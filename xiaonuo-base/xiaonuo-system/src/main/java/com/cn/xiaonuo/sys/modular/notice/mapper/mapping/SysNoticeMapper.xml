@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.xiaonuo.sys.modular.notice.mapper.SysNoticeMapper">
+
+    <resultMap id="sysNoticeReceiveResult" type="com.cn.xiaonuo.sys.modular.notice.result.SysNoticeReceiveResult">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="type" property="type" />
+        <result column="public_user_id" property="publicUserId" />
+        <result column="public_user_name" property="publicUserName" />
+        <result column="public_org_id" property="publicOrgId" />
+        <result column="public_org_name" property="publicOrgName" />
+        <result column="public_time" property="publicTime" />
+        <result column="cancel_time" property="cancelTime" />
+        <result column="read_status" property="readStatus" />
+        <result column="read_time" property="readTime" />
+    </resultMap>
+
+    <select id="page" resultMap="sysNoticeReceiveResult">
+        select
+            sys_notice.*,
+            sys_notice_user.status as read_status,
+            sys_notice_user.read_time as read_time
+        from
+            sys_notice
+                left join sys_notice_user on sys_notice.id = sys_notice_user.notice_id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

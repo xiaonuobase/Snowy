@@ -1,0 +1,57 @@
+#服务配置
+server:
+  port: 82
+  max-http-header-size: 10240
+
+#spring相关配置
+spring:
+  profiles:
+    active: @spring.active@
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss.SSS
+    locale: zh_CN
+    serialization:
+      # 格式化输出
+      indent_output: false
+
+#mybaits相关配置
+mybatis-plus:
+  mapper-locations: classpath*:com/cn/**/mapping/*.xml, classpath:/META-INF/modeler-mybatis-mappings/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    lazy-loading-enabled: true
+    multiple-result-sets-enabled: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: assign_id
+      table-underline: true
+    enable-sql-runner: true
+  configuration-properties:
+    prefix:
+    blobType: BLOB
+    boolValue: TRUE
+
+#libreoffice文档在线预览配置
+# CentOS 下安装 libreoffice：
+# 安装：yum -y install libreoffice
+# Linux 中文字体乱码解决：
+# 1、上传 C:\Windows\Fonts 下的字体到 /usr/share/fonts/windows 目录
+# 2、执行命令： chmod 644 /usr/share/fonts/windows/* && fc-cache -fv
+jodconverter:
+  local:
+    #暂时关闭预览，启动时会有点慢
+    enabled: false
+    #设置libreoffice主目录 linux地址如：/usr/lib64/libreoffice
+    office-home: C:\Program Files\LibreOffice
+    #开启多个libreoffice进程，每个端口对应一个进程
+    port-numbers: 8100
+    #libreoffice进程重启前的最大进程数
+    max-tasks-per-process: 100

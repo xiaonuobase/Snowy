@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.xiaonuo.sys.modular.dict.mapper.SysDictDataMapper">
+
+    <select id="getDictCodesByDictTypeCode" resultType="java.lang.String">
+        SELECT
+        dict.`code`
+        FROM
+        sys_dict_data dict
+        INNER JOIN sys_dict_type type ON dict.type_id = type.id
+        where type.code in
+        <foreach collection="array" index="index" item="i" open="(" separator="," close=")">
+            #{i}
+        </foreach>
+    </select>
+
+</mapper>

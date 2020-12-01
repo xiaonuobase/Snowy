@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.xiaonuo.sys.modular.user.mapper.SysUserMapper">
+
+    <resultMap id="sysUserResult" type="com.cn.xiaonuo.sys.modular.user.result.SysUserResult">
+        <id column="id" property="id" />
+        <result column="account" property="account" />
+        <result column="nick_name" property="nickName" />
+        <result column="name" property="name" />
+        <result column="avatar" property="avatar" />
+        <result column="birthday" property="birthday" />
+        <result column="sex" property="sex" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="tel" property="tel" />
+        <result column="status" property="status" />
+        <association property="sysEmpInfo" javaType="com.cn.xiaonuo.sys.modular.emp.result.SysEmpInfo">
+            <result column="job_num" property="jobNum" />
+            <result column="org_id" property="orgId" />
+            <result column="org_name" property="orgName" />
+        </association>
+    </resultMap>
+
+    <!--获取用户分页列表-->
+    <select id="page" resultMap="sysUserResult">
+        select sys_user.*,
+               sys_emp.job_num,
+               sys_emp.org_id,
+               sys_emp.org_name
+        from sys_user left join sys_emp on sys_user.id = sys_emp.id left join sys_org on sys_emp.org_id = sys_org.id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>
