@@ -42,36 +42,29 @@
         <span slot="status" slot-scope="text">
           {{ statusFilter(text) }}
         </span>
-
         <span slot="action" slot-scope="text, record">
           <a v-if="hasPerm('sysApp:edit')" @click="$refs.editForm.edit(record)">编辑</a>
           <a-divider type="vertical" v-if="hasPerm('sysApp:edit') & hasPerm('sysApp:delete')" />
           <a-popconfirm v-if="hasPerm('sysApp:delete')" placement="topRight" title="确认删除？" @confirm="() => sysAppDelete(record)">
             <a>删除</a>
           </a-popconfirm>
-
           <a-divider type="vertical" v-if="hasPerm('sysApp:setAsDefault') & hasPerm('sysApp:delete') & record.active == 'N' || hasPerm('sysApp:edit') & hasPerm('sysApp:setAsDefault') & record.active == 'N'" />
-
           <a-popconfirm v-if="hasPerm('sysApp:setAsDefault') & record.active == 'N'" placement="topRight" title="设置为默认应用？" @confirm="() => sysDefault(record)">
             <a>设为默认</a>
           </a-popconfirm>
-
         </span>
       </s-table>
-
       <add-form ref="addForm" @ok="handleOk" />
       <edit-form ref="editForm" @ok="handleOk" />
     </a-spin>
   </a-card>
 </template>
-
 <script>
   import { STable } from '@/components'
   import { getAppPage, sysAppDelete, sysAppSetAsDefault } from '@/api/modular/system/appManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import editForm from './editForm'
   import addForm from './addForm'
-
   export default {
     components: {
       STable,
@@ -125,7 +118,6 @@
         activeDict: []
       }
     },
-
     created () {
       this.sysDictTypeDropDown()
       if (this.hasPerm('sysApp:edit') || this.hasPerm('sysApp:delete') || this.hasPerm('sysApp:setAsDefault')) {
@@ -137,7 +129,6 @@
         })
       }
     },
-
     methods: {
       activeFilter (active) {
         // eslint-disable-next-line eqeqeq
@@ -153,7 +144,6 @@
           return values[0].value
         }
       },
-
       /**
        * 获取字典数据
        */
@@ -165,11 +155,9 @@
           this.statusDict = res.data
         })
       },
-
       handleOk () {
         this.$refs.table.refresh()
       },
-
       sysDefault (record) {
         this.loading = true
         sysAppSetAsDefault({ id: record.id }).then((res) => {
@@ -207,12 +195,10 @@
   }
 </script>
 <style scoped>
-
   .table-operator {
     margin-bottom: 18px;
   }
   button {
     margin-right: 8px;
   }
-
 </style>

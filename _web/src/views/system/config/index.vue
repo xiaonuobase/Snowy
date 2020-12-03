@@ -185,10 +185,8 @@
         this.selectedRows = selectedRows
       }
     }
-
   }
 </script>
-
 <style lang="less">
   .table-operator {
     margin-bottom: 18px;
@@ -196,5 +194,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>
