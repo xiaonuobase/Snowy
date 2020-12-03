@@ -2,7 +2,7 @@
 
 <p align="center">     
     <p align="center">
-        xiaonuo-vue为XiaoNuo生态技术框架环境中的vue分离版本<br/>
+        xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本<br/>
         前后端分离架构，开箱即用，紧随前沿技术<br/>
         <br>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
@@ -32,7 +32,6 @@
 * 后续我们会行发多个版本，将适配多个数据库环境，国产化环境，并且根据多年经验会出相关系统中用到的案例，提供给大家使用！
 * 如需了解我们更多，请移步官网：https://xiaonuo.vip
 * 当然，有问题讨论的小伙伴还可以加入我们的QQ技术群：732230670，一起学习讨论。
-* 或者联系客服加入群聊：1253070437、1633655315
 
 ### 在线演示
 
