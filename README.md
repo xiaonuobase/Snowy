@@ -41,7 +41,7 @@
 
 ### 在线演示
 
-* 账号密码：superAdmin/123456，地址：http://vue.xiaonuo.vip
+* 账号密码：superAdmin/123456，地址：https://vue.xiaonuo.vip
 
 ### 效果图
 
