@@ -227,9 +227,11 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
             BeanUtil.copyProperties(item, tableField);
             if (tableField.getColumnKey().equals(Config.DB_TABLE_COM_KRY)) {
                 tableField.setPrimaryKeyFlag(true);
-                String columnName = NamingConTool.UnderlineToHump(item.getColumnName(),"");
-                tableField.setColumnKeyName(columnName.substring(0,1).toUpperCase() + columnName.substring(1,columnName.length()));
             }
+
+            // 加入后端查询参数get set参数
+            String columnName = NamingConTool.UnderlineToHump(item.getColumnName(),"");
+            tableField.setColumnKeyName(columnName.substring(0,1).toUpperCase() + columnName.substring(1,columnName.length()));
 
             // 字段类型转换Java类型
             tableField.setJavaType(JavaSqlTool.sqlToJava(item.getDataType()));

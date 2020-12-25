@@ -58,14 +58,22 @@ public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${C
     public PageResult<${ClassName}> page(${ClassName}Param ${className}Param) {
         QueryWrapper<${ClassName}> queryWrapper = new QueryWrapper<>();
         if (ObjectUtil.isNotNull(${className}Param)) {
-    #foreach ($column in $tableField)
-        #if (${column.primaryKeyFlag})
-            // 根据条件 模糊查询
+
+#foreach ($column in $tableField)
+#if (${column.primaryKeyFlag})
+            // 根据${column.columnComment} 查询
+            if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
+                queryWrapper.lambda().eq(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
+            }
+
+#else
+            // 根据${column.columnComment} 模糊查询
             if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
                 queryWrapper.lambda().like(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
             }
-        #end
-    #end
+
+#end
+#end
         }
         return new PageResult<>(this.page(PageFactory.defaultPage(), queryWrapper));
     }
@@ -74,13 +82,21 @@ public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${C
     public List<${ClassName}> list(${ClassName}Param ${className}Param) {
         LambdaQueryWrapper<${ClassName}> queryWrapper = new LambdaQueryWrapper<>();
         if (ObjectUtil.isNotNull(${className}Param)) {
-            //根据条件模糊查询
+
 #foreach ($column in $tableField)
-    #if (${column.primaryKeyFlag})
-        if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
-            queryWrapper.eq(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
-        }
-    #end
+#if (${column.primaryKeyFlag})
+            // 根据${column.columnComment} 查询
+            if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
+                queryWrapper.eq(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
+            }
+
+#else
+            // 根据${column.columnComment} 模糊查询
+            if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
+                queryWrapper.like(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
+            }
+
+#end
 #end
         }
         return this.list(queryWrapper);

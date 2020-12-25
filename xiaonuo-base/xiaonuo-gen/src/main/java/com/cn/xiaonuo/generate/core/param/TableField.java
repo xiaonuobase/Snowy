@@ -32,7 +32,7 @@ public class TableField {
     public String columnKey;
 
     /**
-     * 主键（转换后的）
+     * 字段名，用来 get set方法使用的
      */
     public String columnKeyName;
 
