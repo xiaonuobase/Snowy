@@ -3,7 +3,7 @@
     <div class="links">
     </div>
     <div class="copyright">
-      Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">XiaoNuo</a> All rights reserved. xiaonuo-vue 1.0
+      Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">XiaoNuo</a> All rights reserved. xiaonuo-vue 1.1
     </div>
   </div>
 </template>
