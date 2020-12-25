@@ -18,6 +18,7 @@
     <modules>
         <module>xiaonuo-core</module>
         <module>xiaonuo-system</module>
+        <module>xiaonuo-gen</module>
     </modules>
 
 </project>

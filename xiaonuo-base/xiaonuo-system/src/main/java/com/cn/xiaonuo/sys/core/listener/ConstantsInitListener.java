@@ -30,6 +30,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.log.Log;
+import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.context.constant.ConstantContext;
 import com.cn.xiaonuo.core.enums.CommonStatusEnum;
 import com.cn.xiaonuo.core.exception.ServiceException;
@@ -75,6 +76,9 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
         String dataSourceUrl = environment.getProperty("spring.datasource.url");
         String dataSourceUsername = environment.getProperty("spring.datasource.username");
         String dataSourcePassword = environment.getProperty("spring.datasource.password");
+
+        // 缓存中放入datasource链接，代码生成时候使用
+        ConstantContext.putConstant(CommonConstant.DATABASE_URL_NAME, dataSourceUrl);
 
         // 如果有为空的配置，终止执行
         if (ObjectUtil.hasEmpty(dataSourceUrl, dataSourceUsername, dataSourcePassword)) {

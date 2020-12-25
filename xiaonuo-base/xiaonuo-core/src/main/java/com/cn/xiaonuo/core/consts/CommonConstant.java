@@ -27,7 +27,7 @@ package com.cn.xiaonuo.core.consts;
 /**
  * 通用常量
  *
- * @author xuyuxiang
+ * @author xuyuxiang yubaoshan
  * @date 2020/3/11 16:51
  */
 public interface CommonConstant {
@@ -106,4 +106,9 @@ public interface CommonConstant {
      * 请求号在header中的唯一标识
      */
     String REQUEST_NO_HEADER_NAME = "Request-No";
+
+    /**
+     * 数据库链接URL标识
+     */
+    String DATABASE_URL_NAME = "DATABASE_URL_NAME";
 }

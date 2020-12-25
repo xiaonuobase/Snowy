@@ -1,0 +1,136 @@
+/*
+Copyright [2020] [https://www.xiaonuo.vip]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+
+1.请不要删除和修改根目录下的LICENSE文件。
+2.请不要删除和修改XiaoNuo源码头部的版权声明。
+3.请保留源码和相关描述文件的项目出处，作者声明等。
+4.分发源码时候，请注明软件出处 https://gitee.com/xiaonuobase/xiaonuo-layui
+5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/xiaonuo-layui
+6.若您的项目无法满足以上几点，可申请商业授权，获取XiaoNuo商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${modularName}.${busName}.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cn.xiaonuo.core.consts.CommonConstant;
+import com.cn.xiaonuo.core.enums.CommonStatusEnum;
+import com.cn.xiaonuo.core.exception.ServiceException;
+import com.cn.xiaonuo.core.factory.PageFactory;
+import com.cn.xiaonuo.core.pojo.page.PageResult;
+import ${packageName}.${modularName}.${busName}.entity.${ClassName};
+import ${packageName}.${modularName}.${busName}.enums.${ClassName}ExceptionEnum;
+import ${packageName}.${modularName}.${busName}.mapper.${ClassName}Mapper;
+import ${packageName}.${modularName}.${busName}.param.${ClassName}Param;
+import ${packageName}.${modularName}.${busName}.service.${ClassName}Service;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * ${functionName}service接口实现类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Service
+public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${ClassName}> implements ${ClassName}Service {
+
+    @Override
+    public PageResult<${ClassName}> page(${ClassName}Param ${className}Param) {
+        QueryWrapper<${ClassName}> queryWrapper = new QueryWrapper<>();
+        if (ObjectUtil.isNotNull(${className}Param)) {
+    #foreach ($column in $tableField)
+        #if (${column.primaryKeyFlag})
+            // 根据条件 模糊查询
+            if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
+                queryWrapper.lambda().like(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
+            }
+        #end
+    #end
+        }
+        return new PageResult<>(this.page(PageFactory.defaultPage(), queryWrapper));
+    }
+
+    @Override
+    public List<${ClassName}> list(${ClassName}Param ${className}Param) {
+        LambdaQueryWrapper<${ClassName}> queryWrapper = new LambdaQueryWrapper<>();
+        if (ObjectUtil.isNotNull(${className}Param)) {
+            //根据条件模糊查询
+#foreach ($column in $tableField)
+    #if (${column.primaryKeyFlag})
+        if (ObjectUtil.isNotEmpty(${className}Param.get${column.columnKeyName}())) {
+            queryWrapper.eq(${ClassName}::get${column.columnKeyName}, ${className}Param.get${column.columnKeyName}());
+        }
+    #end
+#end
+        }
+        return this.list(queryWrapper);
+    }
+
+    @Override
+    public void add(${ClassName}Param ${className}Param) {
+        ${ClassName} ${className} = new ${ClassName}();
+        BeanUtil.copyProperties(${className}Param, ${className});
+        this.save(${className});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(List<${ClassName}Param> ${className}ParamList) {
+        ${className}ParamList.forEach(${className}Param -> {
+            ${ClassName} ${className} = this.query${ClassName}(${className}Param);
+#foreach ($column in $tableField)
+    #if (${column.primaryKeyFlag})
+        this.removeById(${className}.get${column.columnKeyName}());
+    });
+    #end
+#end
+
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void edit(${ClassName}Param ${className}Param) {
+        ${ClassName} ${className} = this.query${ClassName}(${className}Param);
+        BeanUtil.copyProperties(${className}Param, ${className});
+        this.updateById(${className});
+    }
+
+    @Override
+    public ${ClassName} detail(${ClassName}Param ${className}Param) {
+        return this.query${ClassName}(${className}Param);
+    }
+
+    /**
+     * 获取${functionName}
+     *
+     * @author ${authorName}
+     * @date ${createDateString}
+     */
+    private ${ClassName} query${ClassName}(${ClassName}Param ${className}Param) {
+        ${ClassName} ${className} = this.getById(${className}Param.getId());
+        if (ObjectUtil.isNull(${className})) {
+            throw new ServiceException(${ClassName}ExceptionEnum.NOT_EXIST);
+        }
+        return ${className};
+    }
+}

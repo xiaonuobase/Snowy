@@ -1000,3 +1000,28 @@ CREATE TABLE `sys_vis_log`  (
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for `sys_code_generate`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_code_generate`;
+CREATE TABLE `sys_code_generate` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `author_name` varchar(255) NOT NULL COMMENT '作者姓名',
+  `class_name` varchar(255) NOT NULL COMMENT '类名',
+  `table_prefix` varchar(255) NOT NULL COMMENT '是否移除表前缀',
+  `generate_type` varchar(255) NOT NULL COMMENT '生成位置类型',
+  `table_name` varchar(255) NOT NULL COMMENT '数据库表名',
+  `package_name` varchar(255) DEFAULT NULL COMMENT '包名称',
+  `bus_name` varchar(255) DEFAULT NULL COMMENT '业务名',
+  `table_comment` varchar(255) DEFAULT NULL COMMENT '功能名',
+  `create_user` bigint(20) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_user` bigint(20) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='代码生成基础配置';
+
+-- ----------------------------
+-- Records of sys_code_generate
+-- ----------------------------

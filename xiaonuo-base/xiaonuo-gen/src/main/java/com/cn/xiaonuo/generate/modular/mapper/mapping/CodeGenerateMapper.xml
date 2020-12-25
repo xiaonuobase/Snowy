@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.xiaonuo.generate.modular.mapper.CodeGenerateMapper">
+
+    <resultMap id="informationResult" type="com.cn.xiaonuo.generate.modular.result.InformationResult">
+        <result column="table_name" property="tableName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="table_comment" property="tableComment" />
+    </resultMap>
+
+    <resultMap id="inforMationColumnsResult" type="com.cn.xiaonuo.generate.modular.result.InforMationColumnsResult">
+        <result column="column_name" property="columnName" />
+        <result column="data_type" property="dataType" />
+        <result column="column_comment" property="columnComment" />
+        <result column="column_key" property="columnKey" />
+    </resultMap>
+
+    <!-- 查询指定库中所有表 -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult">
+        select table_name,create_time,update_time,table_comment
+            from information_schema.tables
+        where
+            table_schema = '${dbName}'
+    </select>
+
+    <!-- 查询指定表中所有字段 -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult">
+	    select
+	        column_name,data_type,column_comment,column_key
+	        from information_schema.columns
+        where
+            table_schema = '${dbName}' and table_name = '${tableName}';
+	</select>
+
+</mapper>

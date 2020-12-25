@@ -1,0 +1,96 @@
+<template>
+  <a-modal
+    title="编辑${functionName}"
+    :width="900"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleSubmit"
+    @cancel="handleCancel"
+  >
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+#foreach ($column in $tableField)
+#if (${column.primaryKeyFlag})
+        <a-form-item v-show="false">
+          <a-input v-decorator="['${column.columnName}']" />
+        </a-form-item>
+#else
+        <a-form-item
+          label="${column.columnComment}"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          has-feedback
+        >
+          <a-input placeholder="请输入${column.columnComment}" v-decorator="['${column.columnName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+        </a-form-item>
+#end
+#end
+
+      </a-form>
+    </a-spin>
+  </a-modal>
+</template>
+
+<script>
+  import { ${className}Edit } from '@/api/modular/main/${busName}/${className}Manage'
+  export default {
+    data () {
+      return {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 }
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 15 }
+        },
+        visible: false,
+        confirmLoading: false,
+        form: this.$form.createForm(this)
+      }
+    },
+    methods: {
+      // 初始化方法
+      edit (record) {
+        this.visible = true
+        setTimeout(() => {
+          this.form.setFieldsValue(
+            {
+#foreach ($column in $tableField)
+              ${column.columnName}: record.${column.columnName}#if($foreach.hasNext),
+#end
+#end
+
+            }
+          )
+        }, 100)
+      },
+      handleSubmit () {
+        const { form: { validateFields } } = this
+        this.confirmLoading = true
+        validateFields((errors, values) => {
+          if (!errors) {
+              ${className}Edit(values).then((res) => {
+              if (res.success) {
+                this.$message.success('编辑成功')
+                this.confirmLoading = false
+                this.$emit('ok', values)
+                this.handleCancel()
+              } else {
+                this.$message.error('编辑失败')//  + res.message
+              }
+            }).finally((res) => {
+              this.confirmLoading = false
+            })
+          } else {
+            this.confirmLoading = false
+          }
+        })
+      },
+      handleCancel () {
+        this.form.resetFields()
+        this.visible = false
+      }
+    }
+  }
+</script>
