@@ -120,7 +120,7 @@
         ],
         loadData: parameter => {
           return codeGeneratePage(Object.assign(parameter, this.queryParam)).then((res) => {
-            return res
+            return res.data
           })
         },
         selectedRowKeys: [],
