@@ -33,7 +33,7 @@ import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import ${packageName}.${modularName}.${busName}.entity.${ClassName};
 import ${packageName}.${modularName}.${busName}.param.${ClassName}Param;
 import ${packageName}.${modularName}.${busName}.service.${ClassName}Service;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +47,7 @@ import java.util.List;
  * @author ${authorName}
  * @date ${createDateString}
  */
-@Controller
+@RestController
 public class ${ClassName}Controller {
 
     @Resource
