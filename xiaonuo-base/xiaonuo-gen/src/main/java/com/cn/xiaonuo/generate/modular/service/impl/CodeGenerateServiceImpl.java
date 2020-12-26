@@ -266,7 +266,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         //实例化一个VelocityEngine对象
         VelocityEngine velocityEngine=new VelocityEngine(properties);
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getClassName().toLowerCase(), xnCodeGenParam.getPackageName());
+        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName(), xnCodeGenParam.getClassName());
         for (int i = 0; i < filePath.length; i++) {
             String templateName = Config.xnCodeGenTempFile[i];
 
@@ -308,7 +308,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         Util.initVelocity();
         XnVelocityContext context = new XnVelocityContext();
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getClassName().toLowerCase(), xnCodeGenParam.getPackageName());
+        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName(), xnCodeGenParam.getClassName());
         for (int a = 0; a < filePath.length; a++) {
             String templateName = Config.xnCodeGenTempFile[a];
 

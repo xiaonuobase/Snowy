@@ -63,20 +63,20 @@ public class Config {
     /**
      * 各个代码存放路径文件夹
      */
-    public static String[] xnCodeGenFilePath (String busName, String packageName) {
-        String packageNameString = packageName.replace(".","\\") + "\\";
-        controllerPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + "\\" + busName + "\\" + "controller" + "\\";
-        entityPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + "\\" + busName + "\\" + "entity" + "\\";
-        enumsPath = BASE_JAVA_PAHT+ packageNameString  + MODULAR_NAME + "\\" + busName + "\\" + "enums" + "\\";
-        mapperPath = BASE_JAVA_PAHT + packageNameString  + MODULAR_NAME + "\\" + busName + "\\" + "mapper" + "\\";
-        mappingPath = mapperPath + "\\" + "mapping" + "\\";
-        paramPath = BASE_JAVA_PAHT+ "\\" + packageNameString  + MODULAR_NAME + "\\" + busName + "\\" + "param" + "\\";
-        servicePath = BASE_JAVA_PAHT+ "\\" + packageNameString  + MODULAR_NAME + "\\" + busName + "\\" + "service" + "\\";
-        serviceImplPath = servicePath + "\\" + "impl" + "\\";
-        manageJsPath = BASE_VUE_PAHT + "\\" + "api\\" + MODULAR_NAME + "\\main\\" + busName + "\\";
-        vueIndexPath = BASE_VUE_PAHT + "\\" + "views\\main\\" + busName + "\\";
-        vueAddFromPath = BASE_VUE_PAHT + "\\" + "views\\main\\" + busName + "\\";
-        vueEditFromPath = BASE_VUE_PAHT + "\\" + "views\\main\\" + busName + "\\";
+    public static String[] xnCodeGenFilePath (String busName, String packageName, String className) {
+        String packageNameString = packageName.replace(".",File.separator) + File.separator;
+        controllerPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + File.separator + busName + File.separator + "controller" + File.separator;
+        entityPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + File.separator + busName + File.separator + "entity" + File.separator;
+        enumsPath = BASE_JAVA_PAHT+ packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "enums" + File.separator;
+        mapperPath = BASE_JAVA_PAHT + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "mapper" + File.separator;
+        mappingPath = mapperPath + File.separator + "mapping" + File.separator;
+        paramPath = BASE_JAVA_PAHT+ File.separator + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "param" + File.separator;
+        servicePath = BASE_JAVA_PAHT+ File.separator + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "service" + File.separator;
+        serviceImplPath = servicePath + File.separator + "impl" + File.separator;
+        manageJsPath = BASE_VUE_PAHT + File.separator + "api" + File.separator + MODULAR_NAME + File.separator + "main" + File.separator + busName + File.separator;
+        vueIndexPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className)  + File.separator;
+        vueAddFromPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className) + File.separator;
+        vueEditFromPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className) + File.separator;
         return new String[] {
                 controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath
         };
