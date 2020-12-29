@@ -1,6 +1,8 @@
 package com.cn.xiaonuo.generate.core.config;
 
 
+import java.io.File;
+
 /**
  * 代码生成配置
  *
@@ -8,6 +10,11 @@ package com.cn.xiaonuo.generate.core.config;
  * @date 2020-12-19 02:30:56
  */
 public class Config {
+
+    /**
+     * 路径分离（不通的机器，取不同的路径）
+     */
+    public static String FILE_SEP = File.separator;
 
     /**
      * 存放vm模板位置
@@ -63,20 +70,20 @@ public class Config {
     /**
      * 各个代码存放路径文件夹
      */
-    public static String[] xnCodeGenFilePath (String busName, String packageName, String className) {
-        String packageNameString = packageName.replace(".",File.separator) + File.separator;
-        controllerPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + File.separator + busName + File.separator + "controller" + File.separator;
-        entityPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + File.separator + busName + File.separator + "entity" + File.separator;
-        enumsPath = BASE_JAVA_PAHT+ packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "enums" + File.separator;
-        mapperPath = BASE_JAVA_PAHT + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "mapper" + File.separator;
-        mappingPath = mapperPath + File.separator + "mapping" + File.separator;
-        paramPath = BASE_JAVA_PAHT+ File.separator + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "param" + File.separator;
-        servicePath = BASE_JAVA_PAHT+ File.separator + packageNameString  + MODULAR_NAME + File.separator + busName + File.separator + "service" + File.separator;
-        serviceImplPath = servicePath + File.separator + "impl" + File.separator;
-        manageJsPath = BASE_VUE_PAHT + File.separator + "api" + File.separator + MODULAR_NAME + File.separator + "main" + File.separator + busName + File.separator;
-        vueIndexPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className)  + File.separator;
-        vueAddFromPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className) + File.separator;
-        vueEditFromPath = BASE_VUE_PAHT + File.separator + "views" + File.separator +  "main" + File.separator + busName + File.separator + StrUtil.lowerFirst(className) + File.separator;
+    public static String[] xnCodeGenFilePath (String busName, String packageName) {
+        String packageNameString = packageName.replace(".",FILE_SEP) + FILE_SEP;
+        controllerPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "controller" + FILE_SEP;
+        entityPath = BASE_JAVA_PAHT + packageNameString + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "entity" + FILE_SEP;
+        enumsPath = BASE_JAVA_PAHT+ packageNameString  + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "enums" + FILE_SEP;
+        mapperPath = BASE_JAVA_PAHT + packageNameString  + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "mapper" + FILE_SEP;
+        mappingPath = mapperPath + FILE_SEP + "mapping" + FILE_SEP;
+        paramPath = BASE_JAVA_PAHT+ FILE_SEP + packageNameString  + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "param" + FILE_SEP;
+        servicePath = BASE_JAVA_PAHT+ FILE_SEP + packageNameString  + MODULAR_NAME + FILE_SEP + busName + FILE_SEP + "service" + FILE_SEP;
+        serviceImplPath = servicePath + FILE_SEP + "impl" + FILE_SEP;
+        manageJsPath = BASE_VUE_PAHT + FILE_SEP + "api" + FILE_SEP + MODULAR_NAME + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
+        vueIndexPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
+        vueAddFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
+        vueEditFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
         return new String[] {
                 controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath
         };
@@ -104,13 +111,13 @@ public class Config {
      * 本地项目根目录
      */
     public static String getLocalPath () {
-        return System.getProperty("user.dir") + "\\" + BASE_MODULAR_NAME + "\\";
+        return System.getProperty("user.dir") + FILE_SEP + BASE_MODULAR_NAME + FILE_SEP;
     }
 
     /**
      * vue前端
      */
     public static String getLocalFrontPath () {
-        return System.getProperty("user.dir") + "\\" ;
+        return System.getProperty("user.dir") + FILE_SEP ;
     }
 }

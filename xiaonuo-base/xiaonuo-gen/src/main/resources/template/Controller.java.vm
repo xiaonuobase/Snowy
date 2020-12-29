@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * ${functionName}控制器
@@ -87,8 +86,8 @@ public class ${ClassName}Controller {
     @Permission
     @PostMapping("/${className}/delete")
     @BusinessLog(title = "${functionName}_删除", opType = LogAnnotionOpTypeEnum.DELETE)
-    public ResponseData delete(@RequestBody @Validated(${ClassName}Param.delete.class) List<${ClassName}Param> ${className}ParamList) {
-        ${className}Service.delete(${className}ParamList);
+    public ResponseData delete(@RequestBody @Validated(${ClassName}Param.delete.class) ${ClassName}Param ${className}Param) {
+        ${className}Service.delete(${className}Param);
         return new SuccessResponseData();
     }
 

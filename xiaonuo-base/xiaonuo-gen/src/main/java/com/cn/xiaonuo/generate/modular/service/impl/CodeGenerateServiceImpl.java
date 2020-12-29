@@ -266,12 +266,12 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         //实例化一个VelocityEngine对象
         VelocityEngine velocityEngine=new VelocityEngine(properties);
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName(), xnCodeGenParam.getClassName());
+        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
         for (int i = 0; i < filePath.length; i++) {
             String templateName = Config.xnCodeGenTempFile[i];
 
             String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
-                    templateName.substring(templateName.indexOf("/") + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
+                    templateName.substring(templateName.indexOf(Config.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
             String path = Config.getLocalPath ();
             // 前端VUE位置有所变化
             if (fileBaseName.contains(INDEX_PAGE_NAME) || fileBaseName.contains(ADD_FORM_PAGE_NAME) ||
@@ -308,12 +308,12 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         Util.initVelocity();
         XnVelocityContext context = new XnVelocityContext();
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName(), xnCodeGenParam.getClassName());
+        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
         for (int a = 0; a < filePath.length; a++) {
             String templateName = Config.xnCodeGenTempFile[a];
 
             String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
-                    templateName.substring(templateName.indexOf("/") + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
+                    templateName.substring(templateName.indexOf(Config.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
             XnZipOutputStream(context.createVelContext(xnCodeGenParam),
                     Config.templatePath + templateName,
                     filePath[a] + fileBaseName,

@@ -111,16 +111,12 @@ public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${C
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(List<${ClassName}Param> ${className}ParamList) {
-        ${className}ParamList.forEach(${className}Param -> {
-            ${ClassName} ${className} = this.query${ClassName}(${className}Param);
+    public void delete(${ClassName}Param ${className}Param) {
 #foreach ($column in $tableField)
     #if (${column.primaryKeyFlag})
-        this.removeById(${className}.get${column.columnKeyName}());
-    });
+        this.removeById(${className}Param.get${column.columnKeyName}());
     #end
 #end
-
     }
 
     @Transactional(rollbackFor = Exception.class)
