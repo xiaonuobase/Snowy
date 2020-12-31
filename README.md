@@ -20,9 +20,9 @@
 
 ### 其他版本
 
-* 如果Vue分离版本不适用您当前的开发模式，可以了解我们XiaoNuo生态系列框架中前后一体化版本，开发更独立！
-* 快速前往：https://gitee.com/xiaonuobase/xiaonuo-layui
-* PS：我们的微服务框架还在路上，一样开源，如需关注最新动态可加入群聊探讨
+* layui单体版本：https://gitee.com/xiaonuobase/xiaonuo-layui
+* vue前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-vue
+* cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud（即将发布）
 
 ### 快速启动
 
