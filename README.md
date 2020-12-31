@@ -22,7 +22,7 @@
 
 * layui单体版本：https://gitee.com/xiaonuobase/xiaonuo-layui
 * vue前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-vue
-* cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud（即将发布）
+* cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud
 
 ### 快速启动
 
