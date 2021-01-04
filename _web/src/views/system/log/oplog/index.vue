@@ -9,9 +9,11 @@
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
-            <a-select v-model="queryParam.opType" allow-clear placeholder="请选择操作类型" >
-              <a-select-option v-for="(item,index) in opTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-            </a-select>
+            <a-form-item label="操作类型">
+              <a-select v-model="queryParam.opType" allow-clear placeholder="请选择操作类型" >
+                <a-select-option v-for="(item,index) in opTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+              </a-select>
+            </a-form-item>
           </a-col>
           <template v-if="advanced">
             <a-col :md="8" :sm="24">
@@ -19,6 +21,18 @@
                 <a-select v-model="queryParam.success" placeholder="请选择是否成功" >
                   <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
                 </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="10" :sm="24">
+              <a-form-item label="操作时间">
+                <a-range-picker
+                  v-model="queryParam.dates"
+                  :show-time="{
+                    hideDisabledOptions: true,
+                    defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                  }"
+                  format="YYYY-MM-DD HH:mm:ss"
+                />
               </a-form-item>
             </a-col>
           </template>
@@ -78,6 +92,7 @@
   import { sysOpLogPage, sysOpLogDelete } from '@/api/modular/system/logManage'
   import detailsOplog from './details'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
+  import moment from 'moment'
   export default {
     components: {
       STable,
@@ -133,7 +148,7 @@
         ],
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
-          return sysOpLogPage(Object.assign(parameter, this.queryParam)).then((res) => {
+          return sysOpLogPage(Object.assign(parameter, this.switchingDate())).then((res) => {
             return res.data
           })
         },
@@ -148,6 +163,7 @@
       this.sysDictTypeDropDown()
     },
     methods: {
+      moment,
       opTypeFilter (opType) {
         // eslint-disable-next-line eqeqeq
         const values = this.opTypeDict.filter(item => item.code == opType)
@@ -161,6 +177,23 @@
         if (values.length > 0) {
           return values[0].value
         }
+      },
+      /**
+       * 查询参数组装
+       */
+      switchingDate () {
+        const dates = this.queryParam.dates
+        if (dates != null) {
+          this.queryParam.searchBeginTime = moment(dates[0]).format('YYYY-MM-DD HH:mm:ss')
+          this.queryParam.searchEndTime = moment(dates[1]).format('YYYY-MM-DD HH:mm:ss')
+          if (dates.length < 1) {
+            delete this.queryParam.searchBeginTime
+            delete this.queryParam.searchEndTime
+          }
+        }
+        const obj = JSON.parse(JSON.stringify(this.queryParam))
+        delete obj.dates
+        return obj
       },
       /**
        * 获取字典数据

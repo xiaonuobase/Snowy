@@ -61,6 +61,11 @@ public class SysVisLogServiceImpl extends ServiceImpl<SysVisLogMapper, SysVisLog
             if (ObjectUtil.isNotEmpty(sysVisLogParam.getSuccess())) {
                 queryWrapper.eq(SysVisLog::getSuccess, sysVisLogParam.getSuccess());
             }
+            // 根据时间范围查询
+            if (ObjectUtil.isAllNotEmpty(sysVisLogParam.getSearchBeginTime(), sysVisLogParam.getSearchEndTime())) {
+                queryWrapper.apply("date_format (vis_time,'%Y-%m-%d') >= date_format('" + sysVisLogParam.getSearchBeginTime() + "','%Y-%m-%d')")
+                        .apply("date_format (vis_time,'%Y-%m-%d') <= date_format('" + sysVisLogParam.getSearchEndTime() + "','%Y-%m-%d')");
+            }
         }
         return new PageResult<>(this.page(PageFactory.defaultPage(), queryWrapper));
     }
