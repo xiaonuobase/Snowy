@@ -27,7 +27,11 @@ package ${packageName}.${modularName}.${busName}.param;
 import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import lombok.Data;
 import java.util.*;
-
+#foreach ($column in $tableField)
+#if (${column.javaType} == 'BigDecimal')
+import java.math.BigDecimal;
+#end
+#end
 
 /**
 * ${functionName}参数类
