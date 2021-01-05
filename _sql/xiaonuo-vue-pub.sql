@@ -104,8 +104,8 @@ INSERT INTO `sys_config` VALUES ('1270378172860403713', '邮箱host', 'XIAONUO_E
 INSERT INTO `sys_config` VALUES ('1270378295543795714', '邮箱用户名', 'XIAONUO_EMAIL_USERNAME', 'test@126.com', 'Y', '邮箱用户名', '0', 'EMAIL', '2020-06-09 23:32:43', '1265476890672672808', null, null);
 INSERT INTO `sys_config` VALUES ('1270378340510928897', '邮箱密码', 'XIAONUO_EMAIL_PASSWORD', '你的邮箱密码', 'Y', '邮箱密码', '0', 'EMAIL', '2020-06-09 23:32:54', '1265476890672672808', null, null);
 INSERT INTO `sys_config` VALUES ('1270378527358783489', '邮箱端口', 'XIAONUO_EMAIL_PORT', '465', 'Y', '邮箱端口', '0', 'EMAIL', '2020-06-09 23:33:38', '1265476890672672808', null, null);
-INSERT INTO `sys_config` VALUES ('1270378790035460097', '邮箱是否开启ssl', 'XIAONUO_EMAIL_FROM', 'true', 'Y', '邮箱是否开启ssl', '0', 'EMAIL', '2020-06-09 23:34:41', '1265476890672672808', null, null);
-INSERT INTO `sys_config` VALUES ('1270380786649972737', '邮箱发件人', 'XIAONUO_EMAIL_SSL', 'test@126.com', 'Y', '邮箱发件人', '0', 'EMAIL', '2020-06-09 23:42:37', '1265476890672672808', null, null);
+INSERT INTO `sys_config` VALUES ('1270378790035460097', '邮箱是否开启ssl', 'XIAONUO_EMAIL_SSL', 'true', 'Y', '邮箱是否开启ssl', '0', 'EMAIL', '2020-06-09 23:34:41', '1265476890672672808', null, null);
+INSERT INTO `sys_config` VALUES ('1270380786649972737', '邮箱发件人', 'XIAONUO_EMAIL_FROM', 'test@126.com', 'Y', '邮箱发件人', '0', 'EMAIL', '2020-06-09 23:42:37', '1265476890672672808', null, null);
 INSERT INTO `sys_config` VALUES ('1270380786649972738', 'win本地上传文件路径', 'XIAONUO_FILE_UPLOAD_PATH_FOR_WINDOWS', 'd:/tmp', 'Y', 'win本地上传文件路径', '0', 'FILE_PATH', '2020-06-09 23:42:37', '1265476890672672808', null, null);
 INSERT INTO `sys_config` VALUES ('1270380786649972739', 'linux/mac本地上传文件路径', 'XIAONUO_FILE_UPLOAD_PATH_FOR_LINUX', '/tmp', 'Y', 'linux/mac本地上传文件路径', '0', 'FILE_PATH', '2020-06-09 23:42:37', '1265476890672672808', null, null);
 INSERT INTO `sys_config` VALUES ('1270380786649982740', 'XiaoNuo演示环境', 'XIAONUO_DEMO_ENV_FLAG', 'false', 'Y', 'XiaoNuo演示环境的开关，true-打开，false-关闭，如果演示环境开启，则只能读数据不能写数据', '0', 'DEFAULT', '2020-06-09 23:42:37', '1265476890672672808', '2020-09-03 14:38:17', '1265476890672672808');
