@@ -897,7 +897,7 @@ CREATE TABLE `sys_sms` (
   `status` tinyint(4) NOT NULL COMMENT '发送状态（字典 0 未发送，1 发送成功，2 发送失败，3 失效）',
   `source` tinyint(4) NOT NULL COMMENT '来源（字典 1 app， 2 pc， 3 其他）',
   `invalid_time` datetime DEFAULT NULL COMMENT '失效时间',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `create_user` bigint(20) DEFAULT NULL COMMENT '创建人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `update_user` bigint(20) DEFAULT NULL COMMENT '更新人',
