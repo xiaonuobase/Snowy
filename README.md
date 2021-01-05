@@ -6,9 +6,11 @@
         前后端分离架构，开箱即用，紧随前沿技术<br/>
         <br>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
+            <img src="https://img.shields.io/badge/vue-2.x-blue.svg" alt="bootstrap">
+        </a> 
+        <a href="https://www.antdv.com/docs/vue/introduce-cn/">
             <img src="https://img.shields.io/badge/vue--ant--design-2.1.0-blue.svg" alt="bootstrap">
         </a> 
-        +
         <a href="http://spring.io/projects/spring-boot">
             <img src="https://img.shields.io/badge/spring--boot-2.3.1-green.svg" alt="spring-boot">
         </a>
@@ -23,6 +25,7 @@
 * layui单体版本：https://gitee.com/xiaonuobase/xiaonuo-layui
 * vue前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-vue
 * cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud
+* 我们的其他产品线同样开源，如需关注最新动态可加入QQ群聊探讨：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)
 
 ### 快速启动
 
@@ -37,7 +40,7 @@
 * 纯手研发搭建框架脚手架，在自己用的时候，也为各位小伙伴打下坚固的接私活利器。
 * 后续我们会行发多个版本，将适配多个数据库环境，国产化环境，并且根据多年经验会出相关系统中用到的案例，提供给大家使用！
 * 如需了解我们更多，请移步官网：https://xiaonuo.vip
-* 当然，有问题讨论的小伙伴还可以加入我们的QQ技术群：732230670，一起学习讨论。
+* 当然，有问题讨论的小伙伴还可以加入我们的QQ技术群：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)，一起学习讨论。
 
 ### 在线演示
 
