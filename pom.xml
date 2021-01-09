@@ -28,6 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
+        <oracle.version>11.2.0.3</oracle.version>
         <druid.version>1.1.21</druid.version>
         <mp.version>3.3.2</mp.version>
         <fastjson.version>1.2.70</fastjson.version>
@@ -63,6 +64,11 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${oracle.version}</version>
             </dependency>
 
             <!--数据库连接池-->

@@ -35,15 +35,10 @@ import com.cn.xiaonuo.core.context.constant.ConstantContext;
 import com.cn.xiaonuo.core.enums.CommonStatusEnum;
 import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.sys.modular.consts.enums.SysConfigExceptionEnum;
-import com.cn.xiaonuo.core.context.constant.ConstantContext;
-import com.cn.xiaonuo.core.enums.CommonStatusEnum;
-import com.cn.xiaonuo.core.exception.ServiceException;
-import com.cn.xiaonuo.sys.modular.consts.enums.SysConfigExceptionEnum;
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -96,7 +91,12 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
 
             // 将查询到的参数配置添加到缓存
             if (ObjectUtil.isNotEmpty(entityList)) {
-                entityList.forEach(sysConfig -> ConstantContext.putConstant(sysConfig.getStr("code"), sysConfig.getStr("value")));
+                entityList.forEach(sysConfig ->
+                        ConstantContext.putConstant(
+                                sysConfig.getStr("code") == null ? sysConfig.getStr("CODE") : sysConfig.getStr("code"),
+                                sysConfig.getStr("value") == null ? sysConfig.getStr("VALUE") : sysConfig.getStr("value")
+                        )
+                );
             }
         } catch (SQLException | ClassNotFoundException e) {
             log.error(">>> 读取数据库constants配置信息出错：{}", e.getMessage());
