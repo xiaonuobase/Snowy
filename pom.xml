@@ -65,11 +65,13 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
             </dependency>
+            <!--
             <dependency>
                 <groupId>com.oracle</groupId>
                 <artifactId>ojdbc6</artifactId>
                 <version>${oracle.version}</version>
             </dependency>
+            -->
 
             <!--数据库连接池-->
             <dependency>
