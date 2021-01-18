@@ -3,12 +3,11 @@
 </p>
 
 ### 框架介绍
+<h3 align="center">xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本</h3>
+<h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3>
 
 <p align="center">     
     <p align="center">
-        xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本<br/>
-        前后端分离架构，开箱即用，紧随前沿技术<br/>
-        <br>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
             <img src="https://img.shields.io/badge/vue-2.x-blue.svg" alt="bootstrap">
         </a> 
