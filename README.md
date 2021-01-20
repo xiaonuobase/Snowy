@@ -1,10 +1,12 @@
-<p align="center">
-    <img src="./_web/public/logo.png" height="150" alt="logo"/>
-</p>
+<div align="center">
+    <p align="center">
+        <img src="./_web/public/logo.png" height="150" alt="logo"/>
+    </p>
+</div>
 
 ### 框架介绍
-<h3 align="center">xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本</h3>
-<h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3>
+<div align="center"><h3 align="center">xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本</h3></div>
+<div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
 
 <p align="center">     
     <p align="center">
