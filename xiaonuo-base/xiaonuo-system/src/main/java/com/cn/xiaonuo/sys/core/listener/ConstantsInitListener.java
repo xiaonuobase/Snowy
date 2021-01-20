@@ -39,6 +39,7 @@ import org.springframework.boot.context.event.ApplicationContextInitializedEvent
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
