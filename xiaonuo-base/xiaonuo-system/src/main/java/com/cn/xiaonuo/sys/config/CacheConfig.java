@@ -31,11 +31,6 @@ import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
 import com.cn.xiaonuo.sys.core.cache.MappingCache;
 import com.cn.xiaonuo.sys.core.cache.ResourceCache;
 import com.cn.xiaonuo.sys.core.cache.UserCache;
-import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
-import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
-import com.cn.xiaonuo.sys.core.cache.MappingCache;
-import com.cn.xiaonuo.sys.core.cache.ResourceCache;
-import com.cn.xiaonuo.sys.core.cache.UserCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

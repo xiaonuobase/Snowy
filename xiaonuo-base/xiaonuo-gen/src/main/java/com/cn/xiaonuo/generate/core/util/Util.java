@@ -2,6 +2,7 @@ package com.cn.xiaonuo.generate.core.util;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.app.Velocity;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;

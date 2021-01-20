@@ -24,8 +24,8 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.modular.consts.entity;
 
-import com.cn.xiaonuo.core.pojo.base.entity.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
+import com.cn.xiaonuo.core.pojo.base.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

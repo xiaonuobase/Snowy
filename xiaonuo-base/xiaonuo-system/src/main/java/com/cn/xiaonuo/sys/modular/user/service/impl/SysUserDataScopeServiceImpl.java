@@ -25,13 +25,10 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.user.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.cn.xiaonuo.sys.modular.user.entity.SysUserDataScope;
-import com.cn.xiaonuo.sys.modular.user.mapper.SysUserDataScopeMapper;
-import com.cn.xiaonuo.sys.modular.user.param.SysUserParam;
-import com.cn.xiaonuo.sys.modular.user.service.SysUserDataScopeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.sys.modular.user.entity.SysUserDataScope;
+import com.cn.xiaonuo.sys.modular.user.mapper.SysUserDataScopeMapper;
 import com.cn.xiaonuo.sys.modular.user.param.SysUserParam;
 import com.cn.xiaonuo.sys.modular.user.service.SysUserDataScopeService;
 import org.springframework.stereotype.Service;

@@ -24,10 +24,6 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.modular.org.service;
 
-import com.cn.xiaonuo.core.pojo.node.AntdBaseTreeNode;
-import com.cn.xiaonuo.core.pojo.page.PageResult;
-import com.cn.xiaonuo.sys.modular.org.entity.SysOrg;
-import com.cn.xiaonuo.sys.modular.org.param.SysOrgParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cn.xiaonuo.core.pojo.node.AntdBaseTreeNode;
 import com.cn.xiaonuo.core.pojo.page.PageResult;

@@ -25,7 +25,6 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.core.annotion;
 
 import com.cn.xiaonuo.core.enums.LogicTypeEnum;
-import com.cn.xiaonuo.core.enums.LogicTypeEnum;
 
 import java.lang.annotation.*;
 

@@ -28,7 +28,6 @@ import com.cn.xiaonuo.sys.modular.sms.enums.SmsSendStatusEnum;
 import com.cn.xiaonuo.sys.modular.sms.enums.SmsVerifyEnum;
 import com.cn.xiaonuo.sys.modular.sms.param.SysSmsSendParam;
 import com.cn.xiaonuo.sys.modular.sms.param.SysSmsVerifyParam;
-import com.cn.xiaonuo.sys.modular.sms.enums.SmsVerifyEnum;
 
 /**
  * 短信通知接口

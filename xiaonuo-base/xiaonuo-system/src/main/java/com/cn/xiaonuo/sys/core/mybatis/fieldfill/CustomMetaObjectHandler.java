@@ -25,7 +25,6 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.core.mybatis.fieldfill;
 
 import cn.hutool.log.Log;
-import com.cn.xiaonuo.core.context.login.LoginContextHolder;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.cn.xiaonuo.core.context.login.LoginContextHolder;
 import org.apache.ibatis.reflection.MetaObject;

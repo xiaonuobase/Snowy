@@ -25,8 +25,8 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.core.filter;
 
 
-import com.cn.xiaonuo.core.context.requestno.RequestNoContext;
 import com.cn.xiaonuo.core.consts.CommonConstant;
+import com.cn.xiaonuo.core.context.requestno.RequestNoContext;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;

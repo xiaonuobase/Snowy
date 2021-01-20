@@ -25,11 +25,12 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.config;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import com.alibaba.druid.support.http.StatViewServlet;
+import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import java.util.HashMap;
 
 /**

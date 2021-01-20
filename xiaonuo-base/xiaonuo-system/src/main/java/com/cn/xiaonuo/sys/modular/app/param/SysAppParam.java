@@ -26,8 +26,6 @@ package com.cn.xiaonuo.sys.modular.app.param;
 
 import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import com.cn.xiaonuo.core.validation.flag.FlagValue;
-import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
-import com.cn.xiaonuo.core.validation.flag.FlagValue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -26,6 +26,7 @@ package com.cn.xiaonuo.generate.core.param;
 
 import com.cn.xiaonuo.generate.core.config.Config;
 import lombok.Data;
+
 import java.util.List;
 
 @Data

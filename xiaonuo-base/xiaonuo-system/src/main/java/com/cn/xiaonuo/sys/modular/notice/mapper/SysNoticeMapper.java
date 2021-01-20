@@ -24,8 +24,6 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.modular.notice.mapper;
 
-import com.cn.xiaonuo.sys.modular.notice.entity.SysNotice;
-import com.cn.xiaonuo.sys.modular.notice.result.SysNoticeReceiveResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

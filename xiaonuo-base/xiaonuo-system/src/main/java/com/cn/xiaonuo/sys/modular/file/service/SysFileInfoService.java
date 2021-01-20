@@ -24,11 +24,11 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.modular.file.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
 import com.cn.xiaonuo.sys.modular.file.entity.SysFileInfo;
 import com.cn.xiaonuo.sys.modular.file.param.SysFileInfoParam;
 import com.cn.xiaonuo.sys.modular.file.result.SysFileInfoResult;
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;

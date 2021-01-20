@@ -32,11 +32,6 @@ import com.cn.xiaonuo.sys.core.enums.LogSuccessStatusEnum;
 import com.cn.xiaonuo.sys.core.enums.VisLogTypeEnum;
 import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 import com.cn.xiaonuo.sys.modular.log.entity.SysVisLog;
-import com.cn.xiaonuo.core.annotion.BusinessLog;
-import com.cn.xiaonuo.core.consts.SymbolConstant;
-import com.cn.xiaonuo.core.util.JoinPointUtil;
-import com.cn.xiaonuo.sys.core.enums.LogSuccessStatusEnum;
-import com.cn.xiaonuo.sys.core.enums.VisLogTypeEnum;
 import org.aspectj.lang.JoinPoint;
 
 import java.util.Arrays;

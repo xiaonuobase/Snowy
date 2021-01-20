@@ -26,7 +26,6 @@ package com.cn.xiaonuo.sys.modular.sms.param;
 
 
 import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
-import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

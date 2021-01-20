@@ -28,10 +28,6 @@ import com.cn.xiaonuo.sys.core.aop.BusinessLogAop;
 import com.cn.xiaonuo.sys.core.aop.DataScopeAop;
 import com.cn.xiaonuo.sys.core.aop.PermissionAop;
 import com.cn.xiaonuo.sys.core.aop.WrapperAop;
-import com.cn.xiaonuo.sys.core.aop.BusinessLogAop;
-import com.cn.xiaonuo.sys.core.aop.DataScopeAop;
-import com.cn.xiaonuo.sys.core.aop.PermissionAop;
-import com.cn.xiaonuo.sys.core.aop.WrapperAop;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

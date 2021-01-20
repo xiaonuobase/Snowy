@@ -25,12 +25,12 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.timer.tasks;
 
 import cn.hutool.log.Log;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cn.xiaonuo.core.context.constant.ConstantContext;
 import com.cn.xiaonuo.core.enums.CommonStatusEnum;
 import com.cn.xiaonuo.core.timer.TimerTaskRunner;
 import com.cn.xiaonuo.sys.modular.consts.entity.SysConfig;
 import com.cn.xiaonuo.sys.modular.consts.service.SysConfigService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

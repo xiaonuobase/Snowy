@@ -30,8 +30,6 @@ import cn.hutool.system.*;
 import com.cn.xiaonuo.core.consts.SymbolConstant;
 import com.cn.xiaonuo.sys.modular.monitor.result.SysMachineResult;
 import com.cn.xiaonuo.sys.modular.monitor.service.SysMachineService;
-import com.cn.xiaonuo.sys.modular.monitor.result.SysMachineResult;
-import com.cn.xiaonuo.sys.modular.monitor.service.SysMachineService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

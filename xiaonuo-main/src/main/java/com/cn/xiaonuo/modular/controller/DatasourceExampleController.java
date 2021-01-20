@@ -27,7 +27,6 @@ package com.cn.xiaonuo.modular.controller;
 import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.modular.service.DatasourceExampleService;
-import com.cn.xiaonuo.modular.service.DatasourceExampleService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

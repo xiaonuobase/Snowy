@@ -31,6 +31,7 @@ import com.cn.xiaonuo.sys.modular.log.entity.SysVisLog;
 import com.cn.xiaonuo.sys.modular.log.service.SysVisLogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.List;
 

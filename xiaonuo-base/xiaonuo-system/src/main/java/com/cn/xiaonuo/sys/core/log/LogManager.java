@@ -36,13 +36,6 @@ import com.cn.xiaonuo.sys.core.log.factory.LogFactory;
 import com.cn.xiaonuo.sys.core.log.factory.LogTaskFactory;
 import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 import com.cn.xiaonuo.sys.modular.log.entity.SysVisLog;
-import com.cn.xiaonuo.core.annotion.BusinessLog;
-import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
-import com.cn.xiaonuo.core.exception.ServiceException;
-import com.cn.xiaonuo.core.exception.enums.ServerExceptionEnum;
-import com.cn.xiaonuo.core.util.HttpServletUtil;
-import com.cn.xiaonuo.core.util.IpAddressUtil;
-import com.cn.xiaonuo.core.util.UaUtil;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
 

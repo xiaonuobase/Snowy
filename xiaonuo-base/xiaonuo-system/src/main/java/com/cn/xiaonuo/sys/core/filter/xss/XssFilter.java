@@ -26,7 +26,6 @@ package com.cn.xiaonuo.sys.core.filter.xss;
 
 
 import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
-import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

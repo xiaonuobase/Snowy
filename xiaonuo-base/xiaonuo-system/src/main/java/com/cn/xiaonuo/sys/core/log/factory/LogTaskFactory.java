@@ -32,8 +32,6 @@ import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 import com.cn.xiaonuo.sys.modular.log.entity.SysVisLog;
 import com.cn.xiaonuo.sys.modular.log.service.SysOpLogService;
 import com.cn.xiaonuo.sys.modular.log.service.SysVisLogService;
-import com.cn.xiaonuo.core.annotion.BusinessLog;
-import com.cn.xiaonuo.core.context.requestno.RequestNoContext;
 import org.aspectj.lang.JoinPoint;
 
 import java.util.TimerTask;

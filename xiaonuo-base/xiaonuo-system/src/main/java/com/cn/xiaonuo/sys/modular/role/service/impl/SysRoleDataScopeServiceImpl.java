@@ -26,10 +26,6 @@ package com.cn.xiaonuo.sys.modular.role.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.cn.xiaonuo.sys.modular.role.entity.SysRoleDataScope;
-import com.cn.xiaonuo.sys.modular.role.mapper.SysRoleDataScopeMapper;
-import com.cn.xiaonuo.sys.modular.role.param.SysRoleParam;
-import com.cn.xiaonuo.sys.modular.role.service.SysRoleDataScopeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.sys.modular.role.entity.SysRoleDataScope;

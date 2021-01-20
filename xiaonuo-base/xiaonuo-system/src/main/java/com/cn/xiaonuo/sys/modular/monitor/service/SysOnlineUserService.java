@@ -27,7 +27,6 @@ package com.cn.xiaonuo.sys.modular.monitor.service;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
 import com.cn.xiaonuo.sys.modular.monitor.param.SysOnlineUserParam;
 import com.cn.xiaonuo.sys.modular.monitor.result.SysOnlineUserResult;
-import com.cn.xiaonuo.sys.modular.monitor.result.SysOnlineUserResult;
 
 /**
  * 系统在线用户service接口

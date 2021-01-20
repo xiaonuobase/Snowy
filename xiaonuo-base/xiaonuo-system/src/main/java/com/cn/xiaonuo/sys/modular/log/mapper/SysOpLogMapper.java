@@ -24,8 +24,8 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.modular.log.mapper;
 
-import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 
 /**
  * 系统访问日志mapper

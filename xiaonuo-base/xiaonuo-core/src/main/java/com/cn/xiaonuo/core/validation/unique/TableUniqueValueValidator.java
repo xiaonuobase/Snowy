@@ -30,11 +30,6 @@ import com.cn.xiaonuo.core.context.group.RequestParamIdContext;
 import com.cn.xiaonuo.core.context.system.SystemContextHolder;
 import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import com.cn.xiaonuo.core.pojo.base.validate.UniqueValidateParam;
-import com.cn.xiaonuo.core.context.group.RequestGroupContext;
-import com.cn.xiaonuo.core.context.group.RequestParamIdContext;
-import com.cn.xiaonuo.core.context.system.SystemContextHolder;
-import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
-import com.cn.xiaonuo.core.pojo.base.validate.UniqueValidateParam;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

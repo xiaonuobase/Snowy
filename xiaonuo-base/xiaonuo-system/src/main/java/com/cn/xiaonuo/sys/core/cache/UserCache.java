@@ -27,7 +27,6 @@ package com.cn.xiaonuo.sys.core.cache;
 import cn.hutool.cache.impl.TimedCache;
 import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
 import com.cn.xiaonuo.sys.core.cache.base.AbstractMemoryCacheOperator;
-import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
 
 /**
  * 登录用户的缓存，存储了当前登录的用户

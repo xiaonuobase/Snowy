@@ -31,7 +31,6 @@ import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.sys.modular.monitor.param.SysOnlineUserParam;
 import com.cn.xiaonuo.sys.modular.monitor.service.SysOnlineUserService;
-import com.cn.xiaonuo.sys.modular.monitor.service.SysOnlineUserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

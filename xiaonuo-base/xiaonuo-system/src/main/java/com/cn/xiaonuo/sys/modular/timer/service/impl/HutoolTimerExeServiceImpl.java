@@ -33,7 +33,6 @@ import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.core.timer.TimerTaskRunner;
 import com.cn.xiaonuo.sys.modular.timer.enums.exp.SysTimersExceptionEnum;
 import com.cn.xiaonuo.sys.modular.timer.service.TimerExeService;
-import com.cn.xiaonuo.sys.modular.timer.enums.exp.SysTimersExceptionEnum;
 import org.springframework.stereotype.Service;
 
 /**

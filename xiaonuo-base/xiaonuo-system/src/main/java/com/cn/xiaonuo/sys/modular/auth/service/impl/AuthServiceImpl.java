@@ -55,8 +55,6 @@ import com.cn.xiaonuo.sys.modular.auth.factory.LoginUserFactory;
 import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
 import com.cn.xiaonuo.sys.modular.user.entity.SysUser;
 import com.cn.xiaonuo.sys.modular.user.service.SysUserService;
-import com.cn.xiaonuo.sys.modular.auth.factory.LoginUserFactory;
-import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

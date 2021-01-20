@@ -24,11 +24,12 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.generate.modular.mapper;
 
-import com.cn.xiaonuo.generate.modular.entity.CodeGenerate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.cn.xiaonuo.generate.modular.entity.CodeGenerate;
 import com.cn.xiaonuo.generate.modular.result.InforMationColumnsResult;
 import com.cn.xiaonuo.generate.modular.result.InformationResult;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**

@@ -26,9 +26,9 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.core.validator;
 
 import cn.hutool.log.Log;
+import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.context.group.RequestGroupContext;
 import com.cn.xiaonuo.core.context.group.RequestParamIdContext;
-import com.cn.xiaonuo.core.consts.CommonConstant;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 

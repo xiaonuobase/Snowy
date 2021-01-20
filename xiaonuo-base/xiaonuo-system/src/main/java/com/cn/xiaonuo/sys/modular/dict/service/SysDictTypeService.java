@@ -25,11 +25,10 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.dict.service;
 
 import cn.hutool.core.lang.Dict;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
 import com.cn.xiaonuo.sys.modular.dict.entity.SysDictType;
 import com.cn.xiaonuo.sys.modular.dict.param.SysDictTypeParam;
-import com.cn.xiaonuo.sys.modular.dict.result.SysDictTreeNode;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.cn.xiaonuo.sys.modular.dict.result.SysDictTreeNode;
 
 import java.util.List;

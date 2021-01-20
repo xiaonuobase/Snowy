@@ -25,7 +25,6 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.monitor.service;
 
 import com.cn.xiaonuo.sys.modular.monitor.result.SysMachineResult;
-import com.cn.xiaonuo.sys.modular.monitor.result.SysMachineResult;
 
 /**
  * 系统属性监控service接口

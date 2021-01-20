@@ -25,21 +25,14 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.oauth.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.core.pojo.oauth.OauthConfigs;
 import com.cn.xiaonuo.sys.core.cache.OauthCache;
 import com.cn.xiaonuo.sys.core.enums.OauthPlatformEnum;
-import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
-import com.cn.xiaonuo.sys.modular.oauth.entity.SysOauthUser;
-import com.cn.xiaonuo.sys.modular.oauth.enums.SysOauthExceptionEnum;
-import com.cn.xiaonuo.sys.modular.oauth.mapper.SysOauthMapper;
-import com.cn.xiaonuo.sys.modular.oauth.service.SysOauthService;
-import com.cn.xiaonuo.sys.modular.user.entity.SysUser;
-import com.cn.xiaonuo.sys.modular.user.service.SysUserService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
 import com.cn.xiaonuo.sys.modular.oauth.entity.SysOauthUser;
 import com.cn.xiaonuo.sys.modular.oauth.enums.SysOauthExceptionEnum;

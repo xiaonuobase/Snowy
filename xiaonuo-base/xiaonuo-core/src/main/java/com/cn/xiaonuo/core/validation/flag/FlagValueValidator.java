@@ -26,7 +26,6 @@ package com.cn.xiaonuo.core.validation.flag;
 
 import cn.hutool.core.util.StrUtil;
 import com.cn.xiaonuo.core.enums.YesOrNotEnum;
-import com.cn.xiaonuo.core.enums.YesOrNotEnum;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

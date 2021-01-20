@@ -27,8 +27,6 @@ package com.cn.xiaonuo.core.context.system;
 import cn.hutool.core.lang.Dict;
 import com.cn.xiaonuo.core.pojo.base.validate.UniqueValidateParam;
 import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
-import com.cn.xiaonuo.core.pojo.base.validate.UniqueValidateParam;
-import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
 
 import java.util.List;
 

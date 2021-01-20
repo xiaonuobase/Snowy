@@ -25,8 +25,8 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.emp.service;
 
 import cn.hutool.core.lang.Dict;
-import com.cn.xiaonuo.sys.modular.emp.entity.SysEmpExtOrgPos;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cn.xiaonuo.sys.modular.emp.entity.SysEmpExtOrgPos;
 
 import java.util.List;
 

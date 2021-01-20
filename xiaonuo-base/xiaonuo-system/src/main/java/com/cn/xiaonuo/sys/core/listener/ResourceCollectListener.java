@@ -28,7 +28,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.log.Log;
 import com.cn.xiaonuo.sys.core.cache.ResourceCache;
-import com.cn.xiaonuo.sys.core.cache.ResourceCache;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
