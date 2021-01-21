@@ -86,7 +86,7 @@
         <Verify
           @success="verifySuccess"
           :mode="'pop'"
-          :captchaType="'blockPuzzle'"
+          :captchaType="'clickWord'"
           :imgSize="{ width: '330px', height: '155px' }"
           ref="verify"
         ></Verify>

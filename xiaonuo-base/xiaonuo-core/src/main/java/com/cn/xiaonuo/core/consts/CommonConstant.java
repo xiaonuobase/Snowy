@@ -113,7 +113,7 @@ public interface CommonConstant {
     String DATABASE_URL_NAME = "DATABASE_URL_NAME";
 
     /**
-     * 滑块验证码
+     * 点选验证码
      */
-    String IMAGE_CODE_TYPE = "blockPuzzle";
+    String IMAGE_CODE_TYPE = "clickWord";
 }

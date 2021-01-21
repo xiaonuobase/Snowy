@@ -32,7 +32,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.consts.SymbolConstant;
-import com.cn.xiaonuo.core.enums.YesOrNotEnum;
 import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.core.pojo.email.EmailConfigs;
 import com.cn.xiaonuo.core.pojo.oauth.OauthConfigs;

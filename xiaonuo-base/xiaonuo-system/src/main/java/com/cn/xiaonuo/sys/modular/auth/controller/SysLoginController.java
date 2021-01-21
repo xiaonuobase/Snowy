@@ -36,6 +36,7 @@ import com.cn.xiaonuo.core.exception.enums.AuthExceptionEnum;
 import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,6 +56,7 @@ public class SysLoginController {
     @Resource
     private AuthService authService;
 
+    @Lazy
     @Resource
     private CaptchaService captchaService;
 
