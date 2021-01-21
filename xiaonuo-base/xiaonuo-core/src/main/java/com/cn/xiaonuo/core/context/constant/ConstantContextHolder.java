@@ -390,4 +390,13 @@ public class ConstantContextHolder {
         }
     }
 
+    /**
+    * @Description 获取验证码 开关标识
+    * @Date 2021/1/21 15:22
+    * @author Jax
+    * @return Boolean
+    **/
+    public static Boolean getCaptchaOpenFlag() {
+        return getSysConfigWithDefault("XIAONUO_CAPTCHA_OPEN", Boolean.class, true);
+    }
 }

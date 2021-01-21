@@ -25,11 +25,18 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.auth.controller;
 
 import cn.hutool.core.lang.Dict;
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
+import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import com.cn.xiaonuo.core.context.login.LoginContextHolder;
+import com.cn.xiaonuo.core.exception.AuthException;
+import com.cn.xiaonuo.core.exception.enums.AuthExceptionEnum;
 import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +55,10 @@ public class SysLoginController {
 
     @Resource
     private AuthService authService;
+
+    @Lazy
+    @Resource
+    private CaptchaService captchaService;
 
     /**
      * 获取是否开启租户的标识
@@ -71,6 +82,11 @@ public class SysLoginController {
         String account = dict.getStr("account");
         String password = dict.getStr("password");
         String tenantCode = dict.getStr("tenantCode");
+
+        //检测是否开启验证码
+        if (ConstantContextHolder.getCaptchaOpenFlag()) {
+            verificationCode(dict.getStr("code"));
+        }
 
         //如果系统开启了多租户开关，则添加租户的临时缓存
         if (ConstantContextHolder.getTenantOpenFlag()) {
@@ -101,6 +117,58 @@ public class SysLoginController {
     @GetMapping("/getLoginUser")
     public ResponseData getLoginUser() {
         return new SuccessResponseData(LoginContextHolder.me().getSysLoginUserUpToDate());
+    }
+
+    /**
+    * @Description 获取验证码开关
+    * @author Jax
+    * @Date 2021/1/21 15:19
+    * @return ResponseData
+    **/
+    @GetMapping("/getCaptchaOpen")
+    public ResponseData getCaptchaOpen() {
+        return new SuccessResponseData(ConstantContextHolder.getCaptchaOpenFlag());
+    }
+
+    /**
+    * @Description  获取验证码
+    * @Date 2021/1/21 15:25
+    * @author Jax
+    * @return ResponseModel
+    **/
+    @GetMapping("/captcha/code")
+    public ResponseModel getCode() {
+        CaptchaVO vo = new CaptchaVO();
+        vo.setCaptchaType(CommonConstant.IMAGE_CODE_TYPE);
+        return captchaService.get(vo);
+    }
+
+    /**
+    * @Description  校验前端验证码
+    * @Date 2021/1/21 15:26
+    * @author Jax
+    * @param captcha
+    * @return ResponseModel
+    **/
+    @PostMapping("/captcha/code/check")
+    public ResponseModel check(@RequestBody CaptchaVO captcha) {
+        return captchaService.check(captcha);
+    }
+
+    /**
+    * @Description 校验验证码
+    * @Date 2021/1/21 15:27
+    * @author Jax
+    * @param code
+    * @return boolean
+    **/
+    private boolean verificationCode(String code) {
+        CaptchaVO vo = new CaptchaVO();
+        vo.setCaptchaVerification(code);
+        if (!captchaService.verification(vo).isSuccess()) {
+            throw new AuthException(AuthExceptionEnum.CONSTANT_EMPTY_ERROR);
+        }
+        return true;
     }
 
 }

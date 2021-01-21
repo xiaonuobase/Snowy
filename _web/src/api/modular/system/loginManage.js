@@ -75,3 +75,17 @@ export function getSmsCaptcha (parameter) {
     params: parameter
   })
 }
+
+
+/**
+ * 获取验证码开关
+ * @author Jax
+ * @param parameter
+ */
+export function getCaptchaOpen (parameter) {
+  return axios({
+    url: '/getCaptchaOpen',
+    method: 'get',
+    params: parameter
+  })
+}

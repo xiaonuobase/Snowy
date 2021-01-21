@@ -82,6 +82,16 @@
         >忘记密码</router-link>
       </a-form-item>
 
+      <a-form-item>
+        <Verify
+          @success="verifySuccess"
+          :mode="'pop'"
+          :captchaType="'clickWord'"
+          :imgSize="{ width: '330px', height: '155px' }"
+          ref="verify"
+        ></Verify>
+      </a-form-item>
+
       <a-form-item style="margin-top:24px">
         <a-button
           size="large"
@@ -120,11 +130,13 @@
 <script>
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
-import { getSmsCaptcha } from '@/api/modular/system/loginManage'
+import { getSmsCaptcha, getCaptchaOpen } from '@/api/modular/system/loginManage'
+import Verify from '@/components/verifition/Verify'
 
 export default {
   components: {
-    TwoStepCaptcha
+    TwoStepCaptcha,
+    Verify
   },
   data () {
     return {
@@ -145,13 +157,27 @@ export default {
       },
       accountLoginErrMsg: '',
       tenantOpen: false,
-      tenantsList: []
+      captchaOpen: false, // 是否开启验证码
+      tenantsList: [],
+      loginParams: [] // 登录参数
+
     }
   },
   created () {
+    this.getCaptchaOpen()
   },
   methods: {
     ...mapActions(['Login', 'Logout', 'dictTypeData']),
+    /**
+     * 获取验证码开关
+     */
+    getCaptchaOpen () {
+      getCaptchaOpen().then((res) => {
+        if (res.success) {
+          this.captchaOpen = res.data
+        }
+      })
+    },
     // handler
     handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
@@ -185,6 +211,12 @@ export default {
       }
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
+          this.loginParams = values
+          // 是否开启验证码
+          if (this.captchaOpen) {
+            this.$refs.verify.show()
+            return
+          }
           const loginParams = { ...values }
           delete loginParams.account
           loginParams[!state.loginType ? 'email' : 'account'] = values.account
@@ -204,6 +236,17 @@ export default {
           }, 600)
         }
       })
+    },
+    /**
+     * 获取验证码
+     */
+    verifySuccess(params) {
+      this.loginParams.code = params.captchaVerification
+      this.Login(this.loginParams).then((res) => this.loginSuccess(res))
+        .catch(err => this.requestFailed(err))
+        .finally(() => {
+          this.state.loginBtn = false
+        })
     },
     getCaptcha (e) {
       e.preventDefault()

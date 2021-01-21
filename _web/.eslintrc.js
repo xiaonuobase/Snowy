@@ -56,7 +56,9 @@ module.exports = {
       }
     ],
     'template-curly-spacing': 'off',
-    'indent': 'off'
+    'indent': 'off',
+    "space-before-function-paren": 0,
+    'no-multi-spaces': 2, //不能用多余的空格
   },
   parserOptions: {
     parser: 'babel-eslint'

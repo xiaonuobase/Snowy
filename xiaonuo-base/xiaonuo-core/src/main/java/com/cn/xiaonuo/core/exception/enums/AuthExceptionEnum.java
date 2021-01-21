@@ -86,7 +86,14 @@ public enum AuthExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 无登录用户
      */
-    NO_LOGIN_USER(9, "无登录用户");
+    NO_LOGIN_USER(9, "无登录用户"),
+
+    /**
+     * 验证码错误
+     */
+    CONSTANT_EMPTY_ERROR(10, "验证码错误"),
+
+    ;
 
     private final Integer code;
 

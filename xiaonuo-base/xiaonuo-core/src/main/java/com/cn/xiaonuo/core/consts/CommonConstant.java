@@ -111,4 +111,9 @@ public interface CommonConstant {
      * 数据库链接URL标识
      */
     String DATABASE_URL_NAME = "DATABASE_URL_NAME";
+
+    /**
+     * 点选验证码
+     */
+    String IMAGE_CODE_TYPE = "clickWord";
 }
