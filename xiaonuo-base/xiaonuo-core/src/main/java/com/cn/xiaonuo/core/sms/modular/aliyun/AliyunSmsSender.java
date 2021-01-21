@@ -39,7 +39,7 @@ public class AliyunSmsSender implements SmsSender {
     @Override
     public void sendSms(String phone, String templateCode, Map<String, Object> params) {
 
-        log.info("开始发送阿里云短信，手机号是：" + phone + ",模板号是：" + templateCode + ",参数是：" + params);
+        log.info(">>> 开始发送阿里云短信，手机号是：" + phone + ",模板号是：" + templateCode + ",参数是：" + params);
 
         // 检验参数是否合法
         assertSendSmsParams(phone, templateCode, params, aliyunSmsProperties);
@@ -62,7 +62,7 @@ public class AliyunSmsSender implements SmsSender {
                     errorMessage = smsExceptionEnum.getMessage();
                 }
             }
-            log.error("发送短信异常！code = " + code + ",message = " + errorMessage);
+            log.error(">>> 发送短信异常！code = " + code + ",message = " + errorMessage);
             throw new AliyunSmsException(code, errorMessage);
         }
     }
@@ -112,10 +112,10 @@ public class AliyunSmsSender implements SmsSender {
             commonResponse = acsClient.getCommonResponse(request);
             String data = commonResponse.getData();
             String jsonResult = data.replaceAll("'\'", "");
-            log.info("获取到发送短信的响应结果！{}", jsonResult);
+            log.info(">>> 获取到发送短信的响应结果！{}", jsonResult);
             return JSON.parseObject(jsonResult);
         } catch (ClientException e) {
-            log.error("初始化阿里云sms异常！可能是accessKey和secret错误！", e);
+            log.error(">>> 初始化阿里云sms异常！可能是accessKey和secret错误！", e);
             throw new AliyunSmsException(AliyunSmsResultEnum.INIT_SMS_CLIENT_ERROR.getCode(),
                     AliyunSmsResultEnum.INIT_SMS_CLIENT_ERROR.getMessage());
         }
@@ -130,7 +130,7 @@ public class AliyunSmsSender implements SmsSender {
     private void assertSendSmsParams(String phoneNumber, String templateCode, Map<String, Object> params,
                                      AliyunSmsProperties aliyunSmsProperties) {
         if (ObjectUtil.hasEmpty(phoneNumber, templateCode, params, aliyunSmsProperties)) {
-            log.error("阿里云短信发送异常！请求参数存在空！");
+            log.error(">>> 阿里云短信发送异常！请求参数存在空！");
             throw new AliyunSmsException(AliyunSmsResultEnum.PARAM_NULL.getCode(), AliyunSmsResultEnum.PARAM_NULL.getMessage());
         }
     }
@@ -146,7 +146,7 @@ public class AliyunSmsSender implements SmsSender {
 
         // 如果是单个签名就用一个签名发
         if (!signName.contains(",")) {
-            log.info("发送短信，签名为：" + signName + ",电话为：" + phone);
+            log.info(">>> 发送短信，签名为：" + signName + ",电话为：" + phone);
             return signName;
         } else {
             return multiSignManager.getSign(phone, signName);
