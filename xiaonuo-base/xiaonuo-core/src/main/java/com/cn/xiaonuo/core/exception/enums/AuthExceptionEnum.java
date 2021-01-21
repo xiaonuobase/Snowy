@@ -91,9 +91,7 @@ public enum AuthExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 验证码错误
      */
-    CONSTANT_EMPTY_ERROR(10, "验证码错误"),
-
-    ;
+    CONSTANT_EMPTY_ERROR(10, "验证码错误");
 
     private final Integer code;
 

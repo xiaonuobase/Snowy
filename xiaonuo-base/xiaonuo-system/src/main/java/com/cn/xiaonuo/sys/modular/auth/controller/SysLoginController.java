@@ -120,22 +120,22 @@ public class SysLoginController {
     }
 
     /**
-    * @Description 获取验证码开关
-    * @author Jax
-    * @Date 2021/1/21 15:19
-    * @return ResponseData
-    **/
+     * 获取验证码开关
+     *
+     * @author Jax
+     * @Date 2021/1/21 15:19
+     */
     @GetMapping("/getCaptchaOpen")
     public ResponseData getCaptchaOpen() {
         return new SuccessResponseData(ConstantContextHolder.getCaptchaOpenFlag());
     }
 
     /**
-    * @Description  获取验证码
-    * @Date 2021/1/21 15:25
-    * @author Jax
-    * @return ResponseModel
-    **/
+     * 获取验证码
+     *
+     * @author Jax
+     * @Date 2021/1/21 15:19
+     */
     @GetMapping("/captcha/code")
     public ResponseModel getCode() {
         CaptchaVO vo = new CaptchaVO();
@@ -144,24 +144,22 @@ public class SysLoginController {
     }
 
     /**
-    * @Description  校验前端验证码
-    * @Date 2021/1/21 15:26
-    * @author Jax
-    * @param captcha
-    * @return ResponseModel
-    **/
+     * 校验前端验证码
+     *
+     * @author Jax
+     * @Date 2021/1/21 15:19
+     */
     @PostMapping("/captcha/code/check")
     public ResponseModel check(@RequestBody CaptchaVO captcha) {
         return captchaService.check(captcha);
     }
 
     /**
-    * @Description 校验验证码
-    * @Date 2021/1/21 15:27
-    * @author Jax
-    * @param code
-    * @return boolean
-    **/
+     * 校验验证码
+     *
+     * @author Jax
+     * @Date 2021/1/21 15:19
+     */
     private boolean verificationCode(String code) {
         CaptchaVO vo = new CaptchaVO();
         vo.setCaptchaVerification(code);
