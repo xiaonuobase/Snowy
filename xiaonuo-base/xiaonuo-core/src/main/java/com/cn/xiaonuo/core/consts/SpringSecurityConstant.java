@@ -63,6 +63,10 @@ public interface SpringSecurityConstant {
             //druid的
             "/druid/**",
 
+            //获取验证码
+            "/captcha/**",
+            "/getCaptchaOpen",
+
     };
 
 }

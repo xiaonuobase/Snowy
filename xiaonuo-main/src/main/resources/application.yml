@@ -55,3 +55,9 @@ jodconverter:
     port-numbers: 8100
     #libreoffice进程重启前的最大进程数
     max-tasks-per-process: 100
+
+#验证码相关配置
+aj:
+  captcha:
+    water-font: 宋体
+    water-mark: XiaoNuo开发平台
