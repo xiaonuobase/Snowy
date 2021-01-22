@@ -204,19 +204,19 @@ export default {
       } = this
 
       state.loginBtn = true
-
       const validateFieldsKey = customActiveKey === 'tab1' ? ['account', 'password'] : ['mobile', 'captcha']
       if (this.tenantOpen) {
         validateFieldsKey.push('tenantCode')
       }
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
+        this.loginParams = values
+        // 是否开启验证码
+        if (this.captchaOpen) {
+          this.$refs.verify.show()
+          state.loginBtn = false
+          return
+        }
         if (!err) {
-          this.loginParams = values
-          // 是否开启验证码
-          if (this.captchaOpen) {
-            this.$refs.verify.show()
-            return
-          }
           const loginParams = { ...values }
           delete loginParams.account
           loginParams[!state.loginType ? 'email' : 'account'] = values.account
@@ -242,6 +242,7 @@ export default {
      */
     verifySuccess(params) {
       this.loginParams.code = params.captchaVerification
+      console.log(this.loginParams)
       this.Login(this.loginParams).then((res) => this.loginSuccess(res))
         .catch(err => this.requestFailed(err))
         .finally(() => {

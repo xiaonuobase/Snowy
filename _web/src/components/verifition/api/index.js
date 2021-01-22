@@ -6,8 +6,8 @@ import { axios } from '@/utils/request'
 // 获取验证图片  以及token
 export function reqGet(data) {
 	return axios({
-        url: '/captcha/code',
-        method: 'get',
+        url: '/captcha/get',
+        method: 'post',
         data
     })
 }
@@ -15,7 +15,7 @@ export function reqGet(data) {
 // 滑动或者点选验证
 export function reqCheck(data) {
 	return axios({
-        url: '/captcha/code/check',
+        url: '/captcha/check',
         method: 'post',
         data
     })
