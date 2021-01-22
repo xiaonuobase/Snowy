@@ -210,13 +210,13 @@ export default {
       }
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         this.loginParams = values
-        // 是否开启验证码
-        if (this.captchaOpen) {
-          this.$refs.verify.show()
-          state.loginBtn = false
-          return
-        }
         if (!err) {
+          // 是否开启验证码
+          if (this.captchaOpen) {
+            this.$refs.verify.show()
+            state.loginBtn = false
+            return
+          }
           const loginParams = { ...values }
           delete loginParams.account
           loginParams[!state.loginType ? 'email' : 'account'] = values.account
