@@ -1,30 +1,31 @@
 <template>
-<div :class="mode=='pop'?'mask':''"  v-show="showBox">
+  <div :class="mode=='pop'?'mask':''" v-show="showBox">
     <div :class="mode=='pop'?'verifybox':''" :style="{'max-width':parseInt(imgSize.width)+30+'px'}">
-        <div class="verifybox-top"  v-if="mode=='pop'">
-            请完成安全验证
-            <span class="verifybox-close" @click="closeBox">
-                <i class="iconfont icon-close"></i>
-            </span>
-        </div>
-        <div class="verifybox-bottom" :style="{padding:mode=='pop'?'15px':'0'}">
-            <!-- 验证码容器 -->
-            <components v-if="componentType"
-                        :is="componentType"
-                        :captchaType="captchaType"
-                        :type="verifyType"
-                        :figure="figure"
-                        :arith="arith"
-                        :mode="mode"
-                        :vSpace="vSpace"
-                        :explain="explain"
-                        :imgSize="imgSize"
-                        :blockSize="blockSize"
-                        :barSize="barSize"
-                        ref="instance"></components>
-        </div>
+      <div class="verifybox-top" v-if="mode=='pop'">
+        请完成安全验证
+        <span @click="closeBox" class="verifybox-close">
+          <i class="iconfont icon-close"></i>
+        </span>
+      </div>
+      <div :style="{padding:mode=='pop'?'15px':'0'}" class="verifybox-bottom">
+        <!-- 验证码容器 -->
+        <components
+          :arith="arith"
+          :barSize="barSize"
+          :blockSize="blockSize"
+          :captchaType="captchaType"
+          :explain="explain"
+          :figure="figure"
+          :imgSize="imgSize"
+          :is="componentType"
+          :mode="mode"
+          :type="verifyType"
+          :vSpace="vSpace"
+          ref="instance"
+          v-if="componentType"></components>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 <script type="text/babel">
     /**
@@ -44,31 +45,35 @@
                 default() {
                     // 默认语言不输入为浏览器语言
                     if (navigator.language) {
-                        var language = navigator.language;
-                    }
-                    else {
-                        var language = navigator.browserLanguage;
+                        var language = navigator.language
+                    } else {
+                        // eslint-disable-next-line no-redeclare
+                        var language = navigator.browserLanguage
                     }
                     return language
                 }
             },
-            captchaType:{
-                type:String,
-                required:true
+            captchaType: {
+                type: String,
+                required: true
             },
+            // eslint-disable-next-line vue/require-default-prop
             figure: {
                 type: Number
             },
+            // eslint-disable-next-line vue/require-default-prop
             arith: {
                 type: Number
             },
             mode: {
                 type: String,
-                default:'pop'
+                default: 'pop'
             },
+            // eslint-disable-next-line vue/require-default-prop
             vSpace: {
                 type: Number
             },
+            // eslint-disable-next-line vue/require-default-prop
             explain: {
                 type: String
             },
@@ -81,17 +86,19 @@
                     }
                 }
             },
+            // eslint-disable-next-line vue/require-default-prop
             blockSize: {
                 type: Object
             },
+            // eslint-disable-next-line vue/require-default-prop
             barSize: {
                 type: Object
-            },
+            }
         },
         data() {
             return {
                 // showBox:true,
-                clickShow:false,
+                clickShow: false,
                 // 内部类型
                 verifyType: undefined,
                 // 所用组件类型
@@ -110,7 +117,7 @@
                     return this.$t(text)
                 } else {
                     // 兼容不存在的语言
-                    let i18n = this.$options.i18n.messages[this.locale] || this.$options.i18n.messages['en-US']
+                    const i18n = this.$options.i18n.messages[this.locale] || this.$options.i18n.messages['en-US']
                     return i18n[text]
                 }
             },
@@ -123,13 +130,14 @@
                     this.instance.refresh()
                 }
             },
-            closeBox(){
+            closeBox() {
                 this.clickShow = false
-                this.refresh();
+                this.refresh()
             },
-            show(){
-                if (this.mode=="pop") {
-                    this.clickShow = true;
+            show() {
+                // eslint-disable-next-line eqeqeq
+                if (this.mode == 'pop') {
+                    this.clickShow = true
                 }
             }
         },
@@ -137,16 +145,17 @@
             instance() {
                 return this.$refs.instance || {}
             },
-            showBox(){
-                if (this.mode=='pop') {
+            showBox() {
+                // eslint-disable-next-line eqeqeq
+                if (this.mode == 'pop') {
                     return this.clickShow
-                }else{
-                    return true;
+                } else {
+                    return true
                 }
             }
         },
         watch: {
-            captchaType:{
+            captchaType: {
                 immediate: true,
                 handler(captchaType) {
                     switch (captchaType.toString()) {
@@ -160,12 +169,12 @@
                             break
                     }
                 }
-            },
+            }
         },
         components: {
             VerifySlide,
             VerifyPoints
-        },
+        }
     }
 </script>
 <style>
@@ -224,11 +233,11 @@
         color: #fff;
     }
     .suc-bg{
-       background-color:rgba(92, 184, 92,.5);  
+       background-color:rgba(92, 184, 92,.5);
        filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7f5CB85C, endcolorstr=#7f5CB85C);
     }
     .err-bg{
-       background-color:rgba(217, 83, 79,.5);  
+       background-color:rgba(217, 83, 79,.5);
        filter: progid:DXImageTransform.Microsoft.gradient(startcolorstr=#7fD9534F, endcolorstr=#7fD9534F);
     }
     .tips-enter,.tips-leave-to{
@@ -287,8 +296,7 @@
         border: none;
         margin-top: 10px;
     }
-    
-    
+
     /*滑动验证码*/
     .verify-bar-area {
         position: relative;

@@ -33,18 +33,18 @@ public class MapBasedMultiSignManager implements MultiSignManager {
         Object lastSignName = cacheMap.get(phone);
         if (lastSignName == null) {
             cacheMap.put(phone, signNames[0]);
-            log.info("发送短信，签名为：" + signNames[0] + ",电话为：" + phone);
+            log.info(">>> 发送短信，签名为：" + signNames[0] + ",电话为：" + phone);
             return signNames[0];
         } else {
             for (String name : signNames) {
                 if (!name.equals(lastSignName)) {
                     cacheMap.put(phone, name);
-                    log.info("发送短信，签名为：" + name + ",电话为：" + phone);
+                    log.info(">>> 发送短信，签名为：" + name + ",电话为：" + phone);
                     return name;
                 }
             }
             cacheMap.put(phone, signNames[0]);
-            log.info("发送短信，签名为：" + signNames[0] + ",电话为：" + phone);
+            log.info(">>> 发送短信，签名为：" + signNames[0] + ",电话为：" + phone);
             return signNames[0];
         }
     }

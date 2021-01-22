@@ -76,11 +76,11 @@ export function getSmsCaptcha (parameter) {
   })
 }
 
-
 /**
  * 获取验证码开关
+ *
  * @author Jax
- * @param parameter
+ * @date 2021/1/22 00:00
  */
 export function getCaptchaOpen (parameter) {
   return axios({
