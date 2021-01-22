@@ -25,10 +25,8 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.modular.auth.controller;
 
 import cn.hutool.core.lang.Dict;
-import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
-import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import com.cn.xiaonuo.core.context.login.LoginContextHolder;
 import com.cn.xiaonuo.core.exception.AuthException;
@@ -120,46 +118,23 @@ public class SysLoginController {
     }
 
     /**
-     * 获取验证码开关
-     *
-     * @author Jax
-     * @Date 2021/1/21 15:19
-     */
+    * @Description 获取验证码开关
+    * @author Jax
+    * @Date 2021/1/21 15:19
+    * @return ResponseData
+    **/
     @GetMapping("/getCaptchaOpen")
     public ResponseData getCaptchaOpen() {
         return new SuccessResponseData(ConstantContextHolder.getCaptchaOpenFlag());
     }
 
     /**
-     * 获取验证码
-     *
-     * @author Jax
-     * @Date 2021/1/21 15:19
-     */
-    @GetMapping("/captcha/code")
-    public ResponseModel getCode() {
-        CaptchaVO vo = new CaptchaVO();
-        vo.setCaptchaType(CommonConstant.IMAGE_CODE_TYPE);
-        return captchaService.get(vo);
-    }
-
-    /**
-     * 校验前端验证码
-     *
-     * @author Jax
-     * @Date 2021/1/21 15:19
-     */
-    @PostMapping("/captcha/code/check")
-    public ResponseModel check(@RequestBody CaptchaVO captcha) {
-        return captchaService.check(captcha);
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @author Jax
-     * @Date 2021/1/21 15:19
-     */
+    * @Description 校验验证码
+    * @Date 2021/1/21 15:27
+    * @author Jax
+    * @param code
+    * @return boolean
+    **/
     private boolean verificationCode(String code) {
         CaptchaVO vo = new CaptchaVO();
         vo.setCaptchaVerification(code);
