@@ -118,23 +118,22 @@ public class SysLoginController {
     }
 
     /**
-    * @Description 获取验证码开关
-    * @author Jax
-    * @Date 2021/1/21 15:19
-    * @return ResponseData
-    **/
+     * 获取验证码开关
+     *
+     * @author Jax
+     * @date 2021/1/21 15:27
+     */
     @GetMapping("/getCaptchaOpen")
     public ResponseData getCaptchaOpen() {
         return new SuccessResponseData(ConstantContextHolder.getCaptchaOpenFlag());
     }
 
     /**
-    * @Description 校验验证码
-    * @Date 2021/1/21 15:27
-    * @author Jax
-    * @param code
-    * @return boolean
-    **/
+     * 校验验证码
+     *
+     * @author Jax
+     * @date 2021/1/21 15:27
+     */
     private boolean verificationCode(String code) {
         CaptchaVO vo = new CaptchaVO();
         vo.setCaptchaVerification(code);

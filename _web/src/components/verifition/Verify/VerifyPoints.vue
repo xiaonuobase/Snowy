@@ -58,10 +58,9 @@
      * VerifyPoints
      * @description 点选
      * */
-    // _code_chars, _code_color1, _code_color2
     import { resetSize } from './../utils/util'
     import { aesEncrypt } from './../utils/ase'
-    import { reqGet, reqCheck } from './../api/index'
+    import { reqGet, reqCheck } from '@/api/modular/system/loginManage'
 
     export default {
         name: 'VerifyPoints',
