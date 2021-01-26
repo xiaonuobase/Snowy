@@ -139,7 +139,11 @@ public class ${ClassName}ServiceImpl extends ServiceImpl<${ClassName}Mapper, ${C
      * @date ${createDateString}
      */
     private ${ClassName} query${ClassName}(${ClassName}Param ${className}Param) {
-        ${ClassName} ${className} = this.getById(${className}Param.getId());
+#foreach ($column in $tableField)
+    #if (${column.primaryKeyFlag})
+        ${ClassName} ${className} = this.getById(${className}Param.get${column.columnKeyName}());
+    #end
+#end
         if (ObjectUtil.isNull(${className})) {
             throw new ServiceException(${ClassName}ExceptionEnum.NOT_EXIST);
         }
