@@ -56,6 +56,10 @@ jodconverter:
     #libreoffice进程重启前的最大进程数
     max-tasks-per-process: 100
 
+#验证码相关配置 去除日志打印
+logging:
+  level:
+    com.anji: off
 #验证码相关配置
 aj:
   captcha:
