@@ -9,7 +9,7 @@
     <a-divider />
     <div class="ant-checkbox-group">
       <div>
-        <draggable v-model="columnsSetting" animation="300" @end="dragEnd">
+        <draggable v-model="columnsSetting" animation="300" @end="emitColumnChange">
           <div class="s-tool-column-item" v-for="item in columnsSetting" :key="item.title">
             <div class="s-tool-column-handle" >
               <a-icon type="more"/>
@@ -48,12 +48,13 @@
         this.columnsSetting = this.originColumns
         this.indeterminate = false
         this.checkAll = true
+        this.emitColumnChange()
       },
       onChange() {
         const checkedList = this.columnsSetting.filter(value => value.checked)
         this.indeterminate = !!checkedList.length && checkedList.length < this.columnsSetting.length
         this.checkAll = checkedList.length === this.columnsSetting.length
-        this.$emit('columnChange', this.columnsSetting)
+        this.emitColumnChange()
       },
       onCheckAllChange(e) {
         const val = e.target.checked
@@ -62,8 +63,9 @@
           checkAll: val,
           columnsSetting: this.columns.map(value => ({ ...value, checked: val }))
         })
+        this.emitColumnChange()
       },
-      dragEnd() {
+      emitColumnChange() {
         this.$emit('columnChange', this.columnsSetting)
       }
     },
