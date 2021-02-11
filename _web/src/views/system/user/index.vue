@@ -43,10 +43,6 @@
           </a-form>
         </div>
 
-        <div class="table-operator" v-if="hasPerm('sysUser:add')" >
-          <a-button type="primary" v-if="hasPerm('sysUser:add')" icon="plus" @click="$refs.addForm.add()">新增用户</a-button>
-        </div>
-
         <s-table
           ref="table"
           size="default"
@@ -56,6 +52,9 @@
           :rowKey="(record) => record.id"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         >
+          <template slot="operator" v-if="hasPerm('sysUser:add')">
+            <a-button type="primary" v-if="hasPerm('sysUser:add')" icon="plus" @click="$refs.addForm.add()">新增用户</a-button>
+          </template>
           <span slot="sex" slot-scope="text">
             {{ sexFilter(text) }}
           </span>

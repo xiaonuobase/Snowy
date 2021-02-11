@@ -1,7 +1,14 @@
 import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
+import screenfull from 'screenfull'
+import draggable from 'vuedraggable'
+import columnSetting from './columnSetting'
+import './index.less'
 
 export default {
+  components: {
+    draggable, columnSetting
+  },
   data () {
     return {
       needTotalList: [],
@@ -11,7 +18,9 @@ export default {
 
       localLoading: false,
       localDataSource: [],
-      localPagination: Object.assign({}, this.pagination)
+      localPagination: Object.assign({}, this.pagination),
+      isFullscreen: false,
+      customSize: this.size
     }
   },
   props: Object.assign({}, T.props, {
@@ -74,6 +83,10 @@ export default {
     pageURI: {
       type: Boolean,
       default: false
+    },
+    extraTool: {
+      type: Array,
+      default: () => ([])
     }
   }),
   watch: {
@@ -116,6 +129,7 @@ export default {
     // console.log('this.localPagination', this.localPagination)
     this.needTotalList = this.initTotalList(this.columns)
     this.loadData()
+    this.columnsSetting = this.columns
   },
   methods: {
     /**
@@ -276,11 +290,109 @@ export default {
           </template>
         </a-alert>
       ) */
+    },
+    columnChange(val) {
+      this.columnsSetting = val
+    },
+    renderHeader () {
+      let tools = [
+        {
+          icon: 'reload',
+          title: '刷新',
+          onClick: () => {
+            this.refresh()
+          }
+        },
+        {
+          icon: 'column-height',
+          title: '密度',
+          isDropdown: true,
+          menu: () => {
+            const onClick = ({ key }) => {
+              this.customSize = key
+            }
+            return (
+              <a-menu slot="overlay" onClick={onClick} selectable defaultSelectedKeys={[this.customSize]}>
+                <a-menu-item key="default">默认</a-menu-item>
+                <a-menu-item key="middle">中等</a-menu-item>
+                <a-menu-item key="small">紧凑</a-menu-item>
+              </a-menu>
+            )
+          },
+          onClick: () => {
+          }
+        },
+        {
+          icon: 'setting',
+          title: '列设置',
+          isDropdown: true,
+          menu: () => {
+            return <columnSetting slot="overlay" columns={this.columns} onColumnChange={this.columnChange} />
+          },
+          onClick: () => {
+          }
+        },
+        {
+          icon: this.isFullscreen ? 'fullscreen-exit' : 'fullscreen',
+          title: '全屏',
+          onClick: () => {
+            if (screenfull.isEnabled) {
+              const table = document.querySelector('.table-wrapper')
+              const antdCard = table.parentNode.parentNode
+              if (antdCard.classList.contains('ant-card')) {
+                screenfull.toggle(antdCard)
+                this.isFullscreen = !this.isFullscreen
+              }
+            }
+          }
+        }
+      ]
+      if (this.extraTool.length) {
+        tools = tools.concat(this.extraTool)
+      }
+
+      return (
+        <div class="s-table-tool">
+          <div class="s-table-tool-left">
+            {this.$scopedSlots.operator()}
+          </div>
+          <div class="s-table-tool-right">
+            {
+              tools.map(tool => {
+                if (tool.isDropdown) {
+                  return (
+                    <a-dropdown trigger={['click']}>
+                      <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
+                        <a-icon type={tool.icon}/>
+                      </a-tooltip>
+                      { tool.menu() }
+                    </a-dropdown>
+                  )
+                }
+                return (
+                  <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
+                    <a-icon type={tool.icon} />
+                  </a-tooltip>
+                )
+              })
+            }
+          </div>
+        </div>
+      )
+      /* return (
+        <a-alert showIcon={true} style="margin-bottom: 16px">
+          <template slot="message">
+            <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRows.length}</a></span>
+            {needTotalItems}
+            {clearItem}
+          </template>
+        </a-alert>
+      ) */
     }
   },
 
   render () {
-    const props = {}
+    let props = {}
     const localKeys = Object.keys(this.$data)
     const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
 
@@ -311,6 +423,12 @@ export default {
         }
       }
       this[k] && (props[k] = this[k])
+      // 此处配置表格大小与要显示的列
+      props = {
+        ...props,
+        size: this.customSize,
+        columns: this.columnsSetting.filter(value => value.checked === undefined || value.checked)
+      }
       return props[k]
     })
     const table = (
@@ -321,6 +439,7 @@ export default {
 
     return (
       <div class="table-wrapper">
+        { this.renderHeader() }
         { showAlert ? this.renderAlert() : null }
         { table }
       </div>
