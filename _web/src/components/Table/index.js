@@ -127,7 +127,6 @@ export default {
         return range[0] + '-' + range[1] + '共' + total + '条'
       }
     }) || false
-    // console.log('this.localPagination', this.localPagination)
     this.needTotalList = this.initTotalList(this.columns)
     this.loadData()
     this.columnsSetting = this.columns
@@ -293,7 +292,6 @@ export default {
       ) */
     },
     columnChange(val) {
-      console.log(val)
       this.columnsSetting = val
     },
     renderHeader () {
@@ -356,7 +354,7 @@ export default {
       return (
         <div class="s-table-tool">
           <div class="s-table-tool-left">
-            {this.$scopedSlots.operator()}
+            {this.$scopedSlots.operator && this.$scopedSlots.operator()}
           </div>
           <div class="s-table-tool-right">
             {
@@ -407,7 +405,6 @@ export default {
       if (k === 'rowSelection') {
         if (showAlert && this.rowSelection) {
           // 如果需要使用alert，则重新绑定 rowSelection 事件
-          // console.log('this.rowSelection', this.rowSelection)
           props[k] = {
             ...this.rowSelection,
             selectedRows: this.selectedRows,
