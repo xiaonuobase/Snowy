@@ -20,7 +20,8 @@ export default {
       localDataSource: [],
       localPagination: Object.assign({}, this.pagination),
       isFullscreen: false,
-      customSize: this.size
+      customSize: this.size,
+      columnsSetting: []
     }
   },
   props: Object.assign({}, T.props, {
@@ -292,6 +293,7 @@ export default {
       ) */
     },
     columnChange(val) {
+      console.log(val)
       this.columnsSetting = val
     },
     renderHeader () {
