@@ -49,11 +49,6 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator" v-if="hasPerm('sysVisLog:delete')">
-      <a-popconfirm v-if="hasPerm('sysVisLog:delete')" placement="top" title="确认清空日志？" @confirm="() => sysVisLogDelete()">
-        <a-button >清空日志</a-button>
-      </a-popconfirm>
-    </div>
     <s-table
       ref="table"
       size="default"
@@ -63,6 +58,11 @@
       :rowKey="(record) => record.id"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysVisLog:sysVisLog')">
+        <a-popconfirm @confirm="() => sysVisLogDelete()" placement="top" title="确认清空日志？" v-if="hasPerm('sysVisLog:delete')">
+          <a-button >清空日志</a-button>
+        </a-popconfirm>
+      </template>
       <span slot="name" slot-scope="text">
         <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
       </span>

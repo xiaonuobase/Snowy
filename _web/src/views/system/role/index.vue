@@ -1,6 +1,5 @@
 <template>
   <a-card :bordered="false">
-
     <div class="table-page-search-wrapper" v-if="hasPerm('sysRole:page')">
       <a-form layout="inline">
         <a-row :gutter="48">
@@ -19,14 +18,8 @@
             <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
           </a-col>
         </a-row>
-
       </a-form>
     </div>
-
-    <div class="table-operator" v-if="hasPerm('sysRole:add')" >
-      <a-button type="primary" v-if="hasPerm('sysRole:add')" icon="plus" @click="$refs.addForm.add()">新增角色</a-button>
-    </div>
-
     <s-table
       ref="table"
       size="default"
@@ -36,6 +29,9 @@
       :rowKey="(record) => record.code"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysRole:add')">
+        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysRole:add')">新增角色</a-button>
+      </template>
       <span slot="action" slot-scope="text, record">
         <a v-if="hasPerm('sysRole:edit')" @click="$refs.editForm.edit(record)">编辑</a>
         <a-divider type="vertical" v-if="hasPerm('sysRole:edit')"/>

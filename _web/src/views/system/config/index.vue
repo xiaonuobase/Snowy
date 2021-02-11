@@ -35,9 +35,6 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator" v-if="hasPerm('sysConfig:add')" >
-      <a-button type="primary" v-if="hasPerm('sysConfig:add')" icon="plus" @click="$refs.addForm.add()">新增配置</a-button>
-    </div>
     <s-table
       ref="table"
       size="default"
@@ -47,6 +44,9 @@
       :rowKey="(record) => record.code"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysConfig:add')">
+        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysConfig:add')">新增配置</a-button>
+      </template>
       <span slot="name" slot-scope="text">
         <ellipsis :length="20" tooltip>{{ text }}</ellipsis>
       </span>

@@ -1,6 +1,5 @@
 <template>
   <a-card :bordered="false">
-
     <a-spin :spinning="confirmLoading">
       <a-tabs default-active-key="1" >
         <a-tab-pane key="1" tab="发送邮件" @change="tabsCallback" v-if="hasPerm('email:sendEmail')">
@@ -48,23 +47,18 @@
           </a-form>
         </a-tab-pane>
       </a-tabs>
-
     </a-spin>
-
   </a-card>
 </template>
-
 <script>
   import { emailSendEmail, emailSendEmailHtml } from '@/api/modular/system/emailManage'
   import { AntdEditor } from '@/components'
   // eslint-disable-next-line no-unused-vars
   import { sysFileInfoUpload, sysFileInfoDownload } from '@/api/modular/system/fileManage'
-
   export default {
     components: {
       AntdEditor
     },
-
     data () {
       return {
         editorContentText: '',
@@ -78,9 +72,7 @@
         form2: this.$form.createForm(this)
       }
     },
-
     methods: {
-
       tabsCallback (key) {
         if (key === '1') {
           // eslint-disable-next-line no-labels
@@ -117,7 +109,6 @@
         this.editorContent = html
         this.editorContentText = ele.text()
       },
-
       /**
        * 发送邮件
        */
@@ -177,7 +168,6 @@
     }
   }
 </script>
-
 <style lang="less">
   .table-operator {
     margin-bottom: 18px;
@@ -185,5 +175,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>

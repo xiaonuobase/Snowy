@@ -1,6 +1,5 @@
 <template>
   <a-card :bordered="false">
-
     <div class="table-page-search-wrapper" v-if="hasPerm('sysSms:page')">
       <a-form layout="inline">
         <a-row :gutter="48">
@@ -38,7 +37,6 @@
         </a-row>
       </a-form>
     </div>
-
     <s-table
       ref="table"
       size="default"
@@ -55,20 +53,16 @@
         {{ sourceFilter(text) }}
       </span>
     </s-table>
-
   </a-card>
 </template>
-
 <script>
   import { STable } from '@/components'
   import { smsPage } from '@/api/modular/system/smsManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
-
   export default {
     components: {
       STable
     },
-
     data () {
       return {
         // 高级搜索 展开/关闭
@@ -114,14 +108,12 @@
         selectedRows: [],
         statusDictTypeDropDown: [],
         sourceDictTypeDropDown: []
-    }
+      }
     },
-
     created () {
       this.sysDictTypeDropDown()
     },
     methods: {
-
       sourceFilter (source) {
         // eslint-disable-next-line eqeqeq
         const values = this.sourceDictTypeDropDown.filter(item => item.code == source)
@@ -129,7 +121,6 @@
           return values[0].value
         }
       },
-
       statusFilter (status) {
         // eslint-disable-next-line eqeqeq
         const values = this.statusDictTypeDropDown.filter(item => item.code == status)
@@ -137,7 +128,6 @@
           return values[0].value
         }
       },
-
       /**
        * 获取字典数据
        */
@@ -149,7 +139,6 @@
           this.sourceDictTypeDropDown = res.data
         })
       },
-
       toggleAdvanced () {
         this.advanced = !this.advanced
       },
@@ -158,10 +147,8 @@
         this.selectedRows = selectedRows
       }
     }
-
   }
 </script>
-
 <style lang="less">
   .table-operator {
     margin-bottom: 18px;
@@ -169,5 +156,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>

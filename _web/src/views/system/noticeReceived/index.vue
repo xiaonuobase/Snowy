@@ -1,6 +1,5 @@
 <template>
   <a-card :bordered="false">
-
     <div class="table-page-search-wrapper" v-if="hasPerm('sysNotice:received')">
       <a-form layout="inline">
         <a-row :gutter="48">
@@ -23,10 +22,8 @@
             </span>
           </a-col>
         </a-row>
-
       </a-form>
     </div>
-
     <s-table
       ref="table"
       size="default"
@@ -36,26 +33,20 @@
       :rowKey="(record) => record.id"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-
       <span slot="status" slot-scope="text">
         {{ statusFilter(text) }}
       </span>
-
       <span slot="type" slot-scope="text">
         {{ typeFilter(text) }}
       </span>
-
       <span slot="action" slot-scope="text, record">
         <a v-if="hasPerm('sysNotice:received')" @click="$refs.detailForm.detail(record)">查看</a>
       </span>
-
     </s-table>
-
     <detail-form ref="detailForm" @ok="handleOk" />
     <div ref="editor"></div>
   </a-card>
 </template>
-
 <script>
   import { STable } from '@/components'
   // eslint-disable-next-line no-unused-vars
@@ -63,13 +54,11 @@
   import { sysNoticeReceived } from '@/api/modular/system/noticeReceivedManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import detailForm from './detailForm'
-
   export default {
     components: {
       STable,
       detailForm
     },
-
     data () {
       return {
         // 高级搜索 展开/关闭
@@ -103,9 +92,8 @@
         selectedRows: [],
         statusDictTypeDropDown: [], // 0草稿 1发布 2撤回 3删除
         typeDictTypeDropDown: []// 0通知 1公告
-    }
+      }
     },
-
     created () {
       this.sysDictTypeDropDown()// 先注释
       if (this.hasPerm('sysNotice:received')) {
@@ -117,7 +105,6 @@
         })
       }
     },
-
     methods: {
       /**
        * 获取字典数据
@@ -130,7 +117,6 @@
           this.typeDictTypeDropDown = res.data
         })
       },
-
       statusFilter (status) {
         // eslint-disable-next-line eqeqeq
         const values = this.statusDictTypeDropDown.filter(item => item.code == status)
@@ -145,7 +131,6 @@
           return values[0].value
         }
       },
-
       handleOk () {
         this.$refs.table.refresh()
       },
@@ -154,7 +139,6 @@
         this.selectedRows = selectedRows
       }
     }
-
   }
 </script>
 
@@ -165,5 +149,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>

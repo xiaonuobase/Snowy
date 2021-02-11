@@ -49,11 +49,6 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator" v-if="hasPerm('sysOpLog:delete')">
-      <a-popconfirm placement="top" title="确认清空日志？" @confirm="() => sysOpLogDelete()">
-        <a-button >清空日志</a-button>
-      </a-popconfirm>
-    </div>
     <s-table
       ref="table"
       size="default"
@@ -63,6 +58,11 @@
       :rowKey="(record) => record.id"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysOpLog:delete')">
+        <a-popconfirm @confirm="() => sysOpLogDelete()" placement="top" title="确认清空日志？">
+          <a-button >清空日志</a-button>
+        </a-popconfirm>
+      </template>
       <span slot="opType" slot-scope="text">
         {{ opTypeFilter(text) }}
       </span>

@@ -1,6 +1,5 @@
 <template>
   <a-card :bordered="false">
-
     <div class="table-page-search-wrapper" v-if="hasPerm('sysDictType:page')">
       <a-form layout="inline">
         <a-row :gutter="48">
@@ -23,11 +22,6 @@
         </a-row>
       </a-form>
     </div>
-
-    <div class="table-operator" v-if="hasPerm('sysDictType:add')" >
-      <a-button type="primary" v-if="hasPerm('sysDictType:add')" icon="plus" @click="$refs.addForm.add()">新增类型</a-button>
-    </div>
-
     <s-table
       ref="table"
       size="default"
@@ -37,10 +31,12 @@
       :rowKey="(record) => record.code"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysDictType:add')">
+        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysDictType:add')">新增类型</a-button>
+      </template>
       <span slot="status" slot-scope="text">
         {{ statusFilter(text) }}
       </span>
-
       <span slot="action" slot-scope="text, record">
         <a @click="$refs.dataIndex.index(record)">字典</a>
         <a-divider type="vertical" v-if="hasPerm('sysDictType:edit') || hasPerm('sysDictType:delete')"/>
@@ -49,11 +45,9 @@
             更多 <a-icon type="down" />
           </a>
           <a-menu slot="overlay">
-
             <a-menu-item v-if="hasPerm('sysDictType:edit')">
               <a @click="$refs.editForm.edit(record)">编辑</a>
             </a-menu-item>
-
             <a-menu-item v-if="hasPerm('sysDictType:delete')">
               <a-popconfirm placement="topRight" title="确认删除？" @confirm="() => sysDictTypeDelete(record)">
                 <a>删除</a>
@@ -62,23 +56,18 @@
           </a-menu>
         </a-dropdown>
       </span>
-
     </s-table>
-
     <add-form ref="addForm" @ok="handleOk" />
     <edit-form ref="editForm" @ok="handleOk" />
     <data-index ref="dataIndex" @ok="handleOk" />
-
   </a-card>
 </template>
-
 <script>
   import { STable } from '@/components'
   import { sysDictTypePage, sysDictTypeDelete, sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
   import editForm from './editForm'
   import dataIndex from './dictdata/index'
-
   export default {
     components: {
       STable,
@@ -86,10 +75,8 @@
       editForm,
       dataIndex
     },
-
     data () {
       return {
-
         // 高级搜索 展开/关闭
         advanced: false,
         // 查询参数
@@ -138,9 +125,7 @@
     created () {
       this.sysDictTypeDropDown()
     },
-
     methods: {
-
       statusFilter (status) {
         // eslint-disable-next-line eqeqeq
         const values = this.statusDict.filter(item => item.code == status)
@@ -148,7 +133,6 @@
           return values[0].value
         }
       },
-
       /**
        * 获取字典数据
        */
@@ -157,7 +141,6 @@
           this.statusDict = res.data
         })
       },
-
       sysDictTypeDelete (record) {
         sysDictTypeDelete(record).then((res) => {
           if (res.success) {
@@ -170,7 +153,6 @@
           this.$message.error('删除错误：' + err.message)
         })
       },
-
       toggleAdvanced () {
         this.advanced = !this.advanced
       },
@@ -182,10 +164,8 @@
         this.selectedRows = selectedRows
       }
     }
-
   }
 </script>
-
 <style lang="less">
   .table-operator {
     margin-bottom: 18px;
@@ -193,5 +173,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>

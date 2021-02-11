@@ -22,9 +22,6 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator" v-if="hasPerm('sysNotice:add')" >
-      <a-button v-if="hasPerm('sysNotice:add')" type="primary" @click="$refs.addForm.add()" icon="plus" >新增公告</a-button>
-    </div>
     <s-table
       ref="table"
       size="default"
@@ -34,6 +31,9 @@
       :rowKey="(record) => record.id"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysNotice:add')">
+        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysNotice:add')" >新增公告</a-button>
+      </template>
       <span slot="status" slot-scope="text">
         {{ statusFilter(text) }}
       </span>

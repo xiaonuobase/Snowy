@@ -22,9 +22,6 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator" v-if="hasPerm('sysTimers:add')" >
-      <a-button type="primary" v-if="hasPerm('sysTimers:add')" icon="plus" @click="$refs.addForm.add()">新增定时器</a-button>
-    </div>
     <s-table
       ref="table"
       size="default"
@@ -34,6 +31,9 @@
       :rowKey="(record) => record.id"
       :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
+      <template slot="operator" v-if="hasPerm('sysTimers:add')">
+        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysTimers:add')">新增定时器</a-button>
+      </template>
       <span slot="actionClass" slot-scope="text">
         <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
       </span>

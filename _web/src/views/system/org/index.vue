@@ -1,5 +1,4 @@
 <template>
-
   <a-row :gutter="24" >
     <a-col :md="5" :sm="24" >
       <a-card :bordered="false" :loading="treeLoading">
@@ -18,7 +17,6 @@
         </div>
       </a-card>
     </a-col>
-
     <a-col :md="19" :sm="24">
       <a-card :bordered="false">
         <div class="table-page-search-wrapper" v-if="hasPerm('sysOrg:page')">
@@ -34,17 +32,10 @@
                 <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
               </a-col>
               <a-col :md="8" :sm="24">
-
               </a-col>
-
             </a-row>
           </a-form>
         </div>
-
-        <div class="table-operator" v-if="hasPerm('sysOrg:add')" >
-          <a-button type="primary" v-if="hasPerm('sysOrg:add')" icon="plus" @click="$refs.addForm.add()">新增机构</a-button>
-        </div>
-
         <s-table
           ref="table"
           size="default"
@@ -54,40 +45,35 @@
           :rowKey="(record) => record.id"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         >
+          <template slot="operator" v-if="hasPerm('sysOrg:add')">
+            <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysOrg:add')">新增机构</a-button>
+          </template>
           <span slot="action" slot-scope="text, record">
             <a v-if="hasPerm('sysOrg:edit')" @click="$refs.editForm.edit(record)">编辑</a>
             <a-divider type="vertical" v-if="hasPerm('sysOrg:edit') & hasPerm('sysOrg:delete')"/>
             <a-popconfirm v-if="hasPerm('sysOrg:delete')" placement="topRight" title="确认删除？" @confirm="() => sysOrgDelete(record)">
               <a>删除</a>
             </a-popconfirm>
-
           </span>
-
         </s-table>
-
         <add-form ref="addForm" @ok="handleOk" />
         <edit-form ref="editForm" @ok="handleOk" />
-
       </a-card>
     </a-col>
   </a-row>
-
 </template>
-
 <script>
   import { STable } from '@/components'
   import { Empty } from 'ant-design-vue'
   import { getOrgPage, sysOrgDelete, getOrgTree } from '@/api/modular/system/orgManage'
   import addForm from './addForm'
   import editForm from './editForm'
-
   export default {
     components: {
       STable,
       addForm,
       editForm
     },
-
     data () {
       return {
         // 高级搜索 展开/关闭
@@ -132,7 +118,7 @@
         replaceFields: {
           key: 'id'
         }
-    }
+      }
     },
     created () {
       this.getOrgTree()
@@ -145,7 +131,6 @@
         })
       }
     },
-
     methods: {
       /**
        * 获取到机构树，展开顶级下树节点，考虑到后期数据量变大，不建议全部展开
@@ -185,7 +170,6 @@
           this.$message.error('删除错误：' + err.message)
         })
       },
-
       handleClick (e) {
         this.queryParam = {
           pid: e.toString()
@@ -204,10 +188,8 @@
         this.selectedRows = selectedRows
       }
     }
-
   }
 </script>
-
 <style lang="less">
   .table-operator {
     margin-bottom: 18px;
@@ -215,5 +197,4 @@
   button {
     margin-right: 8px;
   }
-
 </style>

@@ -36,7 +36,7 @@
           </a-row>
         </a-form>
       </div>
-      <div class="table-operator" v-if="hasPerm('sysFileInfo:upload')">
+      <!--<div class="table-operator" v-if="hasPerm('sysFileInfo:upload')">
         <a-upload
           v-if="hasPerm('sysFileInfo:upload')"
           name="file"
@@ -46,7 +46,7 @@
         >
           <a-button> <a-icon type="upload" />上传文件</a-button>
         </a-upload>
-      </div>
+      </div>-->
       <s-table
         ref="table"
         size="default"
@@ -56,6 +56,17 @@
         :rowKey="(record) => record.id"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
+        <template slot="operator" v-if="hasPerm('sysFileInfo:upload')">
+          <a-upload
+            :customRequest="customRequest"
+            :multiple="true"
+            :showUploadList="false"
+            name="file"
+            v-if="hasPerm('sysFileInfo:upload')"
+          >
+            <a-button> <a-icon type="upload" />上传文件</a-button>
+          </a-upload>
+        </template>
         <span slot="fileOriginName" slot-scope="text">
           <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
         </span>
