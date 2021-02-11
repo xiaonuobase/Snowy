@@ -20,8 +20,6 @@
         </draggable>
       </div>
     </div>
-    <!--    <a-checkbox-group v-model="checkedList" :options="optionsWithDisabled" @change="onChange" >-->
-    <!--    </a-checkbox-group>-->
   </div>
 </template>
 

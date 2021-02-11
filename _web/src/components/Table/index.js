@@ -20,13 +20,7 @@ export default {
       localDataSource: [],
       localPagination: Object.assign({}, this.pagination),
       isFullscreen: false,
-      customSize: this.size,
-
-      // 列配置
-      indeterminate: true,
-      checkAll: false,
-      checkedList: [],
-      columnsSetting: []
+      customSize: this.size
     }
   },
   props: Object.assign({}, T.props, {
