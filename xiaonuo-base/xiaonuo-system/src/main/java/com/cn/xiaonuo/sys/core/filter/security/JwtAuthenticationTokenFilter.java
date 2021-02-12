@@ -33,6 +33,7 @@ import com.cn.xiaonuo.core.exception.enums.ServerExceptionEnum;
 import com.cn.xiaonuo.core.pojo.login.SysLoginUser;
 import com.cn.xiaonuo.core.util.ResponseUtil;
 import com.cn.xiaonuo.sys.modular.auth.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -58,7 +59,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private static final Log log = Log.get();
 
-    @Resource
+    @Autowired
     private AuthService authService;
 
     @Override
