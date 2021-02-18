@@ -10,7 +10,7 @@
           <a-menu
             mode="horizontal"
             :default-selected-keys="this.defApp"
-            style="border-bottom:0px;lineHeight:62px;"
+            style="border-bottom:0px;lineHeight:58px;"
           >
             <a-icon v-if="device==='mobile'" class="trigger" :type="collapsed ? 'menu-fold' : 'menu-unfold'" @click="toggle"/>
             <a-icon v-else class="trigger" :type="collapsed ? 'menu-unfold' : 'menu-fold'" @click="toggle"/>

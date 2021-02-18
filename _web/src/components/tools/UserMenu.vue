@@ -59,7 +59,7 @@
           <a-menu
             mode="inline"
             :default-selected-keys="this.defApp"
-            style="border-bottom:0px;lineHeight:62px;"
+            style="border-bottom:0px;lineHeight:58px;"
           >
             <a-menu-item v-for="(item) in userInfo.apps" :key="item.code" style="top:0px;" @click="switchApp(item.code)">
               {{ item.name }}

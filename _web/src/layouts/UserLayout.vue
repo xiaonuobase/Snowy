@@ -66,9 +66,10 @@ export default {
       width: 100%;
       min-height: 100%;
       background-color: #ffffff;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cpolygon fill='%2340a7cc' points='957 450 539 900 1396 900'/%3E%3Cpolygon fill='%23c6dbe1' points='957 450 872.9 900 1396 900'/%3E%3Cpolygon fill='%2350a7c5' points='-60 900 398 662 816 900'/%3E%3Cpolygon fill='%23c0d7da' points='337 900 398 662 816 900'/%3E%3Cpolygon fill='%235fa6be' points='1203 546 1552 900 876 900'/%3E%3Cpolygon fill='%23bad3d4' points='1203 546 1552 900 1162 900'/%3E%3Cpolygon fill='%236fa6b8' points='641 695 886 900 367 900'/%3E%3Cpolygon fill='%23b3cfcd' points='587 900 641 695 886 900'/%3E%3Cpolygon fill='%237ea5b1' points='1710 900 1401 632 1096 900'/%3E%3Cpolygon fill='%23adcbc7' points='1710 900 1401 632 1365 900'/%3E%3Cpolygon fill='%238ea5aa' points='1210 900 971 687 725 900'/%3E%3Cpolygon fill='%23a7c7c0' points='943 900 1210 900 971 687'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 200 200'%3E%3Cdefs%3E%3ClinearGradient id='a' gradientUnits='userSpaceOnUse' x1='88' y1='88' x2='0' y2='0'%3E%3Cstop offset='0' stop-color='%23064e77'/%3E%3Cstop offset='1' stop-color='%230a7dbe'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' gradientUnits='userSpaceOnUse' x1='75' y1='76' x2='168' y2='160'%3E%3Cstop offset='0' stop-color='%238f8f8f'/%3E%3Cstop offset='0.09' stop-color='%23b3b3b3'/%3E%3Cstop offset='0.18' stop-color='%23c9c9c9'/%3E%3Cstop offset='0.31' stop-color='%23dbdbdb'/%3E%3Cstop offset='0.44' stop-color='%23e8e8e8'/%3E%3Cstop offset='0.59' stop-color='%23f2f2f2'/%3E%3Cstop offset='0.75' stop-color='%23fafafa'/%3E%3Cstop offset='1' stop-color='%23FFFFFF'/%3E%3C/linearGradient%3E%3Cfilter id='c' x='0' y='0' width='200%25' height='200%25'%3E%3CfeGaussianBlur in='SourceGraphic' stdDeviation='12' /%3E%3C/filter%3E%3C/defs%3E%3Cpolygon fill='url(%23a)' points='0 174 0 0 174 0'/%3E%3Cpath fill='%23000' fill-opacity='.5' filter='url(%23c)' d='M121.8 174C59.2 153.1 0 174 0 174s63.5-73.8 87-94c24.4-20.9 87-80 87-80S107.9 104.4 121.8 174z'/%3E%3Cpath fill='url(%23b)' d='M142.7 142.7C59.2 142.7 0 174 0 174s42-66.3 74.9-99.3S174 0 174 0S142.7 62.6 142.7 142.7z'/%3E%3C/svg%3E");
       background-attachment: fixed;
-      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: top left;
       padding: 110px 0 144px;
       position: relative;
 
