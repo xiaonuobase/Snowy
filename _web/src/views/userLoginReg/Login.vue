@@ -22,6 +22,7 @@
               placeholder="账号"
               v-decorator="[
                 'account',
+                { initialValue:'superAdmin' },
                 {rules: [{ required: true, message: '请输入帐户名' }, { validator: handleUsernameOrEmail }], validateTrigger: 'change'}
               ]"
             >
@@ -37,6 +38,7 @@
               placeholder="密码"
               v-decorator="[
                 'password',
+                { initialValue:'123456' },
                 {rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
               ]"
             >
