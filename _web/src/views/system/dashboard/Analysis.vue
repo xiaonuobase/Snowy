@@ -72,7 +72,7 @@
               <a>本月</a>
               <a>本年</a>
             </div>
-            <a-range-picker :style="{width: '256px'}" />
+            <a-range-picker :style="{width: '230px'}" />
           </div>
           <a-tab-pane loading="true" tab="销售额" key="1">
             <a-row>

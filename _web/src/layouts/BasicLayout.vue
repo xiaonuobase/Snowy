@@ -40,7 +40,7 @@
       />
 
       <!-- layout content -->
-      <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
+      <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '55px' : '0' }">
         <multi-tab v-if="multiTab"></multi-tab>
         <transition name="page-transition">
           <route-view />
@@ -99,7 +99,7 @@ export default {
         return '0'
       }
       if (this.sidebarOpened) {
-        return '256px'
+        return '230px'
       }
       return '80px'
     }
@@ -145,7 +145,7 @@ export default {
     paddingCalc () {
       let left = ''
       if (this.sidebarOpened) {
-        left = this.isDesktop() ? '256px' : '80px'
+        left = this.isDesktop() ? '230px' : '80px'
       } else {
         left = (this.isMobile() && '0') || ((this.fixSidebar && '80px') || '0')
       }

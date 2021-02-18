@@ -67,7 +67,7 @@ body {
 
   .trigger {
     font-size: 20px;
-    line-height: 64px;
+    line-height: 55px;
     padding: 0 24px;
     cursor: pointer;
     transition: color 0.3s;
@@ -128,7 +128,7 @@ body {
       transition: width 0.2s;
 
       &.ant-header-side-opened {
-        width: calc(100% - 256px);
+        width: calc(100% - 230px);
       }
 
       &.ant-header-side-closed {
@@ -138,8 +138,8 @@ body {
   }
 
   .header {
-    height: 64px;
-    padding: 0 12px 0 0;
+    height: 55px;
+    // padding: 0 12px 0 0;
     background: #fff;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     position: relative;
@@ -152,6 +152,7 @@ body {
       height: 100%;
 
       .action {
+        line-height: 55px;
         cursor: pointer;
         padding: 0 12px;
         display: inline-block;
@@ -164,7 +165,7 @@ body {
         }
 
         .avatar {
-          margin: 20px 8px 20px 0;
+          margin: 15px 8px 15px 0;
           color: #1890ff;
           background: hsla(0, 0%, 100%, 0.85);
           vertical-align: middle;
@@ -255,14 +256,14 @@ body {
       margin: auto;
       padding-left: 0;
       display: flex;
-      height: 64px;
+      height: 55px;
 
       .ant-menu.ant-menu-horizontal {
         max-width: 835px;
         flex: 0 1 835px;
         border: none;
-        height: 64px;
-        line-height: 64px;
+        height: 55px;
+        line-height: 55px;
       }
 
       .header-index-left {
@@ -272,9 +273,9 @@ body {
         .logo.top-nav-header {
           flex: 0 0 165px;
           width: 165px;
-          height: 64px;
+          height: 55px;
           position: relative;
-          line-height: 64px;
+          line-height: 55px;
           transition: all 0.3s;
           overflow: hidden;
 
@@ -300,7 +301,7 @@ body {
       .header-index-right {
         flex: 0 0 238px;
         align-self: flex-end;
-        height: 64px;
+        height: 55px;
         overflow: hidden;
 
         .content-box {
@@ -333,8 +334,8 @@ body {
   // 内容区
   .layout-content {
     margin: 24px 24px 0px;
-    height: 100%;
-    height: 64px;
+    //height: 100%;
+    //height: 64px;
     padding: 0 12px 0 0;
   }
 
@@ -394,12 +395,13 @@ body {
     height: 100%;
   }
 
+  // logo区域样式
   .logo {
     position: relative;
-    height: 64px;
+    height: 55px;
     padding-left: 24px;
     overflow: hidden;
-    line-height: 64px;
+    line-height: 55px;
     background: #002140;
     transition: all .3s;
 

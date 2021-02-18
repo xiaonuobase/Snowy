@@ -1,11 +1,11 @@
 <template>
   <div class="user-wrapper">
     <div class="content-box">
-      <a href="https://www.xiaonuo.vip" target="_blank">
+      <!--<a href="https://www.xiaonuo.vip" target="_blank">
         <span class="action">
           <a-icon type="question-circle-o"></a-icon>
         </span>
-      </a>
+      </a>-->
 
       <notice-icon class="action"/>
 
@@ -59,7 +59,7 @@
           <a-menu
             mode="inline"
             :default-selected-keys="this.defApp"
-            style="border-bottom:0px;lineHeight:58px;"
+            style="border-bottom:0px;lineHeight:55px;"
           >
             <a-menu-item v-for="(item) in userInfo.apps" :key="item.code" style="top:0px;" @click="switchApp(item.code)">
               {{ item.name }}
