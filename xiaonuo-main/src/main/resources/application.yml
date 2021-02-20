@@ -66,3 +66,9 @@ aj:
     cache-type: local #分布式部署需要 自己实现CaptchaCacheService 使用redis需要配置redis相关配置
     type: clickword #验证码类型 为点选   blockPuzzle 为滑块验证码
     font-type: 宋体
+    req-frequency-limit-enable: true #接口请求次数一分钟限制是否开启 true|false
+    req-get-lock-limit: 2  # 验证失败2次，get接口锁定
+    req-get-lock-seconds: 10 # 验证失败后，锁定时间间隔,s
+    req-get-minute-limit: 30 # get接口一分钟内请求数限制
+    req-check-minute-limit: 60 # check接口一分钟内请求数限制
+    req-verify-minute-limit: 60 # verify接口一分钟内请求数限制
