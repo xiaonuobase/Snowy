@@ -51,7 +51,7 @@ public class MappingCache extends AbstractMemoryCacheOperator<Map<String, Object
     /**
      * 缓存的前缀标识
      */
-    public static final String TRANSLATES_CACHE_PREFIX = "MAPPINGS_";
+    public static final String MAPPING_CACHE_PREFIX = "MAPPINGS_";
 
     public MappingCache(TimedCache<String, Map<String, Object>> timedCache) {
         super(timedCache);
@@ -59,7 +59,7 @@ public class MappingCache extends AbstractMemoryCacheOperator<Map<String, Object
 
     @Override
     public String getCommonKeyPrefix() {
-        return TRANSLATES_CACHE_PREFIX;
+        return MAPPING_CACHE_PREFIX;
     }
 
 }
