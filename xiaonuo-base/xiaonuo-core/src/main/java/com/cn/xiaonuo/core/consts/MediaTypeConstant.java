@@ -96,4 +96,29 @@ public interface MediaTypeConstant {
      * 文档pptx格式
      */
     String DOC_PPTX = "pptx";
+
+    /**
+     * 文档pdf格式
+     */
+    String DOC_PDF = "pdf";
+
+    /**
+     * 文件html格式
+     */
+    String FILE_HTML = "html";
+
+    /**
+     * 文件htm格式
+     */
+    String FILE_HTM = "htm";
+
+    /**
+     * 文件swf格式
+     */
+    String FILE_SWF = "swf";
+
+    /**
+     * 文件flash格式
+     */
+    String FILE_FLASH = "flash";
 }

@@ -45,19 +45,21 @@ public class LibreOfficeUtil {
      * @date 2020/7/6 15:02
      */
     public static void convertToPdf(InputStream inputStream, OutputStream outputStream, String fileSuffix) {
-        init();
-        final DocumentFormatEnum documentFormatEnum = DocumentFormatEnum.valueOf(fileSuffix.toUpperCase());
-        final DocumentFormat format = documentFormatEnum.getFormFormat();
-        log.info(">>> 待转换的文档类型：{}", format);
-        final DocumentFormat targetFormat = documentFormatEnum.getTargetFormat();
-        log.info(">>> 转换的目标文档类型：{}", targetFormat);
-        try {
-            final InputStream is = documentFormatEnum.getInputStream(inputStream);
-            documentConverter.convert(is).as(format).to(outputStream).as(targetFormat).execute();
-        } catch (IOException | OfficeException e) {
-            e.printStackTrace();
+        if(!MediaTypeConstant.DOC_PDF.equals(fileSuffix)) {
+            init();
+            final DocumentFormatEnum documentFormatEnum = DocumentFormatEnum.valueOf(fileSuffix.toUpperCase());
+            final DocumentFormat format = documentFormatEnum.getFormFormat();
+            log.info(">>> 待转换的文档类型：{}", format);
+            final DocumentFormat targetFormat = documentFormatEnum.getTargetFormat();
+            log.info(">>> 转换的目标文档类型：{}", targetFormat);
+            try {
+                final InputStream is = documentFormatEnum.getInputStream(inputStream);
+                documentConverter.convert(is).as(format).to(outputStream).as(targetFormat).execute();
+            } catch (IOException | OfficeException e) {
+                e.printStackTrace();
+            }
+            log.info(">>> 文件转换结束");
         }
-        log.info(">>> 文件转换结束");
     }
 
     /**
@@ -88,7 +90,8 @@ public class LibreOfficeUtil {
                 || MediaTypeConstant.DOC_XLS.equals(fileSuffix)
                 || MediaTypeConstant.DOC_XLSX.equals(fileSuffix)
                 || MediaTypeConstant.DOC_PPT.equals(fileSuffix)
-                || MediaTypeConstant.DOC_PPTX.equals(fileSuffix);
+                || MediaTypeConstant.DOC_PPTX.equals(fileSuffix)
+                || MediaTypeConstant.DOC_PDF.equals(fileSuffix);
     }
 
     /**
@@ -103,7 +106,8 @@ public class LibreOfficeUtil {
                 || MediaTypeConstant.DOC_DOC.equals(fileSuffix)
                 || MediaTypeConstant.DOC_DOCX.equals(fileSuffix)
                 || MediaTypeConstant.DOC_PPT.equals(fileSuffix)
-                || MediaTypeConstant.DOC_PPTX.equals(fileSuffix)) {
+                || MediaTypeConstant.DOC_PPTX.equals(fileSuffix)
+                || MediaTypeConstant.DOC_PDF.equals(fileSuffix)) {
             return MediaType.APPLICATION_PDF_VALUE;
         } else {
             //否则是html类型
