@@ -459,7 +459,7 @@
             values.sysEmpParam['extIds'] = this.sysEmpParamExtList
             // eslint-disable-next-line eqeqeq
             if (this.birthdayString == 'Invalid date') {
-              this.birthdayString = ''
+              this.birthdayString = null
             }
             values.birthday = this.birthdayString
             sysUserEdit(values).then((res) => {
