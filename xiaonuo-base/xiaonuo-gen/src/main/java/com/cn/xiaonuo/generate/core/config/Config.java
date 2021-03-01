@@ -19,7 +19,7 @@ public class Config {
     /**
      * 存放vm模板位置
      */
-    public static String templatePath = "template/";
+    public static String templatePath = "template" + FILE_SEP;
 
     /**
      * 主键标识
@@ -44,12 +44,17 @@ public class Config {
     /**
      * java文件夹
      */
-    public static String BASE_JAVA_PAHT = "\\src\\main\\java\\";
+    public static String BASE_JAVA_PAHT = FILE_SEP + "src" + FILE_SEP + "main" + FILE_SEP + "java" + FILE_SEP;
 
     /**
      * vue文件夹
      */
-    public static String BASE_VUE_PAHT = "\\_web\\src\\";
+    public static String BASE_VUE_PAHT = FILE_SEP + "_web" + FILE_SEP + "src" + FILE_SEP;
+
+    /**
+     * sql文件夹
+     */
+    public static String BASE_SQL_PAHT = FILE_SEP + "_sql" + FILE_SEP;
 
     /**
      * 代码生成路径
@@ -66,6 +71,7 @@ public class Config {
     public static String vueIndexPath;
     public static String vueAddFromPath;
     public static String vueEditFromPath;
+    public static String sqlPath;
 
     /**
      * 各个代码存放路径文件夹
@@ -84,8 +90,9 @@ public class Config {
         vueIndexPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
         vueAddFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
         vueEditFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
+        sqlPath = BASE_SQL_PAHT;
         return new String[] {
-                controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath
+                controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath, sqlPath
         };
     }
 
@@ -105,6 +112,7 @@ public class Config {
             "index.vue.vm",
             "addForm.vue.vm",
             "editForm.vue.vm",
+            "XnMysql.sql.vm",
     };
 
     /**

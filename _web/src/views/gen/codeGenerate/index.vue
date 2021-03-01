@@ -1,75 +1,95 @@
 <template>
-  <a-card :bordered="false">
-    <a-spin :spinning="Loading">
-      <div class="table-page-search-wrapper" v-if="hasPerm('codeGenerate:page')">
-        <a-form layout="inline">
-          <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
-              <a-form-item label="表名称" >
-                <a-input v-model="queryParam.tableName" allow-clear placeholder="请输入表名称"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
-      <div class="table-operator" v-if="hasPerm('codeGenerate:add')" >
-        <a-button type="primary" v-if="hasPerm('codeGenerate:add')" icon="plus" @click="$refs.addForm.add()">新增</a-button>
-      </div>
-      <s-table
-        ref="table"
-        size="default"
-        :columns="columns"
-        :data="loadData"
-        :alert="true"
-        :rowKey="(record) => record.id"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-      >
-        <span slot="tableName" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-        </span>
-        <span slot="packageName" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-        </span>
-        <span slot="tablePrefix" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ 'yes_or_no' | dictType(text) }}</ellipsis>
-        </span>
-        <span slot="generateType" slot-scope="text">
-          <ellipsis :length="10" tooltip>{{ 'code_gen_create_type' | dictType(text) }}</ellipsis>
-        </span>
-        <span slot="action" slot-scope="text, record">
-          <span v-if="record.generateType === '1'">
-            <a v-if="hasPerm('codeGenerate:runDown')" @click="runDownCodeGenerate(record)">开始生成</a>
+  <div>
+    <a-card :bordered="false" v-show="indexOpenShow" :bodyStyle="tstyle">
+      <a-spin :spinning="Loading">
+        <div class="table-page-search-wrapper" v-if="hasPerm('codeGenerate:page')">
+          <a-form layout="inline">
+            <a-row :gutter="48">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="表名称" >
+                  <a-input v-model="queryParam.tableName" allow-clear placeholder="请输入表名称"/>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+              </a-col>
+            </a-row>
+          </a-form>
+        </div>
+      </a-spin>
+    </a-card>
+    <a-card :bordered="false" v-show="indexOpenShow">
+      <a-spin :spinning="Loading">
+        <s-table
+          ref="table"
+          size="default"
+          :columns="columns"
+          :data="loadData"
+          :alert="true"
+          :rowKey="(record) => record.id"
+          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        >
+          <div slot="operator" v-if="hasPerm('codeGenerate:add')" >
+            <a-button type="primary" v-if="hasPerm('codeGenerate:add')" icon="plus" @click="$refs.addForm.add()">新增</a-button>
+          </div>
+          <span slot="tableName" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
           </span>
-          <span v-else>
-            <a-popconfirm v-if="hasPerm('codeGenerate:runLocal')" placement="topRight" title="确定生成代码到本项目？" @confirm="() => runLocalCodeGenerate(record)">
-              <a>开始生成</a>
+          <span slot="packageName" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+          </span>
+          <span slot="busName" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+          </span>
+          <span slot="className" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+          </span>
+          <span slot="tableComment" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+          </span>
+          <span slot="tablePrefix" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ 'yes_or_no' | dictType(text) }}</ellipsis>
+          </span>
+          <span slot="generateType" slot-scope="text">
+            <ellipsis :length="10" tooltip>{{ 'code_gen_create_type' | dictType(text) }}</ellipsis>
+          </span>
+          <span slot="action" slot-scope="text, record">
+            <span v-if="record.generateType === '1'">
+              <a v-if="hasPerm('codeGenerate:runDown')" @click="runDownCodeGenerate(record)">开始生成</a>
+            </span>
+            <span v-else>
+              <a-popconfirm v-if="hasPerm('codeGenerate:runLocal')" placement="topRight" title="确定生成代码到本项目？" @confirm="() => runLocalCodeGenerate(record)">
+                <a>开始生成</a>
+              </a-popconfirm>
+            </span>
+            <a-divider type="vertical" v-if="hasPerm('codeGenerate:config') & hasPerm('codeGenerate:runLocal') || hasPerm('codeGenerate:runDown') "/>
+            <a v-if="hasPerm('codeGenerate:config')" @click="indexConfigOpen(record)">配置</a>
+            <a-divider type="vertical" v-if="hasPerm('codeGenerate:config') & hasPerm('codeGenerate:edit')"/>
+            <a v-if="hasPerm('codeGenerate:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+            <a-divider type="vertical" v-if="hasPerm('codeGenerate:edit') & hasPerm('codeGenerate:delete')"/>
+            <a-popconfirm v-if="hasPerm('codeGenerate:delete')" placement="topRight" title="确认删除？" @confirm="() => codeGenerateDelete(record)">
+              <a>删除</a>
             </a-popconfirm>
           </span>
-          <a-divider type="vertical" v-if="hasPerm('codeGenerate:edit') & hasPerm('codeGenerate:runLocal') || hasPerm('codeGenerate:runDown') "/>
-          <a v-if="hasPerm('codeGenerate:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-          <a-divider type="vertical" v-if="hasPerm('codeGenerate:edit') & hasPerm('codeGenerate:delete')"/>
-          <a-popconfirm v-if="hasPerm('codeGenerate:delete')" placement="topRight" title="确认删除？" @confirm="() => codeGenerateDelete(record)">
-            <a>删除</a>
-          </a-popconfirm>
-        </span>
-      </s-table>
-      <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('codeGenerate:add')"/>
-      <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('codeGenerate:edit')"/>
-    </a-spin>
-  </a-card>
+        </s-table>
+        <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('codeGenerate:add')"/>
+        <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('codeGenerate:edit')"/>
+      </a-spin>
+    </a-card>
+    <index-config ref="indexConfig" @ok="handleResetOpen" v-if="hasPerm('codeGenerate:config')"/>
+  </div>
 </template>
 <script>
   import { STable, Ellipsis } from '@/components'
   import { codeGeneratePage, codeGenerateDelete, codeGenerateRunDown, codeGenerateRunLocal } from '@/api/modular/gen/codeGenerateManage'
   import addForm from './addForm'
   import editForm from './editForm'
+  import indexConfig from './indexConfig'
 
   export default {
     components: {
+      indexConfig,
       STable,
       Ellipsis,
       addForm,
@@ -93,15 +113,18 @@
           },
           {
             title: '业务名',
-            dataIndex: 'busName'
+            dataIndex: 'busName',
+            scopedSlots: { customRender: 'busName' }
           },
           {
             title: '类名',
-            dataIndex: 'className'
+            dataIndex: 'className',
+            scopedSlots: { customRender: 'className' }
           },
           {
             title: '功能名',
-            dataIndex: 'tableComment'
+            dataIndex: 'tableComment',
+            scopedSlots: { customRender: 'tableComment' }
           },
           {
             title: '作者姓名',
@@ -118,6 +141,7 @@
             scopedSlots: { customRender: 'generateType' }
           }
         ],
+        tstyle: { 'padding-bottom': '0px', 'margin-bottom': '10px' },
         loadData: parameter => {
           return codeGeneratePage(Object.assign(parameter, this.queryParam)).then((res) => {
             return res.data
@@ -126,14 +150,15 @@
         selectedRowKeys: [],
         selectedRows: [],
         Loading: false,
-        jdbcDriverList: []
+        jdbcDriverList: [],
+        indexOpenShow: true
       }
     },
     created () {
       if (this.hasPerm('codeGenerate:edit') || this.hasPerm('codeGenerate:delete')) {
         this.columns.push({
           title: '操作',
-          width: '200px',
+          width: '230px',
           dataIndex: 'action',
           scopedSlots: { customRender: 'action' }
         })
@@ -184,6 +209,9 @@
           }
         })
       },
+      /**
+       * 删除
+       */
       codeGenerateDelete (record) {
         this.Loading = true
         codeGenerateDelete([{ id: record.id }]).then((res) => {
@@ -199,6 +227,23 @@
           this.Loading = false
         })
       },
+      /**
+       * 打开配置界面
+       */
+      indexConfigOpen (record) {
+        this.indexOpenShow = false
+        this.$refs.indexConfig.open(record)
+      },
+      /**
+       * 详细配置界面返回
+       */
+      handleResetOpen () {
+        this.indexOpenShow = true
+        this.$refs.table.refresh()
+      },
+      /**
+       * 其他界面返回
+       */
       handleOk () {
         this.$refs.table.refresh()
       },

@@ -1,7 +1,15 @@
 package com.cn.xiaonuo.generate.core.context;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.cn.xiaonuo.core.enums.YesOrNotEnum;
 import com.cn.xiaonuo.generate.core.param.XnCodeGenParam;
+import com.cn.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
+import com.cn.xiaonuo.sys.config.MybatisConfig;
 import org.apache.velocity.VelocityContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 设置上下文缓存
@@ -45,7 +53,23 @@ public class XnVelocityContext {
         // 数据库表名
         velocityContext.put("tableName", xnCodeGenParam.getTableName());
         // 数据库字段
-        velocityContext.put("tableField", xnCodeGenParam.getTableField());
+        velocityContext.put("tableField", xnCodeGenParam.getConfigList());
+
+        // 前端查询所有
+        List<SysCodeGenerateConfig> codeGenerateConfigList = new ArrayList<>();
+        xnCodeGenParam.getConfigList().forEach(item -> {
+            if (item.getQueryWhether().equals(YesOrNotEnum.Y.getCode())) {
+                codeGenerateConfigList.add(item);
+            }
+        });
+        velocityContext.put("queryWhetherList", codeGenerateConfigList);
+
+        // sql中id的创建
+        List<Long> idList = new ArrayList<>();
+        for (int a = 0; a <= 6; a++) {
+            idList.add(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+        }
+        velocityContext.put("sqlMenuId", idList);
 
         return velocityContext;
     }

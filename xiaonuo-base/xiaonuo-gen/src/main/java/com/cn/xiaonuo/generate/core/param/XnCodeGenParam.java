@@ -25,8 +25,9 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.generate.core.param;
 
 import com.cn.xiaonuo.generate.core.config.Config;
+import com.cn.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
+import com.cn.xiaonuo.generate.modular.param.SysCodeGenerateConfigParam;
 import lombok.Data;
-
 import java.util.List;
 
 @Data
@@ -80,7 +81,7 @@ public class XnCodeGenParam {
     /**
      * 数据库表中字段集合
      */
-    private List<TableField> tableField;
+    private List<SysCodeGenerateConfig> configList;
 
     /**
      * 模块名

@@ -1,91 +1,243 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('${className}:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
+  <div>
+    <a-card :bordered="false" :bodyStyle="tstyle">
+#if($queryWhetherList.size() > 0)
+      <div class="table-page-search-wrapper" v-if="hasPerm('${className}:page')">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+#foreach ($column in $queryWhetherList)
+#if($foreach.count == 3)
+            <template v-if="advanced">
+#end
+#if(${column.effectType} == 'input' || ${column.effectType} == 'textarea')
+#if($foreach.count >= 3)
+              <a-col :md="8" :sm="24">
+                <a-form-item label="${column.columnComment}">
+                  <a-input v-model="queryParam.${column.javaName}" allow-clear placeholder="请输入${column.columnComment}"/>
+                </a-form-item>
+              </a-col>
+#else
+            <a-col :md="8" :sm="24">
+              <a-form-item label="${column.columnComment}">
+                <a-input v-model="queryParam.${column.javaName}" allow-clear placeholder="请输入${column.columnComment}"/>
+              </a-form-item>
+            </a-col>
+#end
+#elseif(${column.effectType} == 'inputnumber')
+#if($foreach.count >= 3)
+              <a-col :md="8" :sm="24">
+                <a-form-item label="${column.columnComment}">
+                  <a-input-number v-model="queryParam.${column.javaName}" style="width: 100%" allow-clear placeholder="请输入${column.columnComment}"/>
+                </a-form-item>
+              </a-col>
+#else
+            <a-col :md="8" :sm="24">
+              <a-form-item label="${column.columnComment}">
+                <a-input-number v-model="queryParam.${column.javaName}" style="width: 100%" allow-clear placeholder="请输入${column.columnComment}"/>
+              </a-form-item>
+            </a-col>
+#end
+#elseif(${column.effectType} == 'select' || ${column.effectType} == 'radio')
+#if($foreach.count >= 3)
+              <a-col :md="8" :sm="24">
+                <a-form-item label="${column.columnComment}">
+                  <a-select style="width: 100%" v-model="queryParam.${column.javaName}" placeholder="请选择${column.columnComment}">
+                    <a-select-option v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+#else
+            <a-col :md="8" :sm="24">
+              <a-form-item label="${column.columnComment}">
+                <a-select style="width: 100%" v-model="queryParam.${column.javaName}" placeholder="请选择${column.columnComment}">
+                  <a-select-option v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+#end
+#elseif(${column.effectType} == 'datepicker')
+#if($foreach.count >= 3)
+              <a-col :md="8" :sm="24">
+                <a-form-item label="${column.columnComment}">
+                  <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-model="queryParam.${column.javaName}Date" @change="onChange${column.javaName}"/>
+                </a-form-item>
+              </a-col>
+#else
+            <a-col :md="8" :sm="24">
+              <a-form-item label="${column.columnComment}">
+                <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-model="queryParam.${column.javaName}Date" @change="onChange${column.javaName}"/>
+              </a-form-item>
+            </a-col>
+#end
+#else
+#end
+#end
+#if($queryWhetherList.size() > 2)
+            </template>
+#end
+#if($queryWhetherList.size() > 2)
+            <a-col :md="8" :sm="24" >
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+#else
+            <a-col :md="8" :sm="24">
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+              </span>
+            </a-col>
+#end
+          </a-row>
+        </a-form>
+      </div>
+#end
+    </a-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        size="default"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
 #foreach ($column in $tableField)
-          <a-col :md="8" :sm="24">
-            <a-form-item label="${column.columnComment}" >
-              <a-input v-model="queryParam.${column.columnName}" allow-clear placeholder="请输入${column.columnComment}"/>
-            </a-form-item>
-          </a-col>
+#if (${column.columnKey} == "PRI")
+        :rowKey="(record) => record.${column.javaName}"
 #end
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <div class="table-operator" v-if="hasPerm('${className}:add')" >
-      <a-button type="primary" v-if="hasPerm('${className}:add')" icon="plus" @click="$refs.addForm.add()">新增${functionName}</a-button>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
+#end
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template class="table-operator" slot="operator" v-if="hasPerm('${className}:add')" >
+          <a-button type="primary" v-if="hasPerm('${className}:add')" icon="plus" @click="$refs.addForm.add()">新增${functionName}</a-button>
+        </template>
 #foreach ($column in $tableField)
-#if (${column.primaryKeyFlag})
-      :rowKey="(record) => record.${column.columnName}"
+#if(${column.whetherTable} == "Y")
+#if(${column.whetherRetract} == "Y" || ${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
+        <span slot="${column.javaName}scopedSlots" slot-scope="text">
+#if(${column.whetherRetract} == "Y" && (${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox'))
+          <ellipsis :length="10" tooltip>{{ '${column.dictTypeCode}' | dictType(text) }}</ellipsis>
+#else
+#if(${column.whetherRetract} == "Y")
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+#else
+#if(${column.effectType} == 'checkbox')
+          <a-tag v-for="textData in JSON.parse(text)" :key="textData.code" color="green">{{ 'sex' | dictType(textData) }}</a-tag>
+#else
+          {{ '${column.dictTypeCode}' | dictType(text) }}
 #end
 #end
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <span slot="action" slot-scope="text, record">
-        <a v-if="hasPerm('${className}:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-        <a-divider type="vertical" v-if="hasPerm('${className}:edit') & hasPerm('${className}:delete')"/>
-        <a-popconfirm v-if="hasPerm('${className}:delete')" placement="topRight" title="确认删除？" @confirm="() => ${className}Delete(record)">
-          <a>删除</a>
-        </a-popconfirm>
-      </span>
-    </s-table>
-    <add-form ref="addForm" @ok="handleOk" />
-    <edit-form ref="editForm" @ok="handleOk" />
-  </a-card>
+#end
+        </span>
+#end
+#end
+#end
+        <span slot="action" slot-scope="text, record">
+          <a v-if="hasPerm('${className}:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+          <a-divider type="vertical" v-if="hasPerm('${className}:edit') & hasPerm('${className}:delete')"/>
+          <a-popconfirm v-if="hasPerm('${className}:delete')" placement="topRight" title="确认删除？" @confirm="() => ${className}Delete(record)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
+      </s-table>
+      <add-form ref="addForm" @ok="handleOk" />
+      <edit-form ref="editForm" @ok="handleOk" />
+    </a-card>
+  </div>
 </template>
 <script>
+#set ($columnData = 0)
+#foreach ($column in $tableField)
+#if(${column.whetherTable} == "Y")
+#if(${column.whetherRetract} == "Y")
+#set ($Ellipsis="Y")
+#end
+#set ($columnData = $columnData+1)
+#end
+#if(${column.queryWhether} == 'Y')
+#if(${column.effectType} == 'datepicker')
+#set ($DateQuery="Y")
+#end
+#end
+#end
+#if($Ellipsis == "Y")
+  import { STable, Ellipsis } from '@/components'
+#else
   import { STable } from '@/components'
+#end
+#if($DateQuery == "Y")
+  import moment from 'moment'
+#end
   import { ${className}Page, ${className}Delete } from '@/api/modular/main/${busName}/${className}Manage'
   import addForm from './addForm.vue'
   import editForm from './editForm.vue'
   export default {
     components: {
+#if($Ellipsis == "Y")
+      Ellipsis,
+#end
       STable,
       addForm,
       editForm
     },
     data () {
       return {
+#if($queryWhetherList.size() > 2)
         // 高级搜索 展开/关闭
         advanced: false,
+#end
         // 查询参数
         queryParam: {},
         // 表头
         columns: [
+#set ($columnDataColumns = 0)
 #foreach ($column in $tableField)
-#if (!${column.primaryKeyFlag})
-            {
-              title: '${column.columnComment}',
-              dataIndex: '${column.columnName}'
-            }#if($foreach.hasNext),
+#if (${column.whetherTable} == "Y")
+#set ($columnDataColumns = $columnDataColumns+1)
+          {
+            title: '${column.columnComment}',
+            align: 'center',
+#if(${column.whetherRetract} == "Y" || ${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
+            dataIndex: '${column.javaName}',
+            scopedSlots: { customRender: '${column.javaName}scopedSlots' }
+#else
+            dataIndex: '${column.javaName}'
 #end
-#end
-#end
+          }#if($foreach.hasNext && ($columnDataColumns != $columnData)),
+#else
 
+#end
+#end
+#end
         ],
+        tstyle: { 'padding-bottom': '0px', 'margin-bottom': '10px' },
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
+#if($DateQuery == "Y")
+          return ${className}Page(Object.assign(parameter, this.switchingDate())).then((res) => {
+#else
           return ${className}Page(Object.assign(parameter, this.queryParam)).then((res) => {
+#end
             return res.data
           })
         },
+#foreach ($column in $tableField)
+#if(${column.queryWhether} == 'Y')
+#if(${column.effectType} == 'select' || ${column.effectType} == 'radio')
+#if (${column.dictTypeCode})
+        ${column.javaName}Data: [],
+#end
+#end
+#end
+#end
         selectedRowKeys: [],
         selectedRows: []
-    }
+      }
     },
     created () {
       if (this.hasPerm('${className}:edit') || this.hasPerm('${className}:delete')) {
@@ -96,10 +248,43 @@
           scopedSlots: { customRender: 'action' }
         })
       }
+#foreach ($column in $tableField)
+#if(${column.queryWhether} == 'Y')
+#if(${column.effectType} == 'select' || ${column.effectType} == 'radio')
+#if (${column.dictTypeCode})
+      const ${column.javaName}Option = this.$options
+      this.${column.javaName}Data = ${column.javaName}Option.filters['dictData']('${column.dictTypeCode}')
+#end
+#end
+#end
+#end
     },
     methods: {
-        ${className}Delete (record) {
-          ${className}Delete(record).then((res) => {
+#if($DateQuery == "Y")
+      moment,
+      /**
+       * 查询参数组装
+       */
+      switchingDate () {
+#foreach ($column in $tableField)
+#if(${column.queryWhether} == 'Y')
+#if(${column.effectType} == 'datepicker')
+        const queryParam${column.javaName} = this.queryParam.${column.javaName}Date
+        if (queryParam${column.javaName} != null) {
+            this.queryParam.${column.javaName} = moment(queryParam${column.javaName}).format('YYYY-MM-DD')
+            if (queryParam${column.javaName}.length < 1) {
+                delete this.queryParam.${column.javaName}
+            }
+        }
+#end
+#end
+#end
+        const obj = JSON.parse(JSON.stringify(this.queryParam))
+        return obj
+      },
+#end
+      ${className}Delete (record) {
+        ${className}Delete(record).then((res) => {
           if (res.success) {
             this.$message.success('删除成功')
             this.$refs.table.refresh()
@@ -108,9 +293,20 @@
           }
         })
       },
+#if($queryWhetherList.size() > 2)
       toggleAdvanced () {
         this.advanced = !this.advanced
       },
+#end
+#foreach ($column in $queryWhetherList)
+#if(${column.queryWhether} == 'Y')
+#if(${column.effectType} == 'datepicker')
+      onChange${column.javaName}(date, dateString) {
+        this.${column.javaName}DateString = dateString
+      },
+#end
+#end
+#end
       handleOk () {
         this.$refs.table.refresh()
       },

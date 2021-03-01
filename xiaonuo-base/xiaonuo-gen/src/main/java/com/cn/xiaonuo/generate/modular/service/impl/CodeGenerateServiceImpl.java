@@ -30,25 +30,31 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.cn.xiaonuo.core.context.constant.ConstantContext;
+import com.cn.xiaonuo.core.enums.YesOrNotEnum;
 import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.core.factory.PageFactory;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
-import com.cn.xiaonuo.generate.core.config.Config;
 import com.cn.xiaonuo.generate.core.context.XnVelocityContext;
-import com.cn.xiaonuo.generate.core.enums.TableFilteredFieldsEnum;
 import com.cn.xiaonuo.generate.core.param.TableField;
 import com.cn.xiaonuo.generate.core.param.XnCodeGenParam;
 import com.cn.xiaonuo.generate.core.tool.JavaSqlTool;
 import com.cn.xiaonuo.generate.core.tool.NamingConTool;
 import com.cn.xiaonuo.generate.core.tool.StringDateTool;
+import com.cn.xiaonuo.generate.core.config.Config;
+import com.cn.xiaonuo.generate.core.enums.TableFilteredFieldsEnum;
 import com.cn.xiaonuo.generate.core.util.Util;
 import com.cn.xiaonuo.generate.modular.entity.CodeGenerate;
+import com.cn.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
 import com.cn.xiaonuo.generate.modular.enums.CodeGenerateExceptionEnum;
 import com.cn.xiaonuo.generate.modular.mapper.CodeGenerateMapper;
 import com.cn.xiaonuo.generate.modular.param.CodeGenerateParam;
+import com.cn.xiaonuo.generate.modular.param.SysCodeGenerateConfigParam;
 import com.cn.xiaonuo.generate.modular.result.InforMationColumnsResult;
 import com.cn.xiaonuo.generate.modular.result.InformationResult;
 import com.cn.xiaonuo.generate.modular.service.CodeGenerateService;
+import com.cn.xiaonuo.generate.modular.service.SysCodeGenerateConfigService;
+import com.cn.xiaonuo.sys.modular.menu.entity.SysMenu;
+import com.cn.xiaonuo.sys.modular.menu.mapper.SysMenuMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -56,6 +62,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
@@ -91,9 +98,12 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
     private static String EDIT_FORM_PAGE_NAME = "editForm.vue";
     private static String INDEX_PAGE_NAME = "index.vue";
     private static String MANAGE_JS_NAME = "Manage.js";
+    private static String SQL_NAME = ".sql";
     private static String JAVA_SUFFIX = ".java";
     private static String TEMP_ENTITY_NAME = "entity";
 
+    @Resource
+    private SysCodeGenerateConfigService sysCodeGenerateConfigService;
 
     @Override
     public PageResult<CodeGenerate> page(CodeGenerateParam codeGenerateParam) {
@@ -115,12 +125,19 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
             throw new ServiceException(CodeGenerateExceptionEnum.CODE_GEN_TABLE_NOT_PRI);
         }
         this.save(codeGenerate);
+
+        // 加入配置表中
+        codeGenerateParam.setId(codeGenerate.getId());
+        this.sysCodeGenerateConfigService.addList(this.getInforMationColumnsResultList(codeGenerateParam), codeGenerate);
     }
 
     @Override
     public void delete(List<CodeGenerateParam> codeGenerateParamList) {
         codeGenerateParamList.forEach(codeGenerateParam -> {
             this.removeById(codeGenerateParam.getId());
+            SysCodeGenerateConfigParam sysCodeGenerateConfigParam = new SysCodeGenerateConfigParam();
+            sysCodeGenerateConfigParam.setCodeGenId(codeGenerateParam.getId());
+            this.sysCodeGenerateConfigService.delete(sysCodeGenerateConfigParam);
         });
     }
 
@@ -210,45 +227,28 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
     }
 
     /**
-     * 转换数据为代码生成上下文中所使用的数据
+     * 获取表中所有字段集合
      *
      * @author yubaoshan
-     * @date 2020年12月17日 23点30分
+     * @date 2021-02-06 22:36
      */
-    private XnCodeGenParam copyParams (CodeGenerateParam codeGenerateParam) {
+    private List<InforMationColumnsResult> getInforMationColumnsResultList (CodeGenerateParam codeGenerateParam) {
         CodeGenerate codeGenerate = this.queryCodeGenerate(codeGenerateParam);
         String databaseUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
         String dbName = databaseUrl.substring(Util.getIndex(databaseUrl, 3, "/") + 1, databaseUrl.indexOf("?"));
-        List<InforMationColumnsResult> inforMationColumnsResultList =  this.baseMapper.selectInformationColumns(dbName, codeGenerate.getTableName());
+        return this.baseMapper.selectInformationColumns(dbName, codeGenerate.getTableName());
+    }
 
+    private XnCodeGenParam copyParams (CodeGenerateParam codeGenerateParam) {
+        CodeGenerate codeGenerate = this.queryCodeGenerate(codeGenerateParam);
+        SysCodeGenerateConfigParam sysCodeGenerateConfigParam = new SysCodeGenerateConfigParam();
+        sysCodeGenerateConfigParam.setCodeGenId(codeGenerateParam.getId());
+        List<SysCodeGenerateConfig> configList = this.sysCodeGenerateConfigService.list(sysCodeGenerateConfigParam);
         XnCodeGenParam param = new XnCodeGenParam();
-        List<TableField> tableFieldList = new ArrayList<TableField>();
-        inforMationColumnsResultList.forEach(item -> {
-            TableField tableField = new TableField();
-            BeanUtil.copyProperties(item, tableField);
-            if (tableField.getColumnKey().equals(Config.DB_TABLE_COM_KRY)) {
-                tableField.setPrimaryKeyFlag(true);
-            }
-
-            // 加入后端查询参数get set参数
-            String columnName = NamingConTool.UnderlineToHump(item.getColumnName(),"");
-            tableField.setColumnKeyName(columnName.substring(0,1).toUpperCase() + columnName.substring(1,columnName.length()));
-
-            // 字段类型转换Java类型
-            tableField.setJavaType(JavaSqlTool.sqlToJava(item.getDataType()));
-
-            // 字段名称转换
-            tableField.setColumnName(NamingConTool.UnderlineToHump(item.getColumnName(), codeGenerate.getTablePrefix()));
-
-            // 过滤掉通用字段
-            if (!TableFilteredFieldsEnum.contains(item.getColumnName())) {
-                tableFieldList.add(tableField);
-            }
-        });
         BeanUtil.copyProperties(codeGenerate, param);
         // 功能名
         param.setFunctionName(codeGenerate.getTableComment());
-        param.setTableField(tableFieldList);
+        param.setConfigList(configList);
         param.setCreateTimeString(StringDateTool.getStringDate());
         return param;
     }
@@ -274,9 +274,10 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
             String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
                     templateName.substring(templateName.indexOf(Config.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
             String path = Config.getLocalPath ();
-            // 前端VUE位置有所变化
+            // 前端VUE位置有所变化, sql同样根目录
             if (fileBaseName.contains(INDEX_PAGE_NAME) || fileBaseName.contains(ADD_FORM_PAGE_NAME) ||
-                    fileBaseName.contains(EDIT_FORM_PAGE_NAME) ||fileBaseName.contains(MANAGE_JS_NAME)) {
+                    fileBaseName.contains(EDIT_FORM_PAGE_NAME) ||fileBaseName.contains(MANAGE_JS_NAME) ||
+            fileBaseName.contains(SQL_NAME)) {
                 path = Config.getLocalFrontPath();
             }
 

@@ -89,3 +89,13 @@ Vue.filter('dictData', function (code) {
   }
   return tree
 })
+
+/**
+ * 获取所有字典数组
+ *
+ * @author yubaoshan
+ * @date 2021-2-8 01:13
+ */
+Vue.filter('dictDataAll', function () {
+  return Vue.ls.get(DICT_TYPE_TREE_DATA)
+})

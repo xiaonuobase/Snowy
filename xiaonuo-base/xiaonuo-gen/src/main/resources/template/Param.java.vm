@@ -26,6 +26,8 @@ package ${packageName}.${modularName}.${busName}.param;
 
 import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import lombok.Data;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.util.*;
 #foreach ($column in $tableField)
 #if (${column.javaType} == 'BigDecimal')
@@ -42,11 +44,31 @@ import java.math.BigDecimal;
 @Data
 public class ${ClassName}Param extends BaseParam {
 #foreach ($column in $tableField)
+#if (${column.columnKey} == "PRI")
 
     /**
      * ${column.columnComment}
      */
-    private ${column.javaType} ${column.columnName};
+    @NotNull(message = "${column.columnComment}不能为空，请检查${column.javaName}参数", groups = {edit.class, delete.class, detail.class})
+    private ${column.javaType} ${column.javaName};
+#elseif (${column.whetherCommon} == 'N')
 
+    /**
+     * ${column.columnComment}
+     */
+#if (${column.whetherRequired} == "Y")
+#if (${column.javaType} == "String")
+    @NotBlank(message = "${column.columnComment}不能为空，请检查${column.javaName}参数", groups = {add.class, edit.class})
+#else
+    @NotNull(message = "${column.columnComment}不能为空，请检查${column.javaName}参数", groups = {add.class, edit.class})
 #end
+#end
+#if(${column.javaType} == "Date")
+    private String ${column.javaName};
+#else
+    private ${column.javaType} ${column.javaName};
+#end
+#end
+#end
+
 }

@@ -73,7 +73,7 @@ public class ${ClassName}Controller {
     @PostMapping("/${className}/add")
     @BusinessLog(title = "${functionName}_增加", opType = LogAnnotionOpTypeEnum.ADD)
     public ResponseData add(@RequestBody @Validated(${ClassName}Param.add.class) ${ClassName}Param ${className}Param) {
-        ${className}Service.add(${className}Param);
+            ${className}Service.add(${className}Param);
         return new SuccessResponseData();
     }
 
@@ -87,7 +87,7 @@ public class ${ClassName}Controller {
     @PostMapping("/${className}/delete")
     @BusinessLog(title = "${functionName}_删除", opType = LogAnnotionOpTypeEnum.DELETE)
     public ResponseData delete(@RequestBody @Validated(${ClassName}Param.delete.class) ${ClassName}Param ${className}Param) {
-        ${className}Service.delete(${className}Param);
+            ${className}Service.delete(${className}Param);
         return new SuccessResponseData();
     }
 
@@ -101,7 +101,7 @@ public class ${ClassName}Controller {
     @PostMapping("/${className}/edit")
     @BusinessLog(title = "${functionName}_编辑", opType = LogAnnotionOpTypeEnum.EDIT)
     public ResponseData edit(@RequestBody @Validated(${ClassName}Param.edit.class) ${ClassName}Param ${className}Param) {
-        ${className}Service.edit(${className}Param);
+            ${className}Service.edit(${className}Param);
         return new SuccessResponseData();
     }
 

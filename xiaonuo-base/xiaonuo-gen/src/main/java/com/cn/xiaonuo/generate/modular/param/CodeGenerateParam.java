@@ -28,7 +28,6 @@ import com.cn.xiaonuo.core.pojo.base.param.BaseParam;
 import com.cn.xiaonuo.core.validation.flag.FlagValue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 

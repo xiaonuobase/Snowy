@@ -10,18 +10,87 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 #foreach ($column in $tableField)
-#if (!${column.primaryKeyFlag})
+#if (${column.columnKey} != "PRI")
+#if (${column.whetherAddUpdate} == "Y")
+#if (${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
+        <a-form-item
+          label="${column.columnComment}"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+        >
+#else
         <a-form-item
           label="${column.columnComment}"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           has-feedback
         >
-          <a-input placeholder="请输入${column.columnComment}" v-decorator="['${column.columnName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+#end
+#if (${column.effectType} == "input")
+#if (${column.whetherRequired} == "Y")
+          <a-input placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+#else
+          <a-input placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}']" />
+#end
+#end
+#if (${column.effectType} == "textarea")
+#if (${column.whetherRequired} == "Y")
+          <a-textarea placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" :auto-size="{ minRows: 3, maxRows: 6 }"/>
+#else
+          <a-textarea placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}']" :auto-size="{ minRows: 3, maxRows: 6 }"/>
+#end
+#end
+#if (${column.effectType} == "inputnumber")
+#if (${column.whetherRequired} == "Y")
+          <a-input-number placeholder="请输入${column.columnComment}" style="width: 100%" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+#else
+          <a-input-number placeholder="请输入${column.columnComment}" style="width: 100%" v-decorator="['${column.javaName}']" />
+#end
+#end
+#if (${column.effectType} == "select")
+#if (${column.whetherRequired} == "Y")
+          <a-select style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]">
+            <a-select-option v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-select-option>
+          </a-select>
+#else
+          <a-select style="width: 100%" placeholder="请选择${column.columnComment}">
+            <a-select-option v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-select-option>
+          </a-select>
+#end
+#end
+#if (${column.effectType} == "radio")
+#if (${column.whetherRequired} == "Y")
+          <a-radio-group placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}',{rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]" >
+            <a-radio v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-radio>
+          </a-radio-group>
+#else
+          <a-radio-group placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}']" >
+            <a-radio v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-radio>
+          </a-radio-group>
+#end
+#end
+#if (${column.effectType} == "checkbox")
+#if (${column.whetherRequired} == "Y")
+          <a-checkbox-group placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}',{rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]" >
+            <a-checkbox v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-checkbox>
+          </a-checkbox-group>
+#else
+          <a-checkbox-group placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}']" >
+            <a-checkbox v-for="(item,index) in ${column.javaName}Data" :key="index" :value="item.code">{{ item.name }}</a-checkbox>
+          </a-checkbox-group>
+#end
+#end
+#if (${column.effectType} == "datepicker")
+#if (${column.whetherRequired} == "Y")
+          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}',{rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]" @change="onChange${column.javaName}"/>
+#else
+          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}']" @change="onChange${column.javaName}"/>
+#end
+#end
         </a-form-item>
 #end
 #end
-
+#end
       </a-form>
     </a-spin>
   </a-modal>
@@ -40,6 +109,18 @@
           xs: { span: 24 },
           sm: { span: 15 }
         },
+#foreach ($column in $tableField)
+#if (${column.whetherAddUpdate} == "Y")
+#if (${column.dictTypeCode})
+#if(${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
+        ${column.javaName}Data: [],
+#end
+#end
+#if (${column.effectType} == "datepicker")
+        ${column.javaName}DateString: '',
+#end
+#end
+#end
         visible: false,
         confirmLoading: false,
         form: this.$form.createForm(this)
@@ -49,6 +130,14 @@
       // 初始化方法
       add (record) {
         this.visible = true
+#foreach ($column in $tableField)
+#if (${column.dictTypeCode})
+#if(${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
+        const ${column.javaName}Option = this.$options
+        this.${column.javaName}Data = ${column.javaName}Option.filters['dictData']('${column.dictTypeCode}')
+#end
+#end
+#end
       },
       /**
        * 提交表单
@@ -58,7 +147,19 @@
         this.confirmLoading = true
         validateFields((errors, values) => {
           if (!errors) {
-              ${className}Add(values).then((res) => {
+            for (const key in values) {
+              if (typeof (values[key]) === 'object') {
+                values[key] = JSON.stringify(values[key])
+              }
+            }
+#foreach ($column in $tableField)
+#if (${column.whetherAddUpdate} == "Y")
+#if (${column.effectType} == "datepicker")
+            values.${column.javaName} = this.${column.javaName}DateString
+#end
+#end
+#end
+            ${className}Add(values).then((res) => {
               if (res.success) {
                 this.$message.success('新增成功')
                 this.confirmLoading = false
@@ -75,6 +176,15 @@
           }
         })
       },
+#foreach ($column in $tableField)
+#if (${column.whetherAddUpdate} == "Y")
+#if (${column.effectType} == "datepicker")
+      onChange${column.javaName}(date, dateString) {
+        this.${column.javaName}DateString = dateString
+      },
+#end
+#end
+#end
       handleCancel () {
         this.form.resetFields()
         this.visible = false

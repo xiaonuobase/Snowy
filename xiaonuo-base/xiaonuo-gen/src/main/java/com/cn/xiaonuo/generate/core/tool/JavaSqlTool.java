@@ -47,7 +47,7 @@ public class JavaSqlTool {
             case "smallmoney":return "Double";
             case "image":return "byte[]";
             default:
-                System.out.println("-----------------》转化失败：未发现的类型" + sqlType);
+                System.out.println(">>> 转化失败：未发现的类型" + sqlType);
                 break;
         }
         return sqlType;

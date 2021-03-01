@@ -26,19 +26,13 @@ package com.cn.xiaonuo.generate.modular.controller;
 
 import com.cn.xiaonuo.core.annotion.BusinessLog;
 import com.cn.xiaonuo.core.annotion.Permission;
-import com.cn.xiaonuo.core.context.constant.ConstantContextHolder;
 import com.cn.xiaonuo.core.enums.LogAnnotionOpTypeEnum;
-import com.cn.xiaonuo.core.exception.DemoException;
 import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.generate.modular.param.CodeGenerateParam;
 import com.cn.xiaonuo.generate.modular.service.CodeGenerateService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -133,10 +127,6 @@ public class CodeGenerateController {
     @PostMapping("/codeGenerate/runLocal")
     @BusinessLog(title = "代码生成_本地项目", opType = LogAnnotionOpTypeEnum.OTHER)
     public ResponseData runLocal(@RequestBody @Validated(CodeGenerateParam.detail.class) CodeGenerateParam codeGenerateParam) {
-        // 演示环境开启，则不允许操作
-        if (ConstantContextHolder.getDemoEnvFlag()) {
-            throw new DemoException();
-        }
         this.codeGenerateService.runLocal(codeGenerateParam);
         return new SuccessResponseData();
     }
@@ -151,10 +141,6 @@ public class CodeGenerateController {
     @GetMapping("/codeGenerate/runDown")
     @BusinessLog(title = "代码生成_下载方式", opType = LogAnnotionOpTypeEnum.OTHER)
     public void runDown(@Validated(CodeGenerateParam.detail.class) CodeGenerateParam codeGenerateParam, HttpServletResponse response) {
-        // 演示环境开启，则不允许操作
-        if (ConstantContextHolder.getDemoEnvFlag()) {
-            throw new DemoException();
-        }
         this.codeGenerateService.runDown(codeGenerateParam, response);
     }
 }
