@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * 根据ip地址定位工具类，使用高德地地图定位api
+ * 根据ip地址定位工具类，使用阿里云定位api
  *
  * @author xuyuxiang
  * @date 2020/3/16 11:25
