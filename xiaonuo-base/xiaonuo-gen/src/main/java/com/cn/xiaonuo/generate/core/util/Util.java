@@ -1,5 +1,8 @@
 package com.cn.xiaonuo.generate.core.util;
 
+import com.cn.xiaonuo.core.consts.CommonConstant;
+import com.cn.xiaonuo.core.context.constant.ConstantContext;
+import com.cn.xiaonuo.core.enums.DbIdEnum;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.app.Velocity;
 
@@ -58,7 +61,7 @@ public class Util {
      * @author yubaoshan
      * @date 2020年12月16日23:29:53
      */
-    public static int getIndex(String string, int i, String str) {
+    private static int getIndex(String string, int i, String str) {
         Matcher slashMatcher = Pattern.compile(str).matcher(string);
         int mIdx = 0;
         while (slashMatcher.find()) {
@@ -69,6 +72,24 @@ public class Util {
             }
         }
         return slashMatcher.start();
+    }
+
+    /**
+     * 获取数据库用户
+     *
+     * @author yubaoshan
+     * @date 2021-03-11 18:37:00
+     */
+    public static String getDataBasename () {
+        String dataUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
+        String driverName = ConstantContext.me().getStr(CommonConstant.DATABASE_DRIVER_NAME);
+        if (driverName.contains(DbIdEnum.MS_SQL.getCode())) {
+            return dataUrl.substring(getIndex(dataUrl, 3, "/") + 1, dataUrl.indexOf("?"));
+        } else if (driverName.contains(DbIdEnum.ORACLE.getCode())) {
+            return ConstantContext.me().getStr(CommonConstant.DATABASE_USER_NAME);
+        } else {
+            return "";
+        }
     }
 
 }

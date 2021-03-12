@@ -113,6 +113,16 @@ public interface CommonConstant {
     String DATABASE_URL_NAME = "DATABASE_URL_NAME";
 
     /**
+     * 数据库链接驱动标识
+     */
+    String DATABASE_DRIVER_NAME = "DATABASE_DRIVER_NAME";
+
+    /**
+     * 数据库用户标识
+     */
+    String DATABASE_USER_NAME = "DATABASE_USER_NAME";
+
+    /**
      * 点选验证码
      */
     String IMAGE_CODE_TYPE = "clickWord";

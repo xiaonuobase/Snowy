@@ -19,6 +19,7 @@ public class JavaSqlTool {
         sqlType = sqlType.toLowerCase();
         switch(sqlType){
             case "nvarchar":return "String";
+            case "nvarchar2":return "String";
             case "char":return "String";
             case "varchar":return "String";
             case "text":return "String";
@@ -31,6 +32,7 @@ public class JavaSqlTool {
             case "mediumint":return "Integer";
             case "bit":return "Boolean";
             case "bigint":return "Long";
+            case "number":return "Long";
             case "float":return "Fload";
             case "double":return "Double";
             case "decimal":return "BigDecimal";

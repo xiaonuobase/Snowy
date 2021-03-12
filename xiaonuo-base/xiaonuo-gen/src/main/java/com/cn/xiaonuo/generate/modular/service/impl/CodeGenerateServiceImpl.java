@@ -28,20 +28,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cn.xiaonuo.core.consts.CommonConstant;
-import com.cn.xiaonuo.core.context.constant.ConstantContext;
-import com.cn.xiaonuo.core.enums.YesOrNotEnum;
 import com.cn.xiaonuo.core.exception.ServiceException;
 import com.cn.xiaonuo.core.factory.PageFactory;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
 import com.cn.xiaonuo.generate.core.context.XnVelocityContext;
-import com.cn.xiaonuo.generate.core.param.TableField;
 import com.cn.xiaonuo.generate.core.param.XnCodeGenParam;
-import com.cn.xiaonuo.generate.core.tool.JavaSqlTool;
-import com.cn.xiaonuo.generate.core.tool.NamingConTool;
 import com.cn.xiaonuo.generate.core.tool.StringDateTool;
 import com.cn.xiaonuo.generate.core.config.Config;
-import com.cn.xiaonuo.generate.core.enums.TableFilteredFieldsEnum;
 import com.cn.xiaonuo.generate.core.util.Util;
 import com.cn.xiaonuo.generate.modular.entity.CodeGenerate;
 import com.cn.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
@@ -53,24 +46,19 @@ import com.cn.xiaonuo.generate.modular.result.InforMationColumnsResult;
 import com.cn.xiaonuo.generate.modular.result.InformationResult;
 import com.cn.xiaonuo.generate.modular.service.CodeGenerateService;
 import com.cn.xiaonuo.generate.modular.service.SysCodeGenerateConfigService;
-import com.cn.xiaonuo.sys.modular.menu.entity.SysMenu;
-import com.cn.xiaonuo.sys.modular.menu.mapper.SysMenuMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 
 /**
  * 代码生成基础配置service接口实现类
@@ -172,9 +160,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
 
     @Override
     public List<InformationResult> InformationTableList () {
-        String databaseUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
-        String dbName = databaseUrl.substring(Util.getIndex(databaseUrl, 3, "/") + 1, databaseUrl.indexOf("?"));
-        return this.baseMapper.selectInformationTable(dbName);
+        return this.baseMapper.selectInformationTable(Util.getDataBasename());
     }
 
     @Override
@@ -196,11 +182,10 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
      * @date 2020年12月23日 00点32分
      */
     private boolean vldTablePri (String tableName) {
-        String databaseUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
-        String dbName = databaseUrl.substring(Util.getIndex(databaseUrl, 3, "/") + 1, databaseUrl.indexOf("?"));
-        List<InforMationColumnsResult> inforMationColumnsResultList =  this.baseMapper.selectInformationColumns(dbName, tableName);
+        List<InforMationColumnsResult> inforMationColumnsResultList =  this.baseMapper.selectInformationColumns(Util.getDataBasename(), tableName);
         for (int a = 0; a < inforMationColumnsResultList.size(); a++) {
-            if (inforMationColumnsResultList.get(a).columnKey.equals(Config.DB_TABLE_COM_KRY)) {
+            if (ObjectUtil.isNotNull(inforMationColumnsResultList.get(a).columnKey)
+                    && inforMationColumnsResultList.get(a).columnKey.equals(Config.DB_TABLE_COM_KRY)) {
                 return true;
             }
         }
@@ -234,9 +219,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
      */
     private List<InforMationColumnsResult> getInforMationColumnsResultList (CodeGenerateParam codeGenerateParam) {
         CodeGenerate codeGenerate = this.queryCodeGenerate(codeGenerateParam);
-        String databaseUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
-        String dbName = databaseUrl.substring(Util.getIndex(databaseUrl, 3, "/") + 1, databaseUrl.indexOf("?"));
-        return this.baseMapper.selectInformationColumns(dbName, codeGenerate.getTableName());
+        return this.baseMapper.selectInformationColumns(Util.getDataBasename(), codeGenerate.getTableName());
     }
 
     private XnCodeGenParam copyParams (CodeGenerateParam codeGenerateParam) {

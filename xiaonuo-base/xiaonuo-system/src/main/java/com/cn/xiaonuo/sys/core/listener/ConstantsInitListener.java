@@ -59,6 +59,14 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
 
     private static final String CONFIG_LIST_SQL = "select code,value from sys_config where status = ?";
 
+    private static final String CAPITAL_CODE = "CODE";
+
+    private static final String CODE = "code";
+
+    private static final String CAPITAL_VALUE = "VALUE";
+
+    private static final String VALUE = "value";
+
     @Override
     public int getOrder() {
         return Ordered.HIGHEST_PRECEDENCE;
@@ -75,6 +83,8 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
 
         // 缓存中放入datasource链接，代码生成时候使用
         ConstantContext.putConstant(CommonConstant.DATABASE_URL_NAME, dataSourceUrl);
+        ConstantContext.putConstant(CommonConstant.DATABASE_DRIVER_NAME, environment.getProperty("spring.datasource.driver-class-name"));
+        ConstantContext.putConstant(CommonConstant.DATABASE_USER_NAME, dataSourceUsername);
 
         // 如果有为空的配置，终止执行
         if (ObjectUtil.hasEmpty(dataSourceUrl, dataSourceUsername, dataSourcePassword)) {
@@ -83,7 +93,7 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
 
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName(environment.getProperty("spring.datasource.driver-class-name"));
             assert dataSourceUrl != null;
             conn = DriverManager.getConnection(dataSourceUrl, dataSourceUsername, dataSourcePassword);
 
@@ -94,8 +104,8 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
             if (ObjectUtil.isNotEmpty(entityList)) {
                 entityList.forEach(sysConfig ->
                         ConstantContext.putConstant(
-                                sysConfig.getStr("code") == null ? sysConfig.getStr("CODE") : sysConfig.getStr("code"),
-                                sysConfig.getStr("value") == null ? sysConfig.getStr("VALUE") : sysConfig.getStr("value")
+                                sysConfig.getStr(CODE) == null ? sysConfig.getStr(CAPITAL_CODE) : sysConfig.getStr(CODE),
+                                sysConfig.getStr(VALUE) == null ? sysConfig.getStr(CAPITAL_VALUE) : sysConfig.getStr(VALUE)
                         )
                 );
             }

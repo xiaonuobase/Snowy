@@ -71,7 +71,8 @@ public class Config {
     public static String vueIndexPath;
     public static String vueAddFromPath;
     public static String vueEditFromPath;
-    public static String sqlPath;
+    public static String mysqlSqlPath;
+    public static String oracleSqlPath;
 
     /**
      * 各个代码存放路径文件夹
@@ -90,9 +91,10 @@ public class Config {
         vueIndexPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
         vueAddFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
         vueEditFromPath = BASE_VUE_PAHT + FILE_SEP + "views" + FILE_SEP + "main" + FILE_SEP + busName + FILE_SEP;
-        sqlPath = BASE_SQL_PAHT;
+        mysqlSqlPath = BASE_SQL_PAHT;
+        oracleSqlPath = BASE_SQL_PAHT;
         return new String[] {
-                controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath, sqlPath
+                controllerPath, entityPath, enumsPath, mapperPath, mappingPath, paramPath, servicePath, serviceImplPath, manageJsPath, vueIndexPath, vueAddFromPath, vueEditFromPath, mysqlSqlPath, oracleSqlPath
         };
     }
 
@@ -113,6 +115,7 @@ public class Config {
             "addForm.vue.vm",
             "editForm.vue.vm",
             "XnMysql.sql.vm",
+            "XnOracle.sql.vm",
     };
 
     /**
