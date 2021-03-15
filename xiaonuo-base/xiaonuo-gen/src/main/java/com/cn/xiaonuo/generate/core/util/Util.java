@@ -83,7 +83,7 @@ public class Util {
     public static String getDataBasename () {
         String dataUrl = ConstantContext.me().getStr(CommonConstant.DATABASE_URL_NAME);
         String driverName = ConstantContext.me().getStr(CommonConstant.DATABASE_DRIVER_NAME);
-        if (driverName.contains(DbIdEnum.MS_SQL.getCode())) {
+        if (driverName.contains(DbIdEnum.MYSQL.getCode())) {
             return dataUrl.substring(getIndex(dataUrl, 3, "/") + 1, dataUrl.indexOf("?"));
         } else if (driverName.contains(DbIdEnum.ORACLE.getCode())) {
             return ConstantContext.me().getStr(CommonConstant.DATABASE_USER_NAME);
