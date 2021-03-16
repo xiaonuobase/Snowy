@@ -24,6 +24,7 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
  */
 package com.cn.xiaonuo.sys.core.mybatis.fieldfill;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.cn.xiaonuo.core.context.login.LoginContextHolder;
@@ -53,11 +54,17 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         try {
-            //设置createUser（BaseEntity)
-            setFieldValByName(CREATE_USER, this.getUserUniqueId(), metaObject);
+            //为空则设置createUser（BaseEntity)
+            Object createUser = metaObject.getValue(CREATE_USER);
+            if(ObjectUtil.isNull(createUser)) {
+                setFieldValByName(CREATE_USER, this.getUserUniqueId(), metaObject);
+            }
 
-            //设置createTime（BaseEntity)
-            setFieldValByName(CREATE_TIME, new Date(), metaObject);
+            //为空则设置createTime（BaseEntity)
+            Object createTime = metaObject.getValue(CREATE_TIME);
+            if(ObjectUtil.isNull(createTime)) {
+                setFieldValByName(CREATE_TIME, new Date(), metaObject);
+            }
         } catch (ReflectionException e) {
             log.warn(">>> CustomMetaObjectHandler处理过程中无相关字段，不做处理");
         }
