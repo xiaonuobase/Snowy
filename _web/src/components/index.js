@@ -31,6 +31,9 @@ import ArticleListContent from '@/components/ArticleListContent'
 import AntdEditor from '@/components/Editor/WangEditor'
 import Dialog from '@/components/Dialog'
 
+// xn components
+import XCard from '@/components/xnComponents/XCard'
+
 export {
   AvatarList,
   Bar,
@@ -62,5 +65,6 @@ export {
   StandardFormRow,
   ArticleListContent,
   AntdEditor,
-  Dialog
+  Dialog,
+  XCard
 }
