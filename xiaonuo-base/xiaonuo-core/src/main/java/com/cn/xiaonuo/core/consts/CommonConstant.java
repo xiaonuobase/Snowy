@@ -126,4 +126,9 @@ public interface CommonConstant {
      * 点选验证码
      */
     String IMAGE_CODE_TYPE = "clickWord";
+
+    /**
+     * undefined未知
+     */
+    String UNDEFINED = "undefined";
 }

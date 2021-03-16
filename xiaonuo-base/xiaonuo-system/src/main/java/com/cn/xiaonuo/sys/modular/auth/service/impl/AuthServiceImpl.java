@@ -171,7 +171,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     @Override
     public String getTokenFromRequest(HttpServletRequest request) {
         String authToken = request.getHeader(CommonConstant.AUTHORIZATION);
-        if (ObjectUtil.isEmpty(authToken)) {
+        if (ObjectUtil.isEmpty(authToken) || CommonConstant.UNDEFINED.equals(authToken)) {
             return null;
         } else {
             //token不是以Bearer打头，则响应回格式不正确
