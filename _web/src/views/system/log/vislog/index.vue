@@ -1,97 +1,101 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysVisLog:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="日志名称">
-              <a-input v-model="queryParam.name" allow-clear placeholder="请输入日志名称"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="访问类型">
-              <a-select v-model="queryParam.visType" allow-clear placeholder="请选择访问类型" >
-                <a-select-option v-for="(item,index) in visTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <template v-if="advanced">
+  <div>
+    <x-card v-if="hasPerm('sysVisLog:page')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="是否成功">
-                <a-select v-model="queryParam.success" placeholder="请选择是否成功" >
-                  <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+              <a-form-item label="日志名称">
+                <a-input v-model="queryParam.name" allow-clear placeholder="请输入日志名称"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="访问类型">
+                <a-select v-model="queryParam.visType" allow-clear placeholder="请选择访问类型" >
+                  <a-select-option v-for="(item,index) in visTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :md="10" :sm="24">
-              <a-form-item label="访问时间">
-                <a-range-picker
-                  v-model="queryParam.dates"
-                  :show-time="{
-                    hideDisabledOptions: true,
-                    defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                  }"
-                  format="YYYY-MM-DD HH:mm:ss"
-                />
-              </a-form-item>
+            <template v-if="advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="是否成功">
+                  <a-select v-model="queryParam.success" placeholder="请选择是否成功" >
+                    <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="10" :sm="24">
+                <a-form-item label="访问时间">
+                  <a-range-picker
+                    v-model="queryParam.dates"
+                    :show-time="{
+                      hideDisabledOptions: true,
+                      defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }"
+                    format="YYYY-MM-DD HH:mm:ss"
+                  />
+                </a-form-item>
+              </a-col>
+            </template>
+            <a-col :md="!advanced && 8 || 24" :sm="24">
+              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+                <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
             </a-col>
-          </template>
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-              <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.id"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <template slot="operator" v-if="hasPerm('sysVisLog:sysVisLog')">
-        <a-popconfirm @confirm="() => sysVisLogDelete()" placement="top" title="确认清空日志？" v-if="hasPerm('sysVisLog:delete')">
-          <a-button >清空日志</a-button>
-        </a-popconfirm>
-      </template>
-      <span slot="name" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="visTime" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="visType" slot-scope="text">
-        {{ visTypeFilter(text) }}
-      </span>
-      <span slot="success" slot-scope="text">
-        {{ successFilter(text) }}
-      </span>
-      <span slot="action" slot-scope="text, record">
-        <span slot="action" >
-          <a @click="$refs.detailsVislog.details(record)">查看详情</a>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.id"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template slot="operator" v-if="hasPerm('sysVisLog:sysVisLog')">
+          <a-popconfirm @confirm="() => sysVisLogDelete()" placement="top" title="确认清空日志？" v-if="hasPerm('sysVisLog:delete')">
+            <a-button >清空日志</a-button>
+          </a-popconfirm>
+        </template>
+        <span slot="name" slot-scope="text">
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
         </span>
-      </span>
-    </s-table>
-    <details-vislog ref="detailsVislog"/>
-  </a-card>
+        <span slot="visTime" slot-scope="text">
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="visType" slot-scope="text">
+          {{ visTypeFilter(text) }}
+        </span>
+        <span slot="success" slot-scope="text">
+          {{ successFilter(text) }}
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <span slot="action" >
+            <a @click="$refs.detailsVislog.details(record)">查看详情</a>
+          </span>
+        </span>
+      </s-table>
+      <details-vislog ref="detailsVislog"/>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import { STable, Ellipsis, XCard } from '@/components'
   import { sysVisLogPage, sysVisLogDelete } from '@/api/modular/system/logManage'
   import detailsVislog from './details'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import moment from 'moment'
   export default {
     components: {
+      XCard,
       STable,
       Ellipsis,
       detailsVislog

@@ -192,6 +192,7 @@
             :wrapperCol="wrapperCol_JG"
           >
             <a-table
+              size="middle"
               :columns="columns"
               :dataSource="data"
               :pagination="false"

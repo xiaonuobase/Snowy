@@ -1,8 +1,8 @@
 /* eslint-disable eqeqeq */
 <template>
-  <a-card :bordered="false" >
-    <a-spin :spinning="loading">
-      <div class="table-page-search-wrapper" v-if="hasPerm('sysApp:page')">
+  <div>
+    <x-card v-if="hasPerm('sysApp:page')">
+      <div slot="content" class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
@@ -24,49 +24,53 @@
           </a-row>
         </a-form>
       </div>
-      <s-table
-        ref="table"
-        size="default"
-        :columns="columns"
-        :data="loadData"
-        :alert="true"
-        :rowKey="(record) => record.id"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onChange }"
-      >
-        <template slot="operator" v-if="hasPerm('sysApp:add')">
-          <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysApp:add')">新增应用</a-button>
-        </template>
-        <span slot="active" slot-scope="text">
-          {{ activeFilter(text) }}
-        </span>
-        <span slot="status" slot-scope="text">
-          {{ statusFilter(text) }}
-        </span>
-        <span slot="action" slot-scope="text, record">
-          <a v-if="hasPerm('sysApp:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-          <a-divider type="vertical" v-if="hasPerm('sysApp:edit') & hasPerm('sysApp:delete')" />
-          <a-popconfirm v-if="hasPerm('sysApp:delete')" placement="topRight" title="确认删除？" @confirm="() => sysAppDelete(record)">
-            <a>删除</a>
-          </a-popconfirm>
-          <a-divider type="vertical" v-if="hasPerm('sysApp:setAsDefault') & hasPerm('sysApp:delete') & record.active == 'N' || hasPerm('sysApp:edit') & hasPerm('sysApp:setAsDefault') & record.active == 'N'" />
-          <a-popconfirm v-if="hasPerm('sysApp:setAsDefault') & record.active == 'N'" placement="topRight" title="设置为默认应用？" @confirm="() => sysDefault(record)">
-            <a>设为默认</a>
-          </a-popconfirm>
-        </span>
-      </s-table>
-      <add-form ref="addForm" @ok="handleOk" />
-      <edit-form ref="editForm" @ok="handleOk" />
-    </a-spin>
-  </a-card>
+    </x-card>
+    <a-card :bordered="false" >
+      <a-spin :spinning="loading">
+        <s-table
+          ref="table"
+          :columns="columns"
+          :data="loadData"
+          :alert="true"
+          :rowKey="(record) => record.id"
+          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onChange }"
+        >
+          <template slot="operator" v-if="hasPerm('sysApp:add')">
+            <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysApp:add')">新增应用</a-button>
+          </template>
+          <span slot="active" slot-scope="text">
+            {{ activeFilter(text) }}
+          </span>
+          <span slot="status" slot-scope="text">
+            {{ statusFilter(text) }}
+          </span>
+          <span slot="action" slot-scope="text, record">
+            <a v-if="hasPerm('sysApp:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+            <a-divider type="vertical" v-if="hasPerm('sysApp:edit') & hasPerm('sysApp:delete')" />
+            <a-popconfirm v-if="hasPerm('sysApp:delete')" placement="topRight" title="确认删除？" @confirm="() => sysAppDelete(record)">
+              <a>删除</a>
+            </a-popconfirm>
+            <a-divider type="vertical" v-if="hasPerm('sysApp:setAsDefault') & hasPerm('sysApp:delete') & record.active == 'N' || hasPerm('sysApp:edit') & hasPerm('sysApp:setAsDefault') & record.active == 'N'" />
+            <a-popconfirm v-if="hasPerm('sysApp:setAsDefault') & record.active == 'N'" placement="topRight" title="设置为默认应用？" @confirm="() => sysDefault(record)">
+              <a>设为默认</a>
+            </a-popconfirm>
+          </span>
+        </s-table>
+        <add-form ref="addForm" @ok="handleOk" />
+        <edit-form ref="editForm" @ok="handleOk" />
+      </a-spin>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { getAppPage, sysAppDelete, sysAppSetAsDefault } from '@/api/modular/system/appManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import editForm from './editForm'
   import addForm from './addForm'
   export default {
     components: {
+      XCard,
       STable,
       editForm,
       addForm
@@ -105,6 +109,7 @@
             scopedSlots: { customRender: 'status' }
           }
         ],
+        tstyle: { 'padding-bottom': '0px', 'margin-bottom': '10px' },
         // 加载数据方法 必须为 Promise 对象
         loadData: parameter => {
           return getAppPage(Object.assign(parameter, this.queryParam)).then((res) => {

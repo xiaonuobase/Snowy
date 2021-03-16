@@ -1,79 +1,82 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysNotice:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="关键词" >
-              <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入标题、内容"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="类型" >
-              <a-select v-model="queryParam.type" placeholder="请选择类型" allow-clear >
-                <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-            <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.id"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <template slot="operator" v-if="hasPerm('sysNotice:add')">
-        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysNotice:add')" >新增公告</a-button>
-      </template>
-      <span slot="status" slot-scope="text">
-        {{ statusFilter(text) }}
-      </span>
-      <span slot="type" slot-scope="text">
-        {{ typeFilter(text) }}
-      </span>
-      <span slot="action" slot-scope="text, record">
-        <div v-if="record.status == 0">
-          <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
-          <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:edit')"/>
-          <a v-if="hasPerm('sysNotice:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-          <a-divider type="vertical" v-if="hasPerm('sysNotice:edit') & hasPerm('sysNotice:changeStatus')"/>
-          <a-popconfirm v-if="hasPerm('sysNotice:changeStatus')" placement="topRight" title="确认发布该信息？" @confirm="() => editNoticeStatus(1,record)">
-            <a>发布</a>
-          </a-popconfirm>
-        </div>
-        <div v-if="record.status == 1">
-          <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
-          <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:changeStatus')"/>
-          <a-popconfirm v-if="hasPerm('sysNotice:changeStatus')" placement="topRight" title="确认撤回该信息？" @confirm="() => editNoticeStatus(2,record)">
-            <a>撤回</a>
-          </a-popconfirm>
-        </div>
-        <div v-if="record.status == 2">
-          <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
-          <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:delete')"/>
-          <a-popconfirm v-if="hasPerm('sysNotice:delete')" placement="topRight" title="确认删除？" @confirm="() => sysNoticeDelete(record)">
-            <a>删除</a>
-          </a-popconfirm>
-        </div>
-      </span>
-    </s-table>
-    <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('sysNotice:add')"/>
-    <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('sysNotice:edit')"/>
-    <detail-form ref="detailForm" @ok="handleOk" v-if="hasPerm('sysNotice:detail')"/>
-    <div ref="editor"></div>
-  </a-card>
+  <div>
+    <x-card v-if="hasPerm('sysNotice:page')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="关键词" >
+                <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入标题、内容"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="类型" >
+                <a-select v-model="queryParam.type" placeholder="请选择类型" allow-clear >
+                  <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.id"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template slot="operator" v-if="hasPerm('sysNotice:add')">
+          <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysNotice:add')" >新增公告</a-button>
+        </template>
+        <span slot="status" slot-scope="text">
+          {{ statusFilter(text) }}
+        </span>
+        <span slot="type" slot-scope="text">
+          {{ typeFilter(text) }}
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <div v-if="record.status == 0">
+            <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
+            <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:edit')"/>
+            <a v-if="hasPerm('sysNotice:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+            <a-divider type="vertical" v-if="hasPerm('sysNotice:edit') & hasPerm('sysNotice:changeStatus')"/>
+            <a-popconfirm v-if="hasPerm('sysNotice:changeStatus')" placement="topRight" title="确认发布该信息？" @confirm="() => editNoticeStatus(1,record)">
+              <a>发布</a>
+            </a-popconfirm>
+          </div>
+          <div v-if="record.status == 1">
+            <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
+            <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:changeStatus')"/>
+            <a-popconfirm v-if="hasPerm('sysNotice:changeStatus')" placement="topRight" title="确认撤回该信息？" @confirm="() => editNoticeStatus(2,record)">
+              <a>撤回</a>
+            </a-popconfirm>
+          </div>
+          <div v-if="record.status == 2">
+            <a v-if="hasPerm('sysNotice:detail')" @click="$refs.detailForm.detail(record)">查看</a>
+            <a-divider type="vertical" v-if="hasPerm('sysNotice:detail') & hasPerm('sysNotice:delete')"/>
+            <a-popconfirm v-if="hasPerm('sysNotice:delete')" placement="topRight" title="确认删除？" @confirm="() => sysNoticeDelete(record)">
+              <a>删除</a>
+            </a-popconfirm>
+          </div>
+        </span>
+      </s-table>
+      <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('sysNotice:add')"/>
+      <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('sysNotice:edit')"/>
+      <detail-form ref="detailForm" @ok="handleOk" v-if="hasPerm('sysNotice:detail')"/>
+      <div ref="editor"></div>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { sysNoticePage, sysNoticeDelete, sysNoticeChangeStatus } from '@/api/modular/system/noticeManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
@@ -81,6 +84,7 @@
   import detailForm from './detailForm'
   export default {
     components: {
+      XCard,
       STable,
       addForm,
       editForm,

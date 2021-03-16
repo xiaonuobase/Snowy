@@ -1,69 +1,72 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysTimers:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="任务名称">
-              <a-input v-model="queryParam.timerName" allow-clear placeholder="请输入任务名称"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="任务状态">
-              <a-select v-model="queryParam.jobStatus" placeholder="请选择状态" >
-                <a-select-option v-for="(item,index) in jobStatusDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-            <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.id"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <template slot="operator" v-if="hasPerm('sysTimers:add')">
-        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysTimers:add')">新增定时器</a-button>
-      </template>
-      <span slot="actionClass" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="remark" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="jobStatus" slot-scope="text,record" v-if="hasPerm('sysTimers:start') || hasPerm('sysTimers:stop')">
-        <a-popconfirm placement="top" :title="text===1? '确定停止该任务？':'确定启动该任务？'" @confirm="() => editjobStatusStatus(text,record)">
+  <div>
+    <x-card v-if="hasPerm('sysTimers:page')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="任务名称">
+                <a-input v-model="queryParam.timerName" allow-clear placeholder="请输入任务名称"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="任务状态">
+                <a-select v-model="queryParam.jobStatus" placeholder="请选择状态" >
+                  <a-select-option v-for="(item,index) in jobStatusDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.id"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template slot="operator" v-if="hasPerm('sysTimers:add')">
+          <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysTimers:add')">新增定时器</a-button>
+        </template>
+        <span slot="actionClass" slot-scope="text">
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="remark" slot-scope="text">
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="jobStatus" slot-scope="text,record" v-if="hasPerm('sysTimers:start') || hasPerm('sysTimers:stop')">
+          <a-popconfirm placement="top" :title="text===1? '确定停止该任务？':'确定启动该任务？'" @confirm="() => editjobStatusStatus(text,record)">
+            <a-badge :status="text===1? 'processing':'default'" />
+            <a>{{ jobStatusFilter(text) }}</a>
+          </a-popconfirm>
+        </span>
+        <span slot="jobStatus" v-else>
           <a-badge :status="text===1? 'processing':'default'" />
-          <a>{{ jobStatusFilter(text) }}</a>
-        </a-popconfirm>
-      </span>
-      <span slot="jobStatus" v-else>
-        <a-badge :status="text===1? 'processing':'default'" />
-        {{ jobStatusFilter(text) }}
-      </span>
-      <span slot="action" slot-scope="text, record">
-        <a v-if="hasPerm('sysTimers:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-        <a-divider type="vertical" v-if="hasPerm('sysTimers:edit') & hasPerm('sysTimers:delete')"/>
-        <a-popconfirm v-if="hasPerm('sysTimers:delete')" placement="topRight" title="确认删除？" @confirm="() => sysTimersDelete(record)">
-          <a>删除</a>
-        </a-popconfirm>
-      </span>
-    </s-table>
-    <add-form ref="addForm" @ok="handleOk" />
-    <edit-form ref="editForm" @ok="handleOk" />
-  </a-card>
+          {{ jobStatusFilter(text) }}
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <a v-if="hasPerm('sysTimers:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+          <a-divider type="vertical" v-if="hasPerm('sysTimers:edit') & hasPerm('sysTimers:delete')"/>
+          <a-popconfirm v-if="hasPerm('sysTimers:delete')" placement="topRight" title="确认删除？" @confirm="() => sysTimersDelete(record)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
+      </s-table>
+      <add-form ref="addForm" @ok="handleOk" />
+      <edit-form ref="editForm" @ok="handleOk" />
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import { STable, Ellipsis, XCard } from '@/components'
   import { sysTimersPage, sysTimersDelete, sysTimersStart, sysTimersStop } from '@/api/modular/system/timersManage'
   import addForm from './addForm'
   import editForm from './editForm'
@@ -71,6 +74,7 @@
   export default {
     name: 'PosIndex',
     components: {
+      XCard,
       STable,
       Ellipsis,
       addForm,

@@ -12,6 +12,7 @@
 
       <div>
         <a-table
+          size="middle"
           :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
           :dataSource="loadData"

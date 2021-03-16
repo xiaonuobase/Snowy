@@ -1,61 +1,64 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysNotice:received')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="关键词" v-if="hasPerm('sysNotice:received')">
-              <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入标题、内容"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="类型" v-if="hasPerm('sysNotice:received')">
-              <a-select v-model="queryParam.type" placeholder="请选择类型" allow-clear >
-                <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.id"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <span slot="status" slot-scope="text">
-        {{ statusFilter(text) }}
-      </span>
-      <span slot="type" slot-scope="text">
-        {{ typeFilter(text) }}
-      </span>
-      <span slot="action" slot-scope="text, record">
-        <a v-if="hasPerm('sysNotice:received')" @click="$refs.detailForm.detail(record)">查看</a>
-      </span>
-    </s-table>
-    <detail-form ref="detailForm" @ok="handleOk" />
-    <div ref="editor"></div>
-  </a-card>
+  <div>
+    <x-card v-if="hasPerm('sysNotice:received')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="关键词" v-if="hasPerm('sysNotice:received')">
+                <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入标题、内容"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="类型" v-if="hasPerm('sysNotice:received')">
+                <a-select v-model="queryParam.type" placeholder="请选择类型" allow-clear >
+                  <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="!advanced && 8 || 24" :sm="24">
+              <span class="table-page-search-submitButtons" >
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.id"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <span slot="status" slot-scope="text">
+          {{ statusFilter(text) }}
+        </span>
+        <span slot="type" slot-scope="text">
+          {{ typeFilter(text) }}
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <a v-if="hasPerm('sysNotice:received')" @click="$refs.detailForm.detail(record)">查看</a>
+        </span>
+      </s-table>
+      <detail-form ref="detailForm" @ok="handleOk" />
+      <div ref="editor"></div>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   // eslint-disable-next-line no-unused-vars
-  import { sysNoticePage } from '@/api/modular/system/noticeManage'
   import { sysNoticeReceived } from '@/api/modular/system/noticeReceivedManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import detailForm from './detailForm'
   export default {
     components: {
+      XCard,
       STable,
       detailForm
     },

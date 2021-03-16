@@ -2,7 +2,6 @@
   <a-card :bordered="false">
     <s-table
       ref="table"
-      size="default"
       :pagination="false"
       :loading="loading"
       :columns="columns"

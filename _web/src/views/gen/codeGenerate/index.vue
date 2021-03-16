@@ -23,7 +23,6 @@
       <a-spin :spinning="Loading">
         <s-table
           ref="table"
-          size="default"
           :columns="columns"
           :data="loadData"
           :alert="true"

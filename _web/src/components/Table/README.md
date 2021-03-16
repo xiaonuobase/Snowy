@@ -21,7 +21,6 @@ Table 重封装组件说明
 <template>
   <s-table
     ref="table"
-    size="default"
     :rowKey="(record) => record.data.id"
     :columns="columns"
     :data="loadData"
@@ -102,7 +101,6 @@ Table 重封装组件说明
 <template>
   <s-table
     ref="table"
-    size="default"
     :columns="columns"
     :data="loadData"
   >

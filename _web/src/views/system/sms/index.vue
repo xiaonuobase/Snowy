@@ -1,66 +1,70 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysSms:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="手机号">
-              <a-input v-model="queryParam.phoneNumbers" placeholder="请输入手机号"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="发送状态">
-              <a-select v-model="queryParam.status" placeholder="请选择发送状态" >
-                <a-select-option v-for="(item,index) in statusDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <template v-if="advanced">
+  <div>
+    <x-card v-if="hasPerm('sysSms:page')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="来源">
-                <a-select v-model="queryParam.source" placeholder="请选择来源" >
-                  <a-select-option v-for="(item,index) in sourceDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+              <a-form-item label="手机号">
+                <a-input v-model="queryParam.phoneNumbers" placeholder="请输入手机号"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="发送状态">
+                <a-select v-model="queryParam.status" placeholder="请选择发送状态" >
+                  <a-select-option v-for="(item,index) in statusDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-          </template>
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-              <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.id"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <span slot="status" slot-scope="text">
-        {{ statusFilter(text) }}
-      </span>
-      <span slot="source" slot-scope="text">
-        {{ sourceFilter(text) }}
-      </span>
-    </s-table>
-  </a-card>
+            <template v-if="advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="来源">
+                  <a-select v-model="queryParam.source" placeholder="请选择来源" >
+                    <a-select-option v-for="(item,index) in sourceDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </template>
+            <a-col :md="!advanced && 8 || 24" :sm="24">
+              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+                <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.id"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <span slot="status" slot-scope="text">
+          {{ statusFilter(text) }}
+        </span>
+        <span slot="source" slot-scope="text">
+          {{ sourceFilter(text) }}
+        </span>
+      </s-table>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { smsPage } from '@/api/modular/system/smsManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   export default {
     components: {
+      XCard,
       STable
     },
     data () {

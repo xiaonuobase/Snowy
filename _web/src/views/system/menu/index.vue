@@ -14,6 +14,7 @@
 
     <a-table
       ref="table"
+      size="middle"
       :rowKey="(record) => record.id"
       :pagination="false"
       :defaultExpandAllRows="true"

@@ -1,87 +1,91 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysConfig:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="参数名称">
-              <a-input v-model="queryParam.name" allow-clear placeholder="请输入参数名称"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="唯一编码">
-              <a-input v-model="queryParam.code" allow-clear placeholder="请输入唯一编码"/>
-            </a-form-item>
-          </a-col>
-          <template v-if="advanced">
+  <div>
+    <x-card v-if="hasPerm('sysConfig:page')">
+      <div slot="content" class="table-page-search-wrapper" >
+        <a-form layout="inline">
+          <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="所属分类">
-                <a-select v-model="queryParam.groupCode" placeholder="请选择所属分类" allow-clear>
-                  <a-select-option v-for="(item,index) in groupCodeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
-                </a-select>
+              <a-form-item label="参数名称">
+                <a-input v-model="queryParam.name" allow-clear placeholder="请输入参数名称"/>
               </a-form-item>
             </a-col>
-          </template>
-          <a-col :md="!advanced && 8 || 24" :sm="24" >
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-              <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.code"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <template slot="operator" v-if="hasPerm('sysConfig:add')">
-        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysConfig:add')">新增配置</a-button>
-      </template>
-      <span slot="name" slot-scope="text">
-        <ellipsis :length="20" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="code" slot-scope="text">
-        <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="value" slot-scope="text">
-        <ellipsis :length="16" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="remark" slot-scope="text">
-        <ellipsis :length="16" tooltip>{{ text }}</ellipsis>
-      </span>
-      <span slot="groupCode" slot-scope="text">
-        {{ groupCodeFilter(text) }}
-      </span>
-      <span slot="action" slot-scope="text, record">
-        <a v-if="hasPerm('sysConfig:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-        <a-divider type="vertical" v-if="hasPerm('sysConfig:edit') & hasPerm('sysConfig:delete')"/>
-        <a-popconfirm v-if="hasPerm('sysConfig:delete')" placement="topRight" title="确认删除？" @confirm="() => sysConfigDelete(record)">
-          <a>删除</a>
-        </a-popconfirm>
-      </span>
-    </s-table>
-    <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('sysConfig:add')"/>
-    <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('sysConfig:edit')"/>
-  </a-card>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="唯一编码">
+                <a-input v-model="queryParam.code" allow-clear placeholder="请输入唯一编码"/>
+              </a-form-item>
+            </a-col>
+            <template v-if="advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="所属分类">
+                  <a-select v-model="queryParam.groupCode" placeholder="请选择所属分类" allow-clear>
+                    <a-select-option v-for="(item,index) in groupCodeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </template>
+            <a-col :md="!advanced && 8 || 24" :sm="24" >
+              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+                <a-button type="primary" @click="$refs.table.refresh(true)" >查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.code"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template slot="operator" v-if="hasPerm('sysConfig:add')">
+          <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysConfig:add')">新增配置</a-button>
+        </template>
+        <span slot="name" slot-scope="text">
+          <ellipsis :length="20" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="code" slot-scope="text">
+          <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="value" slot-scope="text">
+          <ellipsis :length="16" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="remark" slot-scope="text">
+          <ellipsis :length="16" tooltip>{{ text }}</ellipsis>
+        </span>
+        <span slot="groupCode" slot-scope="text">
+          {{ groupCodeFilter(text) }}
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <a v-if="hasPerm('sysConfig:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+          <a-divider type="vertical" v-if="hasPerm('sysConfig:edit') & hasPerm('sysConfig:delete')"/>
+          <a-popconfirm v-if="hasPerm('sysConfig:delete')" placement="topRight" title="确认删除？" @confirm="() => sysConfigDelete(record)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
+      </s-table>
+      <add-form ref="addForm" @ok="handleOk" v-if="hasPerm('sysConfig:add')"/>
+      <edit-form ref="editForm" @ok="handleOk" v-if="hasPerm('sysConfig:edit')"/>
+    </a-card>
+  </div>
 </template>
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import { STable, Ellipsis, XCard } from '@/components'
   import { sysConfigPage, sysConfigDelete } from '@/api/modular/system/configManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
   import editForm from './editForm'
   export default {
     components: {
+      XCard,
       STable,
       Ellipsis,
       addForm,

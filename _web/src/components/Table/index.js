@@ -1,6 +1,5 @@
 import T from 'ant-design-vue/es/table/Table'
 import get from 'lodash.get'
-import screenfull from 'screenfull'
 import draggable from 'vuedraggable'
 import columnSetting from './columnSetting'
 import './index.less'
@@ -47,7 +46,7 @@ export default {
     },
     size: {
       type: String,
-      default: 'default'
+      default: 'middle'
     },
     /**
      * alert: {
@@ -330,20 +329,6 @@ export default {
             return <columnSetting slot="overlay" columns={this.columns} onColumnChange={this.columnChange} />
           },
           onClick: () => {
-          }
-        },
-        {
-          icon: this.isFullscreen ? 'fullscreen-exit' : 'fullscreen',
-          title: '全屏',
-          onClick: () => {
-            if (screenfull.isEnabled) {
-              const table = document.querySelector('.table-wrapper')
-              const antdCard = table.parentNode.parentNode
-              if (antdCard.classList.contains('ant-card')) {
-                screenfull.toggle(antdCard)
-                this.isFullscreen = !this.isFullscreen
-              }
-            }
           }
         }
       ]

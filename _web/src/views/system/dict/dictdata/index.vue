@@ -6,8 +6,8 @@
     :footer="null"
     @cancel="handleCancel"
   >
-    <a-card :bordered="false">
-      <div class="table-page-search-wrapper" v-if="hasPerm('sysDictData:page')">
+    <x-card v-if="hasPerm('sysDictData:page')">
+      <div slot="content" class="table-page-search-wrapper" >
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
@@ -29,9 +29,10 @@
           </a-row>
         </a-form>
       </div>
+    </x-card>
+    <a-card :bordered="false">
       <s-table
         ref="table"
-        size="default"
         :columns="columns"
         :data="loadData"
         :alert="false"
@@ -58,13 +59,14 @@
   </a-modal>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { sysDictDataPage, sysDictDataDelete } from '@/api/modular/system/dictDataManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
   import editForm from './editForm'
   export default {
     components: {
+      XCard,
       STable,
       addForm,
       editForm

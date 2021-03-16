@@ -1,7 +1,7 @@
 <template>
   <a-spin :spinning="cardLoading">
-    <a-card :bordered="false">
-      <div class="table-page-search-wrapper" v-if="hasPerm('sysFileInfo:page')">
+    <x-card v-if="hasPerm('sysFileInfo:page')">
+      <div slot="content" class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
@@ -36,20 +36,10 @@
           </a-row>
         </a-form>
       </div>
-      <!--<div class="table-operator" v-if="hasPerm('sysFileInfo:upload')">
-        <a-upload
-          v-if="hasPerm('sysFileInfo:upload')"
-          name="file"
-          :multiple="true"
-          :customRequest="customRequest"
-          :showUploadList="false"
-        >
-          <a-button> <a-icon type="upload" />上传文件</a-button>
-        </a-upload>
-      </div>-->
+    </x-card>
+    <a-card :bordered="false">
       <s-table
         ref="table"
-        size="default"
         :columns="columns"
         :data="loadData"
         :alert="true"
@@ -89,6 +79,8 @@
           </a-popconfirm>
           <a-divider type="vertical" v-if="(hasPerm('sysFileInfo:preview') & record.fileSuffix === 'png' || record.fileSuffix === 'jpeg' || record.fileSuffix === 'jpg'|| record.fileSuffix === 'gif'|| record.fileSuffix === 'tif' || record.fileSuffix === 'bmp' ) & hasPerm('sysFileInfo:delete')"/>
           <a v-if="(hasPerm('sysFileInfo:preview') & record.fileSuffix === 'png' || record.fileSuffix === 'jpeg'|| record.fileSuffix === 'jpg'|| record.fileSuffix === 'gif'|| record.fileSuffix === 'tif' || record.fileSuffix === 'bmp' )" @click="$refs.previewForm.preview(record)">预览</a>
+          <a-divider type="vertical" v-if="(hasPerm('sysFileInfo:preview') & record.fileSuffix === 'doc' || record.fileSuffix === 'docx'|| record.fileSuffix === 'xls'|| record.fileSuffix === 'xlsx') & hasPerm('sysFileInfo:delete')"/>
+          <a v-if="(hasPerm('sysFileInfo:preview') & record.fileSuffix === 'doc' || record.fileSuffix === 'docx'|| record.fileSuffix === 'xls'|| record.fileSuffix === 'xlsx')" @click="previewMicrosoft(record)">预览</a>
         </span>
       </s-table>
       <detail-form ref="detailForm" @ok="handleOk" v-if="hasPerm('sysFileInfo:detail')"/>
@@ -97,13 +89,14 @@
   </a-spin>
 </template>
 <script>
-  import { STable, Ellipsis } from '@/components'
+  import { STable, Ellipsis, XCard } from '@/components'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import { sysFileInfoPage, sysFileInfoDelete, sysFileInfoUpload, sysFileInfoDownload } from '@/api/modular/system/fileManage'
   import detailForm from './detailForm'
   import previewForm from './previewForm'
   export default {
     components: {
+      XCard,
       STable,
       Ellipsis,
       detailForm,
@@ -177,6 +170,12 @@
         if (values.length > 0) {
           return values[0].value
         }
+      },
+      /**
+       * 预览文件（微软插件）
+       */
+      previewMicrosoft (record) {
+        window.open('https://view.officeapps.live.com/op/view.aspx?src=' + process.env.VUE_APP_API_BASE_URL + '/sysFileInfo/download?id=' + record.id)
       },
       /**
        * 获取字典数据

@@ -1,63 +1,67 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper" v-if="hasPerm('sysPos:page')">
-      <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="职位名称" >
-              <a-input v-model="queryParam.name" allow-clear placeholder="请输入职位名称"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="唯一编码" >
-              <a-input v-model="queryParam.code" allow-clear placeholder="请输入唯一编码" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-              <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-              <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-      :alert="true"
-      :rowKey="(record) => record.code"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-    >
-      <template slot="operator" v-if="hasPerm('sysPos:add')">
-        <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysPos:add')">新增职位</a-button>
-      </template>
-      <span slot="action" slot-scope="text, record">
-        <a v-if="hasPerm('sysPos:edit')" @click="$refs.editForm.edit(record)">编辑</a>
-        <a-divider type="vertical" v-if="hasPerm('sysPos:edit') & hasPerm('sysPos:delete')"/>
-        <a-popconfirm v-if="hasPerm('sysPos:delete')" placement="topRight" title="确认删除？" @confirm="() => sysPosDelete(record)">
-          <a>删除</a>
-        </a-popconfirm>
-      </span>
+  <div>
+    <x-card v-if="hasPerm('sysPos:page')">
+      <div slot="content" class="table-page-search-wrapper">
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="职位名称" >
+                <a-input v-model="queryParam.name" allow-clear placeholder="请输入职位名称"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="唯一编码" >
+                <a-input v-model="queryParam.code" allow-clear placeholder="请输入唯一编码" />
+              </a-form-item>
+            </a-col>
+            <a-col :md="!advanced && 8 || 24" :sm="24">
+              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
+                <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </x-card>
+    <a-card :bordered="false">
+      <s-table
+        ref="table"
+        :columns="columns"
+        :data="loadData"
+        :alert="true"
+        :rowKey="(record) => record.code"
+        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template slot="operator" v-if="hasPerm('sysPos:add')">
+          <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysPos:add')">新增职位</a-button>
+        </template>
+        <span slot="action" slot-scope="text, record">
+          <a v-if="hasPerm('sysPos:edit')" @click="$refs.editForm.edit(record)">编辑</a>
+          <a-divider type="vertical" v-if="hasPerm('sysPos:edit') & hasPerm('sysPos:delete')"/>
+          <a-popconfirm v-if="hasPerm('sysPos:delete')" placement="topRight" title="确认删除？" @confirm="() => sysPosDelete(record)">
+            <a>删除</a>
+          </a-popconfirm>
+        </span>
 
-    </s-table>
+      </s-table>
 
-    <add-form ref="addForm" @ok="handleOk" />
-    <edit-form ref="editForm" @ok="handleOk" />
+      <add-form ref="addForm" @ok="handleOk" />
+      <edit-form ref="editForm" @ok="handleOk" />
 
-  </a-card>
+    </a-card>
+  </div>
 </template>
 
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { sysPosPage, sysPosDelete } from '@/api/modular/system/posManage'
   import addForm from './addForm'
   import editForm from './editForm'
 
   export default {
     components: {
+      XCard,
       STable,
       addForm,
       editForm

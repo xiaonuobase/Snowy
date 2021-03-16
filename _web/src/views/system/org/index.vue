@@ -18,8 +18,8 @@
       </a-card>
     </a-col>
     <a-col :md="19" :sm="24">
-      <a-card :bordered="false">
-        <div class="table-page-search-wrapper" v-if="hasPerm('sysOrg:page')">
+      <x-card v-if="hasPerm('sysOrg:page')">
+        <div slot="content" class="table-page-search-wrapper">
           <a-form layout="inline">
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
@@ -36,9 +36,10 @@
             </a-row>
           </a-form>
         </div>
+      </x-card>
+      <a-card :bordered="false">
         <s-table
           ref="table"
-          size="default"
           :columns="columns"
           :data="loadData"
           :alert="true"
@@ -63,13 +64,14 @@
   </a-row>
 </template>
 <script>
-  import { STable } from '@/components'
+  import { STable, XCard } from '@/components'
   import { Empty } from 'ant-design-vue'
   import { getOrgPage, sysOrgDelete, getOrgTree } from '@/api/modular/system/orgManage'
   import addForm from './addForm'
   import editForm from './editForm'
   export default {
     components: {
+      XCard,
       STable,
       addForm,
       editForm
