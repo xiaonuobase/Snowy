@@ -26,6 +26,20 @@
           has-feedback
         >
 #end
+#if (${column.effectType} == "user")
+    #if (${column.whetherRequired} == "Y")
+      <user-select placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+    #else
+      <user-select placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}']" />
+    #end
+#end
+#if (${column.effectType} == "depart")
+    #if (${column.whetherRequired} == "Y")
+      <depart-select placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
+    #else
+      <depart-select placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}']" />
+    #end
+#end
 #if (${column.effectType} == "input")
 #if (${column.whetherRequired} == "Y")
           <a-input placeholder="请输入${column.columnComment}" v-decorator="['${column.javaName}', {rules: [{required: true, message: '请输入${column.columnComment}！'}]}]" />
