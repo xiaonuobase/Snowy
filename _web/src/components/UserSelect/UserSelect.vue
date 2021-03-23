@@ -57,7 +57,7 @@ export default {
       this.userFetching = true
 
       getUserPage(params).then((res) => {
-        this.data = res.rows.map(user => ({
+        this.data = res.data.rows.map(user => ({
           text: `${user.name} ${user.account}`,
           value: user.id
         }))
