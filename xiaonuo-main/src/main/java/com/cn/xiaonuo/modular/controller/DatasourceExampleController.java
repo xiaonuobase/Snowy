@@ -27,6 +27,7 @@ package com.cn.xiaonuo.modular.controller;
 import com.cn.xiaonuo.core.pojo.response.ResponseData;
 import com.cn.xiaonuo.core.pojo.response.SuccessResponseData;
 import com.cn.xiaonuo.modular.service.DatasourceExampleService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,28 +46,28 @@ public class DatasourceExampleController {
     @Resource
     private DatasourceExampleService datasourceService;
 
-    @RequestMapping("/niceDay")
+    @GetMapping("/niceDay")
     public ResponseData niceDay() {
         return new SuccessResponseData("nice day");
     }
 
-    @RequestMapping("/masterDatasource")
+    @GetMapping("/masterDatasource")
     public ResponseData masterDatasource() {
         return new SuccessResponseData(datasourceService.masterDatasource());
     }
 
-    @RequestMapping("/backupDatasource")
+    @GetMapping("/backupDatasource")
     public ResponseData backupDatasource() {
         return new SuccessResponseData(datasourceService.backupDatasource());
     }
 
-    @RequestMapping("/datasourceTransactionNone")
+    @GetMapping("/datasourceTransactionNone")
     public ResponseData datasourceTransactionNone() {
         datasourceService.datasourceTransactionNone();
         return new SuccessResponseData();
     }
 
-    @RequestMapping("/datasourceTransaction")
+    @GetMapping("/datasourceTransaction")
     public ResponseData datasourceTransaction() {
         datasourceService.datasourceTransaction();
         return new SuccessResponseData();

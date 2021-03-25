@@ -25,6 +25,7 @@ XiaoNuo采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注�
 package com.cn.xiaonuo.sys.config;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.cn.xiaonuo.core.consts.CommonConstant;
 import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +71,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+                .apis(RequestHandlerSelectors.basePackage(CommonConstant.DEFAULT_PACKAGE_NAME))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(parameters);
