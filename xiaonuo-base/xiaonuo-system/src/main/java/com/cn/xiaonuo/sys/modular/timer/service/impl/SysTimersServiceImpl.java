@@ -143,7 +143,7 @@ public class SysTimersServiceImpl extends ServiceImpl<SysTimersMapper, SysTimers
         // 查看被编辑的任务的状态
         Integer jobStatus = oldTimer.getJobStatus();
 
-        // 如果任务正在运行，则停掉这个任务，从新运行任务
+        // 如果任务正在运行，则停掉这个任务，重新运行任务
         if (jobStatus.equals(TimerJobStatusEnum.RUNNING.getCode())) {
             CronUtil.remove(String.valueOf(oldTimer.getId()));
             timerExeService.startTimer(

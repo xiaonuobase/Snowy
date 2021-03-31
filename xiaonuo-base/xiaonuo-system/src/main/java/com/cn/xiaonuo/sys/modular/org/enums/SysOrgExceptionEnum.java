@@ -59,9 +59,14 @@ public enum SysOrgExceptionEnum implements AbstractBaseExceptionEnum {
     ORG_CANNOT_DELETE(4, "该机构下有员工，无法删除"),
 
     /**
-     * 父节点不能和本节点一致，请从新选择父节点
+     * 父节点不能和本节点一致，请重新选择父节点
      */
-    ID_CANT_EQ_PID(5, "父节点不能和本节点一致，请从新选择父节点");
+    ID_CANT_EQ_PID(5, "父节点不能和本节点一致，请重新选择父节点"),
+
+    /**
+     * 父节点不能为本节点的子节点，请重新选择父节点
+     */
+    PID_CANT_EQ_CHILD_ID(6, "父节点不能为本节点的子节点，请重新选择父节点");
 
     private final Integer code;
 
