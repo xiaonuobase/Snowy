@@ -49,8 +49,7 @@ public class JwtTokenUtil {
      */
     public static String generateToken(JwtPayLoad jwtPayLoad) {
 
-        DateTime expirationDate = DateUtil.offsetMillisecond(new Date(),
-                Convert.toInt(ConstantContextHolder.getTokenExpireSec()) * 1000);
+        DateTime expirationDate = DateUtil.offsetSecond(new Date(), Convert.toInt(ConstantContextHolder.getTokenExpireSec()));
         return Jwts.builder()
                 .setClaims(BeanUtil.beanToMap(jwtPayLoad))
                 .setSubject(jwtPayLoad.getUserId().toString())
