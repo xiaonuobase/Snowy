@@ -48,6 +48,7 @@ import com.cn.xiaonuo.sys.modular.menu.mapper.SysMenuMapper;
 import com.cn.xiaonuo.sys.modular.menu.node.MenuBaseTreeNode;
 import com.cn.xiaonuo.sys.modular.menu.param.SysMenuParam;
 import com.cn.xiaonuo.sys.modular.menu.service.SysMenuService;
+import com.cn.xiaonuo.sys.modular.org.enums.SysOrgExceptionEnum;
 import com.cn.xiaonuo.sys.modular.role.service.SysRoleMenuService;
 import com.cn.xiaonuo.sys.modular.user.entity.SysUser;
 import com.cn.xiaonuo.sys.modular.user.service.SysUserRoleService;
@@ -471,6 +472,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if (isExcludeSelf) {
             if (sysMenuParam.getId().equals(sysMenuParam.getPid())) {
                 throw new ServiceException(SysMenuExceptionEnum.PID_CANT_EQ_ID);
+            }
+
+            // 如果是编辑，父id不能为自己的子节点
+            List<Long> childIdListById = this.getChildIdListById(sysMenuParam.getId());
+            if(ObjectUtil.isNotEmpty(childIdListById)) {
+                if(childIdListById.contains(sysMenuParam.getPid())) {
+                    throw new ServiceException(SysMenuExceptionEnum.PID_CANT_EQ_CHILD_ID);
+                }
             }
         }
 

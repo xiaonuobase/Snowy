@@ -272,6 +272,14 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         //不能修改状态，用修改状态接口修改状态
         sysOrg.setStatus(null);
         this.updateById(sysOrg);
+        //将所有子的父id进行更新
+        List<Long> childIdListById = this.getChildIdListById(sysOrg.getId());
+        childIdListById.forEach(subChildId -> {
+            SysOrg child = this.getById(subChildId);
+            SysOrgParam childParam = new SysOrgParam();
+            BeanUtil.copyProperties(child, childParam);
+            this.edit(childParam);
+        });
     }
 
     @Override
@@ -384,6 +392,14 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if (isExcludeSelf) {
             if (sysOrgParam.getId().equals(sysOrgParam.getPid())) {
                 throw new ServiceException(SysOrgExceptionEnum.ID_CANT_EQ_PID);
+            }
+
+            // 如果是编辑，父id不能为自己的子节点
+            List<Long> childIdListById = this.getChildIdListById(sysOrgParam.getId());
+            if(ObjectUtil.isNotEmpty(childIdListById)) {
+                if(childIdListById.contains(sysOrgParam.getPid())) {
+                    throw new ServiceException(SysOrgExceptionEnum.PID_CANT_EQ_CHILD_ID);
+                }
             }
         }
 
