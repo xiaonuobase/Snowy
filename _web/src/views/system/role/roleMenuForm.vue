@@ -18,7 +18,8 @@
           <a-tree
             v-model="checkedKeys"
             multiple
-            checkable            
+            checkable  
+            checkStrictly          
             :auto-expand-parent="autoExpandParent"
             :expanded-keys="expandedKeys"
             :tree-data="menuTreeData"
@@ -124,7 +125,7 @@
         this.confirmLoading = true
         validateFields((errors, values) => {
           if (!errors) {
-            sysRoleGrantMenu({ id: this.roleEntity.id, grantMenuIdList: this.checkedKeys }).then((res) => {
+            sysRoleGrantMenu({ id: this.roleEntity.id, grantMenuIdList: this.checkedKeys.checked }).then((res) => {
               if (res.success) {
                 this.$message.success('授权成功')
                 this.confirmLoading = false
