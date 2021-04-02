@@ -137,11 +137,11 @@ public class SysTimersServiceImpl extends ServiceImpl<SysTimersMapper, SysTimers
 
         // 更新库中记录
         SysTimers oldTimer = this.querySysTimers(sysTimersParam);
-        BeanUtil.copyProperties(sysTimersParam, oldTimer);
-        this.updateById(oldTimer);
-
         // 查看被编辑的任务的状态
         Integer jobStatus = oldTimer.getJobStatus();
+        BeanUtil.copyProperties(sysTimersParam, oldTimer);
+        oldTimer.setJobStatus(jobStatus);
+        this.updateById(oldTimer);
 
         // 如果任务正在运行，则停掉这个任务，重新运行任务
         if (jobStatus.equals(TimerJobStatusEnum.RUNNING.getCode())) {
