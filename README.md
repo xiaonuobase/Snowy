@@ -5,8 +5,12 @@
 </div>
 
 ### 框架介绍
-<div align="center"><h3 align="center">xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本</h3></div>
-<div align="center"><h3 align="center">前后端分离架构，开箱即用，紧随前沿技术</h3></div>
+<div align="center"><h4 align="center">xiaonuo中文名称为：小诺，源于‘诺’字诚信，‘小’字衬托</h4></div>
+<div align="center"><h4 align="center">小诺的初衷是以服务为重心，我们代码可以写的烂（并不烂），对同行程序员的态度那是必须友好</h4></div>
+<div align="center"><h4 align="center">我们致力于做好软件脚手架产品，并为每一个需要帮助的人免费提供技术支持，开源以来也得到了很多小伙伴的认可与优秀的口碑</h4></div>
+<div align="center"><h4 align="center">同时此项目名称为小诺版本的前后分离版，故名称起为xiaonuo-vue，例如：layui版本为xiaonuo-layui</h4></div>
+<div align="center"><h4 align="center">xiaonuo-vue为XiaoNuo生态技术框架环境中的vue版本</h4></div>
+<div align="center"><h4 align="center">前后端分离架构，开箱即用，紧随前沿技术</h4></div>
 
 <p align="center">     
     <p align="center">
