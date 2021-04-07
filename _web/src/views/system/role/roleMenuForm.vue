@@ -18,8 +18,8 @@
           <a-tree
             v-model="checkedKeys"
             multiple
-            checkable  
-            checkStrictly          
+            checkable
+            checkStrictly
             :auto-expand-parent="autoExpandParent"
             :expanded-keys="expandedKeys"
             :tree-data="menuTreeData"
