@@ -41,7 +41,7 @@ public enum SysConfigExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 数据库连接配置不存在
      */
-    DATA_SOURCE_NOT_EXIST(1, "数据库连接配置不存在，请检查spring.datasource配置"),
+    DATA_SOURCE_NOT_EXIST(1, "数据库连接配置不存在，请检查spring.datasource配置用户名密码是否正确"),
 
     /**
      * 系统参数配置不存在

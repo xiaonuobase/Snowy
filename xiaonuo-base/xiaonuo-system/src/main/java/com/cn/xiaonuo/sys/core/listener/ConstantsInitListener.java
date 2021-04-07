@@ -87,7 +87,7 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
         ConstantContext.putConstant(CommonConstant.DATABASE_USER_NAME, dataSourceUsername);
 
         // 如果有为空的配置，终止执行
-        if (ObjectUtil.hasEmpty(dataSourceUrl, dataSourceUsername, dataSourcePassword)) {
+        if (ObjectUtil.hasEmpty(dataSourceUrl, dataSourceUsername)) {
             throw new ServiceException(SysConfigExceptionEnum.DATA_SOURCE_NOT_EXIST);
         }
 
