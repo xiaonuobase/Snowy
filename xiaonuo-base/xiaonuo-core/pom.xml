@@ -52,6 +52,12 @@
             <artifactId>ojdbc6</artifactId>
         </dependency>
         -->
+        <!--
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
+        -->
 
         <!-- druid连接池 -->
         <dependency>

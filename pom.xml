@@ -29,6 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <mysql-connector-java.version>8.0.17</mysql-connector-java.version>
         <oracle.version>11.2.0.3</oracle.version>
+        <mssql.version>9.3.0.jre8-preview</mssql.version>
         <druid.version>1.1.21</druid.version>
         <mp.version>3.4.2</mp.version>
         <fastjson.version>1.2.75</fastjson.version>
@@ -70,6 +71,13 @@
                 <groupId>com.oracle</groupId>
                 <artifactId>ojdbc6</artifactId>
                 <version>${oracle.version}</version>
+            </dependency>
+            -->
+            <!--
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
             </dependency>
             -->
 
