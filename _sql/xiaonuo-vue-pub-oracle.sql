@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost_3306
+ Source Server         : 本机Mysql
  Source Server Type    : MySQL
  Source Server Version : 50710
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 110200
  File Encoding         : 65001
 
- Date: 01/03/2021 12:47:20
+ Date: 09/04/2021 19:10:36
 */
 
 
@@ -95,22 +95,22 @@ COMMIT;
 CREATE TABLE "SYS_CODE_GENERATE_CONFIG" (
   "ID" NUMBER(20) NOT NULL ,
   "CODE_GEN_ID" NUMBER(20) ,
-  "COLUMN_NAME" VARCHAR2(255) ,
-  "JAVA_NAME" VARCHAR2(255) ,
-  "DATA_TYPE" VARCHAR2(255) ,
+  "COLUMN_NAME" NVARCHAR2(255) ,
+  "JAVA_NAME" NVARCHAR2(255) ,
+  "DATA_TYPE" NVARCHAR2(255) ,
   "COLUMN_COMMENT" NVARCHAR2(255) ,
-  "JAVA_TYPE" VARCHAR2(255) ,
-  "EFFECT_TYPE" VARCHAR2(255) ,
-  "DICT_TYPE_CODE" VARCHAR2(255) ,
-  "WHETHER_TABLE" VARCHAR2(255) ,
-  "WHETHER_ADD_UPDATE" VARCHAR2(255) ,
-  "WHETHER_RETRACT" VARCHAR2(255) ,
-  "WHETHER_REQUIRED" VARCHAR2(255) ,
-  "QUERY_WHETHER" VARCHAR2(255) ,
-  "QUERY_TYPE" VARCHAR2(255) ,
-  "COLUMN_KEY" VARCHAR2(255) ,
-  "COLUMN_KEY_NAME" VARCHAR2(255) ,
-  "WHETHER_COMMON" VARCHAR2(255) ,
+  "JAVA_TYPE" NVARCHAR2(255) ,
+  "EFFECT_TYPE" NVARCHAR2(255) ,
+  "DICT_TYPE_CODE" NVARCHAR2(255) ,
+  "WHETHER_TABLE" NVARCHAR2(255) ,
+  "WHETHER_ADD_UPDATE" NVARCHAR2(255) ,
+  "WHETHER_RETRACT" NVARCHAR2(255) ,
+  "WHETHER_REQUIRED" NVARCHAR2(255) ,
+  "QUERY_WHETHER" NVARCHAR2(255) ,
+  "QUERY_TYPE" NVARCHAR2(255) ,
+  "COLUMN_KEY" NVARCHAR2(255) ,
+  "COLUMN_KEY_NAME" NVARCHAR2(255) ,
+  "WHETHER_COMMON" NVARCHAR2(255) ,
   "CREATE_TIME" DATE ,
   "CREATE_USER" NUMBER(20) ,
   "UPDATE_TIME" DATE ,
@@ -850,12 +850,6 @@ COMMENT ON COLUMN "SYS_OP_LOG"."RESULT" IS '返回结果';
 COMMENT ON COLUMN "SYS_OP_LOG"."OP_TIME" IS '操作时间';
 COMMENT ON COLUMN "SYS_OP_LOG"."ACCOUNT" IS '操作账号';
 COMMENT ON TABLE "SYS_OP_LOG" IS '系统操作日志表';
-
--- ----------------------------
--- Records of sys_op_log
--- ----------------------------
-INSERT INTO "SYS_OP_LOG" VALUES ('1342446223284174850', '操作日志_清空', '12', 'Y', '成功', '127.0.0.1', '-', 'Chrome', 'Windows 10 or Windows Server 2016', '/sysOpLog/delete', 'com.cn.xiaonuo.sys.modular.log.controller.SysLogController', 'opLogDelete', 'POST', '', '{"code":200,"message":"请求成功","success":true}', TO_DATE('2020-12-25 20:24:56', 'SYYYY-MM-DD HH24:MI:SS'), 'superAdmin');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for sys_org
