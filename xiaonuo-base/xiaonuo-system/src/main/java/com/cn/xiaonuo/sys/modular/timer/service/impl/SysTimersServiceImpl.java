@@ -102,7 +102,7 @@ public class SysTimersServiceImpl extends ServiceImpl<SysTimersMapper, SysTimers
 
             // 拼接查询条件-状态（字典 1运行  2停止）
             if (ObjectUtil.isNotEmpty(sysTimersParam.getJobStatus())) {
-                queryWrapper.like(SysTimers::getJobStatus, sysTimersParam.getJobStatus());
+                queryWrapper.eq(SysTimers::getJobStatus, sysTimersParam.getJobStatus());
             }
         }
 
