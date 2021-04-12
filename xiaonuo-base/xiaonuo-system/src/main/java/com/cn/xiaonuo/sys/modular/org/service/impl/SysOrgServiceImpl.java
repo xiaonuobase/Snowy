@@ -521,7 +521,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     private List<Long> getParentAndChildIdListWithSelfById(Long id) {
         Set<Long> resultSet = CollectionUtil.newHashSet();
         List<Long> parentIdListById = this.getParentIdListById(id);
-        List<Long> childIdListById = this.getChildIdListById(id);
+        List<Long> childIdListById = this.getChildIdListWithSelfById(id);
         resultSet.addAll(parentIdListById);
         resultSet.addAll(childIdListById);
         return CollectionUtil.newArrayList(resultSet);
