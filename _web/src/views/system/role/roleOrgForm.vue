@@ -28,14 +28,13 @@
             <a-tree
               v-model="checkedKeys"
               checkable
-              checkStrictly
               :auto-expand-parent="autoExpandParent"
               :expanded-keys="expandedKeys"
               :tree-data="orgTreeData"
               :selected-keys="selectedKeys"
               :replaceFields="replaceFields"
               @expand="onExpand"
-              @select="onSelect"
+              @check="onCheck"
             />
           </a-form-item>
         </div>
@@ -76,7 +75,9 @@
         replaceFields: {
           key: 'id'
         },
-        form: this.$form.createForm(this)
+        form: this.$form.createForm(this),
+        commitKeys: [],
+        leastChilds: []
       }
     },
 
@@ -110,8 +111,6 @@
           this.orgTreeShow = true
           // 获取机构树
           this.getOrgTree()
-          // 已关联数据
-          this.sysRoleOwnData(this.roleEntity)
         } else {
           this.orgTreeShow = false
           // 清理已选中机构
@@ -123,13 +122,19 @@
        * 获取机构树
        */
       getOrgTree () {
+        const _this = this
         getOrgTree().then((res) => {
            if (res.success) {
              this.orgTreeData = res.data
+
+             _this.getLeastChilds(res.data)
              // 默认展开
              this.orgTreeData.forEach(item => {
                this.expandedKeys.push(item.id)
              })
+
+             // 已关联数据
+             this.sysRoleOwnData(_this.roleEntity)
            }
         })
       },
@@ -138,34 +143,57 @@
        * 此角色已有数据列表
        */
       sysRoleOwnData (record) {
+        const _this = this
         sysRoleOwnData({ id: record.id }).then((res) => {
           if (res.success) {
-            console.log(JSON.stringify(res.data))
-            this.checkedKeys = res.data
+            _this.pickCheckedKeys(res.data)
+            _this.commitKeys = res.data
           }
           this.formLoading = false
         })
+      },
+
+      getLeastChilds(data){
+        for (let i = 0; i < data.length; i++) {
+          this.pushLeastChilds(data[i])
+        }
+      },
+
+      pushLeastChilds(e) {
+        if (e.children.length > 0) {
+          this.getLeastChilds(e.children)
+          return
+        }
+        this.leastChilds.push(e.id)
+      },
+
+      pickCheckedKeys(data){
+        for (let i = 0; i < data.length; i++) {
+          if (this.leastChilds.includes(data[i])) {
+            this.checkedKeys.push(data[i])
+          }
+        }
       },
 
       onExpand (expandedKeys) {
         this.expandedKeys = expandedKeys
         this.autoExpandParent = false
       },
-      onCheck (checkedKeys) {
-        console.log(JSON.stringify(checkedKeys))
+      onCheck (checkedKeys, info) {
         this.checkedKeys = checkedKeys
+        this.commitKeys = checkedKeys.concat(info.halfCheckedKeys);
       },
       onSelect (selectedKeys, info) {
         this.selectedKeys = selectedKeys
       },
 
       handleSubmit () {
+        const _this = this
         const { form: { validateFields } } = this
         this.confirmLoading = true
         validateFields((errors, values) => {
           if (!errors) {
-            const checkedKeys = this.checkedKeys.checked === undefined ? this.checkedKeys : this.checkedKeys.checked
-            sysRoleGrantData({ id: this.roleEntity.id, grantOrgIdList: checkedKeys, dataScopeType: values.dataScopeType }).then((res) => {
+            sysRoleGrantData({ id: this.roleEntity.id, grantOrgIdList: _this.commitKeys, dataScopeType: values.dataScopeType }).then((res) => {
               this.confirmLoading = false
               if (res.success) {
                 this.$message.success('授权成功')
