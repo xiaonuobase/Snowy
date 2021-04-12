@@ -27,7 +27,7 @@ spring:
 #    password: 123456
 #    filters: wall,mergeStat
 
-#PostgreSQL配置
+# PostgreSQL配置
 #spring:
 #  datasource:
 #    driverClassName: org.postgresql.Driver
