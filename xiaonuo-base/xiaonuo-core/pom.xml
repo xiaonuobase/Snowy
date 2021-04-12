@@ -41,27 +41,29 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- 数据库驱动,可根据自己需要自行删减 -->
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--        </dependency>-->
-        <!--
+        <!-- 数据库驱动,可根据自己需要自行删减，默认使用mysql -->
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- oracle -->
+        <!--<dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-        </dependency>
-        -->
+        </dependency>-->
 
-        <dependency>
+        <!-- mssql -->
+        <!--<dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+        <!-- postgresql -->
+        <!--<dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- druid连接池 -->
         <dependency>
