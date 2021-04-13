@@ -41,7 +41,6 @@ import vip.xiaonuo.sys.modular.monitor.param.SysOnlineUserParam;
 import vip.xiaonuo.sys.modular.monitor.result.SysOnlineUserResult;
 import vip.xiaonuo.sys.modular.monitor.service.SysOnlineUserService;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;

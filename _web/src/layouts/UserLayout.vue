@@ -22,7 +22,7 @@
           <a href="_self">条款</a>
         </div>
         <div class="copyright">
-          Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">XiaoNuo</a> All rights reserved. xiaonuo-vue 1.3
+          Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">小诺</a> All rights reserved. Snowy 1.3
         </div>
       </div>
     </div>

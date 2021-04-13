@@ -27,7 +27,6 @@ package vip.xiaonuo.sys.modular.monitor.param;
 import vip.xiaonuo.core.pojo.base.param.BaseParam;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import javax.validation.constraints.NotEmpty;
 
 /**

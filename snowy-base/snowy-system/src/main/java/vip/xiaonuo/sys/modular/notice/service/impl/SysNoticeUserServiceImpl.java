@@ -32,7 +32,6 @@ import vip.xiaonuo.sys.modular.notice.mapper.SysNoticeUserMapper;
 import vip.xiaonuo.sys.modular.notice.service.SysNoticeUserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.List;
 

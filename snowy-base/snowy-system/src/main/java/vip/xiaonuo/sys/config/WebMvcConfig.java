@@ -135,7 +135,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 
     /**
-     * 自定义的XiaoNuoRequestResponseBodyMethodProcessor，放在所有resolvers之前
+     * 自定义的SnowyRequestResponseBodyMethodProcessor，放在所有resolvers之前
      *
      * @author xuyuxiang
      * @date 2020/8/21 21:09

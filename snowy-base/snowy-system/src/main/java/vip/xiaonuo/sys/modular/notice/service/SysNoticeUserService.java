@@ -26,7 +26,6 @@ package vip.xiaonuo.sys.modular.notice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.sys.modular.notice.entity.SysNoticeUser;
-
 import java.util.List;
 
 /**

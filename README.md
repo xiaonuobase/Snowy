@@ -27,10 +27,10 @@
         <a href="./LICENSE">
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
         </a>
-        <a href="https://gitee.com/xiaonuobase/xiaonuo-vue">
+        <a href="https://gitee.com/xiaonuobase/snowy">
             <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
         </a>
-        <a href="https://gitee.com/xiaonuobase/xiaonuo-vue">
+        <a href="https://gitee.com/xiaonuobase/snowy">
             <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
         </a>
     </p>
@@ -220,7 +220,7 @@ jodconverter:
 - 二次开发请不要删除和修改根目录下的LICENSE文件及代码头部作者声明。
 - 请不要删除和修改Snowy源码头部的版权声明及出处。
 
-### XiaoNuo技术团队荣誉作品
+### 小诺技术团队荣誉作品
 
 | 成员组成 | 负责内容 |
 | :---: | :---: |

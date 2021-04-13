@@ -674,10 +674,10 @@ GO
 INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649972739', N'linux/mac本地上传文件路径', N'SNOWY_FILE_UPLOAD_PATH_FOR_LINUX', N'/tmp', N'Y', N'linux/mac本地上传文件路径', N'0', N'FILE_PATH', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', NULL, NULL)
 GO
 
-INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649982740', N'XiaoNuo演示环境', N'SNOWY_DEMO_ENV_FLAG', N'false', N'Y', N'XiaoNuo演示环境的开关，true-打开，false-关闭，如果演示环境开启，则只能读数据不能写数据', N'0', N'DEFAULT', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', N'2020-09-03 14:38:17.0000000', N'1265476890672672808')
+INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649982740', N'Snowy演示环境', N'SNOWY_DEMO_ENV_FLAG', N'false', N'Y', N'Snowy演示环境的开关，true-打开，false-关闭，如果演示环境开启，则只能读数据不能写数据', N'0', N'DEFAULT', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', N'2020-09-03 14:38:17.0000000', N'1265476890672672808')
 GO
 
-INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649982741', N'XiaoNuo放开XSS过滤的接口', N'SNOWY_UN_XSS_FILTER_URL', N'/demo/xssfilter,/demo/unxss', N'Y', N'多个url可以用英文逗号隔开', N'0', N'DEFAULT', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', NULL, NULL)
+INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649982741', N'Snowy放开XSS过滤的接口', N'SNOWY_UN_XSS_FILTER_URL', N'/demo/xssfilter,/demo/unxss', N'Y', N'多个url可以用英文逗号隔开', N'0', N'DEFAULT', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', NULL, NULL)
 GO
 
 INSERT INTO [dbo].[sys_config]  VALUES (N'1270380786649982742', N'单用户登陆的开关', N'SNOWY_ENABLE_SINGLE_LOGIN', N'false', N'Y', N'单用户登陆的开关，true-打开，false-关闭，如果一个人登录两次，就会将上一次登陆挤下去', N'0', N'DEFAULT', N'2020-06-09 23:42:37.0000000', N'1265476890672672808', NULL, NULL)

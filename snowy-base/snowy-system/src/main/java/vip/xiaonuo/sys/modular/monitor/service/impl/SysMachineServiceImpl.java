@@ -31,7 +31,6 @@ import vip.xiaonuo.core.consts.SymbolConstant;
 import vip.xiaonuo.sys.modular.monitor.result.SysMachineResult;
 import vip.xiaonuo.sys.modular.monitor.service.SysMachineService;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 

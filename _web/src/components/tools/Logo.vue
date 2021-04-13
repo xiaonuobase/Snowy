@@ -25,7 +25,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: 'Snowy快速开发平台',
+      default: 'Snowy',
       required: false
     },
     showTitle: {

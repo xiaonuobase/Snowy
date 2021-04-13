@@ -40,7 +40,6 @@ import vip.xiaonuo.sys.modular.consts.mapper.SysConfigMapper;
 import vip.xiaonuo.sys.modular.consts.param.SysConfigParam;
 import vip.xiaonuo.sys.modular.consts.service.SysConfigService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
