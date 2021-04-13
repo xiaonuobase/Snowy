@@ -33,7 +33,7 @@ public class JavaSqlTool {
             case "bit":return "Boolean";
             case "bigint":return "Long";
             case "number":return "Long";
-            case "float":return "Fload";
+            case "float":return "Float";
             case "double":return "Double";
             case "decimal":return "BigDecimal";
             case "boolean":return "Boolean";
