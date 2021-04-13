@@ -28,10 +28,10 @@
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
         </a>
         <a href="https://gitee.com/xiaonuobase/xiaonuo-vue">
-            <img src="https://gitee.com/xiaonuobase/xiaonuo-vue/badge/star.svg?theme=dark" alt="Gitee star">
+            <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
         </a>
         <a href="https://gitee.com/xiaonuobase/xiaonuo-vue">
-            <img src="https://gitee.com/xiaonuobase/xiaonuo-vue/badge/fork.svg?theme=dark" alt="Gitee fork">
+            <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
         </a>
         <a href="https://github.com/xiaonuobase/xiaonuo-vue">
             <img src="https://img.shields.io/github/stars/xiaonuobase/xiaonuo-vue?style=social" alt="GitHub stars">
@@ -216,67 +216,7 @@ jodconverter:
 
 ### 更新日志：
 
-#### v1.3.3
-- 1、【新增】代码生成增加部门选择、用户选择组件化
-- 2、【修复】SwaggerConfig只扫描基础包下的接口
-- 3、【修改】修复角色授权菜单上下级关联动作
-- 4、【修复】修复token失效时间秒数设置过大时出现异常的问题，生成token时统一采用秒计算
-- 5、【修复】更新菜单、机构等树时，父节点不能选择自己的子节点
-- 6、【修复】修复注释错别字
-
-#### v1.3.2
-- 1、【bug修复】修复一个代码生成bug
-- 2、【修复】新增数据时，若手动设置了创建人和创建时间，则不去设置创建人和创建时间
-- 3、【修复】前端传入token为undefined时，判断为无效
-- 4、【新增】新增XCard组件，为列表查询区域统一样式
-- 5、【修改】更改所有列表界面默认为“紧凑”
-- 6、【修改】更改所有列表界面查询区域与列表在不同card显示
-
-#### v1.3.1
-- 1、【更新】更换新版logo，小诺更有朝气
-- 2、【更新】更新ip地址定位描述
-- 3、【更新】代码生成支持oracle数据库直连，添加number类型转换，增加oracle菜单sql
-
-#### v1.3
-- 1、【更新】代码生成增强，配置每个字段作用域
-
-#### v1.2.5
-- 1、【修复】修复用户生日更新失败的bug
-- 2、【更新】优化代码，pdf文件预览无需转换
-- 3、【更新】MappingCache常量字段名称更正
-- 4、【更新】升级验证码请求限制
-
-#### v1.2.4
-- 1、更换登录界面图片及细节调整
-- 2、更新前端布局多处细节，更协调
-- 3、设置顶部导航栏由64px为55px及其他细节
-- 4、设置菜单栏由255px为230px及其他细节
-
-#### v1.2.3
-- 1、修复打war包出现的注入失败导致无法启动的问题
-- 2、升级多个插件版本为最新
-
-#### v1.2.2
-- 1、界面列表组件新增快捷操作刷新、列设置、密度、全屏功能，实时响应
-- 2、列表组件新增slot，列表头按钮放入插槽，界面更协调
-- 3、功能列表代码统一调整规范
-
-#### v1.2.1
-- 1、集成 AJ-Captcha 验证码功能
-- 2、调整日志统一打印格式
-- 3、修复代码生成详情实现类主键问题
-
-#### v1.2.0
-- 1、适配Oracle数据库
-- 2、日志列表增加时间段查询
-- 3、修正邮箱数据问题
-
-#### v1.1.1
-- 1、代码生成中查询条件增加为全部字段，可根据不同程序删减代码
-
-#### v1.1
-- 1、新增代码生成器，以独立的模块存在，更加方便维护
-- 2、修复多处细节问题
+更新日志：https://doc.xiaonuo.vip/xiaonuo_vue/#%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97
 
 ### 版权说明
 
