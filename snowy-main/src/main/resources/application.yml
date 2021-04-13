@@ -21,7 +21,7 @@ spring:
 
 #mybaits相关配置
 mybatis-plus:
-  mapper-locations: classpath*:com/cn/**/mapping/*.xml, classpath:/META-INF/modeler-mybatis-mappings/*.xml
+  mapper-locations: classpath*:vip/xiaonuo/**/mapping/*.xml, classpath:/META-INF/modeler-mybatis-mappings/*.xml
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
