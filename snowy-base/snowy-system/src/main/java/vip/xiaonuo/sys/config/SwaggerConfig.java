@@ -79,10 +79,10 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("XiaoNuo Doc")
-                .description("XiaoNuo Doc文档")
+                .title("Snowy Doc")
+                .description("Snowy Doc文档")
                 .termsOfServiceUrl("https://www.xiaonuo.vip")
-                .contact(new Contact("xuyuxiang, yubaoshan", "https://www.xiaonuo.vip", ""))
+                .contact(new Contact("xuyuxiang, yubaoshan, dongxiayu", "https://www.xiaonuo.vip", ""))
                 .version("1.0")
                 .build();
     }
