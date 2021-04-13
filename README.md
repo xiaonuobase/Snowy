@@ -8,7 +8,7 @@
 
 <div><h5>Snowy是小诺团队下基于SpringBoot+AntDesignVue开发的Java全新RBAC权限管理系统，前后分离，注释丰富，代码简洁。在国策讲究自主可控的时候，适配国产数据库（金仓、达梦）、主流数据库Mysql、Oracle、Mssql、Postgresql，小诺的产品一致追求简洁干净，一套代码搞定！同时支持国产中间件部署、麒麟操作系统、Windows、Linux部署使用。</h5></div>
 
-<div align="center"><h5 align="center">Snowy是小诺的谐音而来，也是代表了下雪天洁白无瑕的干净，同样放在代码层面也是追求简洁干净无冗余代码。</h5></div>
+<div align="center"><h5 align="center">Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。</h5></div>
 
 <p align="center">     
     <p align="center">
@@ -56,7 +56,7 @@
 ### 其他版本
 
 * layui单体版本：https://gitee.com/xiaonuobase/xiaonuo-layui
-* vue前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-vue
+* vue前后分离版本：https://gitee.com/xiaonuobase/snowy
 * cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud
 * 我们的其他产品线同样开源，如需关注最新动态可加入QQ群聊探讨：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)
 * 如果我们的产品能满足您的需求，很期待您给我们右上角点个 star
