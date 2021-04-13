@@ -33,15 +33,6 @@
         <a href="https://gitee.com/xiaonuobase/xiaonuo-vue">
             <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
         </a>
-        <a href="https://github.com/xiaonuobase/xiaonuo-vue">
-            <img src="https://img.shields.io/github/stars/xiaonuobase/xiaonuo-vue?style=social" alt="GitHub stars">
-        </a>
-        <a href="https://github.com/xiaonuobase/xiaonuo-vue">
-            <img src="https://img.shields.io/github/forks/xiaonuobase/xiaonuo-vue?style=social" alt="GitHub forks">
-        </a>
-        <a href="https://github.com/xiaonuobase/xiaonuo-vue">
-            <img src="https://img.shields.io/github/repo-size/xiaonuobase/xiaonuo-vue" alt="size">
-        </a>
     </p>
 </p>
 
@@ -50,14 +41,14 @@
 您的开发电脑需要安装：NodeJs（最新版）、npm或yarn（最新版）建议使用yarn、Mysql5.7、Jdk1.8、Maven3.6.3（配置阿里仓库地址）、开发工具推荐idea
 
 * 启动前端：打开_web文件夹，进行依赖下载，运行npm install或yarn命令，再运行npm run serve或 yarn run serve
-* 启动后端：打开application-local中配置数据库信息，运行XiaoNuoApplication类即可启动
+* 启动后端：打开application-local中配置数据库信息，运行SnowyApplication类即可启动
 * 浏览器访问：http://localhost:81 （默认前端端口为：81，后端端口为：82）
 
 ### 其他版本
 
-* layui单体版本：https://gitee.com/xiaonuobase/xiaonuo-layui
+* layui单体版本：https://gitee.com/xiaonuobase/snowy-layui
 * vue前后分离版本：https://gitee.com/xiaonuobase/snowy
-* cloud微服务前后分离版本：https://gitee.com/xiaonuobase/xiaonuo-cloud
+* cloud微服务前后分离版本：https://gitee.com/xiaonuobase/snowy-cloud
 * 我们的其他产品线同样开源，如需关注最新动态可加入QQ群聊探讨：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)
 * 如果我们的产品能满足您的需求，很期待您给我们右上角点个 star
 
@@ -74,12 +65,12 @@
 1. 模块化架构设计，层次清晰，业务层推荐写到单独模块，框架升级不影响业务。
 ```
 模块树
-├─xiaonuo                    ->项目工程
-│  ├─xiaonuo-base            ->框架基础模块
-│       ├─xiaonuo-core       ->核心模块
-│       ├─xiaonuo-gen        ->代码生成
-│       ├─xiaonuo-system     ->基础业务
-│  ├─xiaonuo-main            ->业务开始模块
+├─snowy                    ->项目工程
+│  ├─snowy-base            ->框架基础模块
+│       ├─snowy-core       ->核心模块
+│       ├─snowy-gen        ->代码生成
+│       ├─snowy-system     ->基础业务
+│  ├─snowy-main            ->业务开始模块
 │       ├─业务               ->您的业务
 ```
 2、独创前端字典翻译
@@ -212,7 +203,7 @@ jodconverter:
 
 ### 参与贡献
 
-- 欢迎各路英雄好汉参与xiaonuo全系版本代码贡献，期待您的加入！
+- 欢迎各路英雄好汉参与Snowy全系版本代码贡献，期待您的加入！
 - 1.  Fork 本仓库
 - 2.  新建 Feat_xxx 分支
 - 3.  提交代码
@@ -224,10 +215,10 @@ jodconverter:
 
 ### 版权说明
 
-- xiaonuo生态技术框架全系版本采用 Apache License2.0协议
-- 代码可用于个人项目等接私活或企业项目脚手架使用，xiaonuo全系开源版完全免费
+- Snowy生态技术框架全系版本采用 Apache License2.0协议
+- 代码可用于个人项目等接私活或企业项目脚手架使用，Snowy全系开源版完全免费
 - 二次开发请不要删除和修改根目录下的LICENSE文件及代码头部作者声明。
-- 请不要删除和修改xiaonuo源码头部的版权声明及出处。
+- 请不要删除和修改Snowy源码头部的版权声明及出处。
 
 ### XiaoNuo技术团队荣誉作品
 

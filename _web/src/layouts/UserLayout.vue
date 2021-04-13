@@ -5,7 +5,7 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.png" class="logo" alt="logo">
-            <span class="title">XiaoNuo快速开发平台</span>
+            <span class="title">Snowy快速开发平台</span>
           </a>
         </div>
         <div class="desc">

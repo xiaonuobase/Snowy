@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.generate.modular.mapper.CodeGenerateMapper">
+
+    <resultMap id="informationResult" type="vip.xiaonuo.generate.modular.result.InformationResult">
+        <result column="table_name" property="tableName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="table_comment" property="tableComment" />
+    </resultMap>
+
+    <resultMap id="inforMationColumnsResult" type="vip.xiaonuo.generate.modular.result.InforMationColumnsResult">
+        <result column="column_name" property="columnName" />
+        <result column="data_type" property="dataType" />
+        <result column="column_comment" property="columnComment" />
+        <result column="column_key" property="columnKey" />
+    </resultMap>
+
+    <!-- 查询指定库中所有表 -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "mysql">
+        select table_name,create_time,update_time,table_comment
+                from information_schema.tables
+            where
+                table_schema = '${dbName}'
+    </select>
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "oracle">
+        select table_name, comments as table_comment
+            from user_tab_comments
+    </select>
+
+    <!-- 查询指定表中所有字段 -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "mysql">
+	    select
+	        column_name,data_type,column_comment,column_key
+	        from information_schema.columns
+        where
+            table_schema = '${dbName}' and table_name = '${tableName}';
+	</select>
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "oracle">
+	    select
+	        a.column_name as column_name,
+            a.data_type as data_type,
+            b.comments as column_comment,
+        case
+            when c.position>0 then 'PRI'
+        else ''
+        end column_key
+        from
+            (select * from user_tab_columns where table_name='${tableName}') a
+        left join
+            (select * from user_col_comments where table_name='${tableName}') b
+        on a.column_name=b.column_name
+        left join
+             (
+              select table_name,column_name,position from user_cons_columns
+              where
+                    table_name='${tableName}'
+                        and constraint_name=(select constraint_name
+                            from
+                            user_constraints where table_name='${tableName}' and constraint_type='P')
+              and owner='${dbName}'
+             ) c
+        on a.column_name=c.column_name
+        order by a.column_id
+	</select>
+
+</mapper>
