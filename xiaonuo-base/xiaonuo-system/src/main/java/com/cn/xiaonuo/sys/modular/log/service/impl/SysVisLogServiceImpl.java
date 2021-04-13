@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cn.xiaonuo.core.factory.PageFactory;
 import com.cn.xiaonuo.core.pojo.page.PageResult;
+import com.cn.xiaonuo.sys.modular.log.entity.SysOpLog;
 import com.cn.xiaonuo.sys.modular.log.entity.SysVisLog;
 import com.cn.xiaonuo.sys.modular.log.mapper.SysVisLogMapper;
 import com.cn.xiaonuo.sys.modular.log.param.SysVisLogParam;
@@ -67,6 +68,8 @@ public class SysVisLogServiceImpl extends ServiceImpl<SysVisLogMapper, SysVisLog
                         .apply("date_format (vis_time,'%Y-%m-%d') <= date_format('" + sysVisLogParam.getSearchEndTime() + "','%Y-%m-%d')");
             }
         }
+        //根据访问时间倒序排列
+        queryWrapper.orderByDesc(SysVisLog::getVisTime);
         return new PageResult<>(this.page(PageFactory.defaultPage(), queryWrapper));
     }
 

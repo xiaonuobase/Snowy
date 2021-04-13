@@ -68,6 +68,8 @@ public class SysOpLogServiceImpl extends ServiceImpl<SysOpLogMapper, SysOpLog> i
                         .apply("date_format (op_time,'%Y-%m-%d') <= date_format('" + sysOpLogParam.getSearchEndTime() + "','%Y-%m-%d')");
             }
         }
+        //根据操作时间倒序排列
+        queryWrapper.orderByDesc(SysOpLog::getOpTime);
         Page<SysOpLog> page = this.page(PageFactory.defaultPage(), queryWrapper);
         return new PageResult<>(page);
     }
