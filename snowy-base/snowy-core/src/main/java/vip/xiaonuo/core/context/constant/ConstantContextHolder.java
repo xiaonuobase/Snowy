@@ -89,11 +89,11 @@ public class ConstantContextHolder {
      * @date 2020/6/20 22:13
      */
     public static List<String> getUnXssFilterUrl() {
-        String xiaoNuoUnXssFilterUrl = getSysConfigWithDefault("SNOWY_UN_XSS_FILTER_URL", String.class, null);
-        if (ObjectUtil.isEmpty(xiaoNuoUnXssFilterUrl)) {
+        String snowyUnXssFilterUrl = getSysConfigWithDefault("SNOWY_UN_XSS_FILTER_URL", String.class, null);
+        if (ObjectUtil.isEmpty(snowyUnXssFilterUrl)) {
             return CollectionUtil.newArrayList();
         } else {
-            return CollectionUtil.toList(xiaoNuoUnXssFilterUrl.split(SymbolConstant.COMMA));
+            return CollectionUtil.toList(snowyUnXssFilterUrl.split(SymbolConstant.COMMA));
         }
     }
 
@@ -138,16 +138,16 @@ public class ConstantContextHolder {
      * @date 2020/6/19 18:08
      */
     public static TencentSmsConfigs getTencentSmsConfigs() {
-        String xiaoNuoTencentSmsSecretId = getSysConfig("SNOWY_TENCENT_SMS_SECRET_ID", String.class, true);
-        String xiaoNuoTencentSmsSecretKey = getSysConfig("SNOWY_TENCENT_SMS_SECRET_KEY", String.class, true);
-        String xiaoNuoTencentSmsSdkAppId = getSysConfig("SNOWY_TENCENT_SMS_SDK_APP_ID", String.class, true);
-        String xiaoNuoTencentSmsSign = getSysConfig("SNOWY_TENCENT_SMS_SIGN", String.class, true);
+        String snowyTencentSmsSecretId = getSysConfig("SNOWY_TENCENT_SMS_SECRET_ID", String.class, true);
+        String snowyTencentSmsSecretKey = getSysConfig("SNOWY_TENCENT_SMS_SECRET_KEY", String.class, true);
+        String snowyTencentSmsSdkAppId = getSysConfig("SNOWY_TENCENT_SMS_SDK_APP_ID", String.class, true);
+        String snowyTencentSmsSign = getSysConfig("SNOWY_TENCENT_SMS_SIGN", String.class, true);
 
         TencentSmsConfigs tencentSmsConfigs = new TencentSmsConfigs();
-        tencentSmsConfigs.setSecretId(xiaoNuoTencentSmsSecretId);
-        tencentSmsConfigs.setSecretKey(xiaoNuoTencentSmsSecretKey);
-        tencentSmsConfigs.setSdkAppId(xiaoNuoTencentSmsSdkAppId);
-        tencentSmsConfigs.setSign(xiaoNuoTencentSmsSign);
+        tencentSmsConfigs.setSecretId(snowyTencentSmsSecretId);
+        tencentSmsConfigs.setSecretKey(snowyTencentSmsSecretKey);
+        tencentSmsConfigs.setSdkAppId(snowyTencentSmsSdkAppId);
+        tencentSmsConfigs.setSign(snowyTencentSmsSign);
         return tencentSmsConfigs;
     }
 
@@ -158,18 +158,18 @@ public class ConstantContextHolder {
      * @date 2020/6/19 18:08
      */
     public static AliyunSmsConfigs getAliyunSmsConfigs() {
-            String xiaoNuoSmsAccesskeyId = getSysConfig("SNOWY_ALIYUN_SMS_ACCESSKEY_ID", String.class, true);
-        String xiaoNuoSmsAccesskeySecret = getSysConfig("SNOWY_ALIYUN_SMS_ACCESSKEY_SECRET", String.class, true);
-        String xiaoNuoSmsSignName = getSysConfig("SNOWY_ALIYUN_SMS_SIGN_NAME", String.class, true);
-        String xiaoNuoSmsLoginTemplateCode = getSysConfig("SNOWY_ALIYUN_SMS_LOGIN_TEMPLATE_CODE", String.class, true);
-        String xiaoNuoSmsInvalidateMinutes = getSysConfig("SNOWY_ALIYUN_SMS_INVALIDATE_MINUTES", String.class, true);
+            String snowySmsAccesskeyId = getSysConfig("SNOWY_ALIYUN_SMS_ACCESSKEY_ID", String.class, true);
+        String snowySmsAccesskeySecret = getSysConfig("SNOWY_ALIYUN_SMS_ACCESSKEY_SECRET", String.class, true);
+        String snowySmsSignName = getSysConfig("SNOWY_ALIYUN_SMS_SIGN_NAME", String.class, true);
+        String snowySmsLoginTemplateCode = getSysConfig("SNOWY_ALIYUN_SMS_LOGIN_TEMPLATE_CODE", String.class, true);
+        String snowySmsInvalidateMinutes = getSysConfig("SNOWY_ALIYUN_SMS_INVALIDATE_MINUTES", String.class, true);
 
         AliyunSmsConfigs aliyunSmsProperties = new AliyunSmsConfigs();
-        aliyunSmsProperties.setAccessKeyId(xiaoNuoSmsAccesskeyId);
-        aliyunSmsProperties.setAccessKeySecret(xiaoNuoSmsAccesskeySecret);
-        aliyunSmsProperties.setSignName(xiaoNuoSmsSignName);
-        aliyunSmsProperties.setLoginTemplateCode(xiaoNuoSmsLoginTemplateCode);
-        aliyunSmsProperties.setInvalidateMinutes(Convert.toInt(xiaoNuoSmsInvalidateMinutes));
+        aliyunSmsProperties.setAccessKeyId(snowySmsAccesskeyId);
+        aliyunSmsProperties.setAccessKeySecret(snowySmsAccesskeySecret);
+        aliyunSmsProperties.setSignName(snowySmsSignName);
+        aliyunSmsProperties.setLoginTemplateCode(snowySmsLoginTemplateCode);
+        aliyunSmsProperties.setInvalidateMinutes(Convert.toInt(snowySmsInvalidateMinutes));
         return aliyunSmsProperties;
     }
 
@@ -272,14 +272,14 @@ public class ConstantContextHolder {
      * @date 2020/7/28 17:16
      **/
     public static OauthConfigs getGiteeOauthConfigs() {
-        String xiaoNuoClientId = getSysConfig("SNOWY_OAUTH_GITEE_CLIENT_ID", String.class, true);
-        String xiaoNuoClientSecret = getSysConfig("SNOWY_OAUTH_GITEE_CLIENT_SECRET", String.class, true);
-        String xiaoNuoRedirectUri = getSysConfig("SNOWY_OAUTH_GITEE_REDIRECT_URI", String.class, true);
+        String snowyClientId = getSysConfig("SNOWY_OAUTH_GITEE_CLIENT_ID", String.class, true);
+        String snowyClientSecret = getSysConfig("SNOWY_OAUTH_GITEE_CLIENT_SECRET", String.class, true);
+        String snowyRedirectUri = getSysConfig("SNOWY_OAUTH_GITEE_REDIRECT_URI", String.class, true);
 
         OauthConfigs oauthConfigs = new OauthConfigs();
-        oauthConfigs.setClientId(xiaoNuoClientId);
-        oauthConfigs.setClientSecret(xiaoNuoClientSecret);
-        oauthConfigs.setRedirectUri(xiaoNuoRedirectUri);
+        oauthConfigs.setClientId(snowyClientId);
+        oauthConfigs.setClientSecret(snowyClientSecret);
+        oauthConfigs.setRedirectUri(snowyRedirectUri);
         return oauthConfigs;
     }
 
@@ -290,14 +290,14 @@ public class ConstantContextHolder {
      * @date 2020/7/28 17:16
      **/
     public static OauthConfigs getGithubOauthConfigs() {
-        String xiaoNuoClientId = getSysConfig("SNOWY_OAUTH_GITHUB_CLIENT_ID", String.class, true);
-        String xiaoNuoClientSecret = getSysConfig("SNOWY_OAUTH_GITHUB_CLIENT_SECRET", String.class, true);
-        String xiaoNuoRedirectUri = getSysConfig("SNOWY_OAUTH_GITHUB_REDIRECT_URI", String.class, true);
+        String snowyClientId = getSysConfig("SNOWY_OAUTH_GITHUB_CLIENT_ID", String.class, true);
+        String snowyClientSecret = getSysConfig("SNOWY_OAUTH_GITHUB_CLIENT_SECRET", String.class, true);
+        String snowyRedirectUri = getSysConfig("SNOWY_OAUTH_GITHUB_REDIRECT_URI", String.class, true);
 
         OauthConfigs oauthConfigs = new OauthConfigs();
-        oauthConfigs.setClientId(xiaoNuoClientId);
-        oauthConfigs.setClientSecret(xiaoNuoClientSecret);
-        oauthConfigs.setRedirectUri(xiaoNuoRedirectUri);
+        oauthConfigs.setClientId(snowyClientId);
+        oauthConfigs.setClientSecret(snowyClientSecret);
+        oauthConfigs.setRedirectUri(snowyRedirectUri);
         return oauthConfigs;
     }
 

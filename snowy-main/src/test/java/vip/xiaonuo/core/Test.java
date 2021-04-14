@@ -26,7 +26,6 @@ package vip.xiaonuo.core;
 
 
 /**
- * v
  * 测试类
  *
  * @author xuyuxiang
