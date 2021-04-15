@@ -69,25 +69,25 @@
             </dependency>
 
             <!-- oracle -->
-            <!--<dependency>
+            <dependency>
                 <groupId>com.oracle</groupId>
                 <artifactId>ojdbc6</artifactId>
                 <version>${oracle.version}</version>
-            </dependency>-->
+            </dependency>
 
             <!-- mssql -->
-            <!--<dependency>
+            <dependency>
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
-            </dependency>-->
+            </dependency>
 
             <!-- postgresql -->
-            <!--<dependency>
+            <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
-            </dependency>-->
+            </dependency>
 
             <!--数据库连接池-->
             <dependency>

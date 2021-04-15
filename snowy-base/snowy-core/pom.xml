@@ -48,22 +48,22 @@
         </dependency>
 
         <!-- oracle -->
-        <!--<dependency>
+        <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
-        </dependency>-->
+        </dependency>
 
         <!-- mssql -->
-        <!--<dependency>
+        <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-        </dependency>-->
+        </dependency>
 
         <!-- postgresql -->
-        <!--<dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>-->
+        </dependency>
 
         <!-- druid连接池 -->
         <dependency>
