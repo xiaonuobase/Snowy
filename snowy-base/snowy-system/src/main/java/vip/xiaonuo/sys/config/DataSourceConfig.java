@@ -52,12 +52,9 @@ public class DataSourceConfig {
     @Bean
     public ServletRegistrationBean<StatViewServlet> druidServletRegistration() {
 
-        // 设置servelet的参数
+        // 设置servlet的参数
         HashMap<String, String> statViewServletParams = CollectionUtil.newHashMap();
         statViewServletParams.put("resetEnable", "true");
-        statViewServletParams.put("loginUsername", ConstantContextHolder.getDruidMonitorUsername());
-        statViewServletParams.put("loginPassword", ConstantContextHolder.getDruidMonitorPassword());
-
         ServletRegistrationBean<StatViewServlet> registration = new ServletRegistrationBean<>(new StatViewServlet());
         registration.addUrlMappings("/druid/*");
         registration.setInitParameters(statViewServletParams);

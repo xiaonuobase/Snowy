@@ -132,7 +132,7 @@ public class SysMenu extends BaseEntity implements BaseTreeNode {
     /**
      * 备注
      */
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED)
     private String remark;
 
     /**

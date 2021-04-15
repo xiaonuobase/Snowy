@@ -63,26 +63,6 @@ public class ConstantContextHolder {
     }
 
     /**
-     * 获取druid监控的密码
-     *
-     * @author yubaoshan
-     * @date 2020/7/8 9:53
-     */
-    public static String getDruidMonitorPassword() {
-        return getSysConfigWithDefault("SNOWY_DRUID_PASSWORD", String.class, RandomUtil.randomString(10));
-    }
-
-    /**
-     * 获取druid的账号
-     *
-     * @author yubaoshan
-     * @date 2020/7/8 9:53
-     */
-    public static String getDruidMonitorUsername() {
-        return getSysConfigWithDefault("SNOWY_DRUID_USERNAME", String.class, RandomUtil.randomString(10));
-    }
-
-    /**
      * 获取放开xss过滤的接口
      *
      * @author yubaoshan

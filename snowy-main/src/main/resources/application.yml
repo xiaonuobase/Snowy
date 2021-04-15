@@ -36,8 +36,10 @@ mybatis-plus:
     enable-sql-runner: true
   configuration-properties:
     prefix:
+    #如果数据库为postgresql，则需要配置为blobType: BINARY
     blobType: BLOB
-    boolValue: TRUE
+    #如果数据库为oracle或mssql，则需要配置为boolValue: 1
+    boolValue: true
 
 #libreoffice文档在线预览配置
 # CentOS 下安装 libreoffice：

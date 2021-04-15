@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 本地数据库
+ Source Server         : mysql本地数据库
  Source Server Type    : MySQL
  Source Server Version : 80022
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80022
  File Encoding         : 65001
 
- Date: 09/04/2021 12:31:21
+ Date: 15/04/2021 16:54:55
 */
 
 SET NAMES utf8mb4;
@@ -65,7 +65,6 @@ CREATE TABLE `sys_code_generate`  (
 -- ----------------------------
 -- Records of sys_code_generate
 -- ----------------------------
-INSERT INTO `sys_code_generate` VALUES (1362310959781744641, 'yubaoshan、xuyuxiang、dongxiayu', 'CodeGenTest', 'Y', '2', 'xn_code_gen_test', 'vip.xiaonuo', 'codegentest', '测试', 1265476890672672808, '2021-02-18 16:00:18', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_code_generate_config
@@ -100,18 +99,6 @@ CREATE TABLE `sys_code_generate_config`  (
 -- ----------------------------
 -- Records of sys_code_generate_config
 -- ----------------------------
-INSERT INTO `sys_code_generate_config` VALUES (1362310959903379458, 1362310959781744641, 'id', 'id', 'bigint', '主键', 'Long', 'input', NULL, 'N', 'N', 'N', 'N', 'N', 'eq', 'PRI', 'Id', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310959941128193, 1362310959781744641, 'name', 'name', 'varchar', '姓名', 'String', 'input', NULL, 'Y', 'Y', 'N', 'Y', 'Y', 'like', '', 'Name', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310959978876929, 1362310959781744641, 'age', 'age', 'int', '年龄', 'Integer', 'input', NULL, 'Y', 'Y', 'N', 'Y', 'Y', 'eq', '', 'Age', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960008237058, 1362310959781744641, 'interest', 'interest', 'varchar', '兴趣', 'String', 'checkbox', 'sex', 'Y', 'Y', 'N', 'Y', 'N', 'eq', '', 'Interest', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960033402881, 1362310959781744641, 'switchTest', 'switchtest', 'varchar', '开关', 'String', 'radio', 'yes_or_no', 'Y', 'Y', 'N', 'Y', 'Y', 'eq', '', 'Switchtest', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960062763009, 1362310959781744641, 'birthday', 'birthday', 'date', '日期', 'Date', 'datepicker', NULL, 'Y', 'Y', 'N', 'Y', 'Y', 'eq', '', 'Birthday', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960096317442, 1362310959781744641, 'whether', 'whether', 'varchar', '是否已婚', 'String', 'select', 'yes_or_no', 'Y', 'Y', 'N', 'Y', 'Y', 'eq', '', 'Whether', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960121483266, 1362310959781744641, 'explainTest', 'explaintest', 'varchar', '简介', 'String', 'textarea', NULL, 'N', 'Y', 'N', 'Y', 'Y', 'eq', '', 'Explain', 'N', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960150843393, 1362310959781744641, 'create_time', 'createTime', 'datetime', '创建时间', 'Date', 'datepicker', NULL, 'N', 'N', 'N', 'N', 'N', 'eq', '', 'CreateTime', 'Y', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960176009218, 1362310959781744641, 'create_user', 'createUser', 'bigint', '', 'Long', 'input', NULL, 'N', 'N', 'N', 'N', 'N', 'eq', '', 'CreateUser', 'Y', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960201175041, 1362310959781744641, 'update_time', 'updateTime', 'datetime', '', 'Date', 'datepicker', NULL, 'N', 'N', 'N', 'N', 'N', 'eq', '', 'UpdateTime', 'Y', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
-INSERT INTO `sys_code_generate_config` VALUES (1362310960234729473, 1362310959781744641, 'update_user', 'updateUser', 'bigint', '', 'Long', 'input', NULL, 'N', 'N', 'N', 'N', 'N', 'eq', '', 'UpdateUser', 'Y', '2021-02-18 16:00:18', 1265476890672672808, '2021-02-18 16:02:31', 1265476890672672808);
 
 -- ----------------------------
 -- Table structure for sys_config
@@ -161,8 +148,6 @@ INSERT INTO `sys_config` VALUES (1270380786649982740, 'Snowy演示环境', 'SNOW
 INSERT INTO `sys_config` VALUES (1270380786649982741, 'Snowy放开XSS过滤的接口', 'SNOWY_UN_XSS_FILTER_URL', '/demo/xssfilter,/demo/unxss', 'Y', '多个url可以用英文逗号隔开', 0, 'DEFAULT', '2020-06-09 23:42:37', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1270380786649982742, '单用户登陆的开关', 'SNOWY_ENABLE_SINGLE_LOGIN', 'false', 'Y', '单用户登陆的开关，true-打开，false-关闭，如果一个人登录两次，就会将上一次登陆挤下去', 0, 'DEFAULT', '2020-06-09 23:42:37', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1270380786649982743, '登录验证码的开关', 'SNOWY_CAPTCHA_OPEN', 'true', 'Y', '登录验证码的开关，true-打开，false-关闭', 0, 'DEFAULT', '2020-06-09 23:42:37', 1265476890672672808, NULL, NULL);
-INSERT INTO `sys_config` VALUES (1280694183769792514, 'druid监控登录账号', 'SNOWY_DRUID_USERNAME', 'superAdmin', 'Y', 'druid监控登录账号', 0, 'DEFAULT', '2020-07-08 10:44:22', 1265476890672672808, NULL, NULL);
-INSERT INTO `sys_config` VALUES (1280694281648070658, 'druid监控界面登录密码', 'SNOWY_DRUID_PASSWORD', '123456', 'Y', 'druid监控登录密码', 0, 'DEFAULT', '2020-07-08 10:44:46', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1280694281648070659, '阿里云定位api接口地址', 'SNOWY_IP_GEO_API', 'http://api01.aliyun.venuscn.com/ip?ip=%s', 'Y', '阿里云定位api接口地址', 0, 'DEFAULT', '2020-07-20 10:44:46', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1280694281648070660, '阿里云定位appCode', 'SNOWY_IP_GEO_APP_CODE', '461535aabeae4f34861884d392f5d452', 'Y', '阿里云定位appCode', 0, 'DEFAULT', '2020-07-20 10:44:46', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1288309751255412737, 'Oauth用户登录的开关', 'SNOWY_ENABLE_OAUTH_LOGIN', 'true', 'Y', 'Oauth用户登录的开关', 0, 'OAUTH', '2020-07-29 11:05:55', 1265476890672672808, NULL, NULL);
@@ -548,7 +533,7 @@ INSERT INTO `sys_menu` VALUES (1264622039642256371, 1264622039642256361, '[0],[1
 INSERT INTO `sys_menu` VALUES (1264622039642256381, 1264622039642256351, '[0],[1264622039642256351],', '在线用户', 'sys_monitor_mgr_online_user', 1, NULL, '/onlineUser', 'system/onlineUser/index', NULL, 'system', 1, 'Y', NULL, NULL, 1, 17, NULL, 0, '2020-06-05 16:01:55', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256391, 1264622039642256381, '[0],[1264622039642256351],[1264622039642256381],', '在线用户列表', 'sys_monitor_mgr_online_user_list', 2, NULL, NULL, NULL, 'sysOnlineUser:list', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-06-05 16:03:46', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256401, 1264622039642256381, '[0],[1264622039642256351],[1264622039642256381],', '在线用户强退', 'sys_monitor_mgr_online_user_force_exist', 2, NULL, NULL, NULL, 'sysOnlineUser:forceExist', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-06-05 16:04:16', 1265476890672672808, NULL, NULL);
-INSERT INTO `sys_menu` VALUES (1264622039642256411, 1264622039642256351, '[0],[1264622039642256351],', '数据监控', 'sys_monitor_mgr_druid', 1, NULL, '/druid', 'Iframe', NULL, 'system', 2, 'Y', 'http://localhost:82/druid/login.html', NULL, 1, 18, NULL, 0, '2020-06-28 16:15:07', 1265476890672672808, '2020-09-13 09:39:10', 1265476890672672808);
+INSERT INTO `sys_menu` VALUES (1264622039642256411, 1264622039642256351, '[0],[1264622039642256351],', '数据监控', 'sys_monitor_mgr_druid', 1, NULL, '/druid', 'Iframe', NULL, 'system', 2, 'Y', 'http://localhost:82/druid', NULL, 1, 18, NULL, 0, '2020-06-28 16:15:07', 1265476890672672808, '2020-09-13 09:39:10', 1265476890672672808);
 INSERT INTO `sys_menu` VALUES (1264622039642256421, 0, '[0],', '通知公告', 'sys_notice', 0, 'sound', '/notice', 'PageView', NULL, 'system', 1, 'Y', NULL, NULL, 1, 7, NULL, 0, '2020-06-29 15:41:53', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256431, 1264622039642256421, '[0],[1264622039642256421],', '公告管理', 'sys_notice_mgr', 1, NULL, '/notice', 'system/notice/index', NULL, 'system', 1, 'Y', NULL, NULL, 1, 19, NULL, 0, '2020-06-29 15:44:24', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256441, 1264622039642256431, '[0],[1264622039642256421],[1264622039642256431],', '公告查询', 'sys_notice_mgr_page', 2, NULL, NULL, NULL, 'sysNotice:page', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-06-29 15:45:30', 1265476890672672808, NULL, NULL);
@@ -605,6 +590,10 @@ CREATE TABLE `sys_notice`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '通知表' ROW_FORMAT = Compact;
 
 -- ----------------------------
+-- Records of sys_notice
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_notice_user
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_notice_user`;
@@ -616,6 +605,10 @@ CREATE TABLE `sys_notice_user`  (
   `read_time` datetime(0) NULL DEFAULT NULL COMMENT '阅读时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统用户数据范围表' ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of sys_notice_user
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for sys_oauth_user
@@ -1089,30 +1082,6 @@ CREATE TABLE `sys_vis_log`  (
 
 -- ----------------------------
 -- Records of sys_vis_log
--- ----------------------------
-
--- ----------------------------
--- Table structure for xn_code_gen_test
--- ----------------------------
-DROP TABLE IF EXISTS `xn_code_gen_test`;
-CREATE TABLE `xn_code_gen_test`  (
-  `id` bigint(0) NOT NULL COMMENT '主键',
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '姓名',
-  `age` int(0) NULL DEFAULT NULL COMMENT '年龄',
-  `interest` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '兴趣',
-  `switchTest` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '开关',
-  `birthday` date NULL DEFAULT NULL COMMENT '日期',
-  `whether` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '是否已婚',
-  `explain_test` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '简介',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
-  `create_user` bigint(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
-  `update_user` bigint(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '测试' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of xn_code_gen_test
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -96,7 +96,7 @@ public class DruidProperties {
 
     private Integer maxPoolPreparedStatementPerConnectionSize = 20;
 
-    private String filters = "stat,wall";
+    private String filters = "stat,slf4j";
 
     private String dataSourceName;
 
