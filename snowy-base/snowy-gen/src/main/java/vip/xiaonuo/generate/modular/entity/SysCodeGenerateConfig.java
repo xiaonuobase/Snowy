@@ -27,9 +27,9 @@ package vip.xiaonuo.generate.modular.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 
 /**
  * 代码生成详细配置

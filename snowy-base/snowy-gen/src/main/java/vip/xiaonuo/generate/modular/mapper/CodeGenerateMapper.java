@@ -24,11 +24,12 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.generate.modular.mapper;
 
-import vip.xiaonuo.generate.modular.entity.CodeGenerate;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import vip.xiaonuo.generate.modular.entity.CodeGenerate;
 import vip.xiaonuo.generate.modular.result.InforMationColumnsResult;
 import vip.xiaonuo.generate.modular.result.InformationResult;
-import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**

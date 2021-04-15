@@ -25,10 +25,10 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.core.util;
 
 import cn.hutool.log.Log;
-import vip.xiaonuo.core.context.requestno.RequestNoContext;
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.support.AopUtils;
+import vip.xiaonuo.core.context.requestno.RequestNoContext;
 
 import java.lang.reflect.Field;
 

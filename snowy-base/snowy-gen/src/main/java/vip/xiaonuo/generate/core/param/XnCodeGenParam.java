@@ -24,10 +24,10 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.generate.core.param;
 
+import lombok.Data;
 import vip.xiaonuo.generate.core.config.Config;
 import vip.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
-import vip.xiaonuo.generate.modular.param.SysCodeGenerateConfigParam;
-import lombok.Data;
+
 import java.util.List;
 
 @Data

@@ -26,8 +26,8 @@ package vip.xiaonuo.core.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
-import vip.xiaonuo.core.pojo.base.node.BaseTreeNode;
 import lombok.Data;
+import vip.xiaonuo.core.pojo.base.node.BaseTreeNode;
 
 import java.util.ArrayList;
 import java.util.List;

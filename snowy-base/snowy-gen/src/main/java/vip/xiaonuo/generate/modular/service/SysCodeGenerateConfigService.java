@@ -25,7 +25,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.generate.modular.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.generate.modular.entity.CodeGenerate;
 import vip.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
 import vip.xiaonuo.generate.modular.param.SysCodeGenerateConfigParam;

@@ -24,11 +24,11 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.generate.core.util;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.velocity.app.Velocity;
 import vip.xiaonuo.core.consts.CommonConstant;
 import vip.xiaonuo.core.context.constant.ConstantContext;
 import vip.xiaonuo.core.enums.DbIdEnum;
-import org.apache.commons.io.IOUtils;
-import org.apache.velocity.app.Velocity;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

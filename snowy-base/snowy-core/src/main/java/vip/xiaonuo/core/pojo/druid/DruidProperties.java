@@ -26,8 +26,8 @@ package vip.xiaonuo.core.pojo.druid;
 
 import cn.hutool.log.Log;
 import com.alibaba.druid.pool.DruidDataSource;
-import vip.xiaonuo.core.enums.DbIdEnum;
 import lombok.Data;
+import vip.xiaonuo.core.enums.DbIdEnum;
 
 import java.sql.SQLException;
 import java.util.Properties;

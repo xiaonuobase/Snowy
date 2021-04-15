@@ -25,10 +25,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.core.file.modular.tencent;
 
 import cn.hutool.core.io.IoUtil;
-import vip.xiaonuo.core.file.FileOperator;
-import vip.xiaonuo.core.file.common.enums.BucketAuthEnum;
-import vip.xiaonuo.core.file.modular.tencent.exp.TencentFileServiceException;
-import vip.xiaonuo.core.file.modular.tencent.prop.TenCosProperties;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
@@ -40,6 +36,10 @@ import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
 import com.qcloud.cos.transfer.TransferManager;
 import com.qcloud.cos.transfer.TransferManagerConfiguration;
+import vip.xiaonuo.core.file.FileOperator;
+import vip.xiaonuo.core.file.common.enums.BucketAuthEnum;
+import vip.xiaonuo.core.file.modular.tencent.exp.TencentFileServiceException;
+import vip.xiaonuo.core.file.modular.tencent.prop.TenCosProperties;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.ByteArrayInputStream;

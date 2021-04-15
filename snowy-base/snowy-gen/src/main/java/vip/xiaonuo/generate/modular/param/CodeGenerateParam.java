@@ -24,10 +24,11 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.generate.modular.param;
 
-import vip.xiaonuo.core.pojo.base.param.BaseParam;
-import vip.xiaonuo.core.validation.flag.FlagValue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import vip.xiaonuo.core.pojo.base.param.BaseParam;
+import vip.xiaonuo.core.validation.flag.FlagValue;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
