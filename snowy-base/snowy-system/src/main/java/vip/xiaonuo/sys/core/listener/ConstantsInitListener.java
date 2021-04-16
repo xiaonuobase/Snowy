@@ -110,7 +110,8 @@ public class ConstantsInitListener implements ApplicationListener<ApplicationCon
                 );
             }
         } catch (SQLException | ClassNotFoundException e) {
-            log.error(">>> 读取数据库constants配置信息出错：{}", e.getMessage());
+            log.error(">>> 读取数据库constants配置信息出错：");
+            e.printStackTrace();
             throw new ServiceException(SysConfigExceptionEnum.DATA_SOURCE_NOT_EXIST);
         } finally {
             DbUtil.close(conn);
