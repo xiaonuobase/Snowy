@@ -25,7 +25,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import vip.xiaonuo.sys.core.mybatis.dbid.SnowyDatabaseIdProvider;
 import vip.xiaonuo.sys.core.mybatis.fieldfill.CustomMetaObjectHandler;
 import vip.xiaonuo.sys.core.mybatis.sqlfilter.DemoProfileSqlInterceptor;
@@ -50,8 +52,10 @@ public class MybatisConfig {
      * @date 2020/3/31 15:42
      */
     @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        return new PaginationInterceptor();
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        return interceptor;
     }
 
     /**
