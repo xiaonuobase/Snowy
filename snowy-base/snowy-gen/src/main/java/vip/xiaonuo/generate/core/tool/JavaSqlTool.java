@@ -46,6 +46,8 @@ public class JavaSqlTool {
             case "nvarchar2":return "String";
             case "char":return "String";
             case "varchar":return "String";
+            case "enum":return "String";
+            case "set":return "String";
             case "text":return "String";
             case "nchar":return "String";
             case "blob":return "byte[]";
