@@ -25,6 +25,7 @@
 
 <script>
   import draggable from 'vuedraggable'
+
   export default {
     props: {
       columns: {
@@ -45,7 +46,7 @@
     },
     methods: {
       reset() {
-        this.columnsSetting = this.originColumns
+        this.columnsSetting = JSON.parse(JSON.stringify(this.originColumns))
         this.indeterminate = false
         this.checkAll = true
         this.emitColumnChange()
@@ -71,7 +72,7 @@
     },
     mounted() {
       this.columnsSetting = this.columns.map(value => ({ ...value, checked: true }))
-      this.originColumns = [...this.columnsSetting]
+      this.originColumns = JSON.parse(JSON.stringify(this.columnsSetting))
     }
   }
 </script>
