@@ -24,9 +24,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.core.cache;
 
-import cn.hutool.cache.impl.TimedCache;
+import org.springframework.data.redis.core.RedisTemplate;
 import vip.xiaonuo.core.pojo.login.SysLoginUser;
-import vip.xiaonuo.sys.core.cache.base.AbstractMemoryCacheOperator;
+import vip.xiaonuo.sys.core.cache.base.AbstractRedisCacheOperator;
 
 /**
  * 登录用户的缓存，存储了当前登录的用户
@@ -38,19 +38,20 @@ import vip.xiaonuo.sys.core.cache.base.AbstractMemoryCacheOperator;
  * @author yubaoshan
  * @date 2020/7/9 11:02
  */
-public class UserCache extends AbstractMemoryCacheOperator<SysLoginUser> {
+public class UserCache extends AbstractRedisCacheOperator<SysLoginUser> {
 
     /**
      * 登录用户缓存前缀
      */
     public static final String LOGIN_USER_CACHE_PREFIX = "LOGIN_USER_";
 
-    public UserCache(TimedCache<String, SysLoginUser> timedCache) {
-        super(timedCache);
+    public UserCache(RedisTemplate<String, SysLoginUser> redisTemplate) {
+        super(redisTemplate);
     }
 
     @Override
     public String getCommonKeyPrefix() {
         return LOGIN_USER_CACHE_PREFIX;
     }
+
 }

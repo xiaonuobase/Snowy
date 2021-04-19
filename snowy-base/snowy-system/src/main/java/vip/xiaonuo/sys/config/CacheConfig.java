@@ -26,14 +26,16 @@ package vip.xiaonuo.sys.config;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
-import vip.xiaonuo.core.context.constant.ConstantContextHolder;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import vip.xiaonuo.core.pojo.login.SysLoginUser;
 import vip.xiaonuo.sys.core.cache.MappingCache;
 import vip.xiaonuo.sys.core.cache.ResourceCache;
 import vip.xiaonuo.sys.core.cache.UserCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import vip.xiaonuo.sys.core.redis.FastJson2JsonRedisSerializer;
 import java.util.Map;
 
 /**
@@ -57,20 +59,30 @@ public class CacheConfig {
     }
 
     /**
-     * 登录用户的缓存，默认过期时间，根据系统sys_config中的常量决定
+     * 登录用户的缓存，redis缓存
      *
      * @author yubaoshan
      * @date 2020/7/9 11:44
      */
     @Bean
-    public UserCache userCache() {
-        TimedCache<String, SysLoginUser> timedCache =
-                CacheUtil.newTimedCache(ConstantContextHolder.getSessionTokenExpireSec() * 1000);
+    public UserCache userCache(RedisTemplate<String, SysLoginUser> redisTemplate) {
+        return new UserCache(redisTemplate);
+    }
 
-        // 定时清理缓存，间隔1秒
-        timedCache.schedulePrune(1000);
-
-        return new UserCache(timedCache);
+    /**
+     * redis缓存类
+     *
+     * @author yubaoshan
+     * @date 2020/4/19 17:53
+     */
+    @Bean
+    public RedisTemplate<String, SysLoginUser> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, SysLoginUser> userRedisTemplate = new RedisTemplate<>();
+        userRedisTemplate.setConnectionFactory(factory);
+        userRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        userRedisTemplate.setValueSerializer(new FastJson2JsonRedisSerializer<>(SysLoginUser.class));
+        userRedisTemplate.afterPropertiesSet();
+        return userRedisTemplate;
     }
 
     /**

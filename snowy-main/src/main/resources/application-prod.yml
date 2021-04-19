@@ -5,6 +5,10 @@ spring:
     url: jdbc:mysql://localhost:3306/snowy-pub?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT&nullCatalogMeansCurrent=true
     username: root
     password: 123456
+  redis:
+    host: localhost
+    port: 6379
+    password:
 
 # Oracle数据库
 #spring:
