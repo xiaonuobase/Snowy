@@ -25,6 +25,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.modular.auth.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -356,6 +357,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      */
     private void cacheLoginUser(JwtPayLoad jwtPayLoad, SysLoginUser sysLoginUser) {
         String redisLoginUserKey = jwtPayLoad.getUuid();
-        userCache.put(redisLoginUserKey, sysLoginUser);
+        userCache.put(redisLoginUserKey, sysLoginUser, Convert.toLong(ConstantContextHolder.getSessionTokenExpireSec()));
     }
 }
