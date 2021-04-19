@@ -16,52 +16,226 @@
         <result column="column_key" property="columnKey" />
     </resultMap>
 
-    <!-- 查询指定库中所有表 -->
+    <!-- 查询指定库中所有表 mysql -->
     <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "mysql">
         select table_name,create_time,update_time,table_comment
-                from information_schema.tables
-            where
-                table_schema = '${dbName}'
-    </select>
-    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "oracle">
-        select table_name, comments as table_comment
-            from user_tab_comments
+        from information_schema.tables
+        where
+            table_schema = '${dbName}'
     </select>
 
-    <!-- 查询指定表中所有字段 -->
+    <!-- 查询指定库中所有表 oracle -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "oracle">
+        select table_name, comments as table_comment
+        from user_tab_comments
+    </select>
+
+    <!-- 查询指定库中所有表 mssql -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "mssql">
+        SELECT DISTINCT
+            d.name as table_name,
+            f.value as table_comment
+        FROM
+            syscolumns a
+                LEFT JOIN systypes b ON a.xusertype= b.xusertype
+                INNER JOIN sysobjects d ON a.id= d.id
+                AND d.xtype= 'U'
+                AND d.name != 'dtproperties'
+                LEFT JOIN syscomments e ON a.cdefault= e.id
+                LEFT JOIN sys.extended_properties g ON a.id= G.major_id
+                AND a.colid= g.minor_id
+                LEFT JOIN sys.extended_properties f ON d.id= f.major_id
+                AND f.minor_id= 0
+    </select>
+
+    <!-- 查询指定库中所有表 pgsql -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "pgsql">
+        SELECT
+            relname AS TABLE_NAME,
+            col_description ( C.oid, 0 ) AS TABLE_COMMENT
+        FROM
+            pg_class C
+        WHERE
+            relkind = 'r'
+          AND relname NOT LIKE'pg_%'
+          AND relname NOT LIKE'sql_%'
+        ORDER BY
+            relname
+    </select>
+
+    <!-- 查询指定库中所有表 达梦数据库 -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "dm">
+        select table_name, comments as table_comment
+        from user_tab_comments
+    </select>
+
+    <!-- 查询指定库中所有表 人大金仓数据库 -->
+    <select id="selectInformationTable" parameterType="String" resultMap="informationResult" databaseId = "kingbasees">
+        select table_name, comments as table_comment
+        from user_tab_comments
+    </select>
+
+    <!-- 查询指定表中所有字段 mysql -->
     <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "mysql">
-	    select
-	        column_name,data_type,column_comment,column_key
-	        from information_schema.columns
+        select
+            column_name,data_type,column_comment,column_key
+        from information_schema.columns
         where
             table_schema = '${dbName}' and table_name = '${tableName}';
-	</select>
+    </select>
+
+    <!-- 查询指定表中所有字段 oracle -->
     <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "oracle">
-	    select
-	        a.column_name as column_name,
+        select
+            a.column_name as column_name,
             a.data_type as data_type,
             b.comments as column_comment,
-        case
-            when c.position>0 then 'PRI'
-        else ''
-        end column_key
+            case
+                when c.position>0 then 'PRI'
+                else ''
+                end column_key
         from
-            (select * from user_tab_columns where table_name='${tableName}') a
-        left join
-            (select * from user_col_comments where table_name='${tableName}') b
-        on a.column_name=b.column_name
-        left join
-             (
-              select table_name,column_name,position from user_cons_columns
-              where
+                (select * from user_tab_columns where table_name='${tableName}') a
+                    left join
+                (select * from user_col_comments where table_name='${tableName}') b
+                on a.column_name=b.column_name
+                    left join
+            (
+                select table_name,column_name,position from user_cons_columns
+                where
                     table_name='${tableName}'
-                        and constraint_name=(select constraint_name
-                            from
-                            user_constraints where table_name='${tableName}' and constraint_type='P')
-              and owner='${dbName}'
-             ) c
-        on a.column_name=c.column_name
+                  and constraint_name=(select constraint_name
+                                       from
+                                           user_constraints where table_name='${tableName}' and constraint_type='P')
+                  and owner='${dbName}'
+            ) c
+            on a.column_name=c.column_name
         order by a.column_id
-	</select>
+    </select>
+
+    <!-- 查询指定表中所有字段 mssql -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "mssql">
+        SELECT
+            C.name AS column_name,
+            T.name AS data_type,
+            isnull( ETP.value, '' ) AS column_comment,
+            CASE
+
+                WHEN EXISTS (
+                        SELECT
+                            1
+                        FROM
+                            sysobjects
+                        WHERE
+                            xtype = 'PK'
+                          AND parent_obj = c.id
+                          AND name IN ( SELECT name FROM sysindexes WHERE indid IN ( SELECT indid FROM sysindexkeys WHERE id = c.id AND colid = c.colid ) )
+                    ) THEN
+                    'PRI' ELSE ''
+                END AS column_key
+        FROM
+            syscolumns C
+                INNER JOIN systypes T ON C.xusertype = T.xusertype
+                LEFT JOIN sys.extended_properties ETP ON ETP.major_id = c.id
+                AND ETP.minor_id = C.colid
+                AND ETP.name = 'MS_Description'
+                LEFT JOIN syscomments CM ON C.cdefault= CM.id
+        WHERE
+            C.id = object_id( '${tableName}' )
+    </select>
+
+    <!-- 查询指定表中所有字段 pgsql -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "pgsql">
+        SELECT
+            t1.*,
+            COALESCE(t2.pk_name, '') AS column_key
+        FROM
+            (
+                SELECT A
+                           .attname AS COLUMN_NAME,
+                       pg_type.typname AS data_type,
+                       col_description ( A.attrelid, A.attnum ) AS column_comment
+                FROM
+                    pg_class AS C,
+                    pg_attribute
+                        AS A INNER JOIN pg_type ON pg_type.oid = A.atttypid
+                WHERE
+                    C.relname = '${tableName}'
+                  AND A.attrelid = C.oid
+                  AND A.attnum > 0
+            ) t1
+                LEFT JOIN (
+                SELECT
+                    pg_attribute.attname AS COLUMN_NAME,
+                    CASE WHEN pg_constraint.conname ISNULL THEN '' ELSE 'PRI' END AS pk_name
+                FROM
+                    pg_constraint
+                        INNER JOIN pg_class ON pg_constraint.conrelid = pg_class.oid
+                        INNER JOIN pg_attribute ON pg_attribute.attrelid = pg_class.oid
+                        AND pg_attribute.attnum = pg_constraint.conkey [ 1 ]
+                        INNER JOIN pg_type ON pg_type.oid = pg_attribute.atttypid
+                WHERE
+                    pg_class.relname = '${tableName}'
+                  AND pg_constraint.contype = 'p'
+            ) t2 ON t1.COLUMN_NAME = t2.COLUMN_NAME
+    </select>
+
+    <!-- 查询指定表中所有字段 达梦数据库 -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "dm">
+        select
+            a.column_name as column_name,
+            a.data_type as data_type,
+            b.comments as column_comment,
+            case
+                when c.position>0 then 'PRI'
+                else ''
+                end column_key
+        from
+                (select * from user_tab_columns where table_name='${tableName}') a
+                    left join
+                (select * from user_col_comments where table_name='${tableName}') b
+                on a.column_name=b.column_name
+                    left join
+            (
+                select table_name,column_name,position from user_cons_columns
+                where
+                    table_name='${tableName}'
+                  and constraint_name=(select constraint_name
+                                       from
+                                           user_constraints where table_name='${tableName}' and constraint_type='P')
+                  and owner='${dbName}'
+            ) c
+            on a.column_name=c.column_name
+        order by a.column_id
+    </select>
+
+    <!-- 查询指定表中所有字段 人大金仓数据库 -->
+    <select id="selectInformationColumns" parameterType="String" resultMap="inforMationColumnsResult" databaseId = "dm">
+        select
+            a.column_name as column_name,
+            a.data_type as data_type,
+            b.comments as column_comment,
+            case
+                when c.position>0 then 'PRI'
+                else ''
+                end column_key
+        from
+                (select * from user_tab_columns where table_name='${tableName}') a
+                    left join
+                (select * from user_col_comments where table_name='${tableName}') b
+                on a.column_name=b.column_name
+                    left join
+            (
+                select table_name,column_name,position from user_cons_columns
+                where
+                    table_name='${tableName}'
+                  and constraint_name=(select constraint_name
+                                       from
+                                           user_constraints where table_name='${tableName}' and constraint_type='P')
+                  and owner='${dbName}'
+            ) c
+            on a.column_name=c.column_name
+        order by a.column_id
+    </select>
 
 </mapper>
