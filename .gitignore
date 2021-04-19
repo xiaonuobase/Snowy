@@ -43,3 +43,6 @@ package-lock.json
 yarn.lock
 
 rebel.xml
+
+!DmJdbcDriver18.jar
+!kingbasejdbc3.jar
