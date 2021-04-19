@@ -30,13 +30,23 @@ spring:
 #    username: postgres
 #    password: 123456
 
+# 达梦数据库
+#spring:
+#  datasource:
+#    driver-class-name: dm.jdbc.driver.DmDriver
+#    url: jdbc:dm://localhost:5236/snowy-pub-dm
+#    username: SNOWY
+#    password: 123456789
+# #达梦数据库兼容问题，不需要在sql语句前加模式名的解决方法：
+# #https://blog.csdn.net/myth8860/article/details/100557705
+
+# 人大金仓数据库
 #spring:
 #  datasource:
 #    driver-class-name: com.kingbase8.Driver
 #    url: jdbc:kingbase8://localhost:54321/snowy-pub-kingbase
 #    username: SYSTEM
 #    password: 123456
-#    filters: mergeStat
 # #人大金仓数据库兼容问题，不需要加在sql语句中加public的解决方法：
 # #在根目录data下的kingbase.conf文档里面找到search_path = '"$user",PUBLIC,sys_catalog'进行替换放开
 # #重启数据库即可完全兼容，注意 sql中不能出现mysql中的关键字的单引号

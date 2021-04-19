@@ -45,6 +45,11 @@ public class DruidProperties {
     private static final Log log = Log.get();
 
     /**
+     * mysql校验语句
+     */
+    private final String MYSQL_VALIDATE_QUERY_SQL = "select 1";
+
+    /**
      * oracle校验语句
      */
     private final String ORACLE_VALIDATE_QUERY_SQL = "select 1 from dual";
@@ -60,9 +65,14 @@ public class DruidProperties {
     private final String SQLSERVER_VALIDATE_QUERY_SQL = "select 1";
 
     /**
-     * mysql校验语句
+     * 达梦数据库校验语句
      */
-    private final String MYSQL_VALIDATE_QUERY_SQL = "select 1";
+    private final String DM_VALIDATE_QUERY_SQL = "select 1";
+
+    /**
+     * 人大金仓数据库校验语句
+     */
+    private final String KINGBASEES_VALIDATE_QUERY_SQL = "select 1";
 
     private String url;
 
@@ -166,6 +176,10 @@ public class DruidProperties {
             return POSTGRESQL_VALIDATE_QUERY_SQL;
         } else if (url.contains(DbIdEnum.MS_SQL.getName())) {
             return SQLSERVER_VALIDATE_QUERY_SQL;
+        } else if (url.contains(DbIdEnum.DM_SQL.getName())) {
+            return DM_VALIDATE_QUERY_SQL;
+        } else if (url.contains(DbIdEnum.KINGBASE_ES.getName())) {
+            return KINGBASEES_VALIDATE_QUERY_SQL;
         } else {
             return MYSQL_VALIDATE_QUERY_SQL;
         }

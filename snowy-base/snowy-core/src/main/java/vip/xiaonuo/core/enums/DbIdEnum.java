@@ -55,7 +55,17 @@ public enum DbIdEnum {
     /**
      * mssql
      */
-    MS_SQL("mssql", "sqlserver");
+    MS_SQL("mssql", "sqlserver"),
+
+    /**
+     * 达梦数据库
+     */
+    DM_SQL("dm", "dm"),
+
+    /**
+     * 人大金仓数据库
+     */
+    KINGBASE_ES("kingbase", "kingbasees");
 
     private final String code;
 

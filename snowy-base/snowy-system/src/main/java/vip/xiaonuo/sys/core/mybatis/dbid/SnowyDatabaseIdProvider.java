@@ -53,6 +53,8 @@ public class SnowyDatabaseIdProvider implements DatabaseIdProvider {
             return DbIdEnum.PG_SQL.getCode();
         } else if (url.contains(DbIdEnum.MS_SQL.getName())) {
             return DbIdEnum.MS_SQL.getCode();
+        } else if (url.contains(DbIdEnum.DM_SQL.getName())) {
+            return DbIdEnum.DM_SQL.getCode();
         } else {
             return DbIdEnum.MYSQL.getCode();
         }
