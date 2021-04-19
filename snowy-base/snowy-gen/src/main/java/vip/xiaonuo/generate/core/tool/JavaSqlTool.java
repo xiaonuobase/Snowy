@@ -41,6 +41,10 @@ public class JavaSqlTool {
     public static String sqlToJava (String sqlType) {
         if( sqlType == null || sqlType.trim().length() == 0 ) return sqlType;
         sqlType = sqlType.toLowerCase();
+        if(sqlType.startsWith("int")) {
+            //如果以int开头，则直接返回int，兼容pgsql中int2 int8等
+            return "Integer";
+        }
         switch(sqlType){
             case "nvarchar":return "String";
             case "nvarchar2":return "String";
