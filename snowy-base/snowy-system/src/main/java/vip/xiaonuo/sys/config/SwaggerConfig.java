@@ -25,9 +25,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.config;
 
 import cn.hutool.core.collection.CollectionUtil;
-import vip.xiaonuo.core.consts.CommonConstant;
-import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -40,7 +37,8 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
+import vip.xiaonuo.core.consts.CommonConstant;
 
 import java.util.List;
 
@@ -48,15 +46,18 @@ import java.util.List;
  * swagger配置
  *
  * @author xuyuxiang
- * @date 2020/3/11 15:05
- */
+ * 加入分组功能(默认注释掉)
+ * <p>
+ * https://doc.xiaominfo.com/knife4j/changelog/2017-12-18-swagger-bootstrap-ui-1.7-issue.html
+ * </p>
+ * @author ldw4033#163.com
+ * @date 2021/4/9 10:42
+ **/
 @Configuration
-@EnableSwagger2
-@EnableSwaggerBootstrapUI
+@EnableSwagger2WebMvc
 public class SwaggerConfig {
 
-    @Bean
-    public Docket createRestApi() {
+    private List<Parameter> getParameters() {
         Parameter parameter = new ParameterBuilder()
                 .name("Authorization")
                 .description("token令牌")
@@ -67,9 +68,15 @@ public class SwaggerConfig {
 
         List<Parameter> parameters = CollectionUtil.newArrayList();
         parameters.add(parameter);
+        return parameters;
+    }
 
+    @Bean
+    public Docket defaultApi() {
+        List<Parameter> parameters = getParameters();
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
+                .apiInfo(defaultApiInfo())
+                .groupName("默认接口")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(CommonConstant.DEFAULT_PACKAGE_NAME))
                 .paths(PathSelectors.any())
@@ -77,7 +84,7 @@ public class SwaggerConfig {
                 .globalOperationParameters(parameters);
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo defaultApiInfo() {
         return new ApiInfoBuilder()
                 .title("Snowy Doc")
                 .description("Snowy Doc文档")
@@ -86,5 +93,32 @@ public class SwaggerConfig {
                 .version("1.0")
                 .build();
     }
+
+    /**
+     * 想分组请放开注释
+     */
+
+    // @Bean
+    // public Docket groupRestApi() {
+    //     List<Parameter> parameters = getParameters();
+    //     return new Docket(DocumentationType.SWAGGER_2)
+    //             .apiInfo(groupApiInfo())
+    //             .groupName("自定义")
+    //             .select()
+    //             //TODO 这里改为自己的包名
+    //             .apis(RequestHandlerSelectors.basePackage("com.example.XXX"))
+    //             .paths(PathSelectors.any())
+    //             .build()
+    //             .globalOperationParameters(parameters);
+    // }
+    //
+    // private ApiInfo groupApiInfo() {
+    //     return new ApiInfoBuilder()
+    //             .title("自定义")
+    //             .description("自定义API")
+    //             .termsOfServiceUrl("http://www.example.com/")
+    //             .version("1.0")
+    //             .build();
+    // }
 
 }
