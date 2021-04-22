@@ -60,6 +60,27 @@
 
 * https://doc.xiaonuo.vip
 
+### 架构原理图
+* 业务架构
+
+![业务架构](./_images/snowy_biz.png)
+
+* 应用架构
+
+![应用架构](./_images/snowy_application.png)
+
+* 数据架构
+
+![数据架构](./_images/snowy_data.png)
+
+* 技术架构
+
+![技术架构](./_images/snowy_tech.png)
+
+* 部署架构
+
+![部署架构](./_images/snowy_deploy.png)
+
 ### 框架亮点及优势
 
 1. 模块化架构设计，层次清晰，业务层推荐写到单独模块，框架升级不影响业务。
