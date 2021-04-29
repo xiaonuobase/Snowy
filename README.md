@@ -79,7 +79,7 @@
 
 * 部署架构
 
-![部署架构](./_images/snowy_deploy.png)
+![部署架构]( ./_images/snowy_deploy.png )
 
 ### 效果图
 
