@@ -96,7 +96,6 @@
 <script>
 import { PageView, RouteView } from '@/layouts'
 import { AppPage, ArticlePage, ProjectPage } from './page'
-
 import { mapGetters } from 'vuex'
 
 export default {
@@ -141,10 +140,33 @@ export default {
     ...mapGetters(['nickname', 'avatar']),
 
     getTeams () {
-      this.$http.get('/workplace/teams').then(res => {
-        this.teams = res.result
-        this.teamSpinning = false
-      })
+      this.teams = [{
+        id: 1,
+        name: '科学搬砖组',
+        avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png'
+      },
+        {
+          id: 2,
+          name: '程序员日常',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/cnrhVkzwxjPwAaCfPbdc.png'
+        },
+        {
+          id: 1,
+          name: '设计天团',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/gaOngJwsRYRaVAuXXcmB.png'
+        },
+        {
+          id: 1,
+          name: '中二少女团',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ubnKSIfAJTxIgXOKlciN.png'
+        },
+        {
+          id: 1,
+          name: '骗你学计算机',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WhxKECPNujWoWEFNdnJE.png'
+        }
+      ]
+      this.teamSpinning = false
     },
 
     handleTabChange (key, type) {

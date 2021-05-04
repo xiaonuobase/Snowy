@@ -136,7 +136,7 @@ export default {
     const panes = pages.map(page => {
       return (
         <a-tab-pane
-          style={{ height: 0 }}
+          style={{ height: 0, background: '#8999ee', color: '#899ee' }}
           tab={this.renderTabPane(page.meta.customTitle || page.meta.title, page.fullPath)}
           key={page.fullPath} closable={pages.length > 1}
         >
@@ -148,9 +148,10 @@ export default {
         <div class="ant-pro-multi-tab-wrapper">
           <a-tabs
             hideAdd
+            tabBarGutter={-1}
             type={'editable-card'}
             v-model={this.activeKey}
-            tabBarStyle={{ background: '#FFF', margin: 0, paddingLeft: '16px', paddingTop: '1px' }}
+            tabBarStyle={{ background: '#FFF', margin: 0, paddingLeft: '0px', paddingTop: '0px' }}
             {...{ on: { edit: onEdit } }}>
             {panes}
           </a-tabs>

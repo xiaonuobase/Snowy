@@ -64,11 +64,117 @@ export default {
       console.log(`selected ${value}`)
     },
     getList () {
-      this.$http.get('/list/article', { params: { count: 8 } }).then(res => {
-        console.log('res', res)
-        this.data = res.result
-        this.loading = false
-      })
+      this.data = [
+        {
+          id: '123',
+          cover: 'https://gw.alipayobjects.com/zos/rmsportal/uMfMFlvUuceEyPpotzlq.png',
+          content: '段落示意：蚂蚁金服设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。',
+          message: '消息',
+          description: '小诺框架产品',
+          href: 'https://xiaonuo.vip',
+          title: '小诺',
+          updatedAt: '2021-05-01 12:00:00',
+          members: [
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
+              name: '曲丽丽',
+              id: 'member1'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
+              name: '王昭君',
+              id: 'member2'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
+              name: '董娜娜',
+              id: 'member3'
+            }
+          ]
+        },
+        {
+          id: '1234',
+          cover: 'https://gw.alipayobjects.com/zos/rmsportal/iZBVOIhGJiAnhplqjvZW.png',
+          content: '段落示意：蚂蚁金服设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。',
+          message: '消息',
+          description: '小诺框架产品',
+          href: 'https://xiaonuo.vip',
+          title: '小诺',
+          updatedAt: '2021-05-01 12:00:00',
+          members: [
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
+              name: '曲丽丽',
+              id: 'member1'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
+              name: '王昭君',
+              id: 'member2'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
+              name: '董娜娜',
+              id: 'member3'
+            }
+          ]
+        },
+        {
+          id: '12345',
+          cover: 'https://gw.alipayobjects.com/zos/rmsportal/iXjVmWVHbCJAyqvDxdtx.png',
+          content: '段落示意：蚂蚁金服设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。',
+          message: '消息',
+          description: '小诺框架产品',
+          href: 'https://xiaonuo.vip',
+          title: '小诺',
+          updatedAt: '2021-05-01 12:00:00',
+          members: [
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
+              name: '曲丽丽',
+              id: 'member1'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
+              name: '王昭君',
+              id: 'member2'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
+              name: '董娜娜',
+              id: 'member3'
+            }
+          ]
+        },
+        {
+          id: '1236',
+          cover: 'https://gw.alipayobjects.com/zos/rmsportal/gLaIAoVWTtLbBWZNYEMg.png',
+          content: '段落示意：蚂蚁金服设计平台 ant.design，用最小的工作量，无缝接入蚂蚁金服生态，提供跨越设计与开发的体验解决方案。',
+          message: '消息',
+          description: '小诺框架产品',
+          href: 'https://xiaonuo.vip',
+          title: '小诺',
+          updatedAt: '2021-05-01 12:00:00',
+          members: [
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
+              name: '曲丽丽',
+              id: 'member1'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
+              name: '王昭君',
+              id: 'member2'
+            },
+            {
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
+              name: '董娜娜',
+              id: 'member3'
+            }
+          ]
+        }
+      ]
+      this.loading = false
     }
   }
 }

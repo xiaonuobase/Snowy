@@ -45,11 +45,39 @@ export default {
   },
   methods: {
     getList () {
-      this.$http.get('/list/article').then(res => {
-        console.log('res', res)
-        this.data = res.result
-        this.loading = false
-      })
+      this.data = [
+        {
+          updatedAt: '2021-05-01 12:00:00',
+          title: '小诺',
+          owner: '俞宝山',
+          description: 'snowy是小诺团队产品',
+          href: 'https://xiaonuo.vip',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
+          name: '曲丽丽',
+          id: 'member1'
+        },
+        {
+          updatedAt: '2021-05-01 12:00:00',
+          title: '小诺',
+          owner: '徐玉祥',
+          description: 'snowy是小诺团队产品',
+          href: 'https://xiaonuo.vip',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
+          name: '王昭君',
+          id: 'member2'
+        },
+        {
+          updatedAt: '2021-05-01 12:00:00',
+          title: '小诺',
+          owner: '董夏雨',
+          description: 'snowy是小诺团队产品',
+          href: 'https://xiaonuo.vip',
+          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
+          name: '董娜娜',
+          id: 'member3'
+        }
+      ]
+      this.loading = false
     },
     loadMore () {
       this.loadingMore = false
