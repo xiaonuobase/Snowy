@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import store from '@/store'
+// import router from './router'
 import { message, Modal, notification } from 'ant-design-vue' /// es/notification
 import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
@@ -62,23 +63,28 @@ service.interceptors.response.use((response) => {
   if (response.request.responseType === 'blob') {
     return response
   }
+  const resData = response.data
   const code = response.data.code
-  if (code === 1011006 || code === 1011007 || code === 1011008 || code === 1011009) {
-    Modal.error({
-      title: '提示：',
-      content: response.data.message,
-      okText: '重新登录',
-      onOk: () => {
-        Vue.ls.remove(ACCESS_TOKEN)
-        window.location.reload()
-      }
-    })
-  } else if (code === 1013002 || code === 1016002 || code === 1015002) {
-    message.error(response.data.message)
-    return response.data
-  } else {
-    return response.data
+  if (!store.state.app.hasError) {
+    if (code === 1011006 || code === 1011007 || code === 1011008 || code === 1011009) {
+      Modal.error({
+        title: '提示：',
+        content: resData.message,
+        okText: '重新登录',
+        onOk: () => {
+          Vue.ls.remove(ACCESS_TOKEN)
+          store.dispatch('SetHasError', false)
+          window.location.reload()
+        }
+      })
+      store.dispatch('SetHasError', true)
+    }
+    if (code === 1013002 || code === 1016002 || code === 1015002) {
+      message.error(response.data.message)
+      return response.data
+    }
   }
+  return resData
 }, err)
 
 const installer = {
