@@ -61,25 +61,31 @@
 * https://doc.xiaonuo.vip
 
 ### 架构原理图
-* 业务架构
 
-![业务架构](./_images/snowy_biz.png)
+* 业务架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yaAhtQ&path=%7BshareItemLink%3A68yaAhtQ%7D%2F"/>
+</p>
 
 * 应用架构
-
-![应用架构](./_images/snowy_application.png)
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yVynJQ&path=%7BshareItemLink%3A68yVynJQ%7D%2F"/>
+</p>
 
 * 数据架构
-
-![数据架构](./_images/snowy_data.png)
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68ydm_dg&path=%7BshareItemLink%3A68ydm_dg%7D%2F"/>
+</p>
 
 * 技术架构
-
-![技术架构](./_images/snowy_tech.png)
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yd_qiw&path=%7BshareItemLink%3A68yd_qiw%7D%2F"/>
+</p>
 
 * 部署架构
-
-![部署架构]( ./_images/snowy_deploy.png )
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yeNc4g&path=%7BshareItemLink%3A68yeNc4g%7D%2F"/>
+</p>
 
 ### 效果图
 
