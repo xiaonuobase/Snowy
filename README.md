@@ -61,7 +61,6 @@
 * https://doc.xiaonuo.vip
 
 ### 架构原理图
-
 * 业务架构
 <p align="center">
     <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yaAhtQ&path=%7BshareItemLink%3A68yaAhtQ%7D%2F"/>
