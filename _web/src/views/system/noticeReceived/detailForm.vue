@@ -44,9 +44,9 @@
 
       // 初始化方法
       detail (record) {
-        this.confirmLoading = true
+        this.confirmLoading = false
         this.visible = true
-        this.sysNoticeDetail(record.id)
+        this.contentRecord = record
       },
 
       /**
