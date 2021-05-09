@@ -31,7 +31,7 @@
       </span>
 
       <span slot="icon" slot-scope="text">
-        <div v-if="text != ''">
+        <div v-if="text != null && text != ''">
           <a-icon :type="text"/>
         </div>
       </span>
@@ -88,6 +88,7 @@
           {
             title: '组件',
             dataIndex: 'component',
+            width: '20%',
             ellipsis: true
           },
           {
@@ -124,11 +125,24 @@
         getMenuList(this.queryParam).then((res) => {
           if (res.success) {
             this.data = res.data
+            this.removeEmptyChildren(this.data)
           }
         }).finally(() => {
           this.loading = false
         })
         this.sysDictTypeDropDown()
+      },
+
+      removeEmptyChildren(data) {
+        if (data == null || data.length === 0) return
+        for (let i = 0; i < data.length; i++) {
+          const item = data[i]
+          if (item.children != null && item.children.length === 0) {
+            item.children = null
+          } else {
+            this.removeEmptyChildren(item.children)
+          }
+        }
       },
 
       typeFilter (type) {
