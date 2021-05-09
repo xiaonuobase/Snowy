@@ -1,14 +1,11 @@
 <template>
   <div class="user-wrapper">
     <div class="content-box">
-      <!--<a href="https://www.xiaonuo.vip" target="_blank">
-        <span class="action">
-          <a-icon type="question-circle-o"></a-icon>
-        </span>
-      </a>-->
-
+      <span class="action" @click="toggleFullscreen">
+        <a-icon type="fullscreen-exit" v-if="isFullscreen"/>
+        <a-icon type="fullscreen" v-else/>
+      </span>
       <notice-icon class="action"/>
-
       <a-dropdown>
         <span class="action ant-dropdown-link user-dropdown-menu">
           <a-avatar class="avatar" size="small" :src="avatar"/>
@@ -72,6 +69,7 @@
 </template>
 
 <script>
+import screenfull from 'screenfull'
 import NoticeIcon from '@/components/NoticeIcon'
 import { mapActions, mapGetters } from 'vuex'
 import { ALL_APPS_MENU } from '@/store/mutation-types'
@@ -81,7 +79,8 @@ import { message } from 'ant-design-vue/es'
 export default {
   name: 'UserMenu',
   components: {
-    NoticeIcon
+    NoticeIcon,
+    screenfull
   },
   props: {
     mode: {
@@ -103,7 +102,8 @@ export default {
       visible: false,
       confirmLoading: false,
       form1: this.$form.createForm(this),
-      defApp: []
+      defApp: [],
+      isFullscreen: false
     }
   },
 
@@ -159,6 +159,19 @@ export default {
     handleCancel () {
       this.form1.resetFields()
       this.visible = false
+    },
+    /* 全屏切换 */
+    toggleFullscreen () {
+      if (!screenfull.isEnabled) {
+        message.error('您的浏览器不支持全屏模式')
+        return
+      }
+      screenfull.toggle()
+      if (screenfull.isFullscreen) {
+        this.isFullscreen = false
+      } else {
+        this.isFullscreen = true
+      }
     }
   }
 }
