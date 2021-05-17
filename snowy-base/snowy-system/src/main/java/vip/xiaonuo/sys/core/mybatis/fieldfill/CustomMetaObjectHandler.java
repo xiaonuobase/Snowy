@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import vip.xiaonuo.core.context.login.LoginContextHolder;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
+import vip.xiaonuo.core.pojo.login.SysLoginUser;
 
 import java.util.Date;
 
@@ -87,7 +88,12 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      */
     private Long getUserUniqueId() {
         try {
-            return LoginContextHolder.me().getSysLoginUserId();
+            SysLoginUser sysLoginUser = LoginContextHolder.me().getSysLoginUserWithoutException();
+            if(ObjectUtil.isNotNull(sysLoginUser)) {
+                return sysLoginUser.getId();
+            } else {
+                return -1L;
+            }
         } catch (Exception e) {
             //如果获取不到就返回-1
             return -1L;
