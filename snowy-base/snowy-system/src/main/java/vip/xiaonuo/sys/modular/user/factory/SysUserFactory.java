@@ -65,6 +65,8 @@ public class SysUserFactory {
             String password = ConstantContextHolder.getDefaultPassWord();
             //设置密码为Md5加密后的密码
             sysUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        } else {
+            sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(), BCrypt.gensalt()));
         }
 
         if (ObjectUtil.isEmpty(sysUser.getAvatar())) {

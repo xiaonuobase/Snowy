@@ -188,7 +188,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = new SysUser();
         BeanUtil.copyProperties(sysUserParam, sysUser);
         SysUserFactory.fillAddCommonUserInfo(sysUser);
-        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(), BCrypt.gensalt()));
         this.save(sysUser);
         Long sysUserId = sysUser.getId();
         //增加员工信息
