@@ -188,6 +188,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = new SysUser();
         BeanUtil.copyProperties(sysUserParam, sysUser);
         SysUserFactory.fillAddCommonUserInfo(sysUser);
+        if(ObjectUtil.isNotEmpty(sysUserParam.getPassword())) {
+            sysUser.setPassword(BCrypt.hashpw(sysUserParam.getPassword(), BCrypt.gensalt()));
+        }
         this.save(sysUser);
         Long sysUserId = sysUser.getId();
         //增加员工信息
@@ -257,6 +260,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUser.setStatus(null);
         //设置密码
         SysUserFactory.fillBaseUserInfo(sysUser);
+        if(ObjectUtil.isNotEmpty(sysUserParam.getPassword())) {
+            sysUser.setPassword(BCrypt.hashpw(sysUserParam.getPassword(), BCrypt.gensalt()));
+        }
         this.updateById(sysUser);
         Long sysUserId = sysUser.getId();
         //编辑员工信息
