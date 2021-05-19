@@ -60,6 +60,7 @@
 | ----------------------         | ------------- |
 | 国产化（金仓、达梦）适配              | $\color{green}{已完成}$ :ok_hand:     |
 | oracle、mssql、pgsql适配          | $\color{green}{已完成}$ :ok_hand:     |
+| 行政区域管理                     | $\color{red}{进行中}$          |
 | 批量删除                        | $\color{red}{进行中}$   |
 | 批量导出Excel                   | $\color{red}{进行中}$         |
 | uni-app前端                     | $\color{red}{进行中}$          |
