@@ -80,7 +80,7 @@
         getAreaList(this.queryParam).then((res) => {
           if (res.success) {
             this.data = res.data
-            this.removeEmptyChildren(this.data);
+            this.removeEmptyChildren(this.data)
           }
         }).finally(() => {
           this.loading = false
@@ -92,7 +92,7 @@
         for (let i = 0; i < data.length; i++) {
           const item = data[i]
           // 如果为最终子节点或其为“市辖区”，则其没有子节点
-          if (item.levelCode === 4 || (item.levelCode === 2 && item.name === "市辖区")) {
+          if (item.levelCode === 4 || (item.levelCode === 2 && item.name === '市辖区')) {
              item.children = null
           }
         }
@@ -101,19 +101,19 @@
         this.selectedRowKeys = selectedRowKeys
       },
       onExpand(expanded, record) {
-        if(expanded) {
+        if (expanded) {
           // 判断其是否已经展开过
-          const index = this.expandedData.indexOf(record.id);
+          const index = this.expandedData.indexOf(record.id)
           // 如果没展开过，则请求接口
-          if(index === -1) {
+          if (index === -1) {
             this.queryParam.parentCode = record.areaCode
             getAreaList(this.queryParam).then((res) => {
               if (res.success) {
                 // 设置为其子节点
                 record.children = res.data
-                this.removeEmptyChildren(record.children);
+                this.removeEmptyChildren(record.children)
                 // 将其放入展开过的id集合
-                this.expandedData.push(record.id);
+                this.expandedData.push(record.id)
               }
             }).finally(() => {
               this.loading = false
