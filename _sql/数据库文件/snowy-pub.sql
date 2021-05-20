@@ -42,6 +42,32 @@ INSERT INTO `sys_app` VALUES (1265476890672672822, '业务应用', 'business', '
 INSERT INTO `sys_app` VALUES (1342445032647098369, '系统工具', 'system_tool', 'N', 0, '2020-12-25 20:20:12', 1265476890672672808, NULL, NULL);
 
 -- ----------------------------
+-- Table structure for sys_area
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_area`;
+CREATE TABLE `sys_area`  (
+  `id` bigint(0) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `level_code` tinyint(0) UNSIGNED COMMENT '层级',
+  `parent_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '0' COMMENT '父级行政代码',
+  `area_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '0' COMMENT '行政代码',
+  `zip_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '0' COMMENT '邮政编码',
+  `city_code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '区号',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '名称',
+  `short_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '简称',
+  `merger_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '组合名',
+  `pinyin` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '拼音',
+  `lng` decimal(10, 6) COMMENT '经度',
+  `lat` decimal(10, 6) COMMENT '纬度',
+PRIMARY KEY (`id`) USING BTREE,
+UNIQUE INDEX `uk_code`(`area_code`) USING BTREE,
+INDEX `idx_parent_code`(`parent_code`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 783563 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '中国行政地区表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_area
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_code_generate
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_code_generate`;
@@ -564,7 +590,10 @@ INSERT INTO `sys_menu` VALUES (1264622039642256681, 1264622039642256621, '[0],[1
 INSERT INTO `sys_menu` VALUES (1264622039642256691, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务可执行列表', 'sys_timers_mgr_get_action_classes', 2, NULL, NULL, NULL, 'sysTimers:getActionClasses', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:16', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256701, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务启动', 'sys_timers_mgr_start', 2, NULL, NULL, NULL, 'sysTimers:start', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:32', 1265476890672672808, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (1264622039642256711, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务关闭', 'sys_timers_mgr_stop', 2, NULL, NULL, NULL, 'sysTimers:stop', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:43', 1265476890672672808, NULL, NULL);
-INSERT INTO `sys_menu` VALUES (1342445437296771074, 0, '[0],', '代码生成', 'code_gen', 1, 'thunderbolt', '/codeGenerate/index', 'gen/codeGenerate/index', '', 'system_tool', 1, 'Y', NULL, '', 1, 100, '代码生成', 0, '2020-12-25 20:21:48', 1265476890672672808, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (1264622039642256721, 0, '[0],', '区域管理', 'sys_area', 0, 'environment', '/area', 'PageView', NULL, 'system', 1, 'Y', NULL, NULL, 1, 100, NULL, 0, '2021-05-19 13:55:40', 1265476890672672808, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (1264622039642256731, 1264622039642256721, '[0],[1264622039642256721],', '系统区域', 'sys_area_mgr', 1, NULL, '/area', 'system/area/index', NULL, 'system', 1, 'Y', NULL, NULL, 1, 100, NULL, 0, '2021-05-19 13:57:42', 1265476890672672808, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (1264622039642256741, 1264622039642256731, '[0],[1264622039642256721],[1264622039642256731],', '系统区域列表', 'sys_area_mgr_list', 2, NULL, NULL, NULL, 'sysArea:list', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2021-05-19 14:01:39', 1265476890672672808, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (1342445437296771074, 0, '[0],', '代码生成', 'code_gen', 1, 'thunderbolt', '/codeGenerate/index', 'gen/codeGenerate/index', NULL, 'system_tool', 1, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-12-25 20:21:48', 1265476890672672808, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_notice

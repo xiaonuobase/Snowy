@@ -121,6 +121,119 @@ GO
 INSERT INTO [dbo].[SYS_APP] ([ID], [NAME], [CODE], [ACTIVE], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1342445032647098369', N'系统工具', N'system_tool', N'N', N'0', N'2020-12-25 20:20:12', N'1265476890672672808', NULL, NULL)
 GO
 
+-- ----------------------------
+-- Table structure for SYS_AREA
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[SYS_AREA]') AND type IN ('U'))
+    DROP TABLE [dbo].[SYS_AREA]
+GO
+
+CREATE TABLE [dbo].[SYS_AREA] (
+  [ID] bigint  NOT NULL,
+  [LEVEL_CODE] tinyint,
+  [PARENT_CODE] nvarchar(20) COLLATE Chinese_PRC_CI_AS,
+  [AREA_CODE] nvarchar(20) COLLATE Chinese_PRC_CI_AS,
+  [ZIP_CODE] nvarchar(6) COLLATE Chinese_PRC_CI_AS,
+  [CITY_CODE] nvarchar(6) COLLATE Chinese_PRC_CI_AS,
+  [NAME] nvarchar(50) COLLATE Chinese_PRC_CI_AS,
+  [SHORT_NAME] nvarchar(50) COLLATE Chinese_PRC_CI_AS,
+  [MERGER_NAME] nvarchar(50) COLLATE Chinese_PRC_CI_AS,
+  [PINYIN] nvarchar(30) COLLATE Chinese_PRC_CI_AS,
+  [LNG] decimal(10,6),
+  [LAT] decimal(10,6)
+)
+GO
+
+ALTER TABLE [dbo].[SYS_AREA] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'层级',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'LEVEL_CODE'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'父级行政代码',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'PARENT_CODE'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'行政代码',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'AREA_CODE'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'邮政编码',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'ZIP_CODE'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'区号',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'CITY_CODE'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'名称',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'NAME'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'简称',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'SHORT_NAME'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'组合名',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'MERGER_NAME'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'拼音',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'PINYIN'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'经度',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'LNG'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'纬度',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA',
+     'COLUMN', N'LAT'
+GO
+
+EXEC sp_addextendedproperty
+     'MS_Description', N'中国行政地区表',
+     'SCHEMA', N'dbo',
+     'TABLE', N'SYS_AREA'
+GO
+
+
+-- ----------------------------
+-- Records of SYS_AREA
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for SYS_CODE_GENERATE
@@ -2156,6 +2269,15 @@ INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON
 GO
 
 INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON], [ROUTER], [COMPONENT], [PERMISSION], [APPLICATION], [OPEN_TYPE], [VISIBLE], [LINK], [REDIRECT], [WEIGHT], [SORT], [REMARK], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1264622039642256711', N'1264622039642256621', N'[0],[1264622039642256611],[1264622039642256621],', N'定时任务关闭', N'sys_timers_mgr_stop', N'2', NULL, NULL, NULL, N'sysTimers:stop', N'system', N'0', N'Y', NULL, NULL, N'1', N'100', NULL, N'0', N'2020-07-01 17:22:43', N'1265476890672672808', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON], [ROUTER], [COMPONENT], [PERMISSION], [APPLICATION], [OPEN_TYPE], [VISIBLE], [LINK], [REDIRECT], [WEIGHT], [SORT], [REMARK], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1264622039642256721', N'0', N'[0],', N'区域管理', N'sys_area', N'0', N'environment', N'/area', N'PageView', NULL, N'system', N'1', N'Y', NULL, NULL, N'1', N'100', NULL, N'0', N'2020-07-01 17:17:20', N'1265476890672672808', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON], [ROUTER], [COMPONENT], [PERMISSION], [APPLICATION], [OPEN_TYPE], [VISIBLE], [LINK], [REDIRECT], [WEIGHT], [SORT], [REMARK], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1264622039642256731', N'1264622039642256721', N'[0],[1264622039642256721],', N'系统区域', N'sys_area_mgr', N'1', NULL, N'/area', N'system/area/index', NULL, N'system', N'1', N'Y', NULL, NULL, N'1', N'100', NULL, N'0', N'2020-07-01 17:18:53', N'1265476890672672808', NULL, NULL)
+GO
+
+INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON], [ROUTER], [COMPONENT], [PERMISSION], [APPLICATION], [OPEN_TYPE], [VISIBLE], [LINK], [REDIRECT], [WEIGHT], [SORT], [REMARK], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1264622039642256741', N'1264622039642256731', N'[0],[1264622039642256721],[1264622039642256731],', N'系统区域列表', N'sys_area_mgr_list', N'2', NULL, NULL, NULL, N'sysArea:list', N'system', N'0', N'Y', NULL, NULL, N'1', N'100', NULL, N'0', N'2020-07-01 17:19:43', N'1265476890672672808', NULL, NULL)
 GO
 
 INSERT INTO [dbo].[SYS_MENU] ([ID], [PID], [PIDS], [NAME], [CODE], [TYPE], [ICON], [ROUTER], [COMPONENT], [PERMISSION], [APPLICATION], [OPEN_TYPE], [VISIBLE], [LINK], [REDIRECT], [WEIGHT], [SORT], [REMARK], [STATUS], [CREATE_TIME], [CREATE_USER], [UPDATE_TIME], [UPDATE_USER]) VALUES (N'1342445437296771074', N'0', N'[0],', N'代码生成', N'code_gen', N'1', N'thunderbolt', N'/codeGenerate/index', N'gen/codeGenerate/index', N'', N'system_tool', N'1', N'Y', NULL, N'', N'1', N'100', N'代码生成', N'0', N'2020-12-25 20:21:48', N'1265476890672672808', NULL, NULL)
@@ -4306,6 +4428,29 @@ WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW
 ON [PRIMARY]
 GO
 
+-- ----------------------------
+-- Indexes structure for table SYS_AREA
+-- ----------------------------
+CREATE UNIQUE NONCLUSTERED INDEX [UK_CODE]
+ON [dbo].[SYS_AREA] (
+  [AREA_CODE] ASC
+)
+GO
+
+CREATE NONCLUSTERED INDEX [IDX_PARENT_CODE]
+ON [dbo].[SYS_AREA] (
+  [PARENT_CODE] ASC
+)
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table SYS_AREA
+-- ----------------------------
+ALTER TABLE [dbo].[SYS_AREA] ADD CONSTRAINT [PK__SYS_AREA__3214EC27872379CC] PRIMARY KEY CLUSTERED ([ID])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+ON [PRIMARY]
+GO
 
 -- ----------------------------
 -- Primary Key structure for table SYS_CODE_GENERATE

@@ -51,6 +51,42 @@ INSERT INTO "public"."sys_app" VALUES (1265476890672672822, '业务应用', 'bus
 INSERT INTO "public"."sys_app" VALUES (1342445032647098369, '系统工具', 'system_tool', 'N', 0, '2020-12-25 20:20:12', 1265476890672672808, NULL, NULL);
 
 -- ----------------------------
+-- Table structure for sys_area
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."sys_area";
+CREATE TABLE "public"."sys_area" (
+  "id" int8 NOT NULL,
+  "level_code" int2,
+  "parent_code" varchar(20) COLLATE "pg_catalog"."default",
+  "area_code" varchar(20) COLLATE "pg_catalog"."default",
+  "zip_code" varchar(6) COLLATE "pg_catalog"."default",
+  "city_code" varchar(6) COLLATE "pg_catalog"."default",
+  "name" varchar(50) COLLATE "pg_catalog"."default",
+  "short_name" varchar(50) COLLATE "pg_catalog"."default",
+  "merger_name" varchar(50) COLLATE "pg_catalog"."default",
+  "pinyin" varchar(30) COLLATE "pg_catalog"."default",
+  "lng" numeric(10,6),
+  "lat" numeric(10,6)
+)
+;
+COMMENT ON COLUMN "public"."sys_area"."level_code" IS '层级';
+COMMENT ON COLUMN "public"."sys_area"."parent_code" IS '父级行政代码';
+COMMENT ON COLUMN "public"."sys_area"."area_code" IS '行政代码';
+COMMENT ON COLUMN "public"."sys_area"."zip_code" IS '邮政编码';
+COMMENT ON COLUMN "public"."sys_area"."city_code" IS '区号';
+COMMENT ON COLUMN "public"."sys_area"."name" IS '名称';
+COMMENT ON COLUMN "public"."sys_area"."short_name" IS '简称';
+COMMENT ON COLUMN "public"."sys_area"."merger_name" IS '组合名';
+COMMENT ON COLUMN "public"."sys_area"."pinyin" IS '拼音';
+COMMENT ON COLUMN "public"."sys_area"."lng" IS '经度';
+COMMENT ON COLUMN "public"."sys_area"."lat" IS '纬度';
+COMMENT ON TABLE "public"."sys_area" IS '中国行政地区表';
+
+-- ----------------------------
+-- Records of sys_area
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for sys_code_generate
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."sys_code_generate";
@@ -698,6 +734,9 @@ INSERT INTO "public"."sys_menu" VALUES (1264622039642256681, 1264622039642256621
 INSERT INTO "public"."sys_menu" VALUES (1264622039642256691, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务可执行列表', 'sys_timers_mgr_get_action_classes', 2, NULL, NULL, NULL, 'sysTimers:getActionClasses', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:16', 1265476890672672808, NULL, NULL);
 INSERT INTO "public"."sys_menu" VALUES (1264622039642256701, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务启动', 'sys_timers_mgr_start', 2, NULL, NULL, NULL, 'sysTimers:start', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:32', 1265476890672672808, NULL, NULL);
 INSERT INTO "public"."sys_menu" VALUES (1264622039642256711, 1264622039642256621, '[0],[1264622039642256611],[1264622039642256621],', '定时任务关闭', 'sys_timers_mgr_stop', 2, NULL, NULL, NULL, 'sysTimers:stop', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:22:43', 1265476890672672808, NULL, NULL);
+INSERT INTO "public"."sys_menu" VALUES (1264622039642256721, 0, '[0],', '区域管理', 'sys_area', 0, 'environment', '/area', 'PageView', NULL, 'system', 1, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:17:20', 1265476890672672808, NULL, NULL);
+INSERT INTO "public"."sys_menu" VALUES (1264622039642256731, 1264622039642256721, '[0],[1264622039642256721],', '系统区域', 'sys_area_mgr', 1, NULL, '/area', 'system/area/index', NULL, 'system', 1, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:18:53', 1265476890672672808, NULL, NULL);
+INSERT INTO "public"."sys_menu" VALUES (1264622039642256741, 1264622039642256731, '[0],[1264622039642256721],[1264622039642256731],', '系统区域列表', 'sys_area_mgr_list', 2, NULL, NULL, NULL, 'sysArea:list', 'system', 0, 'Y', NULL, NULL, 1, 100, NULL, 0, '2020-07-01 17:19:43', 1265476890672672808, NULL, NULL);
 INSERT INTO "public"."sys_menu" VALUES (1342445437296771074, 0, '[0],', '代码生成', 'code_gen', 1, 'thunderbolt', '/codeGenerate/index', 'gen/codeGenerate/index', '', 'system_tool', 1, 'Y', NULL, '', 1, 100, '代码生成', 0, '2020-12-25 20:21:48', 1265476890672672808, NULL, NULL);
 
 -- ----------------------------
@@ -1386,6 +1425,21 @@ COMMENT ON TABLE "public"."sys_vis_log" IS '系统访问日志表';
 -- Primary Key structure for table sys_app
 -- ----------------------------
 ALTER TABLE "public"."sys_app" ADD CONSTRAINT "sys_app_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Indexes structure for table sys_area
+-- ----------------------------
+CREATE INDEX "idx_parent_code" ON "public"."sys_area" USING btree (
+  "parent_code" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
+);
+CREATE INDEX "uk_code" ON "public"."sys_area" USING btree (
+  "area_code" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
+);
+
+-- ----------------------------
+-- Primary Key structure for table sys_area
+-- ----------------------------
+ALTER TABLE "public"."sys_area" ADD CONSTRAINT "sys_area_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
 -- Primary Key structure for table sys_code_generate
