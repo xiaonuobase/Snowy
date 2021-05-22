@@ -101,12 +101,10 @@
           if (res.success) {
             this.$message.success('强制下线成功')
             // 重新加载表格
-            this.loadDataList()
+            this.$refs.table.refresh()
           } else {
             this.$message.error('强制下线失败：' + res.message)
           }
-        }).catch((err) => {
-          this.$message.error('强制下线错误：' + err.message)
         })
       },
       onSelectChange (selectedRowKeys, selectedRows) {
