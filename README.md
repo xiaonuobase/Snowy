@@ -255,14 +255,14 @@ jodconverter:
 18. 邮件发送、发送邮件功能。
 19. 短信发送、短信发送功能，可使用阿里云sms，腾讯云sms，支持拓展。
 
-### 官方公众号
+### 官方微信群
 
-##### 微信扫码关注公众号，免费加入微信交流群，公众号不定时分享一路走来的经验！
+##### 因群达到200人以上，需加微信拉群
 
 <table>
     <tr>
-        <td>官方公众号</td>
-        <td><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=3841yKGwU0dOU5EARaYCHQAw6aFaB5JptCs-ACRfO_rQw7NdogWFXIQ&name=xiaonuobase.jpg" width="120"/></td>
+        <td>微信群</td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=ecc5LVAwwRuysFB28xQQb1p3IPC13hzAtji_Sxyr42naNTnj7xurmI8&name=weixin.png" width="120"/></td>
     </tr>
 </table>
 
