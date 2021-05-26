@@ -40,7 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * 根据ip地址定位工具类，使用阿里云定位api
+ * 根据ip地址定位工具类，使用阿里云定位api，如使用本接口，仅需使用以下地址购买接口，然后替换sys_config表中定位appCode为你自己的即可
+ * 接口购买地址：https://market.aliyun.com/products/57002003/cmapi021970.html
  *
  * @author xuyuxiang
  * @date 2020/3/16 11:25
@@ -100,7 +101,8 @@ public class IpAddressUtil {
             }
         } catch (Exception e) {
             resultJson = SymbolConstant.DASH;
-            log.error(">>> 根据ip定位异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage());
+            //注释掉此log，以免频繁打印，可自行开启
+            //log.error(">>> 根据ip定位异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage());
         }
         return resultJson;
     }
