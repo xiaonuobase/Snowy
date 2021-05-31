@@ -98,7 +98,6 @@
   import { STable, Ellipsis, XCard, XDown } from '@/components'
   import { sysOpLogPage, sysOpLogDelete, sysOpLogExport } from '@/api/modular/system/logManage'
   import detailsOplog from './details'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import moment from 'moment'
   export default {
     components: {

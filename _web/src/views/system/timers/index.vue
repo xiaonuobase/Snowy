@@ -29,9 +29,8 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.id"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <template slot="operator" v-if="hasPerm('sysTimers:add')">
           <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysTimers:add')">新增定时器</a-button>
@@ -45,12 +44,12 @@
         <span slot="jobStatus" slot-scope="text,record" v-if="hasPerm('sysTimers:start') || hasPerm('sysTimers:stop')">
           <a-popconfirm placement="top" :title="text===1? '确定停止该任务？':'确定启动该任务？'" @confirm="() => editjobStatusStatus(text,record)">
             <a-badge :status="text===1? 'processing':'default'" />
-            <a>{{ jobStatusFilter(text) }}</a>
+            <a>{{ 'run_status' | dictType(text) }}</a>
           </a-popconfirm>
         </span>
         <span slot="jobStatus" v-else>
           <a-badge :status="text===1? 'processing':'default'" />
-          {{ jobStatusFilter(text) }}
+          {{ 'run_status' | dictType(text) }}
         </span>
         <span slot="action" slot-scope="text, record">
           <a v-if="hasPerm('sysTimers:edit')" @click="$refs.editForm.edit(record)">编辑</a>
@@ -70,7 +69,6 @@
   import { sysTimersPage, sysTimersDelete, sysTimersStart, sysTimersStop } from '@/api/modular/system/timersManage'
   import addForm from './addForm'
   import editForm from './editForm'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   export default {
     name: 'PosIndex',
     components: {
@@ -116,8 +114,6 @@
             return res.data
           })
         },
-        selectedRowKeys: [],
-        selectedRows: [],
         jobStatusDictTypeDropDown: []
       }
     },
@@ -137,17 +133,15 @@
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'run_status' }).then((res) => {
-          this.jobStatusDictTypeDropDown = res.data
-        })
+        this.jobStatusDictTypeDropDown = this.$options.filters['dictData']('run_status')
       },
-      jobStatusFilter (jobStatus) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.jobStatusDictTypeDropDown.filter(item => item.code == jobStatus)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
+      // jobStatusFilter (jobStatus) {
+      //   // eslint-disable-next-line eqeqeq
+      //   const values = this.jobStatusDictTypeDropDown.filter(item => item.code == jobStatus)
+      //   if (values.length > 0) {
+      //     return values[0].value
+      //   }
+      // },
       /**
        * 启动停止
        */
@@ -186,15 +180,8 @@
           this.$message.error('删除错误：' + err.message)
         })
       },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
       handleOk () {
         this.$refs.table.refresh()
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }

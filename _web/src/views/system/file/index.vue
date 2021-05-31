@@ -42,7 +42,7 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.id"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
@@ -64,7 +64,7 @@
           <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
         </span>
         <span slot="fileLocation" slot-scope="text">
-          {{ fileLocationFilter(text) }}
+          {{ 'file_storage_location' | dictType(text) }}
         </span>
         <span slot="fileSuffix" slot-scope="text">
           <a-tag color="blue">{{ text }}</a-tag>
@@ -90,7 +90,6 @@
 </template>
 <script>
   import { STable, Ellipsis, XCard } from '@/components'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import { sysFileInfoPage, sysFileInfoDelete, sysFileInfoUpload, sysFileInfoDownload } from '@/api/modular/system/fileManage'
   import detailForm from './detailForm'
   import previewForm from './previewForm'
@@ -164,13 +163,6 @@
       }
     },
     methods: {
-      fileLocationFilter (fileLocation) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.fileLocationDictTypeDropDown.filter(item => item.code == fileLocation)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
       /**
        * 预览文件（微软插件）
        */
@@ -181,9 +173,7 @@
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'file_storage_location' }).then((res) => {
-          this.fileLocationDictTypeDropDown = res.data
-        })
+        this.fileLocationDictTypeDropDown = this.$options.filters['dictData']('file_storage_location')
       },
       /**
        * 下载文件（所有文件）

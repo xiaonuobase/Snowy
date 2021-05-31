@@ -12,7 +12,7 @@
             <a-col :md="8" :sm="24">
               <a-form-item label="类型" v-if="hasPerm('sysNotice:received')">
                 <a-select v-model="queryParam.type" placeholder="请选择类型" allow-clear >
-                  <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  <a-select-option v-for="(item,index) in typeDictTypeDropDown" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -31,15 +31,15 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.id"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <span slot="status" slot-scope="text">
-          {{ statusFilter(text) }}
+          {{ 'notice_status' | dictType(text) }}
         </span>
         <span slot="type" slot-scope="text">
-          {{ typeFilter(text) }}
+          {{ 'notice_type' | dictType(text) }}
         </span>
         <span slot="action" slot-scope="text, record">
           <a v-if="hasPerm('sysNotice:received')" @click="$refs.detailForm.detail(record)">查看</a>
@@ -54,7 +54,6 @@
   import { STable, XCard } from '@/components'
   // eslint-disable-next-line no-unused-vars
   import { sysNoticeReceived } from '@/api/modular/system/noticeReceivedManage'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import detailForm from './detailForm'
   export default {
     components: {
@@ -113,26 +112,8 @@
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'notice_status' }).then((res) => {
-          this.statusDictTypeDropDown = res.data
-        })
-        sysDictTypeDropDown({ code: 'notice_type' }).then((res) => {
-          this.typeDictTypeDropDown = res.data
-        })
-      },
-      statusFilter (status) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.statusDictTypeDropDown.filter(item => item.code == status)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
-      typeFilter (type) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.typeDictTypeDropDown.filter(item => item.code == type)
-        if (values.length > 0) {
-          return values[0].value
-        }
+        this.statusDictTypeDropDown = this.$options.filters['dictData']('notice_status')
+        this.typeDictTypeDropDown = this.$options.filters['dictData']('notice_type')
       },
       handleOk () {
         this.$refs.table.refresh()
