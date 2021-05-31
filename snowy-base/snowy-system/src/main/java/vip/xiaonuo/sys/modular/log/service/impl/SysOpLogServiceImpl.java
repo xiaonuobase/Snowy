@@ -31,6 +31,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import vip.xiaonuo.core.factory.PageFactory;
 import vip.xiaonuo.core.pojo.page.PageResult;
+import vip.xiaonuo.core.util.PoiUtil;
 import vip.xiaonuo.sys.modular.log.entity.SysOpLog;
 import vip.xiaonuo.sys.modular.log.mapper.SysOpLogMapper;
 import vip.xiaonuo.sys.modular.log.param.SysOpLogParam;
@@ -77,5 +78,11 @@ public class SysOpLogServiceImpl extends ServiceImpl<SysOpLogMapper, SysOpLog> i
     @Override
     public void delete() {
         this.remove(new QueryWrapper<>());
+    }
+
+    @Override
+    public void export(SysOpLogParam sysOpLogParam) {
+        List<SysOpLog> list = this.list();
+        PoiUtil.exportExcelWithStream("SysOpLog.xls", SysOpLog.class, list);
     }
 }

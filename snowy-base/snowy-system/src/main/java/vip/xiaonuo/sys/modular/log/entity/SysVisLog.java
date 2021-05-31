@@ -24,6 +24,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.log.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -51,46 +52,55 @@ public class SysVisLog {
     /**
      * 名称
      */
+    @Excel(name = "名称", width = 20)
     private String name;
 
     /**
      * 是否执行成功（Y-是，N-否）
      */
+    @Excel(name = "是否执行成功", replace = {"是_Y", "否_N"}, width = 20)
     private String success;
 
     /**
      * 具体消息
      */
+    @Excel(name = "具体消息", width = 20)
     private String message;
 
     /**
      * ip
      */
+    @Excel(name = "ip", width = 20)
     private String ip;
 
     /**
      * 地址
      */
+    @Excel(name = "地址", width = 20)
     private String location;
 
     /**
      * 浏览器
      */
+    @Excel(name = "浏览器", width = 20)
     private String browser;
 
     /**
      * 操作系统
      */
+    @Excel(name = "操作系统", width = 20)
     private String os;
 
     /**
      * 访问类型（字典 1登入 2登出）
      */
+    @Excel(name = "访问类型", replace = {"登入_1", "登出_2"}, width = 20)
     private Integer visType;
 
     /**
      * 访问时间
      */
+    @Excel(name = "操作时间", databaseFormat = "yyyy-MM-dd HH:mm:ss", format = "yyyy-MM-dd HH:mm:ss", width = 20)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date visTime;
 

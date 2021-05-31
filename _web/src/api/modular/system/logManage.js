@@ -55,3 +55,33 @@ export function sysOpLogDelete (parameter) {
     data: parameter
   })
 }
+
+/**
+ * 导出登录日志
+ *
+ * @author yubaoshan
+ * @date 2021/5/30 18:03
+ */
+export function sysVisLogExport (parameter) {
+  return axios({
+    url: '/sysVisLog/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 导出操作日志
+ *
+ * @author yubaoshan
+ * @date 2021/5/30 18:03
+ */
+export function sysOpLogExport (parameter) {
+  return axios({
+    url: '/sysOpLog/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}

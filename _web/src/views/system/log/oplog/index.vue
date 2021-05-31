@@ -12,7 +12,7 @@
             <a-col :md="8" :sm="24">
               <a-form-item label="操作类型">
                 <a-select v-model="queryParam.opType" allow-clear placeholder="请选择操作类型" >
-                  <a-select-option v-for="(item,index) in opTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  <a-select-option v-for="(item,index) in opTypeDict" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -20,7 +20,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="是否成功">
                   <a-select v-model="queryParam.success" placeholder="请选择是否成功" >
-                    <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                    <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -56,20 +56,24 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.id"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
-        <template slot="operator" v-if="hasPerm('sysOpLog:delete')">
-          <a-popconfirm @confirm="() => sysOpLogDelete()" placement="top" title="确认清空日志？">
-            <a-button >清空日志</a-button>
+        <template slot="operator">
+          <a-popconfirm v-if="hasPerm('sysOpLog:delete')" @confirm="() => sysOpLogDelete()" placement="top" title="确认清空日志？">
+            <a-button type="danger" ghost>清空日志</a-button>
           </a-popconfirm>
+          <x-down
+            v-if="hasPerm('sysOpLog:export')"
+            ref="batchExport"
+            @batchExport="batchExport"
+          />
         </template>
         <span slot="opType" slot-scope="text">
-          {{ opTypeFilter(text) }}
+          {{ 'op_type' | dictType(text) }}
         </span>
         <span slot="success" slot-scope="text">
-          {{ successFilter(text) }}
+          {{ 'yes_or_no' | dictType(text) }}
         </span>
         <span slot="name" slot-scope="text">
           <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
@@ -91,13 +95,14 @@
   </div>
 </template>
 <script>
-  import { STable, Ellipsis, XCard } from '@/components'
-  import { sysOpLogPage, sysOpLogDelete } from '@/api/modular/system/logManage'
+  import { STable, Ellipsis, XCard, XDown } from '@/components'
+  import { sysOpLogPage, sysOpLogDelete, sysOpLogExport } from '@/api/modular/system/logManage'
   import detailsOplog from './details'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import moment from 'moment'
   export default {
     components: {
+      XDown,
       XCard,
       STable,
       Ellipsis,
@@ -156,9 +161,6 @@
             return res.data
           })
         },
-        selectedRowKeys: [],
-        selectedRows: [],
-        defaultExpandedKeys: [],
         opTypeDict: [],
         successDict: []
       }
@@ -168,20 +170,6 @@
     },
     methods: {
       moment,
-      opTypeFilter (opType) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.opTypeDict.filter(item => item.code == opType)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
-      successFilter (success) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.successDict.filter(item => item.code == success)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
       /**
        * 查询参数组装
        */
@@ -203,12 +191,8 @@
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'op_type' }).then((res) => {
-          this.opTypeDict = res.data
-        })
-        sysDictTypeDropDown({ code: 'yes_or_no' }).then((res) => {
-          this.successDict = res.data
-        })
+        this.opTypeDict = this.$options.filters['dictData']('op_type')
+        this.successDict = this.$options.filters['dictData']('yes_or_no')
       },
       /**
        * 清空日志
@@ -223,12 +207,16 @@
           }
         })
       },
+      /**
+       * 批量导出
+       */
+      batchExport () {
+        sysOpLogExport().then((res) => {
+          this.$refs.batchExport.downloadfile(res)
+        })
+      },
       toggleAdvanced () {
         this.advanced = !this.advanced
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }

@@ -54,4 +54,12 @@ public interface SysOpLogService extends IService<SysOpLog> {
      * @date 2020/6/1 11:05
      */
     void delete();
+
+    /**
+     * 导出系统操作日志
+     *
+     * @author yubaoshan
+     * @date 2021/5/30 17:58
+     */
+    void export(SysOpLogParam sysOpLogParam);
 }

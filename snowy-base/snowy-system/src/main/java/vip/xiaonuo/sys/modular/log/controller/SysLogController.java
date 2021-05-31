@@ -36,7 +36,6 @@ import vip.xiaonuo.sys.modular.log.service.SysVisLogService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
 
 /**
@@ -105,4 +104,31 @@ public class SysLogController {
         sysOpLogService.delete();
         return new SuccessResponseData();
     }
+
+    /**
+     * 导出系统操作日志
+     *
+     * @author yubaoshan
+     * @date 2020/5/30 17:55
+     */
+    @Permission
+    @GetMapping("/sysOpLog/export")
+    @BusinessLog(title = "操作日志_导出", opType = LogAnnotionOpTypeEnum.EXPORT)
+    public void export(SysOpLogParam sysOpLogParam) {
+        sysOpLogService.export(sysOpLogParam);
+    }
+
+    /**
+     * 导出系统访问日志
+     *
+     * @author yubaoshan
+     * @date 2020/5/30 17:55
+     */
+    @Permission
+    @GetMapping("/sysVisLog/export")
+    @BusinessLog(title = "访问日志_导出", opType = LogAnnotionOpTypeEnum.EXPORT)
+    public void export(SysVisLogParam sysVisLogParam) {
+        sysVisLogService.export(sysVisLogParam);
+    }
+
 }

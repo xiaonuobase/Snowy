@@ -54,4 +54,12 @@ public interface SysVisLogService extends IService<SysVisLog> {
      * @date 2020/6/1 11:04
      */
     void delete();
+
+    /**
+     * 导出系统访问日志
+     *
+     * @author yubaoshan
+     * @date 2021/5/30 17:58
+     */
+    void export(SysVisLogParam sysVisLogParam);
 }

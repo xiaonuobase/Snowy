@@ -12,7 +12,7 @@
             <a-col :md="8" :sm="24">
               <a-form-item label="访问类型">
                 <a-select v-model="queryParam.visType" allow-clear placeholder="请选择访问类型" >
-                  <a-select-option v-for="(item,index) in visTypeDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  <a-select-option v-for="(item,index) in visTypeDict" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -20,7 +20,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="是否成功">
                   <a-select v-model="queryParam.success" placeholder="请选择是否成功" >
-                    <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                    <a-select-option v-for="(item,index) in successDict" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -53,17 +53,21 @@
     </x-card>
     <a-card :bordered="false">
       <s-table
-        ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
         :rowKey="(record) => record.id"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :alert="false"
+        ref="table"
       >
-        <template slot="operator" v-if="hasPerm('sysVisLog:sysVisLog')">
+        <template slot="operator">
           <a-popconfirm @confirm="() => sysVisLogDelete()" placement="top" title="确认清空日志？" v-if="hasPerm('sysVisLog:delete')">
-            <a-button >清空日志</a-button>
+            <a-button type="danger" ghost>清空日志</a-button>
           </a-popconfirm>
+          <x-down
+            v-if="hasPerm('sysVisLog:export')"
+            ref="batchExport"
+            @batchExport="batchExport"
+          />
         </template>
         <span slot="name" slot-scope="text">
           <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
@@ -72,10 +76,10 @@
           <ellipsis :length="10" tooltip>{{ text }}</ellipsis>
         </span>
         <span slot="visType" slot-scope="text">
-          {{ visTypeFilter(text) }}
+          {{ 'vis_type' | dictType(text) }}
         </span>
         <span slot="success" slot-scope="text">
-          {{ successFilter(text) }}
+          {{ 'yes_or_no' | dictType(text) }}
         </span>
         <span slot="action" slot-scope="text, record">
           <span slot="action" >
@@ -88,13 +92,13 @@
   </div>
 </template>
 <script>
-  import { STable, Ellipsis, XCard } from '@/components'
-  import { sysVisLogPage, sysVisLogDelete } from '@/api/modular/system/logManage'
+  import { STable, Ellipsis, XCard, XDown } from '@/components'
+  import { sysVisLogPage, sysVisLogDelete, sysVisLogExport } from '@/api/modular/system/logManage'
   import detailsVislog from './details'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import moment from 'moment'
   export default {
     components: {
+      XDown,
       XCard,
       STable,
       Ellipsis,
@@ -152,8 +156,6 @@
             return res.data
           })
         },
-        selectedRowKeys: [],
-        selectedRows: [],
         defaultExpandedKeys: [],
         visTypeDict: [],
         successDict: []
@@ -167,30 +169,12 @@
     },
     methods: {
       moment,
-      visTypeFilter (visType) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.visTypeDict.filter(item => item.code == visType)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
-      successFilter (success) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.successDict.filter(item => item.code == success)
-        if (values.length > 0) {
-          return values[0].value
-        }
-      },
       /**
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'vis_type' }).then((res) => {
-          this.visTypeDict = res.data
-        })
-        sysDictTypeDropDown({ code: 'yes_or_no' }).then((res) => {
-          this.successDict = res.data
-        })
+        this.visTypeDict = this.$options.filters['dictData']('vis_type')
+        this.successDict = this.$options.filters['dictData']('yes_or_no')
       },
       /**
        * 查询参数组装
@@ -210,6 +194,14 @@
         return obj
       },
       /**
+       * 批量导出
+       */
+      batchExport () {
+        sysVisLogExport().then((res) => {
+          this.$refs.batchExport.downloadfile(res)
+        })
+      },
+      /**
        * 清空日志
        */
       sysVisLogDelete () {
@@ -224,10 +216,6 @@
       },
       toggleAdvanced () {
         this.advanced = !this.advanced
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }
