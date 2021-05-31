@@ -18,7 +18,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="所属分类">
                   <a-select v-model="queryParam.groupCode" placeholder="请选择所属分类" allow-clear>
-                    <a-select-option v-for="(item,index) in groupCodeDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                    <a-select-option v-for="(item,index) in groupCodeDictTypeDropDown" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -42,9 +42,8 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.code"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <template slot="operator" v-if="hasPerm('sysConfig:add')">
           <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysConfig:add')">新增配置</a-button>
@@ -62,7 +61,7 @@
           <ellipsis :length="16" tooltip>{{ text }}</ellipsis>
         </span>
         <span slot="groupCode" slot-scope="text">
-          {{ groupCodeFilter(text) }}
+          {{ 'consts_type' | dictType(text) }}
         </span>
         <span slot="action" slot-scope="text, record">
           <a v-if="hasPerm('sysConfig:edit')" @click="$refs.editForm.edit(record)">编辑</a>
@@ -80,7 +79,6 @@
 <script>
   import { STable, Ellipsis, XCard } from '@/components'
   import { sysConfigPage, sysConfigDelete } from '@/api/modular/system/configManage'
-  import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
   import editForm from './editForm'
   export default {
@@ -131,8 +129,6 @@
             return res.data
           })
         },
-        selectedRowKeys: [],
-        selectedRows: [],
         groupCodeDictTypeDropDown: []
       }
     },
@@ -155,16 +151,7 @@
        * 获取字典数据
        */
       sysDictTypeDropDown () {
-        sysDictTypeDropDown({ code: 'consts_type' }).then((res) => {
-          this.groupCodeDictTypeDropDown = res.data
-        })
-      },
-      groupCodeFilter (groupCode) {
-        // eslint-disable-next-line eqeqeq
-        const values = this.groupCodeDictTypeDropDown.filter(item => item.code == groupCode)
-        if (values.length > 0) {
-          return values[0].value
-        }
+        this.groupCodeDictTypeDropDown = this.$options.filters['dictData']('consts_type')
       },
       sysConfigDelete (record) {
         sysConfigDelete(record).then((res) => {
@@ -183,10 +170,6 @@
       },
       handleOk () {
         this.$refs.table.refresh()
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }

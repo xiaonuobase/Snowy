@@ -27,9 +27,8 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
-        :rowKey="(record) => record.code"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :alert="false"
+        :rowKey="(record) => record.id"
       >
         <template slot="operator" v-if="hasPerm('sysRole:add')">
           <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysRole:add')">新增角色</a-button>
@@ -109,9 +108,7 @@
           return getRolePage(Object.assign(parameter, this.queryParam)).then((res) => {
             return res.data
           })
-        },
-        selectedRowKeys: [],
-        selectedRows: []
+        }
     }
     },
 
@@ -142,10 +139,6 @@
 
       handleOk () {
         this.$refs.table.refresh()
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
 

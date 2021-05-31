@@ -44,7 +44,7 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="false"
         :rowKey="(record) => record.id"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >

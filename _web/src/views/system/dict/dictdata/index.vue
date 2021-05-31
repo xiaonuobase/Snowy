@@ -20,8 +20,8 @@
                 <a-input v-model="queryParam.code" allow-clear placeholder="请输入唯一编码"/>
               </a-form-item>
             </a-col>
-            <a-col :md="!advanced && 8 || 24" :sm="24">
-              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+            <a-col :md="8" :sm="24">
+              <span class="table-page-search-submitButtons">
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
               </span>
@@ -37,7 +37,6 @@
         :data="loadData"
         :alert="false"
         :rowKey="(record) => record.code"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
         <template slot="operator" v-if="hasPerm('sysDictData:add')" >
           <a-button @click="$refs.addForm.add(typeId)" icon="plus" type="primary" v-if="hasPerm('sysDictData:add')">新增数据</a-button>
@@ -73,8 +72,6 @@
     },
     data () {
       return {
-        // 高级搜索 展开/关闭
-        advanced: false,
         // 查询参数
         queryParam: {},
         // 表头
@@ -111,8 +108,6 @@
             return res.data
           })
         },
-        selectedRowKeys: [],
-        selectedRows: [],
         statusDict: []
       }
     },
@@ -170,15 +165,8 @@
           this.$message.error('删除错误：' + err.message)
         })
       },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
-      },
       handleOk () {
         this.$refs.table.refresh()
-      },
-      onSelectChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }

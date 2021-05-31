@@ -31,9 +31,8 @@
           ref="table"
           :columns="columns"
           :data="loadData"
-          :alert="true"
+          :alert="false"
           :rowKey="(record) => record.id"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onChange }"
         >
           <template slot="operator" v-if="hasPerm('sysApp:add')">
             <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysApp:add')">新增应用</a-button>
@@ -78,14 +77,6 @@
     data () {
       return {
         // description: '面包屑说明',
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 }
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 }
-        },
         // 查询参数
         queryParam: {},
         // 表头
@@ -117,8 +108,6 @@
           })
         },
         loading: false,
-        selectedRowKeys: [],
-        selectedRows: [],
         statusDict: [],
         activeDict: []
       }
@@ -191,10 +180,6 @@
         }).catch((err) => {
           this.$message.error('删除错误：' + err.message)
         })
-      },
-      onChange (selectedRowKeys, selectedRows) {
-        this.selectedRowKeys = selectedRowKeys
-        this.selectedRows = selectedRows
       }
     }
   }

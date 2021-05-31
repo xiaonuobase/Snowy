@@ -11,6 +11,7 @@ Table 重封装组件说明
 
 该 `table` 由 [@Saraka](https://github.com/saraka-tsukai) 完成封装
 
+由 `小诺` 完成二次改进使用
 
 例子1
 ----

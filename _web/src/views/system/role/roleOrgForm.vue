@@ -140,7 +140,6 @@
       sysRoleOwnData (record) {
         sysRoleOwnData({ id: record.id }).then((res) => {
           if (res.success) {
-            console.log(JSON.stringify(res.data))
             this.checkedKeys = res.data
           }
           this.formLoading = false
@@ -152,7 +151,6 @@
         this.autoExpandParent = false
       },
       onCheck (checkedKeys) {
-        console.log(JSON.stringify(checkedKeys))
         this.checkedKeys = checkedKeys
       },
       onSelect (selectedKeys, info) {
