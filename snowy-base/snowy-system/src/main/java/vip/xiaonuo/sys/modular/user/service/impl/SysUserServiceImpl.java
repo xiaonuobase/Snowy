@@ -436,8 +436,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void export(SysUserParam sysUserParam) {
         // 只导出正常的
-        sysUserParam.setStatus(CommonStatusEnum.ENABLE.getCode());
-        List<SysUser> list = this.list();
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getStatus, CommonStatusEnum.ENABLE.getCode());
+        // 其他的条件正常来说导出也只能是自己权限范围内看到的用户，改天我们再优化
+        List<SysUser> list = this.list(queryWrapper);
         PoiUtil.exportExcelWithStream("SonwyUsers.xls", SysUser.class, list);
     }
 
