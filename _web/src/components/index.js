@@ -33,6 +33,7 @@ import Dialog from '@/components/Dialog'
 
 // xn components
 import XCard from '@/components/xnComponents/XCard'
+import XDown from '@/components/xnComponents/XDown'
 
 export {
   AvatarList,
@@ -66,5 +67,6 @@ export {
   ArticleListContent,
   AntdEditor,
   Dialog,
-  XCard
+  XCard,
+  XDown
 }

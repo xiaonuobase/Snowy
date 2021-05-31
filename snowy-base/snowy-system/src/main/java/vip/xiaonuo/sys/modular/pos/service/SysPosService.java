@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * 系统职位service接口
  *
- * @author xuyuxiang
+ * @author xuyuxiang yubaoshan
  * @date 2020/3/13 16:00
  */
 public interface SysPosService extends IService<SysPos> {
@@ -95,4 +95,11 @@ public interface SysPosService extends IService<SysPos> {
      * @date 2020/3/26 9:50
      */
     SysPos detail(SysPosParam sysPosParam);
+
+    /**
+     * 导出系统职位
+     * @author yubaoshan
+     * @date 2021/5/29 16:12
+     */
+    void export(SysPosParam sysPosParam);
 }

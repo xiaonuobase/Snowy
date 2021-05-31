@@ -131,4 +131,17 @@ public class SysPosController {
     public ResponseData detail(@Validated(SysPosParam.detail.class) SysPosParam sysPosParam) {
         return new SuccessResponseData(sysPosService.detail(sysPosParam));
     }
+
+    /**
+     * 导出系统用户
+     *
+     * @author yubaoshan
+     * @date 2020/6/30 16:07
+     */
+    @Permission
+    @GetMapping("/sysPos/export")
+    @BusinessLog(title = "系统职位_导出", opType = LogAnnotionOpTypeEnum.EXPORT)
+    public void export(SysPosParam sysPosParam) {
+        sysPosService.export(sysPosParam);
+    }
 }

@@ -69,3 +69,18 @@ export function sysPosDelete (parameter) {
     data: parameter
   })
 }
+
+/**
+ * 导出系统职位
+ *
+ * @author yubaoshan
+ * @date 2021/5/29 16:19
+ */
+export function sysPosExport (parameter) {
+  return axios({
+    url: '/sysPos/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}

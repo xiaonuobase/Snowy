@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="职位编辑"
-    :width="900"
+    :width="500"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
@@ -73,7 +73,7 @@
         },
         wrapperCol: {
           xs: { span: 24 },
-          sm: { span: 15 }
+          sm: { span: 18 }
         },
         visible: false,
         confirmLoading: false,

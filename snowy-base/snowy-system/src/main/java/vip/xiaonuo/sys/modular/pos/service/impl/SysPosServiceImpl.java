@@ -32,6 +32,7 @@ import vip.xiaonuo.core.enums.CommonStatusEnum;
 import vip.xiaonuo.core.exception.ServiceException;
 import vip.xiaonuo.core.factory.PageFactory;
 import vip.xiaonuo.core.pojo.page.PageResult;
+import vip.xiaonuo.core.util.PoiUtil;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpExtOrgPosService;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpPosService;
 import vip.xiaonuo.sys.modular.pos.entity.SysPos;
@@ -48,7 +49,7 @@ import java.util.List;
 /**
  * 系统职位service接口实现类
  *
- * @author xuyuxiang
+ * @author xuyuxiang yubaoshan
  * @date 2020/3/13 16:01
  */
 @Service
@@ -189,5 +190,11 @@ public class SysPosServiceImpl extends ServiceImpl<SysPosMapper, SysPos> impleme
             throw new ServiceException(SysPosExceptionEnum.POS_NOT_EXIST);
         }
         return sysPos;
+    }
+
+    @Override
+    public void export(SysPosParam sysPosParam) {
+        List<SysPos> list = this.list();
+        PoiUtil.exportExcelWithStream("SnowyPos.xls", SysPos.class, list);
     }
 }

@@ -44,7 +44,7 @@ public class SysPosParam extends BaseParam {
     /**
      * 主键
      */
-    @NotNull(message = "id不能为空，请检查id参数", groups = {edit.class, delete.class, detail.class})
+    @NotNull(message = "id不能为空，请检查id参数", groups = {edit.class, delete.class, detail.class, export.class})
     private Long id;
 
     /**
