@@ -56,7 +56,6 @@ import vip.xiaonuo.sys.modular.role.service.SysRoleDataScopeService;
 import vip.xiaonuo.sys.modular.user.service.SysUserDataScopeService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
@@ -526,5 +525,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         resultSet.addAll(parentIdListById);
         resultSet.addAll(childIdListById);
         return CollectionUtil.newArrayList(resultSet);
+    }
+
+    @Override
+    public void export(SysOrgParam sysOrgParam) {
+        List<SysOrg> list = this.list(sysOrgParam);
+        PoiUtil.exportExcelWithStream("SysOrg.xls", SysOrg.class, list);
     }
 }

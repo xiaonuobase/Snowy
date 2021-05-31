@@ -37,6 +37,7 @@ import vip.xiaonuo.sys.modular.log.mapper.SysOpLogMapper;
 import vip.xiaonuo.sys.modular.log.param.SysOpLogParam;
 import vip.xiaonuo.sys.modular.log.service.SysOpLogService;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 /**
  * 系统操作日志service接口实现类
