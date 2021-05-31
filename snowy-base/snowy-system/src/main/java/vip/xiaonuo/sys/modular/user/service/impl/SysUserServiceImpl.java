@@ -435,6 +435,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void export(SysUserParam sysUserParam) {
+        // 只导出正常的
+        sysUserParam.setStatus(CommonStatusEnum.ENABLE.getCode());
         List<SysUser> list = this.list();
         PoiUtil.exportExcelWithStream("SonwyUsers.xls", SysUser.class, list);
     }

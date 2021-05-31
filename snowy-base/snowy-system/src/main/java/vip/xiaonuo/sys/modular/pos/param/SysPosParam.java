@@ -69,4 +69,9 @@ public class SysPosParam extends BaseParam {
      * 备注
      */
     private String remark;
+
+    /**
+     * 状态
+     */
+    private Integer status;
 }

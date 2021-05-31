@@ -194,6 +194,8 @@ public class SysPosServiceImpl extends ServiceImpl<SysPosMapper, SysPos> impleme
 
     @Override
     public void export(SysPosParam sysPosParam) {
+        // 只导出状态正常的数据
+        sysPosParam.setStatus(CommonStatusEnum.ENABLE.getCode());
         List<SysPos> list = this.list();
         PoiUtil.exportExcelWithStream("SnowyPos.xls", SysPos.class, list);
     }
