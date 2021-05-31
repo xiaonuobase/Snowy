@@ -201,38 +201,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(SysUserParam sysUserParam) {
-        SysUser sysUser = this.querySysUser(sysUserParam);
-        //不能删除超级管理员
-        if (AdminTypeEnum.SUPER_ADMIN.getCode().equals(sysUser.getAdminType())) {
-            throw new ServiceException(SysUserExceptionEnum.USER_CAN_NOT_DELETE_ADMIN);
-        }
-        boolean superAdmin = LoginContextHolder.me().isSuperAdmin();
-        //如果登录用户不是超级管理员，则进行数据权限校验
-        if (!superAdmin) {
-            List<Long> dataScope = sysUserParam.getDataScope();
-            //获取要删除的用户的所属机构
-            SysEmpInfo sysEmpInfo = sysEmpService.getSysEmpInfo(sysUser.getId());
-            Long orgId = sysEmpInfo.getOrgId();
-            //数据范围为空
-            if (ObjectUtil.isEmpty(dataScope)) {
-                throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
-            } else if (!dataScope.contains(orgId)) {
-                //所要删除的用户的所属机构不在自己的数据范围内
-                throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+    public void delete(List<SysUserParam> sysUserParamList) {
+        sysUserParamList.forEach(sysUserParam -> {
+            SysUser sysUser = this.querySysUser(sysUserParam);
+            //不能删除超级管理员
+            if (AdminTypeEnum.SUPER_ADMIN.getCode().equals(sysUser.getAdminType())) {
+                throw new ServiceException(SysUserExceptionEnum.USER_CAN_NOT_DELETE_ADMIN);
             }
-        }
-        sysUser.setStatus(CommonStatusEnum.DELETED.getCode());
-        this.updateById(sysUser);
-        Long id = sysUser.getId();
-        //删除该用户对应的员工表信息
-        sysEmpService.deleteEmpInfoByUserId(id);
+            boolean superAdmin = LoginContextHolder.me().isSuperAdmin();
+            //如果登录用户不是超级管理员，则进行数据权限校验
+            if (!superAdmin) {
+                List<Long> dataScope = sysUserParam.getDataScope();
+                //获取要删除的用户的所属机构
+                SysEmpInfo sysEmpInfo = sysEmpService.getSysEmpInfo(sysUser.getId());
+                Long orgId = sysEmpInfo.getOrgId();
+                //数据范围为空
+                if (ObjectUtil.isEmpty(dataScope)) {
+                    throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+                } else if (!dataScope.contains(orgId)) {
+                    //所要删除的用户的所属机构不在自己的数据范围内
+                    throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+                }
+            }
+            sysUser.setStatus(CommonStatusEnum.DELETED.getCode());
+            this.updateById(sysUser);
+            Long id = sysUser.getId();
+            //删除该用户对应的员工表信息
+            sysEmpService.deleteEmpInfoByUserId(id);
 
-        //删除该用户对应的用户-角色表关联信息
-        sysUserRoleService.deleteUserRoleListByUserId(id);
+            //删除该用户对应的用户-角色表关联信息
+            sysUserRoleService.deleteUserRoleListByUserId(id);
 
-        //删除该用户对应的用户-数据范围表关联信息
-        sysUserDataScopeService.deleteUserDataScopeListByUserId(id);
+            //删除该用户对应的用户-数据范围表关联信息
+            sysUserDataScopeService.deleteUserDataScopeListByUserId(id);
+        });
     }
 
     @Transactional(rollbackFor = Exception.class)

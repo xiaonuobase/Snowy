@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 系统用户控制器
@@ -84,15 +85,15 @@ public class SysUserController {
     /**
      * 删除系统用户
      *
-     * @author xuyuxiang
+     * @author xuyuxiang yubaoshan
      * @date 2020/3/23 16:28
      */
     @Permission
     @DataScope
     @PostMapping("/sysUser/delete")
     @BusinessLog(title = "系统用户_删除", opType = LogAnnotionOpTypeEnum.DELETE)
-    public ResponseData delete(@RequestBody @Validated(SysUserParam.delete.class) SysUserParam sysUserParam) {
-        sysUserService.delete(sysUserParam);
+    public ResponseData delete(@RequestBody @Validated(SysUserParam.delete.class) List<SysUserParam> sysUserParamList) {
+        sysUserService.delete(sysUserParamList);
         return new SuccessResponseData();
     }
 

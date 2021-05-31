@@ -71,6 +71,21 @@ export function sysUserDelete (parameter) {
 }
 
 /**
+ * 导出用户
+ *
+ * @author yubaoshan
+ * @date 2021/5/30 00:23
+ */
+export function sysUserExport (parameter) {
+  return axios({
+    url: '/sysUser/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}
+
+/**
  * 拥有角色
  *
  * @author yubaoshan

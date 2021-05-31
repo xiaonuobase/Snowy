@@ -84,11 +84,11 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 删除系统用户
      *
-     * @param sysUserParam 删除参数
-     * @author xuyuxiang
+     * @param sysUserParamList 删除集合
+     * @author xuyuxiang yubaosahn
      * @date 2020/3/23 9:26
      */
-    void delete(SysUserParam sysUserParam);
+    void delete(List<SysUserParam> sysUserParamList);
 
     /**
      * 编辑系统用户

@@ -1,5 +1,5 @@
 <template>
-  <a-row :gutter="24" >
+  <a-row :gutter="24">
     <a-col :md="5" :sm="24">
       <a-card :bordered="false" :loading="treeLoading">
         <div v-if="this.orgTree != ''">
@@ -46,12 +46,18 @@
           ref="table"
           :columns="columns"
           :data="loadData"
-          :alert="true"
+          :alert="options.alert"
           :rowKey="(record) => record.id"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          :rowSelection="options.rowSelection"
         >
-          <template slot="operator" v-if="hasPerm('sysUser:add')">
+          <template slot="operator">
             <a-button type="primary" v-if="hasPerm('sysUser:add')" icon="plus" @click="$refs.addForm.add()">新增用户</a-button>
+            <a-button type="danger" :disabled="selectedRowKeys.length < 1" v-if="hasPerm('sysUser:delete')" @click="batchDelete"><a-icon type="delete"/>批量删除</a-button>
+            <x-down
+              v-if="hasPerm('sysUser:export')"
+              ref="batchExport"
+              @batchExport="batchExport"
+            />
           </template>
           <span slot="sex" slot-scope="text">
             {{ sexFilter(text) }}
@@ -84,7 +90,7 @@
                   <a @click="$refs.userOrgForm.userOrg(record)">授权数据</a>
                 </a-menu-item>
                 <a-menu-item v-if="hasPerm('sysUser:delete')">
-                  <a-popconfirm placement="topRight" title="确认删除？" @confirm="() => sysUserDelete(record)">
+                  <a-popconfirm placement="topRight" title="确认删除？" @confirm="() => singleDelete(record)">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -101,10 +107,10 @@
   </a-row>
 </template>
 <script>
-  import { STable, XCard } from '@/components'
+  import { STable, XCard, XDown } from '@/components'
   import { Empty } from 'ant-design-vue'
   import { getOrgTree } from '@/api/modular/system/orgManage'
-  import { getUserPage, sysUserDelete, sysUserChangeStatus, sysUserResetPwd } from '@/api/modular/system/userManage'
+  import { getUserPage, sysUserDelete, sysUserChangeStatus, sysUserResetPwd, sysUserExport } from '@/api/modular/system/userManage'
   import { sysDictTypeDropDown } from '@/api/modular/system/dictManage'
   import addForm from './addForm'
   import editForm from './editForm'
@@ -112,6 +118,7 @@
   import userOrgForm from './userOrgForm'
   export default {
     components: {
+      XDown,
       XCard,
       STable,
       addForm,
@@ -121,8 +128,6 @@
     },
     data () {
       return {
-        // 高级搜索 展开/关闭
-        advanced: false,
         // 查询参数
         queryParam: {},
         // 表头
@@ -165,6 +170,13 @@
         simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
         replaceFields: {
           key: 'id'
+        },
+        options: {
+          alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
+          rowSelection: {
+            selectedRowKeys: this.selectedRowKeys,
+            onChange: this.onSelectChange
+          }
         }
       }
     },
@@ -257,11 +269,26 @@
         })
       },
       /**
-       * 删除用户
-       * @param record
+       * 单个删除
        */
-      sysUserDelete (record) {
-        sysUserDelete(record).then((res) => {
+      singleDelete (record) {
+        const param = [{ 'id': record.id }]
+        this.sysUserDelete(param)
+      },
+      /**
+       * 批量删除
+       */
+      batchDelete () {
+        const paramIds = this.selectedRowKeys.map((d) => {
+          return { 'id': d }
+        })
+        this.sysUserDelete(paramIds)
+      },
+      /**
+       * 删除用户
+       */
+      sysUserDelete (param) {
+        sysUserDelete(param).then((res) => {
           if (res.success) {
             this.$message.success('删除成功')
             this.$refs.table.refresh()
@@ -273,6 +300,14 @@
         })
       },
       /**
+       * 批量导出
+       */
+      batchExport () {
+        sysUserExport().then((res) => {
+          this.$refs.batchExport.downloadfile(res)
+        })
+      },
+      /**
        * 点击左侧机构树查询列表
        */
       handleClick (e) {
@@ -280,9 +315,6 @@
           'sysEmpParam.orgId': e.toString()
         }
         this.$refs.table.refresh(true)
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
       },
       handleOk () {
         this.$refs.table.refresh()
