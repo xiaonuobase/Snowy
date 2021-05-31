@@ -31,8 +31,6 @@
                 <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => queryParam = {}">重置</a-button>
               </a-col>
-              <a-col :md="8" :sm="24">
-              </a-col>
             </a-row>
           </a-form>
         </div>
@@ -46,13 +44,19 @@
           :rowKey="(record) => record.id"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         >
-          <template slot="operator" v-if="hasPerm('sysOrg:add')">
+          <template slot="operator">
             <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysOrg:add')">新增机构</a-button>
+            <a-button type="danger" :disabled="selectedRowKeys.length < 1" v-if="hasPerm('sysPos:delete')" @click="batchDelete"><a-icon type="delete"/>批量删除</a-button>
+            <x-down
+              v-if="hasPerm('sysOrg:export')"
+              ref="batchExport"
+              @batchExport="batchExport"
+            />
           </template>
           <span slot="action" slot-scope="text, record">
             <a v-if="hasPerm('sysOrg:edit')" @click="$refs.editForm.edit(record)">编辑</a>
             <a-divider type="vertical" v-if="hasPerm('sysOrg:edit') & hasPerm('sysOrg:delete')"/>
-            <a-popconfirm v-if="hasPerm('sysOrg:delete')" placement="topRight" title="确认删除？" @confirm="() => sysOrgDelete(record)">
+            <a-popconfirm v-if="hasPerm('sysOrg:delete')" placement="topRight" title="确认删除？" @confirm="() => singleDelete(record)">
               <a>删除</a>
             </a-popconfirm>
           </span>
@@ -64,13 +68,14 @@
   </a-row>
 </template>
 <script>
-  import { STable, XCard } from '@/components'
+  import { STable, XCard, XDown } from '@/components'
   import { Empty } from 'ant-design-vue'
-  import { getOrgPage, sysOrgDelete, getOrgTree } from '@/api/modular/system/orgManage'
+  import { getOrgPage, sysOrgDelete, getOrgTree, sysOrgExport } from '@/api/modular/system/orgManage'
   import addForm from './addForm'
   import editForm from './editForm'
   export default {
     components: {
+      XDown,
       XCard,
       STable,
       addForm,
@@ -78,8 +83,6 @@
     },
     data () {
       return {
-        // 高级搜索 展开/关闭
-        advanced: false,
         // 查询参数
         queryParam: {},
         // 表头
@@ -156,15 +159,38 @@
         })
       },
       /**
+       * 单个删除
+       */
+      singleDelete (record) {
+        const param = [{ 'id': record.id }]
+        this.sysOrgDelete(param)
+      },
+      /**
+       * 批量删除
+       */
+      batchDelete () {
+        const paramIds = this.selectedRowKeys.map((d) => {
+          return { 'id': d }
+        })
+        this.sysOrgDelete(paramIds)
+      },
+      /**
+       * 批量导出
+       */
+      batchExport () {
+        sysOrgExport().then((res) => {
+          this.$refs.batchExport.downloadfile(res)
+        })
+      },
+      /**
        * 删除
-       * @param record
        */
       sysOrgDelete (record) {
         sysOrgDelete(record).then((res) => {
           if (res.success) {
             this.$message.success('删除成功')
             this.getOrgTree()
-            this.$refs.table.refresh()
+            this.$refs.table.clearRefreshSelected()
           } else {
             this.$message.error('删除失败：' + res.message)
           }
@@ -177,9 +203,6 @@
           pid: e.toString()
         }
         this.$refs.table.refresh(true)
-      },
-      toggleAdvanced () {
-        this.advanced = !this.advanced
       },
       handleOk () {
         this.getOrgTree()

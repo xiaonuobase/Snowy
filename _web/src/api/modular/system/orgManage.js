@@ -83,3 +83,18 @@ export function sysOrgDelete (parameter) {
     data: parameter
   })
 }
+
+/**
+ * 导出系统机构
+ *
+ * @author yubaoshan
+ * @date 2021/5/30 12:58
+ */
+export function sysOrgExport (parameter) {
+  return axios({
+    url: '/sysOrg/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}

@@ -117,4 +117,12 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2020/4/5 18:29
      */
     List<Long> getDataScopeListByDataScopeType(Integer dataScopeType, Long orgId);
+
+    /**
+     * 导出机构数据
+     *
+     * @author yubaoshan
+     * @date 2021/5/30 12:48
+     */
+    void export(SysOrgParam sysOrgParam);
 }

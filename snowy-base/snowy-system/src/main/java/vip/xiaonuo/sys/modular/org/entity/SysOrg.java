@@ -24,6 +24,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.org.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.*;
 import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 import lombok.Data;
@@ -59,26 +60,31 @@ public class SysOrg extends BaseEntity {
     /**
      * 名称
      */
+    @Excel(name = "名称", width = 20)
     private String name;
 
     /**
      * 编码
      */
+    @Excel(name = "编码", width = 20)
     private String code;
 
     /**
      * 排序
      */
+    @Excel(name = "排序", width = 20)
     private Integer sort;
 
     /**
      * 备注
      */
+    @Excel(name = "备注", width = 20)
     @TableField(insertStrategy = FieldStrategy.IGNORED)
     private String remark;
 
     /**
      * 状态（字典 0正常 1停用 2删除）
      */
+    @Excel(name = "状态", replace = {"正常_0", "停用_1", "删除_2"}, width = 20)
     private Integer status;
 }
