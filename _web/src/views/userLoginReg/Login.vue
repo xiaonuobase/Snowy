@@ -86,7 +86,7 @@
         <Verify
           @success="verifySuccess"
           :mode="'pop'"
-          :captchaType="'clickWord'"
+          :captchaType="captchaType"
           :imgSize="{ width: '330px', height: '155px' }"
           ref="verify"
         ></Verify>
@@ -139,6 +139,17 @@ export default {
     Verify
   },
   data () {
+    var captchaTypeValue = 'clickWord'
+    var min = 0
+    var max = 100
+    var random = Math.floor(Math.random() * (max - min)) + min
+
+    if (random % 2 === 0) {
+      captchaTypeValue = 'blockPuzzle'
+    }
+    if (random % 2 === 1) {
+      captchaTypeValue = 'clickWord'
+    }
     return {
       customActiveKey: 'tab1',
       loginBtn: false,
@@ -159,8 +170,8 @@ export default {
       tenantOpen: false,
       captchaOpen: false, // 是否开启验证码
       tenantsList: [],
-      loginParams: [] // 登录参数
-
+      loginParams: [], // 登录参数
+      captchaType: captchaTypeValue
     }
   },
   created () {

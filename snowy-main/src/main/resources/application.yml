@@ -66,7 +66,7 @@ logging:
 aj:
   captcha:
     cache-type: local #分布式部署需要 自己实现CaptchaCacheService 使用redis需要配置redis相关配置
-    type: clickword #验证码类型 为点选   blockPuzzle 为滑块验证码
+    type: default #验证码类型 clickword 为点选   blockPuzzle 为滑块验证码   default 两种都实例化
     font-type: 宋体
     req-frequency-limit-enable: true #接口请求次数一分钟限制是否开启 true|false
     req-get-lock-limit: 2  # 验证失败2次，get接口锁定
