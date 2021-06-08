@@ -107,23 +107,25 @@ public class SysPosServiceImpl extends ServiceImpl<SysPosMapper, SysPos> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(SysPosParam sysPosParam) {
-        SysPos sysPos = this.querySysPos(sysPosParam);
-        Long id = sysPos.getId();
-        //该职位下是否有员工
-        boolean hasPosEmp = sysEmpPosService.hasPosEmp(id);
-        //只要还有，则不能删
-        if (hasPosEmp) {
-            throw new ServiceException(SysPosExceptionEnum.POS_CANNOT_DELETE);
-        }
-        //该附属职位下是否有员工
-        boolean hasExtPosEmp = sysEmpExtOrgPosService.hasExtPosEmp(id);
-        //只要还有，则不能删
-        if (hasExtPosEmp) {
-            throw new ServiceException(SysPosExceptionEnum.POS_CANNOT_DELETE);
-        }
-        sysPos.setStatus(CommonStatusEnum.DELETED.getCode());
-        this.updateById(sysPos);
+    public void delete(List<SysPosParam> sysPosParamList) {
+        sysPosParamList.forEach(sysPosParam -> {
+            SysPos sysPos = this.querySysPos(sysPosParam);
+            Long id = sysPos.getId();
+            //该职位下是否有员工
+            boolean hasPosEmp = sysEmpPosService.hasPosEmp(id);
+            //只要还有，则不能删
+            if (hasPosEmp) {
+                throw new ServiceException(SysPosExceptionEnum.POS_CANNOT_DELETE);
+            }
+            //该附属职位下是否有员工
+            boolean hasExtPosEmp = sysEmpExtOrgPosService.hasExtPosEmp(id);
+            //只要还有，则不能删
+            if (hasExtPosEmp) {
+                throw new ServiceException(SysPosExceptionEnum.POS_CANNOT_DELETE);
+            }
+            sysPos.setStatus(CommonStatusEnum.DELETED.getCode());
+            this.updateById(sysPos);
+        });
     }
 
     @Transactional(rollbackFor = Exception.class)

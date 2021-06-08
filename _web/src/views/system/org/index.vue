@@ -40,9 +40,9 @@
           ref="table"
           :columns="columns"
           :data="loadData"
-          :alert="true"
+          :alert="options.alert"
           :rowKey="(record) => record.id"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          :rowSelection="options.rowSelection"
         >
           <template slot="operator">
             <a-button @click="$refs.addForm.add()" icon="plus" type="primary" v-if="hasPerm('sysOrg:add')">新增机构</a-button>
@@ -122,6 +122,13 @@
         simpleImage: Empty.PRESENTED_IMAGE_SIMPLE,
         replaceFields: {
           key: 'id'
+        },
+        options: {
+          alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
+          rowSelection: {
+            selectedRowKeys: this.selectedRowKeys,
+            onChange: this.onSelectChange
+          }
         }
       }
     },

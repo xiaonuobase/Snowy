@@ -74,7 +74,7 @@
 
 <script>
 import { STable, XCard } from '@/components'
-import { getMenuList } from '@/api/modular/system/menuManage'
+import { getMenuList, sysMenuDelete } from '@/api/modular/system/menuManage'
 import addForm from './addForm'
 import editForm from './editForm'
 import { mapGetters } from 'vuex'
@@ -159,6 +159,16 @@ export default {
           this.removeEmptyChildren(item.children)
         }
       }
+    },
+    handleDel (record) {
+      sysMenuDelete(record).then((res) => {
+        if (res.success) {
+          this.$message.success('删除成功')
+          this.$refs.table.refresh()
+        } else {
+          this.$message.error('删除失败：' + res.message)
+        }
+      })
     },
     handleOk () {
       this.$refs.table.refresh()

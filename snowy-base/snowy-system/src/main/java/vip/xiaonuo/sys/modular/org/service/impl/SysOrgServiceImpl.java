@@ -195,46 +195,47 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void delete(SysOrgParam sysOrgParam) {
-        SysOrg sysOrg = this.querySysOrg(sysOrgParam);
-        Long id = sysOrg.getId();
-        boolean superAdmin = LoginContextHolder.me().isSuperAdmin();
-        if (!superAdmin) {
-            List<Long> dataScope = sysOrgParam.getDataScope();
-            //数据范围为空
-            if (ObjectUtil.isEmpty(dataScope)) {
-                throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
-            } else if (!dataScope.contains(id)) {
-                //所操作的数据不在自己的数据范围内
-                throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+    public void delete(List<SysOrgParam> sysOrgParamList) {
+        sysOrgParamList.forEach(sysOrgParam -> {
+            SysOrg sysOrg = this.querySysOrg(sysOrgParam);
+            Long id = sysOrg.getId();
+            boolean superAdmin = LoginContextHolder.me().isSuperAdmin();
+            if (!superAdmin) {
+                List<Long> dataScope = sysOrgParam.getDataScope();
+                //数据范围为空
+                if (ObjectUtil.isEmpty(dataScope)) {
+                    throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+                } else if (!dataScope.contains(id)) {
+                    //所操作的数据不在自己的数据范围内
+                    throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);
+                }
             }
-        }
-        // 该机构下有员工，则不能删
-        boolean hasOrgEmp = sysEmpService.hasOrgEmp(id);
-        if (hasOrgEmp) {
-            throw new ServiceException(SysOrgExceptionEnum.ORG_CANNOT_DELETE);
-        }
+            // 该机构下有员工，则不能删
+            boolean hasOrgEmp = sysEmpService.hasOrgEmp(id);
+            if (hasOrgEmp) {
+                throw new ServiceException(SysOrgExceptionEnum.ORG_CANNOT_DELETE);
+            }
 
-        // 该附属机构下若有员工，则不能删除
-        boolean hasExtOrgEmp = sysEmpExtOrgPosService.hasExtOrgEmp(id);
-        if (hasExtOrgEmp) {
-            throw new ServiceException(SysOrgExceptionEnum.ORG_CANNOT_DELETE);
-        }
+            // 该附属机构下若有员工，则不能删除
+            boolean hasExtOrgEmp = sysEmpExtOrgPosService.hasExtOrgEmp(id);
+            if (hasExtOrgEmp) {
+                throw new ServiceException(SysOrgExceptionEnum.ORG_CANNOT_DELETE);
+            }
 
-        // 级联删除子节点
-        List<Long> childIdList = this.getChildIdListById(id);
-        childIdList.add(id);
-        LambdaUpdateWrapper<SysOrg> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.in(SysOrg::getId, childIdList)
-                .set(SysOrg::getStatus, CommonStatusEnum.DELETED.getCode());
-        this.update(updateWrapper);
+            // 级联删除子节点
+            List<Long> childIdList = this.getChildIdListById(id);
+            childIdList.add(id);
+            LambdaUpdateWrapper<SysOrg> updateWrapper = new LambdaUpdateWrapper<>();
+            updateWrapper.in(SysOrg::getId, childIdList)
+                    .set(SysOrg::getStatus, CommonStatusEnum.DELETED.getCode());
+            this.update(updateWrapper);
 
-        // 级联删除该机构及子机构对应的角色-数据范围关联信息
-        sysRoleDataScopeService.deleteRoleDataScopeListByOrgIdList(childIdList);
+            // 级联删除该机构及子机构对应的角色-数据范围关联信息
+            sysRoleDataScopeService.deleteRoleDataScopeListByOrgIdList(childIdList);
 
-        // 级联删除该机构子机构对应的用户-数据范围关联信息
-        sysUserDataScopeService.deleteUserDataScopeListByOrgIdList(childIdList);
-
+            // 级联删除该机构子机构对应的用户-数据范围关联信息
+            sysUserDataScopeService.deleteUserDataScopeListByOrgIdList(childIdList);
+        });
     }
 
     @Transactional(rollbackFor = Exception.class)

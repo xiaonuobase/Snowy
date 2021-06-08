@@ -113,6 +113,9 @@ export default {
       Object.assign(this.localPagination, {
         showSizeChanger: val
       })
+    },
+    columns(v) {
+      this.columnsSetting = v
     }
   },
   created () {
@@ -151,19 +154,19 @@ export default {
     loadData (pagination, filters, sorter) {
       this.localLoading = true
       const parameter = Object.assign({
-        pageNo: (pagination && pagination.current) ||
-          this.showPagination && this.localPagination.current || this.pageNum,
-        pageSize: (pagination && pagination.pageSize) ||
-          this.showPagination && this.localPagination.pageSize || this.pageSize
-      },
-      (sorter && sorter.field && {
-        sortField: sorter.field
-      }) || {},
-      (sorter && sorter.order && {
-        sortOrder: sorter.order
-      }) || {}, {
-        ...filters
-      }
+          pageNo: (pagination && pagination.current) ||
+            this.showPagination && this.localPagination.current || this.pageNum,
+          pageSize: (pagination && pagination.pageSize) ||
+            this.showPagination && this.localPagination.pageSize || this.pageSize
+        },
+        (sorter && sorter.field && {
+          sortField: sorter.field
+        }) || {},
+        (sorter && sorter.order && {
+          sortOrder: sorter.order
+        }) || {}, {
+          ...filters
+        }
       )
       const result = this.data(parameter)
       // 对接自己的通用数据接口需要修改下方代码中的 r.pageNo, r.totalCount, r.data
@@ -253,6 +256,13 @@ export default {
       }
     },
     /**
+     * 刷新并清空已选
+     */
+    clearRefreshSelected (bool = false) {
+      this.refresh(bool)
+      this.clearSelected()
+    },
+    /**
      * 处理交给 table 使用者去处理 clear 事件时，内部选中统计同时调用
      * @param callback
      * @returns {*}
@@ -261,10 +271,10 @@ export default {
       if (this.selectedRowKeys.length <= 0) return null
       return (
         <a style="margin-left: 24px" onClick={() => {
-          callback()
-          this.clearSelected()
-        }}>清空</a>
-      )
+        callback()
+        this.clearSelected()
+      }}>清空</a>
+    )
     },
     renderAlert () {
       // 绘制统计列数据
@@ -285,16 +295,15 @@ export default {
 
       // 绘制 alert 组件
       // 统一先去除alert组件
-      return ''
-      /* return (
+      return (
         <a-alert showIcon={true} style="margin-bottom: 16px">
-          <template slot="message">
-            <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRows.length}</a></span>
-            {needTotalItems}
-            {clearItem}
-          </template>
-        </a-alert>
-      ) */
+        <template slot="message">
+        <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRows.length}</a></span>
+      {needTotalItems}
+      {clearItem}
+    </template>
+      </a-alert>
+    )
     },
     columnChange(val) {
       this.columnsSetting = val
@@ -318,11 +327,11 @@ export default {
             }
             return (
               <a-menu slot="overlay" onClick={onClick} selectable defaultSelectedKeys={[this.customSize]}>
-                <a-menu-item key="default">默认</a-menu-item>
-                <a-menu-item key="middle">中等</a-menu-item>
-                <a-menu-item key="small">紧凑</a-menu-item>
+              <a-menu-item key="default">默认</a-menu-item>
+              <a-menu-item key="middle">中等</a-menu-item>
+              <a-menu-item key="small">紧凑</a-menu-item>
               </a-menu>
-            )
+          )
           },
           onClick: () => {
           }
@@ -344,33 +353,34 @@ export default {
 
       return (
         <div class="s-table-tool">
-          <div class="s-table-tool-left">
-            {this.$scopedSlots.operator && this.$scopedSlots.operator()}
-          </div>
-          <div class="s-table-tool-right">
-            {
-              tools.map(tool => {
-                if (tool.isDropdown) {
-                  return (
-                    <a-dropdown trigger={['click']}>
-                      <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
-                        <a-icon type={tool.icon}/>
-                      </a-tooltip>
-                      { tool.menu() }
-                    </a-dropdown>
-                  )
-                }
-                return (
-                  <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
-                    <a-icon type={tool.icon} />
-                  </a-tooltip>
-                )
-              })
-            }
-          </div>
+        <div class="s-table-tool-left">
+        {this.$scopedSlots.operator && this.$scopedSlots.operator()}
         </div>
-      )
-      /* return (
+        <div class="s-table-tool-right">
+        {
+          tools.map(tool => {
+            if (tool.isDropdown) {
+              return (
+                <a-dropdown trigger={['click']}>
+                <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
+                <a-icon type={tool.icon}/>
+              </a-tooltip>
+              { tool.menu() }
+            </a-dropdown>
+            )
+            }
+            return (
+              <a-tooltip title={tool.title} class="s-tool-item" onClick={tool.onClick}>
+              <a-icon type={tool.icon} />
+            </a-tooltip>
+          )
+          })
+        }
+        </div>
+        </div>
+    )
+      /*
+      return (
         <a-alert showIcon={true} style="margin-bottom: 16px">
           <template slot="message">
             <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRows.length}</a></span>
@@ -378,7 +388,8 @@ export default {
             {clearItem}
           </template>
         </a-alert>
-      ) */
+      )
+      */
     }
   },
 
@@ -423,16 +434,16 @@ export default {
     })
     const table = (
       <a-table {...{ props, scopedSlots: { ...this.$scopedSlots } }} onChange={this.loadData} onExpand={ (expanded, record) => { this.$emit('expand', expanded, record) } }>
-        { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>)) }
+    { Object.keys(this.$slots).map(name => (<template slot={name}>{this.$slots[name]}</template>)) }
       </a-table>
     )
 
-    return (
-      <div class="table-wrapper">
-        { this.renderHeader() }
-        { showAlert ? this.renderAlert() : null }
-        { table }
-      </div>
+      return (
+        <div class="table-wrapper">
+      { this.renderHeader() }
+      { showAlert ? this.renderAlert() : null }
+      { table }
+    </div>
     )
+    }
   }
-}

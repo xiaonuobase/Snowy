@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 系统职位控制器
@@ -100,8 +101,8 @@ public class SysPosController {
     @Permission
     @PostMapping("/sysPos/delete")
     @BusinessLog(title = "系统职位_删除", opType = LogAnnotionOpTypeEnum.DELETE)
-    public ResponseData delete(@RequestBody @Validated(SysPosParam.delete.class) SysPosParam sysPosParam) {
-        sysPosService.delete(sysPosParam);
+    public ResponseData delete(@RequestBody @Validated(SysPosParam.delete.class) List<SysPosParam> sysPosParamList) {
+        sysPosService.delete(sysPosParamList);
         return new SuccessResponseData();
     }
 

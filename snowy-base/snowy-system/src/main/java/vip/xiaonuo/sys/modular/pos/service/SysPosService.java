@@ -71,11 +71,11 @@ public interface SysPosService extends IService<SysPos> {
     /**
      * 删除系统职位
      *
-     * @param sysPosParam 删除参数
+     * @param sysPosParamList 删除参数集合
      * @author xuyuxiang
      * @date 2020/3/25 14:57
      */
-    void delete(SysPosParam sysPosParam);
+    void delete(List<SysPosParam> sysPosParamList);
 
     /**
      * 编辑系统职位
