@@ -44,8 +44,9 @@
 * 启动后端：打开application-local中配置数据库信息，运行SnowyApplication类即可启动
 * 浏览器访问：http://localhost:81 （默认前端端口为：81，后端端口为：82）
 
-### 其他版本
-
+### 快速链接
+* 演示地址(superAdmin/123456)：https://snowy.xiaonuo.vip
+* 在线文档：https://doc.xiaonuo.vip
 * layui单体版本：https://gitee.com/xiaonuobase/snowy-layui
 * vue前后分离版本：https://gitee.com/xiaonuobase/snowy
 * cloud微服务前后分离版本：https://gitee.com/xiaonuobase/snowy-cloud
@@ -81,13 +82,6 @@
 
 如需实时了解进度，请关注我们群聊或公众号的方式推送给大家大致更新发布的时机，同样，您开心了可以给我们右上角点个star！当然了，我们也很期待PR的到来！
 
-### 在线演示
-
-* 账号密码：superAdmin/123456，地址：https://vue.xiaonuo.vip
-
-### 在线文档
-
-* https://doc.xiaonuo.vip
 
 ### 架构原理图
 * 业务架构
