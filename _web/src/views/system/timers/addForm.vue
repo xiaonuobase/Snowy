@@ -34,7 +34,7 @@
           :wrapperCol="wrapperCol"
           label="任务表达式"
         >
-          <a-input placeholder="请输入任务表达式" v-decorator="['cron', {rules: [{required: true, message: '请输入任务class类名！'}]}]" />
+          <a-input placeholder="请输入任务表达式" v-decorator="['cron', {rules: [{required: true, message: '请输入任务表达式！'}]}]" />
         </a-form-item>
 
         <a-form-item
