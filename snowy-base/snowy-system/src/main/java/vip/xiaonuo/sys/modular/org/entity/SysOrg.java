@@ -26,9 +26,9 @@ package vip.xiaonuo.sys.modular.org.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotation.*;
-import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 
 /**
  * 系统组织机构表

@@ -28,6 +28,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Dict;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.modular.emp.entity.SysEmpExtOrgPos;
 import vip.xiaonuo.sys.modular.emp.mapper.SysEmpExtOrgPosMapper;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpExtOrgPosService;
@@ -35,7 +36,6 @@ import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.pos.entity.SysPos;
 import vip.xiaonuo.sys.modular.pos.service.SysPosService;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;

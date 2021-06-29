@@ -28,6 +28,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.stereotype.Service;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.context.login.LoginContextHolder;
 import vip.xiaonuo.core.exception.DemoException;
@@ -40,7 +41,7 @@ import vip.xiaonuo.sys.core.log.LogManager;
 import vip.xiaonuo.sys.modular.monitor.param.SysOnlineUserParam;
 import vip.xiaonuo.sys.modular.monitor.result.SysOnlineUserResult;
 import vip.xiaonuo.sys.modular.monitor.service.SysOnlineUserService;
-import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;

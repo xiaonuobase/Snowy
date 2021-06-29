@@ -24,8 +24,8 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.dict.result;
 
-import vip.xiaonuo.core.pojo.base.node.BaseTreeNode;
 import lombok.Data;
+import vip.xiaonuo.core.pojo.base.node.BaseTreeNode;
 
 import java.util.List;
 

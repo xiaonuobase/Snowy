@@ -27,9 +27,9 @@ package vip.xiaonuo.sys.core.mybatis.fieldfill;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import vip.xiaonuo.core.context.login.LoginContextHolder;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
+import vip.xiaonuo.core.context.login.LoginContextHolder;
 import vip.xiaonuo.core.pojo.login.SysLoginUser;
 
 import java.util.Date;

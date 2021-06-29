@@ -25,7 +25,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.modular.area.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.sys.modular.area.entity.SysArea;
 import vip.xiaonuo.sys.modular.area.param.SysAreaParam;
 

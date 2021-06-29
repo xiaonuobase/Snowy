@@ -28,11 +28,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.modular.role.entity.SysRoleDataScope;
 import vip.xiaonuo.sys.modular.role.mapper.SysRoleDataScopeMapper;
 import vip.xiaonuo.sys.modular.role.param.SysRoleParam;
 import vip.xiaonuo.sys.modular.role.service.SysRoleDataScopeService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

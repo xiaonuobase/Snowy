@@ -27,6 +27,7 @@ package vip.xiaonuo.sys.core.provider;
 import com.anji.captcha.service.CaptchaCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+
 import java.util.concurrent.TimeUnit;
 
 /**

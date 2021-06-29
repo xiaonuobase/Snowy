@@ -34,7 +34,6 @@ import lombok.Data;
 import vip.xiaonuo.core.pojo.base.node.BaseTreeNode;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 
 /**

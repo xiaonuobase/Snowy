@@ -24,9 +24,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular;
 
-import vip.xiaonuo.core.consts.CommonConstant;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.xiaonuo.core.consts.CommonConstant;
 
 /**
  * 首页控制器

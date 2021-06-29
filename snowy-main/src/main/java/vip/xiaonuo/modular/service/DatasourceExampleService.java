@@ -25,12 +25,12 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.modular.service;
 
 import cn.hutool.core.util.RandomUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.sys.modular.app.param.SysAppParam;
 import vip.xiaonuo.sys.modular.app.service.SysAppService;
 import vip.xiaonuo.sys.modular.log.entity.SysVisLog;
 import vip.xiaonuo.sys.modular.log.service.SysVisLogService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;

@@ -27,9 +27,9 @@ package vip.xiaonuo.sys.modular.notice.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import vip.xiaonuo.sys.modular.notice.entity.SysNotice;
 import vip.xiaonuo.sys.modular.notice.result.SysNoticeReceiveResult;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * 系统通知公告mapper接口

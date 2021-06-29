@@ -25,14 +25,14 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.config;
 
 import cn.hutool.core.bean.BeanUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.pojo.sms.AliyunSmsConfigs;
 import vip.xiaonuo.core.sms.SmsSender;
 import vip.xiaonuo.core.sms.modular.aliyun.AliyunSmsSender;
 import vip.xiaonuo.core.sms.modular.aliyun.msign.impl.MapBasedMultiSignManager;
 import vip.xiaonuo.core.sms.modular.aliyun.prop.AliyunSmsProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 短信发送配置，短信发送的配置属性都在数据库的sys_config表中

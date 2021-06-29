@@ -26,14 +26,13 @@ package vip.xiaonuo.sys.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import vip.xiaonuo.sys.core.mybatis.dbid.SnowyDatabaseIdProvider;
-import vip.xiaonuo.sys.core.mybatis.fieldfill.CustomMetaObjectHandler;
-import vip.xiaonuo.sys.core.mybatis.sqlfilter.DemoProfileSqlInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import vip.xiaonuo.sys.core.mybatis.dbid.SnowyDatabaseIdProvider;
+import vip.xiaonuo.sys.core.mybatis.fieldfill.CustomMetaObjectHandler;
+import vip.xiaonuo.sys.core.mybatis.sqlfilter.DemoProfileSqlInterceptor;
 
 /**
  * mybatis扩展插件配置

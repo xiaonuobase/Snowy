@@ -25,9 +25,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.modular.dict.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
 
 /**
  * 系统字典类型表

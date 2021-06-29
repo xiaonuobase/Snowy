@@ -24,10 +24,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.config;
 
-import vip.xiaonuo.core.consts.SpringSecurityConstant;
-import vip.xiaonuo.sys.core.filter.security.JwtAuthenticationTokenFilter;
-import vip.xiaonuo.sys.core.filter.security.entrypoint.JwtAuthenticationEntryPoint;
-import vip.xiaonuo.sys.modular.auth.service.impl.AuthServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,6 +33,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import vip.xiaonuo.core.consts.SpringSecurityConstant;
+import vip.xiaonuo.sys.core.filter.security.JwtAuthenticationTokenFilter;
+import vip.xiaonuo.sys.core.filter.security.entrypoint.JwtAuthenticationEntryPoint;
+import vip.xiaonuo.sys.modular.auth.service.impl.AuthServiceImpl;
 
 import javax.annotation.Resource;
 

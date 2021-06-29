@@ -24,9 +24,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.core.listener;
 
-import vip.xiaonuo.core.context.param.RequestParamContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.context.support.ServletRequestHandledEvent;
+import vip.xiaonuo.core.context.param.RequestParamContext;
 
 /**
  * 用来清除临时缓存的@RequestBody的请求参数

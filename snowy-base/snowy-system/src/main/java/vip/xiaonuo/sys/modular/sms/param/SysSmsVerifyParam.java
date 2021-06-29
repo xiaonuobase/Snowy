@@ -24,8 +24,8 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.sms.param;
 
-import vip.xiaonuo.sys.modular.sms.enums.SmsSendSourceEnum;
 import lombok.Data;
+import vip.xiaonuo.sys.modular.sms.enums.SmsSendSourceEnum;
 
 import javax.validation.constraints.NotBlank;
 

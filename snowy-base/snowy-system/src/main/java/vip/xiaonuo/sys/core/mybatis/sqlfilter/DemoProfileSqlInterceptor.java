@@ -25,10 +25,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.core.mybatis.sqlfilter;
 
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
-import vip.xiaonuo.core.consts.SpringSecurityConstant;
-import vip.xiaonuo.core.context.constant.ConstantContextHolder;
-import vip.xiaonuo.core.exception.DemoException;
-import vip.xiaonuo.core.util.HttpServletUtil;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
@@ -39,6 +35,10 @@ import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.springframework.util.AntPathMatcher;
+import vip.xiaonuo.core.consts.SpringSecurityConstant;
+import vip.xiaonuo.core.context.constant.ConstantContextHolder;
+import vip.xiaonuo.core.exception.DemoException;
+import vip.xiaonuo.core.util.HttpServletUtil;
 
 import java.sql.Connection;
 

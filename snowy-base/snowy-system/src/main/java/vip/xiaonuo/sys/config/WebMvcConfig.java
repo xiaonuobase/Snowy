@@ -24,11 +24,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.config;
 
-import vip.xiaonuo.core.web.SnowyRequestResponseBodyMethodProcessor;
-import vip.xiaonuo.sys.core.error.SnowyErrorAttributes;
-import vip.xiaonuo.sys.core.filter.RequestNoFilter;
-import vip.xiaonuo.sys.core.filter.xss.XssFilter;
-import vip.xiaonuo.sys.core.validator.SnowyValidator;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -39,6 +34,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import vip.xiaonuo.core.web.SnowyRequestResponseBodyMethodProcessor;
+import vip.xiaonuo.sys.core.error.SnowyErrorAttributes;
+import vip.xiaonuo.sys.core.filter.RequestNoFilter;
+import vip.xiaonuo.sys.core.filter.xss.XssFilter;
+import vip.xiaonuo.sys.core.validator.SnowyValidator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;

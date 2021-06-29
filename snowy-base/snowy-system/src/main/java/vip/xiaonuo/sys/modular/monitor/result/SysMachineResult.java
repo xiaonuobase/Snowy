@@ -26,6 +26,7 @@ package vip.xiaonuo.sys.modular.monitor.result;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 /**

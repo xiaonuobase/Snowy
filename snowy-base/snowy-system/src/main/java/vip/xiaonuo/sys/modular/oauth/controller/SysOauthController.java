@@ -24,14 +24,14 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.oauth.controller;
 
-import vip.xiaonuo.core.consts.CommonConstant;
-import vip.xiaonuo.core.consts.SymbolConstant;
-import vip.xiaonuo.core.context.constant.ConstantContextHolder;
-import vip.xiaonuo.sys.modular.oauth.service.SysOauthService;
 import me.zhyd.oauth.model.AuthCallback;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import vip.xiaonuo.core.consts.CommonConstant;
+import vip.xiaonuo.core.consts.SymbolConstant;
+import vip.xiaonuo.core.context.constant.ConstantContextHolder;
+import vip.xiaonuo.sys.modular.oauth.service.SysOauthService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

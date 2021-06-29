@@ -26,9 +26,6 @@ package vip.xiaonuo.sys.core.scanner;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import vip.xiaonuo.core.consts.SymbolConstant;
-import vip.xiaonuo.core.context.resources.ApiResourceContext;
-import vip.xiaonuo.core.util.AopTargetUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Controller;
@@ -36,6 +33,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vip.xiaonuo.core.consts.SymbolConstant;
+import vip.xiaonuo.core.context.resources.ApiResourceContext;
+import vip.xiaonuo.core.util.AopTargetUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

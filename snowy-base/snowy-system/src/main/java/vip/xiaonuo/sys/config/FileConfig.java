@@ -25,12 +25,12 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.config;
 
 import cn.hutool.core.util.ObjectUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.file.FileOperator;
 import vip.xiaonuo.core.file.modular.local.LocalFileOperator;
 import vip.xiaonuo.core.file.modular.local.prop.LocalFileProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 文件存储的配置

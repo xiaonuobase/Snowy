@@ -26,11 +26,11 @@ package vip.xiaonuo.sys.modular.user.service;
 
 import cn.hutool.core.lang.Dict;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.zhyd.oauth.model.AuthUser;
 import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.SysUserParam;
 import vip.xiaonuo.sys.modular.user.result.SysUserResult;
-import me.zhyd.oauth.model.AuthUser;
 
 import java.util.List;
 

@@ -26,10 +26,8 @@ package vip.xiaonuo.sys.modular.area.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.sys.modular.area.entity.SysArea;
 import vip.xiaonuo.sys.modular.area.mapper.SysAreaMapper;
 import vip.xiaonuo.sys.modular.area.param.SysAreaParam;

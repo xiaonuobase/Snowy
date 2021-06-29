@@ -33,6 +33,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.core.consts.SymbolConstant;
 import vip.xiaonuo.core.context.login.LoginContextHolder;
 import vip.xiaonuo.core.enums.CommonStatusEnum;
@@ -54,8 +56,7 @@ import vip.xiaonuo.sys.modular.org.param.SysOrgParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.role.service.SysRoleDataScopeService;
 import vip.xiaonuo.sys.modular.user.service.SysUserDataScopeService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;

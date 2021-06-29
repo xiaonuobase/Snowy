@@ -26,12 +26,12 @@ package vip.xiaonuo.sys.modular.timer.tasks;
 
 import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.stereotype.Component;
 import vip.xiaonuo.core.context.constant.ConstantContext;
 import vip.xiaonuo.core.enums.CommonStatusEnum;
 import vip.xiaonuo.core.timer.TimerTaskRunner;
 import vip.xiaonuo.sys.modular.consts.entity.SysConfig;
 import vip.xiaonuo.sys.modular.consts.service.SysConfigService;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;

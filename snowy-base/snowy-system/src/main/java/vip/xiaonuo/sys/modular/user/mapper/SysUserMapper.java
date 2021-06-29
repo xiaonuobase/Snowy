@@ -27,9 +27,9 @@ package vip.xiaonuo.sys.modular.user.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.result.SysUserResult;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * 系统用户mapper接口

@@ -26,13 +26,13 @@ package vip.xiaonuo.sys.core.log.factory;
 
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.log.Log;
+import org.aspectj.lang.JoinPoint;
 import vip.xiaonuo.core.annotion.BusinessLog;
 import vip.xiaonuo.core.context.requestno.RequestNoContext;
 import vip.xiaonuo.sys.modular.log.entity.SysOpLog;
 import vip.xiaonuo.sys.modular.log.entity.SysVisLog;
 import vip.xiaonuo.sys.modular.log.service.SysOpLogService;
 import vip.xiaonuo.sys.modular.log.service.SysVisLogService;
-import org.aspectj.lang.JoinPoint;
 
 import java.util.TimerTask;
 

@@ -24,9 +24,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import vip.xiaonuo.sys.modular.emp.result.SysEmpInfo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import vip.xiaonuo.sys.modular.emp.result.SysEmpInfo;
 
 import java.util.Date;
 

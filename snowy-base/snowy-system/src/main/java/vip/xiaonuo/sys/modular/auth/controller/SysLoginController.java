@@ -27,6 +27,11 @@ package vip.xiaonuo.sys.modular.auth.controller;
 import cn.hutool.core.lang.Dict;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.context.login.LoginContextHolder;
 import vip.xiaonuo.core.exception.AuthException;
@@ -34,11 +39,6 @@ import vip.xiaonuo.core.exception.enums.AuthExceptionEnum;
 import vip.xiaonuo.core.pojo.response.ResponseData;
 import vip.xiaonuo.core.pojo.response.SuccessResponseData;
 import vip.xiaonuo.sys.modular.auth.service.AuthService;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 

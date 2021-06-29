@@ -34,7 +34,6 @@ import com.alibaba.fastjson.JSONPath;
 import vip.xiaonuo.core.consts.CommonConstant;
 import vip.xiaonuo.core.consts.SymbolConstant;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
-import vip.xiaonuo.core.context.requestno.RequestNoContext;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

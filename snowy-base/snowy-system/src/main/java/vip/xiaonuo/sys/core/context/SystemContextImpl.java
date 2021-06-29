@@ -29,6 +29,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.log.Log;
 import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
+import org.springframework.stereotype.Component;
 import vip.xiaonuo.core.context.system.SystemContext;
 import vip.xiaonuo.core.pojo.base.validate.UniqueValidateParam;
 import vip.xiaonuo.core.pojo.login.SysLoginUser;
@@ -40,7 +41,6 @@ import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.SysUserParam;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;

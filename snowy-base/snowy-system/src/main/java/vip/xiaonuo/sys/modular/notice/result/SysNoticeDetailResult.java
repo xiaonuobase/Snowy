@@ -27,6 +27,7 @@ package vip.xiaonuo.sys.modular.notice.result;
 import cn.hutool.core.lang.Dict;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.List;
 

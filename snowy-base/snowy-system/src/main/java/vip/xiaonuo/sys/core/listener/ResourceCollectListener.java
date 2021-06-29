@@ -27,12 +27,12 @@ package vip.xiaonuo.sys.core.listener;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.log.Log;
-import vip.xiaonuo.sys.core.cache.ResourceCache;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import vip.xiaonuo.sys.core.cache.ResourceCache;
 
 import javax.annotation.Resource;
 import java.util.Collection;

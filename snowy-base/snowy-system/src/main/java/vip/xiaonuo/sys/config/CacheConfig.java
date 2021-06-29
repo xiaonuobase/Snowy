@@ -26,6 +26,8 @@ package vip.xiaonuo.sys.config;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -33,9 +35,8 @@ import vip.xiaonuo.core.pojo.login.SysLoginUser;
 import vip.xiaonuo.sys.core.cache.MappingCache;
 import vip.xiaonuo.sys.core.cache.ResourceCache;
 import vip.xiaonuo.sys.core.cache.UserCache;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import vip.xiaonuo.sys.core.redis.FastJson2JsonRedisSerializer;
+
 import java.util.Map;
 
 /**
