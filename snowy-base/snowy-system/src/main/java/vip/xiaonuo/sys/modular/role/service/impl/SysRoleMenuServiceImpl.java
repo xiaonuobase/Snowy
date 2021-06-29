@@ -25,6 +25,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.modular.role.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import vip.xiaonuo.sys.modular.role.entity.SysRoleMenu;
@@ -34,6 +35,7 @@ import vip.xiaonuo.sys.modular.role.service.SysRoleMenuService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 系统角色菜单service接口实现类
@@ -46,15 +48,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
 
     @Override
     public List<Long> getRoleMenuIdList(List<Long> roleIdList) {
-        List<Long> menuIdList = CollectionUtil.newArrayList();
-
-        LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.in(SysRoleMenu::getRoleId, roleIdList);
-
-        this.list(queryWrapper).forEach(sysRoleMenu -> menuIdList.add(sysRoleMenu.getMenuId()));
-
-        return menuIdList;
+        if(ObjectUtil.isNotEmpty(roleIdList)) {
+            LambdaQueryWrapper<SysRoleMenu> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in(SysRoleMenu::getRoleId, roleIdList);
+            return this.list(queryWrapper).stream().map(SysRoleMenu::getMenuId).collect(Collectors.toList());
+        } else {
+            return CollectionUtil.newArrayList();
+        }
     }
 
     @Override

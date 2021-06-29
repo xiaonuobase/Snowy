@@ -24,7 +24,6 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.core;
 
-import vip.xiaonuo.SnowyApplication;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import vip.xiaonuo.SnowyApplication;
 
 import javax.annotation.Resource;
 

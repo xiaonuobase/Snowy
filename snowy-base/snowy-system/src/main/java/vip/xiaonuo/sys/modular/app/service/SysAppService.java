@@ -44,11 +44,12 @@ public interface SysAppService extends IService<SysApp> {
      * 获取用户应用相关信息
      *
      * @param userId 用户id
+     * @param roleIdList 角色id集合
      * @return 用户拥有的应用信息，格式：[{"code":"system","name":"系统应用","active":true}]
      * @author xuyuxiang
      * @date 2020/3/13 16:25
      */
-    List<Dict> getLoginApps(Long userId);
+    List<Dict> getLoginApps(Long userId, List<Long> roleIdList);
 
     /**
      * 查询系统应用

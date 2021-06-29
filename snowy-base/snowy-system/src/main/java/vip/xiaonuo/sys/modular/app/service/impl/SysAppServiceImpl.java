@@ -68,7 +68,7 @@ public class SysAppServiceImpl extends ServiceImpl<SysAppMapper, SysApp> impleme
     private SysMenuService sysMenuService;
 
     @Override
-    public List<Dict> getLoginApps(Long userId) {
+    public List<Dict> getLoginApps(Long userId, List<Long> roleIdList) {
         List<Dict> userAppDictList = CollectionUtil.newArrayList();
 
         LambdaQueryWrapper<SysApp> queryWrapper = new LambdaQueryWrapper<>();
@@ -81,7 +81,7 @@ public class SysAppServiceImpl extends ServiceImpl<SysAppMapper, SysApp> impleme
         //如果不是超级管理员则有自己的菜单对应的应用编码
         if (!AdminTypeEnum.SUPER_ADMIN.getCode().equals(adminType)) {
             //获取用户菜单对应的应用编码集合
-            List<String> appCodeList = sysMenuService.getUserMenuAppCodeList(userId);
+            List<String> appCodeList = sysMenuService.getUserMenuAppCodeList(userId, roleIdList);
             //当应用编码不为空时，则限制查询范围
             if (ObjectUtil.isNotEmpty(appCodeList)) {
                 queryWrapper.in(SysApp::getCode, appCodeList);

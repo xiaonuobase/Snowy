@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 系统用户角色service接口实现类
@@ -52,11 +53,9 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @Override
     public List<Long> getUserRoleIdList(Long userId) {
-        List<Long> roleIdList = CollectionUtil.newArrayList();
         LambdaQueryWrapper<SysUserRole> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysUserRole::getUserId, userId);
-        this.list(queryWrapper).forEach(sysUserRole -> roleIdList.add(sysUserRole.getRoleId()));
-        return roleIdList;
+        return this.list(queryWrapper).stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
     }
 
     @Override
