@@ -55,6 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 系统角色service接口实现类
@@ -86,13 +87,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.in(SysRole::getId, roleIdList).eq(SysRole::getStatus, CommonStatusEnum.ENABLE.getCode());
             //根据角色id集合查询并返回结果
-            this.list(queryWrapper).forEach(sysRole -> {
+            dictList = this.list(queryWrapper).stream().map(sysRole -> {
                 Dict dict = Dict.create();
                 dict.put(CommonConstant.ID, sysRole.getId());
                 dict.put(CommonConstant.CODE, sysRole.getCode());
                 dict.put(CommonConstant.NAME, sysRole.getName());
-                dictList.add(dict);
-            });
+                return dict;
+            }).collect(Collectors.toList());
         }
         return dictList;
     }

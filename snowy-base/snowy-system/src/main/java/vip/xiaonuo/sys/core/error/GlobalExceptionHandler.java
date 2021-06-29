@@ -41,6 +41,7 @@ import vip.xiaonuo.core.exception.enums.abs.AbstractBaseExceptionEnum;
 import vip.xiaonuo.core.pojo.response.ErrorResponseData;
 import vip.xiaonuo.core.sms.modular.aliyun.exp.AliyunSmsException;
 import vip.xiaonuo.core.sms.modular.tencent.exp.TencentSmsException;
+import vip.xiaonuo.core.util.HttpServletUtil;
 import vip.xiaonuo.core.util.ResponseUtil;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.mybatis.spring.MyBatisSystemException;
@@ -173,8 +174,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ErrorResponseData notFound(NoHandlerFoundException e) {
-        log.error(">>> 资源不存在异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage());
-        return renderJson(PermissionExceptionEnum.URL_NOT_EXIST);
+        log.error(">>> 资源不存在异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage() +"，请求地址为:" + HttpServletUtil.getRequest().getRequestURI());
+        return renderJson(PermissionExceptionEnum.URL_NOT_EXIST.getCode(), PermissionExceptionEnum.URL_NOT_EXIST.getMessage() +"，请求地址为:" + HttpServletUtil.getRequest().getRequestURI());
     }
 
     /**
@@ -227,8 +228,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PermissionException.class)
     @ResponseBody
     public ErrorResponseData noPermission(PermissionException e) {
-        log.error(">>> 权限异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage());
-        return renderJson(e.getCode(), e.getErrorMessage());
+        log.error(">>> 权限异常，请求号为：{}，具体信息为：{}", RequestNoContext.get(), e.getMessage() +"，请求地址为:" + HttpServletUtil.getRequest().getRequestURI());
+        return renderJson(e.getCode(), e.getErrorMessage() + "，请求地址为:" + HttpServletUtil.getRequest().getRequestURI());
     }
 
     /**

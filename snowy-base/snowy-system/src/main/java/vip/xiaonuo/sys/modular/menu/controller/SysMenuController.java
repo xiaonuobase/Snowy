@@ -28,8 +28,10 @@ import vip.xiaonuo.core.annotion.BusinessLog;
 import vip.xiaonuo.core.annotion.Permission;
 import vip.xiaonuo.core.context.login.LoginContextHolder;
 import vip.xiaonuo.core.enums.LogAnnotionOpTypeEnum;
+import vip.xiaonuo.core.pojo.node.LoginMenuTreeNode;
 import vip.xiaonuo.core.pojo.response.ResponseData;
 import vip.xiaonuo.core.pojo.response.SuccessResponseData;
+import vip.xiaonuo.sys.modular.menu.entity.SysMenu;
 import vip.xiaonuo.sys.modular.menu.param.SysMenuParam;
 import vip.xiaonuo.sys.modular.menu.service.SysMenuService;
 import org.springframework.validation.annotation.Validated;
@@ -37,8 +39,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import vip.xiaonuo.sys.modular.role.service.SysRoleMenuService;
+import vip.xiaonuo.sys.modular.user.service.SysUserRoleService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 系统菜单控制器
@@ -51,6 +56,12 @@ public class SysMenuController {
 
     @Resource
     private SysMenuService sysMenuService;
+
+    @Resource
+    private SysRoleMenuService sysRoleMenuService;
+
+    @Resource
+    private SysUserRoleService sysUserRoleService;
 
     /**
      * 系统菜单列表（树）
@@ -156,6 +167,11 @@ public class SysMenuController {
     @BusinessLog(title = "系统菜单_切换", opType = LogAnnotionOpTypeEnum.TREE)
     public ResponseData change(@RequestBody @Validated(SysMenuParam.change.class) SysMenuParam sysMenuParam) {
         Long sysLoginUserId = LoginContextHolder.me().getSysLoginUserId();
-        return new SuccessResponseData(sysMenuService.getLoginMenusAntDesign(sysLoginUserId, sysMenuParam.getApplication()));
+        List<Long> userRoleIdList = sysUserRoleService.getUserRoleIdList(sysLoginUserId);
+        List<Long> menuIdList = sysRoleMenuService.getRoleMenuIdList(userRoleIdList);
+        //转换成登录菜单
+        List<SysMenu> sysMenuList = sysMenuService.getLoginMenus(sysLoginUserId, sysMenuParam.getApplication(), menuIdList);
+        List<LoginMenuTreeNode> menuTreeNodeList = sysMenuService.convertSysMenuToLoginMenu(sysMenuList);
+        return new SuccessResponseData(menuTreeNodeList);
     }
 }

@@ -27,6 +27,7 @@ package vip.xiaonuo.sys.modular.menu.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 系统菜单service接口实现类
@@ -83,26 +85,28 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private ResourceCache resourceCache;
 
     @Override
-    public List<String> getLoginPermissions(Long userId) {
+    public List<String> getLoginPermissions(Long userId, List<Long> menuIdList) {
         Set<String> permissions = CollectionUtil.newHashSet();
-        List<Long> roleIdList = sysUserRoleService.getUserRoleIdList(userId);
-        if (ObjectUtil.isNotEmpty(roleIdList)) {
-            List<Long> menuIdList = sysRoleMenuService.getRoleMenuIdList(roleIdList);
-            if (ObjectUtil.isNotEmpty(menuIdList)) {
-                LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(menuIdList)) {
+            LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in(SysMenu::getId, menuIdList).ne(SysMenu::getType, MenuTypeEnum.DIR.getCode())
+                    .eq(SysMenu::getStatus, CommonStatusEnum.ENABLE.getCode());
 
-                queryWrapper.in(SysMenu::getId, menuIdList).eq(SysMenu::getType, MenuTypeEnum.BTN.getCode())
-                        .eq(SysMenu::getStatus, CommonStatusEnum.ENABLE.getCode());
-
-                this.list(queryWrapper).forEach(sysMenu -> permissions.add(sysMenu.getPermission()));
-            }
+            this.list(queryWrapper).forEach(sysMenu -> {
+                if(MenuTypeEnum.BTN.getCode().equals(sysMenu.getType())) {
+                    permissions.add(sysMenu.getPermission());
+                } else {
+                    String removePrefix = StrUtil.removePrefix(sysMenu.getRouter(), SymbolConstant.LEFT_DIVIDE);
+                    String permission = removePrefix.replaceAll(SymbolConstant.LEFT_DIVIDE, SymbolConstant.COLON);
+                    permissions.add(permission);
+                }
+            });
         }
         return CollectionUtil.newArrayList(permissions);
     }
 
     @Override
-    public List<LoginMenuTreeNode> getLoginMenusAntDesign(Long userId, String appCode) {
-        List<SysMenu> sysMenuList;
+    public List<SysMenu> getLoginMenus(Long userId, String appCode, List<Long> menuIdList) {
         //如果是超级管理员则展示所有系统权重菜单，不能展示业务权重菜单
         SysUser sysUser = sysUserService.getById(userId);
         Integer adminType = sysUser.getAdminType();
@@ -120,29 +124,19 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         } else {
 
             //非超级管理员则获取自己角色所拥有的菜单集合
-            List<Long> roleIdList = sysUserRoleService.getUserRoleIdList(userId);
-            if (ObjectUtil.isNotEmpty(roleIdList)) {
-                List<Long> menuIdList = sysRoleMenuService.getRoleMenuIdList(roleIdList);
-                if (ObjectUtil.isNotEmpty(menuIdList)) {
-                    queryWrapper.in(SysMenu::getId, menuIdList)
-                            .eq(SysMenu::getStatus, CommonStatusEnum.ENABLE.getCode())
-                            .eq(SysMenu::getApplication, appCode)
-                            .notIn(SysMenu::getType, MenuTypeEnum.BTN.getCode())
-                            .orderByAsc(SysMenu::getSort);
-
-                } else {
-                    //如果角色的菜单为空，则查不到菜单
-                    return CollectionUtil.newArrayList();
-                }
+            if (ObjectUtil.isNotEmpty(menuIdList)) {
+                queryWrapper.in(SysMenu::getId, menuIdList)
+                        .eq(SysMenu::getStatus, CommonStatusEnum.ENABLE.getCode())
+                        .eq(SysMenu::getApplication, appCode)
+                        .notIn(SysMenu::getType, MenuTypeEnum.BTN.getCode())
+                        .orderByAsc(SysMenu::getSort);
             } else {
-                //如果角色为空，则根本没菜单
+                //如果角色的菜单为空，则查不到菜单
                 return CollectionUtil.newArrayList();
             }
         }
         //查询列表
-        sysMenuList = this.list(queryWrapper);
-        //转换成登录菜单
-        return this.convertSysMenuToLoginMenu(sysMenuList);
+        return this.list(queryWrapper);
     }
 
     /**
@@ -151,7 +145,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @author xuyuxiang
      * @date 2020/4/17 17:53
      */
-    private List<LoginMenuTreeNode> convertSysMenuToLoginMenu(List<SysMenu> sysMenuList) {
+    @Override
+    public List<LoginMenuTreeNode> convertSysMenuToLoginMenu(List<SysMenu> sysMenuList) {
         List<LoginMenuTreeNode> antDesignMenuTreeNodeList = CollectionUtil.newArrayList();
         sysMenuList.forEach(sysMenu -> {
             LoginMenuTreeNode loginMenuTreeNode = new LoginMenuTreeNode();
@@ -182,9 +177,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     }
 
     @Override
-    public List<String> getUserMenuAppCodeList(Long userId) {
+    public List<String> getUserMenuAppCodeList(Long userId, List<Long> roleIdList) {
         Set<String> appCodeSet = CollectionUtil.newHashSet();
-        List<Long> roleIdList = sysUserRoleService.getUserRoleIdList(userId);
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
             List<Long> menuIdList = sysRoleMenuService.getRoleMenuIdList(roleIdList);
@@ -193,8 +187,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>();
                 queryWrapper.in(SysMenu::getId, menuIdList)
                         .eq(SysMenu::getStatus, CommonStatusEnum.ENABLE.getCode());
-
-                this.list(queryWrapper).forEach(sysMenu -> appCodeSet.add(sysMenu.getApplication()));
+                appCodeSet = this.list(queryWrapper).stream().map(SysMenu::getApplication).collect(Collectors.toSet());
             }
         }
 
