@@ -24,12 +24,12 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
  */
 package vip.xiaonuo.sys.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import vip.xiaonuo.sys.core.aop.BusinessLogAop;
 import vip.xiaonuo.sys.core.aop.DataScopeAop;
 import vip.xiaonuo.sys.core.aop.PermissionAop;
 import vip.xiaonuo.sys.core.aop.WrapperAop;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * 切面配置
