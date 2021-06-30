@@ -22,43 +22,38 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/snowy
 6.若您的项目无法满足以上几点，可申请商业授权，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.generate.modular.enums;
-
-import vip.xiaonuo.core.annotion.ExpEnumType;
-import vip.xiaonuo.core.exception.enums.abs.AbstractBaseExceptionEnum;
-import vip.xiaonuo.core.factory.ExpEnumCodeFactory;
-import vip.xiaonuo.generate.core.consts.GenExpEnumConstant;
+package vip.xiaonuo.generate.core.consts;
 
 /**
- * 代码生成详细配置
+ * 代码生产 异常枚举编码构成常量
+ * <p>
+ * 异常枚举编码由3部分组成，如下：
+ * <p>
+ * 模块编码（2位） + 分类编码（4位） + 具体项编码（至少1位）
+ * <p>
+ * 模块编码和分类编码在ExpEnumCodeConstant类中声明
  *
- * @author yubaoshan
- * @date 2021-02-06 20:19:49
+ * @author xuyuxiang
+ * @date 2020/6/19 20:46
  */
-@ExpEnumType(module = GenExpEnumConstant.SNOWY_GEN_MODULE_EXP_CODE, kind = GenExpEnumConstant.GEN_CONFIG_EXCEPTION_ENUM)
-public enum SysCodeGenerateConfigExceptionEnum implements AbstractBaseExceptionEnum {
+public interface GenExpEnumConstant {
 
     /**
-     * 数据不存在
+     * 模块分类编码（2位）
+     * <p>
+     * snowy-gen模块异常枚举编码
      */
-    NOT_EXIST(1, "此数据不存在");
+    int SNOWY_GEN_MODULE_EXP_CODE = 60;
 
-    private final Integer code;
+    /* 分类编码（4位） */
+    /**
+     * 代码生成表相关异常枚举
+     */
+    int GEN_CODE_EXCEPTION_ENUM = 1100;
 
-    private final String message;
-        SysCodeGenerateConfigExceptionEnum(Integer code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    @Override
-    public Integer getCode() {
-        return ExpEnumCodeFactory.getExpEnumCode(this.getClass(), code);
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
+    /**
+     * 代码生成详细配置相关异常枚举
+     */
+    int GEN_CONFIG_EXCEPTION_ENUM = 1200;
 
 }

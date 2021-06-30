@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.core.enums.YesOrNotEnum;
 import vip.xiaonuo.core.exception.ServiceException;
-import vip.xiaonuo.generate.core.config.Config;
+import vip.xiaonuo.generate.core.consts.GenConstant;
 import vip.xiaonuo.generate.core.enums.QueryTypeEnum;
 import vip.xiaonuo.generate.core.enums.TableFilteredFieldsEnum;
 import vip.xiaonuo.generate.core.tool.JavaEffTool;
@@ -84,7 +84,7 @@ public class SysCodeGenerateConfigServiceImpl extends ServiceImpl<SysCodeGenerat
 
             String YesOrNo = YesOrNotEnum.Y.getCode();
             if (ObjectUtil.isNotNull(inforMationColumnsResult.getColumnKey())
-                    && inforMationColumnsResult.getColumnKey().equals(Config.DB_TABLE_COM_KRY) ||
+                    && inforMationColumnsResult.getColumnKey().equals(GenConstant.DB_TABLE_COM_KRY) ||
                     TableFilteredFieldsEnum.contains(inforMationColumnsResult.getColumnName())) {
                 YesOrNo = YesOrNotEnum.N.getCode();
             }

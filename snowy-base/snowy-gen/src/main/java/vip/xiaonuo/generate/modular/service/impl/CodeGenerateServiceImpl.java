@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.core.exception.ServiceException;
 import vip.xiaonuo.core.factory.PageFactory;
 import vip.xiaonuo.core.pojo.page.PageResult;
-import vip.xiaonuo.generate.core.config.Config;
+import vip.xiaonuo.generate.core.consts.GenConstant;
 import vip.xiaonuo.generate.core.context.XnVelocityContext;
 import vip.xiaonuo.generate.core.param.XnCodeGenParam;
 import vip.xiaonuo.generate.core.tool.StringDateTool;
@@ -186,7 +186,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         List<InforMationColumnsResult> inforMationColumnsResultList =  this.baseMapper.selectInformationColumns(Util.getDataBasename(), tableName);
         for (int a = 0; a < inforMationColumnsResultList.size(); a++) {
             if (ObjectUtil.isNotNull(inforMationColumnsResultList.get(a).columnKey)
-                    && inforMationColumnsResultList.get(a).columnKey.equals(Config.DB_TABLE_COM_KRY)) {
+                    && inforMationColumnsResultList.get(a).columnKey.equals(GenConstant.DB_TABLE_COM_KRY)) {
                 return true;
             }
         }
@@ -251,24 +251,24 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         //实例化一个VelocityEngine对象
         VelocityEngine velocityEngine=new VelocityEngine(properties);
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
+        String[] filePath = GenConstant.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
         for (int i = 0; i < filePath.length; i++) {
-            String templateName = Config.xnCodeGenTempFile[i];
+            String templateName = GenConstant.xnCodeGenTempFile[i];
 
             String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
-                    templateName.substring(templateName.indexOf(Config.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
-            String path = Config.getLocalPath ();
+                    templateName.substring(templateName.indexOf(GenConstant.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
+            String path = GenConstant.getLocalPath ();
             // 前端VUE位置有所变化, sql同样根目录
             if (fileBaseName.contains(INDEX_PAGE_NAME) || fileBaseName.contains(ADD_FORM_PAGE_NAME) ||
                     fileBaseName.contains(EDIT_FORM_PAGE_NAME) ||fileBaseName.contains(MANAGE_JS_NAME) ||
             fileBaseName.contains(SQL_NAME)) {
-                path = Config.getLocalFrontPath();
+                path = GenConstant.getLocalFrontPath();
             }
 
             File file = new File(path + filePath[i] + fileBaseName);
 
             //判断是否覆盖存在的文件
-            if(file.exists() && !Config.FLAG){
+            if(file.exists() && !GenConstant.FLAG){
                 continue;
             }
 
@@ -279,7 +279,7 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
             }
             try {
                 Writer writer = new FileWriter(file);
-                velocityEngine.mergeTemplate(Config.templatePath + templateName,ENCODED,context.createVelContext(xnCodeGenParam),writer);
+                velocityEngine.mergeTemplate(GenConstant.templatePath + templateName,ENCODED,context.createVelContext(xnCodeGenParam),writer);
                 writer.close();
             } catch (Exception e) {
                 throw new ServiceException(CodeGenerateExceptionEnum.CODE_GEN_NOT_PATH);
@@ -294,14 +294,14 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         Util.initVelocity();
         XnVelocityContext context = new XnVelocityContext();
 
-        String[] filePath = Config.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
+        String[] filePath = GenConstant.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
         for (int a = 0; a < filePath.length; a++) {
-            String templateName = Config.xnCodeGenTempFile[a];
+            String templateName = GenConstant.xnCodeGenTempFile[a];
 
             String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
-                    templateName.substring(templateName.indexOf(Config.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
+                    templateName.substring(templateName.indexOf(GenConstant.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
             XnZipOutputStream(context.createVelContext(xnCodeGenParam),
-                    Config.templatePath + templateName,
+                    GenConstant.templatePath + templateName,
                     filePath[a] + fileBaseName,
                     zipOutputStream);
         }

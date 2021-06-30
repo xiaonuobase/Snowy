@@ -27,7 +27,7 @@ package vip.xiaonuo.generate.modular.enums;
 import vip.xiaonuo.core.annotion.ExpEnumType;
 import vip.xiaonuo.core.exception.enums.abs.AbstractBaseExceptionEnum;
 import vip.xiaonuo.core.factory.ExpEnumCodeFactory;
-import vip.xiaonuo.sys.core.consts.SysExpEnumConstant;
+import vip.xiaonuo.generate.core.consts.GenExpEnumConstant;
 
 /**
  * 代码生成基础配置相关异常枚举
@@ -35,7 +35,7 @@ import vip.xiaonuo.sys.core.consts.SysExpEnumConstant;
  * @author yubaoshan
  * @date 2020年12月16日21:21:14
  */
-@ExpEnumType(module = SysExpEnumConstant.SNOWY_SYS_MODULE_EXP_CODE, kind = SysExpEnumConstant.SYS_APP_EXCEPTION_ENUM)
+@ExpEnumType(module = GenExpEnumConstant.GEN_CODE_EXCEPTION_ENUM, kind = GenExpEnumConstant.GEN_CONFIG_EXCEPTION_ENUM)
 public enum CodeGenerateExceptionEnum implements AbstractBaseExceptionEnum {
 
     /**

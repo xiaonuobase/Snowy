@@ -25,7 +25,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.generate.core.param;
 
 import lombok.Data;
-import vip.xiaonuo.generate.core.config.Config;
+import vip.xiaonuo.generate.core.consts.GenConstant;
 import vip.xiaonuo.generate.modular.entity.SysCodeGenerateConfig;
 
 import java.util.List;
@@ -86,7 +86,7 @@ public class XnCodeGenParam {
     /**
      * 模块名
      */
-    private String modularNane = Config.MODULAR_NAME;
+    private String modularNane = GenConstant.MODULAR_NAME;
 
     /**
      * 业务名

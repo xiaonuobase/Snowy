@@ -25,7 +25,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.core.cache;
 
 import cn.hutool.cache.impl.TimedCache;
-import vip.xiaonuo.sys.core.cache.base.AbstractMemoryCacheOperator;
+import vip.xiaonuo.core.cache.base.AbstractMemoryCacheOperator;
 
 import java.util.Map;
 

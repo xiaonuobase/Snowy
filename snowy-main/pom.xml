@@ -17,6 +17,7 @@
 
     <dependencies>
 
+        <!-- 系统模块 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-system</artifactId>
