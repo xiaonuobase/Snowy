@@ -7,7 +7,7 @@
             <a-col :md="8" :sm="24">
               <a-form-item label="存储位置">
                 <a-select v-model="queryParam.fileLocation" placeholder="请选择存储位置" >
-                  <a-select-option v-for="(item,index) in fileLocationDictTypeDropDown" :key="index" :value="item.code" >{{ item.value }}</a-select-option>
+                  <a-select-option v-for="(item,index) in fileLocationDictTypeDropDown" :key="index" :value="item.code" >{{ item.name }}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
