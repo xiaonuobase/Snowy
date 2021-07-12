@@ -312,6 +312,16 @@ public class ConstantContextHolder {
     }
 
     /**
+     * 获取OnlyOffice地址
+     *
+     * @author xuyuxiang
+     * @date 2020/7/29 14:08
+     **/
+    public static String getOnlyOfficeUrl() {
+        return getSysConfig("SNOWY_ONLY_OFFICE_SERVICE_URL", String.class, true);
+    }
+
+    /**
      * 获取config表中的配置，如果为空返回默认值
      *
      * @param configCode   变量名称，对应sys_config表中的code

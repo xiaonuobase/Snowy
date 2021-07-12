@@ -71,7 +71,22 @@ public enum SysFileInfoExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 预览文件异常
      */
-    PREVIEW_ERROR_LIBREOFFICE(7, "预览文件异常，请检查LibreOffice是否启动");
+    PREVIEW_ERROR_LIBREOFFICE(7, "预览文件异常，请检查LibreOffice是否启动"),
+
+    /**
+     * 文件操作客户端初始化异常
+     */
+    CLIENT_INIT_ERROR(8, "文件操作客户端初始化异常"),
+
+    /**
+     * 在线文档暂时只支持本地文件
+     */
+    ONLINE_EDIT_SUPPORT_LOCAL_ONLY(9, "在线文档暂时只支持本地文件"),
+
+    /**
+     * 在线文档参数错误
+     */
+    ONLINE_EDIT_PARAM_ERROR(10, "在线文档参数错误");
 
     private final Integer code;
 

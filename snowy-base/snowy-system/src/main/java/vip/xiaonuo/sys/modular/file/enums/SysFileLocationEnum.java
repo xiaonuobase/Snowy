@@ -33,7 +33,7 @@ import lombok.Getter;
  * @date 2020/6/7 22:24
  */
 @Getter
-public enum FileLocationEnum {
+public enum SysFileLocationEnum {
 
     /**
      * 阿里云
@@ -57,7 +57,7 @@ public enum FileLocationEnum {
 
     private final Integer code;
 
-    FileLocationEnum(int code) {
+    SysFileLocationEnum(int code) {
         this.code = code;
     }
 

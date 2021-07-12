@@ -28,6 +28,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import vip.xiaonuo.core.pojo.base.param.BaseParam;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -76,11 +77,27 @@ public class SysFileInfoParam extends BaseParam {
     /**
      * 存储到bucket的名称（文件唯一标识id）
      */
+    @NotEmpty(message = "存储到bucket的名称不能为空，请检查fileObjectName参数", groups = {trace.class})
     private String fileObjectName;
 
     /**
      * 存储路径
      */
     private String filePath;
+
+    /**
+     * 文档创建时是否创建相同文件内容的模板文件
+     */
+    private Boolean sample = false;
+
+    /**
+     * 模式：编辑edit 查看view
+     */
+    private String mode;
+
+    /**
+     * 类型：桌面desktop 手机mobile
+     */
+    private String type;
 
 }

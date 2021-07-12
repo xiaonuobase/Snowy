@@ -30,6 +30,7 @@ import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.sys.modular.file.entity.SysFileInfo;
 import vip.xiaonuo.sys.modular.file.param.SysFileInfoParam;
 import vip.xiaonuo.sys.modular.file.result.SysFileInfoResult;
+import vip.xiaonuo.sys.modular.file.result.SysOnlineFileInfoResult;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -147,4 +148,21 @@ public interface SysFileInfoService extends IService<SysFileInfo> {
      * @date 2020/7/7 12:09
      */
     void download(SysFileInfoParam sysFileInfoParam, HttpServletResponse response);
+
+    /**
+     * 新增或编辑在线文档
+     *
+     * @param sysFileInfoParam 新增或编辑参数
+     * @author xuyuxiang
+     * @date 2021/3/24 10:02
+     */
+    SysOnlineFileInfoResult onlineAddOrUpdate(SysFileInfoParam sysFileInfoParam);
+
+    /**
+     * 在线文档编辑回调
+     *
+     * @author xuyuxiang
+     * @date 2021/3/25 15:48
+     */
+    void track();
 }

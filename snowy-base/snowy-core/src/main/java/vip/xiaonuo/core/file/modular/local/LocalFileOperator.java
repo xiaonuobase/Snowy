@@ -25,6 +25,7 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.core.file.modular.local;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.system.SystemUtil;
 import vip.xiaonuo.core.file.FileOperator;
@@ -47,6 +48,8 @@ public class LocalFileOperator implements FileOperator {
 
     private String currentSavePath = "";
 
+    private Dict localClient;
+
     public LocalFileOperator(LocalFileProperties localFileProperties) {
         this.localFileProperties = localFileProperties;
         initClient();
@@ -67,6 +70,9 @@ public class LocalFileOperator implements FileOperator {
             }
             currentSavePath = savePathLinux;
         }
+        localClient = Dict.create();
+        localClient.put("currentSavePath", currentSavePath);
+        localClient.put("localFileProperties", localFileProperties);
     }
 
     @Override
@@ -77,7 +83,7 @@ public class LocalFileOperator implements FileOperator {
     @Override
     public Object getClient() {
         // empty
-        return null;
+        return localClient;
     }
 
     @Override

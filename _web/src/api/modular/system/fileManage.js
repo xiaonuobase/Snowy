@@ -99,3 +99,17 @@ export function sysFileInfoDelete (parameter) {
     data: parameter
   })
 }
+
+/**
+ * 获取在线文档配置
+ *
+ * @author yubaoshan
+ * @date 2020/6/30 00:20
+ */
+export function sysFileInfoGetOnlineConfig (parameter) {
+  return axios({
+    url: '/sysFileInfo/getOnlineFileConfig',
+    method: 'get',
+    params: parameter
+  })
+}
