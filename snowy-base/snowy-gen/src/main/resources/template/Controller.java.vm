@@ -22,21 +22,25 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/snowy
 6.若您的项目无法满足以上几点，可申请商业授权，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package ${packageName}.${modularName}.${busName}.controller;
-
+package ${packageName}import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.core.annotion.BusinessLog;
 import vip.xiaonuo.core.annotion.Permission;
 import vip.xiaonuo.core.enums.LogAnnotionOpTypeEnum;
 import vip.xiaonuo.core.pojo.response.ResponseData;
 import vip.xiaonuo.core.pojo.response.SuccessResponseData;
-import ${packageName}.${modularName}.${busName}.param.${ClassName}Param;
-import ${packageName}.${modularName}.${busName}.service.${ClassName}Service;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import javax.annotation.Resource;
+import java.util.List;
+
+.${modularName}.${busName}.controller;
+    ${packageName}
+        .${modularName}.${busName}.param.${ClassName}Param;
+    ${packageName}
+        .${modularName}.${busName}.service.${ClassName}Service;
 
 /**
  * ${functionName}控制器
@@ -78,7 +82,7 @@ public class ${ClassName}Controller {
     }
 
     /**
-     * 删除${functionName}
+     * 删除${functionName}，可批量删除
      *
      * @author ${authorName}
      * @date ${createDateString}
@@ -86,8 +90,8 @@ public class ${ClassName}Controller {
     @Permission
     @PostMapping("/${className}/delete")
     @BusinessLog(title = "${functionName}_删除", opType = LogAnnotionOpTypeEnum.DELETE)
-    public ResponseData delete(@RequestBody @Validated(${ClassName}Param.delete.class) ${ClassName}Param ${className}Param) {
-            ${className}Service.delete(${className}Param);
+    public ResponseData delete(@RequestBody @Validated(${ClassName}Param.delete.class) List<${ClassName}Param> ${className}ParamList) {
+            ${className}Service.delete(${className}ParamList);
         return new SuccessResponseData();
     }
 
@@ -129,6 +133,19 @@ public class ${ClassName}Controller {
     @BusinessLog(title = "${functionName}_列表", opType = LogAnnotionOpTypeEnum.QUERY)
     public ResponseData list(${ClassName}Param ${className}Param) {
         return new SuccessResponseData(${className}Service.list(${className}Param));
+    }
+
+    /**
+     * 导出系统用户
+     *
+     * @author ${authorName}
+     * @date ${createDateString}
+     */
+    @Permission
+    @GetMapping("/${className}/export")
+    @BusinessLog(title = "${functionName}_导出", opType = LogAnnotionOpTypeEnum.EXPORT)
+    public void export(${ClassName}Param ${className}Param) {
+        ${className}Service.export(${className}Param);
     }
 
 }

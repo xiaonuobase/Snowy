@@ -88,7 +88,7 @@ public class XnVelocityContext {
 
         // sql中id的创建
         List<Long> idList = new ArrayList<>();
-        for (int a = 0; a <= 6; a++) {
+        for (int a = 0; a <= 7; a++) {
             idList.add(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
         }
         velocityContext.put("sqlMenuId", idList);

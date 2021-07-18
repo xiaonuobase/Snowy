@@ -69,3 +69,18 @@ export function ${className}Delete (parameter) {
     data: parameter
   })
 }
+
+/**
+ * 导出${functionName}
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+export function ${className}Export (parameter) {
+  return axios({
+    url: '/${className}/export',
+    method: 'get',
+    params: parameter,
+    responseType: 'blob'
+  })
+}

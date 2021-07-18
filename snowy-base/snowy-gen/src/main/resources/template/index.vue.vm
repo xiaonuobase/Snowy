@@ -104,16 +104,22 @@
         ref="table"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="options.alert"
 #foreach ($column in $tableField)
 #if (${column.columnKey} == "PRI")
         :rowKey="(record) => record.${column.javaName}"
 #end
 #end
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :rowSelection="options.rowSelection"
       >
         <template class="table-operator" slot="operator" v-if="hasPerm('${className}:add')" >
           <a-button type="primary" v-if="hasPerm('${className}:add')" icon="plus" @click="$refs.addForm.add()">新增${functionName}</a-button>
+          <a-button type="danger" :disabled="selectedRowKeys.length < 1" v-if="hasPerm('${className}:delete')" @click="batchDelete"><a-icon type="delete"/>批量删除</a-button>
+          <x-down
+            v-if="hasPerm('${className}:export')"
+            ref="batchExport"
+            @batchExport="batchExport"
+          />
         </template>
 #foreach ($column in $tableField)
 #if(${column.whetherTable} == "Y")
@@ -139,7 +145,7 @@
         <span slot="action" slot-scope="text, record">
           <a v-if="hasPerm('${className}:edit')" @click="$refs.editForm.edit(record)">编辑</a>
           <a-divider type="vertical" v-if="hasPerm('${className}:edit') & hasPerm('${className}:delete')"/>
-          <a-popconfirm v-if="hasPerm('${className}:delete')" placement="topRight" title="确认删除？" @confirm="() => ${className}Delete(record)">
+          <a-popconfirm v-if="hasPerm('${className}:delete')" placement="topRight" title="确认删除？" @confirm="() => singleDelete(record)">
             <a>删除</a>
           </a-popconfirm>
         </span>
@@ -164,25 +170,25 @@
 #end
 #end
 #end
-#if($Ellipsis == "Y")
-  import { STable, Ellipsis } from '@/components'
-#else
-  import { STable } from '@/components'
+        #if($Ellipsis == "Y")
+        import {Ellipsis, STable, XDown} from '@/components'
+        import moment from 'moment'
+        import {${className}Delete, ${className}Export, ${className}Page} from '@/api/modular/main/'
+        import addForm from './addForm.vue'
+        import editForm from './editForm.vue'
+        #else
 #end
 #if($DateQuery == "Y")
-  import moment from 'moment'
 #end
-  import { ${className}Page, ${className}Delete } from '@/api/modular/main/${busName}/${className}Manage'
-  import addForm from './addForm.vue'
-  import editForm from './editForm.vue'
-  export default {
+    export default {
     components: {
 #if($Ellipsis == "Y")
       Ellipsis,
 #end
       STable,
       addForm,
-      editForm
+      editForm,
+      XDown
     },
     data () {
       return {
@@ -235,7 +241,14 @@
 #end
 #end
         selectedRowKeys: [],
-        selectedRows: []
+        selectedRows: [],
+        options: {
+          alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
+          rowSelection: {
+            selectedRowKeys: this.selectedRowKeys,
+            onChange: this.onSelectChange
+          }
+        }
       }
     },
     created () {
@@ -282,11 +295,35 @@
         return obj
       },
 #end
+      /**
+       * 单个删除
+       */
+      singleDelete (record) {
+#foreach ($column in $tableField)
+#if (${column.columnKey} == "PRI")
+        const param = [{ '${column.javaName}': record.${column.javaName} }]
+#end
+#end
+        this.${className}Delete(param)
+      },
+      /**
+       * 批量删除
+       */
+      batchDelete () {
+        const paramIds = this.selectedRowKeys.map((d) => {
+#foreach ($column in $tableField)
+#if (${column.columnKey} == "PRI")
+            return { '${column.javaName}': d }
+#end
+#end
+        })
+        this.${className}Delete(paramIds)
+      },
       ${className}Delete (record) {
         ${className}Delete(record).then((res) => {
           if (res.success) {
             this.$message.success('删除成功')
-            this.$refs.table.refresh()
+            this.$refs.table.clearRefreshSelected()
           } else {
             this.$message.error('删除失败') // + res.message
           }
@@ -306,6 +343,21 @@
 #end
 #end
 #end
+      /**
+       * 批量导出
+       */
+      batchExport () {
+        const paramIds = this.selectedRowKeys.map((d) => {
+#foreach ($column in $tableField)
+#if (${column.columnKey} == "PRI")
+            return { '${column.javaName}': d }
+#end
+#end
+        })
+        ${className}Export(paramIds).then((res) => {
+            this.$refs.batchExport.downloadfile(res)
+        })
+      },
       handleOk () {
         this.$refs.table.refresh()
       },

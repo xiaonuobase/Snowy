@@ -30,5 +30,9 @@ INSERT INTO `sys_menu` VALUES
 #elseif($foreach.count == 7)
 INSERT INTO `sys_menu` VALUES 
 ('$id', '$pid', '[0],[$pid],', '${functionName}列表', '${busName}_index_list', '2', null, null, null, '${className}:list', 'system_tool', '0', 'Y', null, null, '1', '100', null, '0', null, null, null, null);
+
+#elseif($foreach.count == 8)
+INSERT INTO `sys_menu` VALUES
+('$id', '$pid', '[0],[$pid],', '${functionName}导出', '${busName}_index_export', '2', null, null, null, '${className}:export', 'system_tool', '0', 'Y', null, null, '1', '100', null, '0', null, null, null, null);
 #end
 #end

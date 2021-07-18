@@ -22,19 +22,16 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/snowy
 6.若您的项目无法满足以上几点，可申请商业授权，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package ${packageName}.${modularName}.${busName}.entity;
-
-import com.baomidou.mybatisplus.annotation.*;
-import vip.xiaonuo.core.pojo.base.entity.BaseEntity;
+package ${packageName}import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.util.*;
-#foreach ($column in $tableField)
-#if (${column.javaType} == 'BigDecimal')
-import java.math.BigDecimal;
-#end
-#if(${column.javaType} == "Date")
-import cn.afterturn.easypoi.excel.annotation.Excel;
+
+        .${modularName}.${busName}.entity;
+#foreach($column in $tableField)
+    #if(${column.javaType}=='BigDecimal')
 #end
 #end
 
@@ -64,6 +61,7 @@ public class ${ClassName} extends BaseEntity {
 #if(${column.javaType} == "Date")
     @Excel(name = "${column.columnComment}", databaseFormat = "yyyy-MM-dd HH:mm:ss", format = "yyyy-MM-dd", width = 20)
 #end
+    @Excel(name = "${column.columnComment}")
     private ${column.javaType} ${column.javaName};
 #end
 #end
