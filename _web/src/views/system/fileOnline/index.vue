@@ -78,7 +78,7 @@
   </a-spin>
 </template>
 <script>
-  import {Ellipsis, STable, XCard} from '@/components'
+  import { Ellipsis, STable, XCard } from '@/components'
   import {
     sysFileInfoDelete,
     sysFileInfoDownload,
