@@ -170,17 +170,17 @@
 #end
 #end
 #end
-        #if($Ellipsis == "Y")
-        import {Ellipsis, STable, XDown} from '@/components'
-        import moment from 'moment'
-        import {${className}Delete, ${className}Export, ${className}Page} from '@/api/modular/main/'
-        import addForm from './addForm.vue'
-        import editForm from './editForm.vue'
-        #else
+#if($Ellipsis == "Y")
+  import {Ellipsis, STable, XDown} from '@/components'
+  import moment from 'moment'
+  import {${className}Delete, ${className}Export, ${className}Page} from '@/api/modular/main/'
+  import addForm from './addForm.vue'
+  import editForm from './editForm.vue'
+#else
 #end
 #if($DateQuery == "Y")
 #end
-    export default {
+  export default {
     components: {
 #if($Ellipsis == "Y")
       Ellipsis,
