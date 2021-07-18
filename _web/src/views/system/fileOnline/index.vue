@@ -61,13 +61,13 @@
         <span slot="action" slot-scope="text, record">
           <a @click="onlineEdit(record)">在线编辑</a>
           <a-divider type="vertical"/>
-          <a v-if="hasPerm('sysFileInfo:download')" @click="sysFileInfoDownload(record)">下载</a>
-          <a-divider type="vertical" v-if="hasPerm('sysFileInfo:download') & hasPerm('sysFileInfo:preview')"/>
-          <a v-if="hasPerm('sysFileInfo:preview')" @click="onlinePreview(record, 'desktop')">桌面预览</a>
-          <a-divider type="vertical" v-if="hasPerm('sysFileInfo:preview')"/>
-          <a v-if="hasPerm('sysFileInfo:preview')" @click="onlinePreview(record, 'mobile')">手机预览</a>
-          <a-divider type="vertical" v-if="hasPerm('sysFileInfo:preview') & hasPerm('sysFileInfo:delete')"/>
-          <a-popconfirm v-if="hasPerm('sysFileInfo:delete')" placement="topRight" title="确认删除？" @confirm="() => sysFileInfoDelete(record)">
+          <a @click="sysFileInfoDownload(record)">下载</a>
+          <a-divider type="vertical" />
+          <a @click="onlinePreview(record, 'desktop')">桌面预览</a>
+          <a-divider type="vertical" />
+          <a @click="onlinePreview(record, 'mobile')">手机预览</a>
+          <a-divider type="vertical" />
+          <a-popconfirm placement="topRight" title="确认删除？" @confirm="() => sysFileInfoDelete(record)">
             <a>删除</a>
           </a-popconfirm>
         </span>
@@ -78,8 +78,13 @@
   </a-spin>
 </template>
 <script>
-  import { STable, Ellipsis, XCard } from '@/components'
-  import { sysFileInfoPage, sysFileInfoDelete, sysFileInfoDownload, sysFileInfoGetOnlineConfig } from '@/api/modular/system/fileManage'
+  import {Ellipsis, STable, XCard} from '@/components'
+  import {
+    sysFileInfoDelete,
+    sysFileInfoDownload,
+    sysFileInfoGetOnlineConfig,
+    sysFileInfoPage
+  } from '@/api/modular/system/fileManage'
   import previewForm from './previewForm'
   import onlineEditForm from './onlineEditForm'
 
@@ -143,14 +148,12 @@
     },
     created () {
       this.sysDictTypeDropDown()
-      if (this.hasPerm('sysPos:edit') || this.hasPerm('sysPos:delete')) {
-        this.columns.push({
-          title: '操作',
-          width: '350px',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' }
-        })
-      }
+      this.columns.push({
+        title: '操作',
+        width: '350px',
+        dataIndex: 'action',
+        scopedSlots: { customRender: 'action' }
+      })
     },
     methods: {
       /**
