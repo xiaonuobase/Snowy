@@ -70,6 +70,7 @@
 </template>
 
 <script>
+  import store from '@/store'
   import { sysOrgAdd, getOrgTree } from '@/api/modular/system/orgManage'
   export default {
     data () {
@@ -106,14 +107,20 @@
             this.orgTree = []
             return
           }
-          this.orgTree = [{
-            'id': '-1',
-            'parentId': '0',
-            'title': '顶级',
-            'value': '0',
-            'pid': '0',
-            'children': res.data
-          }]
+          const admintype = store.getters.admintype
+          // eslint-disable-next-line eqeqeq
+          if (admintype == '1') {
+            this.orgTree = [{
+              'id': '-1',
+              'parentId': '0',
+              'title': '顶级',
+              'value': '0',
+              'pid': '0',
+              'children': res.data
+            }]
+          } else {
+            this.orgTree = res.data
+          }
         })
       },
 
