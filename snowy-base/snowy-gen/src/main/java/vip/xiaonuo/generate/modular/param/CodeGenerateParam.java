@@ -96,16 +96,4 @@ public class CodeGenerateParam extends BaseParam {
     @NotBlank(message = "功能名不能为空，请检查tableComment参数", groups = {BaseParam.add.class, edit.class})
     private String tableComment;
 
-    /**
-     * 所属应用
-     */
-    @NotBlank(message = "所属应用不能为空，请检查appCode参数", groups = {BaseParam.add.class, edit.class})
-    private String appCode;
-
-    /**
-     * 菜单上级
-     */
-    @NotBlank(message = "菜单上级不能为空，请检查menuPid参数", groups = {BaseParam.add.class, edit.class})
-    private String menuPid;
-
 }

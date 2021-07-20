@@ -86,10 +86,6 @@ public class XnVelocityContext {
         });
         velocityContext.put("queryWhetherList", codeGenerateConfigList);
 
-        velocityContext.put("appCode", xnCodeGenParam.getAppCode());
-
-        velocityContext.put("menuPids", xnCodeGenParam.getMenuPids() + "[" + xnCodeGenParam.getMenuPid() + "],");
-
         // sql中id的创建
         List<Long> idList = new ArrayList<>();
         for (int a = 0; a <= 7; a++) {

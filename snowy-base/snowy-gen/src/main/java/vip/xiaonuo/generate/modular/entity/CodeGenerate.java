@@ -86,15 +86,4 @@ public class CodeGenerate extends BaseEntity {
      * 功能名（数据库表名称）
      */
     private String tableComment;
-
-    /**
-     * 所属应用
-     */
-    private String appCode;
-
-    /**
-     * 菜单上级
-     */
-    private String menuPid;
-
 }
