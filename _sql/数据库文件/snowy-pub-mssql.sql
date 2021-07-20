@@ -326,6 +326,20 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
+'MS_Description', N'所属应用',
+'SCHEMA', N'dbo',
+'TABLE', N'SYS_CODE_GENERATE',
+'COLUMN', N'APP_CODE'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'菜单上级',
+'SCHEMA', N'dbo',
+'TABLE', N'SYS_CODE_GENERATE',
+'COLUMN', N'MENU_PID'
+GO
+
+EXEC sp_addextendedproperty
 'MS_Description', N'创建人',
 'SCHEMA', N'dbo',
 'TABLE', N'SYS_CODE_GENERATE',

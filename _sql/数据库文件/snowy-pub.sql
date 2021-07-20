@@ -81,6 +81,8 @@ CREATE TABLE `sys_code_generate`  (
   `package_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '包名称',
   `bus_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '业务名',
   `table_comment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '功能名',
+  `app_code` varchar(255) DEFAULT NULL COMMENT '所属应用',
+  `menu_pid` varchar(255) DEFAULT NULL COMMENT '菜单上级',
   `create_user` bigint(0) NULL DEFAULT NULL COMMENT '创建人',
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   `update_user` bigint(0) NULL DEFAULT NULL COMMENT '更新人',

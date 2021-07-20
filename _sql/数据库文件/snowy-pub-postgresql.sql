@@ -115,6 +115,8 @@ COMMENT ON COLUMN "public"."sys_code_generate"."table_name" IS '数据库表名'
 COMMENT ON COLUMN "public"."sys_code_generate"."package_name" IS '包名称';
 COMMENT ON COLUMN "public"."sys_code_generate"."bus_name" IS '业务名';
 COMMENT ON COLUMN "public"."sys_code_generate"."table_comment" IS '功能名';
+COMMENT ON COLUMN "public"."sys_code_generate"."app_code" IS '所属应用';
+COMMENT ON COLUMN "public"."sys_code_generate"."menu_pid" IS '菜单上级';
 COMMENT ON COLUMN "public"."sys_code_generate"."create_user" IS '创建人';
 COMMENT ON COLUMN "public"."sys_code_generate"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."sys_code_generate"."update_user" IS '更新人';
