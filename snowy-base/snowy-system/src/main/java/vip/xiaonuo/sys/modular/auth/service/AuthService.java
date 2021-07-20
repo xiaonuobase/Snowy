@@ -132,4 +132,13 @@ public interface AuthService {
      * @date 2020/9/20 15:21
      **/
     SysLoginUser genSysLoginUser(SysUser sysUser);
+
+    /**
+     * 新增用户的数据授权范围
+     *
+     * @author yubaoshan
+     * @date 2021/7/20 14:50
+     */
+    void refreshUserDataScope(Long orgId);
+
 }

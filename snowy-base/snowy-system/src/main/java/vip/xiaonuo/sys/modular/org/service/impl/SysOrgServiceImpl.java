@@ -47,6 +47,7 @@ import vip.xiaonuo.core.pojo.node.AntdBaseTreeNode;
 import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.core.util.PoiUtil;
 import vip.xiaonuo.sys.core.enums.DataScopeTypeEnum;
+import vip.xiaonuo.sys.modular.auth.service.AuthService;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpExtOrgPosService;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -81,6 +82,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Resource
     private SysUserDataScopeService sysUserDataScopeService;
+
+    @Resource
+    private AuthService authService;
 
     @Override
     public PageResult<SysOrg> page(SysOrgParam sysOrgParam) {
@@ -192,6 +196,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.fillPids(sysOrg);
         sysOrg.setStatus(CommonStatusEnum.ENABLE.getCode());
         this.save(sysOrg);
+        this.authService.refreshUserDataScope(sysOrg.getId());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -202,7 +207,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             Long id = sysOrg.getId();
             boolean superAdmin = LoginContextHolder.me().isSuperAdmin();
             if (!superAdmin) {
-                List<Long> dataScope = sysOrgParam.getDataScope();
+                List<Long> dataScope = LoginContextHolder.me().getLoginUserDataScopeIdList();
                 //数据范围为空
                 if (ObjectUtil.isEmpty(dataScope)) {
                     throw new PermissionException(PermissionExceptionEnum.NO_PERMISSION_OPERATE);

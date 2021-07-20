@@ -37,6 +37,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import vip.xiaonuo.core.consts.CommonConstant;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.dbs.CurrentDataSourceContext;
@@ -358,5 +360,15 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     private void cacheLoginUser(JwtPayLoad jwtPayLoad, SysLoginUser sysLoginUser) {
         String redisLoginUserKey = jwtPayLoad.getUuid();
         userCache.put(redisLoginUserKey, sysLoginUser, Convert.toLong(ConstantContextHolder.getSessionTokenExpireSec()));
+    }
+
+    @Override
+    public void refreshUserDataScope(Long orgId) {
+        // request获取到token
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = this.getTokenFromRequest(request);
+        SysLoginUser sysLoginUser = this.getLoginUserByToken(token);
+        sysLoginUser.getDataScopes().add(orgId);
+        this.cacheLoginUser(JwtTokenUtil.getJwtPayLoad(token), sysLoginUser);
     }
 }
