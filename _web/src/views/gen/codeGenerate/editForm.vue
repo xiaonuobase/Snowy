@@ -83,6 +83,40 @@
         <a-row :gutter="24">
           <a-col :md="12" :sm="24">
             <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="所属应用"
+              has-feedback
+            >
+              <a-select style="width: 100%" placeholder="请选择应用分类" v-decorator="['appCode', {rules: [{ required: true, message: '请选择应用分类！' }]}]" >
+                <a-select-option v-for="(item,index) in appData" :key="index" :value="item.code" @click="changeApplication(item.code)">{{ item.name }}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="12" :sm="24">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="父级菜单"
+              has-feedback
+            >
+              <a-tree-select
+                v-decorator="['menuPid', {rules: [{ required: true, message: '请选择父级菜单！' }]}]"
+                style="width: 100%"
+                :dropdownStyle="{ maxHeight: '300px', overflow: 'auto' }"
+                :treeData="menuTreeData"
+                placeholder="请选择父级菜单"
+                treeDefaultExpandAll
+              >
+                <span slot="title" slot-scope="{ id }">{{ id }}
+                </span>
+              </a-tree-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :md="12" :sm="24">
+            <a-form-item
               label="作者姓名"
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -109,6 +143,8 @@
 
 <script>
   import { codeGenerateInformationList, codeGenerateEdit } from '@/api/modular/gen/codeGenerateManage'
+  import { getAppList } from '@/api/modular/system/appManage'
+  import { getMenuTree } from '@/api/modular/system/menuManage'
   export default {
     data () {
       return {
@@ -128,6 +164,8 @@
         tablePrefixValue: 'N',
         tableNameValue: '',
         packageNameShow: true,
+        appData: [],
+        menuTreeData: [],
         form: this.$form.createForm(this)
       }
     },
@@ -137,6 +175,7 @@
         this.visible = true
         this.codeGenerateInformationList()
         this.dataTypeItem()
+        this.getSysApplist()
         setTimeout(() => {
           this.form.setFieldsValue(
             {
@@ -148,10 +187,13 @@
               busName: record.busName,
               generateType: record.generateType,
               authorName: record.authorName,
-              packageName: record.packageName
+              packageName: record.packageName,
+              appCode: record.appCode,
+              menuPid: record.menuPid
             }
           )
         }, 100)
+        this.changeApplication(record.appCode)
         this.tableNameValue = record.tableName
         this.tablePrefixValue = record.tablePrefix
       },
@@ -161,6 +203,38 @@
       codeGenerateInformationList () {
         codeGenerateInformationList().then((res) => {
           this.tableNameData = res.data
+        })
+      },
+      /**
+       * 获取应用列表
+       */
+      getSysApplist () {
+        return getAppList().then((res) => {
+          if (res.success) {
+            this.appData = res.data
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
+      },
+      /**
+       * 通过应用获取菜单
+       */
+      changeApplication (value) {
+        this.form.resetFields(`menuPid`, [])
+        getMenuTree({ 'application': value }).then((res) => {
+          if (res.success) {
+            this.menuTreeData = [{
+              'id': '-1',
+              'parentId': '0',
+              'title': '顶级',
+              'value': '0',
+              'pid': '0',
+              'children': res.data
+            }]
+          } else {
+            this.$message.warning(res.message)
+          }
         })
       },
       /**

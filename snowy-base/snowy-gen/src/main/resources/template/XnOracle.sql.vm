@@ -4,35 +4,35 @@
 #foreach ($id in $sqlMenuId)
 #if($foreach.count == 1)
 INSERT INTO "sys_menu" VALUES
-("$id", "0", "[0],", "${functionName}", "${busName}_index", "1", null, "/${className}", "main/${busName}/index", null, "system_tool", "1", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "0", "${menuPids}", "${functionName}", "${busName}_index", "1", null, "/${className}", "main/${busName}/index", null, "${appCode}", "1", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 #set ($pid=$id)
 
 #elseif($foreach.count == 2)
 INSERT INTO `sys_menu` VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}查询", "${busName}_index_page", "2", null, null, null, "${className}:page", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}查询", "${busName}_index_page", "2", null, null, null, "${className}:page", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 3)
 INSERT INTO `sys_menu` VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}新增", "${busName}_index_add", "2", null, null, null, "${className}:add", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}新增", "${busName}_index_add", "2", null, null, null, "${className}:add", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 4)
 INSERT INTO `sys_menu` VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}编辑", "${busName}_index_edit", "2", null, null, null, "${className}:edit", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}编辑", "${busName}_index_edit", "2", null, null, null, "${className}:edit", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 5)
 INSERT INTO `sys_menu` VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}删除", "${busName}_index_delete", "2", null, null, null, "${className}:delete", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}删除", "${busName}_index_delete", "2", null, null, null, "${className}:delete", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 6)
 INSERT INTO `sys_menu` VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}查看", "${busName}_index_detail", "2", null, null, null, "${className}:detail", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}查看", "${busName}_index_detail", "2", null, null, null, "${className}:detail", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 7)
 INSERT INTO "sys_menu" VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}列表", "${busName}_index_list", "2", null, null, null, "${className}:list", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}列表", "${busName}_index_list", "2", null, null, null, "${className}:list", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 
 #elseif($foreach.count == 7)
 INSERT INTO "sys_menu" VALUES
-("$id", "$pid", "[0],[$pid],", "${functionName}导出", "${busName}_index_export", "2", null, null, null, "${className}:export", "system_tool", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
+("$id", "$pid", "${menuPids}[$pid],", "${functionName}导出", "${busName}_index_export", "2", null, null, null, "${className}:export", "${appCode}", "0", "Y", null, null, "1", "100", null, "0", null, null, null, null);
 #end
 #end

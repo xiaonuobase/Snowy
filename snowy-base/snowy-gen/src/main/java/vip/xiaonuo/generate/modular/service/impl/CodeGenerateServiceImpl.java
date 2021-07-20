@@ -28,6 +28,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -57,6 +58,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -79,6 +81,8 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
      * 转换的编码
      */
     private static String ENCODED = "UTF-8";
+
+    private static String SELECT_SYS_MENU_SQL = "select * from sys_menu where id = {0}";
 
     /**
      * 转换模板名称所需变量
@@ -234,6 +238,8 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         param.setFunctionName(codeGenerate.getTableComment());
         param.setConfigList(configList);
         param.setCreateTimeString(StringDateTool.getStringDate());
+        Map<String, Object> map = SqlRunner.db().selectOne(SELECT_SYS_MENU_SQL, codeGenerate.getMenuPid());
+        param.setMenuPids(map.get("pids").toString());
         return param;
     }
 

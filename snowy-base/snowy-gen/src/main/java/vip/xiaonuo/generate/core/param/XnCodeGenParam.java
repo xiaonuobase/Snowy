@@ -93,4 +93,19 @@ public class XnCodeGenParam {
      */
     private String busName;
 
+    /**
+     * 所属应用
+     */
+    private String appCode;
+
+    /**
+     * 菜单上级
+     */
+    private String menuPid;
+
+    /**
+     * 菜单上级父ids
+     */
+    private String menuPids;
+
 }
