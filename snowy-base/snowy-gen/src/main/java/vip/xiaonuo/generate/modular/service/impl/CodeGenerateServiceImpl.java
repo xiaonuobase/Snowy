@@ -238,8 +238,10 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         param.setFunctionName(codeGenerate.getTableComment());
         param.setConfigList(configList);
         param.setCreateTimeString(StringDateTool.getStringDate());
-        Map<String, Object> map = SqlRunner.db().selectOne(SELECT_SYS_MENU_SQL, codeGenerate.getMenuPid());
-        param.setMenuPids(map.get("pids").toString());
+        if (!codeGenerate.getMenuPid().equals("0")) {
+            Map<String, Object> map = SqlRunner.db().selectOne(SELECT_SYS_MENU_SQL, codeGenerate.getMenuPid());
+            param.setMenuPids(map.get("pids").toString());
+        }
         return param;
     }
 

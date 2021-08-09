@@ -106,6 +106,6 @@ public class XnCodeGenParam {
     /**
      * 菜单上级父ids
      */
-    private String menuPids;
+    private String menuPids = "";
 
 }
