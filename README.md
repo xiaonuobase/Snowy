@@ -87,6 +87,7 @@
 | 序号                        | 链接地址          |
 | ----------------------      | ------------- |
 | 1        | [小诺开源技术团队及框架介绍](https://www.bilibili.com/video/BV1Yf4y1N7YU?from=search&seid=16730766915542181758)    |
+| 2        | [小诺框架Snowy基础环境介绍](https://www.bilibili.com/video/BV1yA411c7d3)    |
 
 更新中。。。
 
