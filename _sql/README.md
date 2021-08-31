@@ -8,4 +8,4 @@
 
 ### 达梦与人大金仓jdbc驱动文件夹说明
 1. 【DmJdbcDriver18.jar】为达梦数据库8jdbc驱动，如果您的数据库为达梦数据库8，可使用此驱动
-2. 【kingbasejdbc3.jar】为人大金仓kingbase3R3jdbc驱动，如果您的数据库为人大金仓kingbase3R3，可使用此驱动
+2. 【kingbase8-8.6.0.jar】为人大金仓V8R6jdbc驱动，如果您的数据库为人大金仓V8R6，可使用此驱动

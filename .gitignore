@@ -45,4 +45,4 @@ yarn.lock
 rebel.xml
 
 !DmJdbcDriver18.jar
-!kingbasejdbc3.jar
+!kingbase8-8.6.0.jar
