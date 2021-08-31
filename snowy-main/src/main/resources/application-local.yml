@@ -52,5 +52,5 @@ spring:
 #    username: SYSTEM
 #    password: 123456
 # #人大金仓数据库兼容问题，不需要加在sql语句中加public的解决方法：
-# #在根目录data下的kingbase.conf文档里面找到search_path = '"$user",PUBLIC,sys_catalog'进行替换放开
+# #在根目录data下的kingbase.conf文档里面找到search_path = '"$user",PUBLIC,sys_catalog'进行替换放开
 # #重启数据库即可完全兼容，注意 sql中不能出现mysql中的关键字的单引号
