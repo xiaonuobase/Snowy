@@ -33,6 +33,7 @@ import vip.xiaonuo.sys.modular.user.param.SysUserParam;
 import vip.xiaonuo.sys.modular.user.result.SysUserResult;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 系统用户service接口
@@ -261,4 +262,14 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2020/9/11 17:54
      **/
     List<Long> getAllUserIdList();
+
+    /**
+     * 判断集合内用户是否均已删除
+     *
+     * @author xuyuxiang
+     * @date 2021/9/3 13:26
+     * @param userIdSet 用户id集合
+     * @return boolean
+     **/
+    boolean hasAllDeletedUser(Set<Long> userIdSet);
 }

@@ -516,6 +516,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return resultList;
     }
 
+    @Override
+    public boolean hasAllDeletedUser(Set<Long> userIdSet) {
+        //查询id在此集合内，且状态为删除的用户，判断其数量是否大于等于集合数量，大于是为了容错
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getStatus, CommonStatusEnum.DELETED).in(SysUser::getId, userIdSet);
+        return this.count(lambdaQueryWrapper) >= userIdSet.size();
+    }
+
     /**
      * 校验参数，检查是否存在相同的账号
      *

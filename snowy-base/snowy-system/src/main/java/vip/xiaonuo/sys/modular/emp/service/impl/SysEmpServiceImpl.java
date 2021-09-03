@@ -40,9 +40,12 @@ import vip.xiaonuo.sys.modular.emp.result.SysEmpInfo;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpExtOrgPosService;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpPosService;
 import vip.xiaonuo.sys.modular.emp.service.SysEmpService;
+import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 员工service接口实现类
@@ -58,6 +61,9 @@ public class SysEmpServiceImpl extends ServiceImpl<SysEmpMapper, SysEmp> impleme
 
     @Resource
     private SysEmpPosService sysEmpPosService;
+
+    @Resource
+    private SysUserService sysUserService;
 
     @Override
     public LoginEmpInfo getLoginEmpInfo(Long empId) {
@@ -135,7 +141,12 @@ public class SysEmpServiceImpl extends ServiceImpl<SysEmpMapper, SysEmp> impleme
         LambdaQueryWrapper<SysEmp> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysEmp::getOrgId, orgId);
         List<SysEmp> list = this.list(queryWrapper);
-        return list.size() != 0;
+        if(ObjectUtil.isEmpty(list)) {
+            return false;
+        } else {
+            Set<Long> collect = list.stream().map(SysEmp::getId).collect(Collectors.toSet());
+            return sysUserService.hasAllDeletedUser(collect);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
