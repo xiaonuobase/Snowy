@@ -98,9 +98,9 @@
 #end
 #if (${column.effectType} == "datepicker")
 #if (${column.whetherRequired} == "Y")
-          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}',{rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]" @change="onChange${column.javaName}"/>
+          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}',{rules: [{ required: true, message: '请选择${column.columnComment}！' }]}]" @change="${column.javaName}OnChange"/>
 #else
-          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}']" @change="onChange${column.javaName}"/>
+          <a-date-picker style="width: 100%" placeholder="请选择${column.columnComment}" v-decorator="['${column.javaName}']" @change="${column.javaName}OnChange"/>
 #end
 #end
         </a-form-item>
@@ -206,10 +206,10 @@
 #if (${column.whetherAddUpdate} == "Y")
 #if (${column.effectType} == "datepicker")
         // 时间单独处理
-        if (record.${column.javaName} != null) {
+        if (record.${column.javaName}) {
             this.form.getFieldDecorator('${column.javaName}', { initialValue: moment(record.${column.javaName}, 'YYYY-MM-DD') })
+            this.${column.javaName}DateString = moment(record.${column.javaName}).format('YYYY-MM-DD')
         }
-        this.${column.javaName}DateString = moment(record.${column.javaName}).format('YYYY-MM-DD')
 #end
 #end
 #end
@@ -220,14 +220,14 @@
         validateFields((errors, values) => {
           if (!errors) {
             for (const key in values) {
-              if (typeof (values[key]) === 'object') {
+              if (typeof (values[key]) === 'object' && values[key] != null) {
                 values[key] = JSON.stringify(values[key])
               }
             }
 #foreach ($column in $tableField)
 #if (${column.whetherAddUpdate} == "Y")
 #if (${column.effectType} == "datepicker")
-            values.${column.javaName} = this.${column.javaName}DateString
+            values.${column.javaName} = this.${column.javaName}DateString || null
 #end
 #end
 #end
@@ -251,13 +251,21 @@
 #foreach ($column in $tableField)
 #if (${column.whetherAddUpdate} == "Y")
 #if (${column.effectType} == "datepicker")
-      onChange${column.javaName}(date, dateString) {
+      ${column.javaName}OnChange(date, dateString) {
         this.${column.javaName}DateString = dateString
       },
 #end
 #end
 #end
       handleCancel () {
+#foreach ($column in $tableField)
+#if (${column.whetherAddUpdate} == "Y")
+#if (${column.effectType} == "datepicker")
+        this.${column.javaName}DateString =''
+        this.form.getFieldDecorator('${column.javaName}', { initialValue: null })
+#end
+#end
+#end
         this.form.resetFields()
         this.visible = false
       }
