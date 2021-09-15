@@ -124,7 +124,7 @@
 #foreach ($column in $tableField)
 #if(${column.whetherTable} == "Y")
 #if(${column.whetherRetract} == "Y" || ${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
-        <span slot="${column.javaName}scopedSlots" slot-scope="text">
+        <span slot="${column.javaName}ScopedSlots" slot-scope="text">
 #if(${column.whetherRetract} == "Y" && (${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox'))
           <ellipsis :length="10" tooltip>{{ '${column.dictTypeCode}' | dictType(text) }}</ellipsis>
 #else
@@ -210,7 +210,7 @@
             align: 'center',
 #if(${column.whetherRetract} == "Y" || ${column.effectType} == 'select' || ${column.effectType} == 'radio' || ${column.effectType} == 'checkbox')
             dataIndex: '${column.javaName}',
-            scopedSlots: { customRender: '${column.javaName}scopedSlots' }
+            scopedSlots: { customRender: '${column.javaName}ScopedSlots' }
 #else
             dataIndex: '${column.javaName}'
 #end
