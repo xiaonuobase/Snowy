@@ -65,6 +65,12 @@
             <artifactId>postgresql</artifactId>
         </dependency>-->
 
+        <!-- h2 -->
+        <!-- <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>-->
+
         <!-- redis,使用jedis客户端排除lettuce -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
