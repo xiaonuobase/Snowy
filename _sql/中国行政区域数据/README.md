@@ -13,3 +13,5 @@ sys_area_oracle.sql[zip]: https://pan.xiaonuo.vip/#s/7eINrDlg
 sys_area_postgresql.sql: https://pan.xiaonuo.vip/#s/65K_vyrg
 
 sys_area_postgresql.sql[zip]: https://pan.xiaonuo.vip/#s/7eIX3g8w
+
+sys_area_kingbase8_r3.dmp: https://pan.xiaonuo.vip/#s/65K_UJFQ
