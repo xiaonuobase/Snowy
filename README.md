@@ -52,6 +52,7 @@
 * cloud微服务前后分离版本：https://gitee.com/xiaonuobase/snowy-cloud
 * 我们的其他产品线同样开源，如需关注最新动态可加入QQ群聊探讨：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)
 * 如果我们的产品能满足您的需求，很期待您给我们右上角点个 star
+<img src="./_web/_images/gitee_star.png"/>
 
 ### 视频教程:fire:
 
