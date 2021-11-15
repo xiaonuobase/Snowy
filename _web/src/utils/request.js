@@ -30,10 +30,6 @@ const err = (error) => {
       }
     }
     if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
-      notification.error({
-        message: 'Unauthorized',
-        description: 'Authorization verification failed'
-      })
       if (token) {
         store.dispatch('Logout').then(() => {
           setTimeout(() => {
