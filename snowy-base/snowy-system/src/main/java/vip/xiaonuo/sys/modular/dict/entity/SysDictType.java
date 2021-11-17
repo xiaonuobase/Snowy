@@ -64,7 +64,7 @@ public class SysDictType extends BaseEntity {
     /**
      * 备注
      */
-    @TableField(insertStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String remark;
 
     /**

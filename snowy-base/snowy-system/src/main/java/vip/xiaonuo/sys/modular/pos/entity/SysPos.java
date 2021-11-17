@@ -69,7 +69,7 @@ public class SysPos extends BaseEntity {
      * 备注
      */
     @Excel(name = "备注", width = 20)
-    @TableField(insertStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String remark;
 
     /**

@@ -80,7 +80,7 @@ public class SysUser extends BaseEntity {
     /**
      * 生日
      */
-    @TableField(insertStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     @Excel(name = "生日", databaseFormat = "yyyy-MM-dd HH:mm:ss", format = "yyyy-MM-dd", width = 20)
     private Date birthday;
 
