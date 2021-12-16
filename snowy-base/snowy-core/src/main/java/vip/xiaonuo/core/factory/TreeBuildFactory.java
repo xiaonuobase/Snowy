@@ -75,8 +75,8 @@ public class TreeBuildFactory<T extends BaseTreeNode> {
         if (ObjectUtil.isNotEmpty(nodeSubLists)) {
             nodeSubLists.forEach(t -> this.buildChildNodes(totalNodes, t, CollectionUtil.newArrayList()));
         }
-        childNodeLists.addAll(nodeSubLists);
-        node.setChildren(childNodeLists);
+//        childNodeLists.addAll(nodeSubLists);
+        node.setChildren(nodeSubLists);
     }
 
     /**
@@ -104,8 +104,9 @@ public class TreeBuildFactory<T extends BaseTreeNode> {
      * @date 2020/4/5 14:13
      */
     private List<T> executeBuilding(List<T> nodes) {
-        nodes.forEach(t -> this.buildChildNodes(nodes, t, CollectionUtil.newArrayList()));
-        return nodes;
+        List<T> parentNodes = afterBuild(nodes);
+        parentNodes.forEach(t -> this.buildChildNodes(nodes, t, CollectionUtil.newArrayList()));
+        return parentNodes;
     }
 
     /**
