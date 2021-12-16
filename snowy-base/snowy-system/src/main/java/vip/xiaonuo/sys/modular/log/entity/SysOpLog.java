@@ -144,4 +144,21 @@ public class SysOpLog {
      * 操作人
      */
     private String account;
+
+    /**
+     * 签名数据（ID除外）
+     */
+    private String signValue;
+
+    /**
+     * 重写tostring方法 并去除所有空格
+     */
+    @Override
+    public String toString () {
+        String toStr = name + opType + success + message + ip + location + browser
+                + os + url + className + methodName + reqMethod + param + result
+                + opTime + account;
+        return toStr.replaceAll(" +","");
+    }
+
 }

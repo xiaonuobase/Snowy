@@ -56,9 +56,9 @@ public class SysUser extends BaseEntity {
     private String account;
 
     /**
-     * 密码
+     * 密码哈希值
      */
-    private String password;
+    private String pwdHashValue;
 
     /**
      * 昵称

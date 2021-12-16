@@ -51,7 +51,7 @@ public enum SysUserExceptionEnum implements AbstractBaseExceptionEnum {
     /**
      * 原密码错误
      */
-    USER_PWD_ERROR(3, "原密码错误，请检查password参数"),
+    USER_PWD_ERROR(3, "原密码错误，完整性校验失败，请检查password参数"),
 
     /**
      * 新密码与原密码相同

@@ -3,7 +3,7 @@
     <div class="links">
     </div>
     <div class="copyright">
-      Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">小诺</a> All rights reserved. Snowy 1.3
+      Copyright © 2020 <a target="_blank" href="https://www.xiaonuo.vip/">小诺开源技术</a> All rights reserved. Snowy 1.8
     </div>
   </div>
 </template>

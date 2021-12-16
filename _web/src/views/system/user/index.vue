@@ -23,7 +23,7 @@
             <a-row :gutter="48">
               <a-col :md="8" :sm="24">
                 <a-form-item label="关键词" >
-                  <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入姓名、账号、手机号"/>
+                  <a-input v-model="queryParam.searchValue" allow-clear placeholder="请输入姓名或账号"/>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">

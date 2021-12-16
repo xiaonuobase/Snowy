@@ -13,6 +13,12 @@ import { axios } from '@/utils/request'
  * @date 2020/5/26 19:06
  */
 export function login (parameter) {
+  // 密码采用sm2加密传输密码
+  const sm2 = require('sm-crypto').sm2
+  const publicKey = '04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54'
+  const encryptData = sm2.doEncrypt(parameter.password, publicKey, 1)
+  parameter.password = encryptData
+
   return axios({
     url: '/login',
     method: 'post',

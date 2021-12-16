@@ -78,19 +78,6 @@ export const constantRouterMap = [
   },
 
   {
-    path: '/test',
-    component: BlankLayout,
-    redirect: '/test/home',
-    children: [
-      {
-        path: 'home',
-        name: 'TestHome',
-        component: () => import('@/views/Home')
-      }
-    ]
-  },
-
-  {
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/system/exception/404')
   }

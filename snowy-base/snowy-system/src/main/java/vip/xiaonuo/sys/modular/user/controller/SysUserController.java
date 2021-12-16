@@ -32,12 +32,13 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.core.annotion.BusinessLog;
 import vip.xiaonuo.core.annotion.DataScope;
 import vip.xiaonuo.core.annotion.Permission;
+import vip.xiaonuo.core.annotion.Wrapper;
 import vip.xiaonuo.core.enums.LogAnnotionOpTypeEnum;
 import vip.xiaonuo.core.pojo.response.ResponseData;
 import vip.xiaonuo.core.pojo.response.SuccessResponseData;
 import vip.xiaonuo.sys.modular.user.param.SysUserParam;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
-
+import vip.xiaonuo.sys.modular.user.wrapper.SysUserWrapper;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class SysUserController {
     @DataScope
     @GetMapping("/sysUser/page")
     @BusinessLog(title = "系统用户_查询", opType = LogAnnotionOpTypeEnum.QUERY)
+    @Wrapper(SysUserWrapper.class)
     public ResponseData page(SysUserParam sysUserParam) {
         return new SuccessResponseData(sysUserService.page(sysUserParam));
     }
@@ -121,6 +123,7 @@ public class SysUserController {
     @Permission
     @GetMapping("/sysUser/detail")
     @BusinessLog(title = "系统用户_查看", opType = LogAnnotionOpTypeEnum.DETAIL)
+    @Wrapper(SysUserWrapper.class)
     public ResponseData detail(@Validated(SysUserParam.detail.class) SysUserParam sysUserParam) {
         return new SuccessResponseData(sysUserService.detail(sysUserParam));
     }
@@ -274,4 +277,5 @@ public class SysUserController {
     public ResponseData selector(SysUserParam sysUserParam) {
         return new SuccessResponseData(sysUserService.selector(sysUserParam));
     }
+
 }

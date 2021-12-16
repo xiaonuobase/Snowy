@@ -108,4 +108,19 @@ public class SysVisLog {
      * 访问人
      */
     private String account;
+
+    /**
+     * 签名数据（ID除外）
+     */
+    private String signValue;
+
+    /**
+     * 重写tostring方法
+     */
+    @Override
+    public String toString(){
+        String toStr = name + success + message + ip + location + browser
+                + os + visType + visTime + account;
+        return toStr.replaceAll(" +","");
+    }
 }

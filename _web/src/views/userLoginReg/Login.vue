@@ -230,11 +230,12 @@ export default {
           }
           const loginParams = { ...values }
           delete loginParams.account
-          loginParams[!state.loginType ? 'email' : 'account'] = values.account
-          loginParams.password = values.password
+          loginParams.account = values.account
+
           if (this.tenantOpen) {
             loginParams.tenantCode = values.tenantCode
           }
+
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
@@ -253,6 +254,7 @@ export default {
      */
     verifySuccess(params) {
       this.loginParams.code = params.captchaVerification
+      console.log(JSON.stringify(this.loginParams))
       this.Login(this.loginParams).then((res) => this.loginSuccess(res))
         .catch(err => this.requestFailed(err))
         .finally(() => {

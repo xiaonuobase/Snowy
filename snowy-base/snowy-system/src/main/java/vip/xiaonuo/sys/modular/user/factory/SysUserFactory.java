@@ -25,9 +25,9 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 package vip.xiaonuo.sys.modular.user.factory;
 
 import cn.hutool.core.util.ObjectUtil;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.enums.CommonStatusEnum;
+import vip.xiaonuo.core.util.CryptogramUtil;
 import vip.xiaonuo.sys.core.enums.AdminTypeEnum;
 import vip.xiaonuo.sys.core.enums.SexEnum;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
@@ -59,12 +59,12 @@ public class SysUserFactory {
      * @date 2020/3/23 16:50
      */
     public static void fillBaseUserInfo(SysUser sysUser) {
-        //密码为空则设置密码
-        if (ObjectUtil.isEmpty(sysUser.getPassword())) {
+        //密码为空则设置密码（密码都为哈希值哦）
+        if (ObjectUtil.isEmpty(sysUser.getPwdHashValue())) {
             //没有密码则设置默认密码
             String password = ConstantContextHolder.getDefaultPassWord();
-            //设置密码为Md5加密后的密码
-            sysUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+            //设置密码为Sm3的哈希值，这里代表保护密码的完整性
+            sysUser.setPwdHashValue(CryptogramUtil.doHashValue(password));
         }
 
         if (ObjectUtil.isEmpty(sysUser.getAvatar())) {

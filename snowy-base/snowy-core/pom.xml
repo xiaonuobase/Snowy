@@ -71,6 +71,12 @@
             <artifactId>h2</artifactId>
         </dependency>-->
 
+        <dependency>
+            <groupId>com.antherd</groupId>
+            <artifactId>sm-crypto</artifactId>
+            <version>0.3.2</version>
+        </dependency>
+
         <!-- redis,使用jedis客户端排除lettuce -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

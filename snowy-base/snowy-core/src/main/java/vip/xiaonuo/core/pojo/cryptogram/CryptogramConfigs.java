@@ -22,88 +22,36 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/snowy
 6.若您的项目无法满足以上几点，可申请商业授权，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.user.result;
+package vip.xiaonuo.core.pojo.cryptogram;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import vip.xiaonuo.core.pojo.base.wrapper.BaseWrapper;
-import vip.xiaonuo.sys.modular.emp.result.SysEmpInfo;
-
-import java.util.Date;
-import java.util.Map;
 
 /**
- * 系统用户结果
+ * 框架中加解密配置
  *
- * @author xuyuxiang
- * @date 2020/4/2 9:19
- */
+ * @author yubaoshan
+ **/
 @Data
-public class SysUserResult implements BaseWrapper {
+public class CryptogramConfigs {
 
     /**
-     * 主键
+     * token是否加解密
      */
-    private Long id;
+    private Boolean tokenEncDec;
 
     /**
-     * 账号
+     * 操作日志是否加密
      */
-    private String account;
+    private Boolean opLogEnc;
 
     /**
-     * 昵称
+     * 登录登出日志是否加密
      */
-    private String nickName;
+    private Boolean visLogEnc;
 
     /**
-     * 姓名
+     * 铭感字段值是否加解密
      */
-    private String name;
+    private Boolean fieldEncDec;
 
-    /**
-     * 头像
-     */
-    private Long avatar;
-
-    /**
-     * 生日
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date birthday;
-
-    /**
-     * 性别(字典 1男 2女 3未知)
-     */
-    private Integer sex;
-
-    /**
-     * 邮箱
-     */
-    private String email;
-
-    /**
-     * 手机
-     */
-    private String phone;
-
-    /**
-     * 电话
-     */
-    private String tel;
-
-    /**
-     * 用户员工信息
-     */
-    private SysEmpInfo sysEmpInfo;
-
-    /**
-     * 状态（字典 0正常 1停用 2删除）
-     */
-    private Integer status;
-
-    @Override
-    public Map<String, Object> doWrap(Object beWrappedModel) {
-        return null;
-    }
 }

@@ -36,7 +36,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.model.AuthUser;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.core.consts.CommonConstant;
@@ -50,6 +49,7 @@ import vip.xiaonuo.core.exception.enums.PermissionExceptionEnum;
 import vip.xiaonuo.core.exception.enums.StatusExceptionEnum;
 import vip.xiaonuo.core.factory.PageFactory;
 import vip.xiaonuo.core.pojo.page.PageResult;
+import vip.xiaonuo.core.util.CryptogramUtil;
 import vip.xiaonuo.core.util.PoiUtil;
 import vip.xiaonuo.sys.core.enums.AdminTypeEnum;
 import vip.xiaonuo.sys.core.enums.OauthSexEnum;
@@ -67,10 +67,8 @@ import vip.xiaonuo.sys.modular.user.result.SysUserResult;
 import vip.xiaonuo.sys.modular.user.service.SysUserDataScopeService;
 import vip.xiaonuo.sys.modular.user.service.SysUserRoleService;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
-
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 系统用户service接口实现类
@@ -108,8 +106,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //根据关键字模糊查询（姓名，账号，手机号）
             if (ObjectUtil.isNotEmpty(sysUserParam.getSearchValue())) {
                 queryWrapper.and(q -> q.like("sys_user.account", sysUserParam.getSearchValue())
-                        .or().like("sys_user.name", sysUserParam.getSearchValue())
-                        .or().like("sys_user.phone", sysUserParam.getSearchValue()));
+                        .or().like("sys_user.name", sysUserParam.getSearchValue()));
             }
             //根据员工所属机构查询
             if (ObjectUtil.isNotEmpty(sysUserParam.getSysEmpParam())) {
@@ -140,6 +137,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 queryWrapper.in("sys_emp.org_id", dataScopeSet);
             }
         }
+
         return new PageResult<>(this.baseMapper.page(PageFactory.defaultPage(), queryWrapper));
     }
 
@@ -189,7 +187,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         BeanUtil.copyProperties(sysUserParam, sysUser);
         SysUserFactory.fillAddCommonUserInfo(sysUser);
         if(ObjectUtil.isNotEmpty(sysUserParam.getPassword())) {
-            sysUser.setPassword(BCrypt.hashpw(sysUserParam.getPassword(), BCrypt.gensalt()));
+            sysUser.setPwdHashValue(CryptogramUtil.doHashValue(sysUserParam.getPassword()));
+        }
+        // 对铭感字段（手机号进行加密保护）
+        if (ConstantContextHolder.getCryptogramConfigs().getFieldEncDec()) {
+            sysUser.setPhone(CryptogramUtil.doEncrypt(sysUserParam.getPhone()));
         }
         this.save(sysUser);
         Long sysUserId = sysUser.getId();
@@ -263,8 +265,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //设置密码
         SysUserFactory.fillBaseUserInfo(sysUser);
         if(ObjectUtil.isNotEmpty(sysUserParam.getPassword())) {
-            sysUser.setPassword(BCrypt.hashpw(sysUserParam.getPassword(), BCrypt.gensalt()));
+            // 将其哈希掉，存进去
+            sysUser.setPwdHashValue(CryptogramUtil.doHashValue(sysUserParam.getPassword()));
         }
+
+        // 对铭感字段（手机号进行加密保护）
+        if (ConstantContextHolder.getCryptogramConfigs().getFieldEncDec()) {
+            sysUser.setPhone(CryptogramUtil.doEncrypt(sysUserParam.getPhone()));
+        }
+
         this.updateById(sysUser);
         Long sysUserId = sysUser.getId();
         //编辑员工信息
@@ -371,10 +380,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new ServiceException(SysUserExceptionEnum.USER_PWD_REPEAT);
         }
         //原密码错误
-        if (!BCrypt.checkpw(sysUserParam.getPassword(), sysUser.getPassword())) {
+        if (!sysUser.getPwdHashValue().equals(CryptogramUtil.doHashValue(sysUserParam.getPassword()))) {
             throw new ServiceException(SysUserExceptionEnum.USER_PWD_ERROR);
         }
-        sysUser.setPassword(BCrypt.hashpw(sysUserParam.getNewPassword(), BCrypt.gensalt()));
+        sysUser.setPwdHashValue(CryptogramUtil.doHashValue(sysUserParam.getNewPassword()));
         this.updateById(sysUser);
     }
 
@@ -420,7 +429,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void resetPwd(SysUserParam sysUserParam) {
         SysUser sysUser = this.querySysUser(sysUserParam);
         String password = ConstantContextHolder.getDefaultPassWord();
-        sysUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        sysUser.setPwdHashValue(CryptogramUtil.doHashValue(password));
         this.updateById(sysUser);
     }
 

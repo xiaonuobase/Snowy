@@ -35,7 +35,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -54,6 +53,7 @@ import vip.xiaonuo.core.tenant.entity.TenantInfo;
 import vip.xiaonuo.core.tenant.exception.TenantException;
 import vip.xiaonuo.core.tenant.exception.enums.TenantExceptionEnum;
 import vip.xiaonuo.core.tenant.service.TenantInfoService;
+import vip.xiaonuo.core.util.CryptogramUtil;
 import vip.xiaonuo.core.util.HttpServletUtil;
 import vip.xiaonuo.core.util.IpAddressUtil;
 import vip.xiaonuo.sys.core.cache.UserCache;
@@ -101,10 +101,13 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
             throw new AuthException(AuthExceptionEnum.ACCOUNT_PWD_ERROR);
         }
 
-        String passwordBcrypt = sysUser.getPassword();
+        String passwordHashValue = sysUser.getPwdHashValue();
+
+        // 解密密码（这里是前端传来的，如果不需要可将其干掉，这里不做开关）
+        password = CryptogramUtil.doSm2Decrypt(password);
 
         //验证账号密码是否正确
-        if (ObjectUtil.isEmpty(passwordBcrypt) || !BCrypt.checkpw(password, passwordBcrypt)) {
+        if (ObjectUtil.isEmpty(passwordHashValue) || !passwordHashValue.equals(CryptogramUtil.doHashValue(password))) {
             LogManager.me().executeLoginLog(sysUser.getAccount(), LogSuccessStatusEnum.FAIL.getCode(), AuthExceptionEnum.ACCOUNT_PWD_ERROR.getMessage());
             throw new AuthException(AuthExceptionEnum.ACCOUNT_PWD_ERROR);
         }
@@ -185,6 +188,11 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 authToken = authToken.substring(CommonConstant.TOKEN_TYPE_BEARER.length() + 1);
             } catch (StringIndexOutOfBoundsException e) {
                 throw new AuthException(AuthExceptionEnum.NOT_VALID_TOKEN_TYPE);
+            }
+            // 判断是否开启了加密
+            if (ConstantContextHolder.getCryptogramConfigs().getTokenEncDec()) {
+                // 解密token
+                authToken = CryptogramUtil.doDecrypt(authToken);
             }
         }
 

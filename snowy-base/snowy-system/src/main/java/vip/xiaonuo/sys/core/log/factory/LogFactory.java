@@ -28,6 +28,8 @@ import cn.hutool.core.date.DateTime;
 import org.aspectj.lang.JoinPoint;
 import vip.xiaonuo.core.annotion.BusinessLog;
 import vip.xiaonuo.core.consts.SymbolConstant;
+import vip.xiaonuo.core.context.constant.ConstantContextHolder;
+import vip.xiaonuo.core.util.CryptogramUtil;
 import vip.xiaonuo.core.util.JoinPointUtil;
 import vip.xiaonuo.sys.core.enums.LogSuccessStatusEnum;
 import vip.xiaonuo.sys.core.enums.VisLogTypeEnum;
@@ -65,6 +67,9 @@ public class LogFactory {
             sysVisLog.setMessage(VisLogTypeEnum.LOGIN.getMessage() +
                     LogSuccessStatusEnum.FAIL.getMessage() + SymbolConstant.COLON + failMessage);
         }
+        if (ConstantContextHolder.getCryptogramConfigs().getVisLogEnc()) {
+            SysVisLogSign(sysVisLog);
+        }
     }
 
     /**
@@ -80,6 +85,9 @@ public class LogFactory {
         sysVisLog.setVisType(VisLogTypeEnum.EXIT.getCode());
         sysVisLog.setVisTime(DateTime.now());
         sysVisLog.setAccount(account);
+        if (ConstantContextHolder.getCryptogramConfigs().getVisLogEnc()) {
+            SysVisLogSign(sysVisLog);
+        }
     }
 
     /**
@@ -93,6 +101,9 @@ public class LogFactory {
         sysOpLog.setSuccess(LogSuccessStatusEnum.SUCCESS.getCode());
         sysOpLog.setResult(result);
         sysOpLog.setMessage(LogSuccessStatusEnum.SUCCESS.getMessage());
+        if (ConstantContextHolder.getCryptogramConfigs().getOpLogEnc()) {
+            SysOpLogSign(sysOpLog);
+        }
     }
 
     /**
@@ -105,6 +116,9 @@ public class LogFactory {
         fillCommonSysOpLog(sysOpLog, account, businessLog, joinPoint);
         sysOpLog.setSuccess(LogSuccessStatusEnum.FAIL.getCode());
         sysOpLog.setMessage(Arrays.toString(exception.getStackTrace()));
+        if (ConstantContextHolder.getCryptogramConfigs().getOpLogEnc()) {
+            SysOpLogSign(sysOpLog);
+        }
     }
 
     /**
@@ -158,6 +172,24 @@ public class LogFactory {
         sysOpLog.setOs(os);
         sysOpLog.setUrl(url);
         sysOpLog.setReqMethod(method);
+        return sysOpLog;
+    }
+
+    /**
+     * 构建登录登出日志完整性保护（数据签名）
+     */
+    private static SysVisLog SysVisLogSign (SysVisLog sysVisLog) {
+        String sysVisLogStr = sysVisLog.toString().replaceAll(" +","");
+        sysVisLog.setSignValue(CryptogramUtil.doSignature(sysVisLogStr));
+        return sysVisLog;
+    }
+
+    /**
+     * 构建操作日志完整性保护（摘要）
+     */
+    private static SysOpLog SysOpLogSign (SysOpLog sysOpLog) {
+        String sysVisLogStr = sysOpLog.toString();
+        sysOpLog.setSignValue(CryptogramUtil.doHashValue(sysVisLogStr));
         return sysOpLog;
     }
 

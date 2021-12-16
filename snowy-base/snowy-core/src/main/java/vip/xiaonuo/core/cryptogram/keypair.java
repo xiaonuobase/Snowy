@@ -22,88 +22,30 @@ Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意
 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/xiaonuobase/snowy
 6.若您的项目无法满足以上几点，可申请商业授权，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.user.result;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import vip.xiaonuo.core.pojo.base.wrapper.BaseWrapper;
-import vip.xiaonuo.sys.modular.emp.result.SysEmpInfo;
-
-import java.util.Date;
-import java.util.Map;
+package vip.xiaonuo.core.cryptogram;
 
 /**
- * 系统用户结果
+ * 基于SM2的秘钥对
+ * （本项目中配置的，自己使用可根据自己的需求进行更换）
  *
- * @author xuyuxiang
- * @date 2020/4/2 9:19
+ * @author yubaoshan
  */
-@Data
-public class SysUserResult implements BaseWrapper {
+public class keypair {
 
     /**
-     * 主键
+     * 公钥
      */
-    private Long id;
+    public static String PUBLIC_KEY = "04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54";
 
     /**
-     * 账号
+     * 私钥
      */
-    private String account;
+    public static String PRIVATE_KEY = "3037723d47292171677ec8bd7dc9af696c7472bc5f251b2cec07e65fdef22e25";
 
     /**
-     * 昵称
+     * SM4的对称秘钥（生产环境需要改成自己使用的）
+     * 16 进制字符串，要求为 128 比特
      */
-    private String nickName;
+    public static String KEY = "0123456789abcdeffedcba9876543210";
 
-    /**
-     * 姓名
-     */
-    private String name;
-
-    /**
-     * 头像
-     */
-    private Long avatar;
-
-    /**
-     * 生日
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date birthday;
-
-    /**
-     * 性别(字典 1男 2女 3未知)
-     */
-    private Integer sex;
-
-    /**
-     * 邮箱
-     */
-    private String email;
-
-    /**
-     * 手机
-     */
-    private String phone;
-
-    /**
-     * 电话
-     */
-    private String tel;
-
-    /**
-     * 用户员工信息
-     */
-    private SysEmpInfo sysEmpInfo;
-
-    /**
-     * 状态（字典 0正常 1停用 2删除）
-     */
-    private Integer status;
-
-    @Override
-    public Map<String, Object> doWrap(Object beWrappedModel) {
-        return null;
-    }
 }

@@ -32,6 +32,7 @@
     "print-js": "^1.0.63",
     "raphael": "^2.3.0",
     "screenfull": "^5.1.0",
+    "sm-crypto": "^0.3.6",
     "viser-vue": "^2.4.6",
     "vue": "2.6.10",
     "vue-clipboard2": "^0.2.1",

@@ -6,17 +6,23 @@
 
 ### 框架介绍
 
-<div><h5>Snowy是小诺团队下基于SpringBoot+AntDesignVue开发的Java全新RBAC权限管理系统，前后分离，注释丰富，代码简洁。在国策讲究自主可控的时候，适配国产数据库（金仓、达梦）、主流数据库Mysql、Oracle、Mssql、Postgresql，小诺的产品一致追求简洁干净，一套代码搞定！同时支持国产中间件部署、麒麟操作系统、Windows、Linux部署使用。</h5></div>
-
+<div><h5>Snowy是一款基于国产密码算法后台权限管理系统，其中采用了SM2、SM3、SM4及签名验签，软件层面完全符合等保测评要求，让更多的人认识密码，使用密码。技术框架与密码结合，让前后分离“密”不可分。</h5></div>
+<div><h4>结合SpringBoot+AntDesignVue开发，注释丰富，代码简洁。适配国产数据库（金仓、达梦）、主流数据库Mysql、Oracle、Mssql、Postgresql，小诺的产品一致追求简洁干净，一套代码搞定！同时支持国产中间件部署、麒麟操作系统、Windows、Linux部署使用。</h4></div>
 <div align="center"><h5 align="center">Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。</h5></div>
 
 <p align="center">     
     <p align="center">
+        <a href="https://gitee.com/xiaonuobase/snowy">
+            <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
+        </a>
+        <a href="https://gitee.com/xiaonuobase/snowy">
+            <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
+        </a>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
             <img src="https://img.shields.io/badge/vue-2.x-blue.svg" alt="bootstrap">
         </a> 
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
-            <img src="https://img.shields.io/badge/vue--ant--design-2.1.0-blue.svg" alt="bootstrap">
+            <img src="https://img.shields.io/badge/vue--ant--design-1.5.6-blue.svg" alt="bootstrap">
         </a> 
         <a href="http://spring.io/projects/spring-boot">
             <img src="https://img.shields.io/badge/spring--boot-2.3.1-green.svg" alt="spring-boot">
@@ -26,12 +32,6 @@
         </a>  
         <a href="./LICENSE">
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
-        </a>
-        <a href="https://gitee.com/xiaonuobase/snowy">
-            <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
-        </a>
-        <a href="https://gitee.com/xiaonuobase/snowy">
-            <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
         </a>
     </p>
 </p>
@@ -54,6 +54,17 @@
 * 如果我们的产品能满足您的需求，很期待您给我们右上角点个 star
 
 <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7fmSabTg&path=%7BshareItemLink%3A7fmSabTg%7D%2F"/>
+
+### 密码分步:fire:
+
+| 功能                        | 算法类型          |
+| ----------------------      | ------------- |
+| 登录        | SM2前端加密，后端解密 |
+| 登录登出日志        | SM2对登录登出日志做签名完整性保护存储    |
+| 操作日志        | SM2对操作日志做签名完整性保护存储    |
+| Token        | SM4（cbc模式）加密，Token不再曝光暴露    |
+| 用户密码        | SM3完整性保护存储，登录时做完整性校验    |
+| 用户手机号        | SM4（cbc模式）加解密使用字段脱敏    |
 
 ### 视频教程:fire:
 

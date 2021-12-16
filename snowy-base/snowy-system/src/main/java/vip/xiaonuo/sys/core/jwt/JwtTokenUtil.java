@@ -30,7 +30,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import io.jsonwebtoken.*;
 import vip.xiaonuo.core.context.constant.ConstantContextHolder;
-
+import vip.xiaonuo.core.util.CryptogramUtil;
 import java.util.Date;
 
 /**
@@ -50,13 +50,18 @@ public class JwtTokenUtil {
     public static String generateToken(JwtPayLoad jwtPayLoad) {
 
         DateTime expirationDate = DateUtil.offsetSecond(new Date(), Convert.toInt(ConstantContextHolder.getTokenExpireSec()));
-        return Jwts.builder()
+        String jwtToken =  Jwts.builder()
                 .setClaims(BeanUtil.beanToMap(jwtPayLoad))
                 .setSubject(jwtPayLoad.getUserId().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, ConstantContextHolder.getJwtSecret())
                 .compact();
+        if (ConstantContextHolder.getCryptogramConfigs().getTokenEncDec()) {
+            // 加密token
+            return CryptogramUtil.doEncrypt(jwtToken);
+        }
+        return jwtToken;
     }
 
     /**

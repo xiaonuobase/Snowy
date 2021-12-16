@@ -33,6 +33,7 @@ import cn.hutool.log.Log;
 import vip.xiaonuo.core.consts.CommonConstant;
 import vip.xiaonuo.core.consts.SymbolConstant;
 import vip.xiaonuo.core.exception.ServiceException;
+import vip.xiaonuo.core.pojo.cryptogram.CryptogramConfigs;
 import vip.xiaonuo.core.pojo.email.EmailConfigs;
 import vip.xiaonuo.core.pojo.oauth.OauthConfigs;
 import vip.xiaonuo.core.pojo.sms.AliyunSmsConfigs;
@@ -389,4 +390,24 @@ public class ConstantContextHolder {
     public static Boolean getCaptchaOpenFlag() {
         return getSysConfigWithDefault("SNOWY_CAPTCHA_OPEN", Boolean.class, true);
     }
+
+    /**
+     * 获取加解密的配置
+     *
+     * @author yubaoshan
+     */
+    public static CryptogramConfigs getCryptogramConfigs() {
+        boolean snowyTokenEncDec = getSysConfigWithDefault("SNOWY_TOKEN_ENCRYPTION_OPEN", Boolean.class, true);
+        boolean snowyVisLogEnc = getSysConfigWithDefault("SNOWY_VISLOG_ENCRYPTION_OPEN", Boolean.class, true);
+        boolean snowyOpLogEnc = getSysConfigWithDefault("SNOWY_OPLOG_ENCRYPTION_OPEN", Boolean.class, true);
+        boolean snowyFieldEncDec = getSysConfigWithDefault("SNOWY_FIELD_ENC_DEC_OPEN", Boolean.class, true);
+
+        CryptogramConfigs cryptogramConfigs = new CryptogramConfigs();
+        cryptogramConfigs.setTokenEncDec(snowyTokenEncDec);
+        cryptogramConfigs.setVisLogEnc(snowyVisLogEnc);
+        cryptogramConfigs.setOpLogEnc(snowyOpLogEnc);
+        cryptogramConfigs.setFieldEncDec(snowyFieldEncDec);
+        return cryptogramConfigs;
+    }
+
 }
