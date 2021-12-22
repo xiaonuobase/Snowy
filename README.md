@@ -53,7 +53,7 @@
 * 我们的其他产品线同样开源，如需关注最新动态可加入QQ群聊探讨：[732230670](https://wpa.qq.com/msgrd?v=3&uin=732230670&_blank)
 * 如果我们的产品能满足您的需求，很期待您给我们右上角点个 star
 
-<img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7fmSabTg&path=%7BshareItemLink%3A7fmSabTg%7D%2F"/>
+<img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwJHENw&path=%7BshareItemLink%3A7qwJHENw%7D%2F"/>
 
 ### 密码分步:fire:
 
@@ -85,27 +85,27 @@
 ### 架构原理图
 * 业务架构
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yaAhtQ&path=%7BshareItemLink%3A68yaAhtQ%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwKTmEw&path=%7BshareItemLink%3A7qwKTmEw%7D%2F"/>
 </p>
 
 * 应用架构
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yVynJQ&path=%7BshareItemLink%3A68yVynJQ%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwKfxFw&path=%7BshareItemLink%3A7qwKfxFw%7D%2F"/>
 </p>
 
 * 数据架构
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68ydm_dg&path=%7BshareItemLink%3A68ydm_dg%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwKrjRw&path=%7BshareItemLink%3A7qwKrjRw%7D%2F"/>
 </p>
 
 * 技术架构
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yd_qiw&path=%7BshareItemLink%3A68yd_qiw%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwK4RoA&path=%7BshareItemLink%3A7qwK4RoA%7D%2F"/>
 </p>
 
 * 部署架构
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=68yeNc4g&path=%7BshareItemLink%3A68yeNc4g%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwLD35w&path=%7BshareItemLink%3A7qwLD35w%7D%2F"/>
 </p>
 
 ### 效果图
@@ -256,7 +256,7 @@ jodconverter:
 <table>
     <tr>
         <td>微信群</td>
-        <td><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=ecc5LVAwwRuysFB28xQQb1p3IPC13hzAtji_Sxyr42naNTnj7xurmI8&name=weixin.png" width="120"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwFVcdA&path=%7BshareItemLink%3A7qwFVcdA%7D%2F" width="120"/></td>
     </tr>
 </table>
 
