@@ -1,6 +1,4 @@
-sys_area.sql: https://pan.xiaonuo.vip/#s/65K_IzOw
-
-sys_area.sql[zip]: https://pan.xiaonuo.vip/#s/7eH_XK7w
+sys_area.sql[zip]: https://pan.xiaonuo.vip/#s/7rFnfuTA
 
 sys_area_mssql.sql: https://pan.xiaonuo.vip/#s/65K_gwMA
 
