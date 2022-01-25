@@ -251,7 +251,7 @@ jodconverter:
 
 ### 官方微信群
 
-##### 因群达到200人以上，需加微信拉群
+因群达到200人以上，需加微信拉群
 
 <table>
     <tr>
@@ -271,6 +271,12 @@ jodconverter:
 ### 更新日志：
 
 更新日志：https://doc.xiaonuo.vip/snowy_vue/#%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97
+
+### 曾获荣誉：
+
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7xtGQLOA&path=%7BshareItemLink%3A7xtGQLOA%7D%2F"/>
+</p>
 
 ### 版权说明
 
