@@ -55,15 +55,17 @@
           </span>
           <span slot="action" slot-scope="text, record">
             <span v-if="record.generateType === '1'">
-              <a v-if="hasPerm('codeGenerate:runDown')" @click="runDownCodeGenerate(record)">开始生成</a>
+              <a v-if="hasPerm('codeGenerate:runDown')" @click="runDownCodeGenerate(record)">生成</a>
             </span>
             <span v-else>
               <a-popconfirm v-if="hasPerm('codeGenerate:runLocal')" placement="topRight" title="确定生成代码到本项目？" @confirm="() => runLocalCodeGenerate(record)">
-                <a>开始生成</a>
+                <a>生成</a>
               </a-popconfirm>
             </span>
             <a-divider type="vertical" v-if="hasPerm('codeGenerate:config') & hasPerm('codeGenerate:runLocal') || hasPerm('codeGenerate:runDown') "/>
             <a v-if="hasPerm('codeGenerate:config')" @click="indexConfigOpen(record)">配置</a>
+            <a-divider type="vertical" v-if="hasPerm('codeGenerate:config') & hasPerm('codeGenerate:runLocal') || hasPerm('codeGenerate:runDown') "/>
+            <a v-if="hasPerm('codeGenerate:config')" @click="indexCodePreviewOpen(record)">预览</a>
             <a-divider type="vertical" v-if="hasPerm('codeGenerate:config') & hasPerm('codeGenerate:edit')"/>
             <a v-if="hasPerm('codeGenerate:edit')" @click="$refs.editForm.edit(record)">编辑</a>
             <a-divider type="vertical" v-if="hasPerm('codeGenerate:edit') & hasPerm('codeGenerate:delete')"/>
@@ -77,6 +79,7 @@
       </a-spin>
     </a-card>
     <index-config ref="indexConfig" @ok="handleResetOpen" v-if="hasPerm('codeGenerate:config')"/>
+    <index-code-preview ref="indexCodePreview" @ok="handleResetOpen" v-if="hasPerm('codeGenerate:config')"/>
   </div>
 </template>
 <script>
@@ -85,10 +88,12 @@
   import addForm from './addForm'
   import editForm from './editForm'
   import indexConfig from './indexConfig'
+  import indexCodePreview from './indexCodePreview'
 
   export default {
     components: {
       indexConfig,
+      indexCodePreview,
       STable,
       Ellipsis,
       addForm,
@@ -232,6 +237,13 @@
       indexConfigOpen (record) {
         this.indexOpenShow = false
         this.$refs.indexConfig.open(record)
+      },
+      /**
+       * 打开预览界面
+       */
+      indexCodePreviewOpen (record) {
+        this.indexOpenShow = false
+        this.$refs.indexCodePreview.open(record)
       },
       /**
        * 详细配置界面返回
