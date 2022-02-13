@@ -49,6 +49,7 @@ import vip.xiaonuo.generate.modular.enums.CodeGenerateExceptionEnum;
 import vip.xiaonuo.generate.modular.mapper.CodeGenerateMapper;
 import vip.xiaonuo.generate.modular.param.CodeGenerateParam;
 import vip.xiaonuo.generate.modular.param.SysCodeGenerateConfigParam;
+import vip.xiaonuo.generate.modular.result.FileContentResult;
 import vip.xiaonuo.generate.modular.result.InforMationColumnsResult;
 import vip.xiaonuo.generate.modular.result.InformationResult;
 import vip.xiaonuo.generate.modular.service.CodeGenerateService;
@@ -57,6 +58,7 @@ import vip.xiaonuo.generate.modular.service.SysCodeGenerateConfigService;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -180,6 +182,12 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         downloadCode(xnCodeGenParam, response);
     }
 
+    @Override
+    public List<FileContentResult> runFileContent(CodeGenerateParam codeGenerateParam) {
+        XnCodeGenParam xnCodeGenParam = copyParams(codeGenerateParam);
+        return fileContentCode(xnCodeGenParam);
+    }
+
     /**
      * 校验表中是否包含主键
      *
@@ -214,6 +222,36 @@ public class CodeGenerateServiceImpl extends ServiceImpl<CodeGenerateMapper, Cod
         } catch (Exception e) {
             throw new ServiceException(CodeGenerateExceptionEnum.CODE_GEN_NOT_PATH);
         }
+    }
+
+    /**
+     * 文件内容化代码基础
+     *
+     * @author yubaoshan
+     * @date 2020年12月23日 00点32分
+     */
+    private List<FileContentResult> fileContentCode(XnCodeGenParam xnCodeGenParam) {
+        Util.initVelocity();
+        XnVelocityContext context = new XnVelocityContext();
+
+        List<FileContentResult> reList = new ArrayList<>();
+        String[] filePath = GenConstant.xnCodeGenFilePath(xnCodeGenParam.getBusName(), xnCodeGenParam.getPackageName());
+        for (int a = 0; a < filePath.length; a++) {
+            String templateName = GenConstant.xnCodeGenTempFile[a];
+            String fileBaseName = ResetFileBaseName(xnCodeGenParam.getClassName(),
+                    templateName.substring(templateName.indexOf(GenConstant.FILE_SEP) + 1, templateName.lastIndexOf(TEMP_SUFFIX)));
+
+            VelocityContext velContext = context.createVelContext(xnCodeGenParam);
+            String tempName = GenConstant.templatePath + templateName;
+            StringWriter sw = new StringWriter();
+            Template tpl = Velocity.getTemplate(tempName, ENCODED);
+            tpl.merge(velContext, sw);
+
+            FileContentResult fcResult = new FileContentResult(fileBaseName, sw.toString());
+            reList.add(fcResult);
+        }
+
+        return reList;
     }
 
     /**
