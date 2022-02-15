@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.core.pojo.page.PageResult;
 import vip.xiaonuo.generate.modular.entity.CodeGenerate;
 import vip.xiaonuo.generate.modular.param.CodeGenerateParam;
+import vip.xiaonuo.generate.modular.result.FileContentResult;
 import vip.xiaonuo.generate.modular.result.InformationResult;
 
 import javax.servlet.http.HttpServletResponse;
@@ -104,4 +105,12 @@ public interface CodeGenerateService extends IService<CodeGenerate> {
      * @date 2020年12月16日21:03:15
      */
     void runDown(CodeGenerateParam codeGenerateParam, HttpServletResponse response);
+
+    /**
+     * 获取文件内容
+     *
+     * @author Sam
+     * @datetime 2022年02月07日20:01:56
+     */
+    List<FileContentResult> runFileContent(CodeGenerateParam codeGenerateParam);
 }

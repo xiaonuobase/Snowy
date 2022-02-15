@@ -157,4 +157,24 @@ public class CodeGenerateController {
         }
         this.codeGenerateService.runDown(codeGenerateParam, response);
     }
+
+    /**
+     * 代码生成基础配置生成返回预览
+     *
+     * @author Sam
+     * @date 2022-02-11 01:55:48
+     */
+    @Permission
+    @GetMapping("/codeGenerate/runFileContent")
+    @BusinessLog(title = "代码生成_返回预览", opType = LogAnnotionOpTypeEnum.QUERY)
+    public ResponseData runFileContent(@Validated(CodeGenerateParam.detail.class) CodeGenerateParam codeGenerateParam) {
+
+        // 演示环境开启，则不允许操作
+        if (ConstantContextHolder.getDemoEnvFlag()) {
+            throw new DemoException();
+        }
+
+        return ResponseData.success(this.codeGenerateService.runFileContent(codeGenerateParam));
+    }
+
 }
