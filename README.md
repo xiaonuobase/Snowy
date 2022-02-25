@@ -268,11 +268,11 @@ jodconverter:
 - 3.  提交代码
 - 4.  新建 Pull Request
 
-### 更新日志：
+### 更新日志
 
 更新日志：https://doc.xiaonuo.vip/snowy_vue/#%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97
 
-### 曾获荣誉：
+### 曾获荣誉
 
 <p align="center">
     <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7xtGQLOA&path=%7BshareItemLink%3A7xtGQLOA%7D%2F"/>
