@@ -104,3 +104,17 @@ export function codeGenerateRunDown (parameter) {
     responseType: 'blob'
   })
 }
+
+/**
+ * 代码生产预览接口
+ *
+ * @author yubaoshan
+ * @date 2022/05/16
+ */
+export function codeGenerateRunFileContent (parameter) {
+  return axios({
+    url: '/codeGenerate/runFileContent',
+    method: 'get',
+    params: parameter
+  })
+}

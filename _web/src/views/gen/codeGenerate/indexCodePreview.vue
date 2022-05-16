@@ -8,7 +8,7 @@
         <div>
           <a-button type="primary" class="but_item" @click="copyContentCode(pane.content)" icon="copy">复制代码</a-button>
         </div>
-        <a-textarea v-model="pane.content" autosize="true" ref="inputText" />
+        <a-textarea v-model="pane.content" :autoSize="true" ref="inputText" />
       </a-tab-pane>
     </a-tabs>
   </a-card>
