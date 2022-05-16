@@ -74,6 +74,10 @@ public class DruidProperties {
      */
     private final String KINGBASEES_VALIDATE_QUERY_SQL = "select 1";
 
+    private String loginUsername;
+
+    private String loginPassword;
+
     private String url;
 
     private String username;

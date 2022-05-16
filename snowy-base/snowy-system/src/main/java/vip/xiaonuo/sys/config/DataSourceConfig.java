@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import vip.xiaonuo.core.context.constant.ConstantContextHolder;
 import vip.xiaonuo.core.pojo.druid.DruidProperties;
 
 import java.util.HashMap;
@@ -83,6 +84,8 @@ public class DataSourceConfig {
         statViewServletParams.put("resetEnable", "true");
         ServletRegistrationBean<StatViewServlet> registration = new ServletRegistrationBean<>(new StatViewServlet());
         registration.addUrlMappings("/druid/*");
+        statViewServletParams.put("loginUsername", ConstantContextHolder.getDruidLoginConfigs().getLoginUsername());
+        statViewServletParams.put("loginPassword", ConstantContextHolder.getDruidLoginConfigs().getLoginPassword());
         registration.setInitParameters(statViewServletParams);
         return registration;
     }

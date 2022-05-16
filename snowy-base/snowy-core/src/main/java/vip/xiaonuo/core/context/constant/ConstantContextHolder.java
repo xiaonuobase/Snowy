@@ -34,6 +34,7 @@ import vip.xiaonuo.core.consts.CommonConstant;
 import vip.xiaonuo.core.consts.SymbolConstant;
 import vip.xiaonuo.core.exception.ServiceException;
 import vip.xiaonuo.core.pojo.cryptogram.CryptogramConfigs;
+import vip.xiaonuo.core.pojo.druid.DruidProperties;
 import vip.xiaonuo.core.pojo.email.EmailConfigs;
 import vip.xiaonuo.core.pojo.oauth.OauthConfigs;
 import vip.xiaonuo.core.pojo.sms.AliyunSmsConfigs;
@@ -130,6 +131,22 @@ public class ConstantContextHolder {
         tencentSmsConfigs.setSdkAppId(snowyTencentSmsSdkAppId);
         tencentSmsConfigs.setSign(snowyTencentSmsSign);
         return tencentSmsConfigs;
+    }
+
+    /**
+     * 获取Druid默认用户名密码
+     *
+     * @author yubaoshan
+     * @date 2022/5/16
+     */
+    public static DruidProperties getDruidLoginConfigs() {
+        String snowyDruidLoginUsername = getSysConfigWithDefault("SNOWY_DRUID_LOGIN_USERNAME", String.class, RandomUtil.randomString(10));
+        String snowyDruidLoginPassword = getSysConfigWithDefault("SNOWY_DRUID_LOGIN_PASSWORD", String.class, RandomUtil.randomString(10));
+
+        DruidProperties druidProperties = new DruidProperties();
+        druidProperties.setLoginUsername(snowyDruidLoginUsername);
+        druidProperties.setLoginPassword(snowyDruidLoginPassword);
+        return druidProperties;
     }
 
     /**
