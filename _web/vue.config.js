@@ -21,10 +21,10 @@ const assetsCDN = {
   css: [],
   // https://unpkg.com/browse/vue@2.6.10/
   js: [
-    '//unpkg.com/vue@2.6.10/dist/vue.min.js',
-    '//unpkg.com/vue-router@3.1.3/dist/vue-router.min.js',
-    '//unpkg.com/vuex@3.1.1/dist/vuex.min.js',
-    '//unpkg.com/axios@0.19.0/dist/axios.min.js'
+    'https://snowy1xweb-1302926205.cos.ap-nanjing.myqcloud.com/vue.main.js',
+    'https://snowy1xweb-1302926205.cos.ap-nanjing.myqcloud.com/vue-router.min.js',
+    'https://snowy1xweb-1302926205.cos.ap-nanjing.myqcloud.com/vuex.min.js',
+    'https://snowy1xweb-1302926205.cos.ap-nanjing.myqcloud.com/axios.min.js'
   ]
 }
 
