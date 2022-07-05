@@ -46,6 +46,15 @@ public interface LoginContext {
     SysLoginUser getSysLoginUser();
 
     /**
+     * 根据token获取当前登录用户
+     *
+     * @return 当前登录用户信息
+     * @author dongxiayu
+     * @date 2022/7/2 0:22
+     */
+    SysLoginUser getSysLoginUserByToken(String token);
+
+    /**
      * 获取当前登录用户，如未登录，则返回null，不抛异常
      *
      * @return 当前登录用户信息
@@ -71,6 +80,15 @@ public interface LoginContext {
      * @date 2020/3/18 19:22
      */
     boolean hasLogin();
+
+    /**
+     * 根据token判断用户是否登录
+     *
+     * @return 是否登录，true是，false否
+     * @author dongxiayu
+     * @date 2022/7/2 0:22
+     */
+    boolean hasLoginByToken(String token);
 
     /**
      * 获取当前登录用户的账户

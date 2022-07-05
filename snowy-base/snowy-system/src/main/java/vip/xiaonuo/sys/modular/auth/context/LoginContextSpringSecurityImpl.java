@@ -45,6 +45,7 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 登录用户上下文实现类
@@ -79,6 +80,19 @@ public class LoginContextSpringSecurityImpl implements LoginContext {
         } else {
             return (SysLoginUser) authentication.getPrincipal();
         }
+    }
+
+    /**
+     * 根据token获取当前登录用户
+     *
+     * @param token
+     * @return 当前登录用户信息
+     * @author dongxiayu
+     * @date 2022/7/2 0:22
+     */
+    @Override
+    public SysLoginUser getSysLoginUserByToken(String token) {
+        return authService.getLoginUserByToken(token);
     }
 
     /**
@@ -122,6 +136,28 @@ public class LoginContextSpringSecurityImpl implements LoginContext {
         } else {
             return !(authentication instanceof AnonymousAuthenticationToken);
         }
+    }
+
+    /**
+     * 根据token判断用户是否登录
+     *
+     * @param token
+     * @return 是否登录，true是，false否
+     * @author dongxiayu
+     * @date 2022/7/2 0:22
+     */
+    @Override
+    public boolean hasLoginByToken(String token) {
+        boolean ret = false;
+        try {
+            SysLoginUser sysLoginUser = authService.getLoginUserByToken(token);
+            if(Objects.nonNull(sysLoginUser)){
+                ret = true;
+            }
+        }catch (Exception e){
+            ret = false;
+        }
+        return ret;
     }
 
     /**
