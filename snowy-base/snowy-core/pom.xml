@@ -180,6 +180,12 @@
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java</artifactId>
         </dependency>
+
+        <!-- mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

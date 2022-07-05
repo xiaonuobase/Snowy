@@ -47,6 +47,8 @@
         <aliyun.sms.esc.version>4.17.6</aliyun.sms.esc.version>
         <qcloud.sms.sdk.version>3.1.57</qcloud.sms.sdk.version>
         <knife4j.version>2.0.8</knife4j.version>
+        <javax.mail.version>1.4.7</javax.mail.version>
+        <skipTests>true</skipTests>
     </properties>
 
     <dependencyManagement>
@@ -197,6 +199,13 @@
                 <groupId>com.tencentcloudapi</groupId>
                 <artifactId>tencentcloud-sdk-java</artifactId>
                 <version>${qcloud.sms.sdk.version}</version>
+            </dependency>
+
+            <!-- mail -->
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javax.mail.version}</version>
             </dependency>
         </dependencies>
 
