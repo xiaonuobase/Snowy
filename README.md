@@ -55,6 +55,38 @@
 
 <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwJHENw&path=%7BshareItemLink%3A7qwJHENw%7D%2F"/>
 
+
+ ### 升级计划:fire:
+
+官方预告：2.0版本目前处于收尾工作，具体技术细节详情，等发布，大家可以稍作等待，相信您的等待会有好的收获，请看下面功能图：
+
+<table>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHr1wiA&path=%7BshareItemLink%3A8XHr1wiA%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHyk66w&path=%7BshareItemLink%3A8XHyk66w%7D%2F"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHy7cOw&path=%7BshareItemLink%3A8XHy7cOw%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHzPDJg&path=%7BshareItemLink%3A8XHzPDJg%7D%2F"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHzm0ng&path=%7BshareItemLink%3A8XHzm0ng%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XHz1PZg&path=%7BshareItemLink%3A8XHz1PZg%7D%2F"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH0H8nw&path=%7BshareItemLink%3A8XH0H8nw%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH0c-yw&path=%7BshareItemLink%3A8XH0c-yw%7D%2F"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH0sCdg&path=%7BshareItemLink%3A8XH0sCdg%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH05YLw&path=%7BshareItemLink%3A8XH05YLw%7D%2F"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH1QLzQ&path=%7BshareItemLink%3A8XH1QLzQ%7D%2F"/></td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8XH4MZZA&path=%7BshareItemLink%3A8XH4MZZA%7D%2F"/></td>
+    </tr>
+</table>
+
 ### 密码分步:fire:
 
 | 功能                        | 算法类型          |
@@ -75,12 +107,7 @@
 | 3        | [Snowy代码下载及启动](https://www.bilibili.com/video/BV1SP4y1p7M8)    |
 | 4        | [Snowy生成一个完整的前后端模块](https://www.bilibili.com/video/BV1Ry4y1G7er)    |
 
-更新中。。。
-
- ### 升级计划:fire:
-
-2.0版本正在全力打造中，最近新版已到达业务部分开发，大家先用1.x的版本使用，新版的预计 6 月左右会发出第一版公测的，为了做的更好，我们愿意多花点时间来打磨，同时我们也有工作要做，谅解一下下哦。
-
+新的视频即将等2.0发布后针对新版重录
 
 ### 架构原理图
 * 业务架构
