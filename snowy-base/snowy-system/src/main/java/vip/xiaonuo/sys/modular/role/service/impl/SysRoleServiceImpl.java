@@ -177,6 +177,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         SysRole sysRole = new SysRole();
         BeanUtil.copyProperties(sysRoleParam, sysRole);
         sysRole.setStatus(CommonStatusEnum.ENABLE.getCode());
+        if(ObjectUtil.isEmpty(sysRole.getDataScopeType())) {
+            sysRole.setDataScopeType(DataScopeTypeEnum.ALL.getCode());
+        }
         this.save(sysRole);
     }
 

@@ -518,7 +518,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<Long> getAllUserIdList() {
         List<Long> resultList = CollectionUtil.newArrayList();
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.ne(SysUser::getAdminType, AdminTypeEnum.SUPER_ADMIN);
+        queryWrapper.ne(SysUser::getAdminType, AdminTypeEnum.SUPER_ADMIN.getCode());
         this.list(queryWrapper).forEach(sysUser -> {
             resultList.add(sysUser.getId());
         });
@@ -529,7 +529,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public boolean hasAllDeletedUser(Set<Long> userIdSet) {
         //查询id在此集合内，且状态为删除的用户，判断其数量是否大于等于集合数量，大于是为了容错
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getStatus, CommonStatusEnum.DELETED).in(SysUser::getId, userIdSet);
+                .eq(SysUser::getStatus, CommonStatusEnum.DELETED.getCode()).in(SysUser::getId, userIdSet);
         return this.count(lambdaQueryWrapper) >= userIdSet.size();
     }
 
