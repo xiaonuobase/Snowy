@@ -1,0 +1,311 @@
+<template>
+	<a-drawer
+		title="授权资源"
+		:width="drawerWidth"
+		:visible="visible"
+		:destroy-on-close="true"
+		:show-pagination="false"
+		:body-style="{ paddingBottom: '80px' }"
+		:footer-style="{ textAlign: 'right' }"
+		@close="onClose"
+	>
+		<a-spin :spinning="spinningLoading">
+			<a-radio-group v-model:value="moduleId" button-style="solid" style="padding-bottom: 10px">
+				<a-radio-button
+					:key="module.id"
+					v-for="module in echoDatalist"
+					:value="module.id"
+					@click="moduleClock(module.id)"
+				>
+					<component :is="module.icon" />
+					{{ module.title }}</a-radio-button
+				>
+			</a-radio-group>
+
+			<a-table size="middle" :columns="columns" :data-source="loadDatas" :pagination="false" bordered>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'parentName'">
+						<a-checkbox :checked="record.parentCheck" @update:checked="(val) => changeParent(record, val)">
+							{{ record.parentName }}
+						</a-checkbox>
+					</template>
+
+					<template v-if="column.dataIndex === 'title'">
+						<a-checkbox :checked="record.nameCheck" @update:checked="(val) => changeSub(record, val)">{{
+							record.title
+						}}</a-checkbox>
+					</template>
+
+					<template v-if="column.dataIndex === 'button'">
+						<template v-if="record.button.length > 0">
+							<template v-for="(item, index) in record.button" :key="item.id">
+								<a-checkbox v-model:checked="item.check" @change="(evt) => changeChildCheckBox(record, evt)">{{
+									item.title
+								}}</a-checkbox>
+								<br v-if="(index + 1) % 5 === 0" />
+							</template>
+						</template>
+					</template>
+				</template>
+			</a-table>
+		</a-spin>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
+		</template>
+	</a-drawer>
+</template>
+
+<script setup name="grantResourceForm">
+	import { nextTick } from 'vue'
+	import tool from '@/utils/tool'
+	import roleApi from '@/api/sys/roleApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
+	import { remove } from 'lodash-es'
+	const spinningLoading = ref(false)
+	let firstShowMap = $ref({})
+	const emit = defineEmits({ successful: null })
+	const submitLoading = ref(false)
+	// 抽屉的宽度
+	const drawerWidth = 1000
+	// 自动获取宽度，默认获取浏览器的宽度的90%
+	//(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) * 0.9
+
+	const columns = [
+		{
+			key: 'parentName',
+			title: '一级目录',
+			dataIndex: 'parentName',
+			customCell: (row, index) => {
+				const parentName = row.parentName
+				const indexArr = firstShowMap[parentName]
+				if (index === indexArr[0]) {
+					return { rowSpan: indexArr.length }
+				}
+				return { rowSpan: 0 }
+			},
+			width: 150
+		},
+		{
+			key: 'title',
+			title: '菜单',
+			dataIndex: 'title',
+			width: 200
+		},
+		{
+			key: 'button',
+			title: '按钮授权',
+			dataIndex: 'button'
+		}
+	]
+	const echoDatalist = ref([])
+	const moduleId = ref('')
+	const loadDatas = ref([])
+
+	// 获取数据
+	const loadData = async () => {
+		// firstShowMap = {} // 重置单元格合并映射
+		// 如果有数据，我们再不去反复的查询
+		if (echoDatalist.value.length > 0) {
+			let data = echoDatalist.value.find((f) => f.id === moduleId.value).menu
+			loadDatas.value = data
+		} else {
+			// 获取表格数据
+			spinningLoading.value = true
+			const res = await roleApi.roleResourceTreeSelector()
+			const param = {
+				id: resultDataModel.id
+			}
+			// 获取回显数据
+			const resEcho = await roleApi.roleOwnResource(param)
+			spinningLoading.value = false
+			echoDatalist.value = echoModuleData(res, resEcho)
+			moduleId.value = res[0].id
+			loadDatas.value = echoDatalist.value[0].menu
+		}
+	}
+	const checkFieldKeys = ['button']
+	let visible = $ref(false)
+	// 返回的数据模型，最终需要转换成这样
+	let resultDataModel = {
+		id: '',
+		grantInfoList: []
+	}
+	// 打开抽屉
+	const onOpen = (record) => {
+		resultDataModel.id = record.id
+		visible = true
+		firstShowMap = {}
+		loadData()
+	}
+	// 数据转换
+	const echoModuleData = (data, resEcho) => {
+		// 通过应用循环
+		data.forEach((module) => {
+			// 加入回显内容
+			module.menu.forEach((item) => {
+				const menueCheck = ref(0)
+				if (resEcho.grantInfoList.length > 0) {
+					resEcho.grantInfoList.forEach((grant) => {
+						if (item.id === grant.menuId) {
+							menueCheck.value++
+							// 处理按钮
+							if (grant.buttonInfo.length > 0) {
+								grant.buttonInfo.forEach((button) => {
+									item.button.forEach((itemButton) => {
+										if (button === itemButton.id) {
+											itemButton.check = true
+										}
+									})
+								})
+							}
+						}
+					})
+				}
+				// 回显前面的2个
+				if (menueCheck.value > 0) {
+					item.parentCheck = true
+					item.nameCheck = true
+				}
+			})
+
+			// 排序
+			module.menu = module.menu.sort((a, b) => {
+				return a.parentId - b.parentId
+			})
+			// 缓存加入索引
+			module.menu.forEach((item, index) => {
+				// 下面就是用来知道不同的一级菜单里面有几个二级菜单，以及他们所在的索引
+				if (firstShowMap[item.parentName]) {
+					firstShowMap[item.parentName].push(index)
+				} else {
+					firstShowMap[item.parentName] = [index]
+				}
+			})
+		})
+		return data
+	}
+
+	// 通过应用分菜单
+	const moduleClock = (value) => {
+		moduleId.value = value
+		loadData()
+	}
+	// 遍历字段
+	const handleOnlySelf = (record, key, val) => {
+		record[key].forEach((item) => {
+			// 处理'button'选中状态
+			item.check = val
+		})
+	}
+	const checkAllChildNotChecked = (record) => {
+		const allChecked = checkFieldKeys.every((key) => {
+			// 遍历所有的字段
+			const child = record[key]
+			return child.every((field) => !field.check)
+		})
+		return allChecked
+	}
+	const changeChildCheckBox = (record, evt) => {
+		let checked = evt.target.checked
+		if (!checked && checkAllChildNotChecked(record)) {
+			// 这里注释掉勾选去掉所有按钮，联动去掉菜单
+			/*record.nameCheck = false
+			record.parentCheck = false*/
+		} else if (checked) {
+			record.nameCheck = checked
+			record.parentCheck = checked
+		}
+	}
+	// 二级菜单的勾选
+	const changeSub = (record, val) => {
+		// 选中二级菜单
+		record.nameCheck = val
+		checkFieldKeys.forEach((key) => {
+			// 遍历所有的字段
+			handleOnlySelf(record, key, val)
+		})
+	}
+	// 当点击首列的勾选
+	const changeParent = (record, val) => {
+		record.parentCheck = val
+		// 通过这个应用id，找到应用下的所有菜单
+		const moduleMenu = echoDatalist.value.find((f) => record.module === f.id)
+		const parentName = record.parentName
+		// 获取同一级菜单的所有索引
+		const indexArr = firstShowMap[parentName]
+		indexArr.forEach((indexItem) => {
+			// 获取同一级菜单的所有行
+			const row = moduleMenu.menu[indexItem]
+			// 给这些菜单的索引去勾选
+			changeSub(row, val)
+		})
+	}
+	// 关闭抽屉
+	const onClose = () => {
+		// 将这些缓存的给清空
+		echoDatalist.value = []
+		moduleId.value = ''
+		loadDatas.value = []
+		firstShowMap = {}
+		visible = false
+	}
+	// 提交之前转换数据
+	const convertData = () => {
+		resultDataModel.grantInfoList = []
+		echoDatalist.value.forEach((table) => {
+			table.menu.forEach((item) => {
+				const grantInfo = {
+					menuId: '',
+					buttonInfo: []
+				}
+				if (item.nameCheck) {
+					grantInfo.menuId = item.id
+					item.button.forEach((button) => {
+						if (button.check) {
+							grantInfo.buttonInfo.push(button.id)
+						}
+					})
+					resultDataModel.grantInfoList.push(grantInfo)
+				}
+			})
+		})
+		return resultDataModel
+	}
+	// 验证并提交数据
+	const onSubmit = () => {
+		const param = convertData()
+		submitLoading.value = true
+		roleApi
+			.roleGrantResource(param)
+			.then(() => {
+				onClose()
+				emit('successful')
+				refreshCacheMenu()
+			})
+			.finally(() => {
+				submitLoading.value = false
+			})
+	}
+	// 刷新缓存的菜单
+	const refreshCacheMenu = () => {
+		nextTick(() => {
+			userCenterApi.userLoginMenu().then((res) => {
+				tool.data.set('MENU', res)
+			})
+		})
+	}
+	// 调用这个函数将子组件的一些数据和方法暴露出去
+	defineExpose({
+		onOpen
+	})
+</script>
+
+<style scoped>
+	/* 重写复选框的样式 */
+	.ant-checkbox-wrapper {
+		margin-left: 0px !important;
+		padding-top: 2px !important;
+		padding-bottom: 2px !important;
+	}
+</style>

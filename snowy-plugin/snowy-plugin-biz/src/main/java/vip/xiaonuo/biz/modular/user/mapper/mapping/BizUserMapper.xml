@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.biz.modular.user.mapper.BizUserMapper">
+
+    <!-- 获取用户分页 -->
+    <select id="page" resultType="vip.xiaonuo.biz.modular.user.result.BizUserResult">
+        SELECT
+        SYS_USER.*,
+        SYS_ORG.NAME AS ORG_NAME,
+        SYS_POSITION.NAME AS POSITION_NAME,
+        SYS_DIRECTOR.NAME AS DIRECTOR_NAME
+        FROM SYS_USER
+        LEFT JOIN SYS_USER SYS_DIRECTOR ON SYS_USER.ID = SYS_DIRECTOR.ID
+        LEFT JOIN SYS_ORG ON SYS_USER.ORG_ID = SYS_ORG.ID
+        LEFT JOIN SYS_POSITION ON SYS_USER.POSITION_ID = SYS_POSITION.ID
+        ${ew.customSqlSegment}
+    </select>
+
+    <!-- 获取要导出的用户列表 -->
+    <select id="exportList" resultType="vip.xiaonuo.biz.modular.user.result.BizUserExportResult">
+        SELECT
+        SYS_USER.*,
+        SYS_ORG.NAME AS ORG_NAME,
+        SYS_POSITION.NAME AS POSITION_NAME,
+        SYS_DIRECTOR.NAME AS DIRECTOR_NAME
+        FROM SYS_USER
+        LEFT JOIN SYS_USER SYS_DIRECTOR ON SYS_USER.ID = SYS_DIRECTOR.ID
+        LEFT JOIN SYS_ORG ON SYS_USER.ORG_ID = SYS_ORG.ID
+        LEFT JOIN SYS_POSITION ON SYS_USER.POSITION_ID = SYS_POSITION.ID
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

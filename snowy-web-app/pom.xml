@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>vip.xiaonuo</groupId>
+        <artifactId>snowy</artifactId>
+        <version>2.0.0</version>
+    </parent>
+
+    <artifactId>snowy-web-app</artifactId>
+    <packaging>jar</packaging>
+    <description>主启动模块</description>
+
+    <properties>
+        <jnuit.version>4.13.2</jnuit.version>
+        <lombok.versin>1.18.22</lombok.versin>
+        <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
+        <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
+        <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
+        <mssql.connector.java.version>11.2.1.jre8</mssql.connector.java.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- dynamic-datasource -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>${dynamic.datasource.version}</version>
+        </dependency>
+
+        <!-- mysql -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.java.version}</version>
+        </dependency>
+
+        <!-- oracle -->
+        <!--<dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.connector.java.version}</version>
+        </dependency>-->
+
+        <!-- mssql -->
+        <!--<dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql.connector.java.version}</version>
+        </dependency>-->
+
+        <!-- 达梦数据库 -->
+        <!--<dependency>
+            <groupId>DmJdbcDriver18</groupId>
+            <artifactId>DmJdbcDriver18</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/resources/lib/DmJdbcDriver18.jar</systemPath>
+        </dependency>-->
+
+        <!-- 人大金仓数据库 -->
+        <!--<dependency>
+            <groupId>kingbase8-8.6.0</groupId>
+            <artifactId>kingbase8-8.6.0</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/resources/lib/kingbase8-8.6.0.jar</systemPath>
+        </dependency>-->
+
+        <!-- 登录鉴权插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-auth</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- 业务功能插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-biz</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- C端功能插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-client</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- 开发工具插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-dev</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- 系统功能插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-sys</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.4</version>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

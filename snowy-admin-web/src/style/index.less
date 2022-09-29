@@ -1,0 +1,452 @@
+@import 'ant-design-vue/dist/antd';
+
+@import 'ant-design-vue/es/style/themes/default.less';
+@import './realdark';
+@import './default';
+
+/* 全局 */
+/*
+#app, body, html {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f8f9;
+}
+*/
+.body, html {
+	width: 100%;
+	height: 100%;
+	background-color: #f6f8f9;
+}
+
+a, button, input, textarea {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  box-sizing: border-box;
+  outline: none !important;
+  -webkit-appearance: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* 大布局样式 */
+.aminui {
+	overflow: hidden;
+	height: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+.aminui-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+.adminui-main {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	flex: 1;
+}
+.main-content-wrapper{
+	padding: 11px 11px 0px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.main-bottom-wrapper {
+	height: 60px;
+	margin-top: 25px;
+	text-align: center;
+	flex: auto;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding-bottom: 25px;
+}
+
+/* 双排菜单布局 */
+.snowy-doublerow-layout-menu {
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 0;
+  align-items: center;
+}
+
+.snowy-doublerow-layout-menu-item-fort-div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 1;
+  display: block;
+  flex: auto;
+}
+
+.snowy-doublerow-layout-menu-item-fort-div-span {
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+
+.snowy-doublerow-side-top {
+  border-bottom: 1px solid var(--border-color-split);
+  height: 50px;
+  line-height: 50px;
+  padding-left: 20px;
+  font-size: 12px
+}
+
+// 应用主题色
+.snowy-doublerow-side-top-primary-color {
+	background-color: var(--primary-color);
+	.snowy-title {
+		color: white;
+	}
+}
+
+.snowy-title{
+  color: var(--text-color);
+}
+.ant-layout-sider-collapsed{
+  .logo-bar>span{
+    display: none;
+  }
+}
+.ant-layout-sider-dark{
+  .snowy-header-logo{
+    color: #fff;
+  }
+}
+
+
+/* 设置抽屉样式 */
+.layout-setting {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 3px 0 0 3px;
+  bottom: 50%;
+  right: 0px;
+  z-index: 100;
+  background: @primary-color;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.layout-setting i {
+  color: #fff;
+}
+
+/* 头部 */
+.snowy-header {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color-split);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+  background-color: var(--body-background);
+}
+// 应用主题色
+.snowy-header-primary-color {
+	color: white;
+	background-color: var(--primary-color);
+	.ant-badge{
+		color: white;
+	}
+	.ant-breadcrumb-link {
+		color: white;
+	}
+	.ant-breadcrumb-separator {
+		color: white;
+	}
+}
+
+.ant-layout-sider-dark {
+  .snowy-title{
+    color: #fff;
+  }
+}
+
+.snowy-header-left {
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+.snowy-header-left .menu-unfold-outlined {
+  padding: 0 12px
+}
+
+.snowy-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.snowy-header-logo {
+  height: 49px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.snowy-header-logo-primary-color {
+	color: white;
+	background-color: var(--primary-color);
+}
+
+.snowy-header-logo .logo-bar {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+}
+
+.snowy-header-logo .logo-bar .logo {
+  margin-right: 10px;
+  width: 35px;
+  height: 35px;
+}
+
+/* 面包屑 */
+.adminui-topbar {
+  padding-left: 15px
+}
+
+.adminui-topbar .left-panel {
+  display: flex;
+  align-items: center;
+}
+
+.adminui-topbar .right-panel {
+  display: flex;
+  align-items: center;
+}
+
+/* 多标签 */
+.snowy-tags {
+  height: 40px;
+  background: var(--component-background);
+}
+
+.snowy-tags ul {
+  display: flex;
+  overflow: hidden;
+  padding-left: 0;
+}
+
+.snowy-tags li {
+  cursor: pointer;
+  display: inline-block;
+  float: left;
+  line-height: 39.5px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.snowy-tags li::after {
+  content: " ";
+  width: 1px;
+  height: 100%;
+  position: absolute;
+  right: 0px;
+  background-image: linear-gradient(#fff, #e6e6e6);
+}
+
+.snowy-tags li a {
+  padding: 0 10px;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.snowy-tags li i {
+  margin-left: 10px;
+  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.snowy-tags li i:hover {
+  background: rgba(0, 0, 0, .2);
+  color: @body-background;
+}
+
+.snowy-tags li:hover {
+  background: @body-background;
+}
+
+.snowy-tags li.active {
+  background: @primary-color;
+}
+
+.snowy-tags li.active a {
+  color: #fff;
+}
+
+.snowy-tags li.sortable-ghost {
+  opacity: 0;
+}
+
+.snowy-header-tags-right {
+	margin-right: 10px;
+}
+.contextmenu {
+	position: fixed;
+	width: 200px;
+	margin:0;
+	border-radius: 0px;
+	background: @body-background;
+	border: 1px solid var(--border-color-split);
+	box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+	z-index: 3000;
+	list-style-type: none;
+	padding: 10px 0;
+}
+.contextmenu hr {
+	margin:5px 0;
+	border: none;
+	height: 1px;
+	font-size: 0px;
+	background-color: var(--border-color-split)
+}
+.contextmenu li {
+	display: flex;
+	align-items: center;
+	margin:0;
+	cursor: pointer;
+	line-height: 30px;
+	padding: 0 17px;
+	color: @text-color;
+}
+.contextmenu li i {
+	font-size: 14px;
+	margin-right: 10px;
+}
+.contextmenu li:hover {
+	background-color: @component-background;
+	color: #66b1ff;
+}
+.contextmenu li.disabled {
+	cursor: not-allowed;
+	color: #bbb;
+	background: transparent;
+}
+
+/*页面最大化*/
+.aminui.main-maximize {
+  .main-maximize-exit {
+    display: block;
+  }
+
+  .ant-layout-sider, .ant-layout-sider-dark, .layout-setting, .snowy-header {
+    display: none;
+  }
+}
+
+/* 最大化后的退出按钮 */
+.main-maximize-exit {
+  display: none;
+  position: fixed;
+  z-index: 3000;
+  top: -20px;
+  padding-top: 18px;
+  left: 50%;
+  margin-left: -20px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.main-maximize-exit:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.ant-layout-sider{
+  overflow: auto;
+}
+
+/* 重写antdv的一些样式，定义到全局 */
+.ant-card-head-title {
+	padding: 12px 0!important;
+}
+.ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
+	padding: 12px 0!important;
+}
+.ant-card-extra {
+	padding: 12px 0!important;
+}
+
+// 滚动条，需要哪里，加哪个class
+body,
+.ant-drawer-wrapper-body,
+.ant-drawer-body,
+.aminui,
+.ant-modal-wrap,
+.ant-transfer-list-content,
+.ant-card,
+.ant-layout-sider,
+.CodeMirror-scroll,
+.main-content-wrapper,
+.xn-icon-select-list,
+.form-user-table,
+.scopeDefineOrgTreeDiv,
+.user-table,
+.role-table,
+.org-table,
+.pos-table,
+.poi-list,
+.ant-table-body,
+.snowy-orgpos-vis,
+.index-message-list,
+.ant-picker-time-panel-column,
+.timeline-div,
+
+.adminui-main{
+  &::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width : 0px;  /*高宽分别对应横竖滚动条的尺寸*/
+    height: 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius   : 10px;
+    background-color: @component-background; // skyblue
+    background-image: -webkit-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+  }
+  &::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow   : inset 0 0 2px rgba(0, 0, 0, 0.2);
+    background   : @component-background;
+    border-radius: 5px;
+    opacity: 0;
+    display: none;
+  }
+}
+
+.json-box-9136076486841527{
+  overflow: hidden!important;;
+  .CodeMirror-scrollbar-filler{
+    display: none!important;
+  }
+}

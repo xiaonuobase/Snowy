@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+}
+
+@layer utilities {
+}
+
+/*默认为row，横向排列*/
+.layout-items-center {
+  display: flex;
+  align-items: center;
+}
+
+.layout-items-baseline {
+  display: flex;
+  align-items: baseline;
+}
+
+.layout-baseline-between {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+/*左右居中*/
+.layout-center {
+  display: flex;
+  justify-content: center;
+}
+
+/*两边排列*/
+.layout-slide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*左中右排列*/
+.layout-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/*两边排列, 换行*/
+.layout-slide-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/*上下排列*/
+.layout-col-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/*左右垂直居中*/
+
+.layout-abs-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*横向左右垂直居右*/
+.layout-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/*纵向左右垂直居中*/
+.layout-col-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-color{
+  color: var(--text-color);
+}
+
+
+

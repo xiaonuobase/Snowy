@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>vip.xiaonuo</groupId>
+        <artifactId>snowy-plugin</artifactId>
+        <version>2.0.0</version>
+    </parent>
+
+    <artifactId>snowy-plugin-auth</artifactId>
+    <packaging>jar</packaging>
+    <description>登录鉴权插件</description>
+
+    <properties>
+        <sa.token.version>1.30.0</sa.token.version>
+        <just.auth.version>1.16.5</just.auth.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- 每个插件都要引入自己的对外接口 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-auth-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- 引入开发工具接口，用于获取配置 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-dev-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- sa-token -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <version>${sa.token.version}</version>
+        </dependency>
+
+        <!-- sa-token 整合 redis （使用jackson序列化方式） -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-dao-redis-jackson</artifactId>
+            <version>${sa.token.version}</version>
+        </dependency>
+
+        <!-- Sa-Token插件：权限缓存与业务缓存分离 -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-alone-redis</artifactId>
+            <version>${sa.token.version}</version>
+        </dependency>
+
+        <!-- Sa-Token 插件：整合SSO -->
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-sso</artifactId>
+            <version>${sa.token.version}</version>
+        </dependency>
+
+        <!-- JustAuth 第三方登录 -->
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+            <version>${just.auth.version}</version>
+        </dependency>
+    </dependencies>
+</project>
