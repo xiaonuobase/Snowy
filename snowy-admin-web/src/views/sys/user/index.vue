@@ -132,7 +132,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
+			dataIndex: 'genderName',
 			width: '50px'
 		},
 		{
