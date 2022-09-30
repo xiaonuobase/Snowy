@@ -16,6 +16,8 @@ Snowy（SnowyAdmin）是国内首个国产化前后端分离快速开发平台�
 
 Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。
 
+欢迎加入QQ技术群互相解决问题：732230670
+
 <p align="center">     
     <p align="center">
         <a href="https://gitee.com/xiaonuobase/snowy">
@@ -122,6 +124,16 @@ npm run dev
 | 用户密码        | SM3完整性保护存储，登录时做完整性校验    |
 | 用户手机号        | SM4（cbc模式）加解密使用字段脱敏    |
 
+## 官方微信群
+
+因群达到200人以上，需加微信拉群
+
+<table>
+    <tr>
+        <td>微信群</td>
+        <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwFVcdA&path=%7BshareItemLink%3A7qwFVcdA%7D%2F" width="120"/></td>
+    </tr>
+</table>
 
 ## 原理图解
 
