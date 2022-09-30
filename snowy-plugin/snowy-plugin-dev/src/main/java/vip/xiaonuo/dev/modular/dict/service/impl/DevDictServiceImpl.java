@@ -24,6 +24,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fhs.trans.service.impl.DictionaryTransService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
@@ -34,7 +36,11 @@ import vip.xiaonuo.dev.modular.dict.mapper.DevDictMapper;
 import vip.xiaonuo.dev.modular.dict.param.*;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
+import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +50,12 @@ import java.util.stream.Collectors;
  * @date 2022/4/22 10:41
  **/
 @Service
-public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> implements DevDictService {
+public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> implements DevDictService, InitializingBean {
+
+    private static final String ROOT_PARENT_ID = "0";
+
+    @Resource
+    private DictionaryTransService dictionaryTransService;
 
     @Override
     public Page<DevDict> page(DevDictPageParam devDictPageParam) {
@@ -52,16 +63,16 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         // 查询部分字段
         queryWrapper.lambda().select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
                 DevDict::getDictValue, DevDict::getSortCode);
-        if(ObjectUtil.isNotEmpty(devDictPageParam.getParentId())) {
+        if (ObjectUtil.isNotEmpty(devDictPageParam.getParentId())) {
             queryWrapper.lambda().eq(DevDict::getParentId, devDictPageParam.getParentId());
         }
-        if(ObjectUtil.isNotEmpty(devDictPageParam.getCategory())) {
+        if (ObjectUtil.isNotEmpty(devDictPageParam.getCategory())) {
             queryWrapper.lambda().eq(DevDict::getCategory, devDictPageParam.getCategory());
         }
-        if(ObjectUtil.isNotEmpty(devDictPageParam.getSearchKey())) {
+        if (ObjectUtil.isNotEmpty(devDictPageParam.getSearchKey())) {
             queryWrapper.lambda().like(DevDict::getDictLabel, devDictPageParam.getSearchKey());
         }
-        if(ObjectUtil.isAllNotEmpty(devDictPageParam.getSortField(), devDictPageParam.getSortOrder())) {
+        if (ObjectUtil.isAllNotEmpty(devDictPageParam.getSortField(), devDictPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(devDictPageParam.getSortOrder());
             queryWrapper.orderBy(true, devDictPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
                     StrUtil.toUnderlineCase(devDictPageParam.getSortField()));
@@ -74,10 +85,10 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     @Override
     public List<DevDict> list(DevDictListParam devDictListParam) {
         LambdaQueryWrapper<DevDict> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if(ObjectUtil.isNotEmpty(devDictListParam.getParentId())) {
+        if (ObjectUtil.isNotEmpty(devDictListParam.getParentId())) {
             lambdaQueryWrapper.eq(DevDict::getParentId, devDictListParam.getParentId());
         }
-        if(ObjectUtil.isNotEmpty(devDictListParam.getCategory())) {
+        if (ObjectUtil.isNotEmpty(devDictListParam.getCategory())) {
             lambdaQueryWrapper.eq(DevDict::getCategory, devDictListParam.getCategory());
         }
         return this.list(lambdaQueryWrapper);
@@ -87,13 +98,13 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     public List<Tree<String>> tree(DevDictTreeParam devDictTreeParam) {
         LambdaQueryWrapper<DevDict> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.orderByAsc(DevDict::getSortCode);
-        if(ObjectUtil.isNotEmpty(devDictTreeParam.getCategory())) {
+        if (ObjectUtil.isNotEmpty(devDictTreeParam.getCategory())) {
             lambdaQueryWrapper.eq(DevDict::getCategory, devDictTreeParam.getCategory());
         }
         List<DevDict> devDictList = this.list(lambdaQueryWrapper);
         List<TreeNode<String>> treeNodeList = devDictList.stream().map(devDict ->
-                new TreeNode<>(devDict.getId(), devDict.getParentId(),
-                        devDict.getDictLabel(), devDict.getSortCode()).setExtra(JSONUtil.parseObj(devDict)))
+                        new TreeNode<>(devDict.getId(), devDict.getParentId(),
+                                devDict.getDictLabel(), devDict.getSortCode()).setExtra(JSONUtil.parseObj(devDict)))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
@@ -103,6 +114,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         checkParam(devDictAddParam);
         DevDict devDict = BeanUtil.toBean(devDictAddParam, DevDict.class);
         this.save(devDict);
+        refreshTransCache();
     }
 
     private void checkParam(DevDictAddParam devDictAddParam) {
@@ -129,6 +141,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         checkParam(devDictEditParam);
         BeanUtil.copyProperties(devDictEditParam, devDict);
         this.updateById(devDict);
+        refreshTransCache();
     }
 
     private void checkParam(DevDictEditParam devDictEditParam) {
@@ -154,10 +167,10 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     @Override
     public void delete(List<DevDictIdParam> devDictIdParamList) {
         List<String> devDictIdList = CollStreamUtil.toList(devDictIdParamList, DevDictIdParam::getId);
-        if(ObjectUtil.isNotEmpty(devDictIdList)) {
+        if (ObjectUtil.isNotEmpty(devDictIdList)) {
             boolean systemDict = this.listByIds(devDictIdList).stream().map(DevDict::getCategory)
                     .collect(Collectors.toSet()).contains(DevDictCategoryEnum.FRM.getValue());
-            if(systemDict) {
+            if (systemDict) {
                 throw new CommonException("不可删除系统内置字典");
             }
             // 删除
@@ -173,9 +186,40 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     @Override
     public DevDict queryEntity(String id) {
         DevDict devDict = this.getById(id);
-        if(ObjectUtil.isEmpty(devDict)) {
+        if (ObjectUtil.isEmpty(devDict)) {
             throw new CommonException("字典不存在，id值为：{}", id);
         }
         return devDict;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        refreshTransCache();
+    }
+
+    private void refreshTransCache() {
+        // 异步不阻塞主线程，不会 增加启动用时
+        CompletableFuture.supplyAsync(()->{
+            // 使用redis能解决共享问题，但是性能没有直接取缓存的好。
+            dictionaryTransService.makeUseRedis();
+            List<DevDict> devDicts = super.list(new LambdaQueryWrapper<DevDict>());
+            // 非root级别的字典根据ParentId分组
+            Map<String,List<DevDict>> devDictGroupByPIDMap = devDicts.stream().filter(dict -> {
+                return !ROOT_PARENT_ID.equals(dict.getParentId());
+            }).collect(Collectors.groupingBy(DevDict::getParentId));
+            Map<String,String>  parentDictIdValMap = devDicts.stream().filter(dict -> {
+                return ROOT_PARENT_ID.equals(dict.getParentId());
+            }).collect(Collectors.toMap(DevDict::getId,DevDict::getDictValue));
+            for (String parentId : parentDictIdValMap.keySet()) {
+                if(devDictGroupByPIDMap.containsKey(parentId)){
+                    dictionaryTransService.refreshCache(parentDictIdValMap.get(parentId),devDictGroupByPIDMap.get(parentId).stream()
+                            .collect(Collectors.toMap(DevDict::getDictValue,DevDict::getDictLabel)));
+                }
+
+            }
+            return null;
+        });
+
+
     }
 }
