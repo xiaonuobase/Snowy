@@ -48,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -260,6 +261,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         } else {
             queryWrapper.orderByAsc("SYS_USER.SORT_CODE");
         }
+        // 去除已删除的
+        queryWrapper.ne("SYS_USER.DELETE_FLAG", CommonDeleteFlagEnum.DELETED.name());
         return this.baseMapper.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 

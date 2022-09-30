@@ -51,6 +51,7 @@ import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
+import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -115,6 +116,8 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         } else {
             queryWrapper.orderByAsc("SYS_USER.SORT_CODE");
         }
+        // 去除已删除的
+        queryWrapper.ne("SYS_USER.DELETE_FLAG", CommonDeleteFlagEnum.DELETED.name());
         // 排除超管
         queryWrapper.ne("SYS_USER.ID", "-1");
         // 校验数据范围
