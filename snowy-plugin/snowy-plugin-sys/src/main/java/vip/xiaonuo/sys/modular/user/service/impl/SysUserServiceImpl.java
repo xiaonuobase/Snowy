@@ -844,12 +844,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         try {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
-                queryWrapper.and(q -> q.like("SYS_USER.ACCOUNT", sysUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.NAME", sysUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.PHONE", sysUserExportParam.getSearchKey()));
+                queryWrapper.and(q -> q.like("ACCOUNT", sysUserExportParam.getSearchKey())
+                        .or().like("NAME", sysUserExportParam.getSearchKey())
+                        .or().like("PHONE", sysUserExportParam.getSearchKey()));
             }
             if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
-                queryWrapper.eq("SYS_USER.STATUS", sysUserExportParam.getUserStatus());
+                queryWrapper.eq("STATUS", sysUserExportParam.getUserStatus());
             }
             String fileName = "SNOWY2.0系统B端用户信息清单";
             List<SysUserExportResult> sysUserExportResultList = this.baseMapper.selectList(queryWrapper).stream().map(sysUser -> {
