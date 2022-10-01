@@ -28,6 +28,7 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.modular.resource.entity.SysSpa;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
+import vip.xiaonuo.sys.modular.resource.enums.SysResourceMenuTypeEnum;
 import vip.xiaonuo.sys.modular.resource.mapper.SysSpaMapper;
 import vip.xiaonuo.sys.modular.resource.param.spa.SysSpaAddParam;
 import vip.xiaonuo.sys.modular.resource.param.spa.SysSpaEditParam;
@@ -66,6 +67,7 @@ public class SysSpaServiceImpl extends ServiceImpl<SysSpaMapper, SysSpa> impleme
 
     @Override
     public void add(SysSpaAddParam sysSpaAddParam) {
+        checkParam(sysSpaAddParam);
         SysSpa sysSpa = BeanUtil.toBean(sysSpaAddParam, SysSpa.class);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysSpa>().eq(SysSpa::getCategory,
                 SysResourceCategoryEnum.SPA.getValue()).eq(SysSpa::getTitle, sysSpa.getTitle())) > 0;
@@ -77,9 +79,30 @@ public class SysSpaServiceImpl extends ServiceImpl<SysSpaMapper, SysSpa> impleme
         this.save(sysSpa);
     }
 
+    @SuppressWarnings("all")
+    private void checkParam(SysSpaAddParam sysSpaAddParam) {
+        SysResourceMenuTypeEnum.validate(sysSpaAddParam.getMenuType());
+        if(SysResourceMenuTypeEnum.MENU.getValue().equals(sysSpaAddParam.getMenuType())) {
+            if(ObjectUtil.isEmpty(sysSpaAddParam.getName())) {
+                throw new CommonException("name不能为空");
+            }
+            if(ObjectUtil.isEmpty(sysSpaAddParam.getComponent())) {
+                throw new CommonException("component不能为空");
+            }
+        } else if(SysResourceMenuTypeEnum.IFRAME.getValue().equals(sysSpaAddParam.getMenuType()) ||
+                SysResourceMenuTypeEnum.LINK.getValue().equals(sysSpaAddParam.getMenuType())) {
+            sysSpaAddParam.setName(RandomUtil.randomNumbers(10));
+            sysSpaAddParam.setComponent(null);
+        } else {
+            sysSpaAddParam.setName(null);
+            sysSpaAddParam.setComponent(null);
+        }
+    }
+
     @Override
     public void edit(SysSpaEditParam sysSpaEditParam) {
         SysSpa sysSpa = this.queryEntity(sysSpaEditParam.getId());
+        checkParam(sysSpaEditParam);
         BeanUtil.copyProperties(sysSpaEditParam, sysSpa);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysSpa>().eq(SysSpa::getCategory,
                 SysResourceCategoryEnum.SPA.getValue()).eq(SysSpa::getTitle, sysSpa.getTitle())
@@ -88,6 +111,26 @@ public class SysSpaServiceImpl extends ServiceImpl<SysSpaMapper, SysSpa> impleme
             throw new CommonException("存在重复的单页面，名称为：{}", sysSpa.getTitle());
         }
         this.updateById(sysSpa);
+    }
+
+    @SuppressWarnings("all")
+    private void checkParam(SysSpaEditParam sysSpaEditParam) {
+        SysResourceMenuTypeEnum.validate(sysSpaEditParam.getMenuType());
+        if(SysResourceMenuTypeEnum.MENU.getValue().equals(sysSpaEditParam.getMenuType())) {
+            if(ObjectUtil.isEmpty(sysSpaEditParam.getName())) {
+                throw new CommonException("name不能为空");
+            }
+            if(ObjectUtil.isEmpty(sysSpaEditParam.getComponent())) {
+                throw new CommonException("component不能为空");
+            }
+        } else if(SysResourceMenuTypeEnum.IFRAME.getValue().equals(sysSpaEditParam.getMenuType()) ||
+                SysResourceMenuTypeEnum.LINK.getValue().equals(sysSpaEditParam.getMenuType())) {
+            sysSpaEditParam.setName(RandomUtil.randomNumbers(10));
+            sysSpaEditParam.setComponent(null);
+        } else {
+            sysSpaEditParam.setName(null);
+            sysSpaEditParam.setComponent(null);
+        }
     }
 
     @Override
