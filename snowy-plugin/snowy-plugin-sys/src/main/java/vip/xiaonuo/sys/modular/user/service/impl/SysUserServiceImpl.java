@@ -43,6 +43,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fhs.trans.service.impl.TransService;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +115,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private DevSmsApi devSmsApi;
 
     @Resource
+    private TransService transService;
+
+    @Resource
     private DevEmailApi devEmailApi;
 
     @Resource
@@ -143,24 +147,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysLoginUser getUserById(String id) {
         SysUser sysUser = this.getById(id);
-        if(ObjectUtil.isNotEmpty(sysUser)) {
-            SysLoginUser sysLoginUser = BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getOrgId())) {
-                sysLoginUser.setOrgName(sysOrgService.queryEntity(sysLoginUser.getOrgId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPositionId())) {
-                sysLoginUser.setPositionName(sysPositionService.queryEntity(sysLoginUser.getPositionId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPhone())) {
-                sysLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getIdCardNumber())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getEmergencyPhone())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getEmergencyPhone()));
-            }
-            return sysLoginUser;
+        if (ObjectUtil.isNotEmpty(sysUser)) {
+            transService.transOne(sysUser);
+            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
         }
         return null;
     }
@@ -168,24 +157,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysLoginUser getUserByAccount(String account) {
         SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account));
-        if(ObjectUtil.isNotEmpty(sysUser)) {
-            SysLoginUser sysLoginUser = BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getOrgId())) {
-                sysLoginUser.setOrgName(sysOrgService.queryEntity(sysLoginUser.getOrgId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPositionId())) {
-                sysLoginUser.setPositionName(sysPositionService.queryEntity(sysLoginUser.getPositionId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPhone())) {
-                sysLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getIdCardNumber())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getEmergencyPhone())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getEmergencyPhone()));
-            }
-            return sysLoginUser;
+        if (ObjectUtil.isNotEmpty(sysUser)) {
+            transService.transOne(sysUser);
+            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
         }
         return null;
     }
@@ -193,24 +167,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysLoginUser getUserByPhone(String phone) {
         SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
-        if(ObjectUtil.isNotEmpty(sysUser)) {
-            SysLoginUser sysLoginUser = BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getOrgId())) {
-                sysLoginUser.setOrgName(sysOrgService.queryEntity(sysLoginUser.getOrgId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPositionId())) {
-                sysLoginUser.setPositionName(sysPositionService.queryEntity(sysLoginUser.getPositionId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPhone())) {
-                sysLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getIdCardNumber())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getEmergencyPhone())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getEmergencyPhone()));
-            }
-            return sysLoginUser;
+        if (ObjectUtil.isNotEmpty(sysUser)) {
+            transService.transOne(sysUser);
+            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
         }
         return null;
     }
@@ -218,69 +177,42 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysLoginUser getUserByEmail(String email) {
         SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmail, email));
-        if(ObjectUtil.isNotEmpty(sysUser)) {
-            SysLoginUser sysLoginUser = BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getOrgId())) {
-                sysLoginUser.setOrgName(sysOrgService.queryEntity(sysLoginUser.getOrgId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPositionId())) {
-                sysLoginUser.setPositionName(sysPositionService.queryEntity(sysLoginUser.getPositionId()).getName());
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getPhone())) {
-                sysLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getIdCardNumber())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(sysLoginUser.getEmergencyPhone())) {
-                sysLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(sysLoginUser.getEmergencyPhone()));
-            }
-            return sysLoginUser;
+        if (ObjectUtil.isNotEmpty(sysUser)) {
+            transService.transOne(sysUser);
+            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
         }
         return null;
     }
 
     @Override
-    public Page<SysUserResult> page(SysUserPageParam sysUserPageParam) {
-        QueryWrapper<SysUserResult> queryWrapper = new QueryWrapper<>();
-        if(ObjectUtil.isNotEmpty(sysUserPageParam.getSearchKey())) {
-            queryWrapper.and(q -> q.like("SYS_USER.ACCOUNT", sysUserPageParam.getSearchKey())
-                    .or().like("SYS_USER.NAME", sysUserPageParam.getSearchKey()));
+    public Page<SysUser> page(SysUserPageParam sysUserPageParam) {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(sysUserPageParam.getSearchKey())) {
+            queryWrapper.and(q -> q.like("ACCOUNT", sysUserPageParam.getSearchKey())
+                    .or().like("NAME", sysUserPageParam.getSearchKey()));
         }
-        if(ObjectUtil.isNotEmpty(sysUserPageParam.getOrgId())) {
-            queryWrapper.eq("SYS_USER.ORG_ID", sysUserPageParam.getOrgId());
+        if (ObjectUtil.isNotEmpty(sysUserPageParam.getOrgId())) {
+            queryWrapper.eq("ORG_ID", sysUserPageParam.getOrgId());
         }
-        if(ObjectUtil.isNotEmpty(sysUserPageParam.getUserStatus())) {
-            queryWrapper.eq("SYS_USER.USER_STATUS", sysUserPageParam.getUserStatus());
+        if (ObjectUtil.isNotEmpty(sysUserPageParam.getUserStatus())) {
+            queryWrapper.eq("USER_STATUS", sysUserPageParam.getUserStatus());
         }
-        if(ObjectUtil.isAllNotEmpty(sysUserPageParam.getSortField(), sysUserPageParam.getSortOrder())) {
+        if (ObjectUtil.isAllNotEmpty(sysUserPageParam.getSortField(), sysUserPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(sysUserPageParam.getSortOrder());
             queryWrapper.orderBy(true, sysUserPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
-                    StrUtil.toUnderlineCase("SYS_USER." + sysUserPageParam.getSortField()));
+                    StrUtil.toUnderlineCase(sysUserPageParam.getSortField()));
         } else {
-            queryWrapper.orderByAsc("SYS_USER.SORT_CODE");
+            queryWrapper.orderByAsc("SORT_CODE");
         }
-        return this.baseMapper.page(CommonPageRequest.defaultPage(), queryWrapper);
+        return this.baseMapper.selectPage(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysUserAddParam sysUserAddParam) {
         checkParam(sysUserAddParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(sysUserAddParam.getPhone())) {
-            sysUserAddParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserAddParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(sysUserAddParam.getIdCardNumber())) {
-            sysUserAddParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserAddParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(sysUserAddParam.getEmergencyPhone())) {
-            sysUserAddParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserAddParam.getEmergencyPhone()));
-        }
         SysUser sysUser = BeanUtil.toBean(sysUserAddParam, SysUser.class);
-        if(ObjectUtil.isEmpty(sysUser.getAvatar())) {
+        if (ObjectUtil.isEmpty(sysUser.getAvatar())) {
             // 设置默认头像
             sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
         }
@@ -296,8 +228,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .eq(SysUser::getAccount, sysUserAddParam.getAccount())) > 0) {
             throw new CommonException("存在重复的账号，账号为：{}", sysUserAddParam.getAccount());
         }
-        if(ObjectUtil.isNotEmpty(sysUserAddParam.getPhone())) {
-            if(!PhoneUtil.isMobile(sysUserAddParam.getPhone())) {
+        if (ObjectUtil.isNotEmpty(sysUserAddParam.getPhone())) {
+            if (!PhoneUtil.isMobile(sysUserAddParam.getPhone())) {
                 throw new CommonException("手机号码：{}格式错误", sysUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -305,8 +237,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserAddParam.getPhone());
             }
         }
-        if(ObjectUtil.isNotEmpty(sysUserAddParam.getEmail())) {
-            if(!CommonEmailUtil.isEmail(sysUserAddParam.getEmail())) {
+        if (ObjectUtil.isNotEmpty(sysUserAddParam.getEmail())) {
+            if (!CommonEmailUtil.isEmail(sysUserAddParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", sysUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -321,18 +253,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void edit(SysUserEditParam sysUserEditParam) {
         SysUser sysUser = this.queryEntity(sysUserEditParam.getId());
         checkParam(sysUserEditParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(sysUserEditParam.getPhone())) {
-            sysUserEditParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserEditParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(sysUserEditParam.getIdCardNumber())) {
-            sysUserEditParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserEditParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(sysUserEditParam.getEmergencyPhone())) {
-            sysUserEditParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(sysUserEditParam.getEmergencyPhone()));
-        }
         BeanUtil.copyProperties(sysUserEditParam, sysUser);
         this.updateById(sysUser);
     }
@@ -343,8 +263,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .ne(SysUser::getId, sysUserEditParam.getId())) > 0) {
             throw new CommonException("存在重复的账号，账号为：{}", sysUserEditParam.getAccount());
         }
-        if(ObjectUtil.isNotEmpty(sysUserEditParam.getPhone())) {
-            if(!PhoneUtil.isMobile(sysUserEditParam.getPhone())) {
+        if (ObjectUtil.isNotEmpty(sysUserEditParam.getPhone())) {
+            if (!PhoneUtil.isMobile(sysUserEditParam.getPhone())) {
                 throw new CommonException("手机号码：{}格式错误", sysUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -353,8 +273,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserEditParam.getPhone());
             }
         }
-        if(ObjectUtil.isNotEmpty(sysUserEditParam.getEmail())) {
-            if(!CommonEmailUtil.isEmail(sysUserEditParam.getEmail())) {
+        if (ObjectUtil.isNotEmpty(sysUserEditParam.getEmail())) {
+            if (!CommonEmailUtil.isEmail(sysUserEditParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", sysUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -369,16 +289,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void delete(List<SysUserIdParam> sysUserIdParamList) {
         List<String> sysUserIdList = CollStreamUtil.toList(sysUserIdParamList, SysUserIdParam::getId);
-        if(ObjectUtil.isNotEmpty(sysUserIdList)) {
+        if (ObjectUtil.isNotEmpty(sysUserIdList)) {
             boolean containsSuperAdminAccount = this.listByIds(sysUserIdList).stream().map(SysUser::getAccount)
                     .collect(Collectors.toSet()).contains(SysBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
-            if(containsSuperAdminAccount) {
+            if (containsSuperAdminAccount) {
                 throw new CommonException("不可删除系统内置超管用户");
             }
             // 清除【将这些用户作为主管】的信息
             this.update(new LambdaUpdateWrapper<SysUser>().in(SysUser::getDirectorId, sysUserIdList).set(SysUser::getDirectorId, null));
             // 清除【将这些用户作为兼任职位的主管】的信息
-            this.list(new LambdaQueryWrapper<SysUser>() .isNotNull(SysUser::getPositionJson)).forEach(sysUser -> {
+            this.list(new LambdaQueryWrapper<SysUser>().isNotNull(SysUser::getPositionJson)).forEach(sysUser -> {
                 List<JSONObject> handledJsonObjectList = JSONUtil.toList(JSONUtil.parseArray(sysUser.getPositionJson()),
                         JSONObject.class).stream().peek(jsonObject -> {
                     String directorId = jsonObject.getStr("directorId");
@@ -452,11 +372,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 依据请求号，取出缓存中的验证码进行校验
         Object existValidCode = commonCacheOperator.get(USER_CACHE_KEY + validCodeReqNo);
         // 为空则直接验证码错误
-        if(ObjectUtil.isEmpty(existValidCode)) {
+        if (ObjectUtil.isEmpty(existValidCode)) {
             throw new CommonException("验证码错误");
         }
         // 不一致则直接验证码错误
-        if(!validCode.equals(Convert.toStr(existValidCode))) {
+        if (!validCode.equals(Convert.toStr(existValidCode))) {
             // 移除该验证码
             commonCacheOperator.remove(USER_CACHE_KEY + validCodeReqNo);
             throw new CommonException("验证码错误");
@@ -470,13 +390,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 手机号
         String phone = sysUserGetPhoneValidCodeParam.getPhone();
         // 验证码正确则校验手机号格式
-        if(!PhoneUtil.isMobile(phone)) {
+        if (!PhoneUtil.isMobile(phone)) {
             throw new CommonException("手机号码：{}格式错误", phone);
         }
         // 执行校验验证码
         validValidCode(sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
         // 根据手机号获取用户信息，判断用户是否存在
-        if(ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
+        if (ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机码：{}不存在", phone);
         }
         // 生成手机验证码的值，随机6为数字
@@ -503,13 +423,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 邮箱
         String email = sysUserGetEmailValidCodeParam.getEmail();
         // 验证码正确则校验手机号格式
-        if(!CommonEmailUtil.isEmail(email)) {
+        if (!CommonEmailUtil.isEmail(email)) {
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 执行校验验证码
         validValidCode(sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据手机号获取用户信息，判断用户是否存在
-        if(ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在", email);
         }
         // 生成邮箱验证码的值，随机6为数字
@@ -606,7 +526,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取菜单id列表
         List<String> menuIdList = CollectionUtil.newArrayList();
 
-        if(ObjectUtil.isNotEmpty(roleIdList)) {
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
             menuIdList = sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
                     SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue());
         }
@@ -661,11 +581,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 moduleIdSet.contains(sysMenu.getId())).collect(Collectors.toList());
 
         // 如果一个模块都没拥有
-        if(ObjectUtil.isEmpty(moduleList)) {
+        if (ObjectUtil.isEmpty(moduleList)) {
             // 如果系统中无模块（极端情况）
-            if(ObjectUtil.isEmpty(allModuleList)) {
+            if (ObjectUtil.isEmpty(allModuleList)) {
                 // 如果系统中无单页面，则返回空列表
-                if(ObjectUtil.isEmpty(allSpaList)) {
+                if (ObjectUtil.isEmpty(allSpaList)) {
                     return CollectionUtil.newArrayList();
                 } else {
                     // 否则构造一个模块，并添加到拥有模块
@@ -704,13 +624,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<JSONObject> resultJsonObjectList = resultList.stream().map(sysMenu -> {
 
             // 将模块的父id设置为0，设置随机path
-            if(sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) {
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) {
                 sysMenu.setParentId("0");
                 sysMenu.setPath(StrUtil.SLASH + RandomUtil.randomString(10));
             }
             // 将根菜单的父id设置为模块的id
-            if(sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if(sysMenu.getParentId().equals("0")) {
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
+                if (sysMenu.getParentId().equals("0")) {
                     sysMenu.setParentId(sysMenu.getModule());
                 }
             }
@@ -726,9 +646,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 }
             }
             // 如果是单页面
-            if(sysMenu.getCategory().equals(SysResourceCategoryEnum.SPA.getValue())) {
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.SPA.getValue())) {
                 metaJsonObject.set("type", SysResourceCategoryEnum.MENU.getValue().toLowerCase());
-                if(sysMenu.getId().equals(firstSpaId)) {
+                if (sysMenu.getId().equals(firstSpaId)) {
                     // 如果是首页（第一个单页面）则设置affix
                     metaJsonObject.set("affix", true);
                 } else {
@@ -742,8 +662,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 执行构造树
         List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->
-                new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
-                        jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
+                        new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
+                                jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
@@ -756,11 +676,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      **/
     private void execRecursionFindParent(List<SysMenu> originDataList, String id, List<SysMenu> resultList) {
         originDataList.forEach(item -> {
-            if(item.getId().equals(id)) {
+            if (item.getId().equals(id)) {
                 int index = CollStreamUtil.toList(originDataList, SysMenu::getId).indexOf(id);
-                SysMenu parent = index == -1?null:originDataList.get(index);
-                if(ObjectUtil.isNotEmpty(parent)) {
-                    if(!CollectionUtil.contains(resultList, parent)) {
+                SysMenu parent = index == -1 ? null : originDataList.get(index);
+                if (ObjectUtil.isNotEmpty(parent)) {
+                    if (!CollectionUtil.contains(resultList, parent)) {
                         resultList.add(parent);
                     }
                 }
@@ -789,8 +709,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
-            if(ObjectUtil.isNotEmpty(sysUser.getOrgId())) {
-                if(sysOrg.getId().equals(sysUser.getOrgId())) {
+            if (ObjectUtil.isNotEmpty(sysUser.getOrgId())) {
+                if (sysOrg.getId().equals(sysUser.getOrgId())) {
                     treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
                             .set("background", "var(--primary-color)")));
                 }
@@ -826,7 +746,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         SysRelation sysRelation = sysRelationService.getOne(new LambdaUpdateWrapper<SysRelation>().eq(SysRelation::getObjectId, sysUser.getId())
                 .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_WORKBENCH_DATA.getValue()));
-        if(ObjectUtil.isNotEmpty(sysRelation)) {
+        if (ObjectUtil.isNotEmpty(sysRelation)) {
             return sysRelation.getExtJson();
         }
         return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_WORKBENCH_DATA_KEY);
@@ -835,7 +755,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUser queryEntity(String id) {
         SysUser sysUser = this.getById(id);
-        if(ObjectUtil.isEmpty(sysUser)) {
+        if (ObjectUtil.isEmpty(sysUser)) {
             throw new CommonException("用户不存在，id值为：{}", id);
         }
         return sysUser;
@@ -845,7 +765,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<String> getButtonCodeList(String userId) {
         List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if(ObjectUtil.isNotEmpty(roleIdList)) {
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
             List<String> buttonIdList = CollectionUtil.newArrayList();
             sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
                     SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()).forEach(sysRelation -> {
@@ -853,7 +773,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
                 }
             });
-            if(ObjectUtil.isNotEmpty(buttonIdList)) {
+            if (ObjectUtil.isNotEmpty(buttonIdList)) {
                 return sysButtonService.listByIds(buttonIdList).stream().map(SysButton::getCode).collect(Collectors.toList());
             }
         }
@@ -862,13 +782,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<JSONObject> getPermissionList(String userId, String orgId) {
-        if(ObjectUtil.isNotEmpty(orgId)) {
+        if (ObjectUtil.isNotEmpty(orgId)) {
             List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                     SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-            if(ObjectUtil.isNotEmpty(roleIdList)) {
+            if (ObjectUtil.isNotEmpty(roleIdList)) {
                 Map<String, List<SysRelation>> groupMap = sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
                         SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()).stream().collect(Collectors.groupingBy(SysRelation::getTargetId));
-                if(ObjectUtil.isNotEmpty(groupMap)) {
+                if (ObjectUtil.isNotEmpty(groupMap)) {
                     List<JSONObject> resultList = CollectionUtil.newArrayList();
                     List<SysOrg> sysOrgList = sysOrgService.list();
                     List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
@@ -881,12 +801,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         value.forEach(sysRelation -> {
                             JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());
                             String scopeCategory = extJsonObject.getStr("scopeCategory");
-                            if(!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
-                                if(scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
+                            if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
+                                if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
                                     scopeSet.addAll(scopeAllList);
-                                } else if(scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
+                                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
                                     scopeSet.addAll(scopeOrgList);
-                                } else if(scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
+                                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
                                     scopeSet.addAll(scopeOrgChildList);
                                 } else {
                                     scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
@@ -906,7 +826,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<String> getRoleCodeList(String userId) {
         List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if(ObjectUtil.isNotEmpty(roleIdList)) {
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
             return sysRoleService.listByIds(roleIdList)
                     .stream().map(SysRole::getCode).collect(Collectors.toList());
         }
@@ -922,18 +842,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void exportUser(SysUserExportParam sysUserExportParam, HttpServletResponse response) throws IOException {
         File tempFile = null;
         try {
-            QueryWrapper<SysUserExportResult> queryWrapper = new QueryWrapper<>();
-            if(ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
-                queryWrapper.and(q -> q.like("SYS_USER.ACCOUNT", sysUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.NAME", sysUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.PHONE", sysUserExportParam.getSearchKey()));
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
+                queryWrapper.and(q -> q.like("ACCOUNT", sysUserExportParam.getSearchKey())
+                        .or().like("NAME", sysUserExportParam.getSearchKey())
+                        .or().like("PHONE", sysUserExportParam.getSearchKey()));
             }
-            if(ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
-                queryWrapper.eq("SYS_USER.STATUS", sysUserExportParam.getUserStatus());
+            if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
+                queryWrapper.eq("STATUS", sysUserExportParam.getUserStatus());
             }
             String fileName = "SNOWY2.0系统B端用户信息清单";
-            List<SysUserExportResult> sysUserExportResultList = this.baseMapper.exportList(queryWrapper).stream().peek(sysUserExportResult -> {
-                if(ObjectUtil.isNotEmpty(sysUserExportResult.getAvatar())) {
+            List<SysUserExportResult> sysUserExportResultList = this.baseMapper.selectList(queryWrapper).stream().map(sysUser -> {
+                return BeanUtil.copyProperties(sysUser, SysUserExportResult.class);
+            }).peek(sysUserExportResult -> {
+                if (ObjectUtil.isNotEmpty(sysUserExportResult.getAvatar())) {
                     sysUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
                             .split(sysUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
                 }
@@ -960,14 +882,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<SysOrg> sysOrgList = sysOrgService.list();
         String primaryOrgId = sysUser.getOrgId();
         SysOrg primarySysOrg = sysOrgService.getById(sysOrgList, primaryOrgId);
-        if(ObjectUtil.isEmpty(primarySysOrg)) {
+        if (ObjectUtil.isEmpty(primarySysOrg)) {
             throw new CommonException("组织不存在，id值为：{}", primaryOrgId);
         }
         String primaryOrgName = primarySysOrg.getName();
         List<SysPosition> sysPositionList = sysPositionService.list();
         String primaryPositionId = sysUser.getPositionId();
         SysPosition primaryPosition = sysPositionService.getById(sysPositionList, primaryPositionId);
-        if(ObjectUtil.isEmpty(primaryPosition)) {
+        if (ObjectUtil.isEmpty(primaryPosition)) {
             throw new CommonException("职位不存在，id值为：{}", primaryPositionId);
         }
         String primaryPositionName = primaryPosition.getName();
@@ -980,24 +902,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         primarySysUserPositionResult.setType("primary");
         sysUserPositionResultList.add(primarySysUserPositionResult);
         String positionJson = sysUser.getPositionJson();
-        if(ObjectUtil.isNotEmpty(positionJson)) {
+        if (ObjectUtil.isNotEmpty(positionJson)) {
             JSONArray jsonArray = JSONUtil.parseArray(positionJson);
-            if(ObjectUtil.isNotEmpty(jsonArray)) {
+            if (ObjectUtil.isNotEmpty(jsonArray)) {
                 jsonArray.forEach(obj -> {
                     JSONObject jsonObject = JSONUtil.parseObj(obj);
                     String slaveOrgId = jsonObject.getStr("orgId");
                     String slavePositionId = jsonObject.getStr("positionId");
-                    if(ObjectUtil.hasEmpty(slaveOrgId, slavePositionId)) {
+                    if (ObjectUtil.hasEmpty(slaveOrgId, slavePositionId)) {
                         throw new CommonException("兼任职位数据不完整，用户id值为：{}", sysUserIdParam.getId());
                     }
                     SysOrg slaveSysOrg = sysOrgService.getById(sysOrgList, slaveOrgId);
-                    if(ObjectUtil.isEmpty(slaveSysOrg)) {
+                    if (ObjectUtil.isEmpty(slaveSysOrg)) {
                         throw new CommonException("组织不存在，id值为：{}", slaveSysOrg);
                     }
                     String slaveOrgName = slaveSysOrg.getName();
 
                     SysPosition slavePosition = sysPositionService.getById(sysPositionList, slavePositionId);
-                    if(ObjectUtil.isEmpty(slavePosition)) {
+                    if (ObjectUtil.isEmpty(slavePosition)) {
                         throw new CommonException("职位不存在，id值为：{}", slavePositionId);
                     }
                     String slavePositionName = slavePosition.getName();
@@ -1023,7 +945,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
         List<SysOrg> sysOrgList = sysOrgService.list(lambdaQueryWrapper);
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
+                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
@@ -1034,10 +956,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 查询部分字段
         lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
                 SysOrg::getCategory, SysOrg::getSortCode);
-        if(ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getParentId())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getParentId())) {
             lambdaQueryWrapper.eq(SysOrg::getParentId, sysUserSelectorOrgListParam.getParentId());
         }
-        if(ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getSearchKey())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getSearchKey())) {
             lambdaQueryWrapper.like(SysOrg::getName, sysUserSelectorOrgListParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
@@ -1050,10 +972,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 查询部分字段
         lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
                 SysPosition::getCategory, SysPosition::getSortCode);
-        if(ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getOrgId())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getOrgId())) {
             lambdaQueryWrapper.eq(SysPosition::getOrgId, sysUserSelectorPositionParam.getOrgId());
         }
-        if(ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getSearchKey())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getSearchKey())) {
             lambdaQueryWrapper.like(SysPosition::getName, sysUserSelectorPositionParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysPosition::getSortCode);
@@ -1065,13 +987,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.select(SysRole::getId, SysRole::getOrgId, SysRole::getName,
                 SysRole::getCategory, SysRole::getSortCode);
-        if(ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getOrgId())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getOrgId())) {
             lambdaQueryWrapper.eq(SysRole::getOrgId, sysUserSelectorRoleParam.getOrgId());
         }
-        if(ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getCategory())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getCategory())) {
             lambdaQueryWrapper.eq(SysRole::getCategory, sysUserSelectorRoleParam.getCategory());
         }
-        if(ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getSearchKey())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getSearchKey())) {
             lambdaQueryWrapper.like(SysRole::getName, sysUserSelectorRoleParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysRole::getSortCode);
@@ -1083,10 +1005,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
-        if(ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
             lambdaQueryWrapper.eq(SysUser::getOrgId, sysUserSelectorUserParam.getOrgId());
         }
-        if(ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
+        if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
             lambdaQueryWrapper.like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);

@@ -17,7 +17,8 @@
     <properties>
         <lombok.versin>1.18.22</lombok.versin>
         <druid.version>1.2.8</druid.version>
-        <mybatis.plus.version>3.5.1</mybatis.plus.version>
+        <mybatis.plus.version>3.5.2</mybatis.plus.version>
+        <easy.trans.version>2.0.3</easy.trans.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
         <hutool.version>5.7.22</hutool.version>
         <pinyin.version>2.5.1</pinyin.version>
@@ -77,6 +78,43 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${mybatis.plus.version}</version>
+        </dependency>
+
+        <!-- easy-trans 排除自带MP版本使用最新版本 -->
+        <dependency>
+            <groupId>com.fhs-opensource</groupId>
+            <artifactId>easy-trans-spring-boot-starter</artifactId>
+            <version>${easy.trans.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mybatis-plus-annotation</artifactId>
+                    <groupId>com.baomidou</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.springfox</groupId>
+                    <artifactId>springfox-schema</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fhs-opensource</groupId>
+            <artifactId>easy-trans-mybatis-plus-extend</artifactId>
+            <version>${easy.trans.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mybatis-plus-core</artifactId>
+                    <groupId>com.baomidou</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mybatis-plus-extension</artifactId>
+                    <groupId>com.baomidou</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.springfox</groupId>
+                    <artifactId>springfox-schema</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- redis -->
