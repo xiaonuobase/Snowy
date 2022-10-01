@@ -41,7 +41,6 @@ public class SysSpaAddParam {
 
     /** 别名 */
     @ApiModelProperty(value = "别名", required = true, position = 3)
-    @NotBlank(message = "name不能为空")
     private String name;
 
     /** 路径 */
@@ -51,12 +50,10 @@ public class SysSpaAddParam {
 
     /** 组件 */
     @ApiModelProperty(value = "组件", required = true, position = 5)
-    @NotBlank(message = "component不能为空")
     private String component;
 
     /** 图标 */
     @ApiModelProperty(value = "图标", required = true, position = 6)
-    @NotBlank(message = "icon不能为空")
     private String icon;
 
     /** 排序码 */

@@ -149,13 +149,11 @@
 				const param = parameterChanges(formData.value)
 				submitLoading.value = true
 				spaApi.submitForm(param, !param.id).then(() => {
-					submitLoading.value = false
 					visible = false
 					emit('successful')
+				}).finally(() => {
+					submitLoading.value = false
 				})
-			})
-			.catch(() => {
-				submitLoading.value = false
 			})
 	}
 	const parameterChanges = (data) => {
