@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import vip.xiaonuo.common.handler.CommonSm4CbcTypeHandler;
 import vip.xiaonuo.common.pojo.CommonEntity;
 
 import java.util.Date;
@@ -106,7 +107,7 @@ public class ClientUser extends CommonEntity {
 
     /** 证件号码 */
     @ApiModelProperty(value = "证件号码", position = 16)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String idCardNumber;
 
     /** 文化程度 */
@@ -141,7 +142,7 @@ public class ClientUser extends CommonEntity {
 
     /** 手机 */
     @ApiModelProperty(value = "手机", position = 23)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String phone;
 
     /** 邮箱 */
@@ -166,7 +167,7 @@ public class ClientUser extends CommonEntity {
 
     /** 紧急联系人电话 */
     @ApiModelProperty(value = "紧急联系人电话", position = 28)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String emergencyPhone;
 
     /** 紧急联系人地址 */

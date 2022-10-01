@@ -37,7 +37,6 @@ import vip.xiaonuo.dev.modular.dict.param.*;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -193,33 +192,28 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         refreshTransCache();
     }
 
     private void refreshTransCache() {
         // 异步不阻塞主线程，不会 增加启动用时
-        CompletableFuture.supplyAsync(()->{
+        CompletableFuture.supplyAsync(() -> {
             // 使用redis能解决共享问题，但是性能没有直接取缓存的好。
             dictionaryTransService.makeUseRedis();
-            List<DevDict> devDicts = super.list(new LambdaQueryWrapper<DevDict>());
+            List<DevDict> devDictList = super.list(new LambdaQueryWrapper<>());
             // 非root级别的字典根据ParentId分组
-            Map<String,List<DevDict>> devDictGroupByPIDMap = devDicts.stream().filter(dict -> {
-                return !ROOT_PARENT_ID.equals(dict.getParentId());
-            }).collect(Collectors.groupingBy(DevDict::getParentId));
-            Map<String,String>  parentDictIdValMap = devDicts.stream().filter(dict -> {
-                return ROOT_PARENT_ID.equals(dict.getParentId());
-            }).collect(Collectors.toMap(DevDict::getId,DevDict::getDictValue));
+            Map<String,List<DevDict>> devDictGroupByPIDMap = devDictList.stream().filter(dict -> !ROOT_PARENT_ID
+                    .equals(dict.getParentId())).collect(Collectors.groupingBy(DevDict::getParentId));
+            Map<String,String> parentDictIdValMap = devDictList.stream().filter(dict -> ROOT_PARENT_ID
+                    .equals(dict.getParentId())).collect(Collectors.toMap(DevDict::getId, DevDict::getDictValue));
             for (String parentId : parentDictIdValMap.keySet()) {
                 if(devDictGroupByPIDMap.containsKey(parentId)){
-                    dictionaryTransService.refreshCache(parentDictIdValMap.get(parentId),devDictGroupByPIDMap.get(parentId).stream()
-                            .collect(Collectors.toMap(DevDict::getDictValue,DevDict::getDictLabel)));
+                    dictionaryTransService.refreshCache(parentDictIdValMap.get(parentId), devDictGroupByPIDMap.get(parentId).stream()
+                            .collect(Collectors.toMap(DevDict::getDictValue, DevDict::getDictLabel)));
                 }
-
             }
             return null;
         });
-
-
     }
 }

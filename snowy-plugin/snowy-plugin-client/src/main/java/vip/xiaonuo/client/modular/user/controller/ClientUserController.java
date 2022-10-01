@@ -28,9 +28,7 @@ import vip.xiaonuo.client.modular.user.param.ClientUserEditParam;
 import vip.xiaonuo.client.modular.user.param.ClientUserIdParam;
 import vip.xiaonuo.client.modular.user.param.ClientUserPageParam;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
-import vip.xiaonuo.client.modular.user.wrapper.ClientUserWrapperImpl;
 import vip.xiaonuo.common.annotation.CommonLog;
-import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 
@@ -61,7 +59,6 @@ public class ClientUserController {
      */
     @ApiOperationSupport(order = 1)
     @ApiOperation("获取C端用户分页")
-    @CommonWrapper(ClientUserWrapperImpl.class)
     @GetMapping("/client/user/page")
     public CommonResult<Page<ClientUser>> page(ClientUserPageParam clientUserPageParam) {
         return CommonResult.data(clientUserService.page(clientUserPageParam));
@@ -121,7 +118,6 @@ public class ClientUserController {
      */
     @ApiOperationSupport(order = 5)
     @ApiOperation("获取C端用户详情")
-    @CommonWrapper(ClientUserWrapperImpl.class)
     @GetMapping("/client/user/detail")
     public CommonResult<ClientUser> detail(@Valid ClientUserIdParam clientUserIdParam) {
         return CommonResult.data(clientUserService.detail(clientUserIdParam));

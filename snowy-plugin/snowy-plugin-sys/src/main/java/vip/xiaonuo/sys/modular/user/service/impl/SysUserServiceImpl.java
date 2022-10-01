@@ -188,23 +188,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Page<SysUser> page(SysUserPageParam sysUserPageParam) {
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getSearchKey())) {
-            queryWrapper.and(q -> q.like("ACCOUNT", sysUserPageParam.getSearchKey())
-                    .or().like("NAME", sysUserPageParam.getSearchKey()));
+            queryWrapper.lambda().like(SysUser::getAccount, sysUserPageParam.getSearchKey()).or()
+                    .like(SysUser::getName, sysUserPageParam.getSearchKey());
         }
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getOrgId())) {
-            queryWrapper.eq("ORG_ID", sysUserPageParam.getOrgId());
+            queryWrapper.lambda().eq(SysUser::getOrgId, sysUserPageParam.getOrgId());
         }
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getUserStatus())) {
-            queryWrapper.eq("USER_STATUS", sysUserPageParam.getUserStatus());
+            queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserPageParam.getUserStatus());
         }
         if (ObjectUtil.isAllNotEmpty(sysUserPageParam.getSortField(), sysUserPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(sysUserPageParam.getSortOrder());
             queryWrapper.orderBy(true, sysUserPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
                     StrUtil.toUnderlineCase(sysUserPageParam.getSortField()));
         } else {
-            queryWrapper.orderByAsc("SORT_CODE");
+            queryWrapper.lambda().orderByAsc(SysUser::getSortCode);
         }
-        return this.baseMapper.selectPage(CommonPageRequest.defaultPage(), queryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -253,6 +253,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void edit(SysUserEditParam sysUserEditParam) {
         SysUser sysUser = this.queryEntity(sysUserEditParam.getId());
         checkParam(sysUserEditParam);
+        boolean updateSuperAdminAccount = sysUser.getAccount().equals(SysBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue()) &&
+                !sysUserEditParam.getAccount().equals(SysBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
+        if(updateSuperAdminAccount) {
+            throw new CommonException("不可修改系统内置超管用户账号");
+        }
         BeanUtil.copyProperties(sysUserEditParam, sysUser);
         this.updateById(sysUser);
     }
@@ -844,17 +849,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         try {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
             if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
-                queryWrapper.and(q -> q.like("ACCOUNT", sysUserExportParam.getSearchKey())
-                        .or().like("NAME", sysUserExportParam.getSearchKey())
-                        .or().like("PHONE", sysUserExportParam.getSearchKey()));
+                queryWrapper.lambda().like(SysUser::getAccount, sysUserExportParam.getSearchKey()).or()
+                        .like(SysUser::getName, sysUserExportParam.getSearchKey());
             }
             if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
-                queryWrapper.eq("STATUS", sysUserExportParam.getUserStatus());
+                queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());
             }
             String fileName = "SNOWY2.0系统B端用户信息清单";
-            List<SysUserExportResult> sysUserExportResultList = this.baseMapper.selectList(queryWrapper).stream().map(sysUser -> {
-                return BeanUtil.copyProperties(sysUser, SysUserExportResult.class);
-            }).peek(sysUserExportResult -> {
+            List<SysUserExportResult> sysUserExportResultList = this.list(queryWrapper).stream()
+                    .map(sysUser -> BeanUtil.copyProperties(sysUser, SysUserExportResult.class)).peek(sysUserExportResult -> {
                 if (ObjectUtil.isNotEmpty(sysUserExportResult.getAvatar())) {
                     sysUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
                             .split(sysUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));

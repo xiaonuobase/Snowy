@@ -12,15 +12,8 @@
  */
 package vip.xiaonuo.biz.modular.user.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Param;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
-import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
-import vip.xiaonuo.biz.modular.user.result.BizUserResult;
-
-import java.util.List;
 
 /**
  * 人员Mapper接口
@@ -30,19 +23,4 @@ import java.util.List;
  **/
 public interface BizUserMapper extends BaseMapper<BizUser> {
 
-    /**
-     * 获取人员分页列表
-     *
-     * @author xuyuxiang
-     * @date 2022/7/8 13:27
-     **/
-    Page<BizUserResult> page(@Param("page") Page<BizUserResult> page, @Param("ew") QueryWrapper<BizUserResult> queryWrapper);
-
-    /**
-     * 获取要导出的用户列表
-     *
-     * @author xuyuxiang
-     * @date 2022/7/8 13:27
-     **/
-    List<BizUserExportResult> exportList(@Param("ew") QueryWrapper<BizUserExportResult> queryWrapper);
 }
