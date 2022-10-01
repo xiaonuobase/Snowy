@@ -12,15 +12,8 @@
  */
 package vip.xiaonuo.sys.modular.user.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Param;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
-import vip.xiaonuo.sys.modular.user.result.SysUserExportResult;
-import vip.xiaonuo.sys.modular.user.result.SysUserResult;
-
-import java.util.List;
 
 /**
  * 用户Mapper接口
@@ -29,6 +22,5 @@ import java.util.List;
  * @date 2022/4/21 18:37
  **/
 public interface SysUserMapper extends BaseMapper<SysUser> {
-
 
 }

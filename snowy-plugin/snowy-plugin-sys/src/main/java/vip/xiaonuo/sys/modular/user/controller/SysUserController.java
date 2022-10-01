@@ -19,13 +19,11 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
-import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -33,10 +31,7 @@ import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.*;
-import vip.xiaonuo.sys.modular.user.result.SysUserResult;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
-import vip.xiaonuo.sys.modular.user.wrapper.SysUserResultWrapperImpl;
-import vip.xiaonuo.sys.modular.user.wrapper.SysUserWrapperImpl;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -128,7 +123,6 @@ public class SysUserController {
      */
     @ApiOperationSupport(order = 5)
     @ApiOperation("获取用户详情")
-    @CommonWrapper(SysUserWrapperImpl.class)
     @GetMapping("/sys/user/detail")
     public CommonResult<SysUser> detail(@Valid SysUserIdParam sysUserIdParam) {
         return CommonResult.data(sysUserService.detail(sysUserIdParam));

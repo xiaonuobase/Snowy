@@ -13,16 +13,19 @@ import java.sql.SQLException;
 
 /**
  * Sm4Cbc加解密
+ *
  * @author wanglei
  * @date 2022/9/30 15:24
  **/
 @MappedJdbcTypes(JdbcType.VARCHAR)
-public class Sm4CbcTypeHandler <T> extends BaseTypeHandler<T> {
+public class CommonSm4CbcTypeHandler<T> extends BaseTypeHandler<T> {
 
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
         ps.setString(i, CommonCryptogramUtil.doSm4CbcEncrypt((String)parameter));
     }
+
+    @SuppressWarnings("ALL")
     @Override
     public T getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String columnValue = rs.getString(columnName);
@@ -30,12 +33,14 @@ public class Sm4CbcTypeHandler <T> extends BaseTypeHandler<T> {
         return StringUtils.isBlank(columnValue) ? (T)columnValue : (T)CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
     }
 
+    @SuppressWarnings("ALL")
     @Override
     public T getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String columnValue = rs.getString(columnIndex);
         return StringUtils.isBlank(columnValue) ? (T)columnValue : (T)CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
     }
 
+    @SuppressWarnings("ALL")
     @Override
     public T getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String columnValue = cs.getString(columnIndex);

@@ -28,13 +28,9 @@ import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.param.*;
-import vip.xiaonuo.biz.modular.user.result.BizUserResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
-import vip.xiaonuo.biz.modular.user.wrapper.BizUserResultWrapperImpl;
-import vip.xiaonuo.biz.modular.user.wrapper.BizUserWrapperImpl;
 import vip.xiaonuo.common.annotation.CommonLog;
-import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 
@@ -69,9 +65,8 @@ public class BizUserController {
     @ApiOperationSupport(order = 1)
     @ApiOperation("获取人员分页")
     @SaCheckPermission("/biz/user/page")
-    @CommonWrapper(BizUserResultWrapperImpl.class)
     @GetMapping("/biz/user/page")
-    public CommonResult<Page<BizUserResult>> page(BizUserPageParam bizUserPageParam) {
+    public CommonResult<Page<BizUser>> page(BizUserPageParam bizUserPageParam) {
         return CommonResult.data(bizUserService.page(bizUserPageParam));
     }
 
@@ -133,7 +128,6 @@ public class BizUserController {
     @ApiOperationSupport(order = 5)
     @ApiOperation("获取人员详情")
     @SaCheckPermission("/biz/user/detail")
-    @CommonWrapper(BizUserWrapperImpl.class)
     @GetMapping("/biz/user/detail")
     public CommonResult<BizUser> detail(@Valid BizUserIdParam bizUserIdParam) {
         return CommonResult.data(bizUserService.detail(bizUserIdParam));

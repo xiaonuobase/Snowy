@@ -22,7 +22,7 @@ import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import vip.xiaonuo.common.handler.Sm4CbcTypeHandler;
+import vip.xiaonuo.common.handler.CommonSm4CbcTypeHandler;
 import vip.xiaonuo.common.pojo.CommonEntity;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
@@ -37,7 +37,7 @@ import java.util.Date;
  **/
 @Getter
 @Setter
-@TableName(value = "SYS_USER",autoResultMap = true)
+@TableName(value = "SYS_USER", autoResultMap = true)
 public class SysUser extends CommonEntity implements TransPojo {
 
     /** id */
@@ -115,7 +115,7 @@ public class SysUser extends CommonEntity implements TransPojo {
 
     /** 证件号码 */
     @ApiModelProperty(value = "证件号码", position = 16)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String idCardNumber;
 
     /** 文化程度 */
@@ -150,7 +150,7 @@ public class SysUser extends CommonEntity implements TransPojo {
 
     /** 手机 */
     @ApiModelProperty(value = "手机", position = 23)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String phone;
 
     /** 邮箱 */
@@ -175,7 +175,7 @@ public class SysUser extends CommonEntity implements TransPojo {
 
     /** 紧急联系人电话 */
     @ApiModelProperty(value = "紧急联系人电话", position = 28)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String emergencyPhone;
 
     /** 紧急联系人地址 */
@@ -196,14 +196,13 @@ public class SysUser extends CommonEntity implements TransPojo {
     /** 组织id */
     @ApiModelProperty(value = "组织id", position = 32)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE,target = SysOrg.class,fields = "name",alias = "org",ref = "orgName")
+    @Trans(type=TransType.SIMPLE, target = SysOrg.class, fields = "name", alias = "org", ref = "orgName")
     private String orgId;
-
 
     /** 职位id */
     @ApiModelProperty(value = "职位id", position = 33)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE,target = SysPosition.class,fields = "name",alias = "position",ref = "positionName")
+    @Trans(type=TransType.SIMPLE, target = SysPosition.class, fields = "name", alias = "position", ref = "positionName")
     private String positionId;
 
     /** 职级 */
@@ -214,7 +213,7 @@ public class SysUser extends CommonEntity implements TransPojo {
     /** 主管id */
     @ApiModelProperty(value = "主管id", position = 35)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE,target = SysUser.class,fields = "name",alias = "director",ref = "directorName")
+    @Trans(type=TransType.SIMPLE, target = SysUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
     /** 兼任信息 */
@@ -271,14 +270,12 @@ public class SysUser extends CommonEntity implements TransPojo {
     @TableField(exist = false)
     private String orgName;
 
-    @ApiModelProperty(value = "组织名称", position = 49)
+    @ApiModelProperty(value = "职位名称", position = 49)
     @TableField(exist = false)
     private String positionName;
 
     @ApiModelProperty(value = "主管名称", position = 50)
     @TableField(exist = false)
     private String directorName;
-
-
 
 }

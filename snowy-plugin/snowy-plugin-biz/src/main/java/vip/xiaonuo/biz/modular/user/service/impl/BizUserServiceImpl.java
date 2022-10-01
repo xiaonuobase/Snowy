@@ -48,10 +48,8 @@ import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.mapper.BizUserMapper;
 import vip.xiaonuo.biz.modular.user.param.*;
 import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
-import vip.xiaonuo.biz.modular.user.result.BizUserResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
-import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -96,56 +94,41 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     private BizPositionService bizPositionService;
 
     @Override
-    public Page<BizUserResult> page(BizUserPageParam bizUserPageParam) {
-        QueryWrapper<BizUserResult> queryWrapper = new QueryWrapper<>();
-        if(ObjectUtil.isNotEmpty(bizUserPageParam.getSearchKey())) {
-            queryWrapper.and(q -> q.like("SYS_USER.ACCOUNT", bizUserPageParam.getSearchKey())
-                    .or().like("SYS_USER.NAME", bizUserPageParam.getSearchKey())
-                    .or().like("SYS_USER.PHONE", bizUserPageParam.getSearchKey()));
+    public Page<BizUser> page(BizUserPageParam bizUserPageParam) {
+        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
+        if (ObjectUtil.isNotEmpty(bizUserPageParam.getSearchKey())) {
+            queryWrapper.lambda().like(BizUser::getAccount, bizUserPageParam.getSearchKey()).or()
+                    .like(BizUser::getName, bizUserPageParam.getSearchKey());
         }
-        if(ObjectUtil.isNotEmpty(bizUserPageParam.getUserStatus())) {
-            queryWrapper.eq("SYS_USER.USER_STATUS", bizUserPageParam.getUserStatus());
+        if (ObjectUtil.isNotEmpty(bizUserPageParam.getOrgId())) {
+            queryWrapper.lambda().eq(BizUser::getOrgId, bizUserPageParam.getOrgId());
         }
-        if(ObjectUtil.isNotEmpty(bizUserPageParam.getOrgId())) {
-            queryWrapper.eq("SYS_USER.ORG_ID", bizUserPageParam.getOrgId());
+        if (ObjectUtil.isNotEmpty(bizUserPageParam.getUserStatus())) {
+            queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserPageParam.getUserStatus());
         }
-        if(ObjectUtil.isAllNotEmpty(bizUserPageParam.getSortField(), bizUserPageParam.getSortOrder())) {
+        if (ObjectUtil.isAllNotEmpty(bizUserPageParam.getSortField(), bizUserPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(bizUserPageParam.getSortOrder());
             queryWrapper.orderBy(true, bizUserPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
-                    StrUtil.toUnderlineCase("SYS_USER." + bizUserPageParam.getSortField()));
+                    StrUtil.toUnderlineCase(bizUserPageParam.getSortField()));
         } else {
-            queryWrapper.orderByAsc("SYS_USER.SORT_CODE");
+            queryWrapper.lambda().orderByAsc(BizUser::getSortCode);
         }
-        // 去除已删除的
-        queryWrapper.ne("SYS_USER.DELETE_FLAG", CommonDeleteFlagEnum.DELETED.name());
         // 排除超管
-        queryWrapper.ne("SYS_USER.ID", "-1");
+        queryWrapper.lambda().ne(BizUser::getAccount, BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.in("SYS_USER.ORG_ID", loginUserDataScope);
+            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
         } else {
-            queryWrapper.eq("SYS_USER.ID", StpUtil.getLoginIdAsString());
+            queryWrapper.lambda().eq(BizUser::getId, StpUtil.getLoginIdAsString());
         }
-        return this.baseMapper.page(CommonPageRequest.defaultPage(), queryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(BizUserAddParam bizUserAddParam) {
         checkParam(bizUserAddParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(bizUserAddParam.getPhone())) {
-            bizUserAddParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserAddParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(bizUserAddParam.getIdCardNumber())) {
-            bizUserAddParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserAddParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(bizUserAddParam.getEmergencyPhone())) {
-            bizUserAddParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserAddParam.getEmergencyPhone()));
-        }
         BizUser bizUser = BeanUtil.toBean(bizUserAddParam, BizUser.class);
         if(ObjectUtil.isEmpty(bizUser.getAvatar())) {
             // 设置默认头像
@@ -197,17 +180,10 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     public void edit(BizUserEditParam bizUserEditParam) {
         BizUser bizUser = this.queryEntity(bizUserEditParam.getId());
         checkParam(bizUserEditParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(bizUserEditParam.getPhone())) {
-            bizUserEditParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserEditParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(bizUserEditParam.getIdCardNumber())) {
-            bizUserEditParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserEditParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(bizUserEditParam.getEmergencyPhone())) {
-            bizUserEditParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(bizUserEditParam.getEmergencyPhone()));
+        boolean updateSuperAdminAccount = bizUser.getAccount().equals(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue()) &&
+                !bizUserEditParam.getAccount().equals(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
+        if(updateSuperAdminAccount) {
+            throw new CommonException("不可修改系统内置超管用户账号");
         }
         BeanUtil.copyProperties(bizUserEditParam, bizUser);
         this.updateById(bizUser);
@@ -392,20 +368,20 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     public void exportUser(BizUserExportParam bizUserExportParam, HttpServletResponse response) throws IOException {
         File tempFile = null;
         try {
-            QueryWrapper<BizUserExportResult> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
             if(ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
-                queryWrapper.and(q -> q.like("SYS_USER.ACCOUNT", bizUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.NAME", bizUserExportParam.getSearchKey())
-                        .or().like("SYS_USER.PHONE", bizUserExportParam.getSearchKey()));
+                queryWrapper.lambda().like(BizUser::getAccount, bizUserExportParam.getSearchKey()).or()
+                        .like(BizUser::getName, bizUserExportParam.getSearchKey());
             }
             if(ObjectUtil.isNotEmpty(bizUserExportParam.getUserStatus())) {
-                queryWrapper.eq("SYS_USER.STATUS", bizUserExportParam.getUserStatus());
+                queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());
             }
             String fileName = "SNOWY2.0系统B端人员信息清单";
-            List<BizUserExportResult> bizUserExportResultList = this.baseMapper.exportList(queryWrapper).stream().peek(sysUserExportResult -> {
-                if(ObjectUtil.isNotEmpty(sysUserExportResult.getAvatar())) {
-                    sysUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
-                            .split(sysUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+            List<BizUserExportResult> bizUserExportResultList =this.list(queryWrapper).stream()
+                    .map(bizUser -> BeanUtil.copyProperties(bizUser, BizUserExportResult.class)).peek(bizUserExportResult -> {
+                if (ObjectUtil.isNotEmpty(bizUserExportResult.getAvatar())) {
+                    bizUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                            .split(bizUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
                 }
             }).collect(Collectors.toList());
             Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(fileName, "B端人员"),

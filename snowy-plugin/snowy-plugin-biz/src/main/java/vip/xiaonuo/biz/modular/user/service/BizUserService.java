@@ -20,7 +20,6 @@ import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.param.*;
-import vip.xiaonuo.biz.modular.user.result.BizUserResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +40,7 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    Page<BizUserResult> page(BizUserPageParam bizUserPageParam);
+    Page<BizUser> page(BizUserPageParam bizUserPageParam);
 
     /**
      * 添加人员
