@@ -19,6 +19,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,7 @@ public class SysUserController {
     @Resource
     private SysUserService sysUserService;
 
+
     /**
      * 获取用户分页
      *
@@ -67,9 +69,8 @@ public class SysUserController {
      */
     @ApiOperationSupport(order = 1)
     @ApiOperation("获取用户分页")
-    @CommonWrapper(SysUserResultWrapperImpl.class)
     @GetMapping("/sys/user/page")
-    public CommonResult<Page<SysUserResult>> page(SysUserPageParam sysUserPageParam) {
+    public CommonResult<Page<SysUser>> page(SysUserPageParam sysUserPageParam) {
         return CommonResult.data(sysUserService.page(sysUserPageParam));
     }
 

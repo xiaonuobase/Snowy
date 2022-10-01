@@ -74,7 +74,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    Page<SysUserResult> page(SysUserPageParam sysUserPageParam);
+    Page<SysUser> page(SysUserPageParam sysUserPageParam);
 
     /**
      * 添加用户

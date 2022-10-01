@@ -14,11 +14,18 @@ package vip.xiaonuo.sys.modular.user.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fhs.core.trans.anno.Trans;
+import com.fhs.core.trans.constant.TransType;
+import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import vip.xiaonuo.common.handler.Sm4CbcTypeHandler;
 import vip.xiaonuo.common.pojo.CommonEntity;
+import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 
 import java.util.Date;
 
@@ -30,10 +37,11 @@ import java.util.Date;
  **/
 @Getter
 @Setter
-@TableName("SYS_USER")
-public class SysUser extends CommonEntity {
+@TableName(value = "SYS_USER",autoResultMap = true)
+public class SysUser extends CommonEntity implements TransPojo {
 
     /** id */
+    @TableId
     @ApiModelProperty(value = "id", position = 1)
     private String id;
 
@@ -67,6 +75,7 @@ public class SysUser extends CommonEntity {
     /** 性别 */
     @ApiModelProperty(value = "性别", position = 8)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type= TransType.DICTIONARY,key = "GENDER")
     private String gender;
 
     /** 年龄 */
@@ -106,7 +115,7 @@ public class SysUser extends CommonEntity {
 
     /** 证件号码 */
     @ApiModelProperty(value = "证件号码", position = 16)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
     private String idCardNumber;
 
     /** 文化程度 */
@@ -141,7 +150,7 @@ public class SysUser extends CommonEntity {
 
     /** 手机 */
     @ApiModelProperty(value = "手机", position = 23)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
     private String phone;
 
     /** 邮箱 */
@@ -166,7 +175,7 @@ public class SysUser extends CommonEntity {
 
     /** 紧急联系人电话 */
     @ApiModelProperty(value = "紧急联系人电话", position = 28)
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED,typeHandler = Sm4CbcTypeHandler.class)
     private String emergencyPhone;
 
     /** 紧急联系人地址 */
@@ -187,11 +196,14 @@ public class SysUser extends CommonEntity {
     /** 组织id */
     @ApiModelProperty(value = "组织id", position = 32)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type=TransType.SIMPLE,target = SysOrg.class,fields = "name",alias = "org",ref = "orgName")
     private String orgId;
+
 
     /** 职位id */
     @ApiModelProperty(value = "职位id", position = 33)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type=TransType.SIMPLE,target = SysPosition.class,fields = "name",alias = "position",ref = "positionName")
     private String positionId;
 
     /** 职级 */
@@ -202,6 +214,7 @@ public class SysUser extends CommonEntity {
     /** 主管id */
     @ApiModelProperty(value = "主管id", position = 35)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type=TransType.SIMPLE,target = SysUser.class,fields = "name",alias = "director",ref = "directorName")
     private String directorId;
 
     /** 兼任信息 */
@@ -253,4 +266,19 @@ public class SysUser extends CommonEntity {
     @ApiModelProperty(value = "扩展信息", position = 47)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
+
+    @ApiModelProperty(value = "组织名称", position = 48)
+    @TableField(exist = false)
+    private String orgName;
+
+    @ApiModelProperty(value = "组织名称", position = 49)
+    @TableField(exist = false)
+    private String positionName;
+
+    @ApiModelProperty(value = "主管名称", position = 50)
+    @TableField(exist = false)
+    private String directorName;
+
+
+
 }

@@ -44,7 +44,7 @@ public class SysUserExportResult {
     private String name;
 
     /** 昵称 */
-    @Excel(name = "姓名")
+    @Excel(name = "昵称")
     private String nickname;
 
     /** 性别 */

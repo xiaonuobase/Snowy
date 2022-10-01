@@ -30,19 +30,5 @@ import java.util.List;
  **/
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
-    /**
-     * 获取用户分页列表
-     *
-     * @author xuyuxiang
-     * @date 2022/7/8 13:27
-     **/
-    Page<SysUserResult> page(@Param("page") Page<SysUserResult> page, @Param("ew") QueryWrapper<SysUserResult> queryWrapper);
 
-    /**
-     * 获取要导出的用户列表
-     *
-     * @author xuyuxiang
-     * @date 2022/7/8 13:27
-     **/
-    List<SysUserExportResult> exportList(@Param("ew") QueryWrapper<SysUserExportResult> queryWrapper);
 }
