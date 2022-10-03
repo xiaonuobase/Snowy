@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.common.util.CommonServletUtil;
 
 import java.util.Map;
 
@@ -43,9 +44,16 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
         if (ObjectUtil.isNotEmpty(status)) {
             // 如果其为404，则处理
             if (HttpStatus.HTTP_NOT_FOUND == Convert.toInt(status)) {
-                return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_NOT_FOUND, "路径不存在", null));
+                Object path = defaultErrorAttributes.get("path");
+                if(ObjectUtil.isNotEmpty(path)) {
+                    return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_NOT_FOUND, "路径不存在，请求地址：" +
+                            Convert.toStr(path), null));
+                } else {
+                    return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_NOT_FOUND, "路径不存在", null));
+                }
             } else {
-                return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常", null));
+                return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常，请求地址：" +
+                        CommonServletUtil.getRequest().getRequestURL(), null));
             }
         }
 
@@ -56,11 +64,12 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
                 CommonException commonException = (CommonException) throwable;
                 return BeanUtil.beanToMap(CommonResult.error(commonException.getMsg()));
             } else {
-                return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常", null));
+                return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常，请求地址：" +
+                        CommonServletUtil.getRequest().getRequestURL(), null));
             }
         } else {
             // throwable为空，则直接返回默认异常
-            return BeanUtil.beanToMap(CommonResult.error("服务器异常"));
+            return BeanUtil.beanToMap(CommonResult.error("服务器异常，请求地址：" + CommonServletUtil.getRequest().getRequestURL()));
         }
     }
 }
