@@ -15,6 +15,9 @@ package vip.xiaonuo.client.modular.user.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fhs.core.trans.anno.Trans;
+import com.fhs.core.trans.constant.TransType;
+import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +35,7 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("CLIENT_USER")
-public class ClientUser extends CommonEntity {
+public class ClientUser extends CommonEntity implements TransPojo {
 
     /** id */
     @ApiModelProperty(value = "id", position = 1)
