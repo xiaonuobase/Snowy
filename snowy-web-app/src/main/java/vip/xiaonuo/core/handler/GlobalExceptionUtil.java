@@ -17,6 +17,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -113,7 +115,22 @@ public class GlobalExceptionUtil {
 
             // 如果是SaToken相关异常，则由AuthExceptionUtil处理
             return AuthExceptionUtil.getCommonResult(e);
-        }  else if (e instanceof CommonException) {
+        } else if(e instanceof MyBatisSystemException) {
+
+            // 如果是MyBatisSystemException
+            Throwable cause = e.getCause();
+            if (cause instanceof PersistenceException) {
+                Throwable secondCause = cause.getCause();
+                if (secondCause instanceof CommonException) {
+                    CommonException commonException = (CommonException) secondCause;
+                    commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
+                } else {
+                    commonResult = CommonResult.error("数据操作异常");
+                }
+            }else {
+                commonResult = CommonResult.error("数据操作异常");
+            }
+        } else if (e instanceof CommonException) {
 
             // 通用业务异常，直接返回给前端
             CommonException commonException = (CommonException) e;

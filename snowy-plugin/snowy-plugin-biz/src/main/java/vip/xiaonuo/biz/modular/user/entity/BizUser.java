@@ -75,7 +75,7 @@ public class BizUser extends CommonEntity implements TransPojo {
     /** 性别 */
     @ApiModelProperty(value = "性别", position = 8)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type= TransType.DICTIONARY, key = "GENDER")
+    @Trans(type = TransType.DICTIONARY, key = "GENDER")
     private String gender;
 
     /** 年龄 */
@@ -196,13 +196,13 @@ public class BizUser extends CommonEntity implements TransPojo {
     /** 机构id */
     @ApiModelProperty(value = "机构id", position = 32)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE, target = BizOrg.class, fields = "name", alias = "org", ref = "orgName")
+    @Trans(type =TransType.SIMPLE, target = BizOrg.class, fields = "name", alias = "org", ref = "orgName")
     private String orgId;
 
     /** 岗位id */
     @ApiModelProperty(value = "岗位id", position = 33)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE, target = BizPosition.class, fields = "name", alias = "position", ref = "positionName")
+    @Trans(type =TransType.SIMPLE, target = BizPosition.class, fields = "name", alias = "position", ref = "positionName")
     private String positionId;
 
     /** 职级 */
@@ -213,7 +213,7 @@ public class BizUser extends CommonEntity implements TransPojo {
     /** 主管id */
     @ApiModelProperty(value = "主管id", position = 35)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type=TransType.SIMPLE, target = BizUser.class, fields = "name", alias = "director", ref = "directorName")
+    @Trans(type =TransType.SIMPLE, target = BizUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
     /** 兼任信息 */
