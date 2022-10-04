@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fhs.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.client.modular.relation.service.ClientRelationService;
@@ -58,23 +59,17 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     private DevConfigApi devConfigApi;
 
     @Resource
+    private TransService transService;
+
+    @Resource
     private ClientRelationService clientRelationService;
 
     @Override
     public ClientLoginUser getUserById(String id) {
         ClientUser clientUser = this.getById(id);
         if(ObjectUtil.isNotEmpty(clientUser)) {
-            ClientLoginUser clientLoginUser = BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getPhone())) {
-                clientLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getIdCardNumber())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getEmergencyPhone())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getEmergencyPhone()));
-            }
-            return clientLoginUser;
+            transService.transOne(clientUser);
+            return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
         }
         return null;
     }
@@ -83,17 +78,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     public ClientLoginUser getUserByAccount(String account) {
         ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getAccount, account));
         if(ObjectUtil.isNotEmpty(clientUser)) {
-            ClientLoginUser clientLoginUser = BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getPhone())) {
-                clientLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getIdCardNumber())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getEmergencyPhone())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getEmergencyPhone()));
-            }
-            return clientLoginUser;
+            transService.transOne(clientUser);
+            return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
         }
         return null;
     }
@@ -102,17 +88,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     public ClientLoginUser getUserByPhone(String phone) {
         ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
         if(ObjectUtil.isNotEmpty(clientUser)) {
-            ClientLoginUser clientLoginUser = BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getPhone())) {
-                clientLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getIdCardNumber())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getEmergencyPhone())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getEmergencyPhone()));
-            }
-            return clientLoginUser;
+            transService.transOne(clientUser);
+            return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
         }
         return null;
     }
@@ -121,17 +98,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     public ClientLoginUser getUserByEmail(String email) {
         ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getEmail, email));
         if(ObjectUtil.isNotEmpty(clientUser)) {
-            ClientLoginUser clientLoginUser = BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getPhone())) {
-                clientLoginUser.setPhone(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getPhone()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getIdCardNumber())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getIdCardNumber()));
-            }
-            if(ObjectUtil.isNotEmpty(clientLoginUser.getEmergencyPhone())) {
-                clientLoginUser.setIdCardNumber(CommonCryptogramUtil.doSm4CbcDecrypt(clientLoginUser.getEmergencyPhone()));
-            }
-            return clientLoginUser;
+            transService.transOne(clientUser);
+            return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
         }
         return null;
     }
@@ -157,18 +125,6 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Override
     public void add(ClientUserAddParam clientUserAddParam) {
         checkParam(clientUserAddParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(clientUserAddParam.getPhone())) {
-            clientUserAddParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserAddParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(clientUserAddParam.getIdCardNumber())) {
-            clientUserAddParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserAddParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(clientUserAddParam.getEmergencyPhone())) {
-            clientUserAddParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserAddParam.getEmergencyPhone()));
-        }
         ClientUser clientUser = BeanUtil.toBean(clientUserAddParam, ClientUser.class);
         if(ObjectUtil.isEmpty(clientUser.getAvatar())) {
             // 设置默认头像
@@ -210,18 +166,6 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     public void edit(ClientUserEditParam clientUserEditParam) {
         ClientUser clientUser = this.queryEntity(clientUserEditParam.getId());
         checkParam(clientUserEditParam);
-        // 设置手机号
-        if(ObjectUtil.isNotEmpty(clientUserEditParam.getPhone())) {
-            clientUserEditParam.setPhone(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserEditParam.getPhone()));
-        }
-        // 设置证件号
-        if(ObjectUtil.isNotEmpty(clientUserEditParam.getIdCardNumber())) {
-            clientUserEditParam.setIdCardNumber(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserEditParam.getIdCardNumber()));
-        }
-        // 设置紧急联系人电话
-        if(ObjectUtil.isNotEmpty(clientUserEditParam.getEmergencyPhone())) {
-            clientUserEditParam.setEmergencyPhone(CommonCryptogramUtil.doSm4CbcEncrypt(clientUserEditParam.getEmergencyPhone()));
-        }
         BeanUtil.copyProperties(clientUserEditParam, clientUser);
         this.updateById(clientUser);
     }
