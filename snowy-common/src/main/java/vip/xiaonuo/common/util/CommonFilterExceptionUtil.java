@@ -12,6 +12,9 @@
  */
 package vip.xiaonuo.common.util;
 
+import cn.hutool.core.util.ObjectUtil;
+import vip.xiaonuo.common.exception.CommonException;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -32,7 +35,11 @@ public class CommonFilterExceptionUtil {
      **/
     public static void handleFilterException(ServletRequest request, ServletResponse response, Exception e) {
         try {
-            request.setAttribute("model", e);
+            if(ObjectUtil.isNotEmpty(e.getMessage())) {
+                request.setAttribute("model", new CommonException(e.getMessage()));
+            } else {
+                request.setAttribute("model", e);
+            }
             request.getRequestDispatcher("/errorView").forward(request, response);
         } catch (Exception ignored) {
         }
