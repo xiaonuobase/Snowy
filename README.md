@@ -6,7 +6,7 @@
 
 ## 框架介绍
 
-Snowy（SnowyAdmin）是国内首个国产化前后端分离快速开发平台，集成国密加解密插件，
+Snowy（SnowyAdmin）是国内首个国密前后端分离快速开发平台，集成国密加解密插件，
 软件层面完全符合等保测评要求，同时实现国产化机型、中间件、数据库适配，是您的不二之选！
 技术框架与密码结合，让更多的人认识密码，使用密码；更是让前后分离“密”不可分。
 
@@ -15,8 +15,6 @@ Snowy（SnowyAdmin）是国内首个国产化前后端分离快速开发平台�
 
 
 Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。
-
-欢迎加入QQ技术群互相解决问题：732230670
 
 <p align="center">     
     <p align="center">
@@ -49,9 +47,11 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 ## 快速链接
 
-下载地址：https://gitee.com/xiaonuobase/snowy
+下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiaonuobase/snowy)
 
-演示地址：https://snowy.xiaonuo.vip
+演示地址：[https://snowy.xiaonuo.vip](https://snowy.xiaonuo.vip)
+
+文档地址：[https://xiaonuo.vip/doc](https://xiaonuo.vip/doc)
 
 ## 支撑组件及启动
 
@@ -62,7 +62,7 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 |--- | ----- | ----- |
 | node.js | 最新版 |  JavaScript运行环境 |
 
-#### 启动前端
+### 启动前端
 
 ```
 npm install
@@ -74,15 +74,49 @@ npm run dev
 | 插件 | 版本 | 用途 |
 | --- | ----- |  ----- |
 | jdk | 11 / 1.8 |java环境 |
+| lombok | idea内 |代码简化插件 |
 | maven | 最新版 |包管理工具 |
 | redis | 最新版 | 缓存库 |
 | mysql | 8.0 / 5.7 | 数据库 |
 
-#### 启动后端
+### 启动后端
 开发工具内配置好maven并在代码中配置数据库即可启动
 
 ## 代码结构
 
+Snowy2.0框架对代码以插件化的模式进行分包，使得包层级结构更加清晰合理，同时降低了耦合度，关于插件模块化开发的规范请查阅文档【SNOWY开源文档——前端手册or后端手册——开发规范】板块。
+
+```
+snowy
+  |-snowy-admin-web == 前端
+    |-public == 基础静态文件
+    |-src == 前端源代码
+      |-api == API接口转发
+      |-assets == 静态文件
+      |-components == VUE组件
+      |-config == 基础配置
+      |-layout == 基础布局
+      |-locales == 多语言配置
+      |-router == 基础路由配置
+      |-store == VUEX缓存配置
+      |-style == 样式风格配置
+      |-utils == 工具类
+      |-views == 所有视图界面
+  |-snowy-common == 基础通用模块
+  |-snowy-plugin == 插件包
+    |-snowy-plugin-auth == 登录鉴权插件
+    |-snowy-plugin-biz == 业务功能插件
+    |-snowy-plugin-client == C端功能插件
+    |-snowy-plugin-dev == 开发工具插件
+    |-snowy-plugin-sys == 系统功能插件
+  |-snowy-plugin-api == 插件api包
+    |-snowy-plugin-auth-api == 登录鉴权插件api接口
+    |-snowy-plugin-biz-api == 业务功能插件api接口
+    |-snowy-plugin-client-api == C端功能插件api接口
+    |-snowy-plugin-dev-api == 开发工具插件api接口
+    |-snowy-plugin-sys-api == 系统功能插件api接口
+  |-snowy-web-app == 主启动模块
+```
 
 ## 效果图:fire:
 
@@ -116,9 +150,12 @@ npm run dev
 | 用户密码        | SM3完整性保护存储，登录时做完整性校验    |
 | 用户手机号        | SM4（cbc模式）加解密使用字段脱敏    |
 
-## 官方微信群
+## 官方技术群
 
-因群达到200人以上，需加微信拉群
+
+QQ技术群：732230670
+
+微信技术群：因群达到200人以上，需加微信拉群
 
 <table>
     <tr>
@@ -126,8 +163,6 @@ npm run dev
         <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwFVcdA&path=%7BshareItemLink%3A7qwFVcdA%7D%2F" width="120"/></td>
     </tr>
 </table>
-
-## 原理图解
 
 ## 团队成员
 
