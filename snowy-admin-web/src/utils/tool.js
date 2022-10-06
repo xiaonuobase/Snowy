@@ -14,15 +14,9 @@
  * @LastEditors: yubaoshan
  * @LastEditTime: 2022年4月19日10:58:41
  */
-
 const tool = {}
 
-/**
- * localStorage
- *
- * @author yubaoshan
- * @date 2022-05-18 22:59
- */
+// localStorage
 tool.data = {
 	set(table, settings) {
 		const _set = JSON.stringify(settings)
@@ -46,12 +40,7 @@ tool.data = {
 	}
 }
 
-/**
- * sessionStorage
- *
- * @author yubaoshan
- * @date 2022-05-18 22:59
- */
+// sessionStorage
 tool.session = {
 	set(table, settings) {
 		const _set = JSON.stringify(settings)
@@ -74,12 +63,7 @@ tool.session = {
 	}
 }
 
-/**
- * 千分符
- *
- * @author yubaoshan
- * @date 2022-05-18 22:59
- */
+// 千分符
 tool.groupSeparator = (num) => {
 	num = `${num}`
 	if (!num.includes('.')) num += '.'
@@ -91,24 +75,12 @@ tool.groupSeparator = (num) => {
 		.replace(/\.$/, '')
 }
 
-/**
- * 获取所有字典数组
- *
- * @author yubaoshan
- * @date 2022-04-08 01:11
- */
+// 获取所有字典数组
 tool.dictDataAll = () => {
 	return tool.data.get('DICT_TYPE_TREE_DATA')
 }
 
-/**
- * 字典翻译方法
- * 界面插槽使用方法 {{ $TOOL.dictType('sex', record.sex) }}
- *
- * @author yubaoshan
- * @date 2022-04-08 01:11
- */
-// todo 每次都从localStorage获取并重新解析，会有性能问题，应该在内存中做一层缓存，后面需要优化掉
+// 字典翻译方法，界面插槽使用方法 {{ $TOOL.dictType('sex', record.sex) }}
 tool.dictTypeData = (dictValue, value) => {
 	const dictTypeTree = tool.dictDataAll()
 	if (!dictTypeTree) {
@@ -123,12 +95,7 @@ tool.dictTypeData = (dictValue, value) => {
 	return dict?.name || '无此字典'
 }
 
-/**
- * 获取某个code下字典的列表，多用于字典下拉框
- *
- * @author yubaoshan
- * @date 2022-04-08 01:11
- */
+// 获取某个code下字典的列表，多用于字典下拉框
 tool.dictTypeList = (dictValue) => {
 	const dictTypeTree = tool.dictDataAll()
 	if (!dictTypeTree) {
@@ -141,12 +108,7 @@ tool.dictTypeList = (dictValue) => {
 	return []
 }
 
-/**
- * 生成UUID
- *
- * @author yubaoshan
- * @date 2022-05-18 22:59
- */
+// 生成UUID
 tool.snowyUuid = () => {
 	let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
 		let r = (Math.random() * 16) | 0,

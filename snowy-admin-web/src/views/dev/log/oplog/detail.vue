@@ -9,6 +9,8 @@
 	>
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
 			<a-descriptions-item label="名称">{{ formData.name }}</a-descriptions-item>
+			<a-descriptions-item label="请求IP">{{ formData.opIp }}</a-descriptions-item>
+			<a-descriptions-item label="IP来源">{{ formData.opAddress }}</a-descriptions-item>
 			<a-descriptions-item label="请求地址">{{ formData.reqUrl }}</a-descriptions-item>
 			<a-descriptions-item label="操作类">{{ formData.className }}</a-descriptions-item>
 			<a-descriptions-item label="操作方法">{{ formData.methodName }}</a-descriptions-item>

@@ -36,7 +36,7 @@ const DEFAULT_CONFIG = {
 	// 菜单是否折叠
 	SNOWY_MENU_COLLAPSE: false,
 
-	// 目录坞
+	// 模块坞
 	SNOWY_MODULE_UNFOLD_OPEN: true,
 
 	// 是否开启多标签

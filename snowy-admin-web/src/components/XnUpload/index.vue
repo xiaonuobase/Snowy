@@ -36,6 +36,7 @@
 	import tool from '@/utils/tool'
 	import sysConfig from '@/config/index'
 	const fileList = ref([])
+	const emit = defineEmits({ uploadDone: null })
 	const headers = ref({
 		token: tool.data.get('TOKEN')
 	})
@@ -43,12 +44,6 @@
 		action: {
 			type: String,
 			default: '/dev/file/uploadDynamicReturnUrl',
-			required: false
-		},
-		// 允许多个
-		allowMultiple: {
-			type: Boolean,
-			default: false,
 			required: false
 		},
 		// 上传方式 defaults || drag
@@ -66,22 +61,16 @@
 	})
 	const action = sysConfig.API_URL + props.action
 
-	const handleChange = () => {}
-
-	// 获取上传的内容
-	const getUploadData = () => {
-		return fileList.value.map((item) => {
-			return {
-				uid: item.uid,
-				name: item.name,
-				status: item.status,
-				url: item.response.data
+	const handleChange = () => {
+		let result = []
+		for (let a = 0; a < props.uploadMumber; a++) {
+			const file = fileList.value[a]
+			if (file.status === 'done' && file.response && file.response.code === 200) {
+				result.push(file.response.data)
 			}
-		})
+		}
+		if (result.length > 0) {
+			emit('uploadDone', result)
+		}
 	}
-	defineExpose({
-		getUploadData
-	})
 </script>
-
-<style scoped></style>

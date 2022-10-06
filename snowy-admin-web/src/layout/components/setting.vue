@@ -55,7 +55,7 @@
 			</div>
 			<a-divider />
 			<a-form ref="form" style="text-align: right">
-				<a-form-item label="目录坞">
+				<a-form-item label="模块坞">
 					<a-switch v-model:checked="moduleUnfoldOpen" />
 				</a-form-item>
 				<a-form-item label="面包屑">

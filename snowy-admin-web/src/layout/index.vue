@@ -484,9 +484,11 @@
 					: header.classList.remove('snowy-header-primary-color')
 				// 判断是否开启了通栏
 				const headerLogin = document.getElementById('snowyHeaderLogo')
-				this.topHanderThemeColorSpread
-					? headerLogin.classList.add('snowy-header-logo-primary-color')
-					: headerLogin.classList.remove('snowy-header-logo-primary-color')
+				try{
+					this.topHanderThemeColorSpread
+						? headerLogin.classList.add('snowy-header-logo-primary-color')
+						: headerLogin.classList.remove('snowy-header-logo-primary-color')
+				}catch (e) { }
 				// 如果是双排菜单，吧第二排的也给渲染了
 				if (this.layout === 'doublerow') {
 					const snowyDoublerowSideTop = document.getElementById('snowyDoublerowSideTop')
