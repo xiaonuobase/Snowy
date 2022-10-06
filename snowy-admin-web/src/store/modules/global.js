@@ -44,7 +44,7 @@ export default {
 		// 顶栏主题色通栏
 		topHanderThemeColorSpread:
 			getCacheConfig('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD'),
-		// 目录坞
+		// 模块坞
 		moduleUnfoldOpen: getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'),
 		// 主题
 		theme: getCacheConfig('SNOWY_THEME'),

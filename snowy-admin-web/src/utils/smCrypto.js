@@ -49,7 +49,7 @@ export default {
 	doSm3Hash(msgString) {
 		return sm3(msgString)
 	},
-	// SM4 CBC加密
+	// SM4 加密
 	doSm4Encrypt(msgString) {
 		return sm4.encrypt(msgString, key)
 	},

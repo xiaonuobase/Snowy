@@ -88,6 +88,14 @@
 			dataIndex: 'name'
 		},
 		{
+			title: 'IP地址',
+			dataIndex: 'opIp'
+		},
+		{
+			title: '地址',
+			dataIndex: 'opAddress'
+		},
+		{
 			title: '类名称',
 			dataIndex: 'className'
 		},
