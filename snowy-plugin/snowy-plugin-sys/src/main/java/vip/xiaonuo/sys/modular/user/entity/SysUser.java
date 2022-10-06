@@ -75,7 +75,7 @@ public class SysUser extends CommonEntity implements TransPojo {
     /** 性别 */
     @ApiModelProperty(value = "性别", position = 8)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
-    @Trans(type = TransType.DICTIONARY,key = "GENDER")
+    @Trans(type = TransType.DICTIONARY, key = "GENDER")
     private String gender;
 
     /** 年龄 */
