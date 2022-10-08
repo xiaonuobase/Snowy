@@ -496,7 +496,11 @@
 		formRef.value.validate().then(() => {
 			// 因为不切断，我下面转换数据格式，影响上面表单会报错
 			let formDatas = JSON.parse(JSON.stringify(formData.value))
-			formDatas.positionJson = JSON.stringify(formDatas.positionJson)
+			if (formDatas.positionJson && formDatas.positionJson.length > 0) {
+				formDatas.positionJson = JSON.stringify(formDatas.positionJson)
+			} else {
+				delete formDatas.positionJson
+			}
 			formLoading.value = true
 			userApi
 				.submitForm(formDatas, !formDatas.id)
