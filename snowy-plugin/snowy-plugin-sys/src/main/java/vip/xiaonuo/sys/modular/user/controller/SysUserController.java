@@ -55,7 +55,6 @@ public class SysUserController {
     @Resource
     private SysUserService sysUserService;
 
-
     /**
      * 获取用户分页
      *
