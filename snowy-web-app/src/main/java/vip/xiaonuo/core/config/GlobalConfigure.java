@@ -178,6 +178,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
                             .check(r1 -> StpUtil.checkRole(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue()));
                 })
+
                 // 前置函数：在每次认证函数之前执行
                 .setBeforeAuth(obj -> {
 
@@ -205,7 +206,10 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // OPTIONS预检请求，不做处理
                             .free(r -> {})
                             .back();
-                }).setError(e -> {
+                })
+
+                // 异常处理
+                .setError(e -> {
                     // 由于过滤器中抛出的异常不进入全局异常处理，所以必须提供[异常处理函数]来处理[认证函数]里抛出的异常
                     // 在[异常处理函数]里的返回值，将作为字符串输出到前端，此处统一转为JSON输出前端
                     SaResponse saResponse = SaHolder.getResponse();
