@@ -26,18 +26,6 @@ import java.util.List;
 public interface SysRelationService extends IService<SysRelation> {
 
     /**
-     * 获取当前接口的数据范围
-     * 返回的集合有三种情况
-     * 1、
-     *
-     *
-     * @return 数据范围（即组织id）集合
-     * @author xuyuxiang
-     * @date 2022/4/24 22:29
-     */
-//    List<String> getDataScopeList();
-
-    /**
      * 追加关系
      *
      * @author xuyuxiang
