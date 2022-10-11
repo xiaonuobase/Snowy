@@ -20,7 +20,7 @@
         <mybatis.plus.version>3.5.2</mybatis.plus.version>
         <easy.trans.version>2.0.3</easy.trans.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>
-        <hutool.version>5.7.22</hutool.version>
+        <hutool.version>5.8.8</hutool.version>
         <pinyin.version>2.5.1</pinyin.version>
         <ip2region.version>2.6.3</ip2region.version>
         <knife4j.version>2.0.9</knife4j.version>
