@@ -62,7 +62,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
     @Override
     public AuthSessionAnalysisResult analysis() {
         AuthSessionAnalysisResult authSessionAnalysisResult = new AuthSessionAnalysisResult();
-        List<JSONObject> sessionListB = StpUtil.searchSessionId("", -1, -1).stream().map(sessionId -> {
+        List<JSONObject> sessionListB = StpUtil.searchSessionId("", -1, -1, true).stream().map(sessionId -> {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpUtil.getSessionByLoginId(userId, false);
@@ -74,7 +74,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
             return jsonObject;
         }).collect(Collectors.toList());
 
-        List<JSONObject> sessionListC = StpClientUtil.searchSessionId("", -1, -1).stream().map(sessionId -> {
+        List<JSONObject> sessionListC = StpClientUtil.searchSessionId("", -1, -1, true).stream().map(sessionId -> {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpClientUtil.getSessionByLoginId(userId, false);
@@ -107,7 +107,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
     public Page<AuthSessionPageResult> pageForB(AuthSessionPageParam authSessionPageParam) {
         Page<AuthSessionPageResult> defaultPage = CommonPageRequest.defaultPage();
         long current = defaultPage.getCurrent();
-        int total = StpUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize())).size();
+        int total = StpUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize()), true).size();
         if(ObjectUtil.isNotEmpty(total)) {
             defaultPage = new Page<>(current, defaultPage.getSize(), total);
             String keyword = "";
@@ -116,7 +116,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
             }
             List<String> userIdList = StpUtil.searchSessionId(keyword,
                     Convert.toInt((current - 1) * defaultPage.getSize()),
-                    Convert.toInt(defaultPage.getSize())).stream().map(sessionId ->
+                    Convert.toInt(defaultPage.getSize()), true).stream().map(sessionId ->
                     StrUtil.split(sessionId, StrUtil.COLON).get(3)).collect(Collectors.toList());
             if (ObjectUtil.isNotEmpty(userIdList)) {
                 List<AuthSessionPageResult> authSessionPageResultList = loginUserApi.listUserByUserIdList(userIdList).stream().map(userJsonObject -> {
@@ -164,7 +164,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
     public Page<AuthSessionPageResult> pageForC(AuthSessionPageParam authSessionPageParam) {
         Page<AuthSessionPageResult> defaultPage = CommonPageRequest.defaultPage();
         long current = defaultPage.getCurrent();
-        int total = StpClientUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize())).size();
+        int total = StpClientUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize()), true).size();
         if(ObjectUtil.isNotEmpty(total)) {
             defaultPage = new Page<>(current, defaultPage.getSize(), total);
             String keyword = "";
@@ -173,10 +173,10 @@ public class AuthSessionServiceImpl implements AuthSessionService {
             }
             List<String> userIdList = StpClientUtil.searchSessionId(keyword,
                     Convert.toInt((current - 1) * defaultPage.getSize()),
-                    Convert.toInt(defaultPage.getSize())).stream().map(sessionId ->
+                    Convert.toInt(defaultPage.getSize()), true).stream().map(sessionId ->
                     StrUtil.split(sessionId, StrUtil.COLON).get(3)).collect(Collectors.toList());
             if (ObjectUtil.isNotEmpty(userIdList)) {
-                List<AuthSessionPageResult> authSessionPageResultList = loginUserApi.listUserByUserIdList(userIdList).stream().map(userJsonObject -> {
+                List<AuthSessionPageResult> authSessionPageResultList = clientLoginUserApi.listUserByUserIdList(userIdList).stream().map(userJsonObject -> {
                     SaSession saSession = StpClientUtil.getSessionByLoginId(userJsonObject.getStr("id"), false);
                     AuthSessionPageResult authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
                     authSessionPageResult.setSessionId(saSession.getId());

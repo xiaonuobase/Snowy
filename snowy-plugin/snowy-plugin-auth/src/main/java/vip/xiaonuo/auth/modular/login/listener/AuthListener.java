@@ -88,13 +88,13 @@ public class AuthListener implements SaTokenListener {
 
     /** 每次被封禁时触发 */
     @Override
-    public void doDisable(String loginType, Object loginId, long disableTime) {
+    public void doDisable(String loginType, Object loginId, String service, int level, long disableTime) {
         // ...
     }
 
     /** 每次被解封时触发 */
     @Override
-    public void doUntieDisable(String loginType, Object loginId) {
+    public void doUntieDisable(String loginType, Object loginId, String service) {
         // ...
     }
 
@@ -107,6 +107,12 @@ public class AuthListener implements SaTokenListener {
     /** 每次注销Session时触发 */
     @Override
     public void doLogoutSession(String id) {
+        // ...
+    }
+
+    /** 每次Token续期时触发 */
+    @Override
+    public void doRenewTimeout(String tokenValue, Object loginId, long timeout) {
         // ...
     }
 }

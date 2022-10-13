@@ -46,11 +46,11 @@ public class AuthExceptionUtil {
             // 如果是权限异常 403
             NotPermissionException notPermissionException = (NotPermissionException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "无此权限：" + notPermissionException.getPermission(), null);
-        } else if (e instanceof DisableLoginException) {
+        } else if (e instanceof DisableServiceException) {
 
             // 如果是被封禁异常 403
-            DisableLoginException disableLoginException = (DisableLoginException) e;
-            commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "账号被封禁：" + disableLoginException.getDisableTime() + "秒后解封", null);
+            DisableServiceException disableServiceException = (DisableServiceException) e;
+            commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "账号被封禁：" + disableServiceException.getDisableTime() + "秒后解封", null);
         } else if (e instanceof SaTokenException) {
 
             // 如果是SaToken异常 直接返回

@@ -708,8 +708,8 @@ public class StpClientUtil {
      * @param size 获取数量
      * @return token集合
      */
-    public static List<String> searchTokenValue(String keyword, int start, int size) {
-        return stpLogic.searchTokenValue(keyword, start, size);
+    public static List<String> searchTokenValue(String keyword, int start, int size, boolean sortType) {
+        return stpLogic.searchTokenValue(keyword, start, size, sortType);
     }
 
     /**
@@ -719,8 +719,8 @@ public class StpClientUtil {
      * @param size 获取数量
      * @return sessionId集合
      */
-    public static List<String> searchSessionId(String keyword, int start, int size) {
-        return stpLogic.searchSessionId(keyword, start, size);
+    public static List<String> searchSessionId(String keyword, int start, int size, boolean sortType) {
+        return stpLogic.searchSessionId(keyword, start, size, sortType);
     }
 
     /**
@@ -730,8 +730,8 @@ public class StpClientUtil {
      * @param size 获取数量
      * @return sessionId集合
      */
-    public static List<String> searchTokenSessionId(String keyword, int start, int size) {
-        return stpLogic.searchTokenSessionId(keyword, start, size);
+    public static List<String> searchTokenSessionId(String keyword, int start, int size, boolean sortType) {
+        return stpLogic.searchTokenSessionId(keyword, start, size, sortType);
     }
 
 

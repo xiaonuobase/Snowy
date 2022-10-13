@@ -15,7 +15,7 @@
     <description>登录鉴权插件</description>
 
     <properties>
-        <sa.token.version>1.30.0</sa.token.version>
+        <sa.token.version>1.31.0</sa.token.version>
         <just.auth.version>1.16.5</just.auth.version>
     </properties>
 
