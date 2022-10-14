@@ -185,13 +185,21 @@
 				moduleTypeList.value = data
 				moduleType.value = data.length > 0 ? data[0].id : ''
 				searchFormState.module = moduleType.value
-				return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((res) => {
-					return res
+				return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((data) => {
+					if (data) {
+						return data
+					} else {
+						return []
+					}
 				})
 			})
 		} else {
-			return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((res) => {
-				return res
+			return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((data) => {
+				if (data) {
+					return data
+				} else {
+					return []
+				}
 			})
 		}
 	}
