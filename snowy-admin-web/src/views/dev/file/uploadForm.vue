@@ -84,7 +84,7 @@
 		fileApi
 			.fileUploadLocalReturnUrl(fileData)
 			.then(() => {
-				message.success('上传成功')
+				emit('successful')
 			})
 			.finally(() => {
 				uploadLoading.value = false
@@ -98,7 +98,7 @@
 		fileApi
 			.fileUploadAliyunReturnUrl(fileData)
 			.then(() => {
-				message.success('上传成功')
+				emit('successful')
 			})
 			.finally(() => {
 				uploadLoading.value = false
@@ -112,7 +112,7 @@
 		fileApi
 			.fileUploadTencentReturnUrl(fileData)
 			.then(() => {
-				message.success('上传成功')
+				emit('successful')
 			})
 			.finally(() => {
 				uploadLoading.value = false
@@ -126,7 +126,7 @@
 		fileApi
 			.fileUploadMinioReturnUrl(fileData)
 			.then(() => {
-				message.success('上传成功')
+				emit('successful')
 			})
 			.finally(() => {
 				uploadLoading.value = false
