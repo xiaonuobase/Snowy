@@ -20,6 +20,7 @@
         <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
         <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
         <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
+        <oracle.nls.orai18n.version>19.7.0.0</oracle.nls.orai18n.version>
         <mssql.connector.java.version>11.2.1.jre8</mssql.connector.java.version>
     </properties>
 
@@ -59,6 +60,11 @@
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
             <version>${oracle.connector.java.version}</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>com.oracle.database.nls</groupId>
+            <artifactId>orai18n</artifactId>
+            <version>${oracle.nls.orai18n.version}</version>
         </dependency>-->
 
         <!-- mssql -->
