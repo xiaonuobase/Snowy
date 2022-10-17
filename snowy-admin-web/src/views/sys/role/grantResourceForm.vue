@@ -256,21 +256,23 @@
 	const convertData = () => {
 		resultDataModel.grantInfoList = []
 		echoDatalist.value.forEach((table) => {
-			table.menu.forEach((item) => {
-				const grantInfo = {
-					menuId: '',
-					buttonInfo: []
-				}
-				if (item.nameCheck) {
-					grantInfo.menuId = item.id
-					item.button.forEach((button) => {
-						if (button.check) {
-							grantInfo.buttonInfo.push(button.id)
-						}
-					})
-					resultDataModel.grantInfoList.push(grantInfo)
-				}
-			})
+			if (table.menu) {
+				table.menu.forEach((item) => {
+					const grantInfo = {
+						menuId: '',
+						buttonInfo: []
+					}
+					if (item.nameCheck) {
+						grantInfo.menuId = item.id
+						item.button.forEach((button) => {
+							if (button.check) {
+								grantInfo.buttonInfo.push(button.id)
+							}
+						})
+						resultDataModel.grantInfoList.push(grantInfo)
+					}
+				})
+			}
 		})
 		return resultDataModel
 	}
