@@ -125,9 +125,11 @@ public class GlobalExceptionUtil {
                     CommonException commonException = (CommonException) secondCause;
                     commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
                 } else {
+                    e.printStackTrace();
                     commonResult = CommonResult.error("数据操作异常");
                 }
-            }else {
+            } else {
+                e.printStackTrace();
                 commonResult = CommonResult.error("数据操作异常");
             }
         } else if (e instanceof CommonException) {
