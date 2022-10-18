@@ -433,7 +433,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 执行校验验证码
         validValidCode(sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
-        // 根据手机号获取用户信息，判断用户是否存在
+        // 根据邮箱获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在", email);
         }
