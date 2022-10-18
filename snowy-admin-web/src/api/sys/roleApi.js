@@ -73,5 +73,9 @@ export default {
 	// 获取权限授权树
 	rolePermissionTreeSelector(data) {
 		return request('permissionTreeSelector', data, 'get')
+	},
+	// 获取汇总数据
+	roleSummary(data) {
+		return request('summary', data, 'get')
 	}
 }

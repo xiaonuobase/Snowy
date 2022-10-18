@@ -45,6 +45,7 @@
 					bordered
 					:row-key="(record) => record.id"
 					:row-selection="options.rowSelection"
+					@resizeColumn="handleResizeColumn"
 				>
 					<template #operator class="table-operator">
 						<a-space>
@@ -87,6 +88,16 @@
 							</a-dropdown>
 						</template>
 					</template>
+					<template #summary>
+						<a-table-summary-row>
+							<a-table-summary-cell :index="0">汇 总</a-table-summary-cell>
+							<a-table-summary-cell :index="1"></a-table-summary-cell>
+							<a-table-summary-cell :index="2">
+								<a-typography-text type="danger">{{ summaryData.sortCode }}</a-typography-text>
+							</a-table-summary-cell>
+							<a-table-summary-cell :index="3"></a-table-summary-cell>
+						</a-table-summary-row>
+					</template>
 				</s-table>
 			</a-card>
 		</a-col>
@@ -114,7 +125,9 @@
 	const columns = [
 		{
 			title: '角色名称',
-			dataIndex: 'name'
+			dataIndex: 'name',
+			resizable: true,
+			width: 150
 		},
 		{
 			title: '分类',
@@ -165,8 +178,20 @@
 
 	// 表格查询 返回 Promise 对象
 	const loadDate = (parameter) => {
-		return roleApi.rolePage(Object.assign(parameter, searchFormState)).then((res) => {
+		let param = Object.assign(parameter, searchFormState)
+		summaryDataReq(param)
+		return roleApi.rolePage(param).then((res) => {
 			return res
+		})
+	}
+	// 计算汇总数据
+	const summaryData = {}
+	const summaryDataReq = (param) => {
+		summaryData.sortCode = ref(0)
+		roleApi.roleSummary(param).then((summary) => {
+			if(summary != null){
+				return summaryData.sortCode = summary.sortCode
+			}
 		})
 	}
 	// 加载左侧的树
@@ -212,6 +237,10 @@
 			delete searchFormState.orgId
 		}
 		table.value.refresh(true)
+	}
+	// 可伸缩列
+	const handleResizeColumn = (w, col) => {
+		col.width = w;
 	}
 	// 删除
 	const removeOrg = (record) => {
