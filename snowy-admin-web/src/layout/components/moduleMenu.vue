@@ -69,9 +69,11 @@
 	// 设置背景色
 	const setModuleBackColor = () => {
 		if (moduleUnfoldOpen.value) {
-			const moduleMunu = document.getElementById('moduleMunu')
-			moduleBackColor.value? moduleMunu.classList.add('module-menu-color')
-				: moduleMunu.classList.remove('module-menu-color')
+			try {
+				const moduleMunu = document.getElementById('moduleMunu')
+				moduleBackColor.value? moduleMunu.classList.add('module-menu-color')
+					: moduleMunu.classList.remove('module-menu-color')
+			} catch (err) { }
 			setSelectedKeys()
 		}
 	}
