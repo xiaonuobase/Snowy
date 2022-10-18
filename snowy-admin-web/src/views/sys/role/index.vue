@@ -88,16 +88,17 @@
 							</a-dropdown>
 						</template>
 					</template>
-					<template #summary>
+					<!-- <template #summary>
 						<a-table-summary-row>
 							<a-table-summary-cell :index="0">汇 总</a-table-summary-cell>
 							<a-table-summary-cell :index="1"></a-table-summary-cell>
-							<a-table-summary-cell :index="2">
+							<a-table-summary-cell :index="2"></a-table-summary-cell>
+							<a-table-summary-cell :index="3">
 								<a-typography-text type="danger">{{ summaryData.sortCode }}</a-typography-text>
 							</a-table-summary-cell>
-							<a-table-summary-cell :index="3"></a-table-summary-cell>
+							<a-table-summary-cell :index="4"></a-table-summary-cell>
 						</a-table-summary-row>
-					</template>
+					</template> -->
 				</s-table>
 			</a-card>
 		</a-col>
