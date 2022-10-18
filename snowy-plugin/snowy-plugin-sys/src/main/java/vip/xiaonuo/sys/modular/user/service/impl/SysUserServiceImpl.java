@@ -506,7 +506,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserSignatureStr = StrUtil.split(sysUserSignatureStr, StrUtil.COMMA).get(1);
         }
         String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(sysUserSignatureStr),
-                100, 100, null), ImgUtil.IMAGE_TYPE_PNG);
+                100, 50, null), ImgUtil.IMAGE_TYPE_PNG);
         // 更新指定字段
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
                 .set(SysUser::getSignature, base64));
