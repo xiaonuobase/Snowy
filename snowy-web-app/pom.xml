@@ -68,11 +68,11 @@
         </dependency>-->
 
         <!-- mssql -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <version>${mssql.connector.java.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- 达梦数据库 -->
         <!--<dependency>
