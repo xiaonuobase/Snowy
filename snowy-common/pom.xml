@@ -16,7 +16,7 @@
 
     <properties>
         <lombok.versin>1.18.22</lombok.versin>
-        <druid.version>1.2.8</druid.version>
+        <druid.version>1.2.9</druid.version>
         <mybatis.plus.version>3.5.2</mybatis.plus.version>
         <easy.trans.version>2.0.3</easy.trans.version>
         <commons.pool2.version>2.11.1</commons.pool2.version>

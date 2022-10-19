@@ -53,7 +53,7 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 文档地址：[https://xiaonuo.vip/doc](https://xiaonuo.vip/doc)
 
-## 支撑组件及启动
+## 快速启动
 
 全栈工程师推荐idea
 
@@ -133,6 +133,16 @@ snowy
 
 1.x分支，目前已停止新增功能，只限于bug的维护，推荐使用2x版本
 
+## 视频教程
+
+免费教程地址：[https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071](https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071)
+
+<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=4016e9m3XODiVlJlUQUS03pg7bCCXa_TYalxvdtil320XXItVMh4-gAe&name=/001.jpg"/>
+<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=902bZPTH7tjPGGSj05qVl8OHdqZFO-EBeD_OmmYnr3Bg-vUuxXnr0COr&name=/002.jpg"/>
+
+作者也在上班工作，所以在利用休息时间为大家创作，录制视频的目的也是为各位小伙伴提供文档跟技术交流群聊之外的上手学习资料
+
+> 视频由小诺开源技术团队王同学（每天一点）进行录制
 
 ## 效果图:fire:
 

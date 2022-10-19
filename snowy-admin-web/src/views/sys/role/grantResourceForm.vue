@@ -142,46 +142,48 @@
 	const echoModuleData = (data, resEcho) => {
 		// 通过应用循环
 		data.forEach((module) => {
-			// 加入回显内容
-			module.menu.forEach((item) => {
-				const menueCheck = ref(0)
-				if (resEcho.grantInfoList.length > 0) {
-					resEcho.grantInfoList.forEach((grant) => {
-						if (item.id === grant.menuId) {
-							menueCheck.value++
-							// 处理按钮
-							if (grant.buttonInfo.length > 0) {
-								grant.buttonInfo.forEach((button) => {
-									item.button.forEach((itemButton) => {
-										if (button === itemButton.id) {
-											itemButton.check = true
-										}
+			if (module.menu) {
+				// 加入回显内容
+				module.menu.forEach((item) => {
+					const menueCheck = ref(0)
+					if (resEcho.grantInfoList.length > 0) {
+						resEcho.grantInfoList.forEach((grant) => {
+							if (item.id === grant.menuId) {
+								menueCheck.value++
+								// 处理按钮
+								if (grant.buttonInfo.length > 0) {
+									grant.buttonInfo.forEach((button) => {
+										item.button.forEach((itemButton) => {
+											if (button === itemButton.id) {
+												itemButton.check = true
+											}
+										})
 									})
-								})
+								}
 							}
-						}
-					})
-				}
-				// 回显前面的2个
-				if (menueCheck.value > 0) {
-					item.parentCheck = true
-					item.nameCheck = true
-				}
-			})
+						})
+					}
+					// 回显前面的2个
+					if (menueCheck.value > 0) {
+						item.parentCheck = true
+						item.nameCheck = true
+					}
+				})
 
-			// 排序
-			module.menu = module.menu.sort((a, b) => {
-				return a.parentId - b.parentId
-			})
-			// 缓存加入索引
-			module.menu.forEach((item, index) => {
-				// 下面就是用来知道不同的一级菜单里面有几个二级菜单，以及他们所在的索引
-				if (firstShowMap[item.parentName]) {
-					firstShowMap[item.parentName].push(index)
-				} else {
-					firstShowMap[item.parentName] = [index]
-				}
-			})
+				// 排序
+				module.menu = module.menu.sort((a, b) => {
+					return a.parentId - b.parentId
+				})
+				// 缓存加入索引
+				module.menu.forEach((item, index) => {
+					// 下面就是用来知道不同的一级菜单里面有几个二级菜单，以及他们所在的索引
+					if (firstShowMap[item.parentName]) {
+						firstShowMap[item.parentName].push(index)
+					} else {
+						firstShowMap[item.parentName] = [index]
+					}
+				})
+			}
 		})
 		return data
 	}
@@ -254,21 +256,23 @@
 	const convertData = () => {
 		resultDataModel.grantInfoList = []
 		echoDatalist.value.forEach((table) => {
-			table.menu.forEach((item) => {
-				const grantInfo = {
-					menuId: '',
-					buttonInfo: []
-				}
-				if (item.nameCheck) {
-					grantInfo.menuId = item.id
-					item.button.forEach((button) => {
-						if (button.check) {
-							grantInfo.buttonInfo.push(button.id)
-						}
-					})
-					resultDataModel.grantInfoList.push(grantInfo)
-				}
-			})
+			if (table.menu) {
+				table.menu.forEach((item) => {
+					const grantInfo = {
+						menuId: '',
+						buttonInfo: []
+					}
+					if (item.nameCheck) {
+						grantInfo.menuId = item.id
+						item.button.forEach((button) => {
+							if (button.check) {
+								grantInfo.buttonInfo.push(button.id)
+							}
+						})
+						resultDataModel.grantInfoList.push(grantInfo)
+					}
+				})
+			}
 		})
 		return resultDataModel
 	}

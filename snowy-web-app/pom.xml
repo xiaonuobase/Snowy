@@ -21,7 +21,7 @@
         <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
         <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
         <oracle.nls.orai18n.version>19.7.0.0</oracle.nls.orai18n.version>
-        <mssql.connector.java.version>11.2.1.jre8</mssql.connector.java.version>
+        <mssql.connector.java.version>9.4.1.jre8</mssql.connector.java.version>
     </properties>
 
     <dependencies>

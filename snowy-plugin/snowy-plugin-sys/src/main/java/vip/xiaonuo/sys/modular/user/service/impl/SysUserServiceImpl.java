@@ -83,7 +83,6 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -433,7 +432,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 执行校验验证码
         validValidCode(sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
-        // 根据手机号获取用户信息，判断用户是否存在
+        // 根据邮箱获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在", email);
         }
@@ -488,8 +487,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         try {
             String suffix = Objects.requireNonNull(FileUtil.getSuffix(file.getOriginalFilename())).toLowerCase();
-            BufferedImage bufferedImage = ImgUtil.toImage(file.getBytes());
-            String base64 = ImgUtil.toBase64DataUri(bufferedImage, suffix);
+            String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(file.getBytes()),
+                    100, 100, null), suffix);
             this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                     sysUser.getId()).set(SysUser::getAvatar, base64));
             return base64;
@@ -502,9 +501,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updateSignature(SysUserSignatureParam sysUserSignatureParam) {
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        String sysUserSignatureStr = sysUserSignatureParam.getSignature();
+        if(sysUserSignatureParam.getSignature().contains(StrUtil.COMMA)) {
+            sysUserSignatureStr = StrUtil.split(sysUserSignatureStr, StrUtil.COMMA).get(1);
+        }
+        String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(sysUserSignatureStr),
+                100, 50, null), ImgUtil.IMAGE_TYPE_PNG);
         // 更新指定字段
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
-                .set(SysUser::getSignature, sysUserSignatureParam.getSignature()));
+                .set(SysUser::getSignature, base64));
     }
 
     @Override

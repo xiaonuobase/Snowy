@@ -276,4 +276,17 @@ public class SysRoleController {
     public CommonResult<List<SysUser>> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam) {
         return CommonResult.data(sysRoleService.userSelector(sysRoleSelectorUserParam));
     }
+
+    /**
+     * 获取用户选择器
+     *
+     * @author jax
+     * @date 2022/10/18 20:00
+     */
+    @ApiOperationSupport(order = 17)
+    @ApiOperation("获取页面统计数据")
+    @GetMapping("/sys/role/summary")
+    public CommonResult<SysRole> summary(SysRolePageParam sysRolePageParam) {
+        return CommonResult.data(sysRoleService.summary(sysRolePageParam));
+    }
 }
