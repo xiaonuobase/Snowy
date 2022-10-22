@@ -145,8 +145,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
             if(ObjectUtil.isNotEmpty(messageIdList)) {
                 LambdaQueryWrapper<DevMessage> lambdaQueryWrapper = new LambdaQueryWrapper<>();
                 lambdaQueryWrapper.in(DevMessage::getId, messageIdList).orderByDesc(DevMessage::getCreateTime);
-                lambdaQueryWrapper.last("limit 0, " + devMessageListParam.getLimit());
-                return this.list(lambdaQueryWrapper);
+                return this.page(CommonPageRequest.defaultPage(),lambdaQueryWrapper).getRecords();
             }
             return CollectionUtil.newArrayList();
         }

@@ -17,6 +17,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.api.DevLogApi;
 import vip.xiaonuo.dev.modular.log.entity.DevLog;
 import vip.xiaonuo.dev.modular.log.enums.DevLogCategoryEnum;
@@ -51,15 +52,19 @@ public class DevLogApiProvider implements DevLogApi {
 
     @Override
     public List<JSONObject> currentUserVisLogList() {
-        return devLogService.list(new LambdaQueryWrapper<DevLog>().eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
+        return devLogService.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
                 .in(DevLog::getCategory, DevLogCategoryEnum.LOGIN.getValue(), DevLogCategoryEnum.LOGOUT.getValue())
-                .last("limit 0, 10").orderByDesc(DevLog::getCreateTime)).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+                .orderByDesc(DevLog::getCreateTime))
+                .getRecords().stream().map(JSONUtil::parseObj).collect(Collectors.toList());
     }
 
     @Override
     public List<JSONObject> currentUserOpLogList() {
-        return devLogService.list(new LambdaQueryWrapper<DevLog>().eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
+        return devLogService.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
                 .in(DevLog::getCategory, DevLogCategoryEnum.OPERATE.getValue(), DevLogCategoryEnum.EXCEPTION.getValue())
-                .last("limit 0, 10").orderByDesc(DevLog::getCreateTime)).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+                .orderByDesc(DevLog::getCreateTime))
+                .getRecords().stream().map(JSONUtil::parseObj).collect(Collectors.toList());
     }
 }
