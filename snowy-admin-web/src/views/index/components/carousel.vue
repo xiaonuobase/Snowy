@@ -32,17 +32,17 @@
 
 <style scoped>
 	.carousel-images {
-		height: 150px;
+		height: 160px;
 		width: 100%;
 		cursor: pointer;
 	}
 	.snowy-right-card-one {
-		height: 150px;
+		height: 160px;
 	}
 
 	.ant-carousel :deep(.slick-slide) {
 		text-align: center;
-		height: 150px;
+		height: 160px;
 		line-height: 150px;
 		background: #364d79;
 		overflow: hidden;

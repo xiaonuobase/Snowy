@@ -141,8 +141,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if(superRole) {
             throw new CommonException("不可编辑超管角色");
         }
-        if(SysRoleCategoryEnum.ORG.getValue().equals(sysRoleEditParam.getCategory()) && ObjectUtil.isEmpty(sysRoleEditParam.getOrgId())) {
-            throw new CommonException("orgId不能为空");
+        if(SysRoleCategoryEnum.ORG.getValue().equals(sysRoleEditParam.getCategory())) {
+            if (ObjectUtil.isEmpty(sysRoleEditParam.getOrgId())) {
+                throw new CommonException("orgId不能为空");
+            }
         } else {
             sysRoleEditParam.setOrgId(null);
         }
