@@ -16,7 +16,7 @@ import VueJSX from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 import { visualizer } from 'rollup-plugin-visualizer'
-import antdDayjs from 'antd-dayjs-vite-plugin'
+import { antdDayjs } from 'antd-dayjs-vite-plugin'
 import Less2CssVariablePlugin from 'antd-less-to-css-variable'
 
 export const r = (...args) => resolve(__dirname, '.', ...args)

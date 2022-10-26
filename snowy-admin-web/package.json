@@ -54,7 +54,7 @@
 		"@vitejs/plugin-vue-jsx": "^1.3.8",
 		"@vue/compiler-sfc": "^3.2.31",
 		"@vue/eslint-config-standard": "^4.0.0",
-		"antd-dayjs-vite-plugin": "^1.2.0",
+		"antd-dayjs-vite-plugin": "^1.2.2",
 		"antd-less-to-css-variable": "^1.0.5",
 		"autoprefixer": "^10.4.2",
 		"babel-eslint": "10.1.0",
