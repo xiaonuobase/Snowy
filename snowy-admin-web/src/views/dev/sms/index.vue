@@ -34,7 +34,7 @@
 		<s-table
 			ref="table"
 			:columns="columns"
-			:data="loadDate"
+			:data="loadData"
 			:expand-row-by-click="true"
 			:alert="options.alert.show"
 			bordered
@@ -135,7 +135,7 @@
 		}
 	}
 	// 表格查询 返回 Promise 对象
-	const loadDate = (parameter) => {
+	const loadData = (parameter) => {
 		return smsApi.smsPage(Object.assign(parameter, searchFormState)).then((data) => {
 			return data
 		})

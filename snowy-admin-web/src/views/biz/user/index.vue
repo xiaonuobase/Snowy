@@ -18,7 +18,7 @@
 				<s-table
 					ref="table"
 					:columns="columns"
-					:data="loadDate"
+					:data="loadData"
 					:expand-row-by-click="true"
 					bordered
 					:alert="options.alert.show"
@@ -183,7 +183,7 @@
 	const cardLoading = ref(true)
 
 	// 表格查询 返回 Promise 对象
-	const loadDate = (parameter) => {
+	const loadData = (parameter) => {
 		return bizUserApi.userPage(Object.assign(parameter, searchFormState)).then((res) => {
 			return res
 		})

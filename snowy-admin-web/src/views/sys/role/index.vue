@@ -39,7 +39,7 @@
 				<s-table
 					ref="table"
 					:columns="columns"
-					:data="loadDate"
+					:data="loadData"
 					:expand-row-by-click="true"
 					:alert="options.alert.show"
 					bordered
@@ -178,7 +178,7 @@
 	const recordCacheData = ref({})
 
 	// 表格查询 返回 Promise 对象
-	const loadDate = (parameter) => {
+	const loadData = (parameter) => {
 		let param = Object.assign(parameter, searchFormState)
 		summaryDataReq(param)
 		return roleApi.rolePage(param).then((res) => {

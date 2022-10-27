@@ -15,7 +15,7 @@
 			<s-table
 				ref="table"
 				:columns="columns"
-				:data="loadDate"
+				:data="loadData"
 				:expand-row-by-click="true"
 				bordered
 				:row-key="(record) => record.id"
@@ -99,7 +99,7 @@
 	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
 
 	// 表格查询 返回 Promise 对象
-	const loadDate = (parameter) => {
+	const loadData = (parameter) => {
 		loadTreeData()
 		parameter.category = 'BIZ'
 		return dictApi.dictPage(Object.assign(parameter, searchFormState)).then((res) => {
