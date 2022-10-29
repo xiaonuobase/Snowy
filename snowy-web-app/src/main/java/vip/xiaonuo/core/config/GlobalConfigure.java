@@ -55,6 +55,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
@@ -180,11 +181,31 @@ public class GlobalConfigure implements WebMvcConfigurer {
 
                 // 设置鉴权的接口
                 .setAuth(r -> {
+                    // B端的接口校验B端登录
                     SaRouter.match("/**")
+                            // 排除无需登录接口
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
+                            // 排除C端认证接口
+                            .notMatch("/auth/c/**")
+                            // 校验B端登录
                             .check(r1 -> StpUtil.checkLogin());
-                    SaRouter.match(CollectionUtil.newArrayList(SUPER_PERMISSION_PATH_ARR))
+
+                    // C端的接口校验C端登录
+                    SaRouter.match("/**")
+                            // 排除无需登录接口
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
+                            // 匹配C端认证接口
+                            .match("/auth/c/**")
+                            // 校验C端登录
+                            .check(r1 -> StpClientUtil.checkLogin());
+
+                    // B端的超管接口校验B端超管角色
+                    SaRouter.match("/**")
+                            // 排除无需登录接口
+                            .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
+                            // 匹配超管接口
+                            .match(CollectionUtil.newArrayList(SUPER_PERMISSION_PATH_ARR))
+                            // 校验B端超管角色
                             .check(r1 -> StpUtil.checkRole(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue()));
                 })
 
