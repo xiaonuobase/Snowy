@@ -19,7 +19,6 @@ import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.StrUtil;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class StpClientUtil {
          */
         @Override
         public String splicingKeyTokenName() {
-            return super.splicingKeyTokenName() + StrUtil.DASHED + TYPE;
+            return super.splicingKeyTokenName();
         }
 
         // 此处可以根据需求重写其他方法
