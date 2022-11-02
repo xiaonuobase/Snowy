@@ -14,12 +14,14 @@ import global from './modules/global'
 import iframe from './modules/iframe'
 import keepAlive from './modules/keepAlive'
 import viewTags from './modules/viewTags'
+import search from './modules/search'
 // 自动import导入所有 vuex 模块
 export default createStore({
 	modules: {
 		global,
 		iframe,
 		keepAlive,
-		viewTags
+		viewTags,
+		search
 	}
 })

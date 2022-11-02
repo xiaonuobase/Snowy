@@ -1,5 +1,8 @@
 <template>
 	<div class="user-bar">
+		<div v-if="!ismobile" class="search panel-item hidden-sm-and-down" @click="handleSearchClick">
+			<search-outlined />
+		</div>
 		<div v-if="!ismobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
@@ -49,6 +52,20 @@
 	<a-drawer v-model:visible="settingDialog" :closable="false" width="300">
 		<setting></setting>
 	</a-drawer>
+	<!-- 搜索面板 -->
+	<a-modal
+		:visible="searchActive"
+		:closable="false"
+		:footer="null"
+		width="600px"
+		style="overflow: hidden"
+		destroyOnClose
+		dialogClass="searchModal"
+		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '10px' }"
+		@cancel="searchPanelClose"
+	>
+		<panel-search ref="panelSearch" @close="searchPanelClose" />
+	</a-modal>
 </template>
 
 <script>
@@ -61,11 +78,15 @@
 	import tool from '@/utils/tool'
 	import loginApi from '@/api/auth/loginApi'
 	import devUserMessage from './message.vue'
+	import panelSearch from './panel-search/index.vue'
+	import mixinSearch from './mixins/search'
 	export default {
 		components: {
 			setting,
-			devUserMessage
+			devUserMessage,
+			panelSearch
 		},
+		mixins: [mixinSearch],
 		data() {
 			return {
 				lang: [],
@@ -171,12 +192,20 @@
 				if (screenfull.isEnabled) {
 					screenfull.toggle(element)
 				}
-			}
+			},
+			// 搜索
+			fullSearch() {}
 		}
 	}
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+	:deep(.ant-modal) {
+		top: 20px;
+	}
+	:deep(.ant-modal-content) {
+		border-radius: 10px;
+	}
 	.user-bar {
 		display: flex;
 		align-items: center;
