@@ -27,6 +27,9 @@
         <!-- 开发工具插件 -->
         <module>snowy-plugin-dev</module>
 
+        <!-- 代码生成插件 -->
+        <module>snowy-plugin-gen</module>
+
         <!-- 系统功能插件 -->
         <module>snowy-plugin-sys</module>
     </modules>

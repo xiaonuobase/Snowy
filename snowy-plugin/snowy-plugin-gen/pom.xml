@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>vip.xiaonuo</groupId>
+        <artifactId>snowy-plugin</artifactId>
+        <version>2.0.0</version>
+    </parent>
+
+    <artifactId>snowy-plugin-gen</artifactId>
+    <packaging>jar</packaging>
+    <description>代码生成插件</description>
+
+    <properties>
+        <sa.token.version>1.31.0</sa.token.version>
+        <beetl.version>1.2.40.Beetl.RELEASE</beetl.version>
+    </properties>
+
+    <dependencies>
+        <!-- 每个插件都要引入自己的对外接口 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-gen-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- 引入系统接口，用于菜单生成等功能 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-sys-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!-- beetl模板引擎 -->
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl-framework-starter</artifactId>
+            <version>${beetl.version}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -120,6 +120,13 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <!-- 代码生成插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-gen</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
         <!-- 系统功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>

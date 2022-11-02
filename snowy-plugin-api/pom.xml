@@ -27,6 +27,9 @@
         <!-- 开发工具插件api接口 -->
         <module>snowy-plugin-dev-api</module>
 
+        <!-- 代码生成插件api接口 -->
+        <module>snowy-plugin-gen-api</module>
+
         <!-- 系统功能插件api接口 -->
         <module>snowy-plugin-sys-api</module>
     </modules>

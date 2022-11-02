@@ -1,0 +1,14 @@
+/*
+ Source Server Type: Oracle
+ Date: ${genTime}
+*/
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${menuId}', '${parentId}', '${functionName}管理', '${busName}', '${menuCode}', 'MENU', '${moduleId}', 'MENU', '${menuPath}', '${menuComponent}', NULL, NULL, '99', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${addButtonId}', '${menuId}', '新增${functionName}', NULL, '${classNameFirstLower}Add', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, '1', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${batchDeleteButtonId}', '${menuId}', '批量删除${functionName}', NULL, '${classNameFirstLower}BatchDelete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, '2', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${editButtonId}', '${menuId}', '编辑${functionName}', NULL, '${classNameFirstLower}Edit', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, '3', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${deleteButtonId}', '${menuId}', '删除${functionName}', NULL, '${classNameFirstLower}Delete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, '4', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);

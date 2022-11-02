@@ -1,0 +1,109 @@
+/*
+ * Copyright [2022] [https://www.xiaonuo.vip]
+ *
+ * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *
+ * 1.请不要删除和修改根目录下的LICENSE文件。
+ * 2.请不要删除和修改Snowy源码头部的版权声明。
+ * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${moduleName}.modular.${busName}.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.common.enums.CommonSortOrderEnum;
+import ${packageName}.common.exception.CommonException;
+import ${packageName}.common.page.CommonPageRequest;
+import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
+import ${packageName}.${moduleName}.modular.${busName}.mapper.${className}Mapper;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}PageParam;
+import ${packageName}.${moduleName}.modular.${busName}.service.${className}Service;
+
+import java.util.List;
+
+/**
+ * ${functionName}Service接口实现类
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+@Service
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    @Override
+    public Page<${className}> page(${className}PageParam ${classNameFirstLower}PageParam) {
+        QueryWrapper<${className}> queryWrapper = new QueryWrapper<>();
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(configList[i].needPage) { %>
+        <% if(configList[i].effectType == 'datepicker') { %>
+        if(ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.getStart${configList[i].fieldNameCamelCaseFirstUpper}()) && ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.getEnd${configList[i].fieldNameCamelCaseFirstUpper}())) {
+            queryWrapper.lambda().between(${className}::get${configList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}PageParam.getStart${configList[i].fieldNameCamelCaseFirstUpper}(), ${classNameFirstLower}PageParam.getEnd${configList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } else { %>
+        if(ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.get${configList[i].fieldNameCamelCaseFirstUpper}())) {
+            queryWrapper.lambda().${configList[i].needPageType}(${className}::get${configList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}PageParam.get${configList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        <% } %>
+        if(ObjectUtil.isAllNotEmpty(${classNameFirstLower}PageParam.getSortField(), ${classNameFirstLower}PageParam.getSortOrder())) {
+            CommonSortOrderEnum.validate(${classNameFirstLower}PageParam.getSortOrder());
+            queryWrapper.orderBy(true, ${classNameFirstLower}PageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
+                    StrUtil.toUnderlineCase(${classNameFirstLower}PageParam.getSortField()));
+        } else {
+            <% if(hasSortCodeField) { %>
+            queryWrapper.lambda().orderByAsc(${className}::getSortCode);
+            <% } else { %>
+            queryWrapper.lambda().orderByAsc(${className}::get${dbTableKeyFirstUpper});
+            <% } %>
+        }
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+    }
+
+    @Override
+    public void add(${className}AddParam ${classNameFirstLower}AddParam) {
+        ${className} ${classNameFirstLower} = BeanUtil.toBean(${classNameFirstLower}AddParam, ${className}.class);
+        this.save(${classNameFirstLower});
+    }
+
+    @Override
+    public void edit(${className}EditParam ${classNameFirstLower}EditParam) {
+        ${className} ${classNameFirstLower} = this.queryEntity(${classNameFirstLower}EditParam.getId());
+        BeanUtil.copyProperties(${classNameFirstLower}EditParam, ${classNameFirstLower});
+        this.updateById(${classNameFirstLower});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(List<${className}IdParam> ${classNameFirstLower}IdParamList) {
+        // 执行删除
+        this.removeBatchByIds(CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::getId));
+    }
+
+    @Override
+    public ${className} detail(${className}IdParam ${classNameFirstLower}IdParam) {
+        return this.queryEntity(${classNameFirstLower}IdParam.getId());
+    }
+
+    @Override
+    public ${className} queryEntity(String id) {
+        ${className} ${classNameFirstLower} = this.getById(id);
+        if(ObjectUtil.isEmpty(${classNameFirstLower})) {
+            throw new CommonException("${functionName}不存在，id值为：{}", id);
+        }
+        return ${classNameFirstLower};
+    }
+}

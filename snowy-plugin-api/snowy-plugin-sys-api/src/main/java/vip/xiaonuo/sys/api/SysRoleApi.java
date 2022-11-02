@@ -39,4 +39,12 @@ public interface SysRoleApi {
      * @date 2022/7/22 14:49
      **/
     List<JSONObject> roleSelector(String orgId, String category, String searchKey);
+
+    /**
+     * 代码生成菜单按钮授权
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 15:58
+     **/
+    void grantForGenMenuAndButton(String menuId);
 }

@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -123,6 +124,45 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         sysMenu.setCategory(SysResourceCategoryEnum.MENU.getValue());
         this.save(sysMenu);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public String addForGenMenu(String parentId, String busName, String title, String module, String path) {
+        // 参数校验
+        if(!parentId.equals("0")) {
+            SysMenu parentMenu = this.queryEntity(parentId);
+            if(ObjectUtil.isEmpty(parentMenu)) {
+                throw new CommonException("上级菜单不存在，id值为：{}", parentId);
+            }
+            if(!parentMenu.getModule().equals(module)) {
+                throw new CommonException("module与上级菜单不一致");
+            }
+        }
+        // 删除老菜单（同时删除其下面的菜单、按钮，清除对应的角色与资源信息
+        SysMenu sysOldMenu = this.getOne(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getTitle, title)
+                .eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
+                .eq(SysMenu::getMenuType, SysResourceMenuTypeEnum.MENU.getValue()).eq(SysMenu::getPath, path));
+        if(ObjectUtil.isNotEmpty(sysOldMenu)) {
+            SysMenuIdParam sysMenuIdParam = new SysMenuIdParam();
+            sysMenuIdParam.setId(sysOldMenu.getId());
+            this.delete(CollectionUtil.newArrayList(sysMenuIdParam));
+        }
+        // 插入新菜单
+        SysMenu sysMenu = new SysMenu();
+        sysMenu.setParentId(parentId);
+        sysMenu.setTitle(title);
+        sysMenu.setName(busName);
+        sysMenu.setCode(RandomUtil.randomString(10));
+        sysMenu.setCategory(SysResourceCategoryEnum.MENU.getValue());
+        sysMenu.setModule(module);
+        sysMenu.setMenuType(SysResourceMenuTypeEnum.MENU.getValue());
+        sysMenu.setPath(path);
+        sysMenu.setComponent(StrUtil.removePrefix(path, StrUtil.SLASH) + StrUtil.SLASH + "index");
+        sysMenu.setIcon("appstore-outlined");
+        sysMenu.setSortCode(99);
+        this.save(sysMenu);
+        return sysMenu.getId();
     }
 
     private void checkParam(SysMenuAddParam sysMenuAddParam) {

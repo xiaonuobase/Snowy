@@ -1,0 +1,125 @@
+/*
+ * Copyright [2022] [https://www.xiaonuo.vip]
+ *
+ * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *
+ * 1.请不要删除和修改根目录下的LICENSE文件。
+ * 2.请不要删除和修改Snowy源码头部的版权声明。
+ * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${moduleName}.modular.${busName}.controller;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import ${packageName}.common.annotation.CommonLog;
+import ${packageName}.common.pojo.CommonResult;
+import ${packageName}.common.pojo.CommonValidList;
+import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}PageParam;
+import ${packageName}.${moduleName}.modular.${busName}.service.${className}Service;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * ${functionName}控制器
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ */
+@Api(tags = "${functionName}控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@RestController
+@Validated
+public class ${className}Controller {
+
+    @Resource
+    private ${className}Service ${classNameFirstLower}Service;
+
+    /**
+     * 获取${functionName}分页
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @ApiOperationSupport(order = 1)
+    @ApiOperation("获取${functionName}分页")
+    @GetMapping("/${moduleName}/${busName}/page")
+    public CommonResult<Page<${className}>> page(${className}PageParam ${classNameFirstLower}PageParam) {
+        return CommonResult.data(${classNameFirstLower}Service.page(${classNameFirstLower}PageParam));
+    }
+
+    /**
+     * 添加${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @ApiOperationSupport(order = 2)
+    @ApiOperation("添加${functionName}")
+    @CommonLog("添加${functionName}")
+    @PostMapping("/${moduleName}/${busName}/add")
+    public CommonResult<String> add(@RequestBody @Valid ${className}AddParam ${classNameFirstLower}AddParam) {
+        ${classNameFirstLower}Service.add(${classNameFirstLower}AddParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 编辑${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @ApiOperationSupport(order = 3)
+    @ApiOperation("编辑${functionName}")
+    @CommonLog("编辑${functionName}")
+    @PostMapping("/${moduleName}/${busName}/edit")
+    public CommonResult<String> edit(@RequestBody @Valid ${className}EditParam ${classNameFirstLower}EditParam) {
+        ${classNameFirstLower}Service.edit(${classNameFirstLower}EditParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 删除${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @ApiOperationSupport(order = 4)
+    @ApiOperation("删除${functionName}")
+    @CommonLog("删除${functionName}")
+    @PostMapping("/${moduleName}/${busName}/delete")
+    public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
+                                                   CommonValidList<${className}IdParam> ${classNameFirstLower}IdParamList) {
+        ${classNameFirstLower}Service.delete(${classNameFirstLower}IdParamList);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 获取${functionName}详情
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @ApiOperationSupport(order = 5)
+    @ApiOperation("获取${functionName}详情")
+    @GetMapping("/${moduleName}/${busName}/detail")
+    public CommonResult<${className}> detail(@Valid ${className}IdParam ${classNameFirstLower}IdParam) {
+        return CommonResult.data(${classNameFirstLower}Service.detail(${classNameFirstLower}IdParam));
+    }
+}

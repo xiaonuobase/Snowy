@@ -55,6 +55,14 @@ public interface SysMenuService extends IService<SysMenu> {
     void add(SysMenuAddParam sysMenuAddParam);
 
     /**
+     * 代码生成菜单插入
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 14:06
+     **/
+    String addForGenMenu(String parentId, String busName, String title, String module, String path);
+
+    /**
      * 编辑菜单
      *
      * @author xuyuxiang

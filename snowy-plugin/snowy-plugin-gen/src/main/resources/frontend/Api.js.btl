@@ -1,0 +1,32 @@
+import { baseRequest } from '@/utils/request'
+
+const request = (url, ...arg) => baseRequest(`/${moduleName}/${busName}/` + url, ...arg)
+
+/**
+ * ${functionName}Api接口管理器
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+export default {
+	// 获取${functionName}分页
+	${classNameFirstLower}Page(data) {
+		return request('page', data, 'get')
+	},
+	// 获取${functionName}列表
+	${classNameFirstLower}List(data) {
+		return request('list', data, 'get')
+	},
+	// 提交${functionName}表单 edit为true时为编辑，默认为新增
+	${classNameFirstLower}SubmitForm(data, edit = false) {
+		return request(edit ? 'add' : 'edit', data)
+	},
+	// 删除${functionName}
+	${classNameFirstLower}Delete(data) {
+		return request('delete', data)
+	},
+	// 获取${functionName}详情
+	${classNameFirstLower}Detail(data) {
+		return request('detail', data, 'get')
+	}
+}

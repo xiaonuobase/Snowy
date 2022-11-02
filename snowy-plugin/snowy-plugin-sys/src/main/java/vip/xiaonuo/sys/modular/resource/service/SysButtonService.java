@@ -47,6 +47,15 @@ public interface SysButtonService extends IService<SysButton> {
     void add(SysButtonAddParam sysButtonAddParam);
 
     /**
+     * 代码生成按钮插入
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 15:34
+     * @return java.lang.String
+     **/
+    void addForGenButton(String menuId, String className, String functionName);
+
+    /**
      * 编辑按钮
      *
      * @author xuyuxiang

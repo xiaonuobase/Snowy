@@ -97,6 +97,21 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
     }
 
     @Override
+    public void addForGenButton(String menuId, String className, String functionName) {
+        SysMenu sysMenu = sysMenuService.queryEntity(menuId);
+        String classNameFirstLower = StrUtil.lowerFirst(className);
+        CollectionUtil.newArrayList(JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "Add").set("sortCode", 1),
+                JSONUtil.createObj().set("title", "编辑" + functionName).set("code", classNameFirstLower + "Edit").set("sortCode", 2),
+                JSONUtil.createObj().set("title", "删除" + functionName).set("code", classNameFirstLower + "Delete").set("sortCode", 3),
+                JSONUtil.createObj().set("title", "批量删除").set("code", classNameFirstLower + "BatchDelete").set("sortCode", 4)).forEach(jsonObject -> {
+                    SysButtonAddParam sysButtonAddParam = new SysButtonAddParam();
+                    BeanUtil.copyProperties(jsonObject, sysButtonAddParam);
+                    sysButtonAddParam.setParentId(sysMenu.getId());
+                    this.add(sysButtonAddParam);
+        });
+    }
+
+    @Override
     public void edit(SysButtonEditParam sysButtonEditParam) {
         SysButton sysButton = this.queryEntity(sysButtonEditParam.getId());
         BeanUtil.copyProperties(sysButtonEditParam, sysButton);

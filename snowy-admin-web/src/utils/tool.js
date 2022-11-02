@@ -108,6 +108,24 @@ tool.dictTypeList = (dictValue) => {
 	return []
 }
 
+// 获取某个code下字典的列表，基于dictTypeList 改进，保留老的，逐步替换
+tool.dictList = (dictValue) => {
+	const dictTypeTree = tool.dictDataAll()
+	if (!dictTypeTree) {
+		return []
+	}
+	const tree = dictTypeTree.find((item) => item.dictValue === dictValue)
+	if (tree) {
+		return tree.children.map((item) => {
+			return {
+				value: item['dictValue'],
+				label: item['name']
+			}
+		})
+	}
+	return []
+}
+
 // 生成UUID
 tool.snowyUuid = () => {
 	let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
