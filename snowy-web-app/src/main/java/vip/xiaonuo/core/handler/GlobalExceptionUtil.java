@@ -72,14 +72,14 @@ public class GlobalExceptionUtil {
 
             // 如果是参数传递格式不支持异常 415
             if (e.getMessage().contains("JSON parse error")) {
-
+                e.printStackTrace();
                 //JSON格式转换错误特殊提示
                 commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "参数格式错误", null);
             } else {
                 commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "请使用JSON方式传参", null);
             }
         } else if (e instanceof HttpMediaTypeNotSupportedException) {
-
+            e.printStackTrace();
             // 如果是JSON参数格式错误异常 415
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "参数格式错误", null);
         } else if (e instanceof MethodArgumentNotValidException) {
