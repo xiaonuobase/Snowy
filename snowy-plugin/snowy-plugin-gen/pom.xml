@@ -16,7 +16,7 @@
 
     <properties>
         <sa.token.version>1.31.0</sa.token.version>
-        <beetl.version>1.2.5.RELEASE</beetl.version>
+        <beetl.version>1.2.40.Beetl.RELEASE</beetl.version>
     </properties>
 
     <dependencies>
