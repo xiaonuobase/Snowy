@@ -431,7 +431,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         try {
             // SQL基础路径
             String genSqlBasicPath = "sql";
-            // 前端
+            // SQL
             GroupTemplate groupTemplateSql = new GroupTemplate(new ClasspathResourceLoader("sqlend"),
                     Configuration.defaultConfiguration());
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeSqlResultList = CollectionUtil.newArrayList();
