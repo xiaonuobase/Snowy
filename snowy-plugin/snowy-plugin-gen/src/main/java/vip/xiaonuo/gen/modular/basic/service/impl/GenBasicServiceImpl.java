@@ -408,6 +408,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         FileUtil.del(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName() + ".zip");
         // 生成临时目录
         File tempFolder = FileUtil.file(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName());
+        // 生成SQL代码到临时目录
+        genBasicPreviewResult.getGenBasicCodeSqlResultList().forEach(genBasicCodeResult ->
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator +
+                        genBasicCodeResult.getCodeFileWithPathName())));
         // 生成前端代码到临时目录
         genBasicPreviewResult.getGenBasicCodeFrontendResultList().forEach(genBasicCodeResult ->
                 FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
