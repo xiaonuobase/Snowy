@@ -6,8 +6,7 @@
 			class="search-box"
 			style="width: 100%"
 			allowClear
-			placeholder="搜索页面(支持拼音检索)"
-			size="large"
+			placeholder="搜索页面（支持拼音检索）"
 			@change="querySearch"
 		>
 			<template #prefix>
@@ -15,7 +14,7 @@
 			</template>
 		</a-input>
 		<a-card
-			:body-style="{ padding: '4px 0' }"
+			:body-style="{ padding: '0 0' }"
 			hoverable
 			@mouseenter="onCardIn"
 			@mouseleave="onCardOut"
@@ -23,13 +22,13 @@
 			@keypress.down="handleKeyDown"
 			style="margin: 10px 0"
 		>
-			<div ref="cardList" class="search-card beauty-scroll" style="">
+			<div ref="cardList" class="search-card beauty-scroll">
 				<a-list size="small" :data-source="resultsList">
 					<template #renderItem="{ item, index }">
 						<a-list-item
 							@click="handleSelect(item.fullPath)"
 							@mouseover="onCardItemHover(index)"
-							:class="{ active: index == cardIndex }"
+							:class="{ active: index === cardIndex }"
 							style="padding-right: 10px"
 						>
 							<template #actions>
@@ -42,7 +41,7 @@
 									<a>{{ item.name }}</a>
 								</template>
 								<template #avatar>
-									<a-avatar style="color: black; background-color: transparent" :type="item.icon">
+									<a-avatar style="color: var(--text-color); background-color: transparent" :type="item.icon">
 										<template #icon>
 											<component :is="item.icon" />
 										</template>
@@ -108,18 +107,14 @@
 			}
 		},
 		methods: {
-			/**
-			 * @description 过滤选项 这个方法在每次输入框的值发生变化时会触发
-			 */
+			// 过滤选项 这个方法在每次输入框的值发生变化时会触发
 			querySearch(e) {
 				let queryString = e.target.value || ''
 				const results = queryString && this.fuse.search(queryString).map((e) => e.item)
 				this.searchText = queryString
 				this.results = results
 			},
-			/**
-			 * @description 聚焦输入框
-			 */
+			// 聚焦输入框
 			focus() {
 				this.searchText = ''
 				setTimeout(() => {
@@ -178,9 +173,7 @@
 			onCardItemHover(index) {
 				this.cardIndex = index
 			},
-			/**
-			 * @description 接收用户在下拉菜单中选中事件
-			 */
+			// 接收用户在下拉菜单中选中事件
 			handleSelect(path) {
 				// 如果用户选择的就是当前页面 就直接关闭搜索面板
 				if (path === this.$route.path) {
@@ -190,26 +183,20 @@
 				this.$router.push({ path })
 				this.handleEsc()
 			},
-			/**
-			 * @augments 关闭输入框的下拉菜单
-			 */
+			// 关闭输入框的下拉菜单
 			closeSuggestion() {
 				if (this.$refs.input.activated) {
 					this.results = []
 					this.$refs.input.activated = false
 				}
 			},
-			/**
-			 * @augments 接收用户点击空白区域的关闭
-			 */
+			// 接收用户点击空白区域的关闭
 			handlePanelClick(e) {
-				if ('INPUT' != e.target.tagName) {
+				if ('INPUT' !== e.target.tagName) {
 					this.handleEsc()
 				}
 			},
-			/**
-			 * @augments 接收用户触发的关闭
-			 */
+			// 接收用户触发的关闭
 			async handleEsc() {
 				this.closeSuggestion()
 				await this.$nextTick()
@@ -221,21 +208,23 @@
 
 <style lang="less" scoped>
 	/deep/ .ant-input {
-		height: 48px;
+		height: 35px;
 	}
-
 	/deep/ .ant-input:not(:first-child) {
 		padding-left: 10px;
 	}
-
 	/deep/ .ant-input-prefix {
-		font-size: 24px;
+		font-size: 20px;
 	}
-
+	/deep/ .ant-list-sm .ant-list-item {
+		padding: 4px 16px;
+	}
+	/deep/ .ant-list-item-meta {
+		align-items: center;
+	}
 	.search-box {
 		width: 100%;
 	}
-
 	.beauty-scroll {
 		scrollbar-color: var(--primary-color) var(--primary-2);
 		scrollbar-width: thin;
@@ -255,31 +244,22 @@
 			background: var(--primary-3);
 		}
 	}
-
 	.search-card {
 		height: 220px;
 		overflow: hidden;
 		overflow-y: scroll;
 	}
-
 	/deep/ .ant-list-item.active {
 		background-color: var(--primary-1);
 	}
-
 	.search-tips {
 		display: flex;
-		border-top: 1px solid #f0f0f0;
-		padding-top: 6px;
-
+		border-top: 1px solid var(--component-background);
+		padding-top: 10px;
 		.tips {
 			margin-right: 10px;
 		}
-
 		.key {
-			//display: flex;
-			//flex-direction: row;
-			//align-items: center;
-			//justify-content: center;
 			width: 30px;
 			height: 20px;
 			line-height: 20px;
@@ -287,7 +267,6 @@
 			padding-bottom: 2px;
 			margin: 0px 4px;
 			border-radius: 2px;
-			background-color: white;
 			box-shadow: inset 0 -2px #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px #1e235a66;
 			font-weight: bold;
 		}

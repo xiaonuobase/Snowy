@@ -45,7 +45,7 @@
 					.d2-panel-search-item__icon-box {
 						i {
 							font-size: 24px;
-							color: @primary-color;
+							color: var(--primary-color);
 						}
 					}
 				}

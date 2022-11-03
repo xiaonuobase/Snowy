@@ -61,7 +61,7 @@
 		style="overflow: hidden"
 		destroyOnClose
 		dialogClass="searchModal"
-		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '10px' }"
+		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '14px' }"
 		@cancel="searchPanelClose"
 	>
 		<panel-search ref="panelSearch" @close="searchPanelClose" />

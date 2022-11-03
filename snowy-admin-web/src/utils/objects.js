@@ -1,11 +1,6 @@
 import pinyin from 'js-pinyin'
-import store from '@/store/index'
 
-/**
- * 中文转拼音
- * @param first 仅首字母
- * @returns {String}
- */
+// 中文转拼音 传入仅首字母
 Object.defineProperty(String.prototype, 'toPinyin', {
 	writable: false,
 	enumerable: false,
@@ -19,11 +14,7 @@ Object.defineProperty(String.prototype, 'toPinyin', {
 	}
 })
 
-/**
- * 字符检索
- * @param input 检索值
- * @returns {Boolean}
- */
+// 字符检索 传入检索值
 Object.defineProperty(String.prototype, 'filter', {
 	writable: false,
 	enumerable: false,

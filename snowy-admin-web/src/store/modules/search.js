@@ -14,26 +14,15 @@ export default {
 		pool: []
 	},
 	mutations: {
-		/**
-		 * @description 切换激活状态
-		 * @param {Object} state state
-		 */
+		// 切换激活状态
 		toggle(state) {
 			state.active = !state.active
 		},
-		/**
-		 * @description 设置激活模式
-		 * @param {Object} state state
-		 * @param {Boolean} active active
-		 */
+		// 设置激活模式
 		set(state, active) {
 			state.active = active
 		},
-		/**
-		 * @description 初始化
-		 * @param {Object} state state
-		 * @param {Array} menu menu
-		 */
+		// 初始化
 		init(state, menu) {
 			const pool = []
 			const getFullName = function (meta) {
@@ -48,10 +37,10 @@ export default {
 			}
 			const push = function (menu) {
 				menu.forEach((m) => {
-					if ('menu' == m.meta.type) {
+					if ('menu' === m.meta.type) {
 						if (m.children) {
 							push(m.children)
-						} else {
+						} else if (m.children === null){
 							pool.push({
 								icon: m.meta.icon,
 								path: m.path,

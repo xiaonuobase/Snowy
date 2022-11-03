@@ -1,5 +1,4 @@
 import { mapState, mapMutations } from 'vuex'
-
 import hotkeys from 'hotkeys-js'
 
 export default {
@@ -30,9 +29,7 @@ export default {
 			searchToggle: 'search/toggle',
 			searchSet: 'search/set'
 		}),
-		/**
-		 * 接收点击搜索按钮
-		 */
+		// 接收点击搜索按钮
 		handleSearchClick() {
 			this.searchToggle()
 			if (this.searchActive) {
