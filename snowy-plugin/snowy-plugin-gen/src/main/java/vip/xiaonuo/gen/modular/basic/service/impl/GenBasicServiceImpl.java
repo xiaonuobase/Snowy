@@ -434,12 +434,12 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             GEN_SQL_FILE_LIST.forEach(fileJsonObject -> {
                 String fileTemplateName = fileJsonObject.getStr("name");
                 GenBasicPreviewResult.GenBasicCodeResult genBasicCodeSqlResult = new GenBasicPreviewResult.GenBasicCodeResult();
-                Template templateFront = groupTemplateSql.getTemplate(fileTemplateName);
-                templateFront.binding(bindingJsonObject);
+                Template templateSql = groupTemplateSql.getTemplate(fileTemplateName);
+                templateSql.binding(bindingJsonObject);
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
                 genBasicCodeSqlResult.setCodeFileName(resultName);
                 genBasicCodeSqlResult.setCodeFileWithPathName(genSqlBasicPath + File.separator + resultName);
-                genBasicCodeSqlResult.setCodeFileContent(templateFront.render());
+                genBasicCodeSqlResult.setCodeFileContent(templateSql.render());
                 genBasicCodeSqlResultList.add(genBasicCodeSqlResult);
             });
             genBasicPreviewResult.setGenBasicCodeSqlResultList(genBasicCodeSqlResultList);
