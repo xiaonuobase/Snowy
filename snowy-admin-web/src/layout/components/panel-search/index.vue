@@ -207,20 +207,23 @@
 </script>
 
 <style lang="less" scoped>
-	/deep/ .ant-input {
+	:deep(.ant-input){
 		height: 35px;
 	}
-	/deep/ .ant-input:not(:first-child) {
+	:deep(.ant-input:not(:first-child)){
 		padding-left: 10px;
 	}
-	/deep/ .ant-input-prefix {
+	:deep(.ant-input-prefix){
 		font-size: 20px;
 	}
-	/deep/ .ant-list-sm .ant-list-item {
+	:deep(.ant-list-sm .ant-list-item){
 		padding: 4px 16px;
 	}
-	/deep/ .ant-list-item-meta {
+	:deep(.ant-list-item-meta){
 		align-items: center;
+	}
+	:deep(.ant-list-item.active){
+		background-color: var(--primary-1);
 	}
 	.search-box {
 		width: 100%;
@@ -248,9 +251,6 @@
 		height: 220px;
 		overflow: hidden;
 		overflow-y: scroll;
-	}
-	/deep/ .ant-list-item.active {
-		background-color: var(--primary-1);
 	}
 	.search-tips {
 		display: flex;
