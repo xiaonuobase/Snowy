@@ -16,8 +16,8 @@ import VueJSX from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { antdDayjs } from 'antd-dayjs-vite-plugin'
 import Less2CssVariablePlugin from 'antd-less-to-css-variable'
+import viteCompression from 'vite-plugin-compression'
 
 export const r = (...args) => resolve(__dirname, '.', ...args)
 
@@ -90,6 +90,7 @@ export default defineConfig(({ command, mode }) => {
 					refTransform: true
 				}
 			}),
+			viteCompression(),
 			vueSetupExtend(),
 			VueJSX(),
 			AutoImport({
@@ -103,7 +104,6 @@ export default defineConfig(({ command, mode }) => {
 				dts: false,
 				resolvers: []
 			}),
-			antdDayjs(),
 			visualizer()
 		],
 		css: {
