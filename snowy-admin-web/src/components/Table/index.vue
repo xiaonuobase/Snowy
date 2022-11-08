@@ -228,7 +228,15 @@
 							this.localPagination = false
 						}
 						// 返回结果中的数组数据
-						this.localDataSource = r.records
+						if (this.showPagination === false) {
+							// 既然配置了不分页，那么我们这里接收到肯定是数组
+							this.localDataSource = []
+							if (r instanceof Array) {
+								this.localDataSource = r
+							}
+						} else {
+							this.localDataSource = r.records
+						}
 						this.localLoading = false
 					})
 				}

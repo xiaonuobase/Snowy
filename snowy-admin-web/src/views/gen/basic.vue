@@ -262,7 +262,9 @@
 		const traverse = (array) => {
 			array.forEach((element) => {
 				if (element.menuType === 'CATALOG') {
-					traverse(element.children)
+					if (element.children) {
+						traverse(element.children)
+					}
 				} else {
 					// 设置不可用
 					element.disabled = true
