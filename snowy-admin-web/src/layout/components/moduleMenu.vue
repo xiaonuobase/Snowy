@@ -1,7 +1,7 @@
 <template>
 	<div v-if="moduleUnfoldOpen">
 		<a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" v-if="menu && menu.length > 1" class="module-menu" id="moduleMunu">
-			<a-menu-item v-for="item in menu" :key="item.id" style="padding-right: 5px" @click="moduleClick(item.id)">
+			<a-menu-item v-for="item in menu" :key="item.id" style="padding-right: 5px;position: relative;" @click="moduleClick(item.id)">
 				<template #icon>
 					<component :is="item.meta.icon"/>
 				</template>
@@ -101,7 +101,7 @@
 	.module-card-icon {
 		color: white;
 		font-size: 20px;
-		padding-top: 20px;
+		margin-top: 20px;
 	}
 	.module-card-font {
 		color: white;

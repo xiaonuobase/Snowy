@@ -737,7 +737,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 更新指定字段
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
                 .set(SysUser::getName, sysUserUpdateInfoParam.getName())
-                .set(SysUser::getPhone, sysUserUpdateInfoParam.getPhone())
+                .set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()))
                 .set(SysUser::getNickname, sysUserUpdateInfoParam.getNickname())
                 .set(SysUser::getGender, sysUserUpdateInfoParam.getGender())
                 .set(SysUser::getBirthday, sysUserUpdateInfoParam.getBirthday())

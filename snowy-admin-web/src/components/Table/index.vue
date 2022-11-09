@@ -13,10 +13,8 @@
 		data() {
 			return {
 				needTotalList: [],
-
 				selectedRows: [],
 				selectedRowKeys: [],
-
 				localLoading: false,
 				localDataSource: [],
 				localPagination: Object.assign({}, this.pagination),
@@ -44,7 +42,7 @@
 				default: 1
 			},
 			size: {
-				// type: Number,
+				type: String,
 				default: '10'
 			},
 			showSizeChanger: {
@@ -140,7 +138,7 @@
 						size: this.size, //this.compSize, size// 改动
 						showSizeChanger: this.showSizeChanger,
 						showTotal: (total, range) => {
-							return `${range[0]}-${range[1]}共${total}条`
+							return `${range[0]}-${range[1]} 共 ${total} 条 `
 						}
 					})) ||
 				false
@@ -155,14 +153,9 @@
 			 * @param bool Boolean
 			 */
 			refresh(bool = false) {
-				bool &&
-					(this.localPagination = Object.assign(
-						{},
-						{
-							current: 1,
-							size: this.size
-						}
-					))
+				bool && (this.localPagination = Object.assign({}, {
+					current: 1, size: this.size
+				}))
 				this.loadData()
 			},
 			/**
@@ -173,30 +166,22 @@
 			 */
 			loadData(pagination, filters, sorter) {
 				this.localLoading = true
-				const parameter = Object.assign(
-					{
-						current:
-							(pagination && pagination.current) ||
-							(this.showPagination && this.localPagination.current) ||
-							this.pageNum,
-						size: (pagination && pagination.pageSize) || (this.showPagination && this.localPagination.size) || this.size
+				const parameter = Object.assign({
+					current: (pagination && pagination.current) ||
+							this.showPagination && this.localPagination.current || this.pageNum,
+					size: (pagination && pagination.pageSize) ||
+							this.showPagination && this.localPagination.pageSize || this.pageSize
 					},
-					(sorter &&
-						sorter.field && {
-							sortField: sorter.field
-						}) ||
-						{},
-					(sorter &&
-						sorter.order && {
-							sortOrder: sorter.order
-						}) ||
-						{},
-					{
+					(sorter && sorter.field && {
+						sortField: sorter.field
+					}) || {},
+					(sorter && sorter.order && {
+						sortOrder: sorter.order
+					}) || {}, {
 						...filters
 					}
 				)
 				const result = this.data(parameter)
-				// 对接自己的通用数据接口需要修改下方代码中的 r.current, r.totalCount, r.data
 				// eslint-disable-next-line
         		if (
 					(typeof result === 'object' || typeof result === 'function') &&
@@ -213,6 +198,9 @@
 									current: r.current, // pageNo, // 返回结果中的当前分页数
 									total: r.total, // totalRows, // 返回结果中的总记录数
 									showSizeChanger: this.showSizeChanger,
+									showTotal: (total, range) => {
+										return `${range[0]}-${range[1]} 共 ${total} 条 `
+									},
 									size: (pagination && pagination.size) || this.localPagination.size
 								})) ||
 							false
@@ -226,11 +214,14 @@
 							this.loadData()
 							return
 						}
-
-						// 这里用于判断接口是否有返回 r.totalCount(total) 且 this.showPagination = true 且 current 和 size 存在 且 totalCount 小于等于 current * size 的大小
 						// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
 						try {
-							if (['auto', true].includes(this.showPagination) && r.total <= r.pages * this.localPagination.size) {
+							/*
+							if ((['auto', true].includes(this.showPagination) && r.total <= (r.pages * this.localPagination.size))) {
+								this.localPagination.hideOnSinglePage = true
+							}
+							*/
+							if (!this.showPagination) {
 								this.localPagination.hideOnSinglePage = true
 							}
 						} catch (e) {
@@ -238,8 +229,11 @@
 						}
 						// 返回结果中的数组数据
 						if (this.showPagination === false) {
-							// 因为按住小诺的套路，不分页的直接是在data中，我们在界面中直接就是返回了data
-							this.localDataSource = r
+							// 既然配置了不分页，那么我们这里接收到肯定是数组
+							this.localDataSource = []
+							if (r instanceof Array) {
+								this.localDataSource = r
+							}
 						} else {
 							this.localDataSource = r.records
 						}
@@ -321,7 +315,7 @@
 				const needTotalItems = this.needTotalList.map((item) => {
 					return (
 						<span className="mr-3">
-							{item.title}总计{' '}
+							{item.title} 总计 {' '}
 							<a className="font-6">{!item.customRender ? item.total : item.customRender(item.total)}</a>
 						</span>
 					)
@@ -400,24 +394,23 @@
 				}
 
 				// 斑马纹
-				const changeRowClass = (val) => {
+				const changeRowClass = (value) => {
+					const val = value.target.checked
 					this.localSettings.rowClassNameSwitch = val
 					const evenClass = val ? (_record, index) => (index % 2 === 1 ? 'table-striped' : null) : this.rowClassName
 					this.localSettings.rowClassName = evenClass
 				}
-
 				return (
 					<div className="s-table-tool">
 						<div className="s-table-tool-left">{this.$slots.operator && this.$slots.operator()}</div>
 						<div className="layout-items-center s-table-tool-right">
 							{this.toolConfig.striped ? (
 								<div className="layout-items-center ml-4">
-									<span>斑马线</span>
-									<a-switch
+									<a-checkbox
 										checked={this.localSettings.rowClassNameSwitch}
 										onChange={changeRowClass}
-										className="ml-2"
-									/>
+									>斑马纹
+									</a-checkbox>
 								</div>
 							) : null}
 
@@ -430,7 +423,6 @@
 										{tool.icon}
 									</a-tooltip>
 								)
-
 								if (tool.isPopover) {
 									return (
 										<a-popover

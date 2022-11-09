@@ -19,7 +19,7 @@
                         <% } else if (configList[i].effectType == 'textarea') {%>
                         <a-textarea v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
                         <% } else if (configList[i].effectType == 'select') {%>
-                        <a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="categoryOptions" />
+                        <a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
                         <% } else if (configList[i].effectType == 'radio') {%>
                         <a-radio-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="formData.${configList[i].fieldNameCamelCase}Options" />
                         <% } else if (configList[i].effectType == 'checkbox') {%>

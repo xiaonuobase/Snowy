@@ -63,13 +63,6 @@
 						</div>
 					</div>
 				</a-layout-content>
-				<!--
-				<a-layout-footer style="text-align: center">
-					  <a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-								sysBaseConfig.SNOWY_SYS_COPYRIGHT
-							}}</a>
-					</a-layout-footer>
-					-->
 			</a-layout>
 		</a-layout>
 	</template>
@@ -164,13 +157,13 @@
 							</keep-alive>
 						</router-view>
 						<iframe-view></iframe-view>
+						<div class="main-bottom-wrapper">
+							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
+									sysBaseConfig.SNOWY_SYS_COPYRIGHT
+							}}</a>
+						</div>
 					</div>
 				</a-layout-content>
-				<a-layout-footer style="text-align: center">
-					<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-						sysBaseConfig.SNOWY_SYS_COPYRIGHT
-					}}</a>
-				</a-layout-footer>
 			</a-layout>
 		</a-layout>
 	</template>

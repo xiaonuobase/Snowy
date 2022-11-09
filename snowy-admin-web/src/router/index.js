@@ -76,6 +76,7 @@ const handleGetRouter = (to) => {
 		menuRouter.forEach((item) => {
 			router.addRoute('layout', item)
 		})
+		store.commit('search/init', menuRouter)
 		routes_404_r = router.addRoute(routes_404)
 		if (to && to.matched.length === 0) {
 			router.push(to.fullPath)

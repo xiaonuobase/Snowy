@@ -408,6 +408,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         FileUtil.del(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName() + ".zip");
         // 生成临时目录
         File tempFolder = FileUtil.file(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName());
+        // 生成SQL代码到临时目录
+        genBasicPreviewResult.getGenBasicCodeSqlResultList().forEach(genBasicCodeResult ->
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator +
+                        genBasicCodeResult.getCodeFileWithPathName())));
         // 生成前端代码到临时目录
         genBasicPreviewResult.getGenBasicCodeFrontendResultList().forEach(genBasicCodeResult ->
                 FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
@@ -427,19 +431,19 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         try {
             // SQL基础路径
             String genSqlBasicPath = "sql";
-            // 前端
+            // SQL
             GroupTemplate groupTemplateSql = new GroupTemplate(new ClasspathResourceLoader("sqlend"),
                     Configuration.defaultConfiguration());
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeSqlResultList = CollectionUtil.newArrayList();
             GEN_SQL_FILE_LIST.forEach(fileJsonObject -> {
                 String fileTemplateName = fileJsonObject.getStr("name");
                 GenBasicPreviewResult.GenBasicCodeResult genBasicCodeSqlResult = new GenBasicPreviewResult.GenBasicCodeResult();
-                Template templateFront = groupTemplateSql.getTemplate(fileTemplateName);
-                templateFront.binding(bindingJsonObject);
+                Template templateSql = groupTemplateSql.getTemplate(fileTemplateName);
+                templateSql.binding(bindingJsonObject);
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
                 genBasicCodeSqlResult.setCodeFileName(resultName);
                 genBasicCodeSqlResult.setCodeFileWithPathName(genSqlBasicPath + File.separator + resultName);
-                genBasicCodeSqlResult.setCodeFileContent(templateFront.render());
+                genBasicCodeSqlResult.setCodeFileContent(templateSql.render());
                 genBasicCodeSqlResultList.add(genBasicCodeSqlResult);
             });
             genBasicPreviewResult.setGenBasicCodeSqlResultList(genBasicCodeSqlResultList);
