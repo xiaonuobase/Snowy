@@ -135,7 +135,7 @@
 				const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
 				const $link = document.createElement("a");
 				$link.href = URL.createObjectURL(blob);
-				$link.download = patt.exec(contentDisposition)[1]
+				$link.download = decodeURIComponent(patt.exec(contentDisposition)[1])
 				$link.click();
 				document.body.appendChild($link);
 				document.body.removeChild($link); // 下载完成移除元素
