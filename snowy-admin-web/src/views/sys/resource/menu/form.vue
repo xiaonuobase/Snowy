@@ -196,12 +196,10 @@
 				const param = parameterChanges(formData.value)
 				submitLoading.value = true
 				menuApi.submitForm(param, !param.id).then(() => {
-					submitLoading.value = false
-					visible = false
+					onClose()
 					emit('successful')
 				})
-			})
-			.catch(() => {
+			}).finally(() => {
 				submitLoading.value = false
 			})
 	}
