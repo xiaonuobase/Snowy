@@ -241,9 +241,9 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         String fileObjectName = fileId + StrUtil.DOT + fileSuffix;
 
         // 获取日期文件夹，格式如，2021/10/11/
-        String dateFolderPath = DateUtil.thisYear() + FileUtil.FILE_SEPARATOR +
-                (DateUtil.thisMonth() + 1) + FileUtil.FILE_SEPARATOR +
-                DateUtil.thisDayOfMonth() + FileUtil.FILE_SEPARATOR;
+        String dateFolderPath = DateUtil.thisYear() + StrUtil.SLASH +
+                (DateUtil.thisMonth() + 1) + StrUtil.SLASH +
+                DateUtil.thisDayOfMonth() + StrUtil.SLASH;
 
         // 返回
         return dateFolderPath + fileObjectName;

@@ -33,6 +33,7 @@ import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 阿里云文件工具类
@@ -429,7 +430,8 @@ public class DevFileAliyunUtil {
         try {
             initClient();
             OSSClient ossClient = (OSSClient) client;
-            return bucketName + StrUtil.DOT + ossClient.getEndpoint().toString() + StrUtil.SLASH + key;
+            List<String> urlList = StrUtil.split(ossClient.getEndpoint().toString(), StrUtil.COLON + StrUtil.SLASH + StrUtil.SLASH);
+            return urlList.get(0) + StrUtil.COLON + StrUtil.SLASH + StrUtil.SLASH + bucketName + StrUtil.DOT + urlList.get(1) + StrUtil.SLASH + key;
         } catch (OSSException | ClientException e) {
             throw new CommonException(e.getMessage());
         }
