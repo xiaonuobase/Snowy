@@ -363,7 +363,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             GenBasic genBasic = this.queryEntity(genBasicIdParam.getId());
 
             // 生成菜单
-            String menuId = sysMenuApi.addForGenMenu(genBasic.getMenuPid(), genBasic.getBusName(), genBasic.getModule(), genBasic.getFunctionName() + "管理",
+            String menuId = sysMenuApi.addForGenMenu(genBasic.getMenuPid(), genBasic.getBusName(), genBasic.getModule(), genBasic.getFunctionName(),
                     StrUtil.SLASH + MODULE_KEY + StrUtil.SLASH + genBasic.getBusName());
 
             // 生成按钮
