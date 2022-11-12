@@ -12,7 +12,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-package-lock.json
+# other files
+stats.html
+packge-lock.json
+auto-imports.d.ts
 
 # Editor directories and files
 .idea
