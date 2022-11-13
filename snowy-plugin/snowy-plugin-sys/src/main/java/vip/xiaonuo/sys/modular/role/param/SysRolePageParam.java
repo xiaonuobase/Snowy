@@ -46,8 +46,8 @@ public class SysRolePageParam {
     @ApiModelProperty(value = "组织id")
     private String orgId;
 
-    /** 职位分类 */
-    @ApiModelProperty(value = "职位分类")
+    /** 角色分类 */
+    @ApiModelProperty(value = "角色分类")
     private String category;
 
     /** 名称关键词 */
