@@ -33,6 +33,7 @@ module.exports = {
 		'vue/require-default-prop': 'off',
 		'vue/html-self-closing': 'off',
 		'vue/v-on-event-hyphenation': 'off',
-		'vue/multi-word-component-names': 'off'
+		'vue/multi-word-component-names': 'off',
+		'prettier/prettier': ['error', { endOfLine: 'auto' }]
 	}
 }
