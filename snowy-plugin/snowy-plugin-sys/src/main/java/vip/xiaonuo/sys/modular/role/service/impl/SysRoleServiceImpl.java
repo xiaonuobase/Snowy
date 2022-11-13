@@ -405,14 +405,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return sysUserService.list(lambdaQueryWrapper);
     }
 
-    @Override
-    public SysRole summary(SysRolePageParam sysRolePageParam) {
-        // 实现自己业务逻辑计算 以下是伪代码
-        SysRole sysRole = new SysRole();
-        sysRole.setSortCode(2000);
-        return sysRole;
-    }
-
     /* ====以下为各种递归方法==== */
 
     public JSONObject getParentNode(List<Tree<String>> treeList, SysMenu sysMenu) {

@@ -169,12 +169,4 @@ public interface SysRoleService extends IService<SysRole> {
      * @date 2022/8/22 13:39
      **/
     List<SysUser> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam);
-
-    /**
-     * 获取页面统计数据
-     *
-     * @author jax
-     * @date 2022/8/22 13:39
-     **/
-    SysRole summary(SysRolePageParam sysRolePageParam);
 }

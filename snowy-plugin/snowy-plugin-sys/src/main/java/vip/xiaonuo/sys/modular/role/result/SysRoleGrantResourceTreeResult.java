@@ -69,6 +69,7 @@ public class SysRoleGrantResourceTreeResult {
         /** 标题 */
         @ApiModelProperty(value = "菜单标题", position = 4)
         private String title;
+
         /** 模块 */
         @ApiModelProperty(value = "菜单模块", position = 5)
         private String module;
