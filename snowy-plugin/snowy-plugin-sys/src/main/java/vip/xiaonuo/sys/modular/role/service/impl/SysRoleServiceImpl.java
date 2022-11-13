@@ -262,7 +262,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return sysRole;
     }
 
-    /* ====职位部分所需要用到的选择器==== */
+    /* ====角色部分所需要用到的选择器==== */
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
