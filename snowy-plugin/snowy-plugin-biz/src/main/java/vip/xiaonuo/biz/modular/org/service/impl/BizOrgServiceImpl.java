@@ -46,6 +46,7 @@ import vip.xiaonuo.sys.api.SysRoleApi;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -97,17 +98,18 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public List<Tree<String>> tree() {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 获取所有机构
+        List<BizOrg> allOrgList = this.list();
+        // 定义机构集合
+        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScope);
+            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
         } else {
             return CollectionUtil.newArrayList();
         }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        List<BizOrg> bizOrgList = this.list(lambdaQueryWrapper);
-        List<TreeNode<String>> treeNodeList = bizOrgList.stream().map(bizOrg ->
+        List<TreeNode<String>> treeNodeList = bizOrgSet.stream().map(bizOrg ->
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
                         bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
                 .collect(Collectors.toList());
