@@ -10,7 +10,7 @@
 	import tinymce from 'tinymce/tinymce'
 	import 'tinymce/themes/silver'
 	import 'tinymce/icons/default'
-
+	import 'tinymce/models/dom'
 	// 引入编辑器插件
 	import 'tinymce/plugins/code' // 编辑源码
 	import 'tinymce/plugins/image' // 插入编辑图片
