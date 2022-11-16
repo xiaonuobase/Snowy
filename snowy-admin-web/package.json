@@ -40,7 +40,7 @@
 		"sm-crypto": "^0.3.11",
 		"snowflake-id": "^1.1.0",
 		"sortablejs": "^1.15.0",
-		"tinymce": "^6.2.0",
+		"tinymce": "6.2.0",
 		"vue": "3.2.44",
 		"vue-cropper": "^1.0.1",
 		"vue-i18n": "^9.2.2",
