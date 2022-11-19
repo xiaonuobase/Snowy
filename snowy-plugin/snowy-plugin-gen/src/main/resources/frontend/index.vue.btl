@@ -132,14 +132,20 @@
 
 <script setup name="${busName}">
     import { message } from 'ant-design-vue'
-    <% if (searchCount > 0) { %>
-    <% for(var i = 0; i < configList.~size; i++) { %>
-    <% if(!configList[i].needTableId && configList[i].needPage) { %>
-    <% if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+    <%
+    var iptTool = 0;
+    if (searchCount > 0) {
+        for(var i = 0; i < configList.~size; i++) {
+            if(!configList[i].needTableId) {
+            if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
+                iptTool++;
+            }
+            }
+        }
+    }
+    %>
+    <% if(iptTool > 0) { %>
     import tool from '@/utils/tool'
-    <% } %>
-    <% } %>
-    <% } %>
     <% } %>
     import Form from './form.vue'
     import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
