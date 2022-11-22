@@ -1,7 +1,5 @@
 <template>
-	<div class="sceditor">
-		<Editor v-model="contentValue" :init="init" :disabled="disabled" :placeholder="placeholder" @onClick="onClick" />
-	</div>
+	<Editor v-model="contentValue" :init="init" :disabled="disabled" :placeholder="placeholder" @onClick="onClick" />
 </template>
 
 <script>
@@ -69,15 +67,16 @@
 					resize: true,
 					elementpath: true,
 					content_style: '',
-					images_upload_handler: async (blobInfo, success, failure) => {
-						const data = new FormData()
-						data.append('file', blobInfo.blob(), blobInfo.filename())
-						try {
-							const res = await fileApi.fileUploadDynamicReturnUrl(data)
-							success(res)
-						} catch (error) {
-							failure('Image upload failed')
-						}
+					images_upload_handler(blobInfo, progress) {
+						return new Promise((resolve, reject) => {
+							const data = new FormData()
+							data.append('file', blobInfo.blob(), blobInfo.filename())
+							fileApi.fileUploadDynamicReturnUrl(data).then((res) => {
+								return resolve(res)
+							}).catch((err) => {
+								return reject('err:' + err)
+							})
+						})
 					},
 					setup: (editor) => {
 						editor.on('init', function () {
@@ -106,5 +105,3 @@
 		}
 	}
 </script>
-
-<style></style>
