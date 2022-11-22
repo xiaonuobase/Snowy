@@ -41,7 +41,6 @@
 </template>
 
 <script setup name="sysModule">
-	import { message } from 'ant-design-vue'
 	import Form from './form.vue'
 	import configApi from '@/api/dev/configApi'
 	let searchFormState = reactive({})
@@ -87,7 +86,7 @@
 		let params = {
 			id: record.id
 		}
-		configApi.configDetail(params).then(() => {
+		configApi.configDelete(params).then(() => {
 			table.value.refresh(true)
 		})
 	}
