@@ -356,7 +356,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         String genProjectBackendPath = System.getProperty("user.dir") + File.separator + GEN_PROJECT_PLUGIN_BIZ_KEY + File.separator + "src" +
                 File.separator + "main" + File.separator + "java";
 
-        if(!FileUtil.exist(genProjectFrontendPath)) {
+        if(!FileUtil.exist(genProjectBackendPath)) {
             throw new CommonException("后端代码生成位置：{}不存在，请检查位置", genProjectBackendPath);
         }
         try {

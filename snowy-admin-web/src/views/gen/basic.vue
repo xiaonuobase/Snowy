@@ -192,31 +192,31 @@
 					tableColumns: []
 				}
 			})
+			if (record) {
+				const params = {
+					id: record.id
+				}
+				submitLoading.value = true
+				genBasicApi.basicDetail(params).then((data) => {
+					formData.value = data
+					// 让主键选中
+					selectTableColumnsData(data.dbTable, true)
+					// 让模块旁边的上级菜单选中
+					moduleChange(data.module, true)
+				}).finally(() => {
+					submitLoading.value = false
+				})
+			} else {
+				formData.value = {
+					sortCode: 99,
+					tablePrefix: 'Y',
+					generateType: 'ZIP',
+					packageName: 'vip.xiaonuo',
+					formLayout: 'vertical',
+					gridWhether: 'N'
+				}
+			}
 		})
-		if (record) {
-			const params = {
-				id: record.id
-			}
-			submitLoading.value = true
-			genBasicApi.basicDetail(params).then((data) => {
-				formData.value = data
-				// 让主键选中
-				selectTableColumnsData(data.dbTable, true)
-				// 让模块旁边的上级菜单选中
-				moduleChange(data.module, true)
-			}).finally(() => {
-				submitLoading.value = false
-			})
-		} else {
-			formData.value = {
-				sortCode: 99,
-				tablePrefix: 'Y',
-				generateType: 'ZIP',
-				packageName: 'vip.xiaonuo',
-				formLayout: 'vertical',
-				gridWhether: 'N'
-			}
-		}
 	}
 	// 默认要校验的
 	const formRules = {

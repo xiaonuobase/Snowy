@@ -1,6 +1,6 @@
 <template>
 	<a-divider>{{ $t('login.signInOther') }}</a-divider>
-	<div class="login-oauth">
+	<div class="login-oauth layout-center">
 		<a-space align="start">
 			<a @click="getLoginRenderUrl('gitee')"><GiteeIcon /></a>
 			<a-button type="primary" shape="circle">
@@ -23,9 +23,4 @@
 	}
 </script>
 
-<style scoped>
-	.login-oauth {
-		display: flex;
-		justify-content: center;
-	}
-</style>
+<style scoped></style>
