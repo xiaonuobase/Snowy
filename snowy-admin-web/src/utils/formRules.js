@@ -8,10 +8,10 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-export const required = (text, method = ['blur', 'change']) => ({
+export const required = (message, trigger = ['blur', 'change']) => ({
 	required: true,
-	message: text,
-	trigger: method
+	message,
+	trigger
 })
 
 // 常用正则规则大全：https://any86.github.io/any-rule/
