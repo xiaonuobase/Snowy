@@ -47,7 +47,9 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 ## 快速链接
 
-下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiaonuobase/snowy)
+gitee下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiaonuobase/snowy)
+
+github下载地址（镜像）：[https://github.com/xiaonuobase/Snowy](https://github.com/xiaonuobase/Snowy)
 
 演示地址：[https://snowy.xiaonuo.vip](https://snowy.xiaonuo.vip)
 
