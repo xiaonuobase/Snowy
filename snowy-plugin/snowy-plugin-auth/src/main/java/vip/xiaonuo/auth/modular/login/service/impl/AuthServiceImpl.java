@@ -354,7 +354,7 @@ public class AuthServiceImpl implements AuthService {
         saBaseClientLoginUser.setPassword(null);
         saBaseClientLoginUser.setPermissionCodeList(null);
         saBaseClientLoginUser.setDataScopeList(null);
-        return StpClientLoginUserUtil.getClientLoginUser();
+        return saBaseClientLoginUser;
     }
 
     @Override
