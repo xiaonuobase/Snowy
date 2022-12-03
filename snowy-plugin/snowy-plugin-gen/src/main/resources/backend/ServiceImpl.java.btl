@@ -81,7 +81,11 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
 
     @Override
     public void edit(${className}EditParam ${classNameFirstLower}EditParam) {
-        ${className} ${classNameFirstLower} = this.queryEntity(${classNameFirstLower}EditParam.getId());
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(configList[i].needTableId) { %>
+        ${className} ${classNameFirstLower} = this.queryEntity(${classNameFirstLower}EditParam.get${configList[i].fieldNameCamelCaseFirstUpper}());
+        <% } %>
+        <% } %>
         BeanUtil.copyProperties(${classNameFirstLower}EditParam, ${classNameFirstLower});
         this.updateById(${classNameFirstLower});
     }
@@ -90,12 +94,20 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     @Override
     public void delete(List<${className}IdParam> ${classNameFirstLower}IdParamList) {
         // 执行删除
-        this.removeBatchByIds(CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::getId));
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(configList[i].needTableId) { %>
+        this.removeBatchByIds(CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${configList[i].fieldNameCamelCaseFirstUpper}()));
+        <% } %>
+        <% } %>
     }
 
     @Override
     public ${className} detail(${className}IdParam ${classNameFirstLower}IdParam) {
-        return this.queryEntity(${classNameFirstLower}IdParam.getId());
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(configList[i].needTableId) { %>
+        return this.queryEntity(${classNameFirstLower}IdParam.get${configList[i].fieldNameCamelCaseFirstUpper}());
+        <% } %>
+        <% } %>
     }
 
     @Override
