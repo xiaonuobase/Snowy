@@ -145,7 +145,6 @@
 	const phoneLoginFormModalRef = ref()
 	const phoneFormModalData = ref({})
 	const validCodeBase64 = ref('')
-	const validCodeReqNo = ref('')
 	const formModalRules = {
 		validCode: [required(), rules.lettersNum]
 	}
@@ -181,12 +180,14 @@
 					phoneValidCodeReqNo.value = data
 					visible.value = false
 					setTimeout(hide, 500)
-					phoneFormModalData.value.validCode = ''
 				})
 				.catch(() => {
 					setTimeout(hide, 100)
 					clearInterval(interval)
 					state.value.smsSendBtn = false
+				})
+				.finally(() => {
+					phoneFormModalData.value.validCode = ''
 				})
 		})
 	}
