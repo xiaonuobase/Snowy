@@ -178,7 +178,7 @@
 			}
 		]
 		fileApi.fileDelete(params).then(() => {
-			table.refresh(true)
+			table.value.refresh(true)
 		})
 	}
 	// 批量删除

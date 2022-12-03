@@ -118,7 +118,7 @@
 				uploadLoading.value = false
 			})
 	}
-	// 上传腾讯文件
+	// 上传Minio文件
 	const customRequestMinio = (data) => {
 		uploadLoading.value = true
 		const fileData = new FormData()
