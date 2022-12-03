@@ -171,6 +171,14 @@ public class GlobalConfigure implements WebMvcConfigurer {
     };
 
     /**
+     * B端要排除的，相当于C端要认证的
+     */
+    private static final String[] CLIENT_USER_PERMISSION_PATH_ARR = {
+            "/auth/c/**",
+            "/client/c/**"
+    };
+
+    /**
      * 注册跨域过滤器
      */
     @Bean
@@ -186,7 +194,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 排除无需登录接口
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
                             // 排除C端认证接口
-                            .notMatch("/auth/c/**")
+                            .notMatch(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
                             // 校验B端登录
                             .check(r1 -> StpUtil.checkLogin());
 
@@ -195,7 +203,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 排除无需登录接口
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
                             // 匹配C端认证接口
-                            .match("/auth/c/**")
+                            .match(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
                             // 校验C端登录
                             .check(r1 -> StpClientUtil.checkLogin());
 
