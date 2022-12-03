@@ -92,6 +92,7 @@
 	import router from '@/router'
 	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import smCrypto from "@/utils/smCrypto"
 	const emailResetFormRef = ref()
 	const emailFormData = ref({})
 	const islogin = ref(false)
@@ -122,8 +123,8 @@
 
 		emailResetFormRef.value.validate().then(() => {
 			emailFormData.value.validCode = emailFormData.value.emailValidCode
-			// delete emailFormData.value.emailValidCode
 			emailFormData.value.validCodeReqNo = emailValidCodeReqNo.value
+			emailFormData.value.newPassword = smCrypto.doSm2Encrypt(emailFormData.value.newPassword)
 			islogin.value = true
 			userCenterApi
 				.userFindPasswordByEmail(emailFormData.value)
