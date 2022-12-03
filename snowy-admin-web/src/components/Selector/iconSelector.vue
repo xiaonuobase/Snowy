@@ -60,7 +60,7 @@
 			},
 			// 默认配置
 			defaultSetting(value) {
-				if ((value !== undefined) & (value !== '') & (value !== 'undefined')) {
+				if (value) {
 					this.modelValue = value
 					// 判断展开哪个
 					if (value.indexOf('-outlined') > -1 || value.indexOf('-filled') > -1 || value.indexOf('-two-tone') > -1) {
