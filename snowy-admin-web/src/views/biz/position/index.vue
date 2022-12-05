@@ -155,6 +155,9 @@
 			})
 		}
 	})
+	.finally(() => {
+		cardLoading.value = false
+	})
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {

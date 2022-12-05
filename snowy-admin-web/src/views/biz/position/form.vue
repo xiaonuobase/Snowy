@@ -115,8 +115,10 @@
 				submitLoading.value = true
 				bizPositionApi.submitForm(formData.value, !formData.value.id).then(() => {
 					visible = false
-					submitLoading.value = false
 					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
 				})
 			})
 			.catch(() => {})

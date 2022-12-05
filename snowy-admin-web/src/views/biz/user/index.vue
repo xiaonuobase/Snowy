@@ -208,6 +208,9 @@
 			})
 		}
 	})
+	.finally(() => {
+		cardLoading.value = false
+	})
 	// 列表选择配置
 	const options = {
 		alert: {
@@ -236,13 +239,17 @@
 		loading.value = true
 		if (record.userStatus === 'ENABLE') {
 			bizUserApi.userDisableUser(record).then(() => {
-				loading.value = false
 				table.value.refresh()
+			})
+			.finally(() => {
+				loading.value = false
 			})
 		} else {
 			bizUserApi.userEnableUser(record).then(() => {
-				loading.value = false
 				table.value.refresh()
+			})
+			.finally(() => {
+				loading.value = false
 			})
 		}
 	}

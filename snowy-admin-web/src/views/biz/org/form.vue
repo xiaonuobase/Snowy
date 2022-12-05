@@ -158,9 +158,11 @@
 				submitLoading.value = true
 				formData.value.extJson = JSON.stringify(extJson.value)
 				bizOrgApi.submitForm(formData.value, !formData.value.id).then(() => {
-					submitLoading.value = false
 					visible = false
 					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
 				})
 			})
 			.catch(() => {})
