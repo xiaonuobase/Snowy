@@ -137,10 +137,9 @@ snowy
 
 ## 视频教程
 
-免费教程地址：[https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071](https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071)
+教程地址（免费开放）：[https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071](https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071)
 
-<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=4016e9m3XODiVlJlUQUS03pg7bCCXa_TYalxvdtil320XXItVMh4-gAe&name=/001.jpg"/>
-<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=902bZPTH7tjPGGSj05qVl8OHdqZFO-EBeD_OmmYnr3Bg-vUuxXnr0COr&name=/002.jpg"/>
+<img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8nOccuKg&path=%7BshareItemLink%3A8nOccuKg%7D%2F"/>
 
 作者也在上班工作，所以在利用休息时间为大家创作，录制视频的目的也是为各位小伙伴提供文档跟技术交流群聊之外的上手学习资料
 
