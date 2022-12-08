@@ -32,6 +32,7 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
+import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.pojo.CommonResult;
 
@@ -100,7 +101,11 @@ public class AuthConfigure implements WebMvcConfigurer {
          */
         @Override
         public List<String> getPermissionList(Object loginId, String loginType) {
-            return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
+            if (SaClientTypeEnum.B.getValue().equals(loginType)) {
+                return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
+            } else {
+                return StpClientLoginUserUtil.getClientLoginUser().getPermissionCodeList();
+            }
         }
 
         /**
@@ -108,7 +113,11 @@ public class AuthConfigure implements WebMvcConfigurer {
          */
         @Override
         public List<String> getRoleList(Object loginId, String loginType) {
-            return StpLoginUserUtil.getLoginUser().getRoleCodeList();
+            if (SaClientTypeEnum.B.getValue().equals(loginType)) {
+                return StpLoginUserUtil.getLoginUser().getRoleCodeList();
+            } else {
+                return StpClientLoginUserUtil.getClientLoginUser().getRoleCodeList();
+            }
         }
     }
 

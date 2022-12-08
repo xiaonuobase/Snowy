@@ -93,6 +93,7 @@
 	import router from '@/router'
 	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import smCrypto from "@/utils/smCrypto"
 	const phoneLoginFormRef = ref()
 	const phoneFormData = ref({})
 	const islogin = ref(false)
@@ -123,8 +124,8 @@
 
 		phoneLoginFormRef.value.validate().then(() => {
 			phoneFormData.value.validCode = phoneFormData.value.phoneValidCode
-			// delete phoneFormData.value.phoneValidCode
 			phoneFormData.value.validCodeReqNo = phoneValidCodeReqNo.value
+			phoneFormData.value.newPassword = smCrypto.doSm2Encrypt(phoneFormData.value.newPassword)
 			islogin.value = true
 			userCenterApi
 				.userFindPasswordByPhone(phoneFormData.value)
@@ -145,7 +146,6 @@
 	const phoneLoginFormModalRef = ref()
 	const phoneFormModalData = ref({})
 	const validCodeBase64 = ref('')
-	const validCodeReqNo = ref('')
 	const formModalRules = {
 		validCode: [required(), rules.lettersNum]
 	}
@@ -181,12 +181,14 @@
 					phoneValidCodeReqNo.value = data
 					visible.value = false
 					setTimeout(hide, 500)
-					phoneFormModalData.value.validCode = ''
 				})
 				.catch(() => {
 					setTimeout(hide, 100)
 					clearInterval(interval)
 					state.value.smsSendBtn = false
+				})
+				.finally(() => {
+					phoneFormModalData.value.validCode = ''
 				})
 		})
 	}

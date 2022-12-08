@@ -1,6 +1,10 @@
 <template>
     <a-drawer
-        :title="formData.id ? '编辑${functionName}' : '增加${functionName}'"
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(configList[i].needTableId) { %>
+        :title="formData.${configList[i].fieldNameCamelCase} ? '编辑${functionName}' : '增加${functionName}'"
+        <% } %>
+        <% } %>
         :width="600"
         :visible="visible"
         :destroy-on-close="true"

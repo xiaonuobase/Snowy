@@ -226,7 +226,11 @@
     const delete${className} = (record) => {
         let params = [
             {
-                id: record.id
+                <% for(var i = 0; i < configList.~size; i++) { %>
+                <% if(configList[i].needTableId) { %>
+                ${configList[i].fieldNameCamelCase}: record.${configList[i].fieldNameCamelCase}
+                <% } %>
+                <% } %>
             }
         ]
         ${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
@@ -241,7 +245,11 @@
         }
         const params = selectedRowKeys.value.map((m) => {
             return {
-                id: m
+                <% for(var i = 0; i < configList.~size; i++) { %>
+                <% if(configList[i].needTableId) { %>
+                ${configList[i].fieldNameCamelCase}: m
+                <% } %>
+                <% } %>
             }
         })
         ${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {

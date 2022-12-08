@@ -33,7 +33,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -457,7 +456,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validValidCode(sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
                 sysUserFindPwdByPhoneParam.getPhone()).set(SysUser::getPassword,
-                BCrypt.hashpw(sysUserFindPwdByPhoneParam.getNewPassword())));
+                CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()))));
     }
 
     @Override
@@ -466,7 +465,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validValidCode(sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail,
                 sysUserFindPwdByEmailParam.getEmail()).set(SysUser::getPassword,
-                BCrypt.hashpw(sysUserFindPwdByEmailParam.getNewPassword())));
+                CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByEmailParam.getNewPassword()))));
     }
 
     @Override

@@ -74,7 +74,7 @@ public class SysUserCenterController {
     @ApiOperation("找回密码获取手机验证码")
     @GetMapping("/sys/userCenter/findPasswordGetPhoneValidCode")
     public CommonResult<String> findPasswordGetPhoneValidCode(@Valid SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
-        return CommonResult.ok(sysUserService.findPasswordGetPhoneValidCode(sysUserGetPhoneValidCodeParam));
+        return CommonResult.data(sysUserService.findPasswordGetPhoneValidCode(sysUserGetPhoneValidCodeParam));
     }
 
     /**
@@ -87,7 +87,7 @@ public class SysUserCenterController {
     @ApiOperation("找回密码获取邮箱验证码")
     @GetMapping("/sys/userCenter/findPasswordGetEmailValidCode")
     public CommonResult<String> findPasswordGetEmailValidCode(@Valid SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
-        return CommonResult.ok(sysUserService.findPasswordGetEmailValidCode(sysUserGetEmailValidCodeParam));
+        return CommonResult.data(sysUserService.findPasswordGetEmailValidCode(sysUserGetEmailValidCodeParam));
     }
 
     /**

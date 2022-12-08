@@ -315,7 +315,7 @@ public class AuthServiceImpl implements AuthService {
         saBaseClientLoginUser.setButtonCodeList(clientLoginUserApi.getButtonCodeListListByUserId(saBaseClientLoginUser.getId()));
         // 获取数据范围
         saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class,
-                loginUserApi.getPermissionListByUserId(saBaseClientLoginUser.getId(), null)));
+                clientLoginUserApi.getPermissionListByUserId(saBaseClientLoginUser.getId(), null)));
         // 获取权限码
         saBaseClientLoginUser.setPermissionCodeList(saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList()));
@@ -354,7 +354,7 @@ public class AuthServiceImpl implements AuthService {
         saBaseClientLoginUser.setPassword(null);
         saBaseClientLoginUser.setPermissionCodeList(null);
         saBaseClientLoginUser.setDataScopeList(null);
-        return StpClientLoginUserUtil.getClientLoginUser();
+        return saBaseClientLoginUser;
     }
 
     @Override

@@ -47,7 +47,9 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 ## 快速链接
 
-下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiaonuobase/snowy)
+gitee下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiaonuobase/snowy)
+
+github下载地址（镜像）：[https://github.com/xiaonuobase/Snowy](https://github.com/xiaonuobase/Snowy)
 
 演示地址：[https://snowy.xiaonuo.vip](https://snowy.xiaonuo.vip)
 
@@ -135,10 +137,9 @@ snowy
 
 ## 视频教程
 
-免费教程地址：[https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071](https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071)
+教程地址（免费开放）：[https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071](https://space.bilibili.com/50101698/channel/collectiondetail?sid=739071)
 
-<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=4016e9m3XODiVlJlUQUS03pg7bCCXa_TYalxvdtil320XXItVMh4-gAe&name=/001.jpg"/>
-<img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=902bZPTH7tjPGGSj05qVl8OHdqZFO-EBeD_OmmYnr3Bg-vUuxXnr0COr&name=/002.jpg"/>
+<img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=8nOccuKg&path=%7BshareItemLink%3A8nOccuKg%7D%2F"/>
 
 作者也在上班工作，所以在利用休息时间为大家创作，录制视频的目的也是为各位小伙伴提供文档跟技术交流群聊之外的上手学习资料
 
@@ -189,6 +190,18 @@ QQ技术群：732230670
         <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7qwFVcdA&path=%7BshareItemLink%3A7qwFVcdA%7D%2F" width="120"/></td>
     </tr>
 </table>
+
+## 代码贡献
+
+近期有很多热心开源的小伙伴陆续为咱们Snowy框架提交PR或者提出好的建议，基本合格的PR我们都接受，这样您的头像就列入到咱们Snowy仓库的贡献者列表啦！
+
+如何贡献：
+
+1、fork一份代码至自己的账号下，本地修改您要提的代码，提交至您fork的仓库
+
+2、登录gitee后到Snowy仓库下创建Pull Requests,选择您的仓库到Snowy的dev分支，提交即可
+
+因为dev分支是团队开发分支，并不是统一发版本的测试过的，所以我们建议提代码至dev即可
 
 ## 团队成员
 

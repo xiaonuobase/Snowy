@@ -92,6 +92,7 @@
 	import router from '@/router'
 	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import smCrypto from "@/utils/smCrypto"
 	const emailResetFormRef = ref()
 	const emailFormData = ref({})
 	const islogin = ref(false)
@@ -102,7 +103,7 @@
 	let formRules = ref({})
 	const emailValidCodeReqNo = ref('')
 
-	// 点击获取短信验证码
+	// 点击获取邮箱验证码
 	const getEmailValidCode = () => {
 		formRules.value.email = [required(), rules.email]
 		delete formRules.value.emailValidCode
@@ -122,8 +123,8 @@
 
 		emailResetFormRef.value.validate().then(() => {
 			emailFormData.value.validCode = emailFormData.value.emailValidCode
-			// delete emailFormData.value.emailValidCode
 			emailFormData.value.validCodeReqNo = emailValidCodeReqNo.value
+			emailFormData.value.newPassword = smCrypto.doSm2Encrypt(emailFormData.value.newPassword)
 			islogin.value = true
 			userCenterApi
 				.userFindPasswordByEmail(emailFormData.value)
@@ -144,7 +145,6 @@
 	const emailLoginFormModalRef = ref()
 	const emailFormModalData = ref({})
 	const validCodeBase64 = ref('')
-	const validCodeReqNo = ref('')
 	const formModalRules = {
 		validCode: [required(), rules.lettersNum]
 	}
@@ -158,10 +158,10 @@
 		visible.value = false
 	}
 	const handleOk = () => {
-		// 获取到里面的验证码，并发送短信
+		// 获取到里面的验证码，并发送邮箱
 		emailLoginFormModalRef.value.validate().then(() => {
 			visible.value = false
-			// 发送短信，首先拿到刚刚输入的手机号
+			// 发送邮箱，首先拿到刚刚输入的邮箱
 			emailFormModalData.value.email = emailFormData.value.email
 			// 禁用发送按钮，并设置为倒计时
 			state.value.smsSendBtn = true
@@ -180,12 +180,14 @@
 					emailValidCodeReqNo.value = data
 					visible.value = false
 					setTimeout(hide, 500)
-					emailFormModalData.value.validCode = ''
 				})
 				.catch(() => {
 					setTimeout(hide, 100)
 					clearInterval(interval)
 					state.value.smsSendBtn = false
+				})
+				.finally(() => {
+					emailFormModalData.value.validCode = ''
 				})
 		})
 	}
