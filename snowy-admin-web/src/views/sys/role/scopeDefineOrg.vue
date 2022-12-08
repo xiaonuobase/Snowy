@@ -33,7 +33,7 @@
 	const resultDataModel = {
 		dataScopeId: '',
 		defineOrgIdData: {
-			scopeCategory: 'SCOPE_DEFINE_ORG',
+			scopeCategory: 'SCOPE_ORG_DEFINE',
 			scopeDefineOrgIdList: []
 		}
 	}
