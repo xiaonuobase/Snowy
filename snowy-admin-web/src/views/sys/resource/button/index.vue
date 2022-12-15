@@ -98,7 +98,6 @@
 			}
 		]
 		buttonApi.buttonDelete(params).then((res) => {
-			message.success(res.msg)
 			table.value.refresh(true)
 		})
 	}
