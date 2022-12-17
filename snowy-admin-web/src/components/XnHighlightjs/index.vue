@@ -1,7 +1,7 @@
 <template>
 	<!-- 本组件这兄弟写的很好 请参照：https://blog.csdn.net/weixin_41897680/article/details/124925222-->
 	<div class="hljs-container" :codetype="props.language">
-		<highlightjs :language="props.language" :autodetect="false" :code="props.code"></highlightjs>
+		<highlightjs :language="props.language" :autodetect="!props.language" :code="props.code"></highlightjs>
 	</div>
 </template>
 
@@ -13,7 +13,7 @@
 	const props = defineProps({
 		language: {
 			type: String,
-			default: () => 'JavaScript'
+			default: () => undefined
 		},
 		code: {
 			type: String,

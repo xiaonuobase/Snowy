@@ -5,7 +5,7 @@ import { hasPerm } from './utils/permission/index'
 import errorHandler from './utils/errorHandler'
 import customIcons from './assets/icons/index.js'
 import 'highlight.js/styles/atom-one-dark.css'
-import 'highlight.js/lib/common'
+import hljsCommon from 'highlight.js/lib/common'
 import hljsVuePlugin from '@highlightjs/vue-plugin'
 import STable from './components/Table/index.vue'
 import Ellipsis from './components/Ellipsis/index.vue'
@@ -28,6 +28,8 @@ export default {
 		// 统一注册自定义全局图标
 		app.use(customIcons)
 		// 注册代码高亮组件 （博客：https://blog.csdn.net/weixin_41897680/article/details/124925222）
+		// 注意：解决Vue使用highlight.js build打包发布后样式消失问题，原因是webpack在打包的时候没有把未被使用的代码打包进去，因此，在此处引用一下，看似无意义实则有用
+        hljsCommon.highlightAuto('<h1>Highlight.js has been registered successfully!</h1>').value
 		app.use(hljsVuePlugin)
 
 		// 全局代码错误捕捉
