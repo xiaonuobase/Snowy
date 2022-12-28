@@ -83,9 +83,11 @@
 	}
 	// 删除
 	const deleteConfig = (record) => {
-		let params = {
-			id: record.id
-		}
+		let params = [
+			{
+				id: record.id
+			}
+		]
 		configApi.configDelete(params).then(() => {
 			table.value.refresh(true)
 		})
