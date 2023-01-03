@@ -41,7 +41,7 @@ public class StpClientUtil {
     public static StpLogic stpLogic = new StpLogic(TYPE) {
 
         /**
-         * 重写 StpLogic 类下的 `splicingKeyTokenName` 函数，返回一个与 `StpUtil` 不同的token名称, 防止冲突
+         * 重写 StpLogic 类下的 `splicingKeyTokenName` 函数，返回一个与 `StpUtil` 相同的token名称
          */
         @Override
         public String splicingKeyTokenName() {
