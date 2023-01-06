@@ -38,8 +38,8 @@
 			<!-- 右侧布局 -->
 			<a-layout>
 				<div id="snowyHeader" class="snowy-header">
-					<div class="snowy-header-left w-full" style="padding-left: 0px">
-						<moduleMenu class="w-full" @switchModule="switchModule" />
+					<div class="snowy-header-left" style="padding-left: 0px">
+						<moduleMenu @switchModule="switchModule" />
 						<Topbar v-if="!ismobile && breadcrumbOpen" />
 					</div>
 					<div class="snowy-header-right">
@@ -139,8 +139,8 @@
 			<Side-m v-if="ismobile"></Side-m>
 			<a-layout>
 				<div id="snowyHeader" class="snowy-header">
-					<div class="snowy-header-left w-full" style="padding-left: 0px">
-						<moduleMenu class="w-full" @switchModule="switchModule" />
+					<div class="snowy-header-left" style="padding-left: 0px">
+						<moduleMenu @switchModule="switchModule" />
 						<Topbar v-if="!ismobile && breadcrumbOpen" />
 					</div>
 					<div class="snowy-header-right">
