@@ -110,7 +110,7 @@
 						<a-input v-model:value="formData.authorName" placeholder="请输入作者名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8" v-if="formData.generateType === 'BIZ'">
+				<a-col :span="8" v-if="formData.generateType === 'ZIP'">
 					<a-form-item label="包名：" name="packageName">
 						<a-input v-model:value="formData.packageName" placeholder="请输入包名" allow-clear />
 					</a-form-item>
