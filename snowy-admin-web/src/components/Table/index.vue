@@ -70,6 +70,14 @@
 				type: [String, Boolean],
 				default: 'auto'
 			},
+			defaultPageSize: {
+				type: Number,
+				default: 10
+			},
+			pageSizeOptions: {
+				type: Array,
+				default: () => ['10', '20', '50', '100']
+			},
 			/**
 			 * enable page URI mode
 			 *
@@ -137,6 +145,8 @@
 						current: localPageNum,
 						size: this.size, //this.compSize, size// 改动
 						showSizeChanger: this.showSizeChanger,
+						defaultPageSize: this.defaultPageSize,
+						pageSizeOptions: this.pageSizeOptions,
 						showTotal: (total, range) => {
 							return `${range[0]}-${range[1]} 共 ${total} 条 `
 						}
