@@ -111,14 +111,14 @@
 			category: 'FRM'
 		}
 		dictApi.dictTree(param).then((res) => {
-			if (res !== null) {
+			if (res) {
 				treeData.value = res
 			}
 		})
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
-		if (selectedKeys.length > 0) {
+		if (selectedKeys && selectedKeys.length > 0) {
 			searchFormState.parentId = selectedKeys.toString()
 		} else {
 			delete searchFormState.parentId
