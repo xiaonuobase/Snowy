@@ -279,8 +279,8 @@
 	const selectTableColumnsData = (tableName, assign) => {
 		if (!assign) {
 			formData.value.dbTableKey = undefined
+			formFieldAssign(tableName)
 		}
-		formFieldAssign(tableName)
 		// 通过这个 tableName 查到这个表下的字段
 		const param = {
 			tableName: tableName

@@ -12,6 +12,7 @@
  */
 package ${packageName}.${moduleName}.modular.${busName}.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
@@ -59,6 +60,7 @@ public class ${className}Controller {
      */
     @ApiOperationSupport(order = 1)
     @ApiOperation("获取${functionName}分页")
+    @SaCheckPermission("/${moduleName}/${busName}/page")
     @GetMapping("/${moduleName}/${busName}/page")
     public CommonResult<Page<${className}>> page(${className}PageParam ${classNameFirstLower}PageParam) {
         return CommonResult.data(${classNameFirstLower}Service.page(${classNameFirstLower}PageParam));
@@ -73,6 +75,7 @@ public class ${className}Controller {
     @ApiOperationSupport(order = 2)
     @ApiOperation("添加${functionName}")
     @CommonLog("添加${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/add")
     @PostMapping("/${moduleName}/${busName}/add")
     public CommonResult<String> add(@RequestBody @Valid ${className}AddParam ${classNameFirstLower}AddParam) {
         ${classNameFirstLower}Service.add(${classNameFirstLower}AddParam);
@@ -88,6 +91,7 @@ public class ${className}Controller {
     @ApiOperationSupport(order = 3)
     @ApiOperation("编辑${functionName}")
     @CommonLog("编辑${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/edit")
     @PostMapping("/${moduleName}/${busName}/edit")
     public CommonResult<String> edit(@RequestBody @Valid ${className}EditParam ${classNameFirstLower}EditParam) {
         ${classNameFirstLower}Service.edit(${classNameFirstLower}EditParam);
@@ -103,6 +107,7 @@ public class ${className}Controller {
     @ApiOperationSupport(order = 4)
     @ApiOperation("删除${functionName}")
     @CommonLog("删除${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/delete")
     @PostMapping("/${moduleName}/${busName}/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
                                                    CommonValidList<${className}IdParam> ${classNameFirstLower}IdParamList) {
@@ -118,6 +123,7 @@ public class ${className}Controller {
      */
     @ApiOperationSupport(order = 5)
     @ApiOperation("获取${functionName}详情")
+    @SaCheckPermission("/${moduleName}/${busName}/detail")
     @GetMapping("/${moduleName}/${busName}/detail")
     public CommonResult<${className}> detail(@Valid ${className}IdParam ${classNameFirstLower}IdParam) {
         return CommonResult.data(${classNameFirstLower}Service.detail(${classNameFirstLower}IdParam));
