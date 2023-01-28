@@ -30,6 +30,9 @@
         <!-- 代码生成插件 -->
         <module>snowy-plugin-gen</module>
 
+        <!-- 移动端管理插件 -->
+        <module>snowy-plugin-mobile</module>
+
         <!-- 系统功能插件 -->
         <module>snowy-plugin-sys</module>
     </modules>

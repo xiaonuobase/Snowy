@@ -30,6 +30,9 @@
         <!-- 代码生成插件api接口 -->
         <module>snowy-plugin-gen-api</module>
 
+        <!-- 移动端管理插件api接口 -->
+        <module>snowy-plugin-mobile-api</module>
+
         <!-- 系统功能插件api接口 -->
         <module>snowy-plugin-sys-api</module>
     </modules>

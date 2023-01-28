@@ -135,6 +135,13 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <!-- 移动端管理插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-mobile</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
         <!-- 系统功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
