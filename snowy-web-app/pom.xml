@@ -50,18 +50,18 @@
         </dependency>
 
         <!-- mysql -->
-        <!-- <dependency>
+         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.java.version}</version>
-        </dependency>-->
+        </dependency>
 
         <!-- postgresql -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgres.connector.java.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- oracle -->
         <!--<dependency>
