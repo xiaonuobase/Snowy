@@ -10,17 +10,16 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.menu.entity;
+package vip.xiaonuo.mobile.modular.resource.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.util.Date;
+import vip.xiaonuo.common.pojo.CommonEntity;
 
 /**
  * 移动端菜单实体
@@ -30,8 +29,8 @@ import java.util.Date;
  **/
 @Getter
 @Setter
-@TableName("MOBILE_MENU")
-public class MobileMenu {
+@TableName("MOBILE_RESOURCE")
+public class MobileMenu extends CommonEntity {
 
     /** 主键 */
     @TableId
@@ -50,59 +49,40 @@ public class MobileMenu {
     @ApiModelProperty(value = "编码", position = 4)
     private String code;
 
-    /** 界面路径 */
-    @ApiModelProperty(value = "界面路径", position = 5)
+    /** 路径 */
+    @ApiModelProperty(value = "路径", position = 5)
     private String pages;
 
     /** 分类 */
     @ApiModelProperty(value = "分类", position = 6)
     private String category;
 
+    /** 模块 */
+    @ApiModelProperty(value = "模块", position = 7)
+    private String module;
+
     /** 图标 */
-    @ApiModelProperty(value = "图标", position = 7)
+    @ApiModelProperty(value = "图标", position = 8)
     private String icon;
 
     /** 颜色 */
-    @ApiModelProperty(value = "颜色", position = 8)
+    @ApiModelProperty(value = "颜色", position = 9)
     private String color;
 
-    /** 正规则 */
-    @ApiModelProperty(value = "正规则", position = 9)
-    private String isRegExp;
+    /** 规则类型 */
+    @ApiModelProperty(value = "规则类型", position = 10)
+    private String regType;
 
     /** 可用状态 */
-    @ApiModelProperty(value = "可用状态", position = 10)
+    @ApiModelProperty(value = "可用状态", position = 11)
     private String status;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 11)
+    @ApiModelProperty(value = "排序码", position = 12)
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 12)
+    @ApiModelProperty(value = "扩展信息", position = 13)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
-
-    /** 删除标志 */
-    @ApiModelProperty(value = "删除标志", position = 13)
-    private String deleteFlag;
-
-    /** 创建时间 */
-    @ApiModelProperty(value = "创建时间", position = 14)
-    @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /** 创建用户 */
-    @ApiModelProperty(value = "创建用户", position = 15)
-    @TableField(fill = FieldFill.INSERT)
-    private String createUser;
-
-    /** 修改时间 */
-    @ApiModelProperty(value = "修改时间", position = 16)
-    @TableField(fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /** 修改用户 */
-    @ApiModelProperty(value = "修改用户", position = 17)
-    @TableField(fill = FieldFill.UPDATE)
-    private String updateUser;
 }

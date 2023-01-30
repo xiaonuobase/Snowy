@@ -10,28 +10,16 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.resource.provider;
+package vip.xiaonuo.mobile.modular.resource.mapper;
 
-import org.springframework.stereotype.Service;
-import vip.xiaonuo.sys.api.SysButtonApi;
-import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
-
-import javax.annotation.Resource;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
 
 /**
- * 按钮API接口实现类
+ * 移动端菜单Mapper接口
  *
- * @author xuyuxiang
- * @date 2022/11/1 13:50
+ * @author yubaoshan
+ * @date  2023/01/28 22:42
  **/
-@Service
-public class SysButtonApiProvider implements SysButtonApi {
-
-    @Resource
-    private SysButtonService sysButtonService;
-
-    @Override
-    public void addForGenButton(String menuId, String className, String functionName) {
-        sysButtonService.addForGenButton(menuId, className, functionName);
-    }
+public interface MobileMenuMapper extends BaseMapper<MobileMenu> {
 }

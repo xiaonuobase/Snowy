@@ -10,28 +10,26 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.resource.provider;
+package vip.xiaonuo.mobile.modular.resource.param.module;
 
-import org.springframework.stereotype.Service;
-import vip.xiaonuo.sys.api.SysButtonApi;
-import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
 
 /**
- * 按钮API接口实现类
+ * 移动端模块Id参数
  *
  * @author xuyuxiang
- * @date 2022/11/1 13:50
+ * @date 2022/7/27 18:40
  **/
-@Service
-public class SysButtonApiProvider implements SysButtonApi {
+@Getter
+@Setter
+public class MobileModuleIdParam {
 
-    @Resource
-    private SysButtonService sysButtonService;
-
-    @Override
-    public void addForGenButton(String menuId, String className, String functionName) {
-        sysButtonService.addForGenButton(menuId, className, functionName);
-    }
+    /** id */
+    @ApiModelProperty(value = "id", required = true)
+    @NotBlank(message = "id不能为空")
+    private String id;
 }

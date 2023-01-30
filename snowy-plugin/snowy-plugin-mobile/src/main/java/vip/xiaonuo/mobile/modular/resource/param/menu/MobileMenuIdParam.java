@@ -10,25 +10,26 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.menu.enums;
+package vip.xiaonuo.mobile.modular.resource.param.menu;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
 
 /**
- * 移动端菜单枚举
+ * 移动端菜单Id参数
  *
  * @author yubaoshan
  * @date  2023/01/28 22:42
  **/
 @Getter
-public enum MobileMenuEnum {
+@Setter
+public class MobileMenuIdParam {
 
-    /** 测试 */
-    TEST("TEST");
-
-    private final String value;
-
-    MobileMenuEnum(String value) {
-        this.value = value;
-    }
+    /** 主键 */
+    @ApiModelProperty(value = "主键", required = true)
+    @NotBlank(message = "id不能为空")
+    private String id;
 }

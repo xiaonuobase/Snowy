@@ -165,13 +165,13 @@ public class SysUserCenterController {
     }
 
     /**
-     * 获取登录用户的菜单
+     * 获取登录用户的菜单（B端、PC端菜单）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
     @ApiOperationSupport(order = 9)
-    @ApiOperation("获取登录用户的菜单")
+    @ApiOperation("获取登录用户PC端菜单")
     @GetMapping("/sys/userCenter/loginMenu")
     public CommonResult<List<Tree<String>>> loginMenu() {
         SysUserIdParam sysUserIdParam = new SysUserIdParam();
@@ -180,12 +180,27 @@ public class SysUserCenterController {
     }
 
     /**
-     * 获取登录用户组织树
+     * 获取登录用户的菜单（B端、移动端菜单）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
     @ApiOperationSupport(order = 10)
+    @ApiOperation("获取登录用户移动端菜单")
+    @GetMapping("/sys/userCenter/loginMobileMenu")
+    public CommonResult<List<Tree<String>>> loginMobileMenu() {
+        SysUserIdParam sysUserIdParam = new SysUserIdParam();
+        sysUserIdParam.setId(StpUtil.getLoginIdAsString());
+        return CommonResult.data(sysUserService.ownMobileMenu(sysUserIdParam));
+    }
+
+    /**
+     * 获取登录用户组织树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 11)
     @ApiOperation("获取登录用户组织树")
     @GetMapping("/sys/userCenter/loginOrgTree")
     public CommonResult<List<Tree<String>>> loginOrgTree() {
@@ -200,7 +215,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
+    @ApiOperationSupport(order = 12)
     @ApiOperation("获取登录用户的职位信息")
     @GetMapping("/sys/userCenter/loginPositionInfo")
     public CommonResult<List<SysUserPositionResult>> loginPositionInfo() {
@@ -215,7 +230,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 12)
+    @ApiOperationSupport(order = 13)
     @ApiOperation("编辑个人信息")
     @CommonLog("编辑个人信息")
     @PostMapping("/sys/userCenter/updateUserInfo")
@@ -230,7 +245,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 13)
+    @ApiOperationSupport(order = 14)
     @ApiOperation("编辑个人工作台")
     @CommonLog("编辑个人工作台")
     @PostMapping("/sys/userCenter/updateUserWorkbench")
@@ -245,7 +260,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
+    @ApiOperationSupport(order = 15)
     @ApiOperation("获取登录用户的工作台")
     @GetMapping("/sys/userCenter/loginWorkbench")
     public CommonResult<String> loginWorkbench() {
@@ -260,7 +275,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
+    @ApiOperationSupport(order = 16)
     @ApiOperation("获取登录用户的站内信分页")
     @GetMapping("/sys/userCenter/loginUnreadMessagePage")
     public CommonResult<Page<SysUserMessageResult>> loginMessagePage(SysUserMessagePageParam sysUserMessagePageParam) {
@@ -273,7 +288,7 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
+    @ApiOperationSupport(order = 17)
     @ApiOperation("读取登录用户站内信详情")
     @GetMapping("/sys/userCenter/loginUnreadMessageDetail")
     public CommonResult<SysUserMessageDetailResult> loginMessageDetail(@Valid SysUserMessageIdParam sysUserMessageIdParam) {

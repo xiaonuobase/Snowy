@@ -10,16 +10,13 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.menu.param;
+package vip.xiaonuo.mobile.modular.resource.param.menu;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 移动端菜单编辑参数
@@ -66,10 +63,10 @@ public class MobileMenuEditParam {
     @NotBlank(message = "color不能为空")
     private String color;
 
-    /** 正规则 */
-    @ApiModelProperty(value = "正规则", required = true, position = 9)
-    @NotBlank(message = "isRegExp不能为空")
-    private String isRegExp;
+    /** 规则类型 */
+    @ApiModelProperty(value = "规则类型", required = true, position = 9)
+    @NotBlank(message = "regType不能为空")
+    private String regType;
 
     /** 可用状态 */
     @ApiModelProperty(value = "可用状态", required = true, position = 10)

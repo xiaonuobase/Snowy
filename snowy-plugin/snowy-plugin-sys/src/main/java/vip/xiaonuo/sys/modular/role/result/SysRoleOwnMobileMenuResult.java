@@ -10,40 +10,44 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.relation.enums;
+package vip.xiaonuo.sys.modular.role.result;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 /**
- * 关系分类枚举
+ * 角色拥有的移动端菜单结果
  *
  * @author xuyuxiang
- * @date 2022/4/21 19:56
+ * @date 2022/7/27 15:08
  **/
 @Getter
-public enum SysRelationCategoryEnum {
+@Setter
+public class SysRoleOwnMobileMenuResult {
 
-    /** 用户工作台数据 */
-    SYS_USER_WORKBENCH_DATA("SYS_USER_WORKBENCH_DATA"),
+    /** 角色id */
+    @ApiModelProperty(value = "角色id", position = 1)
+    private String id;
 
-    /** 用户日程数据 */
-    SYS_USER_SCHEDULE_DATA("SYS_USER_SCHEDULE_DATA"),
+    /** 已授权移动端菜单信息 */
+    @ApiModelProperty(value = "已授权移动端菜单信息", position = 2)
+    private List<SysRoleOwnMobileMenu> grantInfoList;
 
-    /** 用户拥有角色 */
-    SYS_USER_HAS_ROLE("SYS_USER_HAS_ROLE"),
+    /**
+     * 角色拥有移动端菜单类
+     *
+     * @author xuyuxiang
+     * @date 2022/4/28 23:19
+     */
+    @Getter
+    @Setter
+    public static class SysRoleOwnMobileMenu {
 
-    /** 角色拥有资源 */
-    SYS_ROLE_HAS_RESOURCE("SYS_ROLE_HAS_RESOURCE"),
-
-    /** 角色拥有移动端菜单 */
-    SYS_ROLE_HAS_MENU_MOBILE("SYS_ROLE_HAS_MOBILE_MENU"),
-
-    /** 角色拥有权限 */
-    SYS_ROLE_HAS_PERMISSION("SYS_ROLE_HAS_PERMISSION");
-
-    private final String value;
-
-    SysRelationCategoryEnum(String value) {
-        this.value = value;
+        /** 菜单id */
+        @ApiModelProperty(value = "菜单id", position = 1)
+        private String menuId;
     }
 }

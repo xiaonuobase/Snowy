@@ -10,16 +10,36 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.menu.mapper;
+package vip.xiaonuo.mobile.modular.resource.enums;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import vip.xiaonuo.mobile.modular.menu.entity.MobileMenu;
+import lombok.Getter;
+import vip.xiaonuo.common.exception.CommonException;
 
 /**
- * 移动端菜单Mapper接口
+ * 移动端资源分类枚举
  *
- * @author yubaoshan
- * @date  2023/01/28 22:42
+ * @author xuyuxiang
+ * @date 2022/4/21 19:56
  **/
-public interface MobileMenuMapper extends BaseMapper<MobileMenu> {
+@Getter
+public enum MobileResourceCategoryEnum {
+
+    /** 模块 */
+    MODULE("MODULE"),
+
+    /** 菜单 */
+    MENU("MENU");
+
+    private final String value;
+
+    MobileResourceCategoryEnum(String value) {
+        this.value = value;
+    }
+
+    public static void validate(String value) {
+        boolean flag = MODULE.getValue().equals(value) || MENU.getValue().equals(value);
+        if(!flag) {
+            throw new CommonException("不支持的资源分类：{}", value);
+        }
+    }
 }

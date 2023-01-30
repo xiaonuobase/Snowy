@@ -13,7 +13,6 @@
 package vip.xiaonuo.gen.modular.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.gen.modular.config.entity.GenConfig;
 import vip.xiaonuo.gen.modular.config.param.GenConfigEditParam;
 import vip.xiaonuo.gen.modular.config.param.GenConfigIdParam;

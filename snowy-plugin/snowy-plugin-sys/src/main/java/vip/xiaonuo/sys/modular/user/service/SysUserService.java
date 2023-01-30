@@ -221,6 +221,14 @@ public interface SysUserService extends IService<SysUser> {
     List<Tree<String>> ownMenu(SysUserIdParam sysUserIdParam);
 
     /**
+     * 获取用户拥有移动端菜单
+     *
+     * @author xuyuxiang
+     * @date 2022/6/25 18:55
+     */
+    List<Tree<String>> ownMobileMenu(SysUserIdParam sysUserIdParam);
+
+    /**
      * 获取用户拥有角色
      *
      * @author xuyuxiang

@@ -677,6 +677,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return TreeUtil.build(treeNodeList, "0");
     }
 
+    @Override
+    public List<Tree<String>> ownMobileMenu(SysUserIdParam sysUserIdParam) {
+        // TODO 获取移动菜单树
+        return null;
+    }
+
     /**
      * 递归获取父节点
      *

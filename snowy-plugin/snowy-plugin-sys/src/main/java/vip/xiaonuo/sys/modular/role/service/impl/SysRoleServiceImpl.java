@@ -212,6 +212,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
+    public SysRoleOwnResourceResult ownMobileMenu(SysRoleIdParam SysRoleIdParam) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void grantMobileMenu(SysRoleGrantMobileMenuParam sysRoleGrantMobileMenuParam) {
+        // TODO
+    }
+
+    @Override
     public SysRoleOwnPermissionResult ownPermission(SysRoleIdParam sysRoleIdParam) {
         SysRoleOwnPermissionResult sysRoleOwnPermissionResult = new SysRoleOwnPermissionResult();
         sysRoleOwnPermissionResult.setId(sysRoleIdParam.getId());

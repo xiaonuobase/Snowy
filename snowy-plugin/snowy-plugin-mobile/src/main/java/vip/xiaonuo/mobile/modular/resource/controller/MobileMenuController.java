@@ -10,7 +10,7 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.menu.controller;
+package vip.xiaonuo.mobile.modular.resource.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
@@ -25,9 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
-import vip.xiaonuo.mobile.modular.menu.entity.MobileMenu;
-import vip.xiaonuo.mobile.modular.menu.param.*;
-import vip.xiaonuo.mobile.modular.menu.service.MobileMenuService;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
+import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuAddParam;
+import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuEditParam;
+import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuIdParam;
+import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuTreeParam;
+import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;

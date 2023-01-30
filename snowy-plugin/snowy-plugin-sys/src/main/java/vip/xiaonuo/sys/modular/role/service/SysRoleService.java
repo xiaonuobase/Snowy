@@ -97,6 +97,22 @@ public interface SysRoleService extends IService<SysRole> {
     void grantResource(SysRoleGrantResourceParam sysRoleGrantResourceParam);
 
     /**
+     * 获取角色拥有移动端菜单
+     *
+     * @author xuyuxiang
+     * @date 2022/5/13 20:51
+     */
+    SysRoleOwnResourceResult ownMobileMenu(SysRoleIdParam SysRoleIdParam);
+
+    /**
+     * 给角色授权移动端菜单
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 10:12
+     **/
+    void grantMobileMenu(SysRoleGrantMobileMenuParam sysRoleGrantMobileMenuParam);
+
+    /**
      * 获取角色拥有权限
      *
      * @author xuyuxiang
