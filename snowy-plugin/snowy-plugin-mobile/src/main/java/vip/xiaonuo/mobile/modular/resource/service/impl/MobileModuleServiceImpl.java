@@ -49,8 +49,10 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
     @Resource
     private MobileMenuService mobileMenuService;
 
+    /*
     @Resource
-    /*private MobileRelationService mobileRelationService;*/
+    private MobileRelationService mobileRelationService;
+    */
 
     @Override
     public Page<MobileModule> page(MobileModulePageParam mobileModulePageParam) {

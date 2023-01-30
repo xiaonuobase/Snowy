@@ -26,10 +26,8 @@ import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuAddParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuEditParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuIdParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuTreeParam;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
+import vip.xiaonuo.mobile.modular.resource.param.menu.*;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 
 import javax.annotation.Resource;
@@ -122,5 +120,33 @@ public class MobileMenuController {
     @GetMapping("/mobile/menu/detail")
     public CommonResult<MobileMenu> detail(@Valid MobileMenuIdParam mobileMenuIdParam) {
         return CommonResult.data(mobileMenuService.detail(mobileMenuIdParam));
+    }
+
+    /* ====菜单部分所需要用到的选择器==== */
+
+    /**
+     * 获取模块选择器
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 8)
+    @ApiOperation("获取模块选择器")
+    @GetMapping("/mobile/menu/moduleSelector")
+    public CommonResult<List<MobileModule>> moduleSelector(MobileMenuSelectorModuleParam mobileMenuSelectorModuleParam) {
+        return CommonResult.data(mobileMenuService.moduleSelector(mobileMenuSelectorModuleParam));
+    }
+
+    /**
+     * 获取菜单树选择器
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 9)
+    @ApiOperation("获取菜单树选择器")
+    @GetMapping("/mobile/menu/menuTreeSelector")
+    public CommonResult<List<Tree<String>>> menuTreeSelector(MobileMenuSelectorMenuParam mobileMenuSelectorMenuParam) {
+        return CommonResult.data(mobileMenuService.menuTreeSelector(mobileMenuSelectorMenuParam));
     }
 }

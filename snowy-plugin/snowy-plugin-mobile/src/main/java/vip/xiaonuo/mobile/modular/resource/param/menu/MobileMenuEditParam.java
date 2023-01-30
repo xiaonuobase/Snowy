@@ -53,28 +53,33 @@ public class MobileMenuEditParam {
     @NotBlank(message = "category不能为空")
     private String category;
 
+    /** 模块 */
+    @ApiModelProperty(value = "模块", required = true, position = 7)
+    @NotBlank(message = "module不能为空")
+    private String module;
+
     /** 图标 */
-    @ApiModelProperty(value = "图标", required = true, position = 7)
+    @ApiModelProperty(value = "图标", required = true, position = 8)
     @NotBlank(message = "icon不能为空")
     private String icon;
 
     /** 颜色 */
-    @ApiModelProperty(value = "颜色", required = true, position = 8)
+    @ApiModelProperty(value = "颜色", required = true, position = 9)
     @NotBlank(message = "color不能为空")
     private String color;
 
     /** 规则类型 */
-    @ApiModelProperty(value = "规则类型", required = true, position = 9)
+    @ApiModelProperty(value = "规则类型", required = true, position = 10)
     @NotBlank(message = "regType不能为空")
     private String regType;
 
     /** 可用状态 */
-    @ApiModelProperty(value = "可用状态", required = true, position = 10)
+    @ApiModelProperty(value = "可用状态", required = true, position = 11)
     @NotBlank(message = "status不能为空")
     private String status;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 11)
+    @ApiModelProperty(value = "排序码", position = 12)
     private Integer sortCode;
 
 }

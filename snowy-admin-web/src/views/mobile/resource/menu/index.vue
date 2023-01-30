@@ -1,29 +1,27 @@
 <template>
     <a-card :bordered="false">
-        <a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form mb-4">
-            <a-row :gutter="24">
-                <a-col :span="6">
-                    <a-form-item label="关键词" name="searchKey">
-                        <a-input v-model:value="searchFormState.searchKey" placeholder="请输入关键词" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="6">
-                    <a-form-item label="分类" name="category">
-                        <a-select v-model:value="searchFormState.category" placeholder="请选择分类" :options="categoryOptions" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="6">
-                    <a-form-item label="可用状态" name="status">
-                        <a-select v-model:value="searchFormState.status" placeholder="请选择可用状态" :options="statusOptions" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="6">
-                    <a-button type="primary" @click="table.refresh(true)">查询</a-button>
-                    <a-button style="margin: 0 8px" @click="() => searchFormRef.resetFields()">重置</a-button>
-                </a-col>
-            </a-row>
-        </a-form>
-        <s-table
+		<a-space class="mb-3">
+			<a-radio-group v-model:value="module" button-style="solid">
+				<a-radio-button
+					v-for="module in moduleList"
+					:key="module.id"
+					:value="module.id"
+					@click="moduleClock(module.id)"
+				>
+					<component :is="module.icon" />
+					{{ module.title }}</a-radio-button
+				>
+			</a-radio-group>
+
+			<a-input-search
+				v-model:value="searchFormState.searchKey"
+				placeholder="请输入菜单名称关键词"
+				enter-button
+				allowClear
+				@search="onSearch"
+			/>
+		</a-space>
+		<s-table
             ref="table"
             :columns="columns"
             :data="loadData"
@@ -36,7 +34,7 @@
         >
             <template #operator class="table-operator">
                 <a-space>
-                    <a-button type="primary" @click="formRef.onOpen()">
+                    <a-button type="primary" @click="formRef.onOpen(undefined, module)">
                         <template #icon><plus-outlined /></template>
                         新增
                     </a-button>
@@ -44,18 +42,15 @@
                 </a-space>
             </template>
             <template #bodyCell="{ column, record }">
-                <template v-if="column.dataIndex === 'category'">
-                    {{ $TOOL.dictTypeData('MOBILE_CATEGORY', record.category) }}
-                </template>
-                <template v-if="column.dataIndex === 'isRegExp'">
-                    {{ $TOOL.dictTypeData('MOBILE_IS_REG_EXP', record.isRegExp) }}
+                <template v-if="column.dataIndex === 'regType'">
+                    {{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}
                 </template>
                 <template v-if="column.dataIndex === 'status'">
                     {{ $TOOL.dictTypeData('MOBILE_STATUS', record.status) }}
                 </template>
                 <template v-if="column.dataIndex === 'action'">
                     <a-space>
-                        <a @click="formRef.onOpen(record)">编辑</a>
+                        <a @click="formRef.onOpen(record, module)">编辑</a>
                         <a-divider type="vertical" />
                         <a-popconfirm title="确定要删除吗？" @confirm="deleteMobileMenu(record)">
                             <a-button type="link" danger size="small">删除</a-button>
@@ -70,10 +65,11 @@
 
 <script setup name="mobileMenuIndex">
     import { message } from 'ant-design-vue'
-    import tool from '@/utils/tool'
     import Form from './form.vue'
-    import mobileMenuApi from '@/api/mobile/mobileMenuApi'
+	import mobileMenuApi from '@/api/mobile/resource/menuApi'
     let searchFormState = reactive({})
+	let moduleList = ref([])
+	const module = ref()
     const searchFormRef = ref()
     const table = ref()
     const formRef = ref()
@@ -89,24 +85,16 @@
             ellipsis: true
         },
         {
-            title: '分类',
-            dataIndex: 'category'
-        },
-        {
             title: '图标',
             dataIndex: 'icon'
         },
         {
             title: '正规则',
-            dataIndex: 'isRegExp'
+            dataIndex: 'regType'
         },
         {
             title: '可用状态',
             dataIndex: 'status'
-        },
-        {
-            title: '排序码',
-            dataIndex: 'sortCode'
         },
         {
             title: '创建时间',
@@ -136,14 +124,46 @@
         }
     }
     const loadData = (parameter) => {
-        const searchFormParam = JSON.parse(JSON.stringify(searchFormState))
+		if (!module.value) {
+			return mobileMenuApi.mobileMenuModuleSelector().then((data) => {
+				moduleList.value = data
+				module.value = data.length > 0 ? data[0].id : ''
+				searchFormState.module = module.value
+				return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState)).then((data) => {
+					if (data) {
+						return data
+					}
+					return []
+				})
+			})
+		} else {
+			return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState)).then((data) => {
+				if (data) {
+					return data
+				}
+				return []
+			})
+		}
+        /*const searchFormParam = JSON.parse(JSON.stringify(searchFormState))
         return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormParam)).then((data) => {
 			if (data) {
 				return data
 			}
 			return []
-        })
+        })*/
     }
+	// 切换模块标签查询菜单列表
+	const moduleClock = (value) => {
+		searchFormState.module = value
+		table.value.refresh(true)
+	}
+
+	// 查询
+	const onSearch = () => {
+		if (searchFormState.searchKey) {
+			table.value.refresh(true)
+		}
+	}
     // 删除
     const deleteMobileMenu = (record) => {
         let params = [
@@ -170,6 +190,4 @@
             table.value.clearRefreshSelected()
         })
     }
-    const categoryOptions = tool.dictList('MOBILE_CATEGORY')
-    const statusOptions = tool.dictList('MOBILE_STATUS')
 </script>

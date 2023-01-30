@@ -25,13 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
+import vip.xiaonuo.mobile.modular.resource.enums.MobileResourceCategoryEnum;
 import vip.xiaonuo.mobile.modular.resource.mapper.MobileMenuMapper;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuAddParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuEditParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuIdParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuTreeParam;
+import vip.xiaonuo.mobile.modular.resource.param.menu.*;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
+import vip.xiaonuo.mobile.modular.resource.service.MobileModuleService;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,18 +45,19 @@ import java.util.stream.Collectors;
 @Service
 public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileMenu> implements MobileMenuService {
 
+    @Resource
+    private MobileModuleService mobileModuleService;
+
     @Override
     public List<Tree<String>> tree(MobileMenuTreeParam mobileMenuTreeParam) {
         LambdaQueryWrapper<MobileMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if(ObjectUtil.isNotEmpty(mobileMenuTreeParam.getCategory())) {
-            lambdaQueryWrapper.eq(MobileMenu::getCategory, mobileMenuTreeParam.getCategory());
+        if(ObjectUtil.isNotEmpty(mobileMenuTreeParam.getModule())) {
+            lambdaQueryWrapper.eq(MobileMenu::getModule, mobileMenuTreeParam.getModule());
         }
         if(ObjectUtil.isNotEmpty(mobileMenuTreeParam.getSearchKey())) {
             lambdaQueryWrapper.like(MobileMenu::getTitle, mobileMenuTreeParam.getSearchKey());
         }
-        if(ObjectUtil.isNotEmpty(mobileMenuTreeParam.getStatus())) {
-            lambdaQueryWrapper.like(MobileMenu::getStatus, mobileMenuTreeParam.getStatus());
-        }
+        lambdaQueryWrapper.eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue());
         lambdaQueryWrapper.orderByDesc(MobileMenu::getSortCode);
         List<MobileMenu> mobileMenuList = this.list(lambdaQueryWrapper);
         List<TreeNode<String>> treeNodeList = mobileMenuList.stream().map(mobileMenu ->
@@ -97,5 +99,31 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
             throw new CommonException("移动端菜单不存在，id值为：{}", id);
         }
         return mobileMenu;
+    }
+
+    @Override
+    public List<MobileModule> moduleSelector(MobileMenuSelectorModuleParam mobileMenuSelectorModuleParam) {
+        LambdaQueryWrapper<MobileModule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(ObjectUtil.isNotEmpty(mobileMenuSelectorModuleParam.getSearchKey())) {
+            lambdaQueryWrapper.like(MobileModule::getTitle, mobileMenuSelectorModuleParam.getSearchKey());
+        }
+        lambdaQueryWrapper.eq(MobileModule::getCategory, MobileResourceCategoryEnum.MODULE.getValue());
+        return mobileModuleService.list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<Tree<String>> menuTreeSelector(MobileMenuSelectorMenuParam mobileMenuSelectorMenuParam) {
+        LambdaQueryWrapper<MobileMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询类型为菜单的
+        lambdaQueryWrapper.eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue());
+        if(ObjectUtil.isNotEmpty(mobileMenuSelectorMenuParam.getModule())) {
+            lambdaQueryWrapper.eq(MobileMenu::getModule, mobileMenuSelectorMenuParam.getModule());
+        }
+        List<MobileMenu> resourceList = this.list(lambdaQueryWrapper);
+        List<TreeNode<String>> treeNodeList = resourceList.stream().map(sysMenu ->
+                        new TreeNode<>(sysMenu.getId(), sysMenu.getParentId(),
+                                sysMenu.getTitle(), sysMenu.getSortCode()).setExtra(JSONUtil.parseObj(sysMenu)))
+                .collect(Collectors.toList());
+        return TreeUtil.build(treeNodeList, "0");
     }
 }

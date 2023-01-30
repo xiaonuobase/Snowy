@@ -15,10 +15,8 @@ package vip.xiaonuo.mobile.modular.resource.service;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuAddParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuEditParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuIdParam;
-import vip.xiaonuo.mobile.modular.resource.param.menu.MobileMenuTreeParam;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
+import vip.xiaonuo.mobile.modular.resource.param.menu.*;
 
 import java.util.List;
 
@@ -77,4 +75,20 @@ public interface MobileMenuService extends IService<MobileMenu> {
      * @date  2023/01/28 22:42
      **/
     MobileMenu queryEntity(String id);
+
+    /**
+     * 获取模块选择器
+     *
+     * @author yubaoshan
+     * @date  2023/01/28 22:42
+     **/
+    List<MobileModule> moduleSelector(MobileMenuSelectorModuleParam mobileMenuSelectorModuleParam);
+
+    /**
+     * 获取菜单树选择器
+     *
+     * @author yubaoshan
+     * @date  2023/01/28 22:42
+     **/
+    List<Tree<String>> menuTreeSelector(MobileMenuSelectorMenuParam mobileMenuSelectorMenuParam);
 }

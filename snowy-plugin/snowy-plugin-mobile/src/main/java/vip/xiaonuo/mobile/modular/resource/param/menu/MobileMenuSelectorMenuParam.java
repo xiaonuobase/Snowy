@@ -17,21 +17,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 移动端菜单tree查询参数
+ * 移动端菜单选择器参数
  *
- * @author yubaoshan
- * @date  2023/01/28 22:42
+ * @author xuyuxiang
+ * @date 2022/7/27 18:40
  **/
 @Getter
 @Setter
-public class MobileMenuTreeParam {
-
-    /** 关键词 */
-    @ApiModelProperty(value = "关键词")
-    private String searchKey;
+public class MobileMenuSelectorMenuParam {
 
     /** 模块 */
     @ApiModelProperty(value = "模块")
     private String module;
-
 }
