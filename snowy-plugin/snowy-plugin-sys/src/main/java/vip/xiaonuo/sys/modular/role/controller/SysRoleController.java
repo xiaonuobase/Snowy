@@ -28,9 +28,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
-import vip.xiaonuo.sys.modular.role.result.SysRoleGrantResourceTreeResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnPermissionResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnResourceResult;
+import vip.xiaonuo.sys.modular.role.result.*;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 
@@ -163,7 +161,7 @@ public class SysRoleController {
     @ApiOperationSupport(order = 8)
     @ApiOperation("获取角色拥有移动端菜单")
     @GetMapping("/sys/role/ownMobileMenu")
-    public CommonResult<SysRoleOwnResourceResult> ownMobileMenu(@Valid SysRoleIdParam sysRoleIdParam) {
+    public CommonResult<SysRoleOwnMobileMenuResult> ownMobileMenu(@Valid SysRoleIdParam sysRoleIdParam) {
         return CommonResult.data(sysRoleService.ownMobileMenu(sysRoleIdParam));
     }
 
@@ -267,12 +265,25 @@ public class SysRoleController {
     }
 
     /**
-     * 获取权限授权树
+     * 获取移动端菜单授权树
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
     @ApiOperationSupport(order = 16)
+    @ApiOperation("获取移动端菜单授权树")
+    @GetMapping("/sys/role/mobileMenuTreeSelector")
+    public CommonResult<List<SysRoleGrantMobileMenuTreeResult>> mobileMenuTreeSelector() {
+        return CommonResult.data(sysRoleService.mobileMenuTreeSelector());
+    }
+
+    /**
+     * 获取权限授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 17)
     @ApiOperation("获取权限授权树")
     @GetMapping("/sys/role/permissionTreeSelector")
     public CommonResult<List<String>> permissionTreeSelector() {
@@ -285,7 +296,7 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
+    @ApiOperationSupport(order = 18)
     @ApiOperation("获取角色选择器")
     @GetMapping("/sys/role/roleSelector")
     public CommonResult<List<SysRole>> roleSelector(SysRoleSelectorRoleParam sysRoleSelectorRoleParam) {
@@ -298,7 +309,7 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 18)
+    @ApiOperationSupport(order = 19)
     @ApiOperation("获取用户选择器")
     @GetMapping("/sys/role/userSelector")
     public CommonResult<List<SysUser>> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam) {

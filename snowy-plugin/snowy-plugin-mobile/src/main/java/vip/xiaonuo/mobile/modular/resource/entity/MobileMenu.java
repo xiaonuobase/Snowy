@@ -49,40 +49,44 @@ public class MobileMenu extends CommonEntity {
     @ApiModelProperty(value = "编码", position = 4)
     private String code;
 
-    /** 路径 */
-    @ApiModelProperty(value = "路径", position = 5)
-    private String pages;
-
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 6)
+    @ApiModelProperty(value = "分类", position = 5)
     private String category;
 
     /** 模块 */
-    @ApiModelProperty(value = "模块", position = 7)
+    @ApiModelProperty(value = "模块", position = 6)
     private String module;
 
+    /** 菜单类型 */
+    @ApiModelProperty(value = "菜单类型", position = 7)
+    private String menuType;
+
+    /** 路径 */
+    @ApiModelProperty(value = "路径", position = 8)
+    private String path;
+
     /** 图标 */
-    @ApiModelProperty(value = "图标", position = 8)
+    @ApiModelProperty(value = "图标", position = 9)
     private String icon;
 
     /** 颜色 */
-    @ApiModelProperty(value = "颜色", position = 9)
+    @ApiModelProperty(value = "颜色", position = 10)
     private String color;
 
     /** 规则类型 */
-    @ApiModelProperty(value = "规则类型", position = 10)
+    @ApiModelProperty(value = "规则类型", position = 11)
     private String regType;
 
     /** 可用状态 */
-    @ApiModelProperty(value = "可用状态", position = 11)
+    @ApiModelProperty(value = "可用状态", position = 12)
     private String status;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 12)
+    @ApiModelProperty(value = "排序码", position = 13)
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 13)
+    @ApiModelProperty(value = "扩展信息", position = 14)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

@@ -94,6 +94,21 @@ public class MobileMenuController {
     }
 
     /**
+     * 更改移动端菜单所属模块
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:47
+     */
+    @ApiOperationSupport(order = 5)
+    @ApiOperation("更改移动端菜单所属模块")
+    @CommonLog("更改移动端菜单所属模块")
+    @PostMapping("/mobile/menu/changeModule")
+    public CommonResult<String> changeModule(@RequestBody @Valid MobileMenuChangeModuleParam mobileMenuChangeModuleParam) {
+        mobileMenuService.changeModule(mobileMenuChangeModuleParam);
+        return CommonResult.ok();
+    }
+
+    /**
      * 删除移动端菜单
      *
      * @author yubaoshan

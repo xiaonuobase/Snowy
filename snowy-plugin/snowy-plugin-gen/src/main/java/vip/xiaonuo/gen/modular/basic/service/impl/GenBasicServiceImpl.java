@@ -85,13 +85,13 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     private static final String DB_PASSWORD_KEY = "spring.datasource.dynamic.datasource.master.password";
 
-    private static final String MODULE_KEY = "mobile";
+    private static final String MODULE_KEY = "biz";
 
     private static final String GEN_PROJECT_FRONT_PLUGIN_KEY = "snowy-admin-web";
 
     private static final String GEN_PROJECT_PLUGIN_KEY = "snowy-plugin";
 
-    private static final String GEN_PROJECT_PLUGIN_BIZ_KEY = GEN_PROJECT_PLUGIN_KEY + File.separator + "snowy-plugin-mobile";
+    private static final String GEN_PROJECT_PLUGIN_BIZ_KEY = GEN_PROJECT_PLUGIN_KEY + File.separator + "snowy-plugin-biz";
 
     private static final List<JSONObject> GEN_SQL_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "Mysql.sql.btl"),

@@ -10,4 +10,34 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.biz;
+package vip.xiaonuo.mobile.api;
+
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
+
+import java.util.List;
+
+/**
+ * 移动端菜单API
+ *
+ * @author xuyuxiang
+ * @date 2023/1/31 10:09
+ **/
+public interface MobileMenuApi {
+
+    /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:10
+     **/
+    List<JSONObject> mobileMenuTreeSelector();
+
+    /**
+     * 获取移动端登录菜单树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:29
+     **/
+    List<Tree<String>> loginMobileMenuTree(List<String> menuIdList);
+}

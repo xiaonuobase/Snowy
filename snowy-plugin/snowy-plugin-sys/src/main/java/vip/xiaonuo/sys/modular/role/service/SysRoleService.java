@@ -17,9 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
-import vip.xiaonuo.sys.modular.role.result.SysRoleGrantResourceTreeResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnPermissionResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnResourceResult;
+import vip.xiaonuo.sys.modular.role.result.*;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 
 import java.util.List;
@@ -102,7 +100,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @author xuyuxiang
      * @date 2022/5/13 20:51
      */
-    SysRoleOwnResourceResult ownMobileMenu(SysRoleIdParam SysRoleIdParam);
+    SysRoleOwnMobileMenuResult ownMobileMenu(SysRoleIdParam SysRoleIdParam);
 
     /**
      * 给角色授权移动端菜单
@@ -161,6 +159,14 @@ public interface SysRoleService extends IService<SysRole> {
      * @date 2022/4/24 20:08
      */
     List<SysRoleGrantResourceTreeResult> resourceTreeSelector();
+
+    /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<SysRoleGrantMobileMenuTreeResult> mobileMenuTreeSelector();
 
     /**
      * 获取权限授权树

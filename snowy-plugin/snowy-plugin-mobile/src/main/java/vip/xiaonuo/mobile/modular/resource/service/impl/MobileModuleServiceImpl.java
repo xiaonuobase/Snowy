@@ -13,6 +13,8 @@
 package vip.xiaonuo.mobile.modular.resource.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
 import vip.xiaonuo.mobile.modular.resource.enums.MobileResourceCategoryEnum;
 import vip.xiaonuo.mobile.modular.resource.mapper.MobileModuleMapper;
@@ -33,9 +36,11 @@ import vip.xiaonuo.mobile.modular.resource.param.module.MobileModuleIdParam;
 import vip.xiaonuo.mobile.modular.resource.param.module.MobileModulePageParam;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 import vip.xiaonuo.mobile.modular.resource.service.MobileModuleService;
+import vip.xiaonuo.sys.api.SysRelationApi;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 模块Service接口实现类
@@ -49,10 +54,8 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
     @Resource
     private MobileMenuService mobileMenuService;
 
-    /*
     @Resource
-    private MobileRelationService mobileRelationService;
-    */
+    private SysRelationApi sysRelationApi;
 
     @Override
     public Page<MobileModule> page(MobileModulePageParam mobileModulePageParam) {
@@ -99,16 +102,10 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
 
     @Override
     public void delete(List<MobileModuleIdParam> mobileModuleIdParamList) {
-        /*List<String> mobileModuleIdList = CollStreamUtil.toList(mobileModuleIdParamList, MobileModuleIdParam::getId);
+        List<String> mobileModuleIdList = CollStreamUtil.toList(mobileModuleIdParamList, MobileModuleIdParam::getId);
         if(ObjectUtil.isNotEmpty(mobileModuleIdList)) {
-            boolean containsMobiletemModule = this.listByIds(mobileModuleIdList).stream().map(MobileModule::getCode)
-                    .collect(Collectors.toSet()).contains(MobileBuildInEnum.BUILD_IN_MODULE_CODE.getValue());
-            if(containsMobiletemModule) {
-                throw new CommonException("不可删除系统内置模块");
-            }
-
             // 获取模块下的菜单
-            List<MobileMenu> allMenuList = mobileMenuService.list(new LambdaUpdateWrapper<MobileMenu>()
+            List<MobileMenu> allMenuList = mobileMenuService.list(new LambdaQueryWrapper<MobileMenu>()
                     .in(MobileMenu::getCategory, CollectionUtil.newArrayList(MobileResourceCategoryEnum.MENU.getValue())));
             if(ObjectUtil.isNotEmpty(allMenuList)) {
                 List<String> toDeleteMenuIdList = CollectionUtil.newArrayList(mobileModuleIdList);
@@ -118,14 +115,12 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
                                 .map(MobileMenu::getId).collect(Collectors.toList())));
                 if(ObjectUtil.isNotEmpty(toDeleteMenuIdList)) {
                     // 清除对应的角色与移动端资源信息
-                    mobileRelationService.remove(new LambdaUpdateWrapper<MobileRelation>().in(MobileRelation::getTargetId, toDeleteMenuIdList)
-                            .eq(MobileRelation::getCategory, MobileRelationCategoryEnum.MOBILE_ROLE_HAS_RESOURCE.getValue()));
+                    sysRelationApi.removeRoleHasMobileMenuRelationByMenuIdList(toDeleteMenuIdList);
                     // 执行删除
                     this.removeBatchByIds(toDeleteMenuIdList);
                 }
             }
-        }*/
-        // TODO
+        }
     }
 
     @Override

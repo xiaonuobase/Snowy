@@ -10,31 +10,31 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.api;
+package vip.xiaonuo.mobile.modular.resource.param.menu;
 
-import java.util.List;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
 
 /**
- * 关系API
+ * 移动端菜单更改所属模块参数
  *
  * @author xuyuxiang
- * @date 2022/6/6 11:41
+ * @date 2022/7/27 18:40
  **/
-public interface SysRelationApi {
+@Getter
+@Setter
+public class MobileMenuChangeModuleParam {
 
-    /**
-     * 根据角色id集合获取角色下用户id集合
-     *
-     * @author xuyuxiang
-     * @date 2022/6/6 11:43
-     **/
-    List<String> getUserIdListByRoleIdList(List<String> roleIdList);
+    /** id */
+    @ApiModelProperty(value = "id", required = true)
+    @NotBlank(message = "id不能为空")
+    private String id;
 
-    /**
-     * 根据移动端菜单Id集合移除角色和移动端菜单关系
-     *
-     * @author xuyuxiang
-     * @date 2023/1/31 9:54
-     **/
-    void removeRoleHasMobileMenuRelationByMenuIdList(List<String> targetIdList);
+    /** 模块 */
+    @ApiModelProperty(value = "module", required = true)
+    @NotBlank(message = "module不能为空")
+    private String module;
 }

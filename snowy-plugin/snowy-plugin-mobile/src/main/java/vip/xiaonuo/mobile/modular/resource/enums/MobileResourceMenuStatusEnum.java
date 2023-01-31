@@ -10,31 +10,36 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.api;
+package vip.xiaonuo.mobile.modular.resource.enums;
 
-import java.util.List;
+import lombok.Getter;
+import vip.xiaonuo.common.exception.CommonException;
 
 /**
- * 关系API
+ * 移动端资菜单状态枚举
  *
  * @author xuyuxiang
- * @date 2022/6/6 11:41
+ * @date 2022/4/21 19:56
  **/
-public interface SysRelationApi {
+@Getter
+public enum MobileResourceMenuStatusEnum {
 
-    /**
-     * 根据角色id集合获取角色下用户id集合
-     *
-     * @author xuyuxiang
-     * @date 2022/6/6 11:43
-     **/
-    List<String> getUserIdListByRoleIdList(List<String> roleIdList);
+    /** 可用 */
+    ENABLE("ENABLE"),
 
-    /**
-     * 根据移动端菜单Id集合移除角色和移动端菜单关系
-     *
-     * @author xuyuxiang
-     * @date 2023/1/31 9:54
-     **/
-    void removeRoleHasMobileMenuRelationByMenuIdList(List<String> targetIdList);
+    /** 不可用 */
+    DISABLED("DISABLED");
+
+    private final String value;
+
+    MobileResourceMenuStatusEnum(String value) {
+        this.value = value;
+    }
+
+    public static void validate(String value) {
+        boolean flag = ENABLE.getValue().equals(value) || DISABLED.getValue().equals(value);
+        if(!flag) {
+            throw new CommonException("不支持的资源分类：{}", value);
+        }
+    }
 }

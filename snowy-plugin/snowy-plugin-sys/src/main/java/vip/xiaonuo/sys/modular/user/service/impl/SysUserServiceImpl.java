@@ -56,6 +56,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.api.DevMessageApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
+import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
@@ -123,6 +124,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private DevMessageApi devMessageApi;
+
+    @Resource
+    private MobileMenuApi mobileMenuApi;
 
     @Resource
     private SysOrgService sysOrgService;
@@ -679,8 +683,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<Tree<String>> ownMobileMenu(SysUserIdParam sysUserIdParam) {
-        // TODO 获取移动菜单树
-        return null;
+        // 获取角色id列表
+        List<String> roleIdList = this.ownRole(sysUserIdParam);
+        List<Tree<String>> resultList = CollectionUtil.newArrayList();
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
+            resultList = mobileMenuApi.loginMobileMenuTree(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
+                    SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
+        }
+        return resultList;
     }
 
     /**

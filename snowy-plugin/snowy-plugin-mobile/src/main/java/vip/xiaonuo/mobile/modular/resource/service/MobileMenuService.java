@@ -13,6 +13,7 @@
 package vip.xiaonuo.mobile.modular.resource.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
@@ -53,6 +54,14 @@ public interface MobileMenuService extends IService<MobileMenu> {
     void edit(MobileMenuEditParam mobileMenuEditParam);
 
     /**
+     * 更改移动端菜单所属模块
+     *
+     * @author xuyuxiang
+     * @date 2022/9/26 13:09
+     **/
+    void changeModule(MobileMenuChangeModuleParam mobileMenuChangeModuleParam);
+
+    /**
      * 删除移动端菜单
      *
      * @author yubaoshan
@@ -76,6 +85,24 @@ public interface MobileMenuService extends IService<MobileMenu> {
      **/
     MobileMenu queryEntity(String id);
 
+    /* ====以下为各种递归方法==== */
+
+    /**
+     * 根据id获取所有的子数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/2 14:52
+     */
+    List<MobileMenu> getChildListById(List<MobileMenu> originDataList, String id, boolean includeSelf);
+
+    /**
+     * 根据id获取所有的父数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/2 14:52
+     */
+    List<MobileMenu> getParentListById(List<MobileMenu> originDataList, String id, boolean includeSelf);
+
     /**
      * 获取模块选择器
      *
@@ -91,4 +118,20 @@ public interface MobileMenuService extends IService<MobileMenu> {
      * @date  2023/01/28 22:42
      **/
     List<Tree<String>> menuTreeSelector(MobileMenuSelectorMenuParam mobileMenuSelectorMenuParam);
+
+    /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:14
+     **/
+    List<JSONObject> mobileMenuTreeSelector();
+
+    /**
+     * 获取移动端登录菜单树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:30
+     **/
+    List<Tree<String>> loginMobileMenuTree(List<String> menuIdList);
 }

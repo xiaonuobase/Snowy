@@ -10,31 +10,36 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.api;
+package vip.xiaonuo.mobile.modular.resource.provider;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
+import org.springframework.stereotype.Service;
+import vip.xiaonuo.mobile.api.MobileMenuApi;
+import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
+
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 关系API
+ * 移动端菜单API接口提供者
  *
  * @author xuyuxiang
- * @date 2022/6/6 11:41
+ * @date 2023/1/31 10:12
  **/
-public interface SysRelationApi {
+@Service
+public class MobileMenuApiProvider implements MobileMenuApi {
 
-    /**
-     * 根据角色id集合获取角色下用户id集合
-     *
-     * @author xuyuxiang
-     * @date 2022/6/6 11:43
-     **/
-    List<String> getUserIdListByRoleIdList(List<String> roleIdList);
+    @Resource
+    private MobileMenuService mobileMenuService;
 
-    /**
-     * 根据移动端菜单Id集合移除角色和移动端菜单关系
-     *
-     * @author xuyuxiang
-     * @date 2023/1/31 9:54
-     **/
-    void removeRoleHasMobileMenuRelationByMenuIdList(List<String> targetIdList);
+    @Override
+    public List<JSONObject> mobileMenuTreeSelector() {
+        return mobileMenuService.mobileMenuTreeSelector();
+    }
+
+    @Override
+    public List<Tree<String>> loginMobileMenuTree(List<String> menuIdList) {
+        return mobileMenuService.loginMobileMenuTree(menuIdList);
+    }
 }

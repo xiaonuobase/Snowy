@@ -38,6 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
@@ -51,9 +52,7 @@ import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.enums.SysRoleCategoryEnum;
 import vip.xiaonuo.sys.modular.role.mapper.SysRoleMapper;
 import vip.xiaonuo.sys.modular.role.param.*;
-import vip.xiaonuo.sys.modular.role.result.SysRoleGrantResourceTreeResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnPermissionResult;
-import vip.xiaonuo.sys.modular.role.result.SysRoleOwnResourceResult;
+import vip.xiaonuo.sys.modular.role.result.*;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
@@ -84,6 +83,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private MobileMenuApi mobileMenuApi;
 
     @Override
     public Page<SysRole> page(SysRolePageParam sysRolePageParam) {
@@ -212,14 +214,24 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public SysRoleOwnResourceResult ownMobileMenu(SysRoleIdParam SysRoleIdParam) {
-        // TODO
-        return null;
+    public SysRoleOwnMobileMenuResult ownMobileMenu(SysRoleIdParam sysRoleIdParam) {
+        SysRoleOwnMobileMenuResult sysRoleOwnMobileMenuResult = new SysRoleOwnMobileMenuResult();
+        sysRoleOwnMobileMenuResult.setId(sysRoleIdParam.getId());
+        sysRoleOwnMobileMenuResult.setGrantInfoList(sysRelationService.getRelationListByObjectIdAndCategory(sysRoleIdParam.getId(),
+                SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()).stream().map(sysRelation ->
+                JSONUtil.toBean(sysRelation.getExtJson(), SysRoleOwnMobileMenuResult.SysRoleOwnMobileMenu.class)).collect(Collectors.toList()));
+        return sysRoleOwnMobileMenuResult;
     }
 
     @Override
     public void grantMobileMenu(SysRoleGrantMobileMenuParam sysRoleGrantMobileMenuParam) {
-        // TODO
+        String id = sysRoleGrantMobileMenuParam.getId();
+        List<String> menuIdList = sysRoleGrantMobileMenuParam.getGrantInfoList().stream()
+                .map(SysRoleGrantMobileMenuParam.SysRoleGrantMobileMenu::getMenuId).collect(Collectors.toList());
+        List<String> extJsonList = sysRoleGrantMobileMenuParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue(),
+                extJsonList);
     }
 
     @Override
@@ -351,6 +363,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             sysRoleGrantResourceTreeResult.setMenu(menuListGroup.get(sysModule.getId()));
             return sysRoleGrantResourceTreeResult;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SysRoleGrantMobileMenuTreeResult> mobileMenuTreeSelector() {
+        return BeanUtil.copyToList(mobileMenuApi.mobileMenuTreeSelector(), SysRoleGrantMobileMenuTreeResult.class);
     }
 
     @Override

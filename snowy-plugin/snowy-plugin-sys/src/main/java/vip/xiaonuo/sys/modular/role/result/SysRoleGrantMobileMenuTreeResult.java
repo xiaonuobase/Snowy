@@ -28,12 +28,12 @@ import java.util.List;
 @Setter
 public class SysRoleGrantMobileMenuTreeResult {
 
-    /** 分类id */
-    @ApiModelProperty(value = "分类id", position = 1)
+    /** 模块id */
+    @ApiModelProperty(value = "模块id", position = 1)
     private String id;
 
-    /** 分类名称*/
-    @ApiModelProperty(value = "分类名称", position = 2)
+    /** 模块名称*/
+    @ApiModelProperty(value = "模块名称", position = 2)
     private String title;
 
     /** 模块图标 */
@@ -73,28 +73,5 @@ public class SysRoleGrantMobileMenuTreeResult {
         /** 模块 */
         @ApiModelProperty(value = "菜单模块", position = 5)
         private String module;
-
-        /** 菜单下按钮集合 */
-        @ApiModelProperty(value = "菜单下按钮集合", position = 6)
-        private List<SysRoleGrantResourceButtonResult> button;
-
-        /**
-         * 授权按钮类
-         *
-         * @author xuyuxiang
-         * @date 2022/8/13 16:54
-         */
-        @Getter
-        @Setter
-        public static class SysRoleGrantResourceButtonResult {
-
-            /** 按钮id */
-            @ApiModelProperty(value = "按钮id", position = 1)
-            private String id;
-
-            /** 标题 */
-            @ApiModelProperty(value = "按钮标题", position = 2)
-            private String title;
-        }
     }
 }

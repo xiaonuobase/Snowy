@@ -168,6 +168,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/dev/sms/page",
             "/dev/sms/delete",
             "/dev/sms/detail",
+            "/mobile/menu/**",
+            "/mobile/module/**",
     };
 
     /**

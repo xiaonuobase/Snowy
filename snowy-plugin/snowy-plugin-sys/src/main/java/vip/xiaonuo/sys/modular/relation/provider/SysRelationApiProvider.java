@@ -12,8 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.relation.provider;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysRelationApi;
+import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 
@@ -36,5 +38,11 @@ public class SysRelationApiProvider implements SysRelationApi {
     public List<String> getUserIdListByRoleIdList(List<String> roleIdList) {
         return sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(roleIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+    }
+
+    @Override
+    public void removeRoleHasMobileMenuRelationByMenuIdList(List<String> targetIdList) {
+        sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().in(SysRelation::getTargetId, targetIdList)
+                .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()));
     }
 }

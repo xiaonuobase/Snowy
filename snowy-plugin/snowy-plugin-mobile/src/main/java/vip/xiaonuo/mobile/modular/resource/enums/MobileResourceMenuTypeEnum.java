@@ -10,40 +10,43 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.relation.enums;
+package vip.xiaonuo.mobile.modular.resource.enums;
 
 import lombok.Getter;
+import vip.xiaonuo.common.exception.CommonException;
 
 /**
- * 关系分类枚举
+ * 移动端菜单类型枚举
  *
  * @author xuyuxiang
  * @date 2022/4/21 19:56
  **/
 @Getter
-public enum SysRelationCategoryEnum {
+public enum MobileResourceMenuTypeEnum {
 
-    /** 用户工作台数据 */
-    SYS_USER_WORKBENCH_DATA("SYS_USER_WORKBENCH_DATA"),
+    /** 目录 */
+    CATALOG("CATALOG"),
 
-    /** 用户日程数据 */
-    SYS_USER_SCHEDULE_DATA("SYS_USER_SCHEDULE_DATA"),
+    /** 组件 */
+    MENU("MENU"),
 
-    /** 用户拥有角色 */
-    SYS_USER_HAS_ROLE("SYS_USER_HAS_ROLE"),
+    /** 内链 */
+    IFRAME("IFRAME"),
 
-    /** 角色拥有资源 */
-    SYS_ROLE_HAS_RESOURCE("SYS_ROLE_HAS_RESOURCE"),
-
-    /** 角色拥有移动端菜单 */
-    SYS_ROLE_HAS_MOBILE_MENU("SYS_ROLE_HAS_MOBILE_MENU"),
-
-    /** 角色拥有权限 */
-    SYS_ROLE_HAS_PERMISSION("SYS_ROLE_HAS_PERMISSION");
+    /** 外链 */
+    LINK("LINK");
 
     private final String value;
 
-    SysRelationCategoryEnum(String value) {
+    MobileResourceMenuTypeEnum(String value) {
         this.value = value;
+    }
+
+    public static void validate(String value) {
+        boolean flag = CATALOG.getValue().equals(value) || MENU.getValue().equals(value) || IFRAME.getValue().equals(value) ||
+                LINK.getValue().equals(value);
+        if(!flag) {
+            throw new CommonException("不支持的菜单类型：{}", value);
+        }
     }
 }

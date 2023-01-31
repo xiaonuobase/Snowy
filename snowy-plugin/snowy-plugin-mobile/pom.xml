@@ -29,7 +29,7 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-        <!-- 引入系统接口，用于授权角色等功能 -->
+        <!-- 引入系统接口，用于授权菜单等功能 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-sys-api</artifactId>
