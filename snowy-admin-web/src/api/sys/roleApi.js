@@ -46,6 +46,14 @@ export default {
 	roleGrantResource(data) {
 		return request('grantResource', data)
 	},
+	// 获取角色拥有移动端菜单
+	roleOwnMobileMenu(data) {
+		return request('ownMobileMenu', data, 'get')
+	},
+	// 给角色授权移动端菜单
+	roleGrantMobileMenu(data) {
+		return request('grantMobileMenu', data)
+	},
 	// 获取角色拥有权限
 	roleOwnPermission(data) {
 		return request('ownPermission', data, 'get')
@@ -69,6 +77,10 @@ export default {
 	// 获取资源授权树
 	roleResourceTreeSelector(data) {
 		return request('resourceTreeSelector', data, 'get')
+	},
+	// 获取移动端菜单授权树
+	roleMobileMenuTreeSelector(data) {
+		return request('mobileMenuTreeSelector', data, 'get')
 	},
 	// 获取权限授权树
 	rolePermissionTreeSelector(data) {

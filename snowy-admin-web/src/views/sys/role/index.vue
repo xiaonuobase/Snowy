@@ -78,6 +78,9 @@
 											<a @click="GrantResourceForm.onOpen(record)">授权资源</a>
 										</a-menu-item>
 										<a-menu-item>
+											<a @click="GrantMobileResourceForm.onOpen(record)">授权移动端资源</a>
+										</a-menu-item>
+										<a-menu-item>
 											<a @click="GrantPermissionForm.onOpen(record)">授权权限</a>
 										</a-menu-item>
 										<a-menu-item>
@@ -93,6 +96,7 @@
 		</a-col>
 	</a-row>
 	<grantResourceForm ref="GrantResourceForm" @successful="table.refresh(true)" />
+	<grantMobileResourceForm ref="GrantMobileResourceForm" @successful="table.refresh(true)" />
 	<grantPermissionForm ref="GrantPermissionForm" @successful="table.refresh(true)" />
 	<Form ref="form" @successful="table.refresh(true)" />
 	<user-selector-plus
@@ -108,6 +112,7 @@
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
 	import grantResourceForm from './grantResourceForm.vue'
+	import grantMobileResourceForm from './grantMobileResourceForm.vue'
 	import grantPermissionForm from './grantPermissionForm.vue'
 	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import Form from './form.vue'
@@ -153,6 +158,7 @@
 	const table = ref()
 	const form = ref()
 	const GrantResourceForm = ref()
+	const GrantMobileResourceForm = ref()
 	const GrantPermissionForm = ref()
 	const userselectorPlusRef = ref()
 	const searchFormRef = ref()
