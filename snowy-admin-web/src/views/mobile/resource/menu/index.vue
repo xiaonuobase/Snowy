@@ -42,6 +42,13 @@
                 </a-space>
             </template>
             <template #bodyCell="{ column, record }">
+				<template v-if="column.dataIndex === 'path'">
+					<span v-if="record.menuType === 'CATALOG'">-</span>
+					<span v-else>{{record.path}}</span>
+				</template>
+				<template v-if="column.dataIndex === 'icon'">
+					<component :is="record.icon" />
+				</template>
                 <template v-if="column.dataIndex === 'regType'">
                     {{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}
                 </template>
@@ -55,17 +62,35 @@
                         <a-popconfirm title="确定要删除吗？" @confirm="deleteMobileMenu(record)">
                             <a-button type="link" danger size="small">删除</a-button>
                         </a-popconfirm>
+						<div v-if="record.parentId === '0'">
+							<a-divider type="vertical" />
+							<a-dropdown>
+								<a class="ant-dropdown-link">
+									更多
+									<DownOutlined />
+								</a>
+								<template #overlay>
+									<a-menu>
+										<a-menu-item v-if="record.parentId === '0'">
+											<a @click="changeModuleFormRef.onOpen(record)">更改模块</a>
+										</a-menu-item>
+									</a-menu>
+								</template>
+							</a-dropdown>
+						</div>
                     </a-space>
                 </template>
             </template>
         </s-table>
     </a-card>
     <Form ref="formRef" @successful="table.refresh(true)" />
+	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)"/>
 </template>
 
 <script setup name="mobileMenuIndex">
     import { message } from 'ant-design-vue'
     import Form from './form.vue'
+	import changeModuleForm from './changeModuleForm.vue'
 	import mobileMenuApi from '@/api/mobile/resource/menuApi'
     let searchFormState = reactive({})
 	let moduleList = ref([])
@@ -73,6 +98,7 @@
     const searchFormRef = ref()
     const table = ref()
     const formRef = ref()
+	const changeModuleFormRef = ref()
     const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
     const columns = [
         {
@@ -81,12 +107,13 @@
         },
         {
             title: '界面路径',
-            dataIndex: 'pages',
+            dataIndex: 'path',
             ellipsis: true
         },
         {
             title: '图标',
-            dataIndex: 'icon'
+            dataIndex: 'icon',
+			width: 80
         },
         {
             title: '正规则',
@@ -105,7 +132,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '150px'
+			width: 200
 		}
     ]
     let selectedRowKeys = ref([])
@@ -144,13 +171,6 @@
 				return []
 			})
 		}
-        /*const searchFormParam = JSON.parse(JSON.stringify(searchFormState))
-        return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormParam)).then((data) => {
-			if (data) {
-				return data
-			}
-			return []
-        })*/
     }
 	// 切换模块标签查询菜单列表
 	const moduleClock = (value) => {

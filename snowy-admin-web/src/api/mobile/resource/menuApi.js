@@ -21,6 +21,10 @@ export default {
 	mobileMenuSubmitForm(data, edit = false) {
 		return request(edit ? 'add' : 'edit', data)
 	},
+	// 更改菜单所属模块
+	mobileMenuChangeModule(data) {
+		return request('changeModule', data)
+	},
 	// 删除移动端菜单
 	mobileMenuDelete(data) {
 		return request('delete', data)
