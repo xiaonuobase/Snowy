@@ -90,7 +90,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
             queryWrapper.lambda().like(DevMessage::getSubject, devMessagePageParam.getSearchKey());
         }
         if(ObjectUtil.isNotEmpty(devMessagePageParam.getReceiveUserId())) {
-            queryWrapper.lambda().in(DevMessage::getId, devRelationService.list(new LambdaUpdateWrapper<DevRelation>()
+            queryWrapper.lambda().in(DevMessage::getId, devRelationService.list(new LambdaQueryWrapper<DevRelation>()
                     .eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue())
                     .eq(DevRelation::getTargetId, devMessagePageParam.getReceiveUserId())).stream()
                     .map(DevRelation::getObjectId).collect(Collectors.toList()));

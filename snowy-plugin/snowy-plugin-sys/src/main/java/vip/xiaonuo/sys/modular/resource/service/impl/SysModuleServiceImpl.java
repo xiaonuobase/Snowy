@@ -115,7 +115,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
             }
 
             // 获取模块下的菜单、按钮
-            List<SysMenu> allMenuList = sysMenuService.list(new LambdaUpdateWrapper<SysMenu>()
+            List<SysMenu> allMenuList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
                     .in(SysMenu::getCategory, CollectionUtil.newArrayList(SysResourceCategoryEnum.MENU.getValue(),
                             SysResourceCategoryEnum.BUTTON.getValue())));
             if(ObjectUtil.isNotEmpty(allMenuList)) {

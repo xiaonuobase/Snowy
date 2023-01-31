@@ -254,7 +254,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<String> sysMenuIdList = CollStreamUtil.toList(sysMenuIdParamList, SysMenuIdParam::getId);
         if(ObjectUtil.isNotEmpty(sysMenuIdList)) {
             // 获取菜单下的菜单、按钮
-            List<SysMenu> allMenuList = this.list(new LambdaUpdateWrapper<SysMenu>()
+            List<SysMenu> allMenuList = this.list(new LambdaQueryWrapper<SysMenu>()
                     .in(SysMenu::getCategory, CollectionUtil.newArrayList(SysResourceCategoryEnum.MENU.getValue(),
                             SysResourceCategoryEnum.BUTTON.getValue())));
             List<String> toDeleteMenuIdList = CollectionUtil.newArrayList();

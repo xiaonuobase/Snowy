@@ -130,7 +130,7 @@ public class MobileMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
+    @ApiOperationSupport(order = 6)
     @ApiOperation("获取模块选择器")
     @GetMapping("/mobile/menu/moduleSelector")
     public CommonResult<List<MobileModule>> moduleSelector(MobileMenuSelectorModuleParam mobileMenuSelectorModuleParam) {
@@ -143,7 +143,7 @@ public class MobileMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
+    @ApiOperationSupport(order = 7)
     @ApiOperation("获取菜单树选择器")
     @GetMapping("/mobile/menu/menuTreeSelector")
     public CommonResult<List<Tree<String>>> menuTreeSelector(MobileMenuSelectorMenuParam mobileMenuSelectorMenuParam) {

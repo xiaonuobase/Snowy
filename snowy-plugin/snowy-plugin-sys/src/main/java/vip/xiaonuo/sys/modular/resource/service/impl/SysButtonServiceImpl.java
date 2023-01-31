@@ -130,11 +130,11 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
         List<String> buttonIdList = CollStreamUtil.toList(sysButtonIdParamList, SysButtonIdParam::getId);
         if(ObjectUtil.isNotEmpty(buttonIdList)) {
             // 获取按钮的父菜单id集合
-            List<String> parentMenuIdList = sysMenuService.list(new LambdaUpdateWrapper<SysMenu>().in(SysMenu::getId, buttonIdList)
+            List<String> parentMenuIdList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>().in(SysMenu::getId, buttonIdList)
                     .eq(SysMenu::getCategory, SysResourceCategoryEnum.BUTTON.getValue())).stream().map(SysMenu::getParentId)
                     .collect(Collectors.toList());
             if(ObjectUtil.isNotEmpty(parentMenuIdList)) {
-                sysRelationService.list(new LambdaUpdateWrapper<SysRelation>().in(SysRelation::getTargetId, parentMenuIdList)
+                sysRelationService.list(new LambdaQueryWrapper<SysRelation>().in(SysRelation::getTargetId, parentMenuIdList)
                         .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue())
                         .isNotNull(SysRelation::getExtJson)).forEach(sysRelation -> {
                     JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());

@@ -72,7 +72,7 @@ public class SysIndexServiceImpl implements SysIndexService {
 
     @Override
     public List<SysIndexScheduleListResult> scheduleList(SysIndexScheduleListParam sysIndexScheduleListParam) {
-        return sysRelationService.list(new LambdaUpdateWrapper<SysRelation>().eq(SysRelation::getObjectId, StpUtil.getLoginIdAsString())
+        return sysRelationService.list(new LambdaQueryWrapper<SysRelation>().eq(SysRelation::getObjectId, StpUtil.getLoginIdAsString())
                 .eq(SysRelation::getTargetId, sysIndexScheduleListParam.getScheduleDate())
                 .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_SCHEDULE_DATA.getValue()))
                 .stream().map(sysRelation -> {
