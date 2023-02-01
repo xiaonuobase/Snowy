@@ -10,48 +10,43 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.role.result;
+package vip.xiaonuo.mobile.modular.resource.param.button;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
- * 角色拥有的移动端菜单结果
+ * 移动端按钮查询参数
  *
  * @author xuyuxiang
- * @date 2022/7/27 15:08
+ * @date 2022/7/27 18:40
  **/
 @Getter
 @Setter
-public class SysRoleOwnMobileMenuResult {
+public class MobileButtonPageParam {
 
-    /** 角色id */
-    @ApiModelProperty(value = "角色id", position = 1)
-    private String id;
+    /** 当前页 */
+    @ApiModelProperty(value = "当前页码")
+    private Integer current;
 
-    /** 已授权移动端菜单信息 */
-    @ApiModelProperty(value = "已授权移动端菜单信息", position = 2)
-    private List<SysRoleOwnMobileMenu> grantInfoList;
+    /** 每页条数 */
+    @ApiModelProperty(value = "每页条数")
+    private Integer size;
 
-    /**
-     * 角色拥有移动端菜单类
-     *
-     * @author xuyuxiang
-     * @date 2022/4/28 23:19
-     */
-    @Getter
-    @Setter
-    public static class SysRoleOwnMobileMenu {
+    /** 排序字段 */
+    @ApiModelProperty(value = "排序字段，字段驼峰名称，如：userName")
+    private String sortField;
 
-        /** 菜单id */
-        @ApiModelProperty(value = "菜单id", position = 1)
-        private String menuId;
+    /** 排序方式 */
+    @ApiModelProperty(value = "排序方式，升序：ASCEND；降序：DESCEND")
+    private String sortOrder;
 
-        /** 按钮id集合 */
-        @ApiModelProperty(value = "按钮id集合", position = 2)
-        private List<String> buttonInfo;
-    }
+    /** 父id */
+    @ApiModelProperty(value = "父id")
+    private String parentId;
+
+    /** 名称关键词 */
+    @ApiModelProperty(value = "名称关键词")
+    private String searchKey;
 }

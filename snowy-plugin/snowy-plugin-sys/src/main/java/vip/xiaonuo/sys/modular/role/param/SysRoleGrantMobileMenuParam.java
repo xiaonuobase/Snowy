@@ -56,5 +56,10 @@ public class SysRoleGrantMobileMenuParam {
         @ApiModelProperty(value = "菜单id", position = 1)
         @NotBlank(message = "menuId不能为空")
         private String menuId;
+
+        /** 按钮id集合 */
+        @ApiModelProperty(value = "按钮id集合", position = 2)
+        @NotNull(message = "buttonInfo不能为空")
+        private List<String> buttonInfo;
     }
 }

@@ -10,48 +10,26 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.role.result;
+package vip.xiaonuo.mobile.modular.resource.param.button;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 /**
- * 角色拥有的移动端菜单结果
+ * 移动端按钮Id参数
  *
  * @author xuyuxiang
- * @date 2022/7/27 15:08
+ * @date 2022/7/27 18:40
  **/
 @Getter
 @Setter
-public class SysRoleOwnMobileMenuResult {
+public class MobileButtonIdParam {
 
-    /** 角色id */
-    @ApiModelProperty(value = "角色id", position = 1)
+    /** id */
+    @ApiModelProperty(value = "id", required = true)
+    @NotBlank(message = "id不能为空")
     private String id;
-
-    /** 已授权移动端菜单信息 */
-    @ApiModelProperty(value = "已授权移动端菜单信息", position = 2)
-    private List<SysRoleOwnMobileMenu> grantInfoList;
-
-    /**
-     * 角色拥有移动端菜单类
-     *
-     * @author xuyuxiang
-     * @date 2022/4/28 23:19
-     */
-    @Getter
-    @Setter
-    public static class SysRoleOwnMobileMenu {
-
-        /** 菜单id */
-        @ApiModelProperty(value = "菜单id", position = 1)
-        private String menuId;
-
-        /** 按钮id集合 */
-        @ApiModelProperty(value = "按钮id集合", position = 2)
-        private List<String> buttonInfo;
-    }
 }

@@ -36,5 +36,13 @@ public interface SysRelationApi {
      * @author xuyuxiang
      * @date 2023/1/31 9:54
      **/
-    void removeRoleHasMobileMenuRelationByMenuIdList(List<String> targetIdList);
+    void removeRoleHasMobileMenuRelation(List<String> targetIdList);
+
+    /**
+     * 清除对应的角色与移动端菜单信息中的【授权的移动端按钮信息】
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 9:54
+     **/
+    void removeRoleHasMobileButtonRelation(List<String> targetIdList, List<String> buttonIdList);
 }

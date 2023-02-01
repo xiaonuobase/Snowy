@@ -140,6 +140,18 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     }
 
     /**
+     * 根据用户id获取移动端按钮码集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/27 22:54
+     */
+    @Override
+    public List<String> getMobileButtonCodeListListByUserId(String userId) {
+        // TODO C端用户暂无移动端按钮码
+        return CollectionUtil.newArrayList();
+    }
+
+    /**
      * 根据用户id获取权限集合
      *
      * @author xuyuxiang

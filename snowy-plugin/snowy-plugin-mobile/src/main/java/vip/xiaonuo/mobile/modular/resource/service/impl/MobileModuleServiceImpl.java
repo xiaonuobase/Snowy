@@ -115,7 +115,7 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
                                 .map(MobileMenu::getId).collect(Collectors.toList())));
                 if(ObjectUtil.isNotEmpty(toDeleteMenuIdList)) {
                     // 清除对应的角色与移动端资源信息
-                    sysRelationApi.removeRoleHasMobileMenuRelationByMenuIdList(toDeleteMenuIdList);
+                    sysRelationApi.removeRoleHasMobileMenuRelation(toDeleteMenuIdList);
                     // 执行删除
                     this.removeBatchByIds(toDeleteMenuIdList);
                 }

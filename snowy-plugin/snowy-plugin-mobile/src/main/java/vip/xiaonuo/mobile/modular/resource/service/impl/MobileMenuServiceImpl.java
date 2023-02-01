@@ -156,7 +156,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                     .map(MobileMenu::getId).collect(Collectors.toList())));
             if(ObjectUtil.isNotEmpty(toDeleteMenuIdList)) {
                 // 清除对应的角色与移动端资源信息
-                sysRelationApi.removeRoleHasMobileMenuRelationByMenuIdList(toDeleteMenuIdList);
+                sysRelationApi.removeRoleHasMobileMenuRelation(toDeleteMenuIdList);
                 // 执行删除
                 this.removeBatchByIds(toDeleteMenuIdList);
             }
@@ -210,9 +210,11 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         List<MobileMenu> allModuleAndMenuList = this.list(lambdaQueryWrapper);
         List<MobileMenu> mobileModuleList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileMenuList = CollectionUtil.newArrayList();
+        List<MobileMenu> mobileButtonList = CollectionUtil.newArrayList();
         allModuleAndMenuList.forEach(mobileMenu -> {
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MODULE.getValue())) mobileModuleList.add(mobileMenu);
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) mobileMenuList.add(mobileMenu);
+            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) mobileMenuList.add(mobileMenu);
         });
         List<JSONObject> leafMenuList = CollectionUtil.newArrayList();
         MobileMenu rootMobileMenu = new MobileMenu();
@@ -243,6 +245,9 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                 } else {
                     mobileRoleGrantResourceMenuResult.set("parentName", parentJsonObject.getStr("parentName"));
                 }
+                mobileRoleGrantResourceMenuResult.set("button", this.getChildListById(mobileButtonList, mobileMenu.getId(), false)
+                        .stream().map(sysMenuItem -> JSONUtil.createObj().set("id", sysMenuItem.getId()).set("title", sysMenuItem.getTitle()))
+                        .collect(Collectors.toList()));
                 leafMenuList.add(mobileRoleGrantResourceMenuResult);
             }
         });

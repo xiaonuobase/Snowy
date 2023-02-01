@@ -806,6 +806,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public List<String> getMobileButtonCodeListListByUserId(String userId) {
+        List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
+                SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
+            List<String> buttonIdList = CollectionUtil.newArrayList();
+            sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
+                    SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()).forEach(sysRelation -> {
+                if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
+                    buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
+                }
+            });
+            if (ObjectUtil.isNotEmpty(buttonIdList)) {
+                return sysButtonService.listByIds(buttonIdList).stream().map(SysButton::getCode).collect(Collectors.toList());
+            }
+        }
+        return CollectionUtil.newArrayList();
+    }
+
+    @Override
     public List<JSONObject> getPermissionList(String userId, String orgId) {
         if (ObjectUtil.isNotEmpty(orgId)) {
             List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,

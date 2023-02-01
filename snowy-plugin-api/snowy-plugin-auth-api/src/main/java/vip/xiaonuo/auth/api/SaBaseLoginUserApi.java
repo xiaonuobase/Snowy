@@ -99,6 +99,14 @@ public interface SaBaseLoginUserApi {
     List<String> getButtonCodeListListByUserId(String userId);
 
     /**
+     * 根据用户id获取移动端按钮码集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/27 22:54
+     */
+    List<String> getMobileButtonCodeListListByUserId(String userId);
+
+    /**
      * 根据用户id获取权限集合
      *
      * @author xuyuxiang

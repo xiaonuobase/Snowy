@@ -10,39 +10,14 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.mobile.modular.resource.enums;
-
-import lombok.Getter;
-import vip.xiaonuo.common.exception.CommonException;
+package vip.xiaonuo.mobile.api;
 
 /**
- * 移动端资源分类枚举
+ * 移动端按钮API
  *
  * @author xuyuxiang
- * @date 2022/4/21 19:56
+ * @date 2023/2/1 9:52
  **/
-@Getter
-public enum MobileResourceCategoryEnum {
+public interface MobileButtonApi {
 
-    /** 模块 */
-    MODULE("MODULE"),
-
-    /** 菜单 */
-    MENU("MENU"),
-
-    /** 按钮 */
-    BUTTON("BUTTON");
-
-    private final String value;
-
-    MobileResourceCategoryEnum(String value) {
-        this.value = value;
-    }
-
-    public static void validate(String value) {
-        boolean flag = MODULE.getValue().equals(value) || MENU.getValue().equals(value);
-        if(!flag) {
-            throw new CommonException("不支持的资源分类：{}", value);
-        }
-    }
 }

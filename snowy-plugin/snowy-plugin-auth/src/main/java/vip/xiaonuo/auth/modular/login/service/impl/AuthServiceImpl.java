@@ -284,6 +284,8 @@ public class AuthServiceImpl implements AuthService {
         StpUtil.login(saBaseLoginUser.getId(), new SaLoginModel().setDevice(device));
         // 获取按钮码
         saBaseLoginUser.setButtonCodeList(loginUserApi.getButtonCodeListListByUserId(saBaseLoginUser.getId()));
+        // 获取移动端按钮码
+        saBaseLoginUser.setMobileButtonCodeList(loginUserApi.getMobileButtonCodeListListByUserId(saBaseLoginUser.getId()));
         // 获取数据范围
         saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class,
                 loginUserApi.getPermissionListByUserId(saBaseLoginUser.getId(), saBaseLoginUser.getOrgId())));
@@ -313,6 +315,8 @@ public class AuthServiceImpl implements AuthService {
         StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginModel().setDevice(device));
         // 获取按钮码
         saBaseClientLoginUser.setButtonCodeList(clientLoginUserApi.getButtonCodeListListByUserId(saBaseClientLoginUser.getId()));
+        // 获取移动端按钮码
+        saBaseClientLoginUser.setMobileButtonCodeList(clientLoginUserApi.getMobileButtonCodeListListByUserId(saBaseClientLoginUser.getId()));
         // 获取数据范围
         saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class,
                 clientLoginUserApi.getPermissionListByUserId(saBaseClientLoginUser.getId(), null)));

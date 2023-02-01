@@ -285,6 +285,14 @@ public interface SysUserService extends IService<SysUser> {
     List<String> getButtonCodeList(String userId);
 
     /**
+     * 获取移动端按钮编码集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 11:13
+     **/
+    List<String> getMobileButtonCodeListListByUserId(String userId);
+
+    /**
      * 获取权限集合
      *
      * @author xuyuxiang
