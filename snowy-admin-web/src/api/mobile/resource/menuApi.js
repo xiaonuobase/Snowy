@@ -33,7 +33,7 @@ export default {
 	mobileMenuDetail(data) {
 		return request('detail', data, 'get')
 	},
-	// 获取类别选择器
+	// 获取模块选择器
 	mobileMenuModuleSelector(data) {
 		return request('moduleSelector', data, 'get')
 	},

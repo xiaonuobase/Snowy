@@ -62,7 +62,7 @@
                         <a-popconfirm title="确定要删除吗？" @confirm="deleteMobileMenu(record)">
                             <a-button type="link" danger size="small">删除</a-button>
                         </a-popconfirm>
-						<div v-if="record.parentId === '0'">
+						<div v-if="record.parentId === '0' || record.menuType === 'MENU'">
 							<a-divider type="vertical" />
 							<a-dropdown>
 								<a class="ant-dropdown-link">
@@ -73,6 +73,9 @@
 									<a-menu>
 										<a-menu-item v-if="record.parentId === '0'">
 											<a @click="changeModuleFormRef.onOpen(record)">更改模块</a>
+										</a-menu-item>
+										<a-menu-item v-if="record.menuType === 'MENU'">
+											<a @click="button.onOpen(record)">按钮权限</a>
 										</a-menu-item>
 									</a-menu>
 								</template>
@@ -85,12 +88,14 @@
     </a-card>
     <Form ref="formRef" @successful="table.refresh(true)" />
 	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)"/>
+	<Button ref="button" />
 </template>
 
 <script setup name="mobileMenuIndex">
     import { message } from 'ant-design-vue'
     import Form from './form.vue'
 	import changeModuleForm from './changeModuleForm.vue'
+	import Button from '../button/index.vue'
 	import mobileMenuApi from '@/api/mobile/resource/menuApi'
     let searchFormState = reactive({})
 	let moduleList = ref([])
@@ -99,6 +104,7 @@
     const table = ref()
     const formRef = ref()
 	const changeModuleFormRef = ref()
+	const button = ref()
     const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
     const columns = [
         {

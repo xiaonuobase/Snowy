@@ -29,10 +29,22 @@
 							{{ record.parentName }}
 						</a-checkbox>
 					</template>
+
 					<template v-if="column.dataIndex === 'title'">
 						<a-checkbox :checked="record.nameCheck" @update:checked="(val) => changeSub(record, val)">{{
-							record.title
-						}}</a-checkbox>
+								record.title
+							}}</a-checkbox>
+					</template>
+
+					<template v-if="column.dataIndex === 'button'">
+						<template v-if="record.button.length > 0">
+							<template v-for="(item, index) in record.button" :key="item.id">
+								<a-checkbox v-model:checked="item.check" @change="(evt) => changeChildCheckBox(record, evt)">{{
+										item.title
+									}}</a-checkbox>
+								<br v-if="(index + 1) % 5 === 0" />
+							</template>
+						</template>
 					</template>
 				</template>
 			</a-table>
@@ -45,14 +57,13 @@
 </template>
 
 <script setup name="grantMobileResourceForm">
-	import tool from '@/utils/tool'
 	import roleApi from '@/api/sys/roleApi'
 	const spinningLoading = ref(false)
 	let firstShowMap = $ref({})
 	const emit = defineEmits({ successful: null })
 	const submitLoading = ref(false)
 	// 抽屉的宽度
-	const drawerWidth = 600
+	const drawerWidth = 1000
 	// 自动获取宽度，默认获取浏览器的宽度的90%
 	//(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) * 0.9
 
@@ -76,6 +87,11 @@
 			title: '菜单',
 			dataIndex: 'title',
 			width: 200
+		},
+		{
+			key: 'button',
+			title: '按钮授权',
+			dataIndex: 'button'
 		}
 	]
 	const echoDatalist = ref([])
@@ -104,6 +120,7 @@
 			loadDatas.value = echoDatalist.value[0].menu
 		}
 	}
+	const checkFieldKeys = ['button']
 	let visible = $ref(false)
 	// 返回的数据模型，最终需要转换成这样
 	let resultDataModel = {
@@ -129,6 +146,16 @@
 						resEcho.grantInfoList.forEach((grant) => {
 							if (item.id === grant.menuId) {
 								menueCheck.value++
+								// 处理按钮
+								if (grant.buttonInfo) {
+									grant.buttonInfo.forEach((button) => {
+										item.button.forEach((itemButton) => {
+											if (button === itemButton.id) {
+												itemButton.check = true
+											}
+										})
+									})
+								}
 							}
 						})
 					}
@@ -169,10 +196,33 @@
 			item.check = val
 		})
 	}
+	const checkAllChildNotChecked = (record) => {
+		const allChecked = checkFieldKeys.every((key) => {
+			// 遍历所有的字段
+			const child = record[key]
+			return child.every((field) => !field.check)
+		})
+		return allChecked
+	}
+	const changeChildCheckBox = (record, evt) => {
+		let checked = evt.target.checked
+		if (!checked && checkAllChildNotChecked(record)) {
+			// 这里注释掉勾选去掉所有按钮，联动去掉菜单
+			/*record.nameCheck = false
+			record.parentCheck = false*/
+		} else if (checked) {
+			record.nameCheck = checked
+			record.parentCheck = checked
+		}
+	}
 	// 二级菜单的勾选
 	const changeSub = (record, val) => {
 		// 选中二级菜单
 		record.nameCheck = val
+		checkFieldKeys.forEach((key) => {
+			// 遍历所有的字段
+			handleOnlySelf(record, key, val)
+		})
 	}
 	// 当点击首列的勾选
 	const changeParent = (record, val) => {
@@ -205,10 +255,16 @@
 			if (table.menu) {
 				table.menu.forEach((item) => {
 					const grantInfo = {
-						menuId: ''
+						menuId: '',
+						buttonInfo: []
 					}
 					if (item.nameCheck) {
 						grantInfo.menuId = item.id
+						item.button.forEach((button) => {
+							if (button.check) {
+								grantInfo.buttonInfo.push(button.id)
+							}
+						})
 						resultDataModel.grantInfoList.push(grantInfo)
 					}
 				})
