@@ -211,21 +211,20 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         List<MobileMenu> mobileModuleList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileMenuList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileButtonList = CollectionUtil.newArrayList();
+        if (ObjectUtil.isEmpty(allModuleAndMenuList)) {
+            // 返回空列表
+            return CollectionUtil.newArrayList();
+        }
         allModuleAndMenuList.forEach(mobileMenu -> {
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MODULE.getValue())) mobileModuleList.add(mobileMenu);
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) mobileMenuList.add(mobileMenu);
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) mobileMenuList.add(mobileMenu);
         });
         List<JSONObject> leafMenuList = CollectionUtil.newArrayList();
-        MobileMenu rootMobileMenu = new MobileMenu();
-        rootMobileMenu.setId("0");
-        rootMobileMenu.setParentId("-1");
-        rootMobileMenu.setSortCode(-1);
-        mobileMenuList.add(rootMobileMenu);
         List<TreeNode<String>> treeNodeList = mobileMenuList.stream().map(mobileMenu ->
                 new TreeNode<>(mobileMenu.getId(), mobileMenu.getParentId(),
                         mobileMenu.getTitle(), mobileMenu.getSortCode())).collect(Collectors.toList());
-        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "-1");
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
         mobileMenuList.forEach(mobileMenu -> {
             boolean isLeafMenu = this.getChildListById(mobileMenuList, mobileMenu.getId(), false).size() == 0;
             if(isLeafMenu) {

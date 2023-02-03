@@ -109,15 +109,20 @@
 			// 获取表格数据
 			spinningLoading.value = true
 			const res = await roleApi.roleMobileMenuTreeSelector()
-			const param = {
-				id: resultDataModel.id
+			if (res && res.length > 0) {
+				const param = {
+					id: resultDataModel.id
+				}
+				// 获取回显数据
+				const resEcho = await roleApi.roleOwnMobileMenu(param)
+				spinningLoading.value = false
+				echoDatalist.value = echoModuleData(res, resEcho)
+				moduleId.value = res[0].id
+				loadDatas.value = echoDatalist.value[0].menu
+			} else {
+				spinningLoading.value = false
+				loadDatas.value = []
 			}
-			// 获取回显数据
-			const resEcho = await roleApi.roleOwnMobileMenu(param)
-			spinningLoading.value = false
-			echoDatalist.value = echoModuleData(res, resEcho)
-			moduleId.value = res[0].id
-			loadDatas.value = echoDatalist.value[0].menu
 		}
 	}
 	const checkFieldKeys = ['button']
