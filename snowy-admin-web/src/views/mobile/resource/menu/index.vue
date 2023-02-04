@@ -1,6 +1,7 @@
 <template>
-    <a-card :bordered="false">
-		<a-space class="mb-3">
+	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
+		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+			<a-space style="align-items: normal">
 			<a-radio-group v-model:value="module" button-style="solid">
 				<a-radio-button
 					v-for="module in moduleList"
@@ -12,15 +13,17 @@
 					{{ module.title }}</a-radio-button
 				>
 			</a-radio-group>
-
-			<a-input-search
-				v-model:value="searchFormState.searchKey"
-				placeholder="请输入菜单名称关键词"
-				enter-button
-				allowClear
-				@search="onSearch"
-			/>
-		</a-space>
+			<a-form-item name="searchKey">
+				<a-space>
+					<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
+					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+					<a-button style="margin: 0 8px" @click="() => searchFormRef.resetFields()">重置</a-button>
+				</a-space>
+			</a-form-item>
+			</a-space>
+		</a-form>
+	</a-card>
+    <a-card :bordered="false">
 		<s-table
             ref="table"
             :columns="columns"
@@ -47,8 +50,9 @@
 					<span v-else>{{record.path}}</span>
 				</template>
 				<template v-if="column.dataIndex === 'icon'">
-<!--					<component :is="record.icon" />-->
-					<span class="snowy xn-icons" :class="record.icon" ></span>
+					<a-tag :color="record.color">
+						<span class="snowy xn-icons" :class="record.icon" ></span>
+					</a-tag>
 				</template>
                 <template v-if="column.dataIndex === 'regType'">
                     {{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}
@@ -101,9 +105,9 @@
     let searchFormState = reactive({})
 	let moduleList = ref([])
 	const module = ref()
-    const searchFormRef = ref()
     const table = ref()
     const formRef = ref()
+	const searchFormRef = ref()
 	const changeModuleFormRef = ref()
 	const button = ref()
     const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
@@ -183,13 +187,6 @@
 	const moduleClock = (value) => {
 		searchFormState.module = value
 		table.value.refresh(true)
-	}
-
-	// 查询
-	const onSearch = () => {
-		if (searchFormState.searchKey) {
-			table.value.refresh(true)
-		}
 	}
     // 删除
     const deleteMobileMenu = (record) => {

@@ -27,7 +27,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit">保存</a-button>
 		</template>
-		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />
+		<icon-mobile-selector ref="iconSelector" @iconCallBack="iconCallBack" />
 	</a-drawer>
 </template>
 
@@ -35,7 +35,7 @@
 	import ColorPicker from '@/components/ColorPicker/index.vue'
 	import { required } from '@/utils/formRules'
 	import moduleApi from '@/api/mobile/resource/moduleApi'
-	import IconSelector from '@/components/Selector/iconSelector.vue'
+	import IconMobileSelector from '@/components/Selector/iconMobileSelector.vue'
 	// 默认是关闭状态
 	let visible = $ref(false)
 	const emit = defineEmits({ successful: null })

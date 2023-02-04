@@ -110,6 +110,12 @@
 			return res
 		})
 	}
+	// 查询
+	const onSearch = () => {
+		if (searchFormState.searchKey) {
+			table.value.refresh(true)
+		}
+	}
 	// 删除
 	const deleteModule = (record) => {
 		let params = [

@@ -48,13 +48,11 @@
 		formRef.value.resetFields()
 		visible = false
 	}
-
 	// 默认要校验的
 	const formRules = {
 		title: [required('请输入按钮名称')],
 		code: [required('请输入按钮编码')]
 	}
-
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
@@ -62,7 +60,6 @@
 			.then(() => {
 				const defParam = {
 					category: 'BUTTON',
-					// module: recordData.value.module,
 					parentId: recordData.value.id
 				}
 				const param = Object.assign(defParam, formData.value)
@@ -72,7 +69,6 @@
 				})
 			})
 	}
-
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
 		onOpen

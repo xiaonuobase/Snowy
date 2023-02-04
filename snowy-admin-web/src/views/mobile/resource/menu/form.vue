@@ -1,7 +1,7 @@
 <template>
     <a-drawer
         :title="formData.id ? '编辑移动端菜单' : '增加移动端菜单'"
-        :width="500"
+        :width="600"
         :visible="visible"
         :destroy-on-close="true"
         :footer-style="{ textAlign: 'right' }"
@@ -73,19 +73,18 @@
             <a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
             <a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
         </template>
-<!--		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />-->
 		<icon-mobile-selector ref="iconSelector" @iconCallBack="iconCallBack" />
     </a-drawer>
 </template>
 
 <script setup name="mobileMenuForm">
     import tool from '@/utils/tool'
+	import { message } from 'ant-design-vue'
 	import SnowflakeId from 'snowflake-id'
     import { cloneDeep } from 'lodash-es'
     import { required } from '@/utils/formRules'
     import mobileMenuApi from '@/api/mobile/resource/menuApi'
 	import ColorPicker from '@/components/ColorPicker/index.vue'
-	// import IconSelector from '@/components/Selector/iconSelector.vue'
 	import IconMobileSelector from '@/components/Selector/iconMobileSelector.vue'
     // 抽屉状态
     const visible = ref(false)
@@ -122,6 +121,10 @@
 
     // 打开抽屉
     const onOpen = (record, module) => {
+		if (!module) {
+			message.warning('请先添加菜单所属模块')
+			return
+		}
 		moduleId.value = module
         visible.value = true
 		// 设置默认的

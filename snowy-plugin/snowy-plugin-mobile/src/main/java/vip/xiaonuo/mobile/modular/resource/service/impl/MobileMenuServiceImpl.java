@@ -206,7 +206,6 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
     @Override
     public List<JSONObject> mobileMenuTreeSelector() {
         LambdaQueryWrapper<MobileMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.in(MobileMenu::getCategory, MobileResourceCategoryEnum.MODULE.getValue(), MobileResourceCategoryEnum.MENU.getValue());
         List<MobileMenu> allModuleAndMenuList = this.list(lambdaQueryWrapper);
         List<MobileMenu> mobileModuleList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileMenuList = CollectionUtil.newArrayList();
@@ -218,7 +217,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         allModuleAndMenuList.forEach(mobileMenu -> {
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MODULE.getValue())) mobileModuleList.add(mobileMenu);
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) mobileMenuList.add(mobileMenu);
-            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) mobileMenuList.add(mobileMenu);
+            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) mobileButtonList.add(mobileMenu);
         });
         List<JSONObject> leafMenuList = CollectionUtil.newArrayList();
         List<TreeNode<String>> treeNodeList = mobileMenuList.stream().map(mobileMenu ->
@@ -404,7 +403,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
             }
         }
     }
-    
+
     @Override
     public List<MobileMenu> getChildListById(List<MobileMenu> originDataList, String id, boolean includeSelf) {
         List<MobileMenu> resultList = CollectionUtil.newArrayList();
