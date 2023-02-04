@@ -1,0 +1,173 @@
+@font-face {
+  font-family: "snowy"; /* Project id 3880534 */
+  src: url('iconfont.ttf?t=1675528061732') format('truetype');
+}
+
+.snowy {
+  font-family: "snowy" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.arrow-up-filling:before {
+  content: "\e688";
+}
+
+.arrow-down-filling:before {
+  content: "\e689";
+}
+
+.arrow-left-filling:before {
+  content: "\e68a";
+}
+
+.arrow-right-filling:before {
+  content: "\e68b";
+}
+
+.caps-unlock-filling:before {
+  content: "\e68c";
+}
+
+.comment-filling:before {
+  content: "\e68d";
+}
+
+.check-item-filling:before {
+  content: "\e68e";
+}
+
+.clock-filling:before {
+  content: "\e68f";
+}
+
+.delete-filling:before {
+  content: "\e690";
+}
+
+.decline-filling:before {
+  content: "\e691";
+}
+
+.dynamic-filling:before {
+  content: "\e692";
+}
+
+.intermediate-filling:before {
+  content: "\e693";
+}
+
+.favorite-filling:before {
+  content: "\e694";
+}
+
+.layout-filling:before {
+  content: "\e695";
+}
+
+.help-filling:before {
+  content: "\e696";
+}
+
+.history-filling:before {
+  content: "\e697";
+}
+
+.filter-filling:before {
+  content: "\e698";
+}
+
+.file-common-filling:before {
+  content: "\e699";
+}
+
+.news-filling:before {
+  content: "\e69a";
+}
+
+.edit-filling:before {
+  content: "\e69b";
+}
+
+.fullscreen-expand-filling:before {
+  content: "\e69c";
+}
+
+.smile-filling:before {
+  content: "\e69d";
+}
+
+.rise-filling:before {
+  content: "\e69e";
+}
+
+.picture-filling:before {
+  content: "\e69f";
+}
+
+.notification-filling:before {
+  content: "\e6a0";
+}
+
+.user-filling:before {
+  content: "\e6a1";
+}
+
+.setting-filling:before {
+  content: "\e6a2";
+}
+
+.switch-filling:before {
+  content: "\e6a3";
+}
+
+.work-filling:before {
+  content: "\e6a4";
+}
+
+.task-filling:before {
+  content: "\e6a5";
+}
+
+.success-filling:before {
+  content: "\e6a6";
+}
+
+.warning-filling:before {
+  content: "\e6a7";
+}
+
+.folder-filling:before {
+  content: "\e6a8";
+}
+
+.map-filling:before {
+  content: "\e6a9";
+}
+
+.prompt-filling:before {
+  content: "\e6aa";
+}
+
+.meh-filling:before {
+  content: "\e6ab";
+}
+
+.cry-filling:before {
+  content: "\e6ac";
+}
+
+.top-filling:before {
+  content: "\e6ad";
+}
+
+.home-filling:before {
+  content: "\e6ae";
+}
+
+.sorting:before {
+  content: "\e6af";
+}
+

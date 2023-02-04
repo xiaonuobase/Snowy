@@ -1,0 +1,331 @@
+{
+  "id": "3880562",
+  "name": "snowy-app-ring",
+  "font_family": "snowy",
+  "css_prefix_text": "",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "32305317",
+      "name": "布",
+      "font_class": "bu",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "32305318",
+      "name": "鞋子",
+      "font_class": "xiezi",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "32946931",
+      "name": "水泵",
+      "font_class": "shuibeng",
+      "unicode": "e705",
+      "unicode_decimal": 59141
+    },
+    {
+      "icon_id": "32946932",
+      "name": "风机",
+      "font_class": "fengji",
+      "unicode": "e706",
+      "unicode_decimal": 59142
+    },
+    {
+      "icon_id": "32946933",
+      "name": "电动机",
+      "font_class": "diandongji",
+      "unicode": "e707",
+      "unicode_decimal": 59143
+    },
+    {
+      "icon_id": "33346326",
+      "name": "原子",
+      "font_class": "yuanzi",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "33347418",
+      "name": "防火",
+      "font_class": "fanghuo",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "31733849",
+      "name": "时间",
+      "font_class": "shijian",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "31733850",
+      "name": "蓝牙",
+      "font_class": "lanya",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "31735230",
+      "name": "电池",
+      "font_class": "dianchi",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "31735231",
+      "name": "水滴",
+      "font_class": "shuidi",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "31736241",
+      "name": "设备",
+      "font_class": "shebei-05",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "31736242",
+      "name": "麦克风",
+      "font_class": "maikefeng-07",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "31736243",
+      "name": "礼物",
+      "font_class": "liwu-08",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "31736244",
+      "name": "音箱",
+      "font_class": "yinxiang-06",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "32042554",
+      "name": "晨曦",
+      "font_class": "qingjing_chenxi",
+      "unicode": "e6e8",
+      "unicode_decimal": 59112
+    },
+    {
+      "icon_id": "32042555",
+      "name": "插座",
+      "font_class": "qingjing_chazuo",
+      "unicode": "e6e9",
+      "unicode_decimal": 59113
+    },
+    {
+      "icon_id": "32042556",
+      "name": "宠物狗",
+      "font_class": "qingjing_chongwugou",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "32042557",
+      "name": "阀门",
+      "font_class": "qingjing_famen",
+      "unicode": "e6eb",
+      "unicode_decimal": 59115
+    },
+    {
+      "icon_id": "32042558",
+      "name": "飞行",
+      "font_class": "qingjing_feihang",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
+      "icon_id": "32042559",
+      "name": "排气扇",
+      "font_class": "qingjing_paiqishan",
+      "unicode": "e6ed",
+      "unicode_decimal": 59117
+    },
+    {
+      "icon_id": "32042560",
+      "name": "就餐",
+      "font_class": "qingjing_jiucan",
+      "unicode": "e6ee",
+      "unicode_decimal": 59118
+    },
+    {
+      "icon_id": "32042561",
+      "name": "开关",
+      "font_class": "qingjing_quanguan",
+      "unicode": "e6ef",
+      "unicode_decimal": 59119
+    },
+    {
+      "icon_id": "32042562",
+      "name": "空调",
+      "font_class": "qingjing_kongtiao",
+      "unicode": "e6f0",
+      "unicode_decimal": 59120
+    },
+    {
+      "icon_id": "32042564",
+      "name": "宠物脚",
+      "font_class": "qingjing_chongwujiao",
+      "unicode": "e6f1",
+      "unicode_decimal": 59121
+    },
+    {
+      "icon_id": "32042565",
+      "name": "回家",
+      "font_class": "qingjing_huijia",
+      "unicode": "e6f2",
+      "unicode_decimal": 59122
+    },
+    {
+      "icon_id": "32042566",
+      "name": "上班",
+      "font_class": "qingjing_shangban",
+      "unicode": "e6f3",
+      "unicode_decimal": 59123
+    },
+    {
+      "icon_id": "32042567",
+      "name": "睡眠",
+      "font_class": "qingjing_shuimian",
+      "unicode": "e6f4",
+      "unicode_decimal": 59124
+    },
+    {
+      "icon_id": "32042568",
+      "name": "花园",
+      "font_class": "qingjing_huayuan",
+      "unicode": "e6f5",
+      "unicode_decimal": 59125
+    },
+    {
+      "icon_id": "32042569",
+      "name": "洗漱",
+      "font_class": "qingjing_xishu",
+      "unicode": "e6f6",
+      "unicode_decimal": 59126
+    },
+    {
+      "icon_id": "32042570",
+      "name": "影音",
+      "font_class": "qingjing_yingyin",
+      "unicode": "e6f7",
+      "unicode_decimal": 59127
+    },
+    {
+      "icon_id": "32042571",
+      "name": "监控",
+      "font_class": "qingjing_jiankong",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
+      "icon_id": "32042572",
+      "name": "照明",
+      "font_class": "qingjing_zhaoming",
+      "unicode": "e6f9",
+      "unicode_decimal": 59129
+    },
+    {
+      "icon_id": "32042573",
+      "name": "下班",
+      "font_class": "qingjing_xiaban",
+      "unicode": "e6fa",
+      "unicode_decimal": 59130
+    },
+    {
+      "icon_id": "32042574",
+      "name": "值班",
+      "font_class": "qingjing_zhiban",
+      "unicode": "e6fb",
+      "unicode_decimal": 59131
+    },
+    {
+      "icon_id": "32042575",
+      "name": "灌溉",
+      "font_class": "qingjing_guangai",
+      "unicode": "e6fc",
+      "unicode_decimal": 59132
+    },
+    {
+      "icon_id": "32042576",
+      "name": "长期离家",
+      "font_class": "qingjing_changqilijia",
+      "unicode": "e6fd",
+      "unicode_decimal": 59133
+    },
+    {
+      "icon_id": "32042577",
+      "name": "会议",
+      "font_class": "qingjing_huiyi",
+      "unicode": "e6fe",
+      "unicode_decimal": 59134
+    },
+    {
+      "icon_id": "32290563",
+      "name": "多口袋",
+      "font_class": "duokoudai-16",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "32290564",
+      "name": "多层",
+      "font_class": "duoceng-15",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "32290565",
+      "name": "化妆品口袋",
+      "font_class": "huazhuangpinkoudai-11",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "32290566",
+      "name": "充电孔",
+      "font_class": "chongdiankong-14",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "32290567",
+      "name": "机洗",
+      "font_class": "jixi-13",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "32290568",
+      "name": "地球",
+      "font_class": "diqiu-12",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "32290569",
+      "name": "纸箱",
+      "font_class": "zhixiang-09",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "32290570",
+      "name": "防盗口袋",
+      "font_class": "fangdaokoudai-10",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    }
+  ]
+}

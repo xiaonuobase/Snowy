@@ -1,0 +1,149 @@
+{
+  "id": "3880561",
+  "name": "snowy-app-square",
+  "font_family": "snowy",
+  "css_prefix_text": "",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "31733849",
+      "name": "时间",
+      "font_class": "shijian",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "31733850",
+      "name": "蓝牙",
+      "font_class": "lanya",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "31735230",
+      "name": "电池",
+      "font_class": "dianchi",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "31735231",
+      "name": "水滴",
+      "font_class": "shuidi",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "31736241",
+      "name": "设备",
+      "font_class": "shebei-05",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "31736242",
+      "name": "麦克风",
+      "font_class": "maikefeng-07",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "31736243",
+      "name": "礼物",
+      "font_class": "liwu-08",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "31736244",
+      "name": "音箱",
+      "font_class": "yinxiang-06",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "32290563",
+      "name": "多口袋",
+      "font_class": "duokoudai-16",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "32290564",
+      "name": "多层",
+      "font_class": "duoceng-15",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "32290565",
+      "name": "化妆品口袋",
+      "font_class": "huazhuangpinkoudai-11",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "32290566",
+      "name": "充电孔",
+      "font_class": "chongdiankong-14",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "32290567",
+      "name": "机洗",
+      "font_class": "jixi-13",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "32290568",
+      "name": "地球",
+      "font_class": "diqiu-12",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "32290569",
+      "name": "纸箱",
+      "font_class": "zhixiang-09",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "32290570",
+      "name": "防盗口袋",
+      "font_class": "fangdaokoudai-10",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "32305317",
+      "name": "布",
+      "font_class": "bu",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "32305318",
+      "name": "鞋子",
+      "font_class": "xiezi",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "33346326",
+      "name": "原子",
+      "font_class": "yuanzi",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "33347418",
+      "name": "防火",
+      "font_class": "fanghuo",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    }
+  ]
+}

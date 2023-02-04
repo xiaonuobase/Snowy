@@ -1,0 +1,197 @@
+@font-face {
+  font-family: "snowy"; /* Project id 3880562 */
+  src: url('iconfont.ttf?t=1675529644071') format('truetype');
+}
+
+.snowy {
+  font-family: "snowy" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bu:before {
+  content: "\e615";
+}
+
+.xiezi:before {
+  content: "\e616";
+}
+
+.shuibeng:before {
+  content: "\e705";
+}
+
+.fengji:before {
+  content: "\e706";
+}
+
+.diandongji:before {
+  content: "\e707";
+}
+
+.yuanzi:before {
+  content: "\e617";
+}
+
+.fanghuo:before {
+  content: "\e618";
+}
+
+.shijian:before {
+  content: "\e605";
+}
+
+.lanya:before {
+  content: "\e606";
+}
+
+.dianchi:before {
+  content: "\e607";
+}
+
+.shuidi:before {
+  content: "\e608";
+}
+
+.shebei-05:before {
+  content: "\e609";
+}
+
+.maikefeng-07:before {
+  content: "\e60a";
+}
+
+.liwu-08:before {
+  content: "\e60b";
+}
+
+.yinxiang-06:before {
+  content: "\e60c";
+}
+
+.qingjing_chenxi:before {
+  content: "\e6e8";
+}
+
+.qingjing_chazuo:before {
+  content: "\e6e9";
+}
+
+.qingjing_chongwugou:before {
+  content: "\e6ea";
+}
+
+.qingjing_famen:before {
+  content: "\e6eb";
+}
+
+.qingjing_feihang:before {
+  content: "\e6ec";
+}
+
+.qingjing_paiqishan:before {
+  content: "\e6ed";
+}
+
+.qingjing_jiucan:before {
+  content: "\e6ee";
+}
+
+.qingjing_quanguan:before {
+  content: "\e6ef";
+}
+
+.qingjing_kongtiao:before {
+  content: "\e6f0";
+}
+
+.qingjing_chongwujiao:before {
+  content: "\e6f1";
+}
+
+.qingjing_huijia:before {
+  content: "\e6f2";
+}
+
+.qingjing_shangban:before {
+  content: "\e6f3";
+}
+
+.qingjing_shuimian:before {
+  content: "\e6f4";
+}
+
+.qingjing_huayuan:before {
+  content: "\e6f5";
+}
+
+.qingjing_xishu:before {
+  content: "\e6f6";
+}
+
+.qingjing_yingyin:before {
+  content: "\e6f7";
+}
+
+.qingjing_jiankong:before {
+  content: "\e6f8";
+}
+
+.qingjing_zhaoming:before {
+  content: "\e6f9";
+}
+
+.qingjing_xiaban:before {
+  content: "\e6fa";
+}
+
+.qingjing_zhiban:before {
+  content: "\e6fb";
+}
+
+.qingjing_guangai:before {
+  content: "\e6fc";
+}
+
+.qingjing_changqilijia:before {
+  content: "\e6fd";
+}
+
+.qingjing_huiyi:before {
+  content: "\e6fe";
+}
+
+.duokoudai-16:before {
+  content: "\e60d";
+}
+
+.duoceng-15:before {
+  content: "\e60e";
+}
+
+.huazhuangpinkoudai-11:before {
+  content: "\e60f";
+}
+
+.chongdiankong-14:before {
+  content: "\e610";
+}
+
+.jixi-13:before {
+  content: "\e611";
+}
+
+.diqiu-12:before {
+  content: "\e612";
+}
+
+.zhixiang-09:before {
+  content: "\e613";
+}
+
+.fangdaokoudai-10:before {
+  content: "\e614";
+}
+
