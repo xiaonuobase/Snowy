@@ -688,7 +688,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<Tree<String>> resultList = CollectionUtil.newArrayList();
         if (ObjectUtil.isNotEmpty(roleIdList)) {
             resultList = mobileMenuApi.loginMobileMenuTree(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
-                    SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
+                    SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()));
         }
         return resultList;
     }
