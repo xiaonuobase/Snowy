@@ -47,7 +47,8 @@
 					<span v-else>{{record.path}}</span>
 				</template>
 				<template v-if="column.dataIndex === 'icon'">
-					<component :is="record.icon" />
+<!--					<component :is="record.icon" />-->
+					<span class="snowy xn-icons" :class="record.icon" ></span>
 				</template>
                 <template v-if="column.dataIndex === 'regType'">
                     {{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}
