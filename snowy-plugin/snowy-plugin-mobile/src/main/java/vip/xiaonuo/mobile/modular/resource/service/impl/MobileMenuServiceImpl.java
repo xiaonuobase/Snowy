@@ -205,8 +205,8 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
 
     @Override
     public List<JSONObject> mobileMenuTreeSelector() {
-        LambdaQueryWrapper<MobileMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        List<MobileMenu> allModuleAndMenuList = this.list(lambdaQueryWrapper);
+        // 模块、菜单、按钮，应该查所有的，当然这里没有已经删除过的
+        List<MobileMenu> allModuleAndMenuList = this.list();
         List<MobileMenu> mobileModuleList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileMenuList = CollectionUtil.newArrayList();
         List<MobileMenu> mobileButtonList = CollectionUtil.newArrayList();
