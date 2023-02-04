@@ -14,11 +14,6 @@ import lineJsonData from './line/iconfont.json'
 import './filled/iconfont.css'
 import filledJsonData from './filled/iconfont.json'
 
-import './square/iconfont.css'
-import squareJsonData from './square/iconfont.json'
-
-import './ring/iconfont.css'
-import ringJsonData from './ring/iconfont.json'
 export default {
 	icons: [
 		{
@@ -37,21 +32,5 @@ export default {
 				},
 			]
 		},
-		{
-			name: '其他',
-			key: 'other',
-			iconItem: [
-				{
-					name: '圆形风格',
-					key: 'default',
-					item: squareJsonData.glyphs
-				},
-				{
-					name: '方形风格',
-					key: 'ring',
-					item: ringJsonData.glyphs
-				},
-			]
-		}
 	]
 }
