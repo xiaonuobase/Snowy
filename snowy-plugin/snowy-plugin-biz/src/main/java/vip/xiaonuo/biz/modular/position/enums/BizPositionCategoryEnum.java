@@ -25,10 +25,10 @@ import vip.xiaonuo.common.exception.CommonException;
 public enum BizPositionCategoryEnum {
 
     /** 高层 */
-    COMPANY("HIGH"),
+    HIGH("HIGH"),
 
     /** 中层 */
-    DEPT("MIDDLE"),
+    MIDDLE("MIDDLE"),
 
     /** 基层 */
     LOW("LOW");
@@ -40,7 +40,7 @@ public enum BizPositionCategoryEnum {
     }
 
     public static void validate(String value) {
-        boolean flag = COMPANY.getValue().equals(value) || DEPT.getValue().equals(value);
+        boolean flag = HIGH.getValue().equals(value) || MIDDLE.getValue().equals(value) || LOW.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持的岗位分类：{}", value);
         }
