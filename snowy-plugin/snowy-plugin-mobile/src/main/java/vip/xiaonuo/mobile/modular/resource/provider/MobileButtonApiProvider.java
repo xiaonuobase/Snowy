@@ -12,8 +12,15 @@
  */
 package vip.xiaonuo.mobile.modular.resource.provider;
 
+import cn.hutool.core.util.ObjectUtil;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.mobile.api.MobileButtonApi;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileButton;
+import vip.xiaonuo.mobile.modular.resource.service.MobileButtonService;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 移动端按钮API接口提供者
@@ -24,4 +31,14 @@ import vip.xiaonuo.mobile.api.MobileButtonApi;
 @Service
 public class MobileButtonApiProvider implements MobileButtonApi {
 
+    @Resource
+    private MobileButtonService mobileButtonService;
+
+    @Override
+    public List<String> listByIds(List<String> buttonIdList) {
+        if (ObjectUtil.isEmpty(buttonIdList)) {
+            return null;
+        }
+        return mobileButtonService.listByIds(buttonIdList).stream().map(MobileButton::getCode).collect(Collectors.toList());
+    }
 }

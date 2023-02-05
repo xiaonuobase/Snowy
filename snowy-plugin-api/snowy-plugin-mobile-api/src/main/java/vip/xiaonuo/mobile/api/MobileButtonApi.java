@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.mobile.api;
 
+import java.util.List;
+
 /**
  * 移动端按钮API
  *
@@ -20,4 +22,12 @@ package vip.xiaonuo.mobile.api;
  **/
 public interface MobileButtonApi {
 
+    /**
+     * 根据键获取值
+     *
+     * @param idList
+     * @author 每天一点
+     * @date 2023/2/5 13:26
+     **/
+    List<String> listByIds(List<String> idList);
 }
