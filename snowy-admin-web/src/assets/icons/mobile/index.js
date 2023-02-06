@@ -29,8 +29,8 @@ export default {
 					name: '实底风格',
 					key: 'filled',
 					item: filledJsonData.glyphs
-				},
+				}
 			]
-		},
+		}
 	]
 }
