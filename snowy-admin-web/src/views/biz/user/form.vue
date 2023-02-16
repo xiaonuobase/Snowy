@@ -232,8 +232,8 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
-							<a-form-item label="证据号码：" name="idCardNumber">
-								<a-input v-model:value="formData.idCardNumber" placeholder="请输入通信地址" allow-clear />
+							<a-form-item label="证件号码：" name="idCardNumber">
+								<a-input v-model:value="formData.idCardNumber" placeholder="请输入证件号码" allow-clear />
 							</a-form-item>
 						</a-col>
 					</a-row>
