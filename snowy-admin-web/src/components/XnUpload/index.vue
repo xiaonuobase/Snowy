@@ -66,7 +66,11 @@
 		for (let a = 0; a < props.uploadMumber; a++) {
 			const file = fileList.value[a]
 			if (file.status === 'done' && file.response && file.response.code === 200) {
-				result.push(file.response.data)
+				const resultObj = {
+					name: file.name,
+					url: file.response.data
+				}
+				result.push(resultObj)
 			}
 		}
 		if (result.length > 0) {
