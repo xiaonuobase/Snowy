@@ -27,11 +27,14 @@
 				</a-col>
 				<a-col :span="8">
 					<a-form-item label="表前缀移除：" name="tablePrefix">
-						<a-radio-group v-model:value="formData.tablePrefix" :options="tablePrefixOptions" @change="tablePrefixChange"> </a-radio-group>
+						<a-radio-group
+							v-model:value="formData.tablePrefix"
+							:options="tablePrefixOptions"
+							@change="tablePrefixChange"
+						>
+						</a-radio-group>
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="16">
 				<a-col :span="8">
 					<a-form-item label="生成方式：" name="generateType">
 						<a-radio-group v-model:value="formData.generateType" :options="generateTypeOptions"> </a-radio-group>
@@ -69,15 +72,51 @@
 						></a-tree-select>
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="16">
+				<a-col :span="8">
+					<a-form-item name="pluginName">
+						<template #label>
+							<a-tooltip>
+								<template #title>
+									不想吧代码生成到本框架指定插件名称下，可以新建一个plugin模块，并这里改为新的名字。
+								</template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 插件名：
+						</template>
+						<a-input v-model:value="formData.pluginName" placeholder="请输入插件名" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-form-item label="包名：" name="packageName">
+						<a-input v-model:value="formData.packageName" placeholder="请输入包名" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-form-item name="moduleName">
+						<template #label>
+							<a-tooltip>
+								<template #title> 代码模块名就是包名后面的代码包，例如：vip.xiaonuo.*，*代表此模块名。 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 模块名：
+						</template>
+						<a-input v-model:value="formData.moduleName" placeholder="请输入模块名" allow-clear />
+					</a-form-item>
+				</a-col>
 				<a-col :span="8">
 					<a-form-item label="功能名：" name="functionName">
 						<a-input v-model:value="formData.functionName" placeholder="请输入功能名" allow-clear />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-form-item label="业务名：" name="busName">
+					<a-form-item name="busName">
+						<template #label>
+							<a-tooltip>
+								<template #title> 业务名是代码生成后，存放controller、service等代码的文件夹名称。 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 业务名：
+						</template>
 						<a-input v-model:value="formData.busName" placeholder="请输入业务名" allow-clear />
 					</a-form-item>
 				</a-col>
@@ -86,33 +125,38 @@
 						<a-input v-model:value="formData.className" placeholder="请输入类名" allow-clear />
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="16">
-				<a-col :span="8">
-					<a-form-item label="表单布局：" name="formLayout">
-						<a-radio-group v-model:value="formData.formLayout" :options="formLayoutOptions" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="8">
-					<a-form-item label="使用栅格：" name="gridWhether">
-						<a-radio-group v-model:value="formData.gridWhether" :options="gridWhetherOptions" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="8">
-					<a-form-item label="排序：" name="sortCode">
-						<a-slider v-model:value="formData.sortCode" :max="100" style="width: 100%"/>
-					</a-form-item>
-				</a-col>
-			</a-row>
-			<a-row :gutter="16">
 				<a-col :span="8">
 					<a-form-item label="作者：" name="authorName">
 						<a-input v-model:value="formData.authorName" placeholder="请输入作者名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8" v-if="formData.generateType === 'ZIP'">
-					<a-form-item label="包名：" name="packageName">
-						<a-input v-model:value="formData.packageName" placeholder="请输入包名" allow-clear />
+				<a-col :span="8">
+					<a-form-item name="formLayout">
+						<template #label>
+							<a-tooltip>
+								<template #title> 垂直选项生成出来的前端表单代码为名称跟输入框是上下两行，反之水平则是一行。 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 表单布局：
+						</template>
+						<a-radio-group v-model:value="formData.formLayout" :options="formLayoutOptions" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-form-item name="gridWhether">
+						<template #label>
+							<a-tooltip>
+								<template #title> 如果使用了栅格配置，即生成出来的前端代码，表单是一排两列，并非一排一列。 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 使用栅格：
+						</template>
+						<a-radio-group v-model:value="formData.gridWhether" :options="gridWhetherOptions" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-form-item label="排序：" name="sortCode">
+						<a-slider v-model:value="formData.sortCode" :max="100" style="width: 100%" />
 					</a-form-item>
 				</a-col>
 			</a-row>
@@ -171,7 +215,7 @@
 		{
 			label: '不使用',
 			value: 'N'
-		},
+		}
 	])
 	// 打开抽屉
 	const onOpen = (record) => {
@@ -197,21 +241,26 @@
 					id: record.id
 				}
 				submitLoading.value = true
-				genBasicApi.basicDetail(params).then((data) => {
-					formData.value = data
-					// 让主键选中
-					selectTableColumnsData(data.dbTable, true)
-					// 让模块旁边的上级菜单选中
-					moduleChange(data.module, true)
-				}).finally(() => {
-					submitLoading.value = false
-				})
+				genBasicApi
+					.basicDetail(params)
+					.then((data) => {
+						formData.value = data
+						// 让主键选中
+						selectTableColumnsData(data.dbTable, true)
+						// 让模块旁边的上级菜单选中
+						moduleChange(data.module, true)
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			} else {
 				formData.value = {
+					pluginName: 'snowy-plugin-biz',
+					packageName: 'vip.xiaonuo',
+					moduleName: 'biz',
 					sortCode: 99,
 					tablePrefix: 'Y',
 					generateType: 'ZIP',
-					packageName: 'vip.xiaonuo',
 					formLayout: 'vertical',
 					gridWhether: 'N'
 				}
@@ -220,6 +269,8 @@
 	}
 	// 默认要校验的
 	const formRules = {
+		pluginName: [required('请输入插件名')],
+		moduleName: [required('请输入模块名')],
 		tablePrefix: [required('请选择是否移除表前缀')],
 		dbTable: [required('请选择主表')],
 		dbTableKey: [required('请选择主表主键')],
@@ -340,19 +391,23 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		return new Promise((resolve,reject) => {
+		return new Promise((resolve, reject) => {
 			formRef.value
 				.validate()
 				.then(() => {
 					submitLoading.value = true
-					genBasicApi.submitForm(formData.value, !formData.value.id).then((data) => {
-						resolve(data)
-					}).finally(() => {
-						submitLoading.value = false
-					})
-				}).catch((err) => {
-				reject(err)
-			})
+					genBasicApi
+						.submitForm(formData.value, !formData.value.id)
+						.then((data) => {
+							resolve(data)
+						})
+						.finally(() => {
+							submitLoading.value = false
+						})
+				})
+				.catch((err) => {
+					reject(err)
+				})
 		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去

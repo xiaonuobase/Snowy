@@ -9,11 +9,16 @@
 	>
 		<a-spin :spinning="loadingSpinning">
 			<a-tabs v-model:activeKey="codeTypeActiveKey" @change="codeTypeChange">
-				<a-tab-pane v-for="codeType in codeTypeArray" :key="codeType.codeTypeKey" :tab="codeType.codeTypeTitle" force-render>
+				<a-tab-pane
+					v-for="codeType in codeTypeArray"
+					:key="codeType.codeTypeKey"
+					:tab="codeType.codeTypeTitle"
+					force-render
+				>
 					<a-tabs v-model:activeKey="typeListActiveKey" tab-position="left" hide-add type="card">
 						<a-tab-pane v-for="pan in codeType.codeTypeList" :key="pan.codeFileName" :tab="pan.codeFileName">
-							<div style="height: calc(100vh - 160px); overflow: auto">
-								<a-textarea ref="textareaRef" v-model:value="pan.codeFileContent" :autoSize="true" />
+							<div class="gen-preview-content">
+								<XnHighlightjs :code="pan.codeFileContent" />
 							</div>
 						</a-tab-pane>
 					</a-tabs>
@@ -39,31 +44,34 @@
 		const param = {
 			id: record.id
 		}
-		genBasicApi.basicPreviewGen(param).then((data) => {
-			if (data) {
-				codeTypeArray.value = [
-					{
-						codeTypeKey: 'frontend',
-						codeTypeTitle: '前端代码',
-						codeTypeList: data.genBasicCodeFrontendResultList
-					},
-					{
-						codeTypeKey: 'backend',
-						codeTypeTitle: '后端代码',
-						codeTypeList: data.genBasicCodeBackendResultList
-					},
-					{
-						codeTypeKey: 'sqlend',
-						codeTypeTitle: 'SQL文件',
-						codeTypeList: data.genBasicCodeSqlResultList
-					}
-				]
-			} else {
-				message.warning('预览失败：请检查问题或反馈小诺官方')
-			}
-		}).finally(() => {
-			loadingSpinning.value = false
-		})
+		genBasicApi
+			.basicPreviewGen(param)
+			.then((data) => {
+				if (data) {
+					codeTypeArray.value = [
+						{
+							codeTypeKey: 'frontend',
+							codeTypeTitle: '前端代码',
+							codeTypeList: data.genBasicCodeFrontendResultList
+						},
+						{
+							codeTypeKey: 'backend',
+							codeTypeTitle: '后端代码',
+							codeTypeList: data.genBasicCodeBackendResultList
+						},
+						{
+							codeTypeKey: 'sqlend',
+							codeTypeTitle: 'SQL文件',
+							codeTypeList: data.genBasicCodeSqlResultList
+						}
+					]
+				} else {
+					message.warning('预览失败：请检查问题或反馈小诺官方')
+				}
+			})
+			.finally(() => {
+				loadingSpinning.value = false
+			})
 	}
 	// 关闭抽屉
 	const onClose = () => {
@@ -77,3 +85,9 @@
 		onOpen
 	})
 </script>
+<style type="less" scoped>
+	.gen-preview-content {
+		height: calc(100vh - 160px);
+		overflow: auto;
+	}
+</style>

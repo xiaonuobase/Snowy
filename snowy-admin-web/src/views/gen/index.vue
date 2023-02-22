@@ -14,17 +14,29 @@
 			<template #operator class="table-operator">
 				<a-space>
 					<a-button type="primary" @click="openConfig()">
+						<template #icon><plus-outlined /></template>
 						新建
 					</a-button>
-					<a-button danger @click="deleteBatchCodeGen()">删除</a-button>
+
+					<a-popconfirm
+						title="删除此信息？"
+						:visible="deleteVisible"
+						@visibleChange="deleteVisibleChange"
+						@confirm="deleteBatchCodeGen"
+					>
+						<a-button type="danger">
+							<template #icon><delete-outlined /></template>
+							删除
+						</a-button>
+					</a-popconfirm>
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'tablePrefix'">
-					{{tablePrefixFilter(record.tablePrefix)}}
+					{{ tablePrefixFilter(record.tablePrefix) }}
 				</template>
 				<template v-if="column.dataIndex === 'generateType'">
-					{{generateTypeFilter(record.generateType)}}
+					{{ generateTypeFilter(record.generateType) }}
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a @click="genPreviewRef.onOpen(record)">预览</a>
@@ -35,14 +47,14 @@
 					<a-divider type="vertical" />
 					<a @click="openConfig(record)">配置</a>
 					<a-divider type="vertical" />
-					<a-popconfirm title="删除此信息？" @confirm="deleteCodeGen(record)">
+					<a-popconfirm title="删除此信息？" placement="topRight" @confirm="deleteCodeGen(record)">
 						<a-button type="link" danger size="small">删除</a-button>
 					</a-popconfirm>
 				</template>
 			</template>
 		</s-table>
 	</a-card>
-	<steps v-else ref="stepsRef" @successful="table.refresh(true)" @closed="closeConfig()"/>
+	<steps v-else ref="stepsRef" @successful="table.refresh(true)" @closed="closeConfig()" />
 	<genPreview ref="genPreviewRef" />
 </template>
 
@@ -56,6 +68,7 @@
 	const indexShow = ref(true)
 	const stepsRef = ref()
 	const genPreviewRef = ref()
+	const deleteVisible = ref(false)
 
 	const columns = [
 		{
@@ -160,16 +173,16 @@
 		} else {
 			// 下载压缩包
 			genBasicApi.basicExecGenBiz(param).then((res) => {
-				const blob = new Blob([res.data],{type: 'application/octet-stream;charset=UTF-8'});
+				const blob = new Blob([res.data], { type: 'application/octet-stream;charset=UTF-8' })
 				const contentDisposition = res.headers['content-disposition']
 				const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
-				const $link = document.createElement("a");
-				$link.href = URL.createObjectURL(blob);
+				const $link = document.createElement('a')
+				$link.href = URL.createObjectURL(blob)
 				$link.download = decodeURIComponent(patt.exec(contentDisposition)[1])
-				$link.click();
-				document.body.appendChild($link);
-				document.body.removeChild($link); // 下载完成移除元素
-				window.URL.revokeObjectURL($link.href); // 释放掉blob对象
+				$link.click()
+				document.body.appendChild($link)
+				document.body.removeChild($link) // 下载完成移除元素
+				window.URL.revokeObjectURL($link.href) // 释放掉blob对象
 			})
 		}
 	}
@@ -184,12 +197,22 @@
 			table.value.refresh()
 		})
 	}
-	// 批量删除
-	const deleteBatchCodeGen = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
+	// 批量删除校验
+	const deleteVisibleChange = () => {
+		if (deleteVisible.value) {
+			deleteVisible.value = false
 			return false
 		}
+		if (selectedRowKeys.value.length < 1) {
+			message.warning('请选择一条或多条数据')
+			deleteVisible.value = false
+			return false
+		} else {
+			deleteVisible.value = true
+		}
+	}
+	// 批量删除
+	const deleteBatchCodeGen = () => {
 		const params = selectedRowKeys.value.map((m) => {
 			return {
 				id: m

@@ -33,10 +33,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'dictTypeCode'">
 					<a-select
-						v-if="
-								record.effectType === 'radio' ||
-								record.effectType === 'select' ||
-								record.effectType === 'checkbox'"
+						v-if="record.effectType === 'radio' || record.effectType === 'select' || record.effectType === 'checkbox'"
 						style="width: 100%"
 						v-model:value="record.dictTypeCode"
 						:options="dictTypeCodeOptions"
@@ -54,7 +51,10 @@
 					<a-checkbox v-model:checked="record.whetherAddUpdate" :disabled="toFieldEstimate(record)" />
 				</template>
 				<template v-if="column.dataIndex === 'whetherRequired'">
-					<a-checkbox v-model:checked="record.whetherRequired" :disabled="toFieldEstimate(record) || !record.whetherAddUpdate" />
+					<a-checkbox
+						v-model:checked="record.whetherRequired"
+						:disabled="toFieldEstimate(record) || !record.whetherAddUpdate"
+					/>
 				</template>
 				<template v-if="column.dataIndex === 'queryWhether'">
 					<a-switch v-model:checked="record.queryWhether" :disabled="!record.whetherTable" />
@@ -77,7 +77,7 @@
 
 <script setup name="genConfig">
 	import tool from '@/utils/tool'
-	import genConfigApi from "@/api/gen/genConfigApi";
+	import genConfigApi from '@/api/gen/genConfigApi'
 	import { cloneDeep } from 'lodash-es'
 
 	const table = ref()
@@ -169,7 +169,7 @@
 			parameter.basicId = recordData.value.id
 			return genConfigApi.configList(parameter).then((data) => {
 				tableData.value = JSON.parse(JSON.stringify(data))
-				let deleteIndex = [];
+				let deleteIndex = []
 				tableData.value.forEach((item, index) => {
 					for (const key in item) {
 						if (item[key] === 'Y') {
@@ -239,7 +239,7 @@
 		{
 			label: 'BigDecimal',
 			value: 'BigDecimal'
-		},
+		}
 	])
 	// 类型
 	const effectTypeOptions = ref([
@@ -324,27 +324,31 @@
 	])
 	const emit = defineEmits({ successful: null }, { close: null })
 	const toFieldEstimate = (data) => {
-		if (data.fieldName.toLowerCase().indexOf('create_user') > -1 ||
+		if (
+			data.fieldName.toLowerCase().indexOf('create_user') > -1 ||
 			data.fieldName.toLowerCase().indexOf('create_time') > -1 ||
 			data.fieldName.toLowerCase().indexOf('update_user') > -1 ||
 			data.fieldName.toLowerCase().indexOf('update_time') > -1 ||
 			data.fieldName.toLowerCase().indexOf('delete_flag') > -1 ||
-			data.isTableKey === true) {
+			data.isTableKey === true
+		) {
 			return true
 		}
 		return false
 	}
 	// 通用字段是否可选
 	const toCommonFieldEstimate = (record) => {
-		if (record.fieldName.toLowerCase().indexOf('create_user') > -1 ||
-			record.fieldName.toLowerCase().indexOf('update_user') > -1 ) {
+		if (
+			record.fieldName.toLowerCase().indexOf('create_user') > -1 ||
+			record.fieldName.toLowerCase().indexOf('update_user') > -1
+		) {
 			return true
 		}
 		return false
 	}
 	// 设置该下拉框是否能选
 	const toFieldSelectEstimate = (record) => {
-		if ( record.fieldJavaType === 'Date' && record.effectType === 'datepicker' ) {
+		if (record.fieldJavaType === 'Date' && record.effectType === 'datepicker') {
 			return true
 		}
 		return false
@@ -358,8 +362,8 @@
 	// 提交
 	const onSubmit = (recordData) => {
 		let submitParam = cloneDeep(tableData.value)
-		let errStatus = 100;
-		submitParam.forEach(item => {
+		let errStatus = 100
+		submitParam.forEach((item) => {
 			// 必填那一项转换
 			for (const key in item) {
 				if (item[key] === true) {
@@ -372,25 +376,29 @@
 			if (item.queryWhether === 'Y' && !item.queryType) {
 				// 排除掉时间选择
 				if (item.fieldJavaType !== 'Date' && item.effectType !== 'checkbox') {
-					errStatus ++
+					errStatus++
 				}
 			}
-			if ((item.effectType === 'select' ||
-				item.effectType === 'radio' ||
-				item.effectType === 'checkbox') && !item.dictTypeCode) {
-				errStatus ++
+			if (
+				(item.effectType === 'select' || item.effectType === 'radio' || item.effectType === 'checkbox') &&
+				!item.dictTypeCode
+			) {
+				errStatus++
 			}
 		})
-		return new Promise((resolve,reject) => {
+		return new Promise((resolve, reject) => {
 			if (errStatus > 100) {
 				reject('校验失败，请选择对应的下拉框选项')
 				return
 			}
-			genConfigApi.configEditBatch(submitParam).then((data) => {
-				resolve(data)
-			}).catch((err) => {
-				reject(err)
-			})
+			genConfigApi
+				.configEditBatch(submitParam)
+				.then((data) => {
+					resolve(data)
+				})
+				.catch((err) => {
+					reject(err)
+				})
 		})
 	}
 	// 抛出钩子

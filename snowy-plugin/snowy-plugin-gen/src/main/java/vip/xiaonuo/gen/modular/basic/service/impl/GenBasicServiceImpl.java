@@ -85,22 +85,18 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     private static final String DB_PASSWORD_KEY = "spring.datasource.dynamic.datasource.master.password";
 
-    private static final String MODULE_KEY = "biz";
-
     private static final String GEN_PROJECT_FRONT_PLUGIN_KEY = "snowy-admin-web";
 
     private static final String GEN_PROJECT_PLUGIN_KEY = "snowy-plugin";
-
-    private static final String GEN_PROJECT_PLUGIN_BIZ_KEY = GEN_PROJECT_PLUGIN_KEY + File.separator + "snowy-plugin-biz";
 
     private static final List<JSONObject> GEN_SQL_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "Mysql.sql.btl"),
             JSONUtil.createObj().set("name", "Oracle.sql.btl"));
 
     private static final List<JSONObject> GEN_FRONT_FILE_LIST = CollectionUtil.newArrayList(
-            JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api" + File.separator + MODULE_KEY),
-            JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "views" + File.separator + MODULE_KEY),
-            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "views" + File.separator + MODULE_KEY));
+            JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
+            JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "views"),
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "views"));
 
     private static final List<JSONObject> GEN_BACKEND_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "Controller.java.btl").set("path", "controller"),
@@ -162,6 +158,34 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     public GenBasic add(GenBasicAddParam genBasicAddParam) {
         GenBasic genBasic = BeanUtil.toBean(genBasicAddParam, GenBasic.class);
         this.save(genBasic);
+        addGenConfig(genBasic);
+        return genBasic;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public GenBasic edit(GenBasicEditParam genBasicEditParam) {
+        GenBasic genBasic = this.queryEntity(genBasicEditParam.getId());
+        if (!genBasic.getDbTable().equals(genBasicEditParam.getDbTable())) {
+            // 删除配置表内该表的字段
+            QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(GenConfig::getBasicId, genBasic.getId());
+            genConfigService.remove(queryWrapper);
+            // 新增新表的数据字段
+            addGenConfig(genBasic);
+        }
+        BeanUtil.copyProperties(genBasicEditParam, genBasic);
+        this.updateById(genBasic);
+        return genBasic;
+    }
+
+    /**
+     * 新增表字段至配置内
+     *
+     * @author yubaoshan
+     * @date 2023/02/22 00:54
+     */
+    private void addGenConfig (GenBasic genBasic) {
         GenBasicTableColumnParam tableColumnParam = new GenBasicTableColumnParam();
         tableColumnParam.setTableName(genBasic.getDbTable());
         List<GenBasicTableColumnResult> resultList = this.tableColumns(tableColumnParam);
@@ -203,16 +227,6 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             GenConfig genConfig = BeanUtil.toBean(addParam, GenConfig.class);
             genConfigService.save(genConfig);
         }
-        return genBasic;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public GenBasic edit(GenBasicEditParam genBasicEditParam) {
-        GenBasic genBasic = this.queryEntity(genBasicEditParam.getId());
-        BeanUtil.copyProperties(genBasicEditParam, genBasic);
-        this.updateById(genBasic);
-        return genBasic;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -352,6 +366,11 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             throw new CommonException("前端代码生成位置：{}不存在，请检查位置", genProjectFrontendPath);
         }
 
+        GenBasic genBasic = this.queryEntity(genBasicIdParam.getId());
+        String genModuleName = genBasic.getModuleName();
+        String genPluginName = genBasic.getPluginName();
+        String GEN_PROJECT_PLUGIN_BIZ_KEY = GEN_PROJECT_PLUGIN_KEY + File.separator + genPluginName;
+
         // 定义后端生成的目录
         String genProjectBackendPath = System.getProperty("user.dir") + File.separator + GEN_PROJECT_PLUGIN_BIZ_KEY + File.separator + "src" +
                 File.separator + "main" + File.separator + "java";
@@ -360,11 +379,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             throw new CommonException("后端代码生成位置：{}不存在，请检查位置", genProjectBackendPath);
         }
         try {
-            GenBasic genBasic = this.queryEntity(genBasicIdParam.getId());
-
             // 生成菜单
             String menuId = sysMenuApi.addForGenMenu(genBasic.getMenuPid(), genBasic.getBusName(), genBasic.getModule(), genBasic.getFunctionName(),
-                    StrUtil.SLASH + MODULE_KEY + StrUtil.SLASH + genBasic.getBusName());
+                    StrUtil.SLASH + genModuleName + StrUtil.SLASH + genBasic.getBusName());
 
             // 生成按钮
             sysButtonApi.addForGenButton(menuId, genBasic.getClassName(), genBasic.getFunctionName());
@@ -456,7 +473,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeFrontendResultList = CollectionUtil.newArrayList();
             GEN_FRONT_FILE_LIST.forEach(fileJsonObject -> {
                 String fileTemplateName = fileJsonObject.getStr("name");
-                String fileTemplatePath = fileJsonObject.getStr("path");
+                String fileTemplatePath = fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName();
                 GenBasicPreviewResult.GenBasicCodeResult genBasicCodeFrontResult = new GenBasicPreviewResult.GenBasicCodeResult();
                 Template templateFront = groupTemplateFront.getTemplate(fileTemplateName);
                 templateFront.binding(bindingJsonObject);
@@ -476,7 +493,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
             // 后端基础路径
             String genBackendBasicPath = StrUtil.replace(genBasic.getPackageName(), StrUtil.DOT, File.separator) +
-                    File.separator + MODULE_KEY + File.separator + "modular" +  File.separator + genBasic.getBusName() + File.separator;
+                    File.separator + genBasic.getModuleName() + File.separator + "modular" +  File.separator + genBasic.getBusName() + File.separator;
             // 后端
             GroupTemplate groupTemplateBackEnd = new GroupTemplate(new ClasspathResourceLoader("backend"),
                     Configuration.defaultConfiguration());
@@ -513,7 +530,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     public JSONObject getBindingJsonObject(GenBasic genBasic) {
         JSONObject bindingJsonObject = JSONUtil.createObj();
         // 代码模块名
-        bindingJsonObject.set("moduleName", MODULE_KEY);
+        bindingJsonObject.set("moduleName", genBasic.getModuleName());
         // 功能名
         bindingJsonObject.set("functionName", genBasic.getFunctionName());
         // 业务名
@@ -547,9 +564,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         // 菜单编码
         bindingJsonObject.set("menuCode", RandomUtil.randomString(10));
         // 菜单路径
-        bindingJsonObject.set("menuPath", StrUtil.SLASH + MODULE_KEY + StrUtil.SLASH + genBasic.getBusName());
+        bindingJsonObject.set("menuPath", StrUtil.SLASH + genBasic.getModuleName() + StrUtil.SLASH + genBasic.getBusName());
         // 菜单组件
-        bindingJsonObject.set("menuComponent", MODULE_KEY + StrUtil.SLASH + genBasic.getBusName() + StrUtil.SLASH + "index");
+        bindingJsonObject.set("menuComponent", genBasic.getModuleName() + StrUtil.SLASH + genBasic.getBusName() + StrUtil.SLASH + "index");
         // 模块ID
         bindingJsonObject.set("moduleId", genBasic.getModule());
         // 添加按钮ID

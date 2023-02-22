@@ -73,12 +73,14 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(${className}AddParam ${classNameFirstLower}AddParam) {
         ${className} ${classNameFirstLower} = BeanUtil.toBean(${classNameFirstLower}AddParam, ${className}.class);
         this.save(${classNameFirstLower});
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(${className}EditParam ${classNameFirstLower}EditParam) {
         <% for(var i = 0; i < configList.~size; i++) { %>
