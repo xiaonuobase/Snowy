@@ -20,11 +20,11 @@
 
 		<a-space direction="vertical" class="mb-2" style="width: 100%">
 			请求参数：
-			<XnHighlightjs :code="paramJson"></XnHighlightjs>
+			<XnHighlightjs language="JSON" :code="paramJson"></XnHighlightjs>
 		</a-space>
 		<a-space direction="vertical" class="mb-2" style="width: 100%">
 			返回结果：
-			<XnHighlightjs language="JSON" :code="resultJson"></XnHighlightjs>
+			<XnHighlightjs autodetect :code="resultJson"></XnHighlightjs>
 		</a-space>
 	</a-drawer>
 </template>
