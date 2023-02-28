@@ -180,7 +180,7 @@
 					current: (pagination && pagination.current) ||
 							this.showPagination && this.localPagination.current || this.pageNum,
 					size: (pagination && pagination.pageSize) ||
-							this.showPagination && this.localPagination.pageSize || this.pageSize
+							this.showPagination && this.localPagination.pageSize || this.pageSize || this.localPagination.size
 					},
 					(sorter && sorter.field && {
 						sortField: sorter.field
