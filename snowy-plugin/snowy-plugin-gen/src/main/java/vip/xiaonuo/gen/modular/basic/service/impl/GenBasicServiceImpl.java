@@ -121,6 +121,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     private static final String UPDATE_TIME_KEY = "UPDATE_TIME";
 
+    private static final String DELETE_FLAG_KEY = "DELETE_FLAG";
+
     @Resource
     private Environment environment;
 
@@ -649,6 +651,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                     // 是否需要自动更新
                     configItem.set("needAutoUpdate", UPDATE_USER_KEY.equalsIgnoreCase(genConfig.getFieldName()) ||
                             UPDATE_TIME_KEY.equalsIgnoreCase(genConfig.getFieldName()));
+                    // 是否需要逻辑删除
+                    configItem.set("needLogicDelete", DELETE_FLAG_KEY.equalsIgnoreCase(genConfig.getFieldName()));
                     configList.add(configItem);
 
                 });

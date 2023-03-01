@@ -45,6 +45,10 @@ public class ${className} {
     <% if(configList[i].needAutoUpdate) { %>
     @TableField(fill = FieldFill.UPDATE)
     <% } else { %><% } %>
+    <% if(configList[i].needLogicDelete) { %>
+    @TableLogic
+    @TableField(fill = FieldFill.INSERT)
+    <% } else { %><% } %>
     private ${configList[i].fieldJavaType} ${configList[i].fieldNameCamelCase};
     <% if(i == configList.~size - 1) { %><% } else { %>
 
