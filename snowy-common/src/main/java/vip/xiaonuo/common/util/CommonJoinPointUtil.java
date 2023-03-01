@@ -12,13 +12,18 @@
  */
 package vip.xiaonuo.common.util;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * Spring切面工具类
@@ -35,27 +40,33 @@ public class CommonJoinPointUtil {
      * @date 2022/9/2 15:51
      */
     public static String getArgsJsonString(JoinPoint joinPoint) {
-        StringBuilder argsJson = new StringBuilder();
+        Signature signature = joinPoint.getSignature();
+        // 参数名数组
+        String[] parameterNames = ((MethodSignature) signature).getParameterNames();
+        // 构造参数组集合
+        Map<String, Object> map = MapUtil.newHashMap();
         Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            if (!isFilterObject(arg)) {
-                if (ObjectUtil.isNotNull(arg)) {
-                    argsJson.append(JSONUtil.toJsonStr(arg)).append(" ");
+        for (int i = 0; i < args.length; i++) {
+            if(ObjectUtil.isNotEmpty(args[i]) && isUsefulParam(args[i])) {
+                if(JSONUtil.isTypeJSON(StrUtil.toString(args[i]))) {
+                    map.put(parameterNames[i], JSONUtil.parseObj(args[i]));
+                } else {
+                    map.put(parameterNames[i], JSONUtil.toJsonStr(args[i]));
                 }
             }
         }
-        return argsJson.toString().trim();
+        return JSONUtil.toJsonStr(map);
     }
 
     /**
-     * 判断是否需要拼接参数，过滤掉HttpServletRequest,MultipartFile,HttpServletResponse等类型参数
+     * 判断是否需要拼接的参数，过滤掉HttpServletRequest,MultipartFile,HttpServletResponse等类型参数
      *
      * @author xuyuxiang
      * @date 2022/9/2 15:51
      */
-    private static boolean isFilterObject(Object arg) {
-        return arg instanceof MultipartFile ||
-                arg instanceof HttpServletRequest ||
-                arg instanceof HttpServletResponse;
+    private static boolean isUsefulParam(Object arg) {
+        return !(arg instanceof MultipartFile) &&
+                !(arg instanceof HttpServletRequest) &&
+                !(arg instanceof HttpServletResponse);
     }
 }
