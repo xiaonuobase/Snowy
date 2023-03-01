@@ -12,8 +12,6 @@
  */
 package vip.xiaonuo;
 
-import cn.hutool.json.JSONUtil;
-
 /**
  * TestMain方法
  *
@@ -22,7 +20,5 @@ import cn.hutool.json.JSONUtil;
  */
 public class Test {
     public static void main(String[] args) {
-        String jsonStr = JSONUtil.toJsonStr("dasdasdas,234233|}dasfsed");
-        System.out.println(jsonStr);
     }
 }
