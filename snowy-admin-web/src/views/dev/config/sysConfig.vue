@@ -88,7 +88,7 @@
 				<a-col :span="24">
 					<a-form-item>
 						<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-						<a-button style="margin-left: 10px" @click="() => formRef.resetFields()">重置</a-button>
+						<a-button style="margin-left: 10px" @click="resetForm">重置</a-button>
 					</a-form-item>
 				</a-col>
 			</a-row>
@@ -210,6 +210,7 @@
 					}
 				})
 
+				console.log(JSON.stringify(param))
 				// 创建快捷方式
 				const shortcut = {
 					shortcut: menuTreeSelectRef.value.getSelectData()
@@ -226,5 +227,13 @@
 					})
 			})
 			.catch(() => {})
+	}
+	// 重置表单，且设置默认值
+	const resetForm = () => {
+		imageUrl.value = ''
+		formData.value = {
+			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN: 'true',
+			SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL'
+		}
 	}
 </script>
