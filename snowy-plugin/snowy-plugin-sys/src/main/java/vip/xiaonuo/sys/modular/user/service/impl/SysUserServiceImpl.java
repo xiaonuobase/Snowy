@@ -753,15 +753,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updateUserInfo(SysUserUpdateInfoParam sysUserUpdateInfoParam) {
         SysUser sysUser = this.queryEntity(sysUserUpdateInfoParam.getId());
+
+        if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getPhone())) {
+            if (!PhoneUtil.isMobile(sysUserUpdateInfoParam.getPhone())) {
+                throw new CommonException("手机号码：{}格式错误", sysUserUpdateInfoParam.getPhone());
+            }
+            if (this.count(new LambdaQueryWrapper<SysUser>().ne(SysUser::getId, sysUser.getId())
+                    .eq(SysUser::getPhone, sysUserUpdateInfoParam.getPhone())) > 0) {
+                throw new CommonException("存在重复的手机号，手机号为：{}", sysUserUpdateInfoParam.getPhone());
+            }
+        }
+        LambdaUpdateWrapper<SysUser> lambdaUpdateWrapper = new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId());
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getName())) {
+            lambdaUpdateWrapper.set(SysUser::getName, sysUserUpdateInfoParam.getName());
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getPhone())) {
+            lambdaUpdateWrapper.set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()));
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getNickname())) {
+            lambdaUpdateWrapper.set(SysUser::getNickname, sysUserUpdateInfoParam.getNickname());
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getGender())) {
+            lambdaUpdateWrapper.set(SysUser::getGender, sysUserUpdateInfoParam.getGender());
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getBirthday())) {
+            lambdaUpdateWrapper.set(SysUser::getBirthday, sysUserUpdateInfoParam.getBirthday());
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getEmail())) {
+            lambdaUpdateWrapper.set(SysUser::getEmail, sysUserUpdateInfoParam.getEmail());
+        }
+        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getSignature())) {
+            lambdaUpdateWrapper.set(SysUser::getSignature, sysUserUpdateInfoParam.getSignature());
+        }
         // 更新指定字段
-        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
-                .set(SysUser::getName, sysUserUpdateInfoParam.getName())
-                .set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()))
-                .set(SysUser::getNickname, sysUserUpdateInfoParam.getNickname())
-                .set(SysUser::getGender, sysUserUpdateInfoParam.getGender())
-                .set(SysUser::getBirthday, sysUserUpdateInfoParam.getBirthday())
-                .set(SysUser::getEmail, sysUserUpdateInfoParam.getEmail())
-                .set(SysUser::getSignature, sysUserUpdateInfoParam.getSignature()));
+        this.update(lambdaUpdateWrapper);
     }
 
     @Override
