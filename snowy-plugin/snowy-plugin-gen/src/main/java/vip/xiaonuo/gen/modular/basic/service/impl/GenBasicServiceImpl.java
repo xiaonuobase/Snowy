@@ -552,7 +552,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         // 主键名驼峰
         bindingJsonObject.set("dbTableKeyCamelCase", StrUtil.toCamelCase(genBasic.getDbTableKey().toLowerCase()));
         // 主键首字母大写名
-        bindingJsonObject.set("dbTableKeyFirstUpper", StrUtil.upperFirst(genBasic.getDbTableKey().toLowerCase()));
+        bindingJsonObject.set("dbTableKeyFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(genBasic.getDbTableKey().toLowerCase())));
         // 主键注释
         bindingJsonObject.set("dbTableKeyRemark", genBasic.getDbTableKey());
         // 表单布局
