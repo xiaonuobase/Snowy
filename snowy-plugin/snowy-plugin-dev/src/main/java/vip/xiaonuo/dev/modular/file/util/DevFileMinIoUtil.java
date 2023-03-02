@@ -352,9 +352,10 @@ public class DevFileMinIoUtil {
             JSONObject configObject = JSONUtil.createObj().set("Version", "2012-10-17");
             JSONArray statementArray = JSONUtil.createArray();
             JSONArray actionArray = JSONUtil.createArray();
-            if (devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ)) {
+            if(devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ)) {
                 actionArray.put("s3:GetObject");
-            } else {
+            }
+            if(devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ_WRITE)) {
                 actionArray.put("s3:GetObject");
                 actionArray.put("s3:PutObject");
             }
