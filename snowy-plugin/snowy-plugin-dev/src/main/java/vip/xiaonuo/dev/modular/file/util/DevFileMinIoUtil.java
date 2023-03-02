@@ -18,11 +18,11 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import io.minio.MinioClient;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import io.minio.*;
 import io.minio.http.Method;
-import io.minio.policy.PolicyType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
@@ -90,11 +90,7 @@ public class DevFileMinIoUtil {
             throw new CommonException("MINIO文件操作客户端未正确配置：defaultBucketName为空");
         }
 
-        try {
-            client = new MinioClient(endpoint, accessKey, secretKey);
-        } catch (InvalidEndpointException | InvalidPortException e) {
-            throw new CommonException(e.getMessage());
-        }
+        client = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
     }
 
     /**
@@ -139,7 +135,8 @@ public class DevFileMinIoUtil {
     public static boolean doesBucketExist(String bucketName) {
         try {
             initClient();
-            client.bucketExists(bucketName);
+            BucketExistsArgs bucketExistsArgs = BucketExistsArgs.builder().bucket(bucketName).build();
+            client.bucketExists(bucketExistsArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
@@ -170,7 +167,8 @@ public class DevFileMinIoUtil {
     public static boolean isExistingFile(String bucketName, String key) {
         try {
             initClient();
-            InputStream object = client.getObject(bucketName, key);
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder().bucket(bucketName).object(key).build();
+            InputStream object = client.getObject(getObjectArgs);
             return !ObjectUtil.isEmpty(object);
         } catch (Exception e) {
             return false;
@@ -229,7 +227,9 @@ public class DevFileMinIoUtil {
         try {
             initClient();
             byteArrayInputStream = new ByteArrayInputStream(bytes);
-            client.putObject(bucketName, key, new ByteArrayInputStream(bytes), bytes.length, getFileContentType(key));
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder().bucket(bucketName).object(key)
+                    .contentType(getFileContentType(key)).stream(byteArrayInputStream, bytes.length, -1).build();
+            client.putObject(putObjectArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         } finally {
@@ -249,7 +249,9 @@ public class DevFileMinIoUtil {
     public static void storageFile(String bucketName, String key, InputStream inputStream) {
         try {
             initClient();
-            client.putObject(bucketName, key, inputStream, inputStream.available(), getFileContentType(key));
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder().bucket(bucketName).object(key)
+                    .contentType(getFileContentType(key)).stream(inputStream, inputStream.available(), -1).build();
+            client.putObject(putObjectArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         } finally {
@@ -328,7 +330,8 @@ public class DevFileMinIoUtil {
     public static byte[] getFileBytes(String bucketName, String key) {
         try {
             initClient();
-            InputStream inputStream = client.getObject(bucketName, key);
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder().bucket(bucketName).object(key).build();
+            InputStream inputStream = client.getObject(getObjectArgs);
             return IoUtil.readBytes(inputStream);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
@@ -339,20 +342,30 @@ public class DevFileMinIoUtil {
      * 设置文件访问权限管理
      *
      * @param bucketName     桶名称
-     * @param key            唯一标示id，例如a.txt, doc/a.txt
+     * @param key             唯一标示id，例如a.txt, doc/a.txt
      * @param devFileBucketAuthEnum 文件权限
      * @author xuyuxiang
      * @date 2022/1/5 23:24
      */
     public static void setFileAcl(String bucketName, String key, DevFileBucketAuthEnum devFileBucketAuthEnum) {
         try {
-            if (devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PRIVATE)) {
-                client.setBucketPolicy(bucketName, key, PolicyType.NONE);
-            } else if (devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ)) {
-                client.setBucketPolicy(bucketName, key, PolicyType.READ_ONLY);
-            } else if (devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ_WRITE)) {
-                client.setBucketPolicy(bucketName, key, PolicyType.READ_WRITE);
+            JSONObject configObject = JSONUtil.createObj().set("Version", "2012-10-17");
+            JSONArray statementArray = JSONUtil.createArray();
+            JSONArray actionArray = JSONUtil.createArray();
+            if (devFileBucketAuthEnum.equals(DevFileBucketAuthEnum.PUBLIC_READ)) {
+                actionArray.put("s3:GetObject");
+            } else {
+                actionArray.put("s3:GetObject");
+                actionArray.put("s3:PutObject");
             }
+            JSONObject statementObject = JSONUtil.createObj();
+            statementObject.set("Effect", "Allow").set("Principal", JSONUtil.createObj().set("AWS", JSONUtil.createArray().put("*")))
+                    .set("Action", actionArray).set("Resource", JSONUtil.createArray().put("arn:aws:s3:::" + bucketName + "/*"));
+            statementArray.put(statementObject);
+            configObject.set("Statement", statementArray);
+            String config = JSONUtil.toJsonStr(configObject);
+            SetBucketPolicyArgs setBucketPolicyArgs = SetBucketPolicyArgs.builder().bucket(bucketName).config(config).build();
+            client.setBucketPolicy(setBucketPolicyArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
@@ -371,7 +384,9 @@ public class DevFileMinIoUtil {
     public static void copyFile(String originBucketName, String originFileKey, String newBucketName, String newFileKey) {
         try {
             initClient();
-            client.copyObject(originBucketName, originFileKey, newBucketName, newFileKey);
+            CopySource copySource = CopySource.builder().bucket(originBucketName).object(originFileKey).build();
+            CopyObjectArgs copyObjectArgs = CopyObjectArgs.builder().source(copySource).bucket(newBucketName).object(newFileKey).build();
+            client.copyObject(copyObjectArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
@@ -389,7 +404,9 @@ public class DevFileMinIoUtil {
     public static String getFileAuthUrl(String bucketName, String key, Long timeoutMillis) {
         try {
             initClient();
-            return client.getPresignedObjectUrl(Method.GET, bucketName, key, timeoutMillis.intValue(), null);
+            GetPresignedObjectUrlArgs getPresignedObjectUrlArgs = GetPresignedObjectUrlArgs.builder().bucket(bucketName)
+                    .object(key).method(Method.GET).expiry(timeoutMillis.intValue()).build();
+            return client.getPresignedObjectUrl(getPresignedObjectUrlArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
@@ -423,7 +440,8 @@ public class DevFileMinIoUtil {
      */
     public static void deleteFile(String bucketName, String key) {
         try {
-            client.removeObject(bucketName, key);
+            RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder().bucket(bucketName).object(key).build();
+            client.removeObject(removeObjectArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }

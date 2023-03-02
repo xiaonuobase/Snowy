@@ -19,7 +19,7 @@
         <ten.sdk.ses.version>3.1.455</ten.sdk.ses.version>
         <ten.sdk.sms.version>3.1.455</ten.sdk.sms.version>
         <ali.oss.version>3.14.0</ali.oss.version>
-        <minio.version>3.0.12</minio.version>
+        <minio.version>8.5.2</minio.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <aliyun.sdk.dm.version>3.3.1</aliyun.sdk.dm.version>
         <aliyun.sdk.ecs.version>3.1.0</aliyun.sdk.ecs.version>
@@ -40,6 +40,12 @@
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
             <version>${ten.cos.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tencentcloud-sdk-java-common</artifactId>
+                    <groupId>com.tencentcloudapi</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--阿里云上传文件客户端-->
@@ -54,6 +60,16 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--java邮件发送-->
@@ -68,6 +84,12 @@
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-dm</artifactId>
             <version>${aliyun.sdk.dm.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.mail</artifactId>
+                    <groupId>com.sun.mail</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- 腾讯云邮件发送 -->
@@ -75,6 +97,20 @@
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java-ses</artifactId>
             <version>${ten.sdk.ses.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>logging-interceptor</artifactId>
+                    <groupId>com.squareup.okhttp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>okio</artifactId>
+                    <groupId>com.squareup.okio</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--阿里云短信发送-->
@@ -82,6 +118,20 @@
             <groupId>com.aliyun</groupId>
             <artifactId>dysmsapi20170525</artifactId>
             <version>${aliyun.sdk.dysmsapi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>org.jacoco.agent</artifactId>
+                    <groupId>org.jacoco</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--腾讯云短信发送-->

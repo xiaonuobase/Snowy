@@ -240,7 +240,7 @@ public class DevFileAliyunUtil {
             byteArrayInputStream = new ByteArrayInputStream(bytes);
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(getFileContentType(key));
-            client.putObject(bucketName, key, new ByteArrayInputStream(bytes), objectMetadata);
+            client.putObject(bucketName, key, byteArrayInputStream, objectMetadata);
         } catch (OSSException | ClientException e) {
             throw new CommonException(e.getMessage());
         } finally {
