@@ -41,7 +41,7 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
         <a href="./LICENSE">
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
         </a>
-        <a href="https://old.murphysec.com/dr/ewroEp2UH6rt8422yW" alt="OSCS Status">
+        <a href="https://old.murphysec.com/dr/mQ1xAybeOLMLOxH8pU" alt="OSCS Status">
             <img src="https://www.oscs1024.com/platform/badge//xiaonuobase/snowy.git.svg?size=small"/>
         </a>
     </p>
