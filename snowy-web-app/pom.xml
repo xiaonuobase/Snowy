@@ -14,17 +14,6 @@
     <packaging>jar</packaging>
     <description>主启动模块</description>
 
-    <properties>
-        <okhttp3.version>4.9.3</okhttp3.version>
-        <junit.version>4.13.2</junit.version>
-        <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
-        <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
-        <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
-        <oracle.nls.orai18n.version>19.7.0.0</oracle.nls.orai18n.version>
-        <mssql.connector.java.version>9.4.1.jre8</mssql.connector.java.version>
-        <postgres.connector.java.version>42.5.1</postgres.connector.java.version>
-    </properties>
-
     <dependencies>
 
         <!-- test -->
@@ -46,40 +35,34 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>${dynamic.datasource.version}</version>
         </dependency>
 
         <!-- mysql -->
          <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.java.version}</version>
         </dependency>
 
         <!-- postgresql -->
         <!--<dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgres.connector.java.version}</version>
         </dependency>-->
 
         <!-- oracle -->
         <!--<dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <version>${oracle.connector.java.version}</version>
         </dependency>-->
         <!--<dependency>
             <groupId>com.oracle.database.nls</groupId>
             <artifactId>orai18n</artifactId>
-            <version>${oracle.nls.orai18n.version}</version>
         </dependency>-->
 
         <!-- mssql -->
         <!--<dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>${mssql.connector.java.version}</version>
         </dependency>-->
 
         <!-- 达梦数据库 -->
@@ -104,49 +87,42 @@
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-auth</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 业务功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-biz</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- C端功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-client</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 开发工具插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-dev</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 代码生成插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-gen</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 移动端管理插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-mobile</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 系统功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-sys</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 

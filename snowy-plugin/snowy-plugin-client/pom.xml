@@ -19,21 +19,18 @@
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-client-api</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 引入登录鉴权接口，用于实现其C端登录所需逻辑 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-auth-api</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- 引入开发工具接口，用于配置信息 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-dev-api</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>

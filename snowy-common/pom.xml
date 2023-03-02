@@ -14,20 +14,6 @@
     <packaging>jar</packaging>
     <description>基础通用模块</description>
 
-    <properties>
-        <lombok.versin>1.18.22</lombok.versin>
-        <druid.version>1.2.9</druid.version>
-        <mybatis.plus.version>3.5.3.1</mybatis.plus.version>
-        <easy.trans.version>2.0.3</easy.trans.version>
-        <commons.pool2.version>2.11.1</commons.pool2.version>
-        <hutool.version>5.8.12</hutool.version>
-        <pinyin.version>2.5.1</pinyin.version>
-        <ip2region.version>2.6.3</ip2region.version>
-        <knife4j.version>2.0.9</knife4j.version>
-        <easypoi.version>4.3.0</easypoi.version>
-        <smcrypto.version>0.3.2</smcrypto.version>
-    </properties>
-
     <dependencies>
         <!-- validation -->
         <dependency>
@@ -63,84 +49,72 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.versin}</version>
         </dependency>
 
         <!-- druid -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>${druid.version}</version>
         </dependency>
 
         <!-- mybatis-plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis.plus.version}</version>
         </dependency>
 
         <!-- easy-trans -->
         <dependency>
             <groupId>com.fhs-opensource</groupId>
             <artifactId>easy-trans-spring-boot-starter</artifactId>
-            <version>${easy.trans.version}</version>
         </dependency>
 
         <!-- easy-trans-mybatis-plus-extend -->
         <dependency>
             <groupId>com.fhs-opensource</groupId>
             <artifactId>easy-trans-mybatis-plus-extend</artifactId>
-            <version>${easy.trans.version}</version>
         </dependency>
 
         <!-- redis -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
-            <version>${commons.pool2.version}</version>
         </dependency>
 
         <!-- hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>${hutool.version}</version>
         </dependency>
 
         <!-- pinyin4j -->
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
-            <version>${pinyin.version}</version>
         </dependency>
 
         <!-- ip2region -->
         <dependency>
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
-            <version>${ip2region.version}</version>
         </dependency>
 
         <!-- knife4j -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-spring-boot-starter</artifactId>
-            <version>${knife4j.version}</version>
         </dependency>
 
         <!-- easy-poi -->
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-spring-boot-starter</artifactId>
-            <version>${easypoi.version}</version>
         </dependency>
 
         <!-- sm-crypto -->
         <dependency>
             <groupId>com.antherd</groupId>
             <artifactId>sm-crypto</artifactId>
-            <version>${smcrypto.version}</version>
         </dependency>
     </dependencies>
 </project>

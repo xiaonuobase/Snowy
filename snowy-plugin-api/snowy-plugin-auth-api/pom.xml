@@ -14,23 +14,17 @@
     <packaging>jar</packaging>
     <description>登录鉴权插件api接口</description>
 
-    <properties>
-        <sa.token.version>1.31.0</sa.token.version>
-    </properties>
-
     <dependencies>
         <!-- 每个插件接口都要引入common -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-common</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
 
         <!-- sa-token-core -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-core</artifactId>
-            <version>${sa.token.version}</version>
         </dependency>
     </dependencies>
 </project>
