@@ -25,6 +25,12 @@
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tencentcloud-sdk-java-common</artifactId>
+                    <groupId>com.tencentcloudapi</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--阿里云上传文件客户端-->
@@ -55,12 +61,24 @@
         <dependency>
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java-ses</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okio-jvm</artifactId>
+                    <groupId>com.squareup.okio</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--阿里云短信发送-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>dysmsapi20170525</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.jacoco.agent</artifactId>
+                    <groupId>org.jacoco</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--腾讯云短信发送-->

@@ -12,50 +12,68 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <snowy.version>2.0.0</snowy.version>
+        <spring.boot.version>2.5.12</spring.boot.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 锁定依赖版本号 -->
-        <spring.boot.version>2.5.12</spring.boot.version>
-        <snowy.version>2.0.0</snowy.version>
-        <lombok.versin>1.18.22</lombok.versin>
-        <druid.version>1.2.9</druid.version>
-        <mybatis.plus.version>3.5.3.1</mybatis.plus.version>
-        <easy.trans.version>2.0.3</easy.trans.version>
-        <commons.pool2.version>2.11.1</commons.pool2.version>
-        <hutool.version>5.8.12</hutool.version>
-        <pinyin.version>2.5.1</pinyin.version>
-        <ip2region.version>2.6.3</ip2region.version>
-        <knife4j.version>2.0.9</knife4j.version>
-        <easypoi.version>4.3.0</easypoi.version>
-        <smcrypto.version>0.3.2</smcrypto.version>
-        <sa.token.version>1.31.0</sa.token.version>
-        <just.auth.version>1.16.5</just.auth.version>
+        <ali.oss.version>3.14.0</ali.oss.version>
+        <aliyun.sdk.dm.version>3.3.1</aliyun.sdk.dm.version>
+        <aliyun.sdk.dysmsapi.version>2.0.9</aliyun.sdk.dysmsapi.version>
+        <aliyun.sdk.ecs.version>3.1.0</aliyun.sdk.ecs.version>
+        <bcprov.jdk15on.version>1.70</bcprov.jdk15on.version>
         <beetl.version>1.2.40.Beetl.RELEASE</beetl.version>
+        <checker.qual.version>3.31.0</checker.qual.version>
+        <commons.beanutils.version>1.9.4</commons.beanutils.version>
+        <commons.compress.version>1.22</commons.compress.version>
+        <commons.pool2.version>2.11.1</commons.pool2.version>
+        <druid.version>1.2.9</druid.version>
+        <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
+        <easy.trans.version>2.1.7</easy.trans.version>
+        <easypoi.version>4.3.0</easypoi.version>
+        <fastjson.version>2.0.24</fastjson.version>
+        <gson.version>2.8.9</gson.version>
+        <guava.version>31.1-jre</guava.version>
+        <hutool.version>5.8.12</hutool.version>
+        <ip2region.version>2.6.3</ip2region.version>
+        <jackson.annotations.version>2.14.2</jackson.annotations.version>
+        <jackson.core.version>2.14.2</jackson.core.version>
+        <jackson.databind.version>2.14.2</jackson.databind.version>
+        <jackson.datatype.jdk8.version>2.14.2</jackson.datatype.jdk8.version>
+        <jackson.datatype.jsr310.version>2.14.2</jackson.datatype.jsr310.version>
+        <jackson.module.parameter.names.version>2.14.2</jackson.module.parameter.names.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+        <jettison.version>1.5.3</jettison.version>
+        <junit.version>4.13.2</junit.version>
+        <just.auth.version>1.16.5</just.auth.version>
+        <knife4j.version>2.0.9</knife4j.version>
+        <logback.classic.version>1.2.0</logback.classic.version>
+        <lombok.versin>1.18.22</lombok.versin>
+        <minio.version>8.5.2</minio.version>
+        <mssql.connector.java.version>9.2.1.jre8</mssql.connector.java.version>
+        <mybatis.plus.version>3.5.3.1</mybatis.plus.version>
+        <mybatis.version>3.5.10</mybatis.version>
+        <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
+        <netty.common.version>4.1.89.Final</netty.common.version>
+        <netty.handler.version>4.1.89.Final</netty.handler.version>
+        <okhttp3.version>4.10.0</okhttp3.version>
+        <okio.version>3.3.0</okio.version>
+        <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
+        <oracle.nls.orai18n.version>19.7.0.0</oracle.nls.orai18n.version>
+        <oshi.core.version>6.2.2</oshi.core.version>
+        <pinyin.version>2.5.1</pinyin.version>
+        <postgres.connector.java.version>42.2.25</postgres.connector.java.version>
+        <protobuf.java.version>3.21.12</protobuf.java.version>
+        <sa.token.version>1.31.0</sa.token.version>
+        <smcrypto.version>0.3.2</smcrypto.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <spring.context.version>5.3.19</spring.context.version>
+        <spring.security.crypto.version>6.0.2</spring.security.crypto.version>
+        <springfox.swagger2.version>2.10.5</springfox.swagger2.version>
         <ten.cos.version>5.6.68</ten.cos.version>
         <ten.sdk.ses.version>3.1.455</ten.sdk.ses.version>
         <ten.sdk.sms.version>3.1.455</ten.sdk.sms.version>
-        <ali.oss.version>3.14.0</ali.oss.version>
-        <minio.version>8.5.2</minio.version>
-        <javax.mail.version>1.6.2</javax.mail.version>
-        <aliyun.sdk.dm.version>3.3.1</aliyun.sdk.dm.version>
-        <aliyun.sdk.ecs.version>3.1.0</aliyun.sdk.ecs.version>
-        <aliyun.sdk.dysmsapi.version>2.0.9</aliyun.sdk.dysmsapi.version>
-        <oshi.core.version>6.2.2</oshi.core.version>
-        <junit.version>4.13.2</junit.version>
-        <logback.classic.version>1.2.0</logback.classic.version>
-        <gson.version>2.8.9</gson.version>
-        <jettison.version>1.5.3</jettison.version>
-        <snakeyaml.version>2.0</snakeyaml.version>
-        <spring.context.version>5.3.19</spring.context.version>
-        <fastjson.version>2.0.24</fastjson.version>
-        <jackson.databind.version>2.14.2</jackson.databind.version>
-        <commons.beanutils.version>1.9.4</commons.beanutils.version>
-        <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
-        <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
-        <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
-        <oracle.nls.orai18n.version>19.7.0.0</oracle.nls.orai18n.version>
-        <mssql.connector.java.version>9.2.1.jre8</mssql.connector.java.version>
-        <postgres.connector.java.version>42.2.25</postgres.connector.java.version>
+        <tomcat.embed.core.version>9.0.72</tomcat.embed.core.version>
     </properties>
 
      <modules>
@@ -202,6 +220,20 @@
                 <version>${druid.version}</version>
             </dependency>
 
+            <!-- mybatis -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+
+            <!-- mybatis-plus-core -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-core</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+
             <!-- mybatis-plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -228,6 +260,20 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>${commons.pool2.version}</version>
+            </dependency>
+
+            <!-- okhttp -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp3.version}</version>
+            </dependency>
+
+            <!-- okio -->
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
             </dependency>
 
             <!-- hutool -->
@@ -406,6 +452,27 @@
                 <version>${gson.version}</version>
             </dependency>
 
+            <!-- guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- netty-common -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.common.version}</version>
+            </dependency>
+
+            <!-- netty-common -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${netty.handler.version}</version>
+            </dependency>
+
             <!-- jettison -->
             <dependency>
                 <groupId>org.codehaus.jettison</groupId>
@@ -427,11 +494,46 @@
                 <version>${spring.context.version}</version>
             </dependency>
 
+            <!-- spring-security-crypto -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${spring.security.crypto.version}</version>
+            </dependency>
+
+            <!-- springfox-swagger2 -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox.swagger2.version}</version>
+            </dependency>
+
+            <!-- tomcat-embed-core -->
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.embed.core.version}</version>
+            </dependency>
+
             <!-- fastjson -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- jackson-annotations -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.annotations.version}</version>
+            </dependency>
+
+            <!-- jackson-core -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.core.version}</version>
             </dependency>
 
             <!-- jackson-databind -->
@@ -441,11 +543,60 @@
                 <version>${jackson.databind.version}</version>
             </dependency>
 
+            <!-- jackson-datatype -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
+                <version>${jackson.datatype.jdk8.version}</version>
+            </dependency>
+
+            <!-- jackson-jsr310 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.datatype.jsr310.version}</version>
+            </dependency>
+
+            <!-- jackson-module-parameter-names -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-parameter-names</artifactId>
+                <version>${jackson.module.parameter.names.version}</version>
+            </dependency>
+
             <!-- commons-beanutils -->
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons.beanutils.version}</version>
+            </dependency>
+
+            <!-- commons-compress -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons.compress.version}</version>
+            </dependency>
+
+            <!-- protobuf-java -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.java.version}</version>
+            </dependency>
+
+            <!-- checker-qual -->
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>${checker.qual.version}</version>
+            </dependency>
+
+            <!-- bcprov-jdk15on -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov.jdk15on.version}</version>
             </dependency>
 
             <!-- dynamic-datasource -->
