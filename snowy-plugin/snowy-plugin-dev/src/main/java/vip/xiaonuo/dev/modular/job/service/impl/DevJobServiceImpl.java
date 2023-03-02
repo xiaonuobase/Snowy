@@ -169,7 +169,7 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
             // 将运行中的停止
             devJobIdList.forEach(CronUtil::remove);
             // 执行删除
-            this.removeBatchByIds(devJobIdList);
+            this.removeByIds(devJobIdList);
         }
     }
 

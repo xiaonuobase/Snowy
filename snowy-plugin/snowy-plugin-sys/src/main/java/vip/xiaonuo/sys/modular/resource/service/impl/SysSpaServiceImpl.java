@@ -143,7 +143,7 @@ public class SysSpaServiceImpl extends ServiceImpl<SysSpaMapper, SysSpa> impleme
                 throw new CommonException("不可删除系统内置单页面");
             }
             // 删除
-            this.removeBatchByIds(sysSpaIdList);
+            this.removeByIds(sysSpaIdList);
         }
     }
 

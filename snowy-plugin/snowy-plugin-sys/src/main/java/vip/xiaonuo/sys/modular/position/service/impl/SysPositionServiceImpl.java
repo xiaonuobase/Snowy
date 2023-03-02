@@ -135,7 +135,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
                 }
             }
             // 执行删除
-            this.removeBatchByIds(positionIdList);
+            this.removeByIds(positionIdList);
         }
     }
 

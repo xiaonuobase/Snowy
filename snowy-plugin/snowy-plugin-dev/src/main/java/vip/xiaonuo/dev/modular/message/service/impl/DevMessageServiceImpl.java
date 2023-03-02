@@ -161,7 +161,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
             devRelationService.remove(new LambdaUpdateWrapper<DevRelation>().eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue())
                     .in(DevRelation::getObjectId, devMessageIdList));
             // 执行删除
-            this.removeBatchByIds(devMessageIdList);
+            this.removeByIds(devMessageIdList);
         }
     }
 

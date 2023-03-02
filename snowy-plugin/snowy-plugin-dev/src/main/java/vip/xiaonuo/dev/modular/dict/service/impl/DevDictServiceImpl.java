@@ -173,7 +173,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
                 throw new CommonException("不可删除系统内置字典");
             }
             // 删除
-            this.removeBatchByIds(devDictIdList);
+            this.removeByIds(devDictIdList);
         }
     }
 

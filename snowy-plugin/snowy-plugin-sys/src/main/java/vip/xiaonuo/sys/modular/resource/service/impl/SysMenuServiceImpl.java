@@ -265,7 +265,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 sysRelationService.remove(new LambdaUpdateWrapper<SysRelation>().in(SysRelation::getTargetId, toDeleteMenuIdList)
                         .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
                 // 执行删除
-                this.removeBatchByIds(toDeleteMenuIdList);
+                this.removeByIds(toDeleteMenuIdList);
             }
         }
     }

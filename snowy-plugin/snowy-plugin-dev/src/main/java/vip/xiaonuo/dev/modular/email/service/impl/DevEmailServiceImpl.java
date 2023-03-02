@@ -182,7 +182,7 @@ public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> i
 
     @Override
     public void delete(List<DevEmailIdParam> devEmailIdParamList) {
-        this.removeBatchByIds(CollStreamUtil.toList(devEmailIdParamList, DevEmailIdParam::getId));
+        this.removeByIds(CollStreamUtil.toList(devEmailIdParamList, DevEmailIdParam::getId));
     }
 
     @Override

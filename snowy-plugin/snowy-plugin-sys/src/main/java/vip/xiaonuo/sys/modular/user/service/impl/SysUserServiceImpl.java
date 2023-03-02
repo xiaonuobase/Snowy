@@ -321,7 +321,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         .set(SysUser::getPositionJson, JSONUtil.toJsonStr(handledJsonObjectList)));
             });
             // 执行删除
-            this.removeBatchByIds(sysUserIdList);
+            this.removeByIds(sysUserIdList);
 
             // TODO 此处需要将这些用户踢下线，并永久注销这些用户
         }

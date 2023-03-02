@@ -66,7 +66,7 @@ public class SysIndexServiceImpl implements SysIndexService {
         List<String> scheduleIdList = sysIndexScheduleIdParamList.stream().map(SysIndexScheduleIdParam::getId)
                 .collect(Collectors.toList());
         if(ObjectUtil.isNotEmpty(scheduleIdList)) {
-            sysRelationService.removeBatchByIds(scheduleIdList);
+            sysRelationService.removeByIds(scheduleIdList);
         }
     }
 

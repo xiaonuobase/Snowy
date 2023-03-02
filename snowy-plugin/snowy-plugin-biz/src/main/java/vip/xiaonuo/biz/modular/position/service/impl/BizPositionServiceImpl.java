@@ -175,7 +175,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
                 }
             }
             // 执行删除
-            this.removeBatchByIds(positionIdList);
+            this.removeByIds(positionIdList);
         }
     }
 

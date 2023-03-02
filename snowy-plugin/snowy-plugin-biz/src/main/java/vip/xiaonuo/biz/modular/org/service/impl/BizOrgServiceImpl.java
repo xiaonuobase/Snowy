@@ -220,7 +220,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 throw new CommonException("请先删除机构下的岗位");
             }
             // 执行删除
-            this.removeBatchByIds(toDeleteOrgIdList);
+            this.removeByIds(toDeleteOrgIdList);
         }
     }
 

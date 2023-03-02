@@ -151,7 +151,7 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
                             .set(SysRelation::getExtJson, JSONUtil.toJsonStr(extJsonObject)));
                 });
                 // 执行删除
-                this.removeBatchByIds(buttonIdList);
+                this.removeByIds(buttonIdList);
             }
         }
     }

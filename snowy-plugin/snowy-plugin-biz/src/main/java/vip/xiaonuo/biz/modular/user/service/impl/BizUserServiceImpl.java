@@ -267,7 +267,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                         .set(BizUser::getPositionJson, JSONUtil.toJsonStr(handledJsonObjectList)));
             });
             // 执行删除
-            this.removeBatchByIds(bizUserIdList);
+            this.removeByIds(bizUserIdList);
 
             // TODO 此处需要将这些人员踢下线，并永久注销这些人员
         }

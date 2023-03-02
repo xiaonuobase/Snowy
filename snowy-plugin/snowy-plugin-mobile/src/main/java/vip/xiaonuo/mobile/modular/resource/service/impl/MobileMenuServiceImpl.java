@@ -158,7 +158,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                 // 清除对应的角色与移动端资源信息
                 sysRelationApi.removeRoleHasMobileMenuRelation(toDeleteMenuIdList);
                 // 执行删除
-                this.removeBatchByIds(toDeleteMenuIdList);
+                this.removeByIds(toDeleteMenuIdList);
             }
         }
     }

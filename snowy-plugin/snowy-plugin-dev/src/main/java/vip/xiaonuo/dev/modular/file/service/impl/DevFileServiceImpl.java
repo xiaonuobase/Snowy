@@ -114,7 +114,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public void delete(List<DevFileIdParam> devFileIdParamList) {
-        this.removeBatchByIds(CollStreamUtil.toList(devFileIdParamList, DevFileIdParam::getId));
+        this.removeByIds(CollStreamUtil.toList(devFileIdParamList, DevFileIdParam::getId));
     }
 
     /**

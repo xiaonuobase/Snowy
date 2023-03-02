@@ -13,6 +13,7 @@
 package vip.xiaonuo.dev.modular.log.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
@@ -109,14 +110,14 @@ public class DevLogServiceImpl extends ServiceImpl<DevLogMapper, DevLog> impleme
         List<DevLogVisPieChartDataResult> resultList = CollectionUtil.newArrayList();
         DevLogVisPieChartDataResult devLogLoginPieChartDataResult = new DevLogVisPieChartDataResult();
         devLogLoginPieChartDataResult.setType("登录");
-        devLogLoginPieChartDataResult.setValue(this.count(new LambdaQueryWrapper<DevLog>()
-                .eq(DevLog::getCategory, DevLogCategoryEnum.LOGIN.getValue())));
+        devLogLoginPieChartDataResult.setValue(Convert.toLong(this.count(new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getCategory, DevLogCategoryEnum.LOGIN.getValue()))));
         resultList.add(devLogLoginPieChartDataResult);
 
         DevLogVisPieChartDataResult devLogLogoutPieChartDataResult = new DevLogVisPieChartDataResult();
         devLogLogoutPieChartDataResult.setType("登出");
-        devLogLogoutPieChartDataResult.setValue(this.count(new LambdaQueryWrapper<DevLog>()
-                .eq(DevLog::getCategory, DevLogCategoryEnum.LOGOUT.getValue())));
+        devLogLogoutPieChartDataResult.setValue(Convert.toLong(this.count(new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getCategory, DevLogCategoryEnum.LOGOUT.getValue()))));
         resultList.add(devLogLogoutPieChartDataResult);
         return resultList;
     }
@@ -160,14 +161,14 @@ public class DevLogServiceImpl extends ServiceImpl<DevLogMapper, DevLog> impleme
         List<DevLogOpPieChartDataResult> resultList = CollectionUtil.newArrayList();
         DevLogOpPieChartDataResult devLogOperatePieChartDataResult = new DevLogOpPieChartDataResult();
         devLogOperatePieChartDataResult.setType("操作日志");
-        devLogOperatePieChartDataResult.setValue(this.count(new LambdaQueryWrapper<DevLog>()
-                .eq(DevLog::getCategory, DevLogCategoryEnum.OPERATE.getValue())));
+        devLogOperatePieChartDataResult.setValue(Convert.toLong(this.count(new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getCategory, DevLogCategoryEnum.OPERATE.getValue()))));
         resultList.add(devLogOperatePieChartDataResult);
 
         DevLogOpPieChartDataResult devLogExceptionPieChartDataResult = new DevLogOpPieChartDataResult();
         devLogExceptionPieChartDataResult.setType("异常日志");
-        devLogExceptionPieChartDataResult.setValue(this.count(new LambdaQueryWrapper<DevLog>()
-                .eq(DevLog::getCategory, DevLogCategoryEnum.EXCEPTION.getValue())));
+        devLogExceptionPieChartDataResult.setValue(Convert.toLong(this.count(new LambdaQueryWrapper<DevLog>()
+                .eq(DevLog::getCategory, DevLogCategoryEnum.EXCEPTION.getValue()))));
         resultList.add(devLogExceptionPieChartDataResult);
         return resultList;
     }

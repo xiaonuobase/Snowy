@@ -172,7 +172,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 throw new CommonException("请先删除组织下的职位");
             }
             // 执行删除
-            this.removeBatchByIds(toDeleteOrgIdList);
+            this.removeByIds(toDeleteOrgIdList);
         }
     }
 

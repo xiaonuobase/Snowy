@@ -183,7 +183,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             sysRelationService.remove(new LambdaUpdateWrapper<SysRelation>().in(SysRelation::getObjectId, sysRoleIdList)
                     .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()));
             // 执行删除
-            this.removeBatchByIds(sysRoleIdList);
+            this.removeByIds(sysRoleIdList);
         }
     }
 

@@ -154,7 +154,7 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
                     commonCacheOperator.remove(CONFIG_CACHE_KEY + devConfig.getConfigKey());
                 });
                 // 执行删除
-                this.removeBatchByIds(devConfigIdList);
+                this.removeByIds(devConfigIdList);
             }
         }
     }

@@ -92,7 +92,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
 
     @Override
     public void delete(List<DevSmsIdParam> devSmsIdParamList) {
-        this.removeBatchByIds(CollStreamUtil.toList(devSmsIdParamList, DevSmsIdParam::getId));
+        this.removeByIds(CollStreamUtil.toList(devSmsIdParamList, DevSmsIdParam::getId));
     }
 
     @Override

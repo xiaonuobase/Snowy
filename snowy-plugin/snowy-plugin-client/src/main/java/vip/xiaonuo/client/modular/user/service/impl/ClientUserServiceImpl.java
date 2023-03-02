@@ -201,7 +201,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<ClientUserIdParam> clientUserIdParamList) {
-        this.removeBatchByIds(CollStreamUtil.toList(clientUserIdParamList, ClientUserIdParam::getId));
+        this.removeByIds(CollStreamUtil.toList(clientUserIdParamList, ClientUserIdParam::getId));
     }
 
     @Override

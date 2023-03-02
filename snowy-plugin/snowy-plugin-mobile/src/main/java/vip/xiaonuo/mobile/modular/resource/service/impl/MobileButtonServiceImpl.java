@@ -114,7 +114,7 @@ public class MobileButtonServiceImpl extends ServiceImpl<MobileButtonMapper, Mob
                 // 清除对应的角色与移动端菜单信息中的【授权的移动端按钮信息】
                 sysRelationApi.removeRoleHasMobileButtonRelation(parentMenuIdList, buttonIdList);
                 // 执行删除
-                this.removeBatchByIds(buttonIdList);
+                this.removeByIds(buttonIdList);
             }
         }
     }
