@@ -13,7 +13,6 @@ Snowy（SnowyAdmin）是国内首个国密前后端分离快速开发平台，�
 
 采用SpringBoot+MybatisPlus+AntDesignVue+Vite 等更多优秀组件及前沿技术开发，注释丰富，代码简洁，开箱即用！
 
-
 Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。
 
 <p align="center">     
@@ -41,6 +40,9 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
         </a>  
         <a href="./LICENSE">
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
+        </a>
+        <a href="https://old.murphysec.com/dr/ewroEp2UH6rt8422yW" alt="OSCS Status">
+            <img src="https://www.oscs1024.com/platform/badge//xiaonuobase/snowy.git.svg?size=small"/>
         </a>
     </p>
 </p>
