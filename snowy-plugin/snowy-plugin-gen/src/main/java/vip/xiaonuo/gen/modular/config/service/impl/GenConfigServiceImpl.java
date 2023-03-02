@@ -69,7 +69,7 @@ public class GenConfigServiceImpl extends ServiceImpl<GenConfigMapper, GenConfig
         List<String> basicIdIdList = CollStreamUtil.toList(genConfigIdParamList, GenConfigIdParam::getId);
         if(ObjectUtil.isNotEmpty(basicIdIdList)) {
             // 执行删除
-            this.removeBatchByIds(basicIdIdList);
+            this.removeByIds(basicIdIdList);
         }
     }
 

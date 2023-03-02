@@ -239,7 +239,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             // 级联删除配置
             genConfigService.remove(new LambdaQueryWrapper<GenConfig>().in(GenConfig::getBasicId, basicIdIdList));
             // 执行删除
-            this.removeBatchByIds(basicIdIdList);
+            this.removeByIds(basicIdIdList);
         }
     }
 
