@@ -245,6 +245,38 @@ public interface SysUserService extends IService<SysUser> {
     void grantRole(SysUserGrantRoleParam sysUserGrantRoleParam);
 
     /**
+     * 获取用户拥有资源
+     *
+     * @author xuyuxiang
+     * @date 2022/5/13 20:51
+     */
+    SysUserOwnResourceResult ownResource(SysUserIdParam sysUserIdParam);
+
+    /**
+     * 给用户授权资源
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 10:12
+     **/
+    void grantResource(SysUserGrantResourceParam sysUserGrantResourceParam);
+
+    /**
+     * 获取用户拥有权限
+     *
+     * @author xuyuxiang
+     * @date 2022/5/13 20:51
+     */
+    SysUserOwnPermissionResult ownPermission(SysUserIdParam sysUserIdParam);
+
+    /**
+     * 给用户授权权限
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 10:12
+     **/
+    void grantPermission(SysUserGrantPermissionParam sysUserGrantPermissionParam);
+
+    /**
      * 获取用户组织树
      *
      * @author xuyuxiang

@@ -29,6 +29,12 @@ public enum SysRelationCategoryEnum {
     /** 用户日程数据 */
     SYS_USER_SCHEDULE_DATA("SYS_USER_SCHEDULE_DATA"),
 
+    /** 用户拥有资源 */
+    SYS_USER_HAS_RESOURCE("SYS_USER_HAS_RESOURCE"),
+
+    /** 用户拥有权限 */
+    SYS_USER_HAS_PERMISSION("SYS_USER_HAS_PERMISSION"),
+
     /** 用户拥有角色 */
     SYS_USER_HAS_ROLE("SYS_USER_HAS_ROLE"),
 

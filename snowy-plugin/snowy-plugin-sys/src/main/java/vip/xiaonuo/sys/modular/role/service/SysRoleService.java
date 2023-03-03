@@ -100,7 +100,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @author xuyuxiang
      * @date 2022/5/13 20:51
      */
-    SysRoleOwnMobileMenuResult ownMobileMenu(SysRoleIdParam SysRoleIdParam);
+    SysRoleOwnMobileMenuResult ownMobileMenu(SysRoleIdParam sysRoleIdParam);
 
     /**
      * 给角色授权移动端菜单

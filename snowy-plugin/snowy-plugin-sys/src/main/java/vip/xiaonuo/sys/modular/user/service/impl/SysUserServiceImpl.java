@@ -746,6 +746,48 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public SysUserOwnResourceResult ownResource(SysUserIdParam sysUserIdParam) {
+        SysUserOwnResourceResult sysUserOwnResourceResult = new SysUserOwnResourceResult();
+        sysUserOwnResourceResult.setId(sysUserIdParam.getId());
+        sysUserOwnResourceResult.setGrantInfoList(sysRelationService.getRelationListByObjectIdAndCategory(sysUserIdParam.getId(),
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()).stream().map(sysRelation ->
+                JSONUtil.toBean(sysRelation.getExtJson(), SysUserOwnResourceResult.SysUserOwnResource.class)).collect(Collectors.toList()));
+        return sysUserOwnResourceResult;
+    }
+
+    @Override
+    public void grantResource(SysUserGrantResourceParam sysUserGrantResourceParam) {
+        String id = sysUserGrantResourceParam.getId();
+        List<String> menuIdList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                .map(SysUserGrantResourceParam.SysUserGrantResource::getMenuId).collect(Collectors.toList());
+        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(),
+                extJsonList);
+    }
+
+    @Override
+    public SysUserOwnPermissionResult ownPermission(SysUserIdParam sysUserIdParam) {
+        SysUserOwnPermissionResult sysUserOwnPermissionResult = new SysUserOwnPermissionResult();
+        sysUserOwnPermissionResult.setId(sysUserIdParam.getId());
+        sysUserOwnPermissionResult.setGrantInfoList(sysRelationService.getRelationListByObjectIdAndCategory(sysUserIdParam.getId(),
+                SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue()).stream().map(sysRelation ->
+                JSONUtil.toBean(sysRelation.getExtJson(), SysUserOwnPermissionResult.SysUserOwnPermission.class)).collect(Collectors.toList()));
+        return sysUserOwnPermissionResult;
+    }
+
+    @Override
+    public void grantPermission(SysUserGrantPermissionParam sysUserGrantPermissionParam) {
+        String id = sysUserGrantPermissionParam.getId();
+        List<String> apiUrlList = sysUserGrantPermissionParam.getGrantInfoList().stream()
+                .map(SysUserGrantPermissionParam.SysUserGrantPermission::getApiUrl).collect(Collectors.toList());
+        List<String> extJsonList = sysUserGrantPermissionParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(id, apiUrlList, SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue(),
+                extJsonList);
+    }
+
+    @Override
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
         LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
@@ -832,6 +874,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<String> getButtonCodeList(String userId) {
+        List<String> buttonCodeListGrantUser = this.getButtonCodeListGrantUser(userId);
+        List<String> buttonCodeListGrantRole = this.getButtonCodeListGrantRole(userId);
+        return CollectionUtil.newArrayList(CollectionUtil.unionDistinct(buttonCodeListGrantUser, buttonCodeListGrantRole));
+    }
+
+    public List<String> getButtonCodeListGrantUser(String userId) {
+        List<String> buttonIdList = CollectionUtil.newArrayList();
+        sysRelationService.getRelationListByObjectIdAndCategory(userId,
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()).forEach(sysRelation -> {
+            if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
+                buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
+            }
+        });
+        if (ObjectUtil.isNotEmpty(buttonIdList)) {
+            return sysButtonService.listByIds(buttonIdList).stream().map(SysButton::getCode).collect(Collectors.toList());
+        }
+        return CollectionUtil.newArrayList();
+    }
+
+    public List<String> getButtonCodeListGrantRole(String userId) {
         List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
         if (ObjectUtil.isNotEmpty(roleIdList)) {
@@ -868,6 +930,24 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<JSONObject> getPermissionList(String userId, String orgId) {
+        List<JSONObject> permissionListGrantUser = this.getPermissionListGrantUser(userId, orgId);
+        List<JSONObject> permissionListGrantRole = this.getPermissionListGrantRole(userId, orgId);
+        // TODO 执行合并
+        return permissionListGrantUser;
+    }
+
+    public List<JSONObject> getPermissionListGrantUser(String userId, String orgId) {
+        if (ObjectUtil.isNotEmpty(orgId)) {
+            Map<String, List<SysRelation>> groupMap = sysRelationService.getRelationListByObjectIdAndCategory(userId,
+                    SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue()).stream().collect(Collectors.groupingBy(SysRelation::getTargetId));
+            if (ObjectUtil.isNotEmpty(groupMap)) {
+                return getScopeListByMap(groupMap, orgId);
+            }
+        }
+        return CollectionUtil.newArrayList();
+    }
+
+    public List<JSONObject> getPermissionListGrantRole(String userId, String orgId) {
         if (ObjectUtil.isNotEmpty(orgId)) {
             List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                     SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
@@ -875,37 +955,41 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 Map<String, List<SysRelation>> groupMap = sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
                         SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()).stream().collect(Collectors.groupingBy(SysRelation::getTargetId));
                 if (ObjectUtil.isNotEmpty(groupMap)) {
-                    List<JSONObject> resultList = CollectionUtil.newArrayList();
-                    List<SysOrg> sysOrgList = sysOrgService.list();
-                    List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
-                    List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
-                    List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
-                            .stream().map(SysOrg::getId).collect(Collectors.toList());
-                    groupMap.forEach((key, value) -> {
-                        JSONObject jsonObject = JSONUtil.createObj().set("apiUrl", key);
-                        Set<String> scopeSet = CollectionUtil.newHashSet();
-                        value.forEach(sysRelation -> {
-                            JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());
-                            String scopeCategory = extJsonObject.getStr("scopeCategory");
-                            if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
-                                if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
-                                    scopeSet.addAll(scopeAllList);
-                                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
-                                    scopeSet.addAll(scopeOrgList);
-                                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
-                                    scopeSet.addAll(scopeOrgChildList);
-                                } else {
-                                    scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
-                                }
-                            }
-                        });
-                        resultList.add(jsonObject.set("dataScope", CollectionUtil.newArrayList(scopeSet)));
-                    });
-                    return resultList;
+                   return getScopeListByMap(groupMap, orgId);
                 }
             }
         }
         return CollectionUtil.newArrayList();
+    }
+
+    public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
+        List<JSONObject> resultList = CollectionUtil.newArrayList();
+        List<SysOrg> sysOrgList = sysOrgService.list();
+        List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
+        List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
+                .stream().map(SysOrg::getId).collect(Collectors.toList());
+        groupMap.forEach((key, value) -> {
+            JSONObject jsonObject = JSONUtil.createObj().set("apiUrl", key);
+            Set<String> scopeSet = CollectionUtil.newHashSet();
+            value.forEach(sysRelation -> {
+                JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());
+                String scopeCategory = extJsonObject.getStr("scopeCategory");
+                if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
+                    if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
+                        scopeSet.addAll(scopeAllList);
+                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
+                        scopeSet.addAll(scopeOrgList);
+                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
+                        scopeSet.addAll(scopeOrgChildList);
+                    } else {
+                        scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
+                    }
+                }
+            });
+            resultList.add(jsonObject.set("dataScope", CollectionUtil.newArrayList(scopeSet)));
+        });
+        return resultList;
     }
 
     @Override
