@@ -31,7 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
@@ -86,6 +88,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysPositionAddParam sysPositionAddParam) {
         SysPositionCategoryEnum.validate(sysPositionAddParam.getCategory());
@@ -97,8 +100,12 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
         }
         sysPosition.setCode(RandomUtil.randomString(10));
         this.save(sysPosition);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.POSITION.getValue(), JSONUtil.createArray().put(sysPosition));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(SysPositionEditParam sysPositionEditParam) {
         SysPositionCategoryEnum.validate(sysPositionEditParam.getCategory());
@@ -110,6 +117,9 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
             throw new CommonException("同组织下存在重复的职位，名称为：{}", sysPosition.getName());
         }
         this.updateById(sysPosition);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.POSITION.getValue(), JSONUtil.createArray().put(sysPosition));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -136,6 +146,9 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
             }
             // 执行删除
             this.removeByIds(positionIdList);
+
+            // 发布删除事件
+            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.POSITION.getValue(), positionIdList);
         }
     }
 

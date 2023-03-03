@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizBuildInEnum;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
@@ -52,6 +53,7 @@ import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.*;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -139,6 +141,9 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         // 设置状态
         bizUser.setUserStatus(BizUserStatusEnum.ENABLE.getValue());
         this.save(bizUser);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
     }
 
     private void checkParam(BizUserAddParam bizUserAddParam) {
@@ -187,6 +192,9 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         }
         BeanUtil.copyProperties(bizUserEditParam, bizUser);
         this.updateById(bizUser);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
     }
 
     private void checkParam(BizUserEditParam bizUserEditParam) {
@@ -254,6 +262,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             }
             // 清除【将这些人员作为主管】的信息
             this.update(new LambdaUpdateWrapper<BizUser>().in(BizUser::getDirectorId, bizUserIdList).set(BizUser::getDirectorId, null));
+
             // 清除【将这些人员作为兼任岗位的主管】的信息
             this.list(new LambdaQueryWrapper<BizUser>() .isNotNull(BizUser::getPositionJson)).forEach(sysUser -> {
                 List<JSONObject> handledJsonObjectList = JSONUtil.toList(JSONUtil.parseArray(sysUser.getPositionJson()),
@@ -266,10 +275,15 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId, sysUser.getId())
                         .set(BizUser::getPositionJson, JSONUtil.toJsonStr(handledJsonObjectList)));
             });
+
+            // 清除【将这些用户作为主管】的机构的主管信息
+            bizOrgService.update(new LambdaUpdateWrapper<BizOrg>().in(BizOrg::getDirectorId, bizUserIdList).set(BizOrg::getDirectorId, null));
+
             // 执行删除
             this.removeByIds(bizUserIdList);
 
-            // TODO 此处需要将这些人员踢下线，并永久注销这些人员
+            // 发布删除事件
+            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.USER.getValue(), bizUserIdList);
         }
     }
 

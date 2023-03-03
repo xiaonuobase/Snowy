@@ -50,6 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.*;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -59,6 +60,7 @@ import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.mobile.api.MobileButtonApi;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
+import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
@@ -227,6 +229,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 设置状态
         sysUser.setUserStatus(SysUserStatusEnum.ENABLE.getValue());
         this.save(sysUser);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
     }
 
     private void checkParam(SysUserAddParam sysUserAddParam) {
@@ -266,6 +271,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         BeanUtil.copyProperties(sysUserEditParam, sysUser);
         this.updateById(sysUser);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
     }
 
     private void checkParam(SysUserEditParam sysUserEditParam) {
@@ -306,8 +314,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (containsSuperAdminAccount) {
                 throw new CommonException("不可删除系统内置超管用户");
             }
+
             // 清除【将这些用户作为主管】的信息
             this.update(new LambdaUpdateWrapper<SysUser>().in(SysUser::getDirectorId, sysUserIdList).set(SysUser::getDirectorId, null));
+
             // 清除【将这些用户作为兼任职位的主管】的信息
             this.list(new LambdaQueryWrapper<SysUser>().isNotNull(SysUser::getPositionJson)).forEach(sysUser -> {
                 List<JSONObject> handledJsonObjectList = JSONUtil.toList(JSONUtil.parseArray(sysUser.getPositionJson()),
@@ -320,10 +330,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
                         .set(SysUser::getPositionJson, JSONUtil.toJsonStr(handledJsonObjectList)));
             });
+
+            // 清除【将这些用户作为主管】的机构的主管信息
+            sysOrgService.update(new LambdaUpdateWrapper<SysOrg>().in(SysOrg::getDirectorId, sysUserIdList).set(SysOrg::getDirectorId, null));
+
             // 执行删除
             this.removeByIds(sysUserIdList);
 
-            // TODO 此处需要将这些用户踢下线，并永久注销这些用户
+            // 发布删除事件
+            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.USER.getValue(), sysUserIdList);
         }
     }
 
@@ -387,7 +402,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("验证码错误");
         }
         // 不一致则直接验证码错误
-        if (!validCode.equals(Convert.toStr(existValidCode))) {
+        if (!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
             // 移除该验证码
             commonCacheOperator.remove(USER_CACHE_KEY + validCodeReqNo);
             throw new CommonException("验证码错误");

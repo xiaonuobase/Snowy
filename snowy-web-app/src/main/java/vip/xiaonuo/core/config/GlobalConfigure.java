@@ -60,11 +60,14 @@ import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
+import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonWrapperInterface;
 import vip.xiaonuo.core.handler.GlobalExceptionUtil;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -584,5 +587,16 @@ public class GlobalConfigure implements WebMvcConfigurer {
             }
 
         }
+    }
+
+    /**
+     * 注册数据变化事件中心 事件发布器
+     *
+     * @author xuyuxiang
+     * @date 2023/3/3 14:27
+     **/
+    @Resource
+    public void registerListenerList(List<CommonDataChangeListener> dataChangeListenerList) {
+        CommonDataChangeEventCenter.registerListenerList(dataChangeListenerList);
     }
 }

@@ -31,6 +31,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
@@ -42,6 +43,7 @@ import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 
 import javax.annotation.Resource;
@@ -114,6 +116,9 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         }
         bizPosition.setCode(RandomUtil.randomString(10));
         this.save(bizPosition);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.POSITION.getValue(), JSONUtil.createArray().put(bizPosition));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -139,6 +144,9 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             throw new CommonException("同机构下存在重复的岗位，名称为：{}", bizPosition.getName());
         }
         this.updateById(bizPosition);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.POSITION.getValue(), JSONUtil.createArray().put(bizPosition));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -176,6 +184,9 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             }
             // 执行删除
             this.removeByIds(positionIdList);
+
+            // 发布删除事件
+            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.POSITION.getValue(), positionIdList);
         }
     }
 

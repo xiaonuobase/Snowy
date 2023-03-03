@@ -18,16 +18,20 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
+import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
@@ -78,6 +82,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysModuleAddParam sysModuleAddParam) {
         SysModule sysModule = BeanUtil.toBean(sysModuleAddParam, SysModule.class);
@@ -89,8 +94,12 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
         sysModule.setCode(RandomUtil.randomString(10));
         sysModule.setCategory(SysResourceCategoryEnum.MODULE.getValue());
         this.save(sysModule);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysModule));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(SysModuleEditParam sysModuleEditParam) {
         SysModule sysModule = this.queryEntity(sysModuleEditParam.getId());
@@ -102,6 +111,9 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
             throw new CommonException("存在重复的模块，名称为：{}", sysModule.getTitle());
         }
         this.updateById(sysModule);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysModule));
     }
 
     @Override
@@ -130,6 +142,9 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
                             .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
                     // 执行删除
                     this.removeByIds(toDeleteMenuIdList);
+
+                    // 发布删除事件
+                    CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.RESOURCE.getValue(), toDeleteMenuIdList);
                 }
             }
         }

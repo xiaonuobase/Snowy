@@ -31,7 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.enums.SysOrgCategoryEnum;
 import vip.xiaonuo.sys.modular.org.mapper.SysOrgMapper;
@@ -100,6 +102,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return TreeUtil.build(treeNodeList, "0");
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysOrgAddParam sysOrgAddParam) {
         SysOrgCategoryEnum.validate(sysOrgAddParam.getCategory());
@@ -112,8 +115,12 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
         sysOrg.setCode(RandomUtil.randomString(10));
         this.save(sysOrg);
+
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(SysOrgEditParam sysOrgEditParam) {
         SysOrgCategoryEnum.validate(sysOrgEditParam.getCategory());
@@ -131,6 +138,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             throw new CommonException("不可选择上级组织：{}", this.getById(originDataList, sysOrg.getParentId()).getName());
         }
         this.updateById(sysOrg);
+
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -173,6 +183,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             }
             // 执行删除
             this.removeByIds(toDeleteOrgIdList);
+
+            // 发布删除事件
+            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
 

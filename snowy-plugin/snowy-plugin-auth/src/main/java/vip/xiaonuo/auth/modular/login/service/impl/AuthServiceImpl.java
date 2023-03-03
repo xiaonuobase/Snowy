@@ -137,7 +137,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
         }
         // 不一致则直接验证码错误
-        if(!validCode.equals(Convert.toStr(existValidCode))) {
+        if(!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
             // 移除该验证码
             commonCacheOperator.remove(AUTH_CACHE_KEY + validCodeReqNo);
             throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
