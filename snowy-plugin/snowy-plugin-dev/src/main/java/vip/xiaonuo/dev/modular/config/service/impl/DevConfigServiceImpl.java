@@ -16,8 +16,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.dfa.SensitiveUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -49,6 +51,8 @@ import java.util.stream.Collectors;
 public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig> implements DevConfigService {
 
     private static final String CONFIG_CACHE_KEY = "dev-config:";
+
+    private static final String SNOWY_SYS_DEFAULT_PASSWORD_KEY = "SNOWY_SYS_DEFAULT_PASSWORD";
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
@@ -98,7 +102,11 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
         if(ObjectUtil.isNotEmpty(devConfigListParam.getCategory())) {
             lambdaQueryWrapper.eq(DevConfig::getCategory, devConfigListParam.getCategory());
         }
-        return this.list(lambdaQueryWrapper);
+        return this.list(lambdaQueryWrapper).stream().peek(devConfig -> {
+            if(devConfig.getConfigKey().equals(SNOWY_SYS_DEFAULT_PASSWORD_KEY)) {
+                devConfig.setConfigValue(DesensitizedUtil.password(devConfig.getConfigValue()));
+            }
+        }).collect(Collectors.toList());
     }
 
     @Override
