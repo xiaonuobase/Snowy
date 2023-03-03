@@ -100,6 +100,14 @@ public interface DevJobService extends IService<DevJob> {
     void runJob(DevJobIdParam devJobIdParam);
 
     /**
+     * 立即运行定时任务
+     *
+     * @author xuyuxiang
+     * @date 2023/3/3 15:50
+     **/
+    void runJobNow(DevJobIdParam devJobIdParam);
+
+    /**
      * 获取定时任务类
      *
      * @author xuyuxiang

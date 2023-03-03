@@ -165,12 +165,27 @@ public class DevJobController {
     }
 
     /**
+     * 立即运行定时任务
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    @ApiOperationSupport(order = 8)
+    @ApiOperation("立即运行定时任务")
+    @CommonLog("立即运行定时任务")
+    @PostMapping("/dev/job/runJobNow")
+    public CommonResult<String> runJobNow(@RequestBody @Valid DevJobIdParam devJobIdParam) {
+        devJobService.runJobNow(devJobIdParam);
+        return CommonResult.ok();
+    }
+
+    /**
      * 获取定时任务类
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
+    @ApiOperationSupport(order = 9)
     @ApiOperation("获取定时任务类")
     @GetMapping("/dev/job/getActionClass")
     public CommonResult<List<String>> getActionClass() {

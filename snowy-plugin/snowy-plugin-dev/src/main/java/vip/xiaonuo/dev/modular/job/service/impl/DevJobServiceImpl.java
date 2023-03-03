@@ -220,6 +220,21 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
     }
 
     @Override
+    public void runJobNow(DevJobIdParam devJobIdParam) {
+        DevJob devJob = this.detail(devJobIdParam);
+        if(devJob.getJobStatus().equals(DevJobStatusEnum.STOPPED.getValue())) {
+            // 如果是停止的，则先开启运行
+            this.runJob(devJobIdParam);
+        }
+        try {
+            // 直接运行一次
+            ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action();
+        } catch (ClassNotFoundException e) {
+            throw new CommonException("定时任务找不到对应的类，名称为：{}", devJob.getActionClass());
+        }
+    }
+
+    @Override
     public List<String> getActionClass() {
         Map<String, CommonTimerTaskRunner> commonTimerTaskRunnerMap = SpringUtil.getBeansOfType(CommonTimerTaskRunner.class);
         if (ObjectUtil.isNotEmpty(commonTimerTaskRunnerMap)) {
