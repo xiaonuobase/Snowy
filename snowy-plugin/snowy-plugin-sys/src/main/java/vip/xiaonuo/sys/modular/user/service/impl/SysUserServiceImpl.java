@@ -29,6 +29,7 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -556,7 +557,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<String> roleIdList = this.ownRole(sysUserIdParam);
 
         // 获取菜单id列表
-        List<String> menuIdList = CollectionUtil.newArrayList();
+        List<String> menuIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());;
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
             menuIdList = sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
@@ -930,36 +932,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<JSONObject> getPermissionList(String userId, String orgId) {
-        List<JSONObject> permissionListGrantUser = this.getPermissionListGrantUser(userId, orgId);
-        List<JSONObject> permissionListGrantRole = this.getPermissionListGrantRole(userId, orgId);
-        // TODO 执行合并
-        return permissionListGrantUser;
+        Map<String, List<SysRelation>> permissionListGrantUser = this.getPermissionListGrantUser(userId, orgId);
+        Map<String, List<SysRelation>> permissionListGrantRole = this.getPermissionListGrantRole(userId, orgId);
+        permissionListGrantUser.forEach((key, value) -> permissionListGrantRole.merge(key, value, (prev, next) -> {
+            prev.addAll(next);
+            return prev;
+        }));
+        return getScopeListByMap(permissionListGrantRole, orgId);
     }
 
-    public List<JSONObject> getPermissionListGrantUser(String userId, String orgId) {
+    public Map<String, List<SysRelation>> getPermissionListGrantUser(String userId, String orgId) {
         if (ObjectUtil.isNotEmpty(orgId)) {
-            Map<String, List<SysRelation>> groupMap = sysRelationService.getRelationListByObjectIdAndCategory(userId,
-                    SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue()).stream().collect(Collectors.groupingBy(SysRelation::getTargetId));
-            if (ObjectUtil.isNotEmpty(groupMap)) {
-                return getScopeListByMap(groupMap, orgId);
-            }
+            return sysRelationService.getRelationListByObjectIdAndCategory(userId,
+                    SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue()).stream()
+                    .collect(Collectors.groupingBy(SysRelation::getTargetId));
         }
-        return CollectionUtil.newArrayList();
+        return MapUtil.newHashMap();
     }
 
-    public List<JSONObject> getPermissionListGrantRole(String userId, String orgId) {
+    public Map<String, List<SysRelation>> getPermissionListGrantRole(String userId, String orgId) {
         if (ObjectUtil.isNotEmpty(orgId)) {
             List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
                     SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
             if (ObjectUtil.isNotEmpty(roleIdList)) {
-                Map<String, List<SysRelation>> groupMap = sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
-                        SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()).stream().collect(Collectors.groupingBy(SysRelation::getTargetId));
-                if (ObjectUtil.isNotEmpty(groupMap)) {
-                   return getScopeListByMap(groupMap, orgId);
-                }
+                return sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
+                        SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()).stream()
+                        .collect(Collectors.groupingBy(SysRelation::getTargetId));
             }
         }
-        return CollectionUtil.newArrayList();
+        return MapUtil.newHashMap();
     }
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
