@@ -37,7 +37,7 @@ import java.util.Date;
  **/
 @Getter
 @Setter
-@TableName(value = "SYS_USER", autoResultMap = true)
+@TableName(value = "SYS_USER")
 public class SysUser extends CommonEntity implements TransPojo {
 
     /** id */

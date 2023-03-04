@@ -109,6 +109,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private static final String USER_CACHE_KEY = "user-validCode:";
 
+    public static final String USER_CACHE_ALL_KEY = "sys-user:all";
+
     @Resource
     private CommonCacheOperator commonCacheOperator;
 
@@ -556,7 +558,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 获取菜单id列表
         List<String> menuIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
-                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());;
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
             menuIdList = sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
@@ -789,9 +791,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        List<SysOrg> sysOrgList = sysOrgService.list(lambdaQueryWrapper);
+        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
@@ -963,7 +963,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
         List<JSONObject> resultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.list();
+        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
         List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
         List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
@@ -1054,7 +1054,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysUserPositionResult> loginPositionInfo(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<SysUserPositionResult> sysUserPositionResultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.list();
+        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         String primaryOrgId = sysUser.getOrgId();
         SysOrg primarySysOrg = sysOrgService.getById(sysOrgList, primaryOrgId);
         if (ObjectUtil.isEmpty(primarySysOrg)) {
@@ -1112,13 +1112,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return sysUserPositionResultList;
     }
 
+    @Override
+    public List<SysUser> getCachedAllUserList() {
+        // 从缓存中取
+        Object cacheValue = commonCacheOperator.get(USER_CACHE_ALL_KEY);
+        if(ObjectUtil.isNotEmpty(cacheValue)) {
+            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), SysUser.class);
+        }
+        // 只查询部分字段
+        List<SysUser> userList = this.list(new LambdaQueryWrapper<SysUser>().select(SysUser::getId, SysUser::getOrgId,
+                SysUser::getAccount, SysUser::getName, SysUser::getSortCode).orderByAsc(SysUser::getSortCode));
+        if(ObjectUtil.isNotEmpty(userList)) {
+            // 更新到缓存
+            commonCacheOperator.put(USER_CACHE_ALL_KEY, userList);
+        }
+        return userList;
+    }
+
     /* ====用户部分所需要用到的选择器==== */
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        List<SysOrg> sysOrgList = sysOrgService.list(lambdaQueryWrapper);
+        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                         new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -1180,14 +1195,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
-        if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysUser::getOrgId, sysUserSelectorUserParam.getOrgId());
+        // 如果查询条件为空，则从缓存中查询
+        if(ObjectUtil.isAllEmpty(sysUserSelectorUserParam.getOrgId(), sysUserSelectorUserParam.getSearchKey())) {
+            return this.getCachedAllUserList();
+        } else {
+            if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
+                // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
+                List<String> parentAndChildOrgIdList = CollStreamUtil.toList(sysOrgService.getParentAndChildListById(sysOrgService
+                        .getCachedAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
+                    lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
+                } else {
+                    return CollectionUtil.newArrayList();
+                }
+            }
+            if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
+                lambdaQueryWrapper.like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
+            }
+            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
+            return this.list(lambdaQueryWrapper);
         }
-        if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
-        }
-        lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-        return this.list(lambdaQueryWrapper);
     }
 
     @Override

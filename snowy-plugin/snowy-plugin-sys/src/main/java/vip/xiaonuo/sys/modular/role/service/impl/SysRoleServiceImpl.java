@@ -302,9 +302,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        List<SysOrg> sysOrgList = sysOrgService.list(lambdaQueryWrapper);
+        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -435,15 +433,27 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public List<SysUser> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName);
-        if(ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysUser::getOrgId, sysRoleSelectorUserParam.getOrgId());
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
+        // 如果查询条件为空，则从缓存中查询
+        if(ObjectUtil.isAllEmpty(sysRoleSelectorUserParam.getOrgId(), sysRoleSelectorUserParam.getSearchKey())) {
+            return sysUserService.getCachedAllUserList();
+        } else {
+            if (ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getOrgId())) {
+                // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
+                List<String> parentAndChildOrgIdList = CollStreamUtil.toList(sysOrgService.getParentAndChildListById(sysOrgService
+                        .getCachedAllOrgList(), sysRoleSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
+                    lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
+                } else {
+                    return CollectionUtil.newArrayList();
+                }
+            }
+            if (ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getSearchKey())) {
+                lambdaQueryWrapper.like(SysUser::getName, sysRoleSelectorUserParam.getSearchKey());
+            }
+            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
+            return sysUserService.list(lambdaQueryWrapper);
         }
-        if(ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysUser::getName, sysRoleSelectorUserParam.getSearchKey());
-        }
-        lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-        return sysUserService.list(lambdaQueryWrapper);
     }
 
     /* ====以下为各种递归方法==== */

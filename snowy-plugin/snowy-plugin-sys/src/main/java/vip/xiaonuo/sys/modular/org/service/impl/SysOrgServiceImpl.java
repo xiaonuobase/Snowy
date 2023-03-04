@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -58,6 +59,11 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
+
+    public static final String ORG_CACHE_ALL_KEY = "sys-org:all";
+
+    @Resource
+    private CommonCacheOperator commonCacheOperator;
 
     @Resource
     private SysRoleService sysRoleService;
@@ -92,9 +98,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<Tree<String>> tree() {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        List<SysOrg> sysOrgList = this.list(lambdaQueryWrapper);
+        List<SysOrg> sysOrgList = this.getCachedAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
                         sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
@@ -131,7 +135,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if(repeatName) {
             throw new CommonException("存在重复的同级组织，名称为：{}", sysOrg.getName());
         }
-        List<SysOrg> originDataList = this.list();
+        List<SysOrg> originDataList = this.getCachedAllOrgList();
         boolean errorLevel = this.getChildListById(originDataList, sysOrg.getId(), true).stream()
                 .map(SysOrg::getId).collect(Collectors.toList()).contains(sysOrg.getParentId());
         if(errorLevel) {
@@ -148,7 +152,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public void delete(List<SysOrgIdParam> sysOrgIdParamList) {
         List<String> orgIdList = CollStreamUtil.toList(sysOrgIdParamList, SysOrgIdParam::getId);
         if(ObjectUtil.isNotEmpty(orgIdList)) {
-            List<SysOrg> allOrgList = this.list();
+            List<SysOrg> allOrgList = this.getCachedAllOrgList();
             // 获取所有子组织
             List<String> toDeleteOrgIdList = CollectionUtil.newArrayList();
             orgIdList.forEach(orgId -> toDeleteOrgIdList.addAll(this.getChildListById(allOrgList, orgId, true).stream()
@@ -203,13 +207,26 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return sysOrg;
     }
 
+    @Override
+    public List<SysOrg> getCachedAllOrgList() {
+        // 从缓存中取
+        Object cacheValue = commonCacheOperator.get(ORG_CACHE_ALL_KEY);
+        if(ObjectUtil.isNotEmpty(cacheValue)) {
+            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), SysOrg.class);
+        }
+        List<SysOrg> orgList = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
+        if(ObjectUtil.isNotEmpty(orgList)) {
+            // 更新到缓存
+            commonCacheOperator.put(ORG_CACHE_ALL_KEY, orgList);
+        }
+        return orgList;
+    }
+
     /* ====组织部分所需要用到的选择器==== */
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        List<SysOrg> sysOrgList = this.list(lambdaQueryWrapper);
+        List<SysOrg> sysOrgList = this.getCachedAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -236,18 +253,38 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public List<SysUser> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName);
-        if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysUser::getOrgId, sysOrgSelectorUserParam.getOrgId());
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
+        // 如果查询条件为空，则从缓存中查询
+        if(ObjectUtil.isAllEmpty(sysOrgSelectorUserParam.getOrgId(), sysOrgSelectorUserParam.getSearchKey())) {
+            return sysUserService.getCachedAllUserList();
+        } else {
+            if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
+                // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
+                List<String> parentAndChildOrgIdList = CollStreamUtil.toList(this.getParentAndChildListById(this
+                        .getCachedAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
+                    lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
+                } else {
+                    return CollectionUtil.newArrayList();
+                }
+            }
+            if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getSearchKey())) {
+                lambdaQueryWrapper.like(SysUser::getName, sysOrgSelectorUserParam.getSearchKey());
+            }
+            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
+            return sysUserService.list(lambdaQueryWrapper);
         }
-        if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysUser::getName, sysOrgSelectorUserParam.getSearchKey());
-        }
-        lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-        return sysUserService.list(lambdaQueryWrapper);
     }
 
     /* ====以下为各种递归方法==== */
+
+    @Override
+    public List<SysOrg> getParentAndChildListById(List<SysOrg> originDataList, String id, boolean includeSelf) {
+        List<SysOrg> parentListById = this.getParentListById(originDataList, id, false);
+        List<SysOrg> childListById = this.getChildListById(originDataList, id, true);
+        parentListById.addAll(childListById);
+        return parentListById;
+    }
 
     @Override
     public List<SysOrg> getChildListById(List<SysOrg> originDataList, String id, boolean includeSelf) {
@@ -262,6 +299,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return resultList;
     }
 
+    @Override
     public List<SysOrg> getParentListById(List<SysOrg> originDataList, String id, boolean includeSelf) {
         List<SysOrg> resultList = CollectionUtil.newArrayList();
         execRecursionFindParent(originDataList, id, resultList);
@@ -301,11 +339,13 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return index == -1?null:originDataList.get(index);
     }
 
+    @Override
     public SysOrg getParentById(List<SysOrg> originDataList, String id) {
         SysOrg self = this.getById(originDataList, id);
         return ObjectUtil.isNotEmpty(self)?self:this.getById(originDataList, self.getParentId());
     }
 
+    @Override
     public SysOrg getChildById(List<SysOrg> originDataList, String id) {
         int index = CollStreamUtil.toList(originDataList, SysOrg::getParentId).indexOf(id);
         return index == -1?null:originDataList.get(index);

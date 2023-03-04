@@ -86,6 +86,22 @@ public interface SysOrgService extends IService<SysOrg> {
     SysOrg queryEntity(String id);
 
     /**
+     * 获取缓存的所有组织
+     *
+     * @author xuyuxiang
+     * @date 2022/7/25 19:42
+     **/
+    List<SysOrg> getCachedAllOrgList();
+
+    /**
+     * 根据id获取父子数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    List<SysOrg> getParentAndChildListById(List<SysOrg> originDataList, String id, boolean includeSelf);
+
+    /**
      * 根据id获取所有的子数据列表
      *
      * @author xuyuxiang
@@ -94,12 +110,36 @@ public interface SysOrgService extends IService<SysOrg> {
     List<SysOrg> getChildListById(List<SysOrg> originDataList, String id, boolean includeSelf);
 
     /**
+     * 根据id获取所有的父数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    List<SysOrg> getParentListById(List<SysOrg> originDataList, String id, boolean includeSelf);
+
+    /**
      * 根据id获取数据
      *
      * @author xuyuxiang
      * @date 2022/8/15 14:55
      **/
     SysOrg getById(List<SysOrg> originDataList, String id) ;
+
+    /**
+     * 根据id获取父数据
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    SysOrg getParentById(List<SysOrg> originDataList, String id) ;
+
+    /**
+     * 根据id获取子数据
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    SysOrg getChildById(List<SysOrg> originDataList, String id) ;
 
     /**
      * 获取组织树选择器
