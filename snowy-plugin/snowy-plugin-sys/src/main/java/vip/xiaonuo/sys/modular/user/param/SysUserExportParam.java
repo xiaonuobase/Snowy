@@ -16,6 +16,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * 用户导出参数
  *
@@ -33,4 +35,8 @@ public class SysUserExportParam {
     /** 账号、姓名、手机号关键词 */
     @ApiModelProperty(value = "账号、姓名、手机号关键词")
     private String searchKey;
+
+    /** 用户id集合 */
+    @ApiModelProperty(value = "用户id集合")
+    private List<String> userIdList;
 }

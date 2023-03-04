@@ -12,8 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.user.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
@@ -37,6 +35,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -44,7 +44,6 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,7 +86,6 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -1014,27 +1012,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         File tempFile = null;
         try {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-            if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
-                queryWrapper.lambda().like(SysUser::getAccount, sysUserExportParam.getSearchKey()).or()
-                        .like(SysUser::getName, sysUserExportParam.getSearchKey());
-            }
-            if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
-                queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());
-            }
-            String fileName = "SNOWY2.0系统B端用户信息清单";
-            List<SysUserExportResult> sysUserExportResultList = this.list(queryWrapper).stream()
-                    .map(sysUser -> BeanUtil.copyProperties(sysUser, SysUserExportResult.class)).peek(sysUserExportResult -> {
-                if (ObjectUtil.isNotEmpty(sysUserExportResult.getAvatar())) {
-                    sysUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
-                            .split(sysUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+            if(ObjectUtil.isNotEmpty(sysUserExportParam.getUserIdList())) {
+                queryWrapper.lambda().in(SysUser::getId, sysUserExportParam.getUserIdList());
+            } else {
+                if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
+                    queryWrapper.lambda().like(SysUser::getAccount, sysUserExportParam.getSearchKey())
+                            .or().like(SysUser::getName, sysUserExportParam.getSearchKey())
+                            .or().like(SysUser::getPhone, sysUserExportParam.getSearchKey());
                 }
-            }).collect(Collectors.toList());
-            Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(fileName, "B端用户"),
-                    SysUserExportResult.class, sysUserExportResultList);
-            tempFile = FileUtil.file(FileUtil.getTmpDir() + FileUtil.FILE_SEPARATOR + fileName + ".xls");
-            BufferedOutputStream outputStream = FileUtil.getOutputStream(tempFile);
-            workbook.write(outputStream);
-            outputStream.close();
+                if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
+                    queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());
+                }
+            }
+            String fileName = "SNOWY2.0系统B端用户信息清单.xlsx";
+            List<SysUserExportResult> sysUserExportResultList = this.list(queryWrapper).stream()
+                    .map(sysUser -> {
+                        SysUserExportResult sysUserExportResult = new SysUserExportResult();
+                        BeanUtil.copyProperties(sysUser, sysUserExportResult);
+                        // 将base64转为byte数组
+                        sysUserExportResult.setAvatar(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                                .split(sysUser.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+                        return sysUserExportResult;
+                    }).collect(Collectors.toList());
+            // 创建临时文件
+            tempFile = FileUtil.file(FileUtil.getTmpDir() + FileUtil.FILE_SEPARATOR + fileName);
+            // 写excel
+            EasyExcel.write(tempFile.getPath(), SysUserExportResult.class)
+                    // 自动列宽
+                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                    .sheet("用户信息").doWrite(sysUserExportResultList);
             CommonDownloadUtil.download(tempFile, response);
         } catch (Exception e) {
             e.printStackTrace();

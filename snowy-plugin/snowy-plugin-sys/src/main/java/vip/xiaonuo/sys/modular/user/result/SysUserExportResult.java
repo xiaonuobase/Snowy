@@ -12,7 +12,11 @@
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.ContentRowHeight;
+import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,169 +33,168 @@ import java.util.Date;
 public class SysUserExportResult {
 
     /** 头像 */
-    private String avatar;
-
-    /** 头像字节数组 */
-    @Excel(name = "头像", type = 2, imageType = 2)
-    private byte[] avatarByte;
+    @ExcelProperty("头像")
+    private byte[] avatar;
 
     /** 账号 */
-    @Excel(name = "账号")
+    @ExcelProperty("账号")
     private String account;
 
     /** 姓名 */
-    @Excel(name = "姓名")
+    @ExcelProperty("姓名")
     private String name;
 
     /** 昵称 */
-    @Excel(name = "昵称")
+    @ExcelProperty("昵称")
     private String nickname;
 
     /** 性别 */
-    @Excel(name = "性别")
+    @ExcelProperty("性别")
     private String gender;
 
     /** 年龄 */
-    @Excel(name = "年龄")
+    @ExcelProperty("年龄")
     private String age;
 
     /** 出生日期 */
-    @Excel(name = "出生日期")
+    @ExcelProperty("出生日期")
     private String birthday;
 
     /** 民族 */
-    @Excel(name = "民族")
+    @ExcelProperty("民族")
     private String nation;
 
     /** 籍贯 */
-    @Excel(name = "籍贯")
+    @ExcelProperty("籍贯")
     private String nativePlace;
 
     /** 家庭住址 */
-    @Excel(name = "家庭住址")
+    @ExcelProperty("家庭住址")
     private String homeAddress;
 
     /** 通信地址 */
-    @Excel(name = "通信地址")
+    @ExcelProperty("通信地址")
     private String mailingAddress;
 
     /** 证件类型 */
-    @Excel(name = "证件类型")
+    @ExcelProperty("证件类型")
     private String idCardType;
 
     /** 证件号码 */
-    @Excel(name = "证件号码")
+    @ExcelProperty("证件号码")
     private String idCardNumber;
 
     /** 文化程度 */
-    @Excel(name = "文化程度")
+    @ExcelProperty("文化程度")
     private String cultureLevel;
 
     /** 政治面貌 */
-    @Excel(name = "政治面貌")
+    @ExcelProperty("政治面貌")
     private String politicalOutlook;
 
     /** 毕业院校 */
-    @Excel(name = "毕业院校")
+    @ExcelProperty("毕业院校")
     private String college;
 
     /** 学历 */
-    @Excel(name = "学历")
+    @ExcelProperty("学历")
     private String education;
 
     /** 学制 */
-    @Excel(name = "学制")
+    @ExcelProperty("学制")
     private String eduLength;
 
     /** 学位 */
-    @Excel(name = "学位")
+    @ExcelProperty("学位")
     private String degree;
 
     /** 手机 */
-    @Excel(name = "手机")
+    @ExcelProperty("手机")
     private String phone;
 
     /** 邮箱 */
-    @Excel(name = "邮箱")
+    @ExcelProperty("邮箱")
     private String email;
 
     /** 家庭电话 */
-    @Excel(name = "家庭电话")
+    @ExcelProperty("家庭电话")
     private String homeTel;
 
     /** 办公电话 */
-    @Excel(name = "办公电话")
+    @ExcelProperty("办公电话")
     private String officeTel;
 
     /** 紧急联系人 */
-    @Excel(name = "紧急联系人")
+    @ExcelProperty("紧急联系人")
     private String emergencyContact;
 
     /** 紧急联系人电话 */
-    @Excel(name = "紧急联系人电话")
+    @ExcelProperty("紧急联系人电话")
     private String emergencyPhone;
 
     /** 紧急联系人地址 */
-    @Excel(name = "紧急联系人地址")
+    @ExcelProperty("紧急联系人地址")
     private String emergencyAddress;
 
     /** 员工编号 */
-    @Excel(name = "员工编号")
+    @ExcelProperty("员工编号")
     private String empNo;
 
     /** 入职日期 */
-    @Excel(name = "入职日期")
+    @ExcelProperty("入职日期")
     private String entryDate;
 
     /** 组织名称 */
-    @Excel(name = "组织名称")
+    @ExcelProperty("组织名称")
     private String orgName;
 
     /** 职位名称 */
-    @Excel(name = "职位名称")
+    @ExcelProperty("职位名称")
     private String positionName;
 
     /** 主管名称 */
-    @Excel(name = "主管名称")
+    @ExcelProperty("主管名称")
     private String directorName;
 
     /** 职级 */
-    @Excel(name = "职级")
+    @ExcelProperty("职级")
     private String positionLevel;
 
     /** 上次登录ip */
-    @Excel(name = "上次登录ip")
+    @ExcelProperty("上次登录ip")
     private String lastLoginIp;
 
     /** 上次登录地点 */
-    @Excel(name = "上次登录地点")
+    @ExcelProperty("上次登录地点")
     private String lastLoginAddress;
 
     /** 上次登录时间 */
-    @Excel(name = "上次登录时间", format = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ExcelProperty("上次登录时间")
     private Date lastLoginTime;
 
     /** 上次登录设备 */
-    @Excel(name = "上次登录设备")
+    @ExcelProperty("上次登录设备")
     private String lastLoginDevice;
 
     /** 最新登录ip */
-    @Excel(name = "最新登录ip")
+    @ExcelProperty("最新登录ip")
     private String latestLoginIp;
 
     /** 最新登录地点 */
-    @Excel(name = "最新登录地点")
+    @ExcelProperty("最新登录地点")
     private String latestLoginAddress;
 
     /** 最新登录时间 */
-    @Excel(name = "最新登录时间", format = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    @ExcelProperty("最新登录时间")
     private Date latestLoginTime;
 
     /** 最新登录设备 */
-    @Excel(name = "最新登录设备")
+    @ExcelProperty("最新登录设备")
     private String latestLoginDevice;
 
     /** 用户状态 */
-    @Excel(name = "用户状态", replace = { "正常_ENABLE", "停用_DISABLED" })
+    @ExcelProperty("用户状态")
     private String userStatus;
 }

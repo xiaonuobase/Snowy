@@ -30,6 +30,7 @@
         <druid.version>1.2.9</druid.version>
         <dynamic.datasource.version>3.5.1</dynamic.datasource.version>
         <easy.trans.version>2.1.7</easy.trans.version>
+        <easyexcel.version>3.2.1</easyexcel.version>
         <easypoi.version>4.3.0</easypoi.version>
         <fastjson.version>2.0.24</fastjson.version>
         <gson.version>2.8.9</gson.version>
@@ -316,6 +317,13 @@
                 <groupId>com.antherd</groupId>
                 <artifactId>sm-crypto</artifactId>
                 <version>${smcrypto.version}</version>
+            </dependency>
+
+            <!-- easyexcel -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
             </dependency>
 
             <!-- sa-token-core -->

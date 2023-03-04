@@ -12,11 +12,6 @@
  */
 package vip.xiaonuo;
 
-import cn.hutool.core.collection.CollectionUtil;
-
-import java.util.Collection;
-import java.util.Set;
-
 /**
  * TestMain方法
  *
@@ -25,7 +20,6 @@ import java.util.Set;
  */
 public class Test {
     public static void main(String[] args) {
-        Set<Integer> integers = CollectionUtil.unionDistinct(CollectionUtil.newArrayList(), CollectionUtil.newArrayList(1, 2, 4));
-        System.out.println(integers);
+
     }
 }

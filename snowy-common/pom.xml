@@ -154,5 +154,11 @@
             <groupId>com.antherd</groupId>
             <artifactId>sm-crypto</artifactId>
         </dependency>
+
+        <!-- easyexcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
     </dependencies>
 </project>
