@@ -282,6 +282,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // 执行登录
         StpUtil.login(saBaseLoginUser.getId(), new SaLoginModel().setDevice(device));
+        // TODO 登录部份需要优化
         // 获取按钮码
         saBaseLoginUser.setButtonCodeList(loginUserApi.getButtonCodeListListByUserId(saBaseLoginUser.getId()));
         // 获取移动端按钮码
