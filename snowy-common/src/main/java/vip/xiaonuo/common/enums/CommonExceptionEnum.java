@@ -15,7 +15,7 @@ package vip.xiaonuo.common.enums;
 import lombok.Getter;
 
 /**
- *
+ * 异常码枚举
  *
  * @author xuyuxiang
  * @date 2022/8/15 16:09
