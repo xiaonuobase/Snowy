@@ -17,7 +17,7 @@ import cn.hutool.json.JSONArray;
 import java.util.List;
 
 /**
- * 通用数据变化侦听器，你可以实现该侦听器接口，在数据更新时进行一些AOP操作
+ * 通用数据变化侦听器，你可以实现该侦听器接口，在数据新增、更新、删除时进行一些AOP操作
  *
  * @author xuyuxiang
  * @date 2023/3/3 10:14
