@@ -30,7 +30,7 @@ public class Test {
                 for (SysUserImportParam sysUserImportParam : dataList) {
                     System.out.println(sysUserImportParam);
                 }
-            })).sheet().doRead();
+            })).sheet().headRowNumber(2).doRead();
         } catch (Exception e) {
             e.printStackTrace();
             throw new CommonException("文件导入失败");

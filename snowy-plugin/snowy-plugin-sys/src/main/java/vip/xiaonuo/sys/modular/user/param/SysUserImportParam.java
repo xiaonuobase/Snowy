@@ -25,14 +25,35 @@ import lombok.Setter;
 @Setter
 public class SysUserImportParam {
 
-    /** 头像 */
-    private String avatar;
-
     /** 账号 */
     private String account;
 
     /** 姓名 */
     private String name;
+
+    /** 组织名称 */
+    private String orgName;
+
+    /** 职位名称 */
+    private String positionName;
+
+    /** 手机 */
+    private String phone;
+
+    /** 邮箱 */
+    private String email;
+
+    /** 主管名称 */
+    private String directorName;
+
+    /** 员工编号 */
+    private String empNo;
+
+    /** 入职日期 */
+    private String entryDate;
+
+    /** 职级 */
+    private String positionLevel;
 
     /** 昵称 */
     private String nickname;
@@ -82,12 +103,6 @@ public class SysUserImportParam {
     /** 学位 */
     private String degree;
 
-    /** 手机 */
-    private String phone;
-
-    /** 邮箱 */
-    private String email;
-
     /** 家庭电话 */
     private String homeTel;
 
@@ -102,22 +117,4 @@ public class SysUserImportParam {
 
     /** 紧急联系人地址 */
     private String emergencyAddress;
-
-    /** 员工编号 */
-    private String empNo;
-
-    /** 入职日期 */
-    private String entryDate;
-
-    /** 组织名称 */
-    private String orgName;
-
-    /** 职位名称 */
-    private String positionName;
-
-    /** 主管名称 */
-    private String directorName;
-
-    /** 职级 */
-    private String positionLevel;
 }
