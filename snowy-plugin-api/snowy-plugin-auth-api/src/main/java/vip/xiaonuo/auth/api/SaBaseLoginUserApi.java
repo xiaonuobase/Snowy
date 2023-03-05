@@ -83,36 +83,36 @@ public interface SaBaseLoginUserApi {
     List<JSONObject> listUserByUserIdList(List<String> userIdList);
 
     /**
-     * 根据用户id获取角色码集合
+     * 根据用户id获取角色集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:53
      */
-    List<String> getRoleCodeListByUserId(String userId);
+    List<JSONObject> getRoleListByUserId(String userId);
 
     /**
-     * 根据用户id获取按钮码集合
+     * 根据角色id和用户id集合获取按钮码集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
-    List<String> getButtonCodeListListByUserId(String userId);
+    List<String> getButtonCodeListListByUserAndRoleIdList(List<String> userAndRoleIdList);
 
     /**
-     * 根据用户id获取移动端按钮码集合
+     * 根据角色id和用户id集合获取移动端按钮码集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
-    List<String> getMobileButtonCodeListListByUserId(String userId);
+    List<String> getMobileButtonCodeListListByUserIdAndRoleIdList(List<String> userAndRoleIdList);
 
     /**
-     * 根据用户id获取权限集合
+     * 根据角色id和用户id集合获取权限集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
-    List<JSONObject> getPermissionListByUserId(String userId, String orgId);
+    List<JSONObject> getPermissionListByUserIdAndRoleIdList(List<String> userAndRoleIdList, String orgId);
 
     /**
      * 更新用户的登录时间和登录ip等信息

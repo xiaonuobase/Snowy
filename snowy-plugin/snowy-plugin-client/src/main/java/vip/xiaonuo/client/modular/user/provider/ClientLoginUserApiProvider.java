@@ -116,49 +116,49 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     }
 
     /**
-     * 根据用户id获取角色码集合
+     * 根据用户id获取角色集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:53
      */
     @Override
-    public List<String> getRoleCodeListByUserId(String userId) {
-        // TODO C端用户暂无角色码
+    public List<JSONObject> getRoleListByUserId(String userId) {
+        // TODO C端用户暂无角色
         return CollectionUtil.newArrayList();
     }
 
     /**
-     * 根据用户id获取按钮码集合
+     * 根据角色id和用户id集合获取按钮码集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
     @Override
-    public List<String> getButtonCodeListListByUserId(String userId) {
+    public List<String> getButtonCodeListListByUserAndRoleIdList(List<String> userAndRoleIdList) {
         // TODO C端用户暂无按钮码
         return CollectionUtil.newArrayList();
     }
 
     /**
-     * 根据用户id获取移动端按钮码集合
+     * 根据角色id和用户id集合获取移动端按钮码集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
     @Override
-    public List<String> getMobileButtonCodeListListByUserId(String userId) {
+    public List<String> getMobileButtonCodeListListByUserIdAndRoleIdList(List<String> userAndRoleIdList) {
         // TODO C端用户暂无移动端按钮码
         return CollectionUtil.newArrayList();
     }
 
     /**
-     * 根据用户id获取权限集合
+     * 根据角色id和用户id集合获取权限集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:54
      */
     @Override
-    public List<JSONObject> getPermissionListByUserId(String userId, String orgId) {
+    public List<JSONObject> getPermissionListByUserIdAndRoleIdList(List<String> userAndRoleIdList, String orgId) {
         // TODO C端用户暂无权限码
         return CollectionUtil.newArrayList();
     }

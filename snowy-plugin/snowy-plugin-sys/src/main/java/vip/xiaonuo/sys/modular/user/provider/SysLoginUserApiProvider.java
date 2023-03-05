@@ -115,47 +115,47 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
     }
 
     /**
-     * 根据用户id获取按钮码集合
-     *
-     * @author xuyuxiang
-     * @date 2022/4/27 22:54
-     */
-    @Override
-    public List<String> getButtonCodeListListByUserId(String userId) {
-        return sysUserService.getButtonCodeList(userId);
-    }
-
-    /**
-     * 根据用户id获取移动端按钮码集合
-     *
-     * @author xuyuxiang
-     * @date 2022/4/27 22:54
-     */
-    @Override
-    public List<String> getMobileButtonCodeListListByUserId(String userId) {
-        return sysUserService.getMobileButtonCodeListListByUserId(userId);
-    }
-
-    /**
-     * 根据用户id获取权限集合
-     *
-     * @author xuyuxiang
-     * @date 2022/4/27 22:54
-     */
-    @Override
-    public List<JSONObject> getPermissionListByUserId(String userId, String orgId) {
-        return sysUserService.getPermissionList(userId, orgId);
-    }
-
-    /**
-     * 根据用户id获取角色码集合
+     * 根据用户id获取角色集合
      *
      * @author xuyuxiang
      * @date 2022/4/27 22:53
      */
     @Override
-    public List<String> getRoleCodeListByUserId(String userId) {
-        return sysUserService.getRoleCodeList(userId);
+    public List<JSONObject> getRoleListByUserId(String userId) {
+        return sysUserService.getRoleList(userId);
+    }
+
+    /**
+     * 根据角色id和用户id集合获取按钮码集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/27 22:54
+     */
+    @Override
+    public List<String> getButtonCodeListListByUserAndRoleIdList(List<String> userAndRoleIdList) {
+        return sysUserService.getButtonCodeList(userAndRoleIdList);
+    }
+
+    /**
+     * 根据角色id和用户id集合获取移动端按钮码集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/27 22:54
+     */
+    @Override
+    public List<String> getMobileButtonCodeListListByUserIdAndRoleIdList(List<String> userAndRoleIdList) {
+        return sysUserService.getMobileButtonCodeList(userAndRoleIdList);
+    }
+
+    /**
+     * 根据角色id和用户id集合获取权限集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/27 22:54
+     */
+    @Override
+    public List<JSONObject> getPermissionListByUserIdAndRoleIdList(List<String> userAndRoleIdList, String orgId) {
+        return sysUserService.getPermissionList(userAndRoleIdList, orgId);
     }
 
     /**

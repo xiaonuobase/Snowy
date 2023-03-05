@@ -23,9 +23,8 @@ import java.util.List;
 public interface MobileButtonApi {
 
     /**
-     * 根据键获取值
+     * 根据按钮id集合获取按钮码列表
      *
-     * @param idList
      * @author 每天一点
      * @date 2023/2/5 13:26
      **/

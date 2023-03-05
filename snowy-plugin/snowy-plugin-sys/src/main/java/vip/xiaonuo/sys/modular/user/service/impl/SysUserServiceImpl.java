@@ -27,7 +27,6 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -873,16 +872,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<String> getButtonCodeList(String userId) {
-        List<String> buttonCodeListGrantUser = this.getButtonCodeListGrantUser(userId);
-        List<String> buttonCodeListGrantRole = this.getButtonCodeListGrantRole(userId);
-        return CollectionUtil.newArrayList(CollectionUtil.unionDistinct(buttonCodeListGrantUser, buttonCodeListGrantRole));
+    public List<JSONObject> getRoleList(String userId) {
+        List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
+                SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+        if (ObjectUtil.isNotEmpty(roleIdList)) {
+            return sysRoleService.listByIds(roleIdList).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+        }
+        return CollectionUtil.newArrayList();
     }
 
-    public List<String> getButtonCodeListGrantUser(String userId) {
+    @Override
+    public List<String> getButtonCodeList(List<String> userAndRoleIdList) {
         List<String> buttonIdList = CollectionUtil.newArrayList();
-        sysRelationService.getRelationListByObjectIdAndCategory(userId,
-                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()).forEach(sysRelation -> {
+        sysRelationService.list(new LambdaQueryWrapper<SysRelation>().in(SysRelation::getObjectId, userAndRoleIdList)
+                .in(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(),
+                        SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue())).forEach(sysRelation -> {
             if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
                 buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
             }
@@ -893,72 +897,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return CollectionUtil.newArrayList();
     }
 
-    public List<String> getButtonCodeListGrantRole(String userId) {
-        List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
-                SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if (ObjectUtil.isNotEmpty(roleIdList)) {
-            List<String> buttonIdList = CollectionUtil.newArrayList();
-            sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
-                    SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()).forEach(sysRelation -> {
-                if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
-                    buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
-                }
-            });
-            if (ObjectUtil.isNotEmpty(buttonIdList)) {
-                return sysButtonService.listByIds(buttonIdList).stream().map(SysButton::getCode).collect(Collectors.toList());
-            }
-        }
-        return CollectionUtil.newArrayList();
-    }
-
     @Override
-    public List<String> getMobileButtonCodeListListByUserId(String userId) {
-        List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
-                SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if (ObjectUtil.isNotEmpty(roleIdList)) {
-            List<String> buttonIdList = CollectionUtil.newArrayList();
-            sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
-                    SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()).forEach(sysRelation -> {
-                if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
-                    buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
-                }
-            });
+    public List<String> getMobileButtonCodeList(List<String> userAndRoleIdList) {
+        List<String> buttonIdList = CollectionUtil.newArrayList();
+        sysRelationService.getRelationListByObjectIdListAndCategory(userAndRoleIdList,
+                SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()).forEach(sysRelation -> {
+            if (ObjectUtil.isNotEmpty(sysRelation.getExtJson())) {
+                buttonIdList.addAll(JSONUtil.parseObj(sysRelation.getExtJson()).getBeanList("buttonInfo", String.class));
+            }
+        });
+        if (ObjectUtil.isNotEmpty(buttonIdList)) {
             return mobileButtonApi.listByIds(buttonIdList);
         }
         return CollectionUtil.newArrayList();
     }
 
     @Override
-    public List<JSONObject> getPermissionList(String userId, String orgId) {
-        Map<String, List<SysRelation>> permissionListGrantUser = this.getPermissionListGrantUser(userId, orgId);
-        Map<String, List<SysRelation>> permissionListGrantRole = this.getPermissionListGrantRole(userId, orgId);
-        permissionListGrantUser.forEach((key, value) -> permissionListGrantRole.merge(key, value, (prev, next) -> {
-            prev.addAll(next);
-            return prev;
-        }));
-        return getScopeListByMap(permissionListGrantRole, orgId);
-    }
-
-    public Map<String, List<SysRelation>> getPermissionListGrantUser(String userId, String orgId) {
-        if (ObjectUtil.isNotEmpty(orgId)) {
-            return sysRelationService.getRelationListByObjectIdAndCategory(userId,
-                    SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue()).stream()
-                    .collect(Collectors.groupingBy(SysRelation::getTargetId));
-        }
-        return MapUtil.newHashMap();
-    }
-
-    public Map<String, List<SysRelation>> getPermissionListGrantRole(String userId, String orgId) {
-        if (ObjectUtil.isNotEmpty(orgId)) {
-            List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
-                    SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-            if (ObjectUtil.isNotEmpty(roleIdList)) {
-                return sysRelationService.getRelationListByObjectIdListAndCategory(roleIdList,
-                        SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue()).stream()
-                        .collect(Collectors.groupingBy(SysRelation::getTargetId));
-            }
-        }
-        return MapUtil.newHashMap();
+    public List<JSONObject> getPermissionList(List<String> userAndRoleIdList, String orgId) {
+        Map<String, List<SysRelation>> map = sysRelationService.list(new LambdaQueryWrapper<SysRelation>()
+                .in(SysRelation::getObjectId, userAndRoleIdList).in(SysRelation::getCategory,
+                        SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue(),
+                        SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue())).stream()
+                .collect(Collectors.groupingBy(SysRelation::getTargetId));
+        return getScopeListByMap(map, orgId);
     }
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
@@ -989,17 +950,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             resultList.add(jsonObject.set("dataScope", CollectionUtil.newArrayList(scopeSet)));
         });
         return resultList;
-    }
-
-    @Override
-    public List<String> getRoleCodeList(String userId) {
-        List<String> roleIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(userId,
-                SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if (ObjectUtil.isNotEmpty(roleIdList)) {
-            return sysRoleService.listByIds(roleIdList)
-                    .stream().map(SysRole::getCode).collect(Collectors.toList());
-        }
-        return CollectionUtil.newArrayList();
     }
 
     @Override

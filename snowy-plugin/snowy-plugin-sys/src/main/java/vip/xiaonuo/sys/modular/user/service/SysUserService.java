@@ -309,12 +309,20 @@ public interface SysUserService extends IService<SysUser> {
     String loginWorkbench(SysUserIdParam sysUserIdParam);
 
     /**
+     * 获取角色集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 11:13
+     **/
+    List<JSONObject> getRoleList(String userId);
+
+    /**
      * 获取按钮编码集合
      *
      * @author xuyuxiang
      * @date 2022/4/29 11:13
      **/
-    List<String> getButtonCodeList(String userId);
+    List<String> getButtonCodeList(List<String> userAndRoleIdList);
 
     /**
      * 获取移动端按钮编码集合
@@ -322,7 +330,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/4/29 11:13
      **/
-    List<String> getMobileButtonCodeListListByUserId(String userId);
+    List<String> getMobileButtonCodeList(List<String> userAndRoleIdList);
 
     /**
      * 获取权限集合
@@ -330,15 +338,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/4/29 11:13
      **/
-    List<JSONObject> getPermissionList(String userId, String orgId);
-
-    /**
-     * 获取角色码集合
-     *
-     * @author xuyuxiang
-     * @date 2022/4/29 11:13
-     **/
-    List<String> getRoleCodeList(String userId);
+    List<JSONObject> getPermissionList(List<String> userAndRoleIdList, String orgId);
 
     /**
      * 用户导入

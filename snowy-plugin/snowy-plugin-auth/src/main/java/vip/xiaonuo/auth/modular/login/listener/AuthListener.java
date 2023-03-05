@@ -49,9 +49,9 @@ public class AuthListener implements SaTokenListener {
         if(SaClientTypeEnum.B.getValue().equals(loginType)) {
             loginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDevice());
             // 记录B端登录日志
-            SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserById(Convert.toStr(loginId));
-            if(ObjectUtil.isNotEmpty(saBaseLoginUser)) {
-                devLogApi.executeLoginLog(saBaseLoginUser.getName());
+            Object name = loginModel.getExtra("name");
+            if(ObjectUtil.isNotEmpty(name)) {
+                devLogApi.executeLoginLog(Convert.toStr(name));
             } else {
                 devLogApi.executeLoginLog(null);
             }
