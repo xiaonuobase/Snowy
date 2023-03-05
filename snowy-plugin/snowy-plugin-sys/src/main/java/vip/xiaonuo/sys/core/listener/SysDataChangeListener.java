@@ -15,6 +15,8 @@ package vip.xiaonuo.sys.core.listener;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONArray;
 import org.springframework.stereotype.Component;
+import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
@@ -41,6 +43,12 @@ public class SysDataChangeListener implements CommonDataChangeListener {
         // 如果检测到机构增加，则将机构的数据缓存清除
         if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
             commonCacheOperator.remove(SysOrgServiceImpl.ORG_CACHE_ALL_KEY);
+            // 并将该机构加入到当前登录用户的数据范围缓存
+            SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
+            saBaseLoginUser.getDataScopeList().forEach(dataScope -> dataScope.getDataScope().addAll(dataIdList));
+            saBaseLoginUser.setDataScopeList(saBaseLoginUser.getDataScopeList());
+            // 重新缓存当前登录用户信息
+            StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
         }
         // 如果检测到用户增加，则将用户数据缓存清除
         if(dataType.equals(SysDataTypeEnum.USER.getValue())) {

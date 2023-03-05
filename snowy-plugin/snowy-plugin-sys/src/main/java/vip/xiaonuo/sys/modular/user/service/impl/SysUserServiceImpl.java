@@ -35,6 +35,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -954,7 +956,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void importUser(MultipartFile file) {
-        // TODO 待完善
+        // TODO
     }
 
     @Override
@@ -975,10 +977,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 }
             }
             String fileName = "SNOWY2.0系统B端用户信息清单.xlsx";
-            List<SysUserExportResult> sysUserExportResultList = this.list(queryWrapper).stream()
+            List<SysUser> sysUserList = this.list(queryWrapper);
+            transService.transBatch(sysUserList);
+            List<SysUserExportResult> sysUserExportResultList = sysUserList.stream()
                     .map(sysUser -> {
                         SysUserExportResult sysUserExportResult = new SysUserExportResult();
                         BeanUtil.copyProperties(sysUser, sysUserExportResult);
+                        // 状态枚举转为文字
+                        sysUserExportResult.setUserStatus(sysUserExportResult.getUserStatus()
+                                .equalsIgnoreCase(SysUserStatusEnum.ENABLE.getValue())?"正常":"停用");
                         // 将base64转为byte数组
                         sysUserExportResult.setAvatar(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
                                 .split(sysUser.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));

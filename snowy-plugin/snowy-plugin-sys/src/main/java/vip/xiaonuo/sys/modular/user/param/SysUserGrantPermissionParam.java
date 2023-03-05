@@ -59,7 +59,7 @@ public class SysUserGrantPermissionParam {
 
         /** 数据范围分类 */
         @ApiModelProperty(value = "数据范围分类", position = 2)
-        @NotBlank(message = "category不能为空")
+        @NotBlank(message = "scopeCategory不能为空")
         private String scopeCategory;
 
         /** 自定义范围组织id集合 */

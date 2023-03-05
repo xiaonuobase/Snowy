@@ -12,6 +12,11 @@
  */
 package vip.xiaonuo;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.listener.PageReadListener;
+import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.sys.modular.user.param.SysUserImportParam;
+
 /**
  * TestMain方法
  *
@@ -20,6 +25,15 @@ package vip.xiaonuo;
  */
 public class Test {
     public static void main(String[] args) {
-
+        try {
+            EasyExcel.read("D://import.xlsx", SysUserImportParam.class, new PageReadListener<SysUserImportParam>(dataList -> {
+                for (SysUserImportParam sysUserImportParam : dataList) {
+                    System.out.println(sysUserImportParam);
+                }
+            })).sheet().doRead();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonException("文件导入失败");
+        }
     }
 }
