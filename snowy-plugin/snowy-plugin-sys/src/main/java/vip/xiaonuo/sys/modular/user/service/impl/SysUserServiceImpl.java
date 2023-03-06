@@ -42,6 +42,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.data.WriteCellData;
+import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
@@ -981,7 +982,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void importUser(MultipartFile file) {
-        // TODO
+        try {
+            // TODO 导入
+            EasyExcel.read("D://import.xlsx", SysUserImportParam.class, new PageReadListener<SysUserImportParam>(dataList -> {
+                for (SysUserImportParam sysUserImportParam : dataList) {
+                    System.out.println(sysUserImportParam);
+                }
+            })).sheet().headRowNumber(2).doRead();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonException("文件导入失败");
+        }
     }
 
     @Override
