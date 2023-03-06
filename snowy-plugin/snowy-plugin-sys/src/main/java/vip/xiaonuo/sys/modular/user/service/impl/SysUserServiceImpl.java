@@ -1003,13 +1003,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             String fileName = "SNOWY2.0系统B端用户信息清单.xlsx";
             List<SysUser> sysUserList = this.list(queryWrapper);
+            if(ObjectUtil.isEmpty(sysUserList)) {
+                throw new CommonException("无数据可导出");
+            }
             transService.transBatch(sysUserList);
             sysUserList = CollectionUtil.sort(sysUserList, Comparator.comparing(SysUser::getOrgId));
             List<SysUserExportResult> sysUserExportResultList = sysUserList.stream()
                     .map(sysUser -> {
                         SysUserExportResult sysUserExportResult = new SysUserExportResult();
                         BeanUtil.copyProperties(sysUser, sysUserExportResult);
-                        sysUserExportResult.setGroupName(sysUserExportResult.getOrgName());
+                        sysUserExportResult.setGroupName(ObjectUtil.isNotEmpty(sysUserExportResult.getOrgName())?
+                                sysUserExportResult.getOrgName():"无组织");
                         // 状态枚举转为文字
                         sysUserExportResult.setUserStatus(sysUserExportResult.getUserStatus()
                                 .equalsIgnoreCase(SysUserStatusEnum.ENABLE.getValue())?"正常":"停用");
@@ -1124,13 +1128,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     File.separator + "userExportTemplate.docx"));
             // 构造填充的参数
             Map<String, Object> map = BeanUtil.beanToMap(sysUser);
-            map.put("avatar", new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil.split(sysUser.getAvatar(),
-                    StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG), 120, 160));
+            String avatarBase64;
+            if(ObjectUtil.isNotEmpty(sysUser.getAvatar())) {
+                avatarBase64 = sysUser.getAvatar();
+            } else {
+                avatarBase64 = CommonAvatarUtil.generateImg(sysUser.getAvatar());
+            }
+            ImageEntity imageEntity = new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                    .split(avatarBase64, StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG), 120, 160);
+            map.put("avatar", imageEntity);
             map.put("exportDateTime", DateUtil.format(DateTime.now(), DatePattern.CHINESE_DATE_PATTERN));
             // 生成doc
             XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
             // 生成临时导出文件
-            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + sysUser.getName() + "个人信息.docx");
+            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY2.0系统B端用户信息_" + sysUser.getName() + ".docx");
             // 写入
             BufferedOutputStream outputStream = FileUtil.getOutputStream(resultFile);
             doc.write(outputStream);
