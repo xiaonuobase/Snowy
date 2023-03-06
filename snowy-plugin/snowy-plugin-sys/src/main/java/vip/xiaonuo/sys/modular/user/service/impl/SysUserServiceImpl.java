@@ -35,9 +35,14 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.read.listener.ReadListener;
+import com.alibaba.excel.metadata.data.WriteCellData;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.row.AbstractRowHeightStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -45,11 +50,13 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
+import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -89,10 +96,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -979,10 +983,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             String fileName = "SNOWY2.0系统B端用户信息清单.xlsx";
             List<SysUser> sysUserList = this.list(queryWrapper);
             transService.transBatch(sysUserList);
+            sysUserList = CollectionUtil.sort(sysUserList, Comparator.comparing(SysUser::getOrgId));
             List<SysUserExportResult> sysUserExportResultList = sysUserList.stream()
                     .map(sysUser -> {
                         SysUserExportResult sysUserExportResult = new SysUserExportResult();
                         BeanUtil.copyProperties(sysUser, sysUserExportResult);
+                        sysUserExportResult.setGroupName(sysUserExportResult.getOrgName());
                         // 状态枚举转为文字
                         sysUserExportResult.setUserStatus(sysUserExportResult.getUserStatus()
                                 .equalsIgnoreCase(SysUserStatusEnum.ENABLE.getValue())?"正常":"停用");
@@ -993,11 +999,87 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }).collect(Collectors.toList());
             // 创建临时文件
             tempFile = FileUtil.file(FileUtil.getTmpDir() + FileUtil.FILE_SEPARATOR + fileName);
+
+            // 头的策略
+            WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+            WriteFont headWriteFont = new WriteFont();
+            headWriteFont.setFontHeightInPoints((short) 14);
+            headWriteCellStyle.setWriteFont(headWriteFont);
+            // 水平垂直居中
+            headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            headWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            // 内容的策略
+            WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
+            contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+            // 内容背景白色
+            contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+            WriteFont contentWriteFont = new WriteFont();
+
+            // 内容字体大小
+            contentWriteFont.setFontHeightInPoints((short) 12);
+            contentWriteCellStyle.setWriteFont(contentWriteFont);
+
+            //设置边框样式，细实线
+            contentWriteCellStyle.setBorderLeft(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderTop(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderRight(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderBottom(BorderStyle.THIN);
+
+            // 水平垂直居中
+            contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+            contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            // 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
+            HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle,
+                    contentWriteCellStyle);
+
             // 写excel
             EasyExcel.write(tempFile.getPath(), SysUserExportResult.class)
+                    // 自定义样式
+                    .registerWriteHandler(horizontalCellStyleStrategy)
                     // 自动列宽
                     .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                    .sheet("用户信息").doWrite(sysUserExportResultList);
+                    // 机构分组合并单元格
+                    .registerWriteHandler(new CommonExcelCustomMergeStrategy(sysUserExportResultList.stream().map(SysUserExportResult::getGroupName)
+                            .collect(Collectors.toList()), 0))
+                    // 设置第一行字体
+                    .registerWriteHandler(new CellWriteHandler() {
+                        @Override
+                        public void afterCellDispose(CellWriteHandlerContext context) {
+                            WriteCellData<?> cellData = context.getFirstCellData();
+                            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                            Integer rowIndex = context.getRowIndex();
+                            if(rowIndex == 0) {
+                                WriteFont headWriteFont = new WriteFont();
+                                headWriteFont.setFontName("宋体");
+                                headWriteFont.setBold(true);
+                                headWriteFont.setFontHeightInPoints((short) 16);
+                                writeCellStyle.setWriteFont(headWriteFont);
+                            }
+                        }
+                    })
+                    // 设置表头行高
+                    .registerWriteHandler(new AbstractRowHeightStyleStrategy() {
+                        @Override
+                        protected void setHeadColumnHeight(Row row, int relativeRowIndex) {
+                            if(relativeRowIndex == 0) {
+                                // 表头第一行
+                                row.setHeightInPoints(34);
+                            } else {
+                                // 表头其他行
+                                row.setHeightInPoints(30);
+                            }
+                        }
+                        @Override
+                        protected void setContentColumnHeight(Row row, int relativeRowIndex) {
+                            // 内容行
+                            row.setHeightInPoints(20);
+                        }
+                    })
+                    .sheet("用户信息")
+                    .doWrite(sysUserExportResultList);
             CommonDownloadUtil.download(tempFile, response);
         } catch (Exception e) {
             e.printStackTrace();
