@@ -341,6 +341,14 @@ public interface SysUserService extends IService<SysUser> {
     List<JSONObject> getPermissionList(List<String> userAndRoleIdList, String orgId);
 
     /**
+     * 下载用户导入模板
+     *
+     * @author xuyuxiang
+     * @date 2022/8/8 13:16
+     **/
+    void downloadImportUserTemplate(HttpServletResponse response) throws IOException;
+
+    /**
      * 用户导入
      *
      * @author xuyuxiang
@@ -355,6 +363,14 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2022/8/8 13:16
      **/
     void exportUser(SysUserExportParam sysUserExportParam, HttpServletResponse response) throws IOException;
+
+    /**
+     * 导出用户个人信息
+     *
+     * @author xuyuxiang
+     * @date 2022/8/8 13:16
+     **/
+    void exportUserInfo(SysUserIdParam sysUserIdParam, HttpServletResponse response) throws IOException;
 
     /**
      * 获取登录用户的职位信息

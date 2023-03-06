@@ -12,6 +12,9 @@
  */
 package vip.xiaonuo.sys.modular.user.service.impl;
 
+import cn.afterturn.easypoi.cache.manager.POICacheManager;
+import cn.afterturn.easypoi.entity.ImageEntity;
+import cn.afterturn.easypoi.word.WordExportUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
@@ -19,9 +22,12 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
@@ -51,6 +57,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,8 +101,10 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -959,6 +968,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public void downloadImportUserTemplate(HttpServletResponse response) throws IOException {
+        try {
+            InputStream inputStream = POICacheManager.getFile("userImportTemplate.xlsx");
+            byte[] bytes = IoUtil.readBytes(inputStream);
+            CommonDownloadUtil.download("SNOWY2.0系统B端用户导入模板.xlsx", bytes, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonResponseUtil.renderError(response, "导出失败");
+        }
+    }
+
+    @Override
     public void importUser(MultipartFile file) {
         // TODO
     }
@@ -1086,6 +1107,47 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             CommonResponseUtil.renderError(response, "导出失败");
         } finally {
             FileUtil.del(tempFile);
+        }
+    }
+
+    @Override
+    public void exportUserInfo(SysUserIdParam sysUserIdParam, HttpServletResponse response) throws IOException {
+        File destTemplateFile = null;
+        File resultFile = null;
+        try {
+            SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+            transService.transOne(sysUser);
+            // 读取模板流
+            InputStream inputStream = POICacheManager.getFile("userExportTemplate.docx");
+            // 创建一个临时模板
+            destTemplateFile = FileUtil.writeFromStream(inputStream, FileUtil.file(FileUtil.getTmpDir() +
+                    File.separator + "userExportTemplate.docx"));
+            // 构造填充的参数
+            Map<String, Object> map = BeanUtil.beanToMap(sysUser);
+            map.put("avatar", new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil.split(sysUser.getAvatar(),
+                    StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG), 120, 160));
+            map.put("exportDateTime", DateUtil.format(DateTime.now(), DatePattern.CHINESE_DATE_PATTERN));
+            // 生成doc
+            XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
+            // 生成临时导出文件
+            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + sysUser.getName() + "个人信息.docx");
+            // 写入
+            BufferedOutputStream outputStream = FileUtil.getOutputStream(resultFile);
+            doc.write(outputStream);
+            outputStream.close();
+            // 下载
+            CommonDownloadUtil.download(resultFile, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonResponseUtil.renderError(response, "导出失败");
+        } finally {
+            // 删除临时文件
+            if(ObjectUtil.isNotEmpty(destTemplateFile)) {
+                FileUtil.del(destTemplateFile);
+            }
+            if(ObjectUtil.isNotEmpty(resultFile)) {
+                FileUtil.del(resultFile);
+            }
         }
     }
 

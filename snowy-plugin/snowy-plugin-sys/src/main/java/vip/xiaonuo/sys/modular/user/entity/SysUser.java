@@ -266,14 +266,17 @@ public class SysUser extends CommonEntity implements TransPojo {
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 
+    /** 组织名称 */
     @ApiModelProperty(value = "组织名称", position = 48)
     @TableField(exist = false)
     private String orgName;
 
+    /** 职位名称 */
     @ApiModelProperty(value = "职位名称", position = 49)
     @TableField(exist = false)
     private String positionName;
 
+    /** 主管名称 */
     @ApiModelProperty(value = "主管名称", position = 50)
     @TableField(exist = false)
     private String directorName;
