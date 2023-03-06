@@ -267,7 +267,7 @@ public class SysUserController {
     @ApiOperationSupport(order = 15)
     @ApiOperation("下载用户导入模板")
     @CommonLog("下载用户导入模板")
-    @PostMapping(value = "/sys/user/downloadImportUserTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/sys/user/downloadImportUserTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public CommonResult<String> downloadImportUserTemplate(HttpServletResponse response) throws IOException {
         sysUserService.downloadImportUserTemplate(response);
         return CommonResult.ok();
