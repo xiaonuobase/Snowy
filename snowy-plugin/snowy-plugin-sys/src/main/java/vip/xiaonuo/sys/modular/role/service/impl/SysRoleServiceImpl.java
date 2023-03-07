@@ -436,7 +436,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
         // 如果查询条件为空，则从缓存中查询
         if(ObjectUtil.isAllEmpty(sysRoleSelectorUserParam.getOrgId(), sysRoleSelectorUserParam.getSearchKey())) {
-            return sysUserService.getCachedAllUserList();
+            return sysUserService.getCachedAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getOrgId())) {
                 // 如果机构id不为空，则查询该机构所在顶级机构下的所有人

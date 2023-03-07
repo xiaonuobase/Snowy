@@ -381,12 +381,12 @@ public interface SysUserService extends IService<SysUser> {
     List<SysUserPositionResult> loginPositionInfo(SysUserIdParam sysUserIdParam);
 
     /**
-     * 获取缓存的所有用户
+     * 获取缓存的所有用户选择器
      *
      * @author xuyuxiang
      * @date 2022/7/25 19:42
      **/
-    List<SysUser> getCachedAllUserList();
+    List<SysUser> getCachedAllUserSelectorList();
 
     /* ====用户部分所需要用到的选择器==== */
 

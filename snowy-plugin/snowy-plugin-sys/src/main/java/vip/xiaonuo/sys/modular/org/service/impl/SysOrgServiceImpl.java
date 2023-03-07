@@ -234,6 +234,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<SysOrg> cachedAllOrgList, List<Tree<String>> treeList) {
         String next = iterator.next();
+        // TODO
         List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(next)).collect(Collectors.toList());
         if(ObjectUtil.isNotEmpty(findList)) {
             if(iterator.hasNext()) {
@@ -250,7 +251,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             sysOrg.setCategory(parentId.equals("0")?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
             sysOrg.setSortCode(99);
             this.save(sysOrg);
-            // 发布增加事件
+            // TODO 发布增加事件
             CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
             // 将该机构加入缓存
             cachedAllOrgList.add(sysOrg);
@@ -301,7 +302,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
         // 如果查询条件为空，则从缓存中查询
         if(ObjectUtil.isAllEmpty(sysOrgSelectorUserParam.getOrgId(), sysOrgSelectorUserParam.getSearchKey())) {
-            return sysUserService.getCachedAllUserList();
+            return sysUserService.getCachedAllUserSelectorList();
         } else {
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
                 // 如果机构id不为空，则查询该机构所在顶级机构下的所有人

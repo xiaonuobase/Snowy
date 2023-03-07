@@ -986,10 +986,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             int successCount = 0;
             int errorCount = 0;
             JSONArray errorDetail = JSONUtil.createArray();
-            List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read("D://import.xlsx")
+            List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read("D://userImportTemplate.xlsx")
                     .head(SysUserImportParam.class).sheet().headRowNumber(2).doReadSync();
+            List<SysUser> allUserList = this.list();
             for (int i = 0; i < sysUserImportParamList.size(); i++) {
-                JSONObject jsonObject = this.doImport(sysUserImportParamList.get(i), i);
+                JSONObject jsonObject = this.doImport(allUserList, sysUserImportParamList.get(i), i);
                 if(jsonObject.getBool("success")) {
                     successCount += 1;
                 } else{
@@ -1014,81 +1015,121 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @author xuyuxiang
      * @date 2023/3/7 13:22
      **/
-    public JSONObject doImport(SysUserImportParam sysUserImportParam, int i) {
+    public JSONObject doImport(List<SysUser> allUserList, SysUserImportParam sysUserImportParam, int i) {
         String account = sysUserImportParam.getAccount();
         String name = sysUserImportParam.getName();
-        String orgName = sysUserImportParam.getOrgName();
-        String positionName = sysUserImportParam.getPositionName();
-        if(ObjectUtil.hasEmpty(account, name, orgName, positionName)) {
+        String orgFullName = sysUserImportParam.getOrgName();
+        String positionFullName = sysUserImportParam.getPositionName();
+        // 校验必填参数
+        if(ObjectUtil.hasEmpty(account, name, orgFullName, positionFullName)) {
             return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "必填字段存在空值");
         } else {
             try {
-                List<SysUser> cachedAllUserList = this.getCachedAllUserList();
-                String orgId = sysOrgService.getOrgIdByOrgFullNameWithCreate(sysUserImportParam.getOrgName());
-                String positionId = sysPositionService.getPositionIdByPositionNameWithCreate(orgId, sysUserImportParam.getPositionName());
-                SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account));
+                // 机构名称
+                String orgName = CollectionUtil.getLast(StrUtil.split(orgFullName, StrUtil.DASHED));
+                // 职位名称
+                String positionName = CollectionUtil.getLast(StrUtil.split(positionFullName, StrUtil.DASHED));
+                // 机构id
+                String orgId = sysOrgService.getOrgIdByOrgFullNameWithCreate(orgFullName);
+                // 职位id
+                String positionId = sysPositionService.getPositionIdByPositionNameWithCreate(orgId, positionFullName);
+
+                // 查找账号对应索引
+                int index = CollStreamUtil.toList(allUserList, SysUser::getAccount).indexOf(account);
+                SysUser sysUser = new SysUser();
                 boolean isAdd = false;
-                String existUserId = null;
-                if(ObjectUtil.isEmpty(sysUser)) {
-                    sysUser = new SysUser();
+                if(index == -1) {
                     isAdd = true;
                 } else {
-                    existUserId = sysUser.getId();
+                    sysUser = allUserList.get(index);
                 }
-                String phone = sysUser.getPhone();
-                String email = sysUser.getEmail();
-                // 拷贝属性
-                BeanUtil.copyProperties(sysUserImportParam, sysUser);
-                sysUser.setOrgId(orgId);
-                sysUser.setPositionId(positionId);
+
+                // 获取手机号和邮箱
+                String phone = sysUserImportParam.getPhone();
+                String email = sysUserImportParam.getEmail();
+
                 // 判断手机号是否跟系统现有的重复
                 if(ObjectUtil.isNotEmpty(phone)) {
                     if(isAdd) {
-                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                        boolean repeatPhone = allUserList.stream().anyMatch(tempSysUser -> ObjectUtil
                                 .isNotEmpty(tempSysUser.getPhone()) && tempSysUser.getPhone().equals(phone));
                         if(repeatPhone) {
-                            sysUser.setPhone(null);
+                            // 新增用户手机号重复则不导入该手机号
+                            sysUserImportParam.setPhone(null);
                         }
                     } else {
-                        String finalExistUserId = existUserId;
-                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                        String finalExistUserId = sysUser.getId();
+                        boolean repeatPhone = allUserList.stream().anyMatch(tempSysUser -> ObjectUtil
                                 .isNotEmpty(tempSysUser.getPhone()) && tempSysUser.getPhone()
                                 .equals(phone) && !tempSysUser.getId().equals(finalExistUserId));
                         if(repeatPhone) {
-                            sysUser.setPhone(phone);
+                            // 更新用户手机号重复则使用原手机号
+                            sysUser.setPhone(sysUser.getPhone());
                         }
                     }
                 }
                 // 判断邮箱是否跟系统现有的重复
                 if(ObjectUtil.isNotEmpty(email)) {
                     if(isAdd) {
-                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                        boolean repeatEmail = allUserList.stream().anyMatch(tempSysUser -> ObjectUtil
                                 .isNotEmpty(tempSysUser.getEmail()) && tempSysUser.getEmail().equals(email));
-                        if(repeatPhone) {
-                            sysUser.setPhone(null);
+                        if(repeatEmail) {
+                            // 新增邮箱重复则不导入该邮箱
+                            sysUserImportParam.setEmail(null);
                         }
                     } else {
-                        String finalExistUserId = existUserId;
-                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                        String finalExistUserId = sysUser.getId();
+                        boolean repeatEmail = allUserList.stream().anyMatch(tempSysUser -> ObjectUtil
                                 .isNotEmpty(tempSysUser.getEmail()) && tempSysUser.getEmail()
                                 .equals(email) && !tempSysUser.getId().equals(finalExistUserId));
-                        if(repeatPhone) {
-                            sysUser.setPhone(email);
+                        if(repeatEmail) {
+                            // 更新用户手机号重复则使用原邮箱
+                            sysUser.setEmail(sysUser.getEmail());
                         }
                     }
                 }
+                // 拷贝属性
+                BeanUtil.copyProperties(sysUserImportParam, sysUser);
+
+                // 设置机构id和职位id
+                sysUser.setOrgId(orgId);
+                sysUser.setPositionId(positionId);
+
+                // 设置机构名称和职位名称（暂时无作用）
+                sysUser.setOrgName(orgName);
+                sysUser.setPositionName(positionName);
+
+                // 发布事件
+                if(isAdd) {
+                    // 设置id
+                    sysUser.setId(IdWorker.getIdStr());
+                    // 设置默认头像
+                    sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
+                    // 设置默认密码
+                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+                    // 设置状态
+                    sysUser.setUserStatus(SysUserStatusEnum.ENABLE.getValue());
+                    // 发布增加事件
+                    CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
+                    // 更新全部用户
+                    allUserList.add(sysUser);
+                } else {
+                    // 发布更新事件
+                    CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
+                    // 删除指定索引元素
+                    allUserList.remove(index);
+                    // 插入指定索引元素
+                    allUserList.add(index, sysUser);
+                }
+
+                // 保存或更新
                 this.saveOrUpdate(sysUser);
-                // 发布增加事件
-                CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysUser));
-                // 将该用户加入缓存
-                cachedAllUserList.add(sysUser);
-                // 更新缓存
-                commonCacheOperator.put(USER_CACHE_ALL_KEY, cachedAllUserList);
+
                 // 返回成功
                 return JSONUtil.createObj().set("success", true);
             } catch (Exception e) {
                 e.printStackTrace();
-                return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "数据导入异常");
+                return JSONUtil.createObj().set("success", false).set("index", i + 1).set("msg", "数据导入异常");
             }
         }
     }
@@ -1346,7 +1387,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysUser> getCachedAllUserList() {
+    public List<SysUser> getCachedAllUserSelectorList() {
         // 从缓存中取
         Object cacheValue = commonCacheOperator.get(USER_CACHE_ALL_KEY);
         if(ObjectUtil.isNotEmpty(cacheValue)) {
@@ -1430,7 +1471,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
         // 如果查询条件为空，则从缓存中查询
         if(ObjectUtil.isAllEmpty(sysUserSelectorUserParam.getOrgId(), sysUserSelectorUserParam.getSearchKey())) {
-            return this.getCachedAllUserList();
+            return this.getCachedAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
                 // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
