@@ -1145,9 +1145,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             } else {
                 avatarBase64 = CommonAvatarUtil.generateImg(sysUser.getAvatar());
             }
+            // 头像
             ImageEntity imageEntity = new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
                     .split(avatarBase64, StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG), 120, 160);
             map.put("avatar", imageEntity);
+            if(ObjectUtil.isNotEmpty(sysUser.getBirthday())) {
+                try {
+                    // 年龄
+                    long age = DateUtil.betweenYear(DateUtil.parseDate(sysUser.getBirthday()), DateTime.now(), true);
+                    if(age != 0) {
+                        map.put("age", age + "岁");
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            // 导出时间
             map.put("exportDateTime", DateUtil.format(DateTime.now(), DatePattern.CHINESE_DATE_PATTERN));
             // 生成doc
             XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
