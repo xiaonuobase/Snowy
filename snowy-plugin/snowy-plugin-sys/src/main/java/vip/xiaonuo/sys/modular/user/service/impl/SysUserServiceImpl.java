@@ -42,7 +42,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.data.WriteCellData;
-import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
@@ -980,18 +979,117 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void importUser(MultipartFile file) {
+    public JSONObject importUser(MultipartFile file) {
         try {
-            // TODO 导入
-            EasyExcel.read("D://import.xlsx", SysUserImportParam.class, new PageReadListener<SysUserImportParam>(dataList -> {
-                for (SysUserImportParam sysUserImportParam : dataList) {
-                    System.out.println(sysUserImportParam);
+            int successCount = 0;
+            int errorCount = 0;
+            JSONArray errorDetail = JSONUtil.createArray();
+            List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read("D://import.xlsx")
+                    .head(SysUserImportParam.class).sheet().headRowNumber(2).doReadSync();
+            for (int i = 0; i < sysUserImportParamList.size(); i++) {
+                JSONObject jsonObject = this.doImport(sysUserImportParamList.get(i), i);
+                if(jsonObject.getBool("success")) {
+                    successCount += 1;
+                } else{
+                    errorCount += 1;
+                    errorDetail.add(jsonObject);
                 }
-            })).sheet().headRowNumber(2).doRead();
+            }
+            return JSONUtil.createObj()
+                    .set("totalCount", sysUserImportParamList.size())
+                    .set("successCount", successCount)
+                    .set("errorCount", errorCount)
+                    .set("errorDetail", errorDetail);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CommonException("文件导入失败");
+        }
+    }
+
+    /**
+     * 执行导入
+     *
+     * @author xuyuxiang
+     * @date 2023/3/7 13:22
+     **/
+    public JSONObject doImport(SysUserImportParam sysUserImportParam, int i) {
+        String account = sysUserImportParam.getAccount();
+        String name = sysUserImportParam.getName();
+        String orgName = sysUserImportParam.getOrgName();
+        String positionName = sysUserImportParam.getPositionName();
+        if(ObjectUtil.hasEmpty(account, name, orgName, positionName)) {
+            return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "必填字段存在空值");
+        } else {
+            try {
+                List<SysUser> cachedAllUserList = this.getCachedAllUserList();
+                String orgId = sysOrgService.getOrgIdByOrgFullNameWithCreate(sysUserImportParam.getOrgName());
+                String positionId = sysPositionService.getPositionIdByPositionNameWithCreate(orgId, sysUserImportParam.getPositionName());
+                SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account));
+                boolean isAdd = false;
+                String existUserId = null;
+                if(ObjectUtil.isEmpty(sysUser)) {
+                    sysUser = new SysUser();
+                    isAdd = true;
+                } else {
+                    existUserId = sysUser.getId();
+                }
+                String phone = sysUser.getPhone();
+                String email = sysUser.getEmail();
+                // 拷贝属性
+                BeanUtil.copyProperties(sysUserImportParam, sysUser);
+                sysUser.setOrgId(orgId);
+                sysUser.setPositionId(positionId);
+                // 判断手机号是否跟系统现有的重复
+                if(ObjectUtil.isNotEmpty(phone)) {
+                    if(isAdd) {
+                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                                .isNotEmpty(tempSysUser.getPhone()) && tempSysUser.getPhone().equals(phone));
+                        if(repeatPhone) {
+                            sysUser.setPhone(null);
+                        }
+                    } else {
+                        String finalExistUserId = existUserId;
+                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                                .isNotEmpty(tempSysUser.getPhone()) && tempSysUser.getPhone()
+                                .equals(phone) && !tempSysUser.getId().equals(finalExistUserId));
+                        if(repeatPhone) {
+                            sysUser.setPhone(phone);
+                        }
+                    }
+                }
+                // 判断邮箱是否跟系统现有的重复
+                if(ObjectUtil.isNotEmpty(email)) {
+                    if(isAdd) {
+                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                                .isNotEmpty(tempSysUser.getEmail()) && tempSysUser.getEmail().equals(email));
+                        if(repeatPhone) {
+                            sysUser.setPhone(null);
+                        }
+                    } else {
+                        String finalExistUserId = existUserId;
+                        boolean repeatPhone = cachedAllUserList.stream().anyMatch(tempSysUser -> ObjectUtil
+                                .isNotEmpty(tempSysUser.getEmail()) && tempSysUser.getEmail()
+                                .equals(email) && !tempSysUser.getId().equals(finalExistUserId));
+                        if(repeatPhone) {
+                            sysUser.setPhone(email);
+                        }
+                    }
+                }
+                this.saveOrUpdate(sysUser);
+                // 发布增加事件
+                CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysUser));
+                // 将该用户加入缓存
+                cachedAllUserList.add(sysUser);
+                // 更新缓存
+                commonCacheOperator.put(USER_CACHE_ALL_KEY, cachedAllUserList);
+                // 返回成功
+                return JSONUtil.createObj().set("success", true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "数据导入异常");
+            }
         }
     }
 
@@ -1143,7 +1241,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if(ObjectUtil.isNotEmpty(sysUser.getAvatar())) {
                 avatarBase64 = sysUser.getAvatar();
             } else {
-                avatarBase64 = CommonAvatarUtil.generateImg(sysUser.getAvatar());
+                avatarBase64 = CommonAvatarUtil.generateImg(sysUser.getName());
             }
             // 头像
             ImageEntity imageEntity = new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil

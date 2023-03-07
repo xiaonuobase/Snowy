@@ -171,7 +171,26 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
         int index = CollStreamUtil.toList(originDataList, SysPosition::getId).indexOf(id);
         return index == -1?null:originDataList.get(index);
     }
-    
+
+    @Override
+    public String getPositionIdByPositionNameWithCreate(String orgId, String positionName) {
+        SysPosition sysPosition = this.getOne(new LambdaQueryWrapper<SysPosition>().eq(SysPosition::getOrgId, orgId).eq(SysPosition::getName, positionName));
+        if(ObjectUtil.isNotEmpty(sysPosition)) {
+            return sysPosition.getId();
+        } else {
+            sysPosition = new SysPosition();
+            sysPosition.setOrgId(orgId);
+            sysPosition.setName(positionName);
+            sysPosition.setCode(RandomUtil.randomString(10));
+            sysPosition.setCategory(SysPositionCategoryEnum.LOW.getValue());
+            sysPosition.setSortCode(99);
+            this.save(sysPosition);
+            // 发布增加事件
+            CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.POSITION.getValue(), JSONUtil.createArray().put(sysPosition));
+            return sysPosition.getId();
+        }
+    }
+
     /* ====职位部分所需要用到的选择器==== */
 
     @Override

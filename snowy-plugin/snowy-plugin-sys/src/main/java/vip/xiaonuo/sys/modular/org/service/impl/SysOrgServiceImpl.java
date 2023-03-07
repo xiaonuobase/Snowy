@@ -48,6 +48,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -221,6 +222,50 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
         return orgList;
     }
+
+    @Override
+    public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
+        List<SysOrg> cachedAllOrgList = this.getCachedAllOrgList();
+        List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(sysOrg ->
+                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
+                .collect(Collectors.toList()), "0");
+        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), cachedAllOrgList, treeList);
+    }
+
+    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<SysOrg> cachedAllOrgList, List<Tree<String>> treeList) {
+        String next = iterator.next();
+        List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(next)).collect(Collectors.toList());
+        if(ObjectUtil.isNotEmpty(findList)) {
+            if(iterator.hasNext()) {
+                return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
+            } else {
+                return findList.get(0).getId();
+            }
+        } else {
+            //创建该机构
+            SysOrg sysOrg = new SysOrg();
+            sysOrg.setName(next);
+            sysOrg.setCode(RandomUtil.randomString(10));
+            sysOrg.setParentId(parentId);
+            sysOrg.setCategory(parentId.equals("0")?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
+            sysOrg.setSortCode(99);
+            this.save(sysOrg);
+            // 发布增加事件
+            CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
+            // 将该机构加入缓存
+            cachedAllOrgList.add(sysOrg);
+            // 更新缓存
+            commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
+            // 继续查找
+            if(iterator.hasNext()) {
+                return findOrgIdByOrgName(sysOrg.getId(), iterator, cachedAllOrgList, CollectionUtil.newArrayList());
+            } else {
+                return sysOrg.getId();
+            }
+        }
+    }
+
+
 
     /* ====组织部分所需要用到的选择器==== */
 

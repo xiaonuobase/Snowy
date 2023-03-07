@@ -354,7 +354,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/8/8 13:16
      **/
-    void importUser(MultipartFile file);
+    JSONObject importUser(MultipartFile file);
 
     /**
      * 用户导出

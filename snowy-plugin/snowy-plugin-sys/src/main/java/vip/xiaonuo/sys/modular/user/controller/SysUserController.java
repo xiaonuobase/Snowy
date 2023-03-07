@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.modular.user.controller;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
@@ -283,9 +284,8 @@ public class SysUserController {
     @ApiOperation("用户导入")
     @CommonLog("用户导入")
     @PostMapping("/sys/user/import")
-    public CommonResult<String> importUser(@RequestPart("file") @ApiParam(value="文件", required = true) MultipartFile file) {
-        sysUserService.importUser(file);
-        return CommonResult.ok();
+    public CommonResult<JSONObject> importUser(@RequestPart("file") @ApiParam(value="文件", required = true) MultipartFile file) {
+        return CommonResult.data(sysUserService.importUser(file));
     }
 
     /**
