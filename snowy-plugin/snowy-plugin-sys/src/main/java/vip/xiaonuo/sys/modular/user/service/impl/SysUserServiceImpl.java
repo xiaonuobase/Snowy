@@ -1111,6 +1111,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
                     // 设置默认密码
                     sysUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+                    // 设置排序码
+                    sysUser.setSortCode(99);
                     // 设置状态
                     sysUser.setUserStatus(SysUserStatusEnum.ENABLE.getValue());
                     // 发布增加事件
