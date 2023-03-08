@@ -8,4 +8,8 @@
 
 ####开发工具插件api接口: snowy-plugin-dev-api
 
+####代码生成api接口: snowy-plugin-gen-api
+
+####移动端管理api接口: snowy-plugin-mobile-api
+
 ####系统功能插件api接口: snowy-plugin-sys-api
