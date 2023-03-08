@@ -112,12 +112,16 @@ snowy
     |-snowy-plugin-biz == 业务功能插件
     |-snowy-plugin-client == C端功能插件
     |-snowy-plugin-dev == 开发工具插件
+    |-snowy-plugin-gen == 代码生成插件
+    |-snowy-plugin-mobile == 移动端管理插件
     |-snowy-plugin-sys == 系统功能插件
   |-snowy-plugin-api == 插件api包
     |-snowy-plugin-auth-api == 登录鉴权插件api接口
     |-snowy-plugin-biz-api == 业务功能插件api接口
     |-snowy-plugin-client-api == C端功能插件api接口
     |-snowy-plugin-dev-api == 开发工具插件api接口
+    |-snowy-plugin-gen == 代码生成插件api接口
+    |-snowy-plugin-mobile == 移动端管理插件api接口
     |-snowy-plugin-sys-api == 系统功能插件api接口
   |-snowy-web-app == 主启动模块
 ```
@@ -212,6 +216,7 @@ QQ技术群：732230670
 | 俞宝山 | 全栈 | 俞宝山 | 
 | 徐玉祥 | 全栈 | 就是那个锅 | 
 | 董夏雨 | 全栈 | 阿董 | 
+| 王鹏 | 全栈 | 每天一点 | 
 
 ## 曾获荣誉
 
