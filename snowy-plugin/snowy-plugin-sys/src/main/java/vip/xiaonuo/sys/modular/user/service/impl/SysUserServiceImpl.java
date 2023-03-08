@@ -986,7 +986,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             int successCount = 0;
             int errorCount = 0;
             JSONArray errorDetail = JSONUtil.createArray();
-            byte[] bytes = file.getBytes();
             // 创建临时文件
             File tempFile = FileUtil.writeBytes(file.getBytes(), FileUtil.file(FileUtil.getTmpDir() +
                     FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
@@ -1400,7 +1399,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 只查询部分字段
         List<SysUser> userList = this.list(new LambdaQueryWrapper<SysUser>().select(SysUser::getId, SysUser::getOrgId,
-                SysUser::getAccount, SysUser::getName, SysUser::getSortCode).orderByAsc(SysUser::getSortCode));
+                SysUser::getId, SysUser::getPositionId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode)
+                .orderByAsc(SysUser::getSortCode));
         if(ObjectUtil.isNotEmpty(userList)) {
             // 更新到缓存
             commonCacheOperator.put(USER_CACHE_ALL_KEY, userList);
