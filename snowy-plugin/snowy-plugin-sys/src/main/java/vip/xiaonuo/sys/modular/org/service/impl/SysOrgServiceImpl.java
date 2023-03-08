@@ -233,40 +233,48 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<SysOrg> cachedAllOrgList, List<Tree<String>> treeList) {
-        String next = iterator.next();
-        // TODO
-        List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(next)).collect(Collectors.toList());
-        if(ObjectUtil.isNotEmpty(findList)) {
-            if(iterator.hasNext()) {
-                return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
-            } else {
-                return findList.get(0).getId();
+        String orgName = iterator.next();
+        if(ObjectUtil.isNotEmpty(treeList)) {
+            List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(orgName)).collect(Collectors.toList());
+            if(ObjectUtil.isNotEmpty(findList)) {
+                if(iterator.hasNext()) {
+                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
+                } else {
+                    return findList.get(0).getId();
+                }
             }
+        }
+        String orgId = this.doCreateOrg(parentId, orgName, cachedAllOrgList);
+        if(iterator.hasNext()) {
+            return findOrgIdByOrgName(orgId, iterator, cachedAllOrgList, CollectionUtil.newArrayList());
         } else {
-            //创建该机构
-            SysOrg sysOrg = new SysOrg();
-            sysOrg.setName(next);
-            sysOrg.setCode(RandomUtil.randomString(10));
-            sysOrg.setParentId(parentId);
-            sysOrg.setCategory(parentId.equals("0")?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
-            sysOrg.setSortCode(99);
-            this.save(sysOrg);
-            // TODO 发布增加事件
-            CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-            // 将该机构加入缓存
-            cachedAllOrgList.add(sysOrg);
-            // 更新缓存
-            commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
-            // 继续查找
-            if(iterator.hasNext()) {
-                return findOrgIdByOrgName(sysOrg.getId(), iterator, cachedAllOrgList, CollectionUtil.newArrayList());
-            } else {
-                return sysOrg.getId();
-            }
+            return orgId;
         }
     }
 
-
+    /**
+     * 执行创建机构
+     *
+     * @author xuyuxiang
+     * @date 2023/3/8 9:38
+     **/
+    public String doCreateOrg(String parentId, String orgName, List<SysOrg> cachedAllOrgList) {
+        //创建该机构
+        SysOrg sysOrg = new SysOrg();
+        sysOrg.setName(orgName);
+        sysOrg.setCode(RandomUtil.randomString(10));
+        sysOrg.setParentId(parentId);
+        sysOrg.setCategory(parentId.equals("0")?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
+        sysOrg.setSortCode(99);
+        this.save(sysOrg);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
+        // 将该机构加入缓存
+        cachedAllOrgList.add(sysOrg);
+        // 更新缓存
+        commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
+        return sysOrg.getId();
+    }
 
     /* ====组织部分所需要用到的选择器==== */
 

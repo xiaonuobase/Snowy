@@ -986,8 +986,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             int successCount = 0;
             int errorCount = 0;
             JSONArray errorDetail = JSONUtil.createArray();
-            List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read("D://userImportTemplate.xlsx")
-                    .head(SysUserImportParam.class).sheet().headRowNumber(2).doReadSync();
+            byte[] bytes = file.getBytes();
+            // 创建临时文件
+            File tempFile = FileUtil.writeBytes(file.getBytes(), FileUtil.file(FileUtil.getTmpDir() +
+                    FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
+            // 读取excel
+            List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read(tempFile).head(SysUserImportParam.class).sheet()
+                    .headRowNumber(2).doReadSync();
             List<SysUser> allUserList = this.list();
             for (int i = 0; i < sysUserImportParamList.size(); i++) {
                 JSONObject jsonObject = this.doImport(allUserList, sysUserImportParamList.get(i), i);
@@ -1032,7 +1037,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 机构id
                 String orgId = sysOrgService.getOrgIdByOrgFullNameWithCreate(orgFullName);
                 // 职位id
-                String positionId = sysPositionService.getPositionIdByPositionNameWithCreate(orgId, positionFullName);
+                String positionId = sysPositionService.getPositionIdByPositionNameWithCreate(orgId, positionName);
 
                 // 查找账号对应索引
                 int index = CollStreamUtil.toList(allUserList, SysUser::getAccount).indexOf(account);
