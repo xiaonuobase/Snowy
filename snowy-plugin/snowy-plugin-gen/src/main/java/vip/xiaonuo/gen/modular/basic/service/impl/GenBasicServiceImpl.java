@@ -274,8 +274,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             List<GenBasicTableResult> tables = new ArrayList<>();
             rs = metaData.getTables(null, schema, "%", new String[]{"TABLE", "VIEW"});
             while (rs.next()) {
-                String tableName = rs.getString("TABLE_NAME").toUpperCase();
-                if (!tableName.startsWith("ACT_")) {
+                String tableName = rs.getString("TABLE_NAME");
+                if (!StrUtil.startWithIgnoreCase(tableName, "ACT_")) {
                     GenBasicTableResult genBasicTableResult = new GenBasicTableResult();
                     genBasicTableResult.setTableName(tableName);
                     String remarks = rs.getString("REMARKS");
