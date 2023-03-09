@@ -47,7 +47,7 @@ public class SysUserApiProvider implements SysUserApi {
     @Override
     public JSONObject getUserByIdWithoutException(String userId) {
         SysUser sysUser = sysUserService.getById(userId);
-        if(ObjectUtil.isEmpty(sysUser)) {
+        if(ObjectUtil.isNotEmpty(sysUser)) {
             return JSONUtil.parseObj(sysUser);
         }
         return null;
