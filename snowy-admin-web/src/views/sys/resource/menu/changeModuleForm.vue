@@ -10,21 +10,16 @@
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="显示名称：" name="title">
-				<span>{{formData.title}}</span>
+				<span>{{ formData.title }}</span>
 			</a-form-item>
-			<a-form-item label="所属目录：" name="module" v-if="formData.parentId === '0'" >
+			<a-form-item label="所属目录：" name="module" v-if="formData.parentId === '0'">
 				<a-radio-group v-model:value="formData.module" button-style="solid">
-					<a-radio-button
-						v-for="module in moduleTypeList"
-						:key="module.id"
-						:value="module.id"
-					>
+					<a-radio-button v-for="module in moduleTypeList" :key="module.id" :value="module.id">
 						<component :is="module.icon" />
 						{{ module.title }}</a-radio-button
 					>
 				</a-radio-group>
 			</a-form-item>
-
 		</a-form>
 		<template #footer>
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
@@ -65,26 +60,27 @@
 
 	// 默认要校验的
 	const formRules = {
-		module: [required('请选择所属目录')],
+		module: [required('请选择所属目录')]
 	}
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				const param = {
-					id: formData.value.id,
-					module: formData.value.module
-				}
-				submitLoading.value = true
-				menuApi.menuChangeModule(param).then(() => {
+		formRef.value.validate().then(() => {
+			const param = {
+				id: formData.value.id,
+				module: formData.value.module
+			}
+			submitLoading.value = true
+			menuApi
+				.menuChangeModule(param)
+				.then(() => {
 					submitLoading.value = false
 					emit('successful')
-				}).finally(() => {
+				})
+				.finally(() => {
 					visible = false
 				})
-			})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

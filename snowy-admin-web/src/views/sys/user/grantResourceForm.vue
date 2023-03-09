@@ -1,6 +1,6 @@
 <template>
 	<a-drawer
-		title="授权移动端资源"
+		title="授权资源"
 		:width="drawerWidth"
 		:visible="visible"
 		:destroy-on-close="true"
@@ -56,8 +56,12 @@
 	</a-drawer>
 </template>
 
-<script setup name="grantMobileResourceForm">
+<script setup name="grantResourceForm">
+	import { nextTick } from 'vue'
+	import tool from '@/utils/tool'
+	import userApi from '@/api/sys/userApi'
 	import roleApi from '@/api/sys/roleApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	const spinningLoading = ref(false)
 	let firstShowMap = $ref({})
 	const emit = defineEmits({ successful: null })
@@ -108,21 +112,16 @@
 		} else {
 			// 获取表格数据
 			spinningLoading.value = true
-			const res = await roleApi.roleMobileMenuTreeSelector()
-			if (res && res.length > 0) {
-				const param = {
-					id: resultDataModel.id
-				}
-				// 获取回显数据
-				const resEcho = await roleApi.roleOwnMobileMenu(param)
-				spinningLoading.value = false
-				echoDatalist.value = echoModuleData(res, resEcho)
-				moduleId.value = res[0].id
-				loadDatas.value = echoDatalist.value[0].menu
-			} else {
-				spinningLoading.value = false
-				loadDatas.value = []
+			const res = await roleApi.roleResourceTreeSelector()
+			const param = {
+				id: resultDataModel.id
 			}
+			// 获取回显数据
+			const resEcho = await userApi.userOwnResource(param)
+			spinningLoading.value = false
+			echoDatalist.value = echoModuleData(res, resEcho)
+			moduleId.value = res[0].id
+			loadDatas.value = echoDatalist.value[0].menu
 		}
 	}
 	const checkFieldKeys = ['button']
@@ -152,7 +151,7 @@
 							if (item.id === grant.menuId) {
 								menueCheck.value++
 								// 处理按钮
-								if (grant.buttonInfo) {
+								if (grant.buttonInfo.length > 0) {
 									grant.buttonInfo.forEach((button) => {
 										item.button.forEach((itemButton) => {
 											if (button === itemButton.id) {
@@ -281,15 +280,24 @@
 	const onSubmit = () => {
 		const param = convertData()
 		submitLoading.value = true
-		roleApi
-			.roleGrantMobileMenu(param)
+		userApi
+			.userGrantResource(param)
 			.then(() => {
 				onClose()
 				emit('successful')
+				refreshCacheMenu()
 			})
 			.finally(() => {
 				submitLoading.value = false
 			})
+	}
+	// 刷新缓存的菜单
+	const refreshCacheMenu = () => {
+		nextTick(() => {
+			userCenterApi.userLoginMenu().then((res) => {
+				tool.data.set('MENU', res)
+			})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

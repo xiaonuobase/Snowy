@@ -45,11 +45,11 @@
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'path'">
-					<span v-if="record.menuType === 'MENU'">{{record.path}}</span>
+					<span v-if="record.menuType === 'MENU'">{{ record.path }}</span>
 					<span v-else>-</span>
 				</template>
 				<template v-if="column.dataIndex === 'component'">
-					<span v-if="record.menuType === 'MENU'">{{record.component}}</span>
+					<span v-if="record.menuType === 'MENU'">{{ record.component }}</span>
 					<span v-else>-</span>
 				</template>
 				<template v-if="column.dataIndex === 'icon'">
@@ -101,7 +101,7 @@
 		</s-table>
 	</a-card>
 	<Form ref="form" @successful="table.refresh(true)" />
-	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)"/>
+	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)" />
 	<Button ref="button" />
 </template>
 

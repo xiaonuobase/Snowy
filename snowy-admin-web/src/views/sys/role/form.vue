@@ -102,20 +102,18 @@
 	})
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				submitLoading.value = true
-				roleApi
-					.submitForm(formData.value, !formData.value.id)
-					.then(() => {
-						visible = false
-						emit('successful')
-					})
-					.finally(() => {
-						submitLoading.value = false
-					})
-			})
+		formRef.value.validate().then(() => {
+			submitLoading.value = true
+			roleApi
+				.submitForm(formData.value, !formData.value.id)
+				.then(() => {
+					visible = false
+					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
+				})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

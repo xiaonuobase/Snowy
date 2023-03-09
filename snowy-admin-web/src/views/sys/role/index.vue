@@ -225,7 +225,7 @@
 	}
 	// 可伸缩列
 	const handleResizeColumn = (w, col) => {
-		col.width = w;
+		col.width = w
 	}
 	// 删除
 	const removeOrg = (record) => {

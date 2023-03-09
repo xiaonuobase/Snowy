@@ -57,20 +57,18 @@
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				const defParam = {
-					category: 'BUTTON',
-					// module: recordData.value.module,
-					parentId: recordData.value.id
-				}
-				const param = Object.assign(defParam, formData.value)
-				buttonApi.submitForm(param, !formData.value.id).then((res) => {
-					onClose()
-					emit('successful')
-				})
+		formRef.value.validate().then(() => {
+			const defParam = {
+				category: 'BUTTON',
+				// module: recordData.value.module,
+				parentId: recordData.value.id
+			}
+			const param = Object.assign(defParam, formData.value)
+			buttonApi.submitForm(param, !formData.value.id).then((res) => {
+				onClose()
+				emit('successful')
 			})
+		})
 	}
 
 	// 调用这个函数将子组件的一些数据和方法暴露出去

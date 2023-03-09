@@ -143,18 +143,19 @@
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				const param = parameterChanges(formData.value)
-				submitLoading.value = true
-				spaApi.submitForm(param, !param.id).then(() => {
+		formRef.value.validate().then(() => {
+			const param = parameterChanges(formData.value)
+			submitLoading.value = true
+			spaApi
+				.submitForm(param, !param.id)
+				.then(() => {
 					visible = false
 					emit('successful')
-				}).finally(() => {
+				})
+				.finally(() => {
 					submitLoading.value = false
 				})
-			})
+		})
 	}
 	const parameterChanges = (data) => {
 		if (!data.component) {

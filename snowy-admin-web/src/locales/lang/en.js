@@ -16,7 +16,10 @@ export default {
 		editButton: 'edit',
 		removeButton: 'delete',
 		batchRemoveButton: 'batch Remove',
-		detailButton: 'detail'
+		detailButton: 'detail',
+		searchKey: 'Search Key',
+		imports: 'import',
+		more: 'More'
 	},
 	model: {
 		user: 'user',
@@ -50,5 +53,10 @@ export default {
 		emailCodePlaceholder: 'Please input a Email code',
 		restPhoneType: 'For phone rest',
 		restEmailType: 'For email rest'
+	},
+	user: {
+		userStatus: 'User Status',
+		resetPassword: 'Reset Password',
+		role: 'Role',
 	}
 }

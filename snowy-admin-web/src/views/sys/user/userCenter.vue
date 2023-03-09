@@ -64,7 +64,7 @@
 
 <script setup>
 	import { onMounted } from 'vue'
-	import { useRoute } from 'vue-router';
+	import { useRoute } from 'vue-router'
 	import tool from '@/utils/tool'
 	import store from '@/store'
 	import userCenterApi from '@/api/sys/userCenterApi'
@@ -108,12 +108,12 @@
 	const onTabChange = (key) => {
 		noTitleKey.value = key
 	}
-	const Route = useRoute();
+	const Route = useRoute()
 	onMounted(() => {
 		if (Route.query.tab) {
 			noTitleKey.value = Route.query.tab
 		}
-	});
+	})
 	// 头像裁剪图片回调
 	const cropUploadSuccess = (data) => {
 		// 转换为file类型

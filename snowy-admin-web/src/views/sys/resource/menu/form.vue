@@ -199,7 +199,8 @@
 					onClose()
 					emit('successful')
 				})
-			}).finally(() => {
+			})
+			.finally(() => {
 				submitLoading.value = false
 			})
 	}

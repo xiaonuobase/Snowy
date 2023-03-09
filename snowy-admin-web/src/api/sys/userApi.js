@@ -69,5 +69,43 @@ export default {
 	// 给用户授权角色
 	grantRole(data) {
 		return request('grantRole', data)
+	},
+	// 获取用户拥有资源
+	userOwnResource(data) {
+		return request('ownResource', data, 'get')
+	},
+	// 给用户授权资源
+	userGrantResource(data) {
+		return request('grantResource', data)
+	},
+	// 获取用户拥有权限
+	userOwnPermission(data) {
+		return request('ownPermission', data, 'get')
+	},
+	// 给用户授权权限
+	userGrantPermission(data) {
+		return request('grantPermission', data)
+	},
+	// 下载用户导入模板
+	userDownloadImportUserTemplate(data) {
+		return request('downloadImportUserTemplate', data, 'get', {
+			responseType: 'blob'
+		})
+	},
+	// 用户导入
+	userImport(data) {
+		return request('import', data)
+	},
+	// 用户导出
+	userExport(data) {
+		return request('export', data, 'get', {
+			responseType: 'blob'
+		})
+	},
+	// 按模板导出用户个人信息
+	userExportUserInfo(data) {
+		return request('exportUserInfo', data, 'get', {
+			responseType: 'blob'
+		})
 	}
 }

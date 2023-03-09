@@ -18,7 +18,10 @@ export default {
 		editButton: '编辑',
 		removeButton: '删除',
 		batchRemoveButton: '批量删除',
-		detailButton: '详情'
+		detailButton: '详情',
+		searchKey: '关键词',
+		imports: '导入',
+		more: '更多',
 	},
 	model: {
 		user: '用户',
@@ -52,5 +55,10 @@ export default {
 		emailCodePlaceholder: '请输入邮件验证码',
 		restPhoneType: '手机号找回',
 		restEmailType: '邮箱找回'
+	},
+	user: {
+		userStatus: '用户状态',
+		resetPassword: '重置密码',
+		role: '角色',
 	}
 }
