@@ -46,6 +46,10 @@ export default {
 	jobRunJob(data) {
 		return request('runJob', data)
 	},
+	// 运行定时任务
+	jobRunJobNow(data) {
+		return request('runJobNow', data)
+	},
 	// 获取定时任务类
 	jobGetActionClass(data) {
 		return request('getActionClass', data, 'get')

@@ -64,6 +64,8 @@
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>
+						<a @click="immediatelyRun(record)">立即运行</a>
+						<a-divider type="vertical" />
 						<a @click="form.onOpen(record)">编辑</a>
 						<a-divider type="vertical" />
 						<a-popconfirm title="确定要删除此定时任务吗？" @confirm="deleteJob(record)">
@@ -123,7 +125,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '200px'
+			width: '220px'
 		}
 	]
 	let selectedRowKeys = ref([])
@@ -168,6 +170,15 @@
 					statusLoading.value = false
 				})
 		}
+	}
+	// 立即运行
+	const immediatelyRun = (record) => {
+		const params = {
+			id: record.id
+		}
+		jobApi.jobRunJobNow(params).then(() => {
+			table.value.refresh(true)
+		})
 	}
 	// 删除
 	const deleteJob = (record) => {
