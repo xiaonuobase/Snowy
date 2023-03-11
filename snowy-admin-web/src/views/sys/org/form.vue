@@ -39,7 +39,7 @@
 				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
-				<a-slider v-model:value="formData.sortCode" :max="100" />
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
 			</a-form-item>
 			<a-form-item label="指定主管：" name="directorId">
 				<a-button type="link" style="padding-left: 0px" @click="openSelector(formData.directorId)">选择</a-button>

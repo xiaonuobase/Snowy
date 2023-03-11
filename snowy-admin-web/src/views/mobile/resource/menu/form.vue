@@ -64,7 +64,7 @@
 				<a-radio-group v-model:value="formData.status" placeholder="请选择可用状态" :options="statusOptions" />
 			</a-form-item>
 			<a-form-item label="排序码：" name="sortCode">
-				<a-slider v-model:value="formData.sortCode" :max="1000" style="width: 100%" />
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="1000" />
 			</a-form-item>
 		</a-form>
 		<template #footer>

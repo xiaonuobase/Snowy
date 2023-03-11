@@ -16,7 +16,7 @@
 				<a-input v-model:value="formData.code" placeholder="请输入按钮编码" allow-clear />
 			</a-form-item>
 			<a-form-item label="排序:" name="sortCode">
-				<a-slider v-model:value="formData.sortCode" :max="100" :min="0" />
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" :min="0" />
 			</a-form-item>
 		</a-form>
 	</a-modal>

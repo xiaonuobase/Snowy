@@ -40,7 +40,7 @@
 				</a-select>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
-				<a-slider v-model:value="formData.sortCode" :max="100" />
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
 			</a-form-item>
 			<a-form-item label="指定主管：" name="directorId">
 				<a-button type="link" style="padding-left: 0px" @click="openSelector(formData.directorId)">选择</a-button>
@@ -65,15 +65,13 @@
 </template>
 
 <script setup name="bizOrgForm">
-	import { required, rules } from '@/utils/formRules'
-	import { message } from 'ant-design-vue'
+	import { required } from '@/utils/formRules'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
-	import { getCurrentInstance } from 'vue'
 	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import tool from '@/utils/tool'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	const { proxy } = getCurrentInstance()
 	// 默认是关闭状态
 	let visible = $ref(false)
 	let UserSelectorPlus = ref()
@@ -124,7 +122,7 @@
 		sortCode: [required('请选择排序')]
 	}
 	// 机构分类字典
-	let orgCategoryOptions = proxy.$TOOL.dictList('ORG_CATEGORY')
+	const orgCategoryOptions = tool.dictList('ORG_CATEGORY')
 	// 打开人员选择器，选择主管
 	const openSelector = (id) => {
 		let checkedUserIds = []
