@@ -92,7 +92,7 @@
 	import router from '@/router'
 	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import smCrypto from "@/utils/smCrypto"
+	import smCrypto from '@/utils/smCrypto'
 	const emailResetFormRef = ref()
 	const emailFormData = ref({})
 	const islogin = ref(false)

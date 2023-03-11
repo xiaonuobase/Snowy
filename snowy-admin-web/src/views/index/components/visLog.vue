@@ -25,7 +25,7 @@
 	})
 	// 是否展示更多按钮
 	const displayMore = () => {
-		return (userInfo.roleCodeList && userInfo.roleCodeList.indexOf("super") !== -1)
+		return userInfo.roleCodeList && userInfo.roleCodeList.indexOf('super') !== -1
 	}
 	// 查询数据
 	const seleVisLogList = () => {

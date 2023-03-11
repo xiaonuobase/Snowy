@@ -514,33 +514,13 @@
 		})
 	}
 	// 性别
-	const genderOptions = proxy.$TOOL.dictTypeList('GENDER').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const genderOptions = proxy.$TOOL.dictList('GENDER')
 	// 民族
-	const nationOptions = proxy.$TOOL.dictTypeList('NATION').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const nationOptions = proxy.$TOOL.dictList('NATION')
 	// 身份证件
-	const idcardTypeOptions = proxy.$TOOL.dictTypeList('IDCARD_TYPE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const idcardTypeOptions = proxy.$TOOL.dictList('IDCARD_TYPE')
 	// 文化程度
-	const cultureLevelOptions = proxy.$TOOL.dictTypeList('CULTURE_LEVEL').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const cultureLevelOptions = proxy.$TOOL.dictList('CULTURE_LEVEL')
 
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

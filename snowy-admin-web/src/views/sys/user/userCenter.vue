@@ -19,7 +19,7 @@
 					<p><i class="group"></i>{{ userInfo.orgName }}</p>
 					<p>
 						<i class="address"></i>
-						<span>{{ userInfo.homeAddress? userInfo.homeAddress : '暂无地址' }}</span>
+						<span>{{ userInfo.homeAddress ? userInfo.homeAddress : '暂无地址' }}</span>
 					</p>
 				</div>
 				<a-divider />

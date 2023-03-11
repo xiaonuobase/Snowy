@@ -101,25 +101,22 @@
 		category: [required('请选择岗位分类')],
 		sortCode: [required('请选择排序')]
 	}
-	let positionCategoryOptions = proxy.$TOOL.dictTypeList('POSITION_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	let positionCategoryOptions = proxy.$TOOL.dictList('POSITION_CATEGORY')
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
 			.validate()
 			.then(() => {
 				submitLoading.value = true
-				bizPositionApi.submitForm(formData.value, !formData.value.id).then(() => {
-					visible = false
-					emit('successful')
-				})
-				.finally(() => {
-					submitLoading.value = false
-				})
+				bizPositionApi
+					.submitForm(formData.value, !formData.value.id)
+					.then(() => {
+						visible = false
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			})
 			.catch(() => {})
 	}

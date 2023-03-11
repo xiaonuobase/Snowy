@@ -66,7 +66,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-popconfirm title="确定要强退此令牌吗？" @confirm="exitToken(record)">
-						<a-button type="link" danger size="small" :loading="exitLoading" >强退</a-button>
+						<a-button type="link" danger size="small" :loading="exitLoading">强退</a-button>
 					</a-popconfirm>
 				</template>
 			</template>

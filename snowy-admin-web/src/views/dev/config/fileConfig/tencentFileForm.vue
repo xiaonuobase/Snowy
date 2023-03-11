@@ -63,24 +63,22 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				submitLoading.value = true
-				let submitParam = cloneDeep(formData.value)
-				const param = Object.entries(submitParam).map((item) => {
-					return {
-						configKey: item[0],
-						configValue: item[1]
-					}
-				})
-				configApi
-					.configEditForm(param)
-					.then(() => {})
-					.finally(() => {
-						submitLoading.value = false
-					})
+		formRef.value.validate().then(() => {
+			submitLoading.value = true
+			let submitParam = cloneDeep(formData.value)
+			const param = Object.entries(submitParam).map((item) => {
+				return {
+					configKey: item[0],
+					configValue: item[1]
+				}
 			})
+			configApi
+				.configEditForm(param)
+				.then(() => {})
+				.finally(() => {
+					submitLoading.value = false
+				})
+		})
 	}
 	const layout = {
 		labelCol: {

@@ -20,7 +20,7 @@
 			<a-input v-model:value="formData.nickname" placeholder="请输入昵称" allow-clear />
 		</a-form-item>
 		<a-form-item label="性别：" name="sex">
-			<a-radio-group v-model:value="formData.gender" :options="genderOptions"> </a-radio-group>
+			<a-radio-group v-model:value="formData.gender" :options="genderOptions" />
 		</a-form-item>
 		<a-form-item label="生日：" name="birthday">
 			<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" style="width: 100%" />
@@ -36,13 +36,13 @@
 </template>
 
 <script setup name="AccountBasic">
-	import { getCurrentInstance } from 'vue'
 	import { required } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import tool from '@/utils/tool'
+	import store from '@/store'
 	const formRef = ref()
-	const { proxy } = getCurrentInstance()
 	// 获取用户信息
-	const userInfo = proxy.$TOOL.data.get('USER_INFO')
+	const userInfo = tool.data.get('USER_INFO')
 	let formData = ref({})
 	formData.value = userInfo
 	const submitLoading = ref(false)
@@ -51,12 +51,7 @@
 		name: [required('请输入姓名')],
 		gender: [required('请选择性别')]
 	}
-	const genderOptions = proxy.$TOOL.dictTypeList('GENDER').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const genderOptions = tool.dictList('GENDER')
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
@@ -66,8 +61,8 @@
 				userCenterApi.userUpdateUserInfo(formData.value).then(() => {
 					submitLoading.value = false
 					// 更新前端缓存
-					proxy.$store.commit('SET_userInfo', formData.value)
-					proxy.$TOOL.data.set('USER_INFO', formData.value)
+					store.commit('SET_userInfo', formData.value)
+					tool.data.set('USER_INFO', formData.value)
 				})
 			})
 			.catch(() => {

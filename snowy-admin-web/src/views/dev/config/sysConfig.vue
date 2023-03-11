@@ -140,19 +140,9 @@
 		}
 	})
 	// 文件引擎
-	const fileEngineOptions = tool.dictTypeList('FILE_ENGINE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const fileEngineOptions = tool.dictList('FILE_ENGINE')
 	// 开关
-	const commonSwitchOptions = tool.dictTypeList('COMMON_SWITCH').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const commonSwitchOptions = tool.dictList('COMMON_SWITCH')
 
 	const customRequest = (data) => {
 		formData.value.SNOWY_SYS_LOGO = ref([])

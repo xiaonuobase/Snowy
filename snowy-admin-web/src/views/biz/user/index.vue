@@ -28,8 +28,8 @@
 						<a-col :span="8">
 							<a-form-item name="userStatus" :label="$t('user.userStatus')">
 								<a-select v-model:value="searchFormState.userStatus" :placeholder="$t('user.placeholderUserStatus')">
-									<a-select-option v-for="item in statusData" :key="item.dictValue" :value="item.dictValue">{{
-										item.name
+									<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
+										item.label
 									}}</a-select-option>
 								</a-select>
 							</a-form-item>
@@ -207,7 +207,7 @@
 			width: '220px'
 		})
 	}
-	const statusData = tool.dictTypeList('COMMON_STATUS')
+	const statusData = tool.dictList('COMMON_STATUS')
 	const searchFormRef = ref()
 	let defaultExpandedKeys = ref([])
 	let searchFormState = reactive({})

@@ -88,10 +88,5 @@
 		})
 	}
 	// 分类
-	const categoryOptions = tool.dictTypeList('THIRD_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const categoryOptions = tool.dictList('THIRD_CATEGORY')
 </script>

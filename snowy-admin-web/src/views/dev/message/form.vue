@@ -18,8 +18,7 @@
 					:options="categoryOptions"
 					style="width: 100%"
 					placeholder="请选择站内信分类"
-				>
-				</a-select>
+				/>
 			</a-form-item>
 			<a-form-item label="正文：" name="content">
 				<a-textarea v-model:value="formData.content" placeholder="请输入正文" :auto-size="{ minRows: 5, maxRows: 5 }" />
@@ -27,7 +26,7 @@
 			<a-form-item label="接收人：" name="receiverIdList">
 				<a-button type="primary" @click="openUserSelector">选择人员</a-button>
 				<br />
-				<a-tag class="mt-3" v-for="(user, index) in userList" color="cyan" closable @close="removeUserTag(index)">{{
+				<a-tag class="mt-3" v-for="(user, index) in userList" color="cyan" :key="index" @close="removeUserTag(index)">{{
 					user.name
 				}}</a-tag>
 			</a-form-item>
@@ -50,12 +49,12 @@
 	import { message } from 'ant-design-vue'
 	import messageApi from '@/api/dev/messageApi'
 	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import tool from '@/utils/tool'
 
 	const sendLoading = ref(false)
 	let UserSelectorPlus = ref()
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	const { proxy } = getCurrentInstance()
 	// 默认是关闭状态
 	let visible = $ref(false)
 	const formRef = ref()
@@ -78,12 +77,7 @@
 		category: [required('请选择站内信分类')]
 	}
 	// 站内信分类字典
-	let categoryOptions = proxy.$TOOL.dictTypeList('MESSAGE_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const categoryOptions = tool.dictList('MESSAGE_CATEGORY')
 	// 打开人员选择器
 	const openUserSelector = () => {
 		let ids = []

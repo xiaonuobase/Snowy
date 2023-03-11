@@ -5,7 +5,7 @@
 			<a-row :gutter="24">
 				<a-col :span="8">
 					<a-form-item label="名称关键词" name="searchKey">
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入单页名称关键词" allow-clear></a-input>
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入单页名称关键词" allow-clear />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -15,7 +15,7 @@
 							:options="categoryOptions"
 							placeholder="请选择类型"
 							allow-clear
-						></a-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -145,18 +145,18 @@
 			}
 		}
 	}
-	let categoryOptions = tool
-		.dictTypeList('MENU_TYPE')
+	const categoryOptions = tool
+		.dictList('MENU_TYPE')
 		.filter((item) => {
 			// 排除
-			if (item.dictValue !== 'CATALOG') {
+			if (item.value !== 'CATALOG') {
 				return item
 			}
 		})
 		.map((item) => {
 			return {
-				value: item['dictValue'],
-				label: item['name'] + '页'
+				value: item['value'],
+				label: item['label'] + '页'
 			}
 		})
 	// 列表数据

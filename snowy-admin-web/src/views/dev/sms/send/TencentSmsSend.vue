@@ -52,20 +52,18 @@
 		templateCode: [required('请输入短信服务控制台配置且审核通过的模板编码')]
 	}
 	const send = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				emit('loadingStart')
-				smsApi
-					.smsSendTencent(formData.value)
-					.then(() => {
-						message.success('发送成功')
-					})
-					.catch(() => {})
-					.finally(() => {
-						emit('loadingEnd')
-					})
-			})
+		formRef.value.validate().then(() => {
+			emit('loadingStart')
+			smsApi
+				.smsSendTencent(formData.value)
+				.then(() => {
+					message.success('发送成功')
+				})
+				.catch(() => {})
+				.finally(() => {
+					emit('loadingEnd')
+				})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

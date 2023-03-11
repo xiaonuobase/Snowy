@@ -18,8 +18,7 @@
 					:options="categoryOptions"
 					style="width: 100%"
 					placeholder="请选择角色分类"
-				>
-				</a-select>
+				/>
 			</a-form-item>
 			<a-form-item v-if="formData.category === 'ORG'" label="所属机构：" name="orgId">
 				<a-tree-select
@@ -37,7 +36,7 @@
 					}"
 					selectable="false"
 					tree-line
-				></a-tree-select>
+				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
 				<a-slider v-model:value="formData.sortCode" :max="100" />
@@ -52,13 +51,12 @@
 
 <script setup name="roleForm">
 	import { required } from '@/utils/formRules'
-	import { getCurrentInstance } from 'vue'
+	import tool from '@/utils/tool'
 	import orgApi from '@/api/sys/orgApi'
 	import roleApi from '@/api/sys/roleApi'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	const { proxy } = getCurrentInstance()
 	// 默认是关闭状态
 	let visible = $ref(false)
 	const formRef = ref()
@@ -94,12 +92,7 @@
 		sortCode: [required('请选择排序')]
 	}
 	// 机构分类字典
-	let categoryOptions = proxy.$TOOL.dictTypeList('ROLE_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	let categoryOptions = tool.dictList('ROLE_CATEGORY')
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value.validate().then(() => {

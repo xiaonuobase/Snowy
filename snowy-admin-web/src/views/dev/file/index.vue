@@ -4,13 +4,12 @@
 			<a-row :gutter="24">
 				<a-col :span="8">
 					<a-form-item name="searchKey" label="名称关键词">
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入文件名称关键词"></a-input>
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入文件名称关键词" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
 					<a-form-item name="engine" label="存储位置">
-						<a-select v-model:value="searchFormState.engine" placeholder="请选择存储位置" :options="engineOptions">
-						</a-select>
+						<a-select v-model:value="searchFormState.engine" placeholder="请选择存储位置" :options="engineOptions" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -197,12 +196,7 @@
 		})
 	}
 	// 存储位置
-	const engineOptions = tool.dictTypeList('FILE_ENGINE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const engineOptions = tool.dictList('FILE_ENGINE')
 </script>
 
 <style scoped>

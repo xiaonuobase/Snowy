@@ -2,8 +2,8 @@
 	<a-row :gutter="10">
 		<a-col :span="4">
 			<a-menu id="userMessage" v-model:selected-keys="selectedKeys" mode="inline" @click="handleClick">
-				<a-menu-item :key="messageCategory.dictValue" v-for="messageCategory in messageCategoryList">{{
-					messageCategory.name
+				<a-menu-item :key="messageCategory.value" v-for="messageCategory in messageCategoryList">{{
+					messageCategory.label
 				}}</a-menu-item>
 			</a-menu>
 		</a-col>
@@ -39,8 +39,8 @@
 	import tool from '@/utils/tool'
 	import { nextTick } from 'vue'
 
-	const messageCategoryList = tool.dictTypeList('MESSAGE_CATEGORY')
-	const selectedKeys = ref(new Array(messageCategoryList[0].dictValue))
+	const messageCategoryList = tool.dictList('MESSAGE_CATEGORY')
+	const selectedKeys = ref(new Array(messageCategoryList[0].value))
 	const table = ref()
 	const detailRef = ref()
 	const columns = [

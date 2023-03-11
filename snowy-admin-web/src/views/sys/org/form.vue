@@ -36,8 +36,7 @@
 					:options="orgCategoryOptions"
 					style="width: 100%"
 					placeholder="请选择组织分类"
-				>
-				</a-select>
+				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
 				<a-slider v-model:value="formData.sortCode" :max="100" />
@@ -68,12 +67,11 @@
 	import { required } from '@/utils/formRules'
 	import { message } from 'ant-design-vue'
 	import orgApi from '@/api/sys/orgApi'
-	import { getCurrentInstance } from 'vue'
 	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import tool from '@/utils/tool'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	const { proxy } = getCurrentInstance()
 	// 默认是关闭状态
 	let visible = $ref(false)
 	let UserSelectorPlus = ref()
@@ -124,12 +122,7 @@
 		sortCode: [required('请选择排序')]
 	}
 	// 机构分类字典
-	let orgCategoryOptions = proxy.$TOOL.dictTypeList('ORG_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const orgCategoryOptions = tool.dictList('ORG_CATEGORY')
 	// 打开人员选择器，选择主管
 	const openSelector = (id) => {
 		let checkedUserIds = []
@@ -152,21 +145,19 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				submitLoading.value = true
-				formData.value.extJson = JSON.stringify(extJson.value)
-				orgApi
-					.submitForm(formData.value, !formData.value.id)
-					.then(() => {
-						visible = false
-						emit('successful')
-					})
-					.finally(() => {
-						submitLoading.value = false
-					})
-			})
+		formRef.value.validate().then(() => {
+			submitLoading.value = true
+			formData.value.extJson = JSON.stringify(extJson.value)
+			orgApi
+				.submitForm(formData.value, !formData.value.id)
+				.then(() => {
+					visible = false
+					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
+				})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

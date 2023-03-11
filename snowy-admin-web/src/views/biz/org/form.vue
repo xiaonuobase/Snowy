@@ -124,12 +124,7 @@
 		sortCode: [required('请选择排序')]
 	}
 	// 机构分类字典
-	let orgCategoryOptions = proxy.$TOOL.dictTypeList('ORG_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	let orgCategoryOptions = proxy.$TOOL.dictList('ORG_CATEGORY')
 	// 打开人员选择器，选择主管
 	const openSelector = (id) => {
 		let checkedUserIds = []
@@ -157,13 +152,15 @@
 			.then(() => {
 				submitLoading.value = true
 				formData.value.extJson = JSON.stringify(extJson.value)
-				bizOrgApi.submitForm(formData.value, !formData.value.id).then(() => {
-					visible = false
-					emit('successful')
-				})
-				.finally(() => {
-					submitLoading.value = false
-				})
+				bizOrgApi
+					.submitForm(formData.value, !formData.value.id)
+					.then(() => {
+						visible = false
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			})
 			.catch(() => {})
 	}

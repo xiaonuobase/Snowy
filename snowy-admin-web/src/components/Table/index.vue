@@ -163,9 +163,14 @@
 			 * @param bool Boolean
 			 */
 			refresh(bool = false) {
-				bool && (this.localPagination = Object.assign({}, {
-					current: 1, size: this.size
-				}))
+				bool &&
+					(this.localPagination = Object.assign(
+						{},
+						{
+							current: 1,
+							size: this.size
+						}
+					))
 				this.loadData()
 			},
 			/**
@@ -176,18 +181,29 @@
 			 */
 			loadData(pagination, filters, sorter) {
 				this.localLoading = true
-				const parameter = Object.assign({
-					current: (pagination && pagination.current) ||
-							this.showPagination && this.localPagination.current || this.pageNum,
-					size: (pagination && pagination.pageSize) ||
-							this.showPagination && this.localPagination.pageSize || this.pageSize || this.localPagination.size
+				const parameter = Object.assign(
+					{
+						current:
+							(pagination && pagination.current) ||
+							(this.showPagination && this.localPagination.current) ||
+							this.pageNum,
+						size:
+							(pagination && pagination.pageSize) ||
+							(this.showPagination && this.localPagination.pageSize) ||
+							this.pageSize ||
+							this.localPagination.size
 					},
-					(sorter && sorter.field && {
-						sortField: sorter.field
-					}) || {},
-					(sorter && sorter.order && {
-						sortOrder: sorter.order
-					}) || {}, {
+					(sorter &&
+						sorter.field && {
+							sortField: sorter.field
+						}) ||
+						{},
+					(sorter &&
+						sorter.order && {
+							sortOrder: sorter.order
+						}) ||
+						{},
+					{
 						...filters
 					}
 				)
@@ -325,7 +341,7 @@
 				const needTotalItems = this.needTotalList.map((item) => {
 					return (
 						<span className="mr-3">
-							{item.title} 总计 {' '}
+							{item.title} 总计{' '}
 							<a className="font-6">{!item.customRender ? item.total : item.customRender(item.total)}</a>
 						</span>
 					)
@@ -416,10 +432,8 @@
 						<div className="layout-items-center s-table-tool-right">
 							{this.toolConfig.striped ? (
 								<div className="layout-items-center ml-4">
-									<a-checkbox
-										checked={this.localSettings.rowClassNameSwitch}
-										onChange={changeRowClass}
-									>斑马纹
+									<a-checkbox checked={this.localSettings.rowClassNameSwitch} onChange={changeRowClass}>
+										斑马纹
 									</a-checkbox>
 								</div>
 							) : null}

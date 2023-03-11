@@ -18,8 +18,7 @@
 					button-style="solid"
 					:options="categoryOptions"
 					option-type="button"
-				>
-				</a-radio-group>
+				/>
 			</a-form-item>
 
 			<a-form-item name="path">
@@ -82,11 +81,10 @@
 </template>
 
 <script setup name="spaForm">
-	import { message } from 'ant-design-vue'
 	import { required } from '@/utils/formRules'
 	import IconSelector from '@/components/Selector/iconSelector.vue'
 	import spaApi from '@/api/sys/resource/spaApi'
-	import { getCurrentInstance } from 'vue'
+	import tool from '@/utils/tool'
 	// 默认是关闭状态
 	let visible = $ref(false)
 	const emit = defineEmits({ successful: null })
@@ -125,19 +123,18 @@
 	const iconCallBack = (value) => {
 		formData.value.icon = value
 	}
-	const { proxy } = getCurrentInstance()
-	let categoryOptions = proxy.$TOOL
-		.dictTypeList('MENU_TYPE')
+	let categoryOptions = tool
+		.dictList('MENU_TYPE')
 		.filter((item) => {
 			// 排除
-			if (item.dictValue !== 'CATALOG') {
+			if (item.value !== 'CATALOG') {
 				return item
 			}
 		})
 		.map((item) => {
 			return {
-				value: item['dictValue'],
-				label: item['name'] + '页'
+				value: item['value'],
+				label: item['label'] + '页'
 			}
 		})
 

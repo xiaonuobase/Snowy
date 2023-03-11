@@ -68,20 +68,18 @@
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value
-			.validate()
-			.then(() => {
-				submitLoading.value = true
-				configApi
-					.submitForm(formData.value, !formData.value.id)
-					.then(() => {
-						onClose()
-						emit('successful')
-					})
-					.finally(() => {
-						submitLoading.value = false
-					})
-			})
+		formRef.value.validate().then(() => {
+			submitLoading.value = true
+			configApi
+				.submitForm(formData.value, !formData.value.id)
+				.then(() => {
+					onClose()
+					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
+				})
+		})
 	}
 
 	// 调用这个函数将子组件的一些数据和方法暴露出去

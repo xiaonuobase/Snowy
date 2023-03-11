@@ -1,33 +1,33 @@
 <template>
-	  <a-carousel class="snowy-right-card-one" autoplay arrows>
-	      <template #prevArrow>
-            <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
-              <left-circle-outlined />
-            </div>
-          </template>
-          <template #nextArrow>
-            <div class="custom-slick-arrow" style="right: 10px">
-              <right-circle-outlined />
-            </div>
-          </template>
-			<img
-				src="/src/assets/images/index_001.png"
-				class="carousel-images"
-				@click="leaveForOpen('https://www.xiaonuo.vip')"
-			/>
-			<img
-				src="/src/assets/images/index_002.png"
-				class="carousel-images"
-				@click="leaveForOpen('https://www.xiaonuo.vip')"
-			/>
-          	<!--
+	<a-carousel class="snowy-right-card-one" autoplay arrows>
+		<template #prevArrow>
+			<div class="custom-slick-arrow" style="left: 10px; z-index: 1">
+				<left-circle-outlined />
+			</div>
+		</template>
+		<template #nextArrow>
+			<div class="custom-slick-arrow" style="right: 10px">
+				<right-circle-outlined />
+			</div>
+		</template>
+		<img
+			src="/src/assets/images/index_001.png"
+			class="carousel-images"
+			@click="leaveForOpen('https://www.xiaonuo.vip')"
+		/>
+		<img
+			src="/src/assets/images/index_002.png"
+			class="carousel-images"
+			@click="leaveForOpen('https://www.xiaonuo.vip')"
+		/>
+		<!--
 			<img v-for="(item, index) in carouselList"
 				:src="item.images"
 				class="carousel-images"
 				@click="leaveForOpen(item.url)"
 			/>
 			-->
-      </a-carousel>
+	</a-carousel>
 </template>
 
 <script setup name="carousel">

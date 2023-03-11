@@ -137,28 +137,30 @@
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
-		bizOrgApi.orgTree().then((res) => {
-			cardLoading.value = false
-			if (res !== null) {
-				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
+		bizOrgApi
+			.orgTree()
+			.then((res) => {
+				cardLoading.value = false
+				if (res !== null) {
+					treeData.value = res
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
-			}
-		})
-		.finally(() => {
-			cardLoading.value = false
-		})
+					})
+				}
+			})
+			.finally(() => {
+				cardLoading.value = false
+			})
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {

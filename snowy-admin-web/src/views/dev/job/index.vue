@@ -4,19 +4,17 @@
 			<a-row :gutter="24">
 				<a-col :span="6">
 					<a-form-item label="关键字" name="searchKey">
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入关键字"></a-input>
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入关键字" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
 					<a-form-item label="分类" name="category">
-						<a-select v-model:value="searchFormState.category" placeholder="请选择分类" :options="categoryOptions">
-						</a-select>
+						<a-select v-model:value="searchFormState.category" placeholder="请选择分类" :options="categoryOptions" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
 					<a-form-item label="状态" name="jobStatus">
-						<a-select v-model:value="searchFormState.jobStatus" placeholder="请选择状态" :options="jobStatusOptions">
-						</a-select>
+						<a-select v-model:value="searchFormState.jobStatus" placeholder="请选择状态" :options="jobStatusOptions" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
@@ -207,17 +205,7 @@
 		})
 	}
 	// 分类
-	const categoryOptions = tool.dictTypeList('JOB_CATEGORY').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const categoryOptions = tool.dictList('JOB_CATEGORY')
 	// 状态
-	const jobStatusOptions = tool.dictTypeList('JOB_STATUS').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const jobStatusOptions = tool.dictList('JOB_STATUS')
 </script>

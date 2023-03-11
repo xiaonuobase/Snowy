@@ -26,7 +26,7 @@
 					<a-row :gutter="16">
 						<a-col :span="12">
 							<a-form-item label="性别：" name="gender">
-								<a-radio-group v-model:value="formData.gender" :options="genderOptions"> </a-radio-group>
+								<a-radio-group v-model:value="formData.gender" :options="genderOptions" />
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
@@ -72,7 +72,7 @@
 										value: 'id'
 									}"
 									@change="selePositionData(formData.orgId, 0)"
-								></a-tree-select>
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
@@ -84,8 +84,7 @@
 									style="width: 100%"
 									placeholder="请选择职位"
 									allow-clear
-								>
-								</a-select>
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
@@ -97,8 +96,7 @@
 									style="width: 100%"
 									placeholder="请选择主管"
 									allow-clear
-								>
-								</a-select>
+								/>
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -150,7 +148,7 @@
 											:tree-default-expanded-keys="treeDefaultExpandedKeys"
 											:field-names="{ children: 'children', label: 'name', value: 'id' }"
 											@select="childOrgSelect(positionInfo, 0)"
-										></a-tree-select>
+										/>
 									</a-form-item>
 								</a-col>
 								<a-col :span="7">
@@ -165,8 +163,7 @@
 											style="width: 100%"
 											placeholder="请选择职位"
 											allow-clear
-										>
-										</a-select>
+										/>
 									</a-form-item>
 								</a-col>
 								<a-col :span="7">
@@ -178,8 +175,7 @@
 											style="width: 100%"
 											placeholder="请选择主管"
 											allow-clear
-										>
-										</a-select>
+										/>
 									</a-form-item>
 								</a-col>
 								<a-col :span="3" style="margin-top: 4px">
@@ -193,7 +189,7 @@
 					<a-row :gutter="16">
 						<a-col :span="12">
 							<a-form-item label="民族：" name="nation">
-								<a-select v-model:value="formData.nation" placeholder="请选择民族" :options="nationOptions"> </a-select>
+								<a-select v-model:value="formData.nation" placeholder="请选择民族" :options="nationOptions" />
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
@@ -227,8 +223,11 @@
 					<a-row :gutter="16">
 						<a-col :span="12">
 							<a-form-item label="证件类型：" name="idCardType">
-								<a-select v-model:value="formData.idCardType" placeholder="请选择证件类型" :options="idcardTypeOptions">
-								</a-select>
+								<a-select
+									v-model:value="formData.idCardType"
+									placeholder="请选择证件类型"
+									:options="idcardTypeOptions"
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
@@ -244,8 +243,7 @@
 									v-model:value="formData.cultureLevel"
 									placeholder="请选择文化程度"
 									:options="cultureLevelOptions"
-								>
-								</a-select>
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
@@ -330,12 +328,12 @@
 
 <script setup>
 	import userApi from '@/api/sys/userApi'
-	import { required, rules } from '@/utils/formRules'
+	import { required } from '@/utils/formRules'
+	import tool from '@/utils/tool'
 	// 默认是关闭状态
 	let visible = $ref(false)
 	const formRef = ref()
 	const activeTabsKey = ref('1')
-	const { proxy } = getCurrentInstance()
 	const emit = defineEmits({ successful: null })
 	const formLoading = ref(false)
 	const treeData = ref([])
@@ -514,34 +512,13 @@
 		})
 	}
 	// 性别
-	const genderOptions = proxy.$TOOL.dictTypeList('GENDER').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const genderOptions = tool.dictList('GENDER')
 	// 民族
-	const nationOptions = proxy.$TOOL.dictTypeList('NATION').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const nationOptions = tool.dictList('NATION')
 	// 身份证件
-	const idcardTypeOptions = proxy.$TOOL.dictTypeList('IDCARD_TYPE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const idcardTypeOptions = tool.dictList('IDCARD_TYPE')
 	// 文化程度
-	const cultureLevelOptions = proxy.$TOOL.dictTypeList('CULTURE_LEVEL').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
-
+	const cultureLevelOptions = tool.dictList('CULTURE_LEVEL')
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
 		onOpen
@@ -560,10 +537,6 @@
 		padding-bottom: 5px;
 		padding-top: 5px;
 		padding-left: 15px;
-	}
-	.dashedButton {
-		margin-top: 10px;
-		width: 100%;
 	}
 	.form-div {
 		padding-top: 10px;

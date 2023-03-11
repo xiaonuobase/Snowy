@@ -70,16 +70,14 @@
 
 <script setup name="devEmail">
 	import { message } from 'ant-design-vue'
+	import tool from '@/utils/tool'
 	import emailApi from '@/api/dev/emailApi'
 	import Form from './form.vue'
-	import { getCurrentInstance } from 'vue'
 	import detail from './detail.vue'
-	const { proxy } = getCurrentInstance()
 	const table = ref(null)
 	const form = ref()
 	const searchFormRef = ref()
 	let searchFormState = reactive({})
-	const deleteLoading = ref(false)
 	const detailRef = ref()
 
 	const columns = [
@@ -140,12 +138,7 @@
 			return data
 		})
 	}
-	const engineOptions = proxy.$TOOL.dictTypeList('EMAIL_ENGINE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const engineOptions = tool.dictList('EMAIL_ENGINE')
 	// 删除
 	const deleteEmail = (record) => {
 		let params = [

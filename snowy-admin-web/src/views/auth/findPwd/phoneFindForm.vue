@@ -93,7 +93,7 @@
 	import router from '@/router'
 	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import smCrypto from "@/utils/smCrypto"
+	import smCrypto from '@/utils/smCrypto'
 	const phoneLoginFormRef = ref()
 	const phoneFormData = ref({})
 	const islogin = ref(false)

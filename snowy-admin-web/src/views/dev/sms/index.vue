@@ -72,10 +72,9 @@
 	import { message } from 'ant-design-vue'
 	import smsApi from '@/api/dev/smsApi'
 	import Form from './form.vue'
-	import { getCurrentInstance } from 'vue'
 	import detail from './detail.vue'
+	import tool from '@/utils/tool'
 
-	const { proxy } = getCurrentInstance()
 	const table = ref(null)
 	const form = ref()
 	const searchFormRef = ref()
@@ -140,12 +139,7 @@
 			return data
 		})
 	}
-	const engineOptions = proxy.$TOOL.dictTypeList('SMS_ENGINE').map((item) => {
-		return {
-			value: item['dictValue'],
-			label: item['name']
-		}
-	})
+	const engineOptions = tool.dictList('SMS_ENGINE')
 	// 删除
 	const deleteSms = (record) => {
 		let params = [
