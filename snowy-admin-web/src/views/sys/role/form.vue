@@ -67,10 +67,18 @@
 	const submitLoading = ref(false)
 
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, category, orgId) => {
 		visible = true
 		formData.value = {
 			sortCode: 99
+		}
+		// 判断角色的类型
+		if (category) {
+			formData.value.category = category
+		}
+		if (orgId) {
+			formData.value.category = 'ORG'
+			formData.value.orgId = orgId
 		}
 		if (record) {
 			formData.value = Object.assign({}, record)

@@ -67,10 +67,13 @@
 	const submitLoading = ref(false)
 
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, orgId) => {
 		visible = true
 		formData.value = {
 			sortCode: 99
+		}
+		if (orgId) {
+			formData.value.orgId = orgId
 		}
 		if (record) {
 			formData.value = Object.assign({}, record)

@@ -19,7 +19,7 @@
 					<a-row :gutter="24">
 						<a-col :span="8">
 							<a-form-item name="searchKey" label="名称关键词">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入机构名称关键词"></a-input>
+								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入机构名称关键词" />
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
@@ -48,7 +48,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen()" v-if="hasPerm('bizOrgAdd')">
+							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.parentId)" v-if="hasPerm('bizOrgAdd')">
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>

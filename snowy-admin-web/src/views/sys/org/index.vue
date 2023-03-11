@@ -8,8 +8,7 @@
 					:tree-data="treeData"
 					:field-names="treeFieldNames"
 					@select="treeSelect"
-				>
-				</a-tree>
+				/>
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 			</a-card>
 		</a-col>
@@ -48,7 +47,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen()">
+							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.parentId)">
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>

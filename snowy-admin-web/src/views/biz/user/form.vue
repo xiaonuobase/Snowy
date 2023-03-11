@@ -351,33 +351,42 @@
 	let formData = ref({})
 
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, orgId) => {
 		visible = true
 		formData.value = {
 			gender: '男',
 			positionJson: []
 		}
+		if (orgId) {
+			formData.value.orgId = orgId
+			// 通过机构再查询职位、主管
+			nextTick(() => {
+				selePositionData(orgId)
+			})
+		}
 		if (record) {
 			convertFormData(record)
 		}
-		// 机构选择器数据
-		bizUserApi.userOrgTreeSelector().then((res) => {
-			if (res !== null) {
-				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						treeDefaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								treeDefaultExpandedKeys.value.push(items.id)
-							})
+		nextTick(() => {
+			// 机构选择器数据
+			bizUserApi.userOrgTreeSelector().then((res) => {
+				if (res !== null) {
+					treeData.value = res
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							treeDefaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									treeDefaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
-			}
+					})
+				}
+			})
 		})
 	}
 	// 关闭抽屉

@@ -25,7 +25,7 @@
 					}"
 					selectable="false"
 					tree-line
-				></a-tree-select>
+				/>
 			</a-form-item>
 			<a-form-item label="组织名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入组织名称" allow-clear />
@@ -84,11 +84,14 @@
 	const submitLoading = ref(false)
 
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, parentId) => {
 		visible = true
 		extJson.value = ref([])
 		formData.value = {
 			sortCode: 99
+		}
+		if (parentId) {
+			formData.value.parentId = parentId
 		}
 		if (record) {
 			const param = {

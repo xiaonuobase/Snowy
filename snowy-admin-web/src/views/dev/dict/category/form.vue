@@ -39,7 +39,7 @@
 				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="1000" />
 			</a-form-item>
 		</a-form>
 		<template #footer>
@@ -66,11 +66,14 @@
 	const defaultExpandedKeys = ref([0])
 
 	// 打开抽屉
-	const onOpen = (record, type) => {
+	const onOpen = (record, type, parentId) => {
 		visible = true
 		formData.value = {
 			sortCode: 99,
 			category: type
+		}
+		if (parentId) {
+			formData.value.parentId = parentId
 		}
 		if (record) {
 			formData.value = Object.assign({}, record)

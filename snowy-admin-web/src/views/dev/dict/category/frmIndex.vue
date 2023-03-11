@@ -39,7 +39,7 @@
 								</a-button>
 							</a-col>
 							<a-col :span="8">
-								<a-button type="primary" @click="form.onOpen(undefined, 'FRM')">
+								<a-button type="primary" @click="form.onOpen(undefined, 'FRM', searchFormState.parentId)">
 									<template #icon><plus-outlined /></template>
 									新增
 								</a-button>

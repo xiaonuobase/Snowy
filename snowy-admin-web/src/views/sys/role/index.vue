@@ -49,7 +49,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen()">
+							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.category, searchFormState.orgId)">
 								<template #icon><plus-outlined /></template>
 								新增角色
 							</a-button>

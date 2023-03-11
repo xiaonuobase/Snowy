@@ -84,11 +84,14 @@
 	const submitLoading = ref(false)
 
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, parentId) => {
 		visible = true
 		extJson.value = ref([])
 		formData.value = {
 			sortCode: 99
+		}
+		if (parentId) {
+			formData.value.parentId = parentId
 		}
 		if (record) {
 			const param = {

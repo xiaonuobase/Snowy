@@ -60,7 +60,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen()">
+							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.orgId)">
 								<template #icon><plus-outlined /></template>
 								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
 							</a-button>
