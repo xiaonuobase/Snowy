@@ -22,6 +22,7 @@ export default {
 		searchKey: '关键词',
 		imports: '导入',
 		more: '更多',
+		export: '导出',
 	},
 	model: {
 		user: '用户',
@@ -60,5 +61,14 @@ export default {
 		userStatus: '用户状态',
 		resetPassword: '重置密码',
 		role: '角色',
+		batchExportButton: '批量导出',
+		grantRole: '授权角色',
+		grantResource: '授权资源',
+		grantPermission: '授权权限',
+		exportUserInfo: '导出信息',
+		placeholderNameAndSearchKey: '请输入姓名或关键词',
+		placeholderUserStatus: '请选择状态',
+		popconfirmDeleteUser: '确定要删除吗？',
+		popconfirmResatUserPwd: '确定要重置吗？'
 	}
 }

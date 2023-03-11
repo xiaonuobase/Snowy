@@ -19,12 +19,15 @@
 					<a-row :gutter="24">
 						<a-col :span="8">
 							<a-form-item name="searchKey" :label="$t('common.searchKey')">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入姓名或账号关键词"></a-input>
+								<a-input
+									v-model:value="searchFormState.searchKey"
+									:placeholder="$t('user.placeholderNameAndSearchKey')"
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
 							<a-form-item name="userStatus" :label="$t('user.userStatus')">
-								<a-select v-model:value="searchFormState.userStatus" placeholder="请选择状态">
+								<a-select v-model:value="searchFormState.userStatus" :placeholder="$t('user.placeholderUserStatus')">
 									<a-select-option v-for="item in statusData" :key="item.dictValue" :value="item.dictValue">{{
 										item.name
 									}}</a-select-option>
@@ -67,7 +70,7 @@
 							</a-button>
 							<a-button @click="exportBatchUserVerify">
 								<template #icon><delete-outlined /></template>
-								批量导出
+								{{ $t('user.batchExportButton') }}
 							</a-button>
 							<a-popconfirm
 								title="删除此信息？"
@@ -95,7 +98,7 @@
 						<template v-if="column.dataIndex === 'action'">
 							<a @click="form.onOpen(record)">{{ $t('common.editButton') }}</a>
 							<a-divider type="vertical" />
-							<a-popconfirm title="确定要删除此用户吗？" placement="topRight" @confirm="removeUser(record)">
+							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
 								<a-button type="link" danger size="small">
 									{{ $t('common.removeButton') }}
 								</a-button>
@@ -109,21 +112,25 @@
 								<template #overlay>
 									<a-menu>
 										<a-menu-item>
-											<a-popconfirm title="确定重置此用户密码？" placement="topRight" @confirm="resetPassword(record)">
+											<a-popconfirm
+												:title="$t('user.popconfirmResatUserPwd')"
+												placement="topRight"
+												@confirm="resetPassword(record)"
+											>
 												<a>{{ $t('user.resetPassword') }}</a>
 											</a-popconfirm>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="selectRole(record)">授权角色</a>
+											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="grantResourceFormRef.onOpen(record)">授权资源</a>
+											<a @click="grantResourceFormRef.onOpen(record)">{{ $t('user.grantResource') }}</a>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="grantPermissionFormRef.onOpen(record)">授权权限</a>
+											<a @click="grantPermissionFormRef.onOpen(record)">{{ $t('user.grantPermission') }}</a>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="exportUserInfo(record)">导出信息</a>
+											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
 										</a-menu-item>
 									</a-menu>
 								</template>
