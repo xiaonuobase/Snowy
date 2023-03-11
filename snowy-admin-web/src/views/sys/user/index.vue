@@ -56,18 +56,31 @@
 					:row-selection="options.rowSelection"
 				>
 					<template #operator class="table-operator">
-						<a-button type="primary" class="primaryAdd" @click="form.onOpen()">
-							<template #icon><plus-outlined /></template>
-							<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
-						</a-button>
-						<a-button class="primaryAdd" @click="ImpExpRef.onOpen()">
-							<template #icon><import-outlined /></template>
-							<span>{{ $t('common.imports') }}</span>
-						</a-button>
-						<a-button danger @click="removeBatchUser()">
-							<template #icon><delete-outlined /></template>
-							{{ $t('common.batchRemoveButton') }}
-						</a-button>
+						<a-space>
+							<a-button type="primary" @click="form.onOpen()">
+								<template #icon><plus-outlined /></template>
+								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
+							</a-button>
+							<a-button @click="ImpExpRef.onOpen()">
+								<template #icon><import-outlined /></template>
+								<span>{{ $t('common.imports') }}</span>
+							</a-button>
+							<a-button @click="exportBatchUserVerify">
+								<template #icon><delete-outlined /></template>
+								批量导出
+							</a-button>
+							<a-popconfirm
+								title="删除此信息？"
+								:visible="deleteVisible"
+								@visibleChange="deleteVisibleChange"
+								@confirm="deleteBatchUser"
+							>
+								<a-button danger>
+									<template #icon><delete-outlined /></template>
+									{{ $t('common.batchRemoveButton') }}
+								</a-button>
+							</a-popconfirm>
+						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'avatar'">
@@ -136,6 +149,7 @@
 <script setup name="sysUser">
 	import { message, Empty } from 'ant-design-vue'
 	import tool from '@/utils/tool'
+	import downloadUtil from '@/utils/downloadUtil'
 	import userApi from '@/api/sys/userApi'
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
@@ -207,7 +221,7 @@
 	const ImpExpRef = ref()
 	const grantResourceFormRef = ref()
 	const grantPermissionFormRef = ref()
-
+	const deleteVisible = ref(false)
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return userApi.userPage(Object.assign(parameter, searchFormState)).then((res) => {
@@ -291,12 +305,49 @@
 			table.value.refresh()
 		})
 	}
-	// 批量删除用户
-	const removeBatchUser = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
+	// 批量导出校验并加参数
+	const exportBatchUserVerify = () => {
+		if ((selectedRowKeys.value.length < 1) & !searchFormState.searchKey & !searchFormState.userStatus) {
+			message.warning('请输入查询条件或勾选要导出的信息')
+		}
+		if (selectedRowKeys.value.length > 0) {
+			const params = selectedRowKeys.value.map((m) => {
+				return m
+			})
+			exportBatchUser(params)
 			return
 		}
+		if (searchFormState.searchKey || searchFormState.userStatus) {
+			const params = {
+				searchKey: searchFormState.searchKey,
+				userStatus: searchFormState.userStatus
+			}
+			exportBatchUser(params)
+			return
+		}
+	}
+	// 批量导出
+	const exportBatchUser = (params) => {
+		userApi.userExport(params).then((res) => {
+			downloadUtil.resultDownload(res)
+		})
+	}
+	// 批量删除校验
+	const deleteVisibleChange = () => {
+		if (deleteVisible.value) {
+			deleteVisible.value = false
+			return false
+		}
+		if (selectedRowKeys.value.length < 1) {
+			message.warning('请选择一条或多条数据')
+			deleteVisible.value = false
+			return false
+		} else {
+			deleteVisible.value = true
+		}
+	}
+	// 批量删除
+	const deleteBatchUser = () => {
 		const params = selectedRowKeys.value.map((m) => {
 			return {
 				id: m
@@ -340,16 +391,7 @@
 			id: record.id
 		}
 		userApi.userExportUserInfo(params).then((res) => {
-			const blob = new Blob([res.data], { type: 'application/octet-stream;charset=UTF-8' })
-			const contentDisposition = res.headers['content-disposition']
-			const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
-			const $link = document.createElement('a')
-			$link.href = URL.createObjectURL(blob)
-			$link.download = decodeURIComponent(patt.exec(contentDisposition)[1])
-			$link.click()
-			document.body.appendChild($link)
-			document.body.removeChild($link) // 下载完成移除元素
-			window.URL.revokeObjectURL($link.href) // 释放掉blob对象
+			downloadUtil.resultDownload(res)
 		})
 	}
 </script>
@@ -360,9 +402,6 @@
 	}
 	.ant-form-item {
 		margin-bottom: 0 !important;
-	}
-	.primaryAdd {
-		margin-right: 10px;
 	}
 	.snowy-table-avatar {
 		margin-top: -10px;
