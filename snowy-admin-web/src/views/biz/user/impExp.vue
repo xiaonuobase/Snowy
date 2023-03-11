@@ -37,6 +37,7 @@
 </template>
 
 <script setup name="bizUserImpExp">
+	import { message } from 'ant-design-vue'
 	import userApi from '@/api/sys/userApi'
 	import bizUserApi from '@/api/biz/bizUserApi'
 	import downloadUtil from '@/utils/downloadUtil'
@@ -45,10 +46,38 @@
 	const impAlertStatus = ref(false)
 	const impResultData = ref({})
 	const impResultErrorDataSource = ref([])
+	const impAccept = [
+		{
+			extension: '.xls',
+			mimeType: 'application/vnd.ms-excel'
+		},
+		{
+			extension: '.xlsx',
+			mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		}
+	]
+	// 指定能选择的文件类型
+	const uploadAccept = String(
+		impAccept.map((item) => {
+			return item.mimeType
+		})
+	)
 	// 导入
 	const customRequestLocal = (data) => {
 		impUploadLoading.value = true
 		const fileData = new FormData()
+		// 校验上传文件扩展名和文件类型是否为.xls、.xlsx
+		const extension = '.'.concat(data.file.name.split('.').slice(-1).toString().toLowerCase())
+		const mimeType = data.file.type
+		// 提取允许的扩展名
+		const extensionArr = impAccept.map((item) => item.extension)
+		// 提取允许的MIMEType
+		const mimeTypeArr = impAccept.map((item) => item.mimeType)
+		if (!extensionArr.includes(extension) || !mimeTypeArr.includes(mimeType)) {
+			message.warning('上传文件类型仅支持xls、xlsx格式文件！')
+			impUploadLoading.value = false
+			return false
+		}
 		fileData.append('file', data.file)
 		return bizUserApi
 			.userImport(fileData)

@@ -14,7 +14,7 @@
 		<a-divider dashed />
 		<div>
 			<a-spin :spinning="impUploadLoading">
-				<a-upload-dragger :show-upload-list="false" :custom-request="customRequestLocal" :accept="impAccept.map((item) => item.mimeType)">
+				<a-upload-dragger :show-upload-list="false" :custom-request="customRequestLocal" :accept="uploadAccept">
 					<p class="ant-upload-drag-icon">
 						<inbox-outlined></inbox-outlined>
 					</p>
@@ -37,8 +37,9 @@
 </template>
 
 <script setup name="userImpExp">
+	import { message } from 'ant-design-vue'
 	import userApi from '@/api/sys/userApi'
-	import downloadUtil from "@/utils/downloadUtil"
+	import downloadUtil from '@/utils/downloadUtil'
 
 	const impUploadLoading = ref(false)
 	const impAlertStatus = ref(false)
@@ -54,12 +55,18 @@
 			mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 		}
 	]
+	// 指定能选择的文件类型
+	const uploadAccept = String(
+		impAccept.map((item) => {
+			return item.mimeType
+		})
+	)
 	// 导入
 	const customRequestLocal = (data) => {
 		impUploadLoading.value = true
 		const fileData = new FormData()
 		// 校验上传文件扩展名和文件类型是否为.xls、.xlsx
-		const extension = '.'.concat(data.file.name.split(".").slice(-1).toString().toLowerCase())
+		const extension = '.'.concat(data.file.name.split('.').slice(-1).toString().toLowerCase())
 		const mimeType = data.file.type
 		// 提取允许的扩展名
 		const extensionArr = impAccept.map((item) => item.extension)
