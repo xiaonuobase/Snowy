@@ -203,20 +203,15 @@
 			})
 		}
 	}
-
 	// 切换应用标签查询菜单列表
 	const moduleClock = (value) => {
 		searchFormState.module = value
 		table.value.refresh(true)
 	}
-
 	// 查询
 	const onSearch = () => {
-		if (searchFormState.searchKey) {
-			table.value.refresh(true)
-		}
+		table.value.refresh(true)
 	}
-
 	/* const removeEmptyChildren = (data) => {
 		if (data == null || data.length === 0) return;
 		for (let i = 0; i < data.length; i++) {
@@ -229,7 +224,6 @@
 		}
 		return data;
 	};*/
-
 	// 删除
 	const deleteMenu = (record) => {
 		let params = [
