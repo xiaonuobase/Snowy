@@ -14,7 +14,7 @@
 		<a-divider dashed />
 		<div>
 			<a-spin :spinning="impUploadLoading">
-				<a-upload-dragger :show-upload-list="false" :custom-request="customRequestLocal">
+				<a-upload-dragger :show-upload-list="false" :custom-request="customRequestLocal" :accept="impAccept.map((item) => item.mimeType)">
 					<p class="ant-upload-drag-icon">
 						<inbox-outlined></inbox-outlined>
 					</p>
@@ -44,10 +44,32 @@
 	const impAlertStatus = ref(false)
 	const impResultData = ref({})
 	const impResultErrorDataSource = ref([])
+	const impAccept = [
+		{
+			extension: '.xls',
+			mimeType: 'application/vnd.ms-excel'
+		},
+		{
+			extension: '.xlsx',
+			mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		}
+	]
 	// 导入
 	const customRequestLocal = (data) => {
 		impUploadLoading.value = true
 		const fileData = new FormData()
+		// 校验上传文件扩展名和文件类型是否为.xls、.xlsx
+		const extension = '.'.concat(data.file.name.split(".").slice(-1).toString().toLowerCase())
+		const mimeType = data.file.type
+		// 提取允许的扩展名
+		const extensionArr = impAccept.map((item) => item.extension)
+		// 提取允许的MIMEType
+		const mimeTypeArr = impAccept.map((item) => item.mimeType)
+		if (!extensionArr.includes(extension) || !mimeTypeArr.includes(mimeType)) {
+			message.warning('上传文件类型仅支持xls、xlsx格式文件！')
+			impUploadLoading.value = false
+			return false
+		}
 		fileData.append('file', data.file)
 		return userApi
 			.userImport(fileData)
