@@ -38,6 +38,7 @@
 
 <script setup name="userImpExp">
 	import userApi from '@/api/sys/userApi'
+	import downloadUtil from "@/utils/downloadUtil"
 
 	const impUploadLoading = ref(false)
 	const impAlertStatus = ref(false)
@@ -93,16 +94,7 @@
 	// 下载用户导入模板
 	const downloadImportUserTemplate = () => {
 		userApi.userDownloadImportUserTemplate().then((res) => {
-			const blob = new Blob([res.data], { type: 'application/octet-stream;charset=UTF-8' })
-			const contentDisposition = res.headers['content-disposition']
-			const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
-			const $link = document.createElement('a')
-			$link.href = URL.createObjectURL(blob)
-			$link.download = decodeURIComponent(patt.exec(contentDisposition)[1])
-			$link.click()
-			document.body.appendChild($link)
-			document.body.removeChild($link) // 下载完成移除元素
-			window.URL.revokeObjectURL($link.href) // 释放掉blob对象
+			downloadUtil.resultDownload(res)
 		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
