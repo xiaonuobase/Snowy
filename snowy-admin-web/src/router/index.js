@@ -8,11 +8,8 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-/* eslint-disable eqeqeq */
-/* eslint-disable camelcase */
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { notification } from 'ant-design-vue'
-import config from '@/config'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import systemRouter from './systemRouter'
@@ -28,19 +25,18 @@ const sysBaseConfig = tool.data.get('SNOWY_SYS_BASE_CONFIG') || store.state.glob
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
 
-// 系统路由
-const routes = [...systemRouter, ...whiteListRouters]
-
 // 系统特殊路由
-const routes_404 = {
-	path: '/:pathMatch(.*)*',
-	hidden: true,
-	component: () => import('@/layout/other/404.vue')
-}
-let routes_404_r = () => {}
+const routes_404 = [
+	{
+		path: '/:pathMatch(.*)*',
+		hidden: true,
+		component: () => import('@/layout/other/404.vue')
+	}
+]
+// 系统路由
+const routes = [...systemRouter, ...whiteListRouters, ...routes_404]
 
 const router = createRouter({
-	// 此方式不带 # 号 // createWebHashHistory()带#号
 	history: createWebHistory(),
 	routes
 })
@@ -49,7 +45,7 @@ const router = createRouter({
 document.title = sysBaseConfig.SNOWY_SYS_NAME
 
 // 判断是否已加载过动态/静态路由
-let isGetRouter = false
+const isGetRouter = ref(false)
 
 // 白名单校验
 const exportWhiteListFromRouter = (router) => {
@@ -58,32 +54,6 @@ const exportWhiteListFromRouter = (router) => {
 	return res
 }
 const whiteList = exportWhiteListFromRouter(whiteListRouters)
-
-// 加载动态/静态路由
-const handleGetRouter = (to) => {
-	if (!isGetRouter) {
-		let apiMenu = tool.data.get('MENU') || []
-		if (apiMenu.length === 0) {
-			// 创建默认模块，显示默认菜单
-			apiMenu[0] = cloneDeep(userRoutes.module[0])
-			const userMenu = userRoutes.menu
-			const childrenApiMenu = apiMenu[0].children
-			apiMenu[0].children = [...userMenu, ...childrenApiMenu]
-		}
-
-		let menuRouter = filterAsyncRouter(apiMenu)
-		menuRouter = flatAsyncRoutes(menuRouter)
-		menuRouter.forEach((item) => {
-			router.addRoute('layout', item)
-		})
-		store.commit('search/init', menuRouter)
-		routes_404_r = router.addRoute(routes_404)
-		if (to && to.matched.length === 0) {
-			router.push(to.fullPath)
-		}
-		isGetRouter = true
-	}
-}
 
 router.beforeEach(async (to, from, next) => {
 	NProgress.start()
@@ -110,9 +80,7 @@ router.beforeEach(async (to, from, next) => {
 		}
 		// 删除路由(替换当前layout路由)
 		router.addRoute(routes[0])
-		// 删除路由(404)
-		routes_404_r()
-		isGetRouter = false
+		isGetRouter.value = false
 		next()
 		return false
 	}
@@ -127,7 +95,25 @@ router.beforeEach(async (to, from, next) => {
 		to.matched = [to.matched[to.matched.length - 1]]
 	}
 	// 加载动态/静态路由
-	handleGetRouter(to)
+	if (!isGetRouter.value) {
+		const apiMenu = tool.data.get('MENU') || []
+		if (apiMenu.length === 0) {
+			// 创建默认模块，显示默认菜单
+			apiMenu[0] = cloneDeep(userRoutes.module[0])
+			const userMenu = userRoutes.menu
+			const childrenApiMenu = apiMenu[0].children
+			apiMenu[0].children = [...userMenu, ...childrenApiMenu]
+		}
+		let menuRouter = filterAsyncRouter(apiMenu)
+		menuRouter = flatAsyncRoutes(menuRouter)
+		menuRouter.forEach((item) => {
+			router.addRoute('layout', item)
+		})
+		store.commit('search/init', menuRouter)
+		isGetRouter.value = true
+		next({ ...to, replace: true })
+		return false
+	}
 	beforeEach(to, from)
 	next()
 })
