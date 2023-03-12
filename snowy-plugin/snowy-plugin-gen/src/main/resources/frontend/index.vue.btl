@@ -8,7 +8,7 @@
     <% } %>
     <a-card :bordered="false">
         <% if (searchCount > 0) { %>
-        <a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form mb-4">
+        <a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
             <a-row :gutter="24">
                 <% for(var i = 0; i < configList.~size; i++) { %>
                 <% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
@@ -37,37 +37,35 @@
                 <% } %>
                 </a-col>
                 <% } else { %>
-                <template v-if="advanced">
-                    <a-col :span="6">
-                    <% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
-                        <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                            <a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
-                        </a-form-item>
-                    <% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
-                        <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                            <a-select v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                        </a-form-item>
-                    <% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
-                        <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                            <a-input-number v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" style="width: 100%" />
-                        </a-form-item>
-                    <% } else if (configList[i].effectType == 'datepicker') {%>
-                        <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                            <a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" show-time />
-                        </a-form-item>
-                    <% } else {%>
-                        <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                            <a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
-                        </a-form-item>
-                    <% } %>
-                    </a-col>
-                </template>
+                <a-col :span="6" v-show="advanced">
+                <% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
+                    <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                        <a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+                    </a-form-item>
+                <% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
+                    <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                        <a-select v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+                    </a-form-item>
+                <% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
+                    <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                        <a-input-number v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" style="width: 100%" />
+                    </a-form-item>
+                <% } else if (configList[i].effectType == 'datepicker') {%>
+                    <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                        <a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" show-time />
+                    </a-form-item>
+                <% } else {%>
+                    <a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                        <a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+                    </a-form-item>
+                <% } %>
+                </a-col>
                 <% } %>
                 <% } %>
                 <% } %>
                 <a-col :span="6">
                     <a-button type="primary" @click="table.refresh(true)">查询</a-button>
-                    <a-button style="margin: 0 8px" @click="() => searchFormRef.resetFields()">重置</a-button>
+                    <a-button style="margin: 0 8px" @click="reset">重置</a-button>
                     <% if(searchCount > 3) { %>
                     <a @click="toggleAdvanced" style="margin-left: 8px">
                         {{ advanced ? '收起' : '展开' }}
@@ -98,7 +96,11 @@
                         <template #icon><plus-outlined /></template>
                         新增
                     </a-button>
-                    <a-button danger @click="deleteBatch${className}()" v-if="hasPerm('${classNameFirstLower}BatchDelete')">删除</a-button>
+                    <xn-batch-delete
+                        v-if="hasPerm('${classNameFirstLower}BatchDelete')"
+                        :selectedRowKeys="selectedRowKeys"
+                        @batchDelete="deleteBatch${className}()"
+                    />
                 </a-space>
             </template>
             <template #bodyCell="{ column, record }">
@@ -131,7 +133,6 @@
 </template>
 
 <script setup name="${busName}">
-    import { message } from 'ant-design-vue'
     <%
     var iptTool = 0;
     if (searchCount > 0) {
@@ -185,13 +186,14 @@
             width: '150px'
         })
     }
-    let selectedRowKeys = ref([])
+    const selectedRowKeys = ref([])
     // 列表选择配置
     const options = {
+        // columns数字类型字段加入 needTotal: true 可以勾选自动算账
         alert: {
-            show: false,
+            show: true,
             clear: () => {
-                selectedRowKeys = ref([])
+                selectedRowKeys.value = ref([])
             }
         },
         rowSelection: {
@@ -222,6 +224,11 @@
             return data
         })
     }
+    // 重置
+    const reset = () => {
+        searchFormRef.value.resetFields();
+        table.value.refresh(true)
+    }
     // 删除
     const delete${className} = (record) => {
         let params = [
@@ -238,20 +245,7 @@
         })
     }
     // 批量删除
-    const deleteBatch${className} = () => {
-        if (selectedRowKeys.value.length < 1) {
-            message.warning('请选择一条或多条数据')
-            return false
-        }
-        const params = selectedRowKeys.value.map((m) => {
-            return {
-                <% for(var i = 0; i < configList.~size; i++) { %>
-                <% if(configList[i].needTableId) { %>
-                ${configList[i].fieldNameCamelCase}: m
-                <% } %>
-                <% } %>
-            }
-        })
+    const deleteBatch${className} = (params) => {
         ${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
             table.value.clearRefreshSelected()
         })
