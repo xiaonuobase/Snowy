@@ -346,16 +346,14 @@
 						</span>
 					)
 				})
-
 				// 绘制 清空 按钮
 				// eslint-disable-next-line no-unused-vars
 				const clearItem =
-					typeof this.alert.clear === 'boolean' && this.alert.clear
+					typeof this.alert === 'boolean' && this.alert
 						? this.renderClear(this.clearSelected)
 						: typeof this.alert.clear === 'function'
 						? this.renderClear(this.alert.clear)
 						: null
-
 				// 绘制 alert 组件
 				if (alert) {
 					const message = (
@@ -367,7 +365,6 @@
 							{clearItem}
 						</div>
 					)
-
 					return <a-alert showIcon class="mb-4" message={message} />
 				}
 			},
