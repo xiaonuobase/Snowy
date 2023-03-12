@@ -192,15 +192,12 @@
 				submitLoading.value = true
 				let submitParam = cloneDeep(formData.value)
 				submitParam.SNOWY_SYS_LOGO = submitParam.SNOWY_SYS_LOGO[0]
-
 				const param = Object.entries(submitParam).map((item) => {
 					return {
 						configKey: item[0],
 						configValue: item[1]
 					}
 				})
-
-				console.log(JSON.stringify(param))
 				// 创建快捷方式
 				const shortcut = {
 					shortcut: menuTreeSelectRef.value.getSelectData()

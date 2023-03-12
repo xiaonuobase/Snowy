@@ -64,6 +64,7 @@
 												v-model:value="ruleForm.validCode"
 												:placeholder="$t('login.validLaceholder')"
 												size="large"
+												@keyup.enter="login"
 											>
 												<template #prefix>
 													<verified-outlined class="login-icon-gray" />
@@ -104,6 +105,10 @@
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
 	import { afterLogin } from './util'
+	import config from '@/config'
+	import configApi from '@/api/dev/configApi'
+	import tool from '@/utils/tool'
+	import store from '@/store'
 
 	export default {
 		name: 'Login',
@@ -111,11 +116,10 @@
 			phoneLoginForm,
 			threeLogin
 		},
-
 		data() {
 			return {
 				activeKey: 'userAccount',
-				sysBaseConfig: this.$TOOL.data.get('SNOWY_SYS_BASE_CONFIG') || this.$store.state.global.sysBaseConfig,
+				sysBaseConfig: store.state.global.sysBaseConfig || tool.data.get('SNOWY_SYS_BASE_CONFIG'),
 				validCodeBase64: '',
 				ruleForm: {
 					account: 'superAdmin',
@@ -130,8 +134,8 @@
 				},
 				loading: false,
 				config: {
-					lang: this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG,
-					theme: this.$TOOL.data.get('APP_THEME') || 'default'
+					lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
+					theme: tool.data.get('APP_THEME') || 'default'
 				},
 				lang: [
 					{
@@ -160,12 +164,22 @@
 			}
 		},
 		created() {
-			this.$store.commit('clearViewTags')
-			this.$store.commit('clearKeepLive')
-			this.$store.commit('clearIframeList')
+			store.commit('clearViewTags')
+			store.commit('clearKeepLive')
+			store.commit('clearIframeList')
 		},
 		mounted() {
-			this.refreshSwitch()
+			let formData = ref(config.SYS_BASE_CONFIG)
+			configApi.configSysBaseList().then((data) => {
+				if (data) {
+					data.forEach((item) => {
+						formData.value[item.configKey] = item.configValue
+					})
+					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
+					store.commit('SET_sysBaseConfig', formData.value)
+					this.refreshSwitch()
+				}
+			})
 		},
 		methods: {
 			// 通过开关加载内容
