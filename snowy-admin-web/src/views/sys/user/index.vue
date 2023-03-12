@@ -39,7 +39,7 @@
 								<template #icon><SearchOutlined /></template>
 								{{ $t('common.searchButton') }}
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+							<a-button class="snowy-buttom-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								{{ $t('common.resetButton') }}
 							</a-button>
@@ -262,6 +262,11 @@
 			}
 		}
 	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
+	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
@@ -328,8 +333,10 @@
 	}
 	// 批量导出
 	const exportBatchUser = (params) => {
+		console.log(JSON.stringify(params))
 		userApi.userExport(params).then((res) => {
 			downloadUtil.resultDownload(res)
+			table.value.clearSelected()
 		})
 	}
 	// 批量删除

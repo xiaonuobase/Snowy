@@ -39,7 +39,7 @@
 								<template #icon><SearchOutlined /></template>
 								{{ $t('common.searchButton') }}
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+							<a-button class="snowy-buttom-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								{{ $t('common.resetButton') }}
 							</a-button>
@@ -227,6 +227,11 @@
 			return res
 		})
 	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
+	}
 	// 左侧树查询
 	bizUserApi
 		.userOrgTreeSelector()
@@ -334,6 +339,7 @@
 	const exportBatchUser = (params) => {
 		bizUserApi.userExport(params).then((res) => {
 			downloadUtil.resultDownload(res)
+			table.value.clearSelected()
 		})
 	}
 	// 批量删除

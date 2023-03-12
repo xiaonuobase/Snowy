@@ -22,7 +22,7 @@
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
-					<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+					<a-button class="snowy-buttom-left" @click="reset">
 						<template #icon><redo-outlined /></template>
 						重置
 					</a-button>
@@ -131,12 +131,16 @@
 			}
 		}
 	}
-
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return emailApi.emailPage(Object.assign(parameter, searchFormState)).then((data) => {
 			return data
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	const engineOptions = tool.dictList('EMAIL_ENGINE')
 	// 删除

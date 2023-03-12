@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
 				<a-col :span="8">
 					<a-form-item label="关键字" name="searchKey">
@@ -15,7 +15,7 @@
 				</a-col>
 				<a-col :span="6">
 					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="() => formRef.resetFields()">重置</a-button>
+					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -46,7 +46,7 @@
 	import thirdApi from '@/api/auth/thirdApi'
 	import tool from '@/utils/tool'
 	let searchFormState = reactive({})
-	const formRef = ref()
+	const searchFormRef = ref()
 	const table = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
@@ -86,6 +86,11 @@
 		return thirdApi.thirdPage(Object.assign(parameter, searchFormState)).then((res) => {
 			return res
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 分类
 	const categoryOptions = tool.dictList('THIRD_CATEGORY')

@@ -17,7 +17,7 @@
 					<a-space>
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
 						<a-button type="primary" @click="table.refresh(true)">查询</a-button>
-						<a-button style="margin: 0 8px" @click="() => searchFormRef.resetFields()">重置</a-button>
+						<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 					</a-space>
 				</a-form-item>
 			</a-space>
@@ -182,6 +182,11 @@
 				return []
 			})
 		}
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 切换模块标签查询菜单列表
 	const moduleClock = (value) => {

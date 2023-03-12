@@ -27,7 +27,7 @@
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+							<a-button class="snowy-buttom-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								重置
 							</a-button>
@@ -83,7 +83,7 @@
 </template>
 
 <script setup name="bizOrg">
-	import { message, Empty } from 'ant-design-vue'
+	import { Empty } from 'ant-design-vue'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
 
@@ -142,6 +142,11 @@
 		return bizOrgApi.orgPage(Object.assign(parameter, searchFormState)).then((res) => {
 			return res
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {

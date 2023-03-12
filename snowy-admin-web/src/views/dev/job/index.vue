@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
 				<a-col :span="6">
 					<a-form-item label="关键字" name="searchKey">
@@ -19,7 +19,7 @@
 				</a-col>
 				<a-col :span="6">
 					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="() => formRef.resetFields()">重置</a-button>
+					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -78,12 +78,11 @@
 </template>
 
 <script setup name="devJob">
-	import { message } from 'ant-design-vue'
 	import tool from '@/utils/tool'
 	import Form from './form.vue'
 	import jobApi from '@/api/dev/jobApi'
 	let searchFormState = reactive({})
-	const formRef = ref()
+	const searchFormRef = ref()
 	const table = ref()
 	let form = ref()
 	const statusLoading = ref(false)
@@ -145,6 +144,11 @@
 		return jobApi.jobPage(Object.assign(parameter, searchFormState)).then((res) => {
 			return res
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 启停
 	const editJobStatus = (record) => {

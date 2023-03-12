@@ -20,7 +20,7 @@
 				</a-col>
 				<a-col :span="8">
 					<a-button type="primary" html-type="submit" @click="table.refresh()">查询</a-button>
-					<a-button style="margin: 0 8px" @click="() => formRef.resetFields()">重置</a-button>
+					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -163,6 +163,11 @@
 		return spaApi.spaPage(Object.assign(parameter, searchFormState)).then((res) => {
 			return res
 		})
+	}
+	// 重置
+	const reset = () => {
+		formRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 删除
 	const removeSpa = (record) => {

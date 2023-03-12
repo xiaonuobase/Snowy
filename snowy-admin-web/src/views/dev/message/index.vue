@@ -12,7 +12,7 @@
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
-					<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+					<a-button class="snowy-buttom-left" @click="reset">
 						<template #icon><redo-outlined /></template>
 						重置
 					</a-button>
@@ -53,7 +53,6 @@
 </template>
 
 <script setup name="devMessage">
-	import { message } from 'ant-design-vue'
 	import messageApi from '@/api/dev/messageApi'
 	import Form from './form.vue'
 	import detail from './detail.vue'
@@ -109,6 +108,11 @@
 		return messageApi.messagePage(Object.assign(parameter, searchFormState)).then((data) => {
 			return data
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 删除
 	const deleteMessage = (record) => {

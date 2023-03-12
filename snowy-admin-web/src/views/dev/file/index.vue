@@ -17,7 +17,7 @@
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
-					<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+					<a-button class="snowy-buttom-left" @click="reset">
 						<template #icon><redo-outlined /></template>
 						重置
 					</a-button>
@@ -99,7 +99,6 @@
 </template>
 
 <script setup name="devFile">
-	import { message } from 'ant-design-vue'
 	import fileApi from '@/api/dev/fileApi'
 	import uploadForm from './uploadForm.vue'
 	import detail from './detail.vue'
@@ -168,6 +167,11 @@
 		return fileApi.filePage(Object.assign(parameter, searchFormState)).then((data) => {
 			return data
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	// 删除
 	const deleteFile = (record) => {

@@ -22,7 +22,7 @@
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
-					<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()">
+					<a-button class="snowy-buttom-left" @click="reset">
 						<template #icon><redo-outlined /></template>
 						重置
 					</a-button>
@@ -69,7 +69,6 @@
 </template>
 
 <script setup name="devSms">
-	import { message } from 'ant-design-vue'
 	import smsApi from '@/api/dev/smsApi'
 	import Form from './form.vue'
 	import detail from './detail.vue'
@@ -138,6 +137,11 @@
 		return smsApi.smsPage(Object.assign(parameter, searchFormState)).then((data) => {
 			return data
 		})
+	}
+	// 重置
+	const reset = () => {
+		searchFormRef.value.resetFields();
+		table.value.refresh(true)
 	}
 	const engineOptions = tool.dictList('SMS_ENGINE')
 	// 删除
