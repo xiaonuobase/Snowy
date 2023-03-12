@@ -31,7 +31,7 @@
 						<template #icon><plus-outlined /></template>
 						新增模块
 					</a-button>
-					<a-button danger @click="deleteBatchModule()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchModule" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -128,16 +128,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchModule = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchModule = (params) => {
 		moduleApi.moduleDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

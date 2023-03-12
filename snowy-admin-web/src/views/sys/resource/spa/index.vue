@@ -42,7 +42,7 @@
 						<template #icon><plus-outlined /></template>
 						新增单页
 					</a-button>
-					<a-button danger @click="deleteBatchSpa()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchSpa" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -76,7 +76,6 @@
 </template>
 
 <script setup name="sysSpa">
-	import { message } from 'ant-design-vue'
 	import spaApi from '@/api/sys/resource/spaApi'
 	import tool from '@/utils/tool'
 	import Form from './form.vue'
@@ -177,16 +176,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchSpa = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchSpa = (params) => {
 		spaApi.spaDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

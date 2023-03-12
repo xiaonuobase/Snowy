@@ -4,7 +4,7 @@
 			<a-row :gutter="24">
 				<a-col :span="8">
 					<a-form-item label="名称关键词" name="searchKey">
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -31,7 +31,7 @@
 						<template #icon><plus-outlined /></template>
 						新增模块
 					</a-button>
-					<a-button danger @click="deleteBatchModule()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchModule" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -122,16 +122,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchModule = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchModule = (params) => {
 		moduleApi.moduleDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

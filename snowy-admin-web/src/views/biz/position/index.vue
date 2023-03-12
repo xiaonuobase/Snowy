@@ -48,11 +48,19 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.orgId)" v-if="hasPerm('bizPositionAdd')">
+							<a-button
+								type="primary"
+								@click="form.onOpen(undefined, searchFormState.orgId)"
+								v-if="hasPerm('bizPositionAdd')"
+							>
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>
-							<a-button danger @click="deleteBatchPosition()" v-if="hasPerm('bizPositionBatchDelete')">删除</a-button>
+							<xn-batch-delete
+								v-if="hasPerm('bizPositionBatchDelete')"
+								:selectedRowKeys="selectedRowKeys"
+								@batchDelete="deleteBatchPosition"
+							/>
 						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">
@@ -181,16 +189,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchPosition = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchPosition = (params) => {
 		bizPositionApi.positionDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

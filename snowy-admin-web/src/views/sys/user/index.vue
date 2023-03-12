@@ -72,17 +72,11 @@
 								<template #icon><delete-outlined /></template>
 								{{ $t('user.batchExportButton') }}
 							</a-button>
-							<a-popconfirm
-								title="删除此信息？"
-								:visible="deleteVisible"
-								@visibleChange="deleteVisibleChange"
-								@confirm="deleteBatchUser"
-							>
-								<a-button danger>
-									<template #icon><delete-outlined /></template>
-									{{ $t('common.batchRemoveButton') }}
-								</a-button>
-							</a-popconfirm>
+							<xn-batch-delete
+								:buttonName="$t('common.batchRemoveButton')"
+								:selectedRowKeys="selectedRowKeys"
+								@batchDelete="deleteBatchUser"
+							/>
 						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">
@@ -218,7 +212,7 @@
 	let searchFormState = reactive({})
 	const table = ref(null)
 	const treeData = ref([])
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	let form = ref(null)
 	let RoleSelectorPlus = ref()
@@ -228,7 +222,6 @@
 	const ImpExpRef = ref()
 	const grantResourceFormRef = ref()
 	const grantPermissionFormRef = ref()
-	const deleteVisible = ref(false)
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return userApi.userPage(Object.assign(parameter, searchFormState)).then((res) => {
@@ -260,7 +253,7 @@
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -339,27 +332,8 @@
 			downloadUtil.resultDownload(res)
 		})
 	}
-	// 批量删除校验
-	const deleteVisibleChange = () => {
-		if (deleteVisible.value) {
-			deleteVisible.value = false
-			return false
-		}
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			deleteVisible.value = false
-			return false
-		} else {
-			deleteVisible.value = true
-		}
-	}
 	// 批量删除
-	const deleteBatchUser = () => {
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchUser = (params) => {
 		userApi.userDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

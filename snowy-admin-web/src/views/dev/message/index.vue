@@ -34,7 +34,7 @@
 			<template #operator class="table-operator">
 				<a-space>
 					<a-button type="primary" @click="form.onOpen()"> 发送站内信 </a-button>
-					<a-button danger @click="deleteBatchEmail()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchEmail" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -122,16 +122,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchEmail = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchEmail = (params) => {
 		messageApi.messageDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

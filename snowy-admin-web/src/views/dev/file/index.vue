@@ -42,7 +42,7 @@
 						<UploadOutlined />
 						文件上传
 					</a-button>
-					<a-button danger @click="deleteBatchFile()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchFile" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -181,16 +181,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchFile = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchFile = (params) => {
 		fileApi.fileDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

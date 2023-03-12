@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false" class="select-card">
+	<a-card :bordered="false">
 		<a-space>
 			<a-radio-group v-model:value="moduleType" button-style="solid">
 				<a-radio-button
@@ -12,7 +12,6 @@
 					{{ module.title }}</a-radio-button
 				>
 			</a-radio-group>
-
 			<a-input-search
 				v-model:value="searchFormState.searchKey"
 				placeholder="请输入菜单名称关键词"
@@ -22,7 +21,7 @@
 			/>
 		</a-space>
 	</a-card>
-	<a-card :bordered="false">
+	<a-card :bordered="false" class="mt-2">
 		<s-table
 			ref="table"
 			:columns="columns"
@@ -40,7 +39,7 @@
 						<template #icon><plus-outlined /></template>
 						新增菜单
 					</a-button>
-					<a-button danger @click="deleteBatchMenu()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchMenu" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -106,7 +105,6 @@
 </template>
 
 <script setup name="sysMenu">
-	import { message } from 'ant-design-vue'
 	import menuApi from '@/api/sys/resource/menuApi'
 	import Form from './form.vue'
 	import changeModuleForm from './changeModuleForm.vue'
@@ -236,28 +234,9 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchMenu = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchMenu = (params) => {
 		menuApi.menuDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})
 	}
 </script>
-
-<style scoped>
-	.select-card {
-		margin-top: -12px;
-		margin-left: -12px;
-		margin-right: -12px;
-		margin-bottom: 10px;
-		padding-top: -10px;
-	}
-</style>

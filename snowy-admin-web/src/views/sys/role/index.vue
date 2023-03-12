@@ -53,7 +53,7 @@
 								<template #icon><plus-outlined /></template>
 								新增角色
 							</a-button>
-							<a-button danger @click="deleteBatchRole()">删除</a-button>
+							<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchRole" />
 						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">
@@ -108,7 +108,7 @@
 </template>
 
 <script setup name="sysRole">
-	import { message, Empty } from 'ant-design-vue'
+	import { Empty } from 'ant-design-vue'
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
 	import grantResourceForm from './grantResourceForm.vue'
@@ -239,16 +239,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchRole = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchRole = (params) => {
 		roleApi.roleDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

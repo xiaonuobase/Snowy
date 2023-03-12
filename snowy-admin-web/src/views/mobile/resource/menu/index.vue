@@ -41,7 +41,7 @@
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
-					<a-button danger @click="deleteBatchMobileMenu()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchMobileMenu" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -200,16 +200,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchMobileMenu = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchMobileMenu = (params) => {
 		mobileMenuApi.mobileMenuDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

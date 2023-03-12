@@ -28,7 +28,6 @@
 </template>
 
 <script setup name="devConfig">
-	import { Empty } from 'ant-design-vue'
 	import SysConfig from './sysConfig.vue'
 	import EmailConfig from './emailConfig/index.vue'
 	import SmsConfig from './smsConfig/index.vue'

@@ -47,7 +47,7 @@
 						<template #icon><plus-outlined /></template>
 						发送短信
 					</a-button>
-					<a-button danger @click="deleteBatchSms()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchSms" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -152,16 +152,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchSms = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchSms = (params) => {
 		smsApi.smsDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

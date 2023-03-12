@@ -41,7 +41,7 @@
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
-					<a-button danger @click="deleteBatchJob()">删除</a-button>
+					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchJob" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -190,16 +190,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchJob = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchJob = (params) => {
 		jobApi.jobDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

@@ -52,7 +52,7 @@
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>
-							<a-button danger @click="deleteBatchPosition()">删除</a-button>
+							<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchPosition" />
 						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">
@@ -75,7 +75,7 @@
 </template>
 
 <script setup name="sysPosition">
-	import { message, Empty } from 'ant-design-vue'
+	import { Empty } from 'ant-design-vue'
 	import positionApi from '@/api/sys/positionApi'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
@@ -174,16 +174,7 @@
 		})
 	}
 	// 批量删除
-	const deleteBatchPosition = () => {
-		if (selectedRowKeys.value.length < 1) {
-			message.warning('请选择一条或多条数据')
-			return false
-		}
-		const params = selectedRowKeys.value.map((m) => {
-			return {
-				id: m
-			}
-		})
+	const deleteBatchPosition = (params) => {
 		positionApi.positionDelete(params).then(() => {
 			table.value.clearRefreshSelected()
 		})

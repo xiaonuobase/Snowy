@@ -39,7 +39,6 @@
 </template>
 
 <script setup>
-	import { message } from 'ant-design-vue'
 	import buttonApi from '@/api/sys/resource/buttonApi'
 	import Form from './form.vue'
 	const columns = [
