@@ -1174,8 +1174,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         sysUserExportResult.setUserStatus(sysUserExportResult.getUserStatus()
                                 .equalsIgnoreCase(SysUserStatusEnum.ENABLE.getValue())?"正常":"停用");
                         // 将base64转为byte数组
-                        sysUserExportResult.setAvatar(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
-                                .split(sysUser.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+                        if (ObjectUtil.isNotEmpty(sysUser.getAvatar())) {
+                            sysUserExportResult.setAvatar(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                                    .split(sysUser.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+                        }
                         return sysUserExportResult;
                     }).collect(Collectors.toList());
             // 创建临时文件
