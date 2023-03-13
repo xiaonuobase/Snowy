@@ -105,7 +105,10 @@
 									$t('common.removeButton')
 								}}</a-button>
 							</a-popconfirm>
-							<a-divider type="vertical" v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')" />
+							<a-divider
+								type="vertical"
+								v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')"
+							/>
 							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')">
 								<a class="ant-dropdown-link">
 									{{ $t('common.more') }}
@@ -228,7 +231,7 @@
 	}
 	// 重置
 	const reset = () => {
-		searchFormRef.value.resetFields();
+		searchFormRef.value.resetFields()
 		table.value.refresh(true)
 	}
 	// 左侧树查询
@@ -322,7 +325,6 @@
 			const params = selectedRowKeys.value.map((m) => {
 				return m
 			})
-			console.log(params)
 			exportBatchUser(params)
 			return
 		}
@@ -332,7 +334,6 @@
 				userStatus: searchFormState.userStatus
 			}
 			exportBatchUser(params)
-			return
 		}
 	}
 	// 批量导出
