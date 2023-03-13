@@ -43,6 +43,7 @@
 					:expand-row-by-click="true"
 					:alert="options.alert.show"
 					bordered
+					:tool-config="toolConfig"
 					:row-key="(record) => record.id"
 					:row-selection="options.rowSelection"
 				>
@@ -125,6 +126,7 @@
 			}
 		}
 	}
+	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	// 定义tableDOM
 	const table = ref(null)
 	const form = ref()

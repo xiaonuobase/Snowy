@@ -55,6 +55,7 @@
 					:expand-row-by-click="true"
 					bordered
 					:alert="options.alert.show"
+					:tool-config="toolConfig"
 					:row-key="(record) => record.id"
 					:row-selection="options.rowSelection"
 				>
@@ -206,6 +207,7 @@
 			width: '220px'
 		})
 	}
+	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	const statusData = tool.dictList('COMMON_STATUS')
 	const searchFormRef = ref()
 	let defaultExpandedKeys = ref([])

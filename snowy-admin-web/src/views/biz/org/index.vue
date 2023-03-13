@@ -44,6 +44,7 @@
 					:alert="options.alert.show"
 					bordered
 					:row-key="(record) => record.id"
+					:tool-config="toolConfig"
 					:row-selection="options.rowSelection"
 				>
 					<template #operator class="table-operator">
@@ -124,6 +125,7 @@
 			}
 		}
 	}
+	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	// 定义tableDOM
 	const table = ref(null)
 	const form = ref()
