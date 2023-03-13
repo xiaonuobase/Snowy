@@ -70,19 +70,15 @@ export default {
 	grantRole(data) {
 		return request('grantRole', data)
 	},
-	// 下载用户导入模板
-	userDownloadImportUserTemplate(data) {
-		return request('downloadImportUserTemplate', data, 'get', {
+	// 人员导出
+	userExport(data) {
+		return request('export', data, 'get', {
 			responseType: 'blob'
 		})
 	},
-	// 用户导入
-	userImport(data) {
-		return request('import', data)
-	},
-	// 用户导出
-	userExport(data) {
-		return request('export', data, 'get', {
+	// 导出人员个人信息
+	userExportUserInfo(data) {
+		return request('exportUserInfo', data, 'get', {
 			responseType: 'blob'
 		})
 	}

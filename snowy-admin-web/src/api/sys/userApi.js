@@ -102,7 +102,7 @@ export default {
 			responseType: 'blob'
 		})
 	},
-	// 按模板导出用户个人信息
+	// 导出用户个人信息
 	userExportUserInfo(data) {
 		return request('exportUserInfo', data, 'get', {
 			responseType: 'blob'

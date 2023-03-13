@@ -13,10 +13,8 @@
 package vip.xiaonuo.biz.modular.user.service;
 
 import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
@@ -122,22 +120,6 @@ public interface BizUserService extends IService<BizUser> {
      * @date 2022/4/29 11:13
      **/
     void grantRole(BizUserGrantRoleParam bizUserGrantRoleParam);
-
-    /**
-     * 下载用户导入模板
-     *
-     * @author xuyuxiang
-     * @date 2022/8/8 13:16
-     **/
-    void downloadImportUserTemplate(HttpServletResponse response) throws IOException;
-
-    /**
-     * 人员导入
-     *
-     * @author xuyuxiang
-     * @date 2022/8/8 13:16
-     **/
-    JSONObject importUser(MultipartFile file);
 
     /**
      * 用户导出

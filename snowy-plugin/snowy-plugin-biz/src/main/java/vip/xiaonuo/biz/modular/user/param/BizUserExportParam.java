@@ -16,8 +16,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * 人员导出参数
  *
@@ -38,5 +36,5 @@ public class BizUserExportParam {
 
     /** 人员id集合 */
     @ApiModelProperty(value = "人员id集合")
-    private List<String> userIdList;
+    private String userIds;
 }

@@ -1145,8 +1145,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         File tempFile = null;
         try {
             QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
-            if(ObjectUtil.isNotEmpty(sysUserExportParam.getUserIdList())) {
-                queryWrapper.lambda().in(SysUser::getId, sysUserExportParam.getUserIdList());
+            if(ObjectUtil.isNotEmpty(sysUserExportParam.getUserIds())) {
+                queryWrapper.lambda().in(SysUser::getId, StrUtil.split(sysUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
                     queryWrapper.lambda().like(SysUser::getAccount, sysUserExportParam.getSearchKey())

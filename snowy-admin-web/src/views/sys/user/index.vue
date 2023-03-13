@@ -69,7 +69,7 @@
 								<span>{{ $t('common.imports') }}</span>
 							</a-button>
 							<a-button @click="exportBatchUserVerify">
-								<template #icon><delete-outlined /></template>
+								<template #icon><export-outlined /></template>
 								{{ $t('user.batchExportButton') }}
 							</a-button>
 							<xn-batch-delete

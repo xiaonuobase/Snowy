@@ -69,12 +69,8 @@
 								<template #icon><plus-outlined /></template>
 								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
 							</a-button>
-							<a-button @click="ImpExpRef.onOpen()" v-if="hasPerm('bizUserImport')">
-								<template #icon><import-outlined /></template>
-								<span>{{ $t('common.imports') }}</span>
-							</a-button>
 							<a-button @click="exportBatchUserVerify" v-if="hasPerm('bizUserBatchExport')">
-								<template #icon><delete-outlined /></template>
+								<template #icon><export-outlined /></template>
 								{{ $t('user.batchExportButton') }}
 							</a-button>
 							<xn-batch-delete
@@ -109,8 +105,8 @@
 									$t('common.removeButton')
 								}}</a-button>
 							</a-popconfirm>
-							<a-divider type="vertical" v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset'], 'and')" />
-							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset'], 'and')">
+							<a-divider type="vertical" v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')" />
+							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')">
 								<a class="ant-dropdown-link">
 									{{ $t('common.more') }}
 									<DownOutlined />
@@ -149,7 +145,6 @@
 		:role-global="false"
 		@onBack="roleBack"
 	/>
-	<ImpExp ref="ImpExpRef" />
 </template>
 <script setup name="bizUser">
 	import { message, Empty } from 'ant-design-vue'
@@ -158,8 +153,6 @@
 	import bizUserApi from '@/api/biz/bizUserApi'
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
-	import ImpExp from './impExp.vue'
-	import userApi from "@/api/sys/userApi";
 
 	const columns = [
 		{
@@ -329,6 +322,7 @@
 			const params = selectedRowKeys.value.map((m) => {
 				return m
 			})
+			console.log(params)
 			exportBatchUser(params)
 			return
 		}

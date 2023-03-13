@@ -24,14 +24,12 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
@@ -46,7 +44,6 @@ import com.alibaba.excel.write.style.row.AbstractRowHeightStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
@@ -54,7 +51,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizBuildInEnum;
 import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
@@ -399,185 +395,21 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     }
 
     @Override
-    public void downloadImportUserTemplate(HttpServletResponse response) throws IOException {
-        try {
-            InputStream inputStream = POICacheManager.getFile("userImportTemplate.xlsx");
-            byte[] bytes = IoUtil.readBytes(inputStream);
-            CommonDownloadUtil.download("SNOWY2.0系统B端人员导入模板.xlsx", bytes, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            CommonResponseUtil.renderError(response, "导出失败");
-        }
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public JSONObject importUser(MultipartFile file) {
-        try {
-            int successCount = 0;
-            int errorCount = 0;
-            JSONArray errorDetail = JSONUtil.createArray();
-            // 创建临时文件
-            File tempFile = FileUtil.writeBytes(file.getBytes(), FileUtil.file(FileUtil.getTmpDir() +
-                    FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
-            // 读取excel
-            List<BizUserImportParam> bizUserImportParamList =  EasyExcel.read(tempFile).head(BizUserImportParam.class).sheet()
-                    .headRowNumber(2).doReadSync();
-            List<BizUser> allUserList = this.list();
-            for (int i = 0; i < bizUserImportParamList.size(); i++) {
-                JSONObject jsonObject = this.doImport(allUserList, bizUserImportParamList.get(i), i);
-                if(jsonObject.getBool("success")) {
-                    successCount += 1;
-                } else{
-                    errorCount += 1;
-                    errorDetail.add(jsonObject);
-                }
-            }
-            return JSONUtil.createObj()
-                    .set("totalCount", bizUserImportParamList.size())
-                    .set("successCount", successCount)
-                    .set("errorCount", errorCount)
-                    .set("errorDetail", errorDetail);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CommonException("文件导入失败");
-        }
-    }
-
-    /**
-     * 执行导入
-     *
-     * @author xuyuxiang
-     * @date 2023/3/7 13:22
-     **/
-    public JSONObject doImport(List<BizUser> allUserList, BizUserImportParam bizUserImportParam, int i) {
-        String account = bizUserImportParam.getAccount();
-        String name = bizUserImportParam.getName();
-        String orgFullName = bizUserImportParam.getOrgName();
-        String positionFullName = bizUserImportParam.getPositionName();
-        // 校验必填参数
-        if(ObjectUtil.hasEmpty(account, name, orgFullName, positionFullName)) {
-            return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "必填字段存在空值");
-        } else {
-            try {
-                // 机构名称
-                String orgName = CollectionUtil.getLast(StrUtil.split(orgFullName, StrUtil.DASHED));
-                // 职位名称
-                String positionName = CollectionUtil.getLast(StrUtil.split(positionFullName, StrUtil.DASHED));
-                // 机构id
-                String orgId = bizOrgService.getOrgIdByOrgFullNameWithCreate(orgFullName);
-                // 职位id
-                String positionId = bizPositionService.getPositionIdByPositionNameWithCreate(orgId, positionName);
-
-                // 查找账号对应索引
-                int index = CollStreamUtil.toList(allUserList, BizUser::getAccount).indexOf(account);
-                BizUser bizUser = new BizUser();
-                boolean isAdd = false;
-                if(index == -1) {
-                    isAdd = true;
-                } else {
-                    bizUser = allUserList.get(index);
-                }
-
-                // 获取手机号和邮箱
-                String phone = bizUserImportParam.getPhone();
-                String email = bizUserImportParam.getEmail();
-
-                // 判断手机号是否跟系统现有的重复
-                if(ObjectUtil.isNotEmpty(phone)) {
-                    if(isAdd) {
-                        boolean repeatPhone = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
-                                .isNotEmpty(tempBizUser.getPhone()) && tempBizUser.getPhone().equals(phone));
-                        if(repeatPhone) {
-                            // 新增人员手机号重复则不导入该手机号
-                            bizUserImportParam.setPhone(null);
-                        }
-                    } else {
-                        String finalExistUserId = bizUser.getId();
-                        boolean repeatPhone = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
-                                .isNotEmpty(tempBizUser.getPhone()) && tempBizUser.getPhone()
-                                .equals(phone) && !tempBizUser.getId().equals(finalExistUserId));
-                        if(repeatPhone) {
-                            // 更新人员手机号重复则使用原手机号
-                            bizUser.setPhone(bizUser.getPhone());
-                        }
-                    }
-                }
-                // 判断邮箱是否跟系统现有的重复
-                if(ObjectUtil.isNotEmpty(email)) {
-                    if(isAdd) {
-                        boolean repeatEmail = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
-                                .isNotEmpty(tempBizUser.getEmail()) && tempBizUser.getEmail().equals(email));
-                        if(repeatEmail) {
-                            // 新增邮箱重复则不导入该邮箱
-                            bizUserImportParam.setEmail(null);
-                        }
-                    } else {
-                        String finalExistUserId = bizUser.getId();
-                        boolean repeatEmail = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
-                                .isNotEmpty(tempBizUser.getEmail()) && tempBizUser.getEmail()
-                                .equals(email) && !tempBizUser.getId().equals(finalExistUserId));
-                        if(repeatEmail) {
-                            // 更新人员手机号重复则使用原邮箱
-                            bizUser.setEmail(bizUser.getEmail());
-                        }
-                    }
-                }
-                // 拷贝属性
-                BeanUtil.copyProperties(bizUserImportParam, bizUser);
-
-                // 设置机构id和职位id
-                bizUser.setOrgId(orgId);
-                bizUser.setPositionId(positionId);
-
-                // 设置机构名称和职位名称（暂时无作用）
-                bizUser.setOrgName(orgName);
-                bizUser.setPositionName(positionName);
-
-                // 发布事件
-                if(isAdd) {
-                    // 设置id
-                    bizUser.setId(IdWorker.getIdStr());
-                    // 设置默认头像
-                    bizUser.setAvatar(CommonAvatarUtil.generateImg(bizUser.getName()));
-                    // 设置默认密码
-                    bizUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
-                    // 设置排序码
-                    bizUser.setSortCode(99);
-                    // 设置状态
-                    bizUser.setUserStatus(BizUserStatusEnum.ENABLE.getValue());
-                    // 发布增加事件
-                    CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
-                    // 更新全部人员
-                    allUserList.add(bizUser);
-                } else {
-                    // 发布更新事件
-                    CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
-                    // 删除指定索引元素
-                    allUserList.remove(index);
-                    // 插入指定索引元素
-                    allUserList.add(index, bizUser);
-                }
-
-                // 保存或更新
-                this.saveOrUpdate(bizUser);
-
-                // 返回成功
-                return JSONUtil.createObj().set("success", true);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return JSONUtil.createObj().set("success", false).set("index", i + 1).set("msg", "数据导入异常");
-            }
-        }
-    }
-
-    @Override
     public void exportUser(BizUserExportParam bizUserExportParam, HttpServletResponse response) throws IOException {
         File tempFile = null;
         try {
             QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
-            if(ObjectUtil.isNotEmpty(bizUserExportParam.getUserIdList())) {
-                queryWrapper.lambda().in(BizUser::getId, bizUserExportParam.getUserIdList());
+            // 排除超管
+            queryWrapper.lambda().ne(BizUser::getAccount, BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
+            // 校验数据范围
+            List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+                queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
+            } else {
+                queryWrapper.lambda().eq(BizUser::getId, StpUtil.getLoginIdAsString());
+            }
+            if(ObjectUtil.isNotEmpty(bizUserExportParam.getUserIds())) {
+                queryWrapper.lambda().in(BizUser::getId, StrUtil.split(bizUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
                     queryWrapper.lambda().like(BizUser::getAccount, bizUserExportParam.getSearchKey())

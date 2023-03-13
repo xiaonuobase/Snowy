@@ -221,7 +221,7 @@ QQ技术群：732230670
 ## 曾获荣誉
 
 <p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=7xtGQLOA&path=%7BshareItemLink%3A7xtGQLOA%7D%2F"/>
+    <img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=ec54DtG4v8DfcUEPF0ACAHWW-urCcymI_0fSSaqMmMXKLsTWdHpQqH0e&name=/%E8%8D%A3%E8%AA%892021%E4%B8%8E2022.jpg"/>
 </p>
 
 ## 版权说明
