@@ -196,7 +196,7 @@
 			width: '80px'
 		}
 	]
-	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserDelete'])) {
+	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserDelete'])) {
 		columns.push({
 			title: '操作',
 			dataIndex: 'action',
