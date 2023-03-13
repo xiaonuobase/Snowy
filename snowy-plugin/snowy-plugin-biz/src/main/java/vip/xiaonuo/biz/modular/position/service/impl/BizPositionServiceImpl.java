@@ -204,6 +204,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         return bizPosition;
     }
 
+    @Override
+    public String getPositionIdByPositionNameWithCreate(String orgId, String positionName) {
+        return null;
+    }
+
     /* ====岗位部分所需要用到的选择器==== */
 
     @Override

@@ -253,13 +253,13 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     /**
-     * 执行创建机构
+     * 执行创建组织
      *
      * @author xuyuxiang
      * @date 2023/3/8 9:38
      **/
     public String doCreateOrg(String parentId, String orgName, List<SysOrg> cachedAllOrgList) {
-        //创建该机构
+        //创建该组织
         SysOrg sysOrg = new SysOrg();
         sysOrg.setName(orgName);
         sysOrg.setCode(RandomUtil.randomString(10));
@@ -269,7 +269,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.save(sysOrg);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-        // 将该机构加入缓存
+        // 将该组织加入缓存
         cachedAllOrgList.add(sysOrg);
         // 更新缓存
         commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
@@ -313,7 +313,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             return sysUserService.getCachedAllUserSelectorList();
         } else {
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
-                // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
+                // 如果组织id不为空，则查询该组织所在顶级组织下的所有人
                 List<String> parentAndChildOrgIdList = CollStreamUtil.toList(this.getParentAndChildListById(this
                         .getCachedAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {

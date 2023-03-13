@@ -86,6 +86,22 @@ public interface BizOrgService extends IService<BizOrg> {
     BizOrg queryEntity(String id);
 
     /**
+     * 获取缓存的所有机构
+     *
+     * @author xuyuxiang
+     * @date 2022/7/25 19:42
+     **/
+    List<BizOrg> getCachedAllOrgList();
+
+    /**
+     * 根据机构全名称获取机构id，有则返回，无则创建
+     *
+     * @author xuyuxiang
+     * @date 2023/3/7 15:44
+     **/
+    String getOrgIdByOrgFullNameWithCreate(String orgFullName);
+
+    /**
      * 获取机构树选择器
      *
      * @author xuyuxiang

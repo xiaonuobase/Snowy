@@ -85,7 +85,7 @@ public interface SysPositionService extends IService<SysPosition> {
     SysPosition getById(List<SysPosition> originDataList, String id);
 
     /**
-     * 根据机构id和职位名称获取职位id，有则返回，无则创建
+     * 根据组织id和职位名称获取职位id，有则返回，无则创建
      *
      * @author xuyuxiang
      * @date 2022/8/15 14:55

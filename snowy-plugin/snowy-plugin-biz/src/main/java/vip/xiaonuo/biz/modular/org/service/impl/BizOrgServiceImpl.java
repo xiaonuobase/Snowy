@@ -40,6 +40,7 @@ import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -47,6 +48,7 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysRoleApi;
 
 import javax.annotation.Resource;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,6 +62,11 @@ import java.util.stream.Collectors;
 @Service
 public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> implements BizOrgService {
 
+    public static final String ORG_CACHE_ALL_KEY = "sys-org:all";
+    
+    @Resource
+    private CommonCacheOperator commonCacheOperator;
+    
     @Resource
     private SysRoleApi sysRoleApi;
 
@@ -196,7 +203,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
             }
             List<BizOrg> allOrgList = this.list();
-            // 获取所有子组织
+            // 获取所有子机构
             List<String> toDeleteOrgIdList = CollectionUtil.newArrayList();
             orgIdList.forEach(orgId -> toDeleteOrgIdList.addAll(this.getChildListById(allOrgList, orgId, true).stream()
                     .map(BizOrg::getId).collect(Collectors.toList())));
@@ -247,6 +254,74 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             throw new CommonException("机构不存在，id值为：{}", id);
         }
         return bizOrg;
+    }
+
+    @Override
+    public List<BizOrg> getCachedAllOrgList() {
+        // 从缓存中取
+        Object cacheValue = commonCacheOperator.get(ORG_CACHE_ALL_KEY);
+        if(ObjectUtil.isNotEmpty(cacheValue)) {
+            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), BizOrg.class);
+        }
+        List<BizOrg> orgList = this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
+        if(ObjectUtil.isNotEmpty(orgList)) {
+            // 更新到缓存
+            commonCacheOperator.put(ORG_CACHE_ALL_KEY, orgList);
+        }
+        return orgList;
+    }
+
+    @Override
+    public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
+        List<BizOrg> cachedAllOrgList = this.getCachedAllOrgList();
+        List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(bizOrg ->
+                new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
+                .collect(Collectors.toList()), "0");
+        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), cachedAllOrgList, treeList);
+    }
+
+    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<BizOrg> cachedAllOrgList, List<Tree<String>> treeList) {
+        String orgName = iterator.next();
+        if(ObjectUtil.isNotEmpty(treeList)) {
+            List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(orgName)).collect(Collectors.toList());
+            if(ObjectUtil.isNotEmpty(findList)) {
+                if(iterator.hasNext()) {
+                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
+                } else {
+                    return findList.get(0).getId();
+                }
+            }
+        }
+        String orgId = this.doCreateOrg(parentId, orgName, cachedAllOrgList);
+        if(iterator.hasNext()) {
+            return findOrgIdByOrgName(orgId, iterator, cachedAllOrgList, CollectionUtil.newArrayList());
+        } else {
+            return orgId;
+        }
+    }
+
+    /**
+     * 执行创建机构
+     *
+     * @author xuyuxiang
+     * @date 2023/3/8 9:38
+     **/
+    public String doCreateOrg(String parentId, String orgName, List<BizOrg> cachedAllOrgList) {
+        //创建该机构
+        BizOrg bizOrg = new BizOrg();
+        bizOrg.setName(orgName);
+        bizOrg.setCode(RandomUtil.randomString(10));
+        bizOrg.setParentId(parentId);
+        bizOrg.setCategory(parentId.equals("0")?BizOrgCategoryEnum.COMPANY.getValue():BizOrgCategoryEnum.DEPT.getValue());
+        bizOrg.setSortCode(99);
+        this.save(bizOrg);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
+        // 将该机构加入缓存
+        cachedAllOrgList.add(bizOrg);
+        // 更新缓存
+        commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
+        return bizOrg.getId();
     }
 
     /* ====机构部分所需要用到的选择器==== */
@@ -316,6 +391,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     /* ====以下为各种递归方法==== */
 
+    public List<BizOrg> getParentAndChildListById(List<BizOrg> originDataList, String id, boolean includeSelf) {
+        List<BizOrg> parentListById = this.getParentListById(originDataList, id, false);
+        List<BizOrg> childListById = this.getChildListById(originDataList, id, true);
+        parentListById.addAll(childListById);
+        return parentListById;
+    }
+    
     public List<BizOrg> getChildListById(List<BizOrg> originDataList, String id, boolean includeSelf) {
         List<BizOrg> resultList = CollectionUtil.newArrayList();
         execRecursionFindChild(originDataList, id, resultList);

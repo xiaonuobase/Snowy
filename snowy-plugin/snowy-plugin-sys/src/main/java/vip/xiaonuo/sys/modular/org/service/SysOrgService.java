@@ -94,7 +94,7 @@ public interface SysOrgService extends IService<SysOrg> {
     List<SysOrg> getCachedAllOrgList();
 
     /**
-     * 根据机构全名称获取机构id，有则返回，无则创建
+     * 根据组织全名称获取组织id，有则返回，无则创建
      *
      * @author xuyuxiang
      * @date 2023/3/7 15:44

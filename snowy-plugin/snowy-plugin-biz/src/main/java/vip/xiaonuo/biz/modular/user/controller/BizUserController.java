@@ -14,6 +14,7 @@ package vip.xiaonuo.biz.modular.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
@@ -182,7 +183,7 @@ public class BizUserController {
     }
 
     /**
-     * 用户拥有角色
+     * 人员拥有角色
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
@@ -196,7 +197,7 @@ public class BizUserController {
     }
 
     /**
-     * 给用户授权角色
+     * 给人员授权角色
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
@@ -212,19 +213,32 @@ public class BizUserController {
     }
 
     /**
-     * 人员导入
+     * 下载人员导入模板
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
     @ApiOperationSupport(order = 11)
+    @ApiOperation("下载人员导入模板")
+    @CommonLog("下载人员导入模板")
+    @GetMapping(value = "/biz/user/downloadImportUserTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public CommonResult<String> downloadImportUserTemplate(HttpServletResponse response) throws IOException {
+        bizUserService.downloadImportUserTemplate(response);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 人员导入
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 12)
     @ApiOperation("人员导入")
     @CommonLog("人员导入")
-    @SaCheckPermission("/biz/user/import")
     @PostMapping("/biz/user/import")
-    public CommonResult<String> importUser(@RequestPart("file") @ApiParam(value="文件", required = true) MultipartFile file) {
-        bizUserService.importUser(file);
-        return CommonResult.ok();
+    public CommonResult<JSONObject> importUser(@RequestPart("file") @ApiParam(value="文件", required = true) MultipartFile file) {
+        return CommonResult.data(bizUserService.importUser(file));
     }
 
     /**
@@ -233,13 +247,26 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
+    @ApiOperationSupport(order = 13)
     @ApiOperation("人员导出")
     @CommonLog("人员导出")
-    @SaCheckPermission("/biz/user/export")
     @GetMapping(value = "/biz/user/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void exportUser(BizUserExportParam bizUserExportParam, HttpServletResponse response) throws IOException {
         bizUserService.exportUser(bizUserExportParam, response);
+    }
+
+    /**
+     * 按模板导出人员个人信息
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 14)
+    @ApiOperation("导出人员个人信息")
+    @CommonLog("导出人员个人信息")
+    @GetMapping(value = "/biz/user/exportUserInfo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void exportUserInfo(BizUserIdParam bizUserIdParam, HttpServletResponse response) throws IOException {
+        bizUserService.exportUserInfo(bizUserIdParam, response);
     }
 
     /* ====人员部分所需要用到的选择器==== */
@@ -250,7 +277,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
+    @ApiOperationSupport(order = 15)
     @ApiOperation("获取机构树选择器")
     @SaCheckPermission("/biz/user/orgTreeSelector")
     @GetMapping("/biz/user/orgTreeSelector")
@@ -264,7 +291,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
+    @ApiOperationSupport(order = 16)
     @ApiOperation("获取机构列表选择器")
     @SaCheckPermission("/biz/user/orgListSelector")
     @GetMapping("/biz/user/orgListSelector")
@@ -278,7 +305,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
+    @ApiOperationSupport(order = 17)
     @ApiOperation("获取岗位选择器")
     @SaCheckPermission("/biz/user/positionSelector")
     @GetMapping("/biz/user/positionSelector")
@@ -292,7 +319,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
+    @ApiOperationSupport(order = 18)
     @ApiOperation("获取角色选择器")
     @SaCheckPermission("/biz/user/roleSelector")
     @GetMapping("/biz/user/roleSelector")
@@ -306,7 +333,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
+    @ApiOperationSupport(order = 19)
     @ApiOperation("获取人员选择器")
     @SaCheckPermission("/biz/user/userSelector")
     @GetMapping("/biz/user/userSelector")

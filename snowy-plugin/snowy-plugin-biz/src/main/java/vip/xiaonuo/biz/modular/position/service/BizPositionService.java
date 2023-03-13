@@ -76,6 +76,14 @@ public interface BizPositionService extends IService<BizPosition> {
      **/
     BizPosition queryEntity(String id);
 
+    /**
+     * 根据机构id和岗位名称获取岗位id，有则返回，无则创建
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    String getPositionIdByPositionNameWithCreate(String orgId, String positionName);
+
     /* ====岗位部分所需要用到的选择器==== */
 
     /**

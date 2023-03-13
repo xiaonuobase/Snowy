@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.auth.core.config;
 
-import cn.dev33.satoken.interceptor.SaAnnotationInterceptor;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;

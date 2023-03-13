@@ -12,28 +12,46 @@
  */
 package vip.xiaonuo.biz.modular.user.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.cache.manager.POICacheManager;
+import cn.afterturn.easypoi.entity.ImageEntity;
+import cn.afterturn.easypoi.word.WordExportUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.metadata.data.WriteCellData;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.row.AbstractRowHeightStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.fhs.trans.service.impl.TransService;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,10 +66,10 @@ import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.mapper.BizUserMapper;
 import vip.xiaonuo.biz.modular.user.param.*;
-import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
+import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -59,13 +77,17 @@ import vip.xiaonuo.common.util.*;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
 import vip.xiaonuo.sys.api.SysUserApi;
+import vip.xiaonuo.sys.modular.user.result.BizUserExportResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,6 +101,9 @@ import java.util.stream.Collectors;
 public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> implements BizUserService {
 
     private static final String SNOWY_SYS_DEFAULT_PASSWORD_KEY = "SNOWY_SYS_DEFAULT_PASSWORD";
+
+    @Resource
+    private TransService transService;
 
     @Resource
     private DevConfigApi devConfigApi;
@@ -188,7 +213,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         boolean updateSuperAdminAccount = bizUser.getAccount().equals(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue()) &&
                 !bizUserEditParam.getAccount().equals(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
         if(updateSuperAdminAccount) {
-            throw new CommonException("不可修改系统内置超管用户账号");
+            throw new CommonException("不可修改系统内置超管人员账号");
         }
         BeanUtil.copyProperties(bizUserEditParam, bizUser);
         this.updateById(bizUser);
@@ -244,7 +269,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             boolean containsSuperAdminAccount = this.listByIds(bizUserIdList).stream().map(BizUser::getAccount)
                     .collect(Collectors.toSet()).contains(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
             if(containsSuperAdminAccount) {
-                throw new CommonException("不可删除系统内置超管用户");
+                throw new CommonException("不可删除系统内置超管人员");
             }
             // 获取这些人员的的机构id集合
             Set<String> userOrgIdList = this.listByIds(bizUserIdList).stream().map(BizUser::getOrgId).collect(Collectors.toSet());
@@ -264,19 +289,19 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             this.update(new LambdaUpdateWrapper<BizUser>().in(BizUser::getDirectorId, bizUserIdList).set(BizUser::getDirectorId, null));
 
             // 清除【将这些人员作为兼任岗位的主管】的信息
-            this.list(new LambdaQueryWrapper<BizUser>() .isNotNull(BizUser::getPositionJson)).forEach(sysUser -> {
-                List<JSONObject> handledJsonObjectList = JSONUtil.toList(JSONUtil.parseArray(sysUser.getPositionJson()),
+            this.list(new LambdaQueryWrapper<BizUser>() .isNotNull(BizUser::getPositionJson)).forEach(bizUser -> {
+                List<JSONObject> handledJsonObjectList = JSONUtil.toList(JSONUtil.parseArray(bizUser.getPositionJson()),
                         JSONObject.class).stream().peek(jsonObject -> {
                     String directorId = jsonObject.getStr("directorId");
                     if (ObjectUtil.isNotEmpty(directorId) && bizUserIdList.contains(directorId)) {
                         jsonObject.remove("directorId");
                     }
                 }).collect(Collectors.toList());
-                this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId, sysUser.getId())
+                this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId, bizUser.getId())
                         .set(BizUser::getPositionJson, JSONUtil.toJsonStr(handledJsonObjectList)));
             });
 
-            // 清除【将这些用户作为主管】的机构的主管信息
+            // 清除【将这些人员作为主管】的机构的主管信息
             bizOrgService.update(new LambdaUpdateWrapper<BizOrg>().in(BizOrg::getDirectorId, bizUserIdList).set(BizOrg::getDirectorId, null));
 
             // 执行删除
@@ -374,8 +399,176 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     }
 
     @Override
-    public void importUser(MultipartFile file) {
-        // TODO 待完善
+    public void downloadImportUserTemplate(HttpServletResponse response) throws IOException {
+        try {
+            InputStream inputStream = POICacheManager.getFile("userImportTemplate.xlsx");
+            byte[] bytes = IoUtil.readBytes(inputStream);
+            CommonDownloadUtil.download("SNOWY2.0系统B端人员导入模板.xlsx", bytes, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonResponseUtil.renderError(response, "导出失败");
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public JSONObject importUser(MultipartFile file) {
+        try {
+            int successCount = 0;
+            int errorCount = 0;
+            JSONArray errorDetail = JSONUtil.createArray();
+            // 创建临时文件
+            File tempFile = FileUtil.writeBytes(file.getBytes(), FileUtil.file(FileUtil.getTmpDir() +
+                    FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
+            // 读取excel
+            List<BizUserImportParam> bizUserImportParamList =  EasyExcel.read(tempFile).head(BizUserImportParam.class).sheet()
+                    .headRowNumber(2).doReadSync();
+            List<BizUser> allUserList = this.list();
+            for (int i = 0; i < bizUserImportParamList.size(); i++) {
+                JSONObject jsonObject = this.doImport(allUserList, bizUserImportParamList.get(i), i);
+                if(jsonObject.getBool("success")) {
+                    successCount += 1;
+                } else{
+                    errorCount += 1;
+                    errorDetail.add(jsonObject);
+                }
+            }
+            return JSONUtil.createObj()
+                    .set("totalCount", bizUserImportParamList.size())
+                    .set("successCount", successCount)
+                    .set("errorCount", errorCount)
+                    .set("errorDetail", errorDetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CommonException("文件导入失败");
+        }
+    }
+
+    /**
+     * 执行导入
+     *
+     * @author xuyuxiang
+     * @date 2023/3/7 13:22
+     **/
+    public JSONObject doImport(List<BizUser> allUserList, BizUserImportParam bizUserImportParam, int i) {
+        String account = bizUserImportParam.getAccount();
+        String name = bizUserImportParam.getName();
+        String orgFullName = bizUserImportParam.getOrgName();
+        String positionFullName = bizUserImportParam.getPositionName();
+        // 校验必填参数
+        if(ObjectUtil.hasEmpty(account, name, orgFullName, positionFullName)) {
+            return JSONUtil.createObj().set("index", i + 1).set("success", false).set("msg", "必填字段存在空值");
+        } else {
+            try {
+                // 机构名称
+                String orgName = CollectionUtil.getLast(StrUtil.split(orgFullName, StrUtil.DASHED));
+                // 职位名称
+                String positionName = CollectionUtil.getLast(StrUtil.split(positionFullName, StrUtil.DASHED));
+                // 机构id
+                String orgId = bizOrgService.getOrgIdByOrgFullNameWithCreate(orgFullName);
+                // 职位id
+                String positionId = bizPositionService.getPositionIdByPositionNameWithCreate(orgId, positionName);
+
+                // 查找账号对应索引
+                int index = CollStreamUtil.toList(allUserList, BizUser::getAccount).indexOf(account);
+                BizUser bizUser = new BizUser();
+                boolean isAdd = false;
+                if(index == -1) {
+                    isAdd = true;
+                } else {
+                    bizUser = allUserList.get(index);
+                }
+
+                // 获取手机号和邮箱
+                String phone = bizUserImportParam.getPhone();
+                String email = bizUserImportParam.getEmail();
+
+                // 判断手机号是否跟系统现有的重复
+                if(ObjectUtil.isNotEmpty(phone)) {
+                    if(isAdd) {
+                        boolean repeatPhone = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
+                                .isNotEmpty(tempBizUser.getPhone()) && tempBizUser.getPhone().equals(phone));
+                        if(repeatPhone) {
+                            // 新增人员手机号重复则不导入该手机号
+                            bizUserImportParam.setPhone(null);
+                        }
+                    } else {
+                        String finalExistUserId = bizUser.getId();
+                        boolean repeatPhone = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
+                                .isNotEmpty(tempBizUser.getPhone()) && tempBizUser.getPhone()
+                                .equals(phone) && !tempBizUser.getId().equals(finalExistUserId));
+                        if(repeatPhone) {
+                            // 更新人员手机号重复则使用原手机号
+                            bizUser.setPhone(bizUser.getPhone());
+                        }
+                    }
+                }
+                // 判断邮箱是否跟系统现有的重复
+                if(ObjectUtil.isNotEmpty(email)) {
+                    if(isAdd) {
+                        boolean repeatEmail = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
+                                .isNotEmpty(tempBizUser.getEmail()) && tempBizUser.getEmail().equals(email));
+                        if(repeatEmail) {
+                            // 新增邮箱重复则不导入该邮箱
+                            bizUserImportParam.setEmail(null);
+                        }
+                    } else {
+                        String finalExistUserId = bizUser.getId();
+                        boolean repeatEmail = allUserList.stream().anyMatch(tempBizUser -> ObjectUtil
+                                .isNotEmpty(tempBizUser.getEmail()) && tempBizUser.getEmail()
+                                .equals(email) && !tempBizUser.getId().equals(finalExistUserId));
+                        if(repeatEmail) {
+                            // 更新人员手机号重复则使用原邮箱
+                            bizUser.setEmail(bizUser.getEmail());
+                        }
+                    }
+                }
+                // 拷贝属性
+                BeanUtil.copyProperties(bizUserImportParam, bizUser);
+
+                // 设置机构id和职位id
+                bizUser.setOrgId(orgId);
+                bizUser.setPositionId(positionId);
+
+                // 设置机构名称和职位名称（暂时无作用）
+                bizUser.setOrgName(orgName);
+                bizUser.setPositionName(positionName);
+
+                // 发布事件
+                if(isAdd) {
+                    // 设置id
+                    bizUser.setId(IdWorker.getIdStr());
+                    // 设置默认头像
+                    bizUser.setAvatar(CommonAvatarUtil.generateImg(bizUser.getName()));
+                    // 设置默认密码
+                    bizUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+                    // 设置排序码
+                    bizUser.setSortCode(99);
+                    // 设置状态
+                    bizUser.setUserStatus(BizUserStatusEnum.ENABLE.getValue());
+                    // 发布增加事件
+                    CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
+                    // 更新全部人员
+                    allUserList.add(bizUser);
+                } else {
+                    // 发布更新事件
+                    CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
+                    // 删除指定索引元素
+                    allUserList.remove(index);
+                    // 插入指定索引元素
+                    allUserList.add(index, bizUser);
+                }
+
+                // 保存或更新
+                this.saveOrUpdate(bizUser);
+
+                // 返回成功
+                return JSONUtil.createObj().set("success", true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return JSONUtil.createObj().set("success", false).set("index", i + 1).set("msg", "数据导入异常");
+            }
+        }
     }
 
     @Override
@@ -383,33 +576,190 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         File tempFile = null;
         try {
             QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
-            if(ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
-                queryWrapper.lambda().like(BizUser::getAccount, bizUserExportParam.getSearchKey()).or()
-                        .like(BizUser::getName, bizUserExportParam.getSearchKey());
-            }
-            if(ObjectUtil.isNotEmpty(bizUserExportParam.getUserStatus())) {
-                queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());
-            }
-            String fileName = "SNOWY2.0系统B端人员信息清单";
-            List<BizUserExportResult> bizUserExportResultList =this.list(queryWrapper).stream()
-                    .map(bizUser -> BeanUtil.copyProperties(bizUser, BizUserExportResult.class)).peek(bizUserExportResult -> {
-                if (ObjectUtil.isNotEmpty(bizUserExportResult.getAvatar())) {
-                    bizUserExportResult.setAvatarByte(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
-                            .split(bizUserExportResult.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+            if(ObjectUtil.isNotEmpty(bizUserExportParam.getUserIdList())) {
+                queryWrapper.lambda().in(BizUser::getId, bizUserExportParam.getUserIdList());
+            } else {
+                if (ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
+                    queryWrapper.lambda().like(BizUser::getAccount, bizUserExportParam.getSearchKey())
+                            .or().like(BizUser::getName, bizUserExportParam.getSearchKey())
+                            .or().like(BizUser::getPhone, bizUserExportParam.getSearchKey());
                 }
-            }).collect(Collectors.toList());
-            Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(fileName, "B端人员"),
-                    BizUserExportResult.class, bizUserExportResultList);
-            tempFile = FileUtil.file(FileUtil.getTmpDir() + FileUtil.FILE_SEPARATOR + fileName + ".xls");
-            BufferedOutputStream outputStream = FileUtil.getOutputStream(tempFile);
-            workbook.write(outputStream);
-            outputStream.close();
+                if (ObjectUtil.isNotEmpty(bizUserExportParam.getUserStatus())) {
+                    queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());
+                }
+            }
+            String fileName = "SNOWY2.0系统B端人员信息清单.xlsx";
+            List<BizUser> bizUserList = this.list(queryWrapper);
+            if(ObjectUtil.isEmpty(bizUserList)) {
+                throw new CommonException("无数据可导出");
+            }
+            transService.transBatch(bizUserList);
+            bizUserList = CollectionUtil.sort(bizUserList, Comparator.comparing(BizUser::getOrgId));
+            List<BizUserExportResult> bizUserExportResultList = bizUserList.stream()
+                    .map(bizUser -> {
+                        BizUserExportResult bizUserExportResult = new BizUserExportResult();
+                        BeanUtil.copyProperties(bizUser, bizUserExportResult);
+                        bizUserExportResult.setGroupName(ObjectUtil.isNotEmpty(bizUserExportResult.getOrgName())?
+                                bizUserExportResult.getOrgName():"无组织");
+                        // 状态枚举转为文字
+                        bizUserExportResult.setUserStatus(bizUserExportResult.getUserStatus()
+                                .equalsIgnoreCase(BizUserStatusEnum.ENABLE.getValue())?"正常":"停用");
+                        // 将base64转为byte数组
+                        if (ObjectUtil.isNotEmpty(bizUser.getAvatar())) {
+                            bizUserExportResult.setAvatar(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                                    .split(bizUser.getAvatar(), StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG));
+                        }
+                        return bizUserExportResult;
+                    }).collect(Collectors.toList());
+            // 创建临时文件
+            tempFile = FileUtil.file(FileUtil.getTmpDir() + FileUtil.FILE_SEPARATOR + fileName);
+
+            // 头的策略
+            WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+            WriteFont headWriteFont = new WriteFont();
+            headWriteFont.setFontHeightInPoints((short) 14);
+            headWriteCellStyle.setWriteFont(headWriteFont);
+            // 水平垂直居中
+            headWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+            headWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            // 内容的策略
+            WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+            // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
+            contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
+            // 内容背景白色
+            contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+            WriteFont contentWriteFont = new WriteFont();
+
+            // 内容字体大小
+            contentWriteFont.setFontHeightInPoints((short) 12);
+            contentWriteCellStyle.setWriteFont(contentWriteFont);
+
+            //设置边框样式，细实线
+            contentWriteCellStyle.setBorderLeft(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderTop(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderRight(BorderStyle.THIN);
+            contentWriteCellStyle.setBorderBottom(BorderStyle.THIN);
+
+            // 水平垂直居中
+            contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+            contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+            // 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
+            HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle,
+                    contentWriteCellStyle);
+
+            // 写excel
+            EasyExcel.write(tempFile.getPath(), BizUserExportResult.class)
+                    // 自定义样式
+                    .registerWriteHandler(horizontalCellStyleStrategy)
+                    // 自动列宽
+                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                    // 机构分组合并单元格
+                    .registerWriteHandler(new CommonExcelCustomMergeStrategy(bizUserExportResultList.stream().map(BizUserExportResult::getGroupName)
+                            .collect(Collectors.toList()), 0))
+                    // 设置第一行字体
+                    .registerWriteHandler(new CellWriteHandler() {
+                        @Override
+                        public void afterCellDispose(CellWriteHandlerContext context) {
+                            WriteCellData<?> cellData = context.getFirstCellData();
+                            WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                            Integer rowIndex = context.getRowIndex();
+                            if(rowIndex == 0) {
+                                WriteFont headWriteFont = new WriteFont();
+                                headWriteFont.setFontName("宋体");
+                                headWriteFont.setBold(true);
+                                headWriteFont.setFontHeightInPoints((short) 16);
+                                writeCellStyle.setWriteFont(headWriteFont);
+                            }
+                        }
+                    })
+                    // 设置表头行高
+                    .registerWriteHandler(new AbstractRowHeightStyleStrategy() {
+                        @Override
+                        protected void setHeadColumnHeight(Row row, int relativeRowIndex) {
+                            if(relativeRowIndex == 0) {
+                                // 表头第一行
+                                row.setHeightInPoints(34);
+                            } else {
+                                // 表头其他行
+                                row.setHeightInPoints(30);
+                            }
+                        }
+                        @Override
+                        protected void setContentColumnHeight(Row row, int relativeRowIndex) {
+                            // 内容行
+                            row.setHeightInPoints(20);
+                        }
+                    })
+                    .sheet("人员信息")
+                    .doWrite(bizUserExportResultList);
             CommonDownloadUtil.download(tempFile, response);
         } catch (Exception e) {
             e.printStackTrace();
             CommonResponseUtil.renderError(response, "导出失败");
         } finally {
             FileUtil.del(tempFile);
+        }
+    }
+
+    @Override
+    public void exportUserInfo(BizUserIdParam bizUserIdParam, HttpServletResponse response) throws IOException {
+        File destTemplateFile = null;
+        File resultFile = null;
+        try {
+            BizUser bizUser = this.queryEntity(bizUserIdParam.getId());
+            transService.transOne(bizUser);
+            // 读取模板流
+            InputStream inputStream = POICacheManager.getFile("userExportTemplate.docx");
+            // 创建一个临时模板
+            destTemplateFile = FileUtil.writeFromStream(inputStream, FileUtil.file(FileUtil.getTmpDir() +
+                    File.separator + "userExportTemplate.docx"));
+            // 构造填充的参数
+            Map<String, Object> map = BeanUtil.beanToMap(bizUser);
+            String avatarBase64;
+            if(ObjectUtil.isNotEmpty(bizUser.getAvatar())) {
+                avatarBase64 = bizUser.getAvatar();
+            } else {
+                avatarBase64 = CommonAvatarUtil.generateImg(bizUser.getName());
+            }
+            // 头像
+            ImageEntity imageEntity = new ImageEntity(ImgUtil.toBytes(ImgUtil.toImage(StrUtil
+                    .split(avatarBase64, StrUtil.COMMA).get(1)), ImgUtil.IMAGE_TYPE_PNG), 120, 160);
+            map.put("avatar", imageEntity);
+            if(ObjectUtil.isNotEmpty(bizUser.getBirthday())) {
+                try {
+                    // 年龄
+                    long age = cn.hutool.core.date.DateUtil.betweenYear(cn.hutool.core.date.DateUtil.parseDate(bizUser.getBirthday()), DateTime.now(), true);
+                    if(age != 0) {
+                        map.put("age", age + "岁");
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            // 导出时间
+            map.put("exportDateTime", DateUtil.format(DateTime.now(), DatePattern.CHINESE_DATE_PATTERN));
+            // 生成doc
+            XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
+            // 生成临时导出文件
+            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY2.0系统B端人员信息_" + bizUser.getName() + ".docx");
+            // 写入
+            BufferedOutputStream outputStream = FileUtil.getOutputStream(resultFile);
+            doc.write(outputStream);
+            outputStream.close();
+            // 下载
+            CommonDownloadUtil.download(resultFile, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            CommonResponseUtil.renderError(response, "导出失败");
+        } finally {
+            // 删除临时文件
+            if(ObjectUtil.isNotEmpty(destTemplateFile)) {
+                FileUtil.del(destTemplateFile);
+            }
+            if(ObjectUtil.isNotEmpty(resultFile)) {
+                FileUtil.del(resultFile);
+            }
         }
     }
 
