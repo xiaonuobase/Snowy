@@ -129,7 +129,7 @@
 										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
 											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
 										</a-menu-item>
-										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
+										<a-menu-item v-if="hasPerm('bizUserExportUserInfo')">
 											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
 										</a-menu-item>
 									</a-menu>
@@ -159,6 +159,7 @@
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
 	import ImpExp from './impExp.vue'
+	import userApi from "@/api/sys/userApi";
 
 	const columns = [
 		{
@@ -380,6 +381,15 @@
 	// 重置人员密码
 	const resetPassword = (record) => {
 		bizUserApi.userResetPassword(record).then(() => {})
+	}
+	// 导出用户信息
+	const exportUserInfo = (record) => {
+		const params = {
+			id: record.id
+		}
+		bizUserApi.userExportUserInfo(params).then((res) => {
+			downloadUtil.resultDownload(res)
+		})
 	}
 </script>
 
