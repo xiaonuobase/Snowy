@@ -15,13 +15,11 @@ package vip.xiaonuo.core.handler;
 import cn.dev33.satoken.exception.SaTokenException;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.Header;
 import cn.hutool.http.HttpStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -35,13 +33,10 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import vip.xiaonuo.auth.core.util.AuthExceptionUtil;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.util.CommonResponseUtil;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -117,22 +112,9 @@ public class GlobalExceptionUtil {
             //文件上传错误特殊提示
             commonResult = CommonResult.error("请选择要上传的文件并检查文件参数名称是否正确");
         } else if (e instanceof SaTokenException) {
-            CommonResult<String> saTokenCommonResult = AuthExceptionUtil.getCommonResult(e);
-            HttpServletRequest request = CommonServletUtil.getRequest();
-            String accept = request.getHeader(Header.ACCEPT.getValue());
-            // 此时异常可能是SaToken的过滤器异常，如果是流下载等接口，需要直接渲染异常信息
-            if(ObjectUtil.isNotEmpty(accept) && accept.equals(MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
-                try {
-                    CommonResponseUtil.renderError(CommonServletUtil.getResponse(), e.getMessage());
-                    return null;
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                    commonResult = CommonResult.error("服务器异常");
-                }
-            } else {
-                // 如果是SaToken相关异常，则由AuthExceptionUtil处理
-                return saTokenCommonResult;
-            }
+
+            // 如果是SaToken相关异常，则由AuthExceptionUtil处理
+            return AuthExceptionUtil.getCommonResult(e);
         } else if(e instanceof MyBatisSystemException) {
 
             // 如果是MyBatisSystemException
@@ -146,7 +128,7 @@ public class GlobalExceptionUtil {
                     e.printStackTrace();
                     commonResult = CommonResult.error("数据操作异常");
                 }
-            }else {
+            } else {
                 e.printStackTrace();
                 commonResult = CommonResult.error("数据操作异常");
             }
