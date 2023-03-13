@@ -316,9 +316,11 @@
 			message.warning('请输入查询条件或勾选要导出的信息')
 		}
 		if (selectedRowKeys.value.length > 0) {
-			const params = selectedRowKeys.value.map((m) => {
-				return m
-			})
+			const params = {
+				userIds: selectedRowKeys.value.map((m) => {
+					return m
+				}).join()
+			}
 			exportBatchUser(params)
 			return
 		}
@@ -328,12 +330,10 @@
 				userStatus: searchFormState.userStatus
 			}
 			exportBatchUser(params)
-			return
 		}
 	}
 	// 批量导出
 	const exportBatchUser = (params) => {
-		console.log(JSON.stringify(params))
 		userApi.userExport(params).then((res) => {
 			downloadUtil.resultDownload(res)
 			table.value.clearSelected()

@@ -322,9 +322,11 @@
 			message.warning('请输入查询条件或勾选要导出的信息')
 		}
 		if (selectedRowKeys.value.length > 0) {
-			const params = selectedRowKeys.value.map((m) => {
-				return m
-			})
+			const params = {
+				userIds: selectedRowKeys.value.map((m) => {
+					return m
+				}).join()
+			}
 			exportBatchUser(params)
 			return
 		}
