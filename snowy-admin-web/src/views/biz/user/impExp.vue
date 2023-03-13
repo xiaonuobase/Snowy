@@ -123,7 +123,7 @@
 	}
 	// 下载用户导入模板
 	const downloadImportUserTemplate = () => {
-		userApi.userDownloadImportUserTemplate().then((res) => {
+		bizUserApi.userDownloadImportUserTemplate().then((res) => {
 			downloadUtil.resultDownload(res)
 		})
 	}

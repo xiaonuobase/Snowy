@@ -70,6 +70,12 @@ export default {
 	grantRole(data) {
 		return request('grantRole', data)
 	},
+	// 下载用户导入模板
+	userDownloadImportUserTemplate(data) {
+		return request('downloadImportUserTemplate', data, 'get', {
+			responseType: 'blob'
+		})
+	},
 	// 用户导入
 	userImport(data) {
 		return request('import', data)

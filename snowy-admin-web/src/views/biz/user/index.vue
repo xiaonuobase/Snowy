@@ -129,6 +129,9 @@
 										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
 											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
 										</a-menu-item>
+										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
+											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
+										</a-menu-item>
 									</a-menu>
 								</template>
 							</a-dropdown>

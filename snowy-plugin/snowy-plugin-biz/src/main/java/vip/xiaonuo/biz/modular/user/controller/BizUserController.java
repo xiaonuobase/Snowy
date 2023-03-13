@@ -221,6 +221,7 @@ public class BizUserController {
     @ApiOperationSupport(order = 11)
     @ApiOperation("下载人员导入模板")
     @CommonLog("下载人员导入模板")
+    @SaCheckPermission("/biz/user/downloadImportUserTemplate")
     @GetMapping(value = "/biz/user/downloadImportUserTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public CommonResult<String> downloadImportUserTemplate(HttpServletResponse response) throws IOException {
         bizUserService.downloadImportUserTemplate(response);
@@ -236,6 +237,7 @@ public class BizUserController {
     @ApiOperationSupport(order = 12)
     @ApiOperation("人员导入")
     @CommonLog("人员导入")
+    @SaCheckPermission("/biz/user/import")
     @PostMapping("/biz/user/import")
     public CommonResult<JSONObject> importUser(@RequestPart("file") @ApiParam(value="文件", required = true) MultipartFile file) {
         return CommonResult.data(bizUserService.importUser(file));
@@ -250,6 +252,7 @@ public class BizUserController {
     @ApiOperationSupport(order = 13)
     @ApiOperation("人员导出")
     @CommonLog("人员导出")
+    @SaCheckPermission("/biz/user/export")
     @GetMapping(value = "/biz/user/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void exportUser(BizUserExportParam bizUserExportParam, HttpServletResponse response) throws IOException {
         bizUserService.exportUser(bizUserExportParam, response);
@@ -264,6 +267,7 @@ public class BizUserController {
     @ApiOperationSupport(order = 14)
     @ApiOperation("导出人员个人信息")
     @CommonLog("导出人员个人信息")
+    @SaCheckPermission("/biz/user/exportUserInfo")
     @GetMapping(value = "/biz/user/exportUserInfo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void exportUserInfo(BizUserIdParam bizUserIdParam, HttpServletResponse response) throws IOException {
         bizUserService.exportUserInfo(bizUserIdParam, response);
