@@ -218,7 +218,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         List<SysOrg> orgList = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
         if(ObjectUtil.isNotEmpty(orgList)) {
             // 更新到缓存
-            commonCacheOperator.put(ORG_CACHE_ALL_KEY, orgList);
+            commonCacheOperator.put(ORG_CACHE_ALL_KEY, JSONUtil.toJsonStr(orgList));
         }
         return orgList;
     }
