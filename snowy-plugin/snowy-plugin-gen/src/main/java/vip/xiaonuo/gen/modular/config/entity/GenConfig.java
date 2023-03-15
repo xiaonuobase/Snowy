@@ -91,5 +91,5 @@ public class GenConfig extends CommonEntity {
 
     /** 排序 */
     @ApiModelProperty(value = "排序", position = 16)
-    private String sortCode;
+    private Integer sortCode;
 }
