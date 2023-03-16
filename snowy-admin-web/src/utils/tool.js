@@ -92,7 +92,7 @@ tool.dictTypeData = (dictValue, value) => {
 	}
 	const children = tree.children
 	const dict = children.find((item) => item.dictValue === value)
-	return dict?.name || '无此字典'
+	return dict ? dict.dictLabel : '无此字典项'
 }
 
 // 获取某个code下字典的列表，多用于字典下拉框
