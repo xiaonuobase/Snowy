@@ -96,7 +96,6 @@ public class AuthSessionServiceImpl implements AuthSessionService {
         List<Date> sessionCreateTimeList = CollectionUtil.newArrayList();
         sessionCreateTimeList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getDate("createTime")).collect(Collectors.toList()));
         sessionCreateTimeList.addAll(sessionListC.stream().map(jsonObject -> jsonObject.getDate("createTime")).collect(Collectors.toList()));
-        System.out.println(sessionCreateTimeList);
         DateTime oneHourAgo = DateUtil.offset(DateTime.now(), DateField.HOUR, -1);
         authSessionAnalysisResult.setOneHourNewlyAdded(Convert.toStr(sessionCreateTimeList.stream().filter(date -> DateUtil.compare(oneHourAgo, date) <= 0).count()));
         authSessionAnalysisResult.setProportionOfBAndC(sessionListB.size() + StrUtil.SLASH + sessionListC.size());

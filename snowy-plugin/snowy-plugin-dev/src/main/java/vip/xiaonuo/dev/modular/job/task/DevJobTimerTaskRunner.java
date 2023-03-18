@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.job.task;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import vip.xiaonuo.common.timer.CommonTimerTaskRunner;
 
@@ -21,6 +22,7 @@ import vip.xiaonuo.common.timer.CommonTimerTaskRunner;
  * @author xuyuxiang
  * @date 2022/8/5 15:52
  **/
+@Slf4j
 @Component
 public class DevJobTimerTaskRunner implements CommonTimerTaskRunner {
 
@@ -28,7 +30,7 @@ public class DevJobTimerTaskRunner implements CommonTimerTaskRunner {
 
     @Override
     public void action() {
-        System.out.println("我是一个定时任务，正在在被执行第" + n + "次");
+        log.info("我是一个定时任务，正在在被执行第" + n + "次");
         n = n + 1;
     }
 }
