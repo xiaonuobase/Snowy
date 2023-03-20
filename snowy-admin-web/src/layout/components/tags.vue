@@ -1,10 +1,42 @@
 <template>
 	<div class="snowy-tags">
+		<xn-context-menu
+			class="right-menu"
+			:target="contextMenuTarget"
+			:show="contextMenuVisible"
+			@update:show="(show) => (contextMenuVisible = show)"
+			@get-context-menu="handleTabContextMenu"
+		>
+			<div class="right-menu-item" @click="refreshTab">
+				<reload-outlined class="snowy-header-tags-right" />
+				<div class="pl-3">刷新</div>
+			</div>
+
+			<div class="right-menu-item" @click="closeTabs">
+				<close-outlined class="snowy-header-tags-right" />
+				<div class="pl-3">关闭</div>
+			</div>
+
+			<div class="right-menu-item" @click="closeOtherTabs">
+				<close-outlined class="snowy-header-tags-right" />
+				<div class="pl-3">关闭其他标签</div>
+			</div>
+
+			<div class="right-menu-item" @click="maximize">
+				<expand-outlined class="snowy-header-tags-right" />
+				<div class="pl-3">最大化</div>
+			</div>
+			<div class="right-menu-item" @click="openWindow">
+				<select-outlined class="snowy-header-tags-right" />
+				<div class="pl-3">新窗口打开</div>
+			</div>
+		</xn-context-menu>
 		<a-tabs
 			v-model:activeKey="activeKey"
 			type="editable-card"
 			class="snowy-admin-tabs"
 			hide-add
+			ref="tabs"
 			@edit="onTabRemove"
 			@tabClick="onTabClick"
 		>
@@ -17,41 +49,8 @@
 				<div class="snowy-admin-tabs-arrow" @click="scrollRight">
 					<right-outlined />
 				</div>
-
-				<a-dropdown>
-					<div class="snowy-admin-tabs-drop">
-						<DownOutlined />
-					</div>
-					<template #overlay>
-						<a-menu>
-							<a-menu-item>
-								<div class="layout-items-center" @click="refreshTab">
-									<reload-outlined class="snowy-header-tags-right" />
-									<div class="pl-3">刷新</div>
-								</div>
-							</a-menu-item>
-							<a-menu-item>
-								<div class="layout-items-center" @click="closeOtherTabs">
-									<close-outlined class="snowy-header-tags-right" />
-									<div class="pl-3">关闭其他标签</div>
-								</div>
-							</a-menu-item>
-							<a-menu-item>
-								<div class="layout-items-center" @click="maximize">
-									<expand-outlined class="snowy-header-tags-right" />
-									<div class="pl-3">最大化</div>
-								</div>
-							</a-menu-item>
-							<a-menu-item>
-								<div class="layout-items-center" @click="openWindow">
-									<select-outlined class="snowy-header-tags-right" />
-									<div class="pl-3">在新的窗口中打开</div>
-								</div>
-							</a-menu-item>
-						</a-menu>
-					</template>
-				</a-dropdown>
 			</template>
+
 			<a-tab-pane v-for="tag in tagList" :key="tag.fullPath" :tab="tag.meta.title" :closable="!tag.meta.affix">
 			</a-tab-pane>
 		</a-tabs>
@@ -59,22 +58,26 @@
 </template>
 
 <script>
-	import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue'
-	import Sortable from 'sortablejs'
 	import tool from '@/utils/tool'
+	import XnContextMenu from '@/components/XnContextMenu/index.vue'
 
 	export default {
 		name: 'Tags',
+		components: { XnContextMenu },
 		props: {},
 		data() {
 			return {
 				tagList: this.$store.state.viewTags.viewTags,
-				activeKey: this.$route.fullPath
+				activeKey: this.$route.fullPath,
+				maxTabs: 20,
+				contextMenuTarget: null,
+				contextMenuVisible: false,
+				currentContextMenuTabIndex: 0
 			}
 		},
 		watch: {
-			$route(e) {
-				this.addViewTags(e)
+			$route(to) {
+				this.addViewTags(to)
 			}
 		},
 		created() {
@@ -88,12 +91,27 @@
 				this.addViewTags(this.$route)
 			}
 		},
+		mounted() {
+			const tabNavList = document.querySelector('.ant-tabs-nav-list')
+			if (tabNavList) {
+				this.contextMenuTarget = tabNavList
+			}
+		},
 		methods: {
+			handleTabContextMenu(evt) {
+				evt.preventDefault()
+				let target = evt.target
+				if (target.classList.contains('ant-tabs-tab-btn')) {
+					target = target.parentNode
+				}
+				const tabList = document.querySelectorAll('.ant-tabs-nav-list .ant-tabs-tab')
+				this.currentContextMenuTabIndex = Array.from(tabList).findIndex((tab) => tab === target)
+			},
 			onTabClick(tab) {
 				this.$router.push(tab)
 			},
 			getCurrentTag() {
-				return this.tagList.find((tag) => tag.fullPath === this.activeKey)
+				return this.tagList[this.currentContextMenuTabIndex]
 			},
 			onTabRemove(tabKey, action) {
 				if (action === 'remove') {
@@ -132,9 +150,14 @@
 			// 增加tag
 			addViewTags(route) {
 				this.activeKey = route.fullPath
+
 				if (route.name && !route.meta.fullpage) {
 					this.$store.commit('pushViewTags', route)
 					this.$store.commit('pushKeepLive', route.name)
+				}
+				if (this.tagList.length - 1 > this.maxTabs) {
+					const firstTag = this.tagList[1]
+					this.$store.commit('removeViewTags', firstTag)
 				}
 			},
 			// 高亮tag
@@ -157,6 +180,7 @@
 			},
 			// TAB 刷新
 			refreshTab() {
+				this.contextMenuVisible = false
 				const nowTag = this.getCurrentTag()
 				// 判断是否当前路由，否的话跳转
 				// eslint-disable-next-line eqeqeq
@@ -178,6 +202,7 @@
 			},
 			// TAB 关闭
 			closeTabs() {
+				this.contextMenuVisible = false
 				const nowTag = this.getCurrentTag()
 				if (!nowTag.meta.affix) {
 					this.closeSelectedTag(nowTag)
@@ -185,6 +210,7 @@
 			},
 			// TAB 关闭其他
 			closeOtherTabs() {
+				this.contextMenuVisible = false
 				const nowTag = this.getCurrentTag()
 				// 判断是否当前路由，否的话跳转
 				// eslint-disable-next-line eqeqeq
@@ -206,6 +232,7 @@
 			},
 			// TAB 最大化（包括标签栏）
 			maximize() {
+				this.contextMenuVisible = false
 				const nowTag = this.getCurrentTag()
 				// 判断是否当前路由，否的话跳转
 				// eslint-disable-next-line eqeqeq
@@ -219,6 +246,7 @@
 			},
 			// 新窗口打开
 			openWindow() {
+				this.contextMenuVisible = false
 				const nowTag = this.getCurrentTag()
 				const url = nowTag.href || '/'
 				if (!nowTag.meta.affix) {
@@ -281,6 +309,27 @@
 					font-size: 12px;
 					vertical-align: -1px;
 				}
+			}
+		}
+	}
+	.right-menu {
+		position: fixed;
+		background: #fff;
+		z-index: 999;
+		border: 1px solid #eee;
+		box-shadow: 0 0.5em 1em 0 rgb(0 0 0 / 10%);
+		border-radius: 1px;
+	}
+	.snowy-tags {
+		.right-menu-item {
+			display: flex;
+			align-items: center;
+			text-align: center;
+			padding: 10px 20px;
+			color: #333;
+			cursor: pointer;
+			&:hover {
+				background: var(--primary-1);
 			}
 		}
 	}
