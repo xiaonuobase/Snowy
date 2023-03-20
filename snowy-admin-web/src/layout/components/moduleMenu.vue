@@ -124,7 +124,8 @@
 	}
 	.module-menu{
 		line-height: 50px;
-		border-bottom: 0px
+		border-bottom: 0px;
+		width: 105%;
 	}
 	.module-menu-color{
 		color: white;
