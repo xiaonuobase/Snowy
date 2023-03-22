@@ -10,10 +10,16 @@
     <description>snowy快速开发平台</description>
     <packaging>pom</packaging>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.5.12</version>
+    </parent>
+
     <properties>
         <java.version>1.8</java.version>
         <snowy.version>2.0.0</snowy.version>
-        <spring.boot.version>2.5.12</spring.boot.version>
+        <spring-framework.version>5.3.26</spring-framework.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 锁定依赖版本号 -->
@@ -93,14 +99,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- springboot-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <!-- snowy-common -->
             <dependency>
