@@ -57,7 +57,7 @@
 										</template>
 									</a-input-password>
 								</a-form-item>
-								<a-form-item name="validCode" v-if="captchaOpen">
+								<a-form-item name="validCode" v-if="captchaOpen === 'true'">
 									<a-row :gutter="8">
 										<a-col :span="17">
 											<a-input
@@ -120,6 +120,7 @@
 			return {
 				activeKey: 'userAccount',
 				sysBaseConfig: store.state.global.sysBaseConfig || tool.data.get('SNOWY_SYS_BASE_CONFIG'),
+				captchaOpen: tool.data.get('SNOWY_SYS_BASE_CONFIG').SNOWY_SYS_DEFAULT_CAPTCHA_OPEN,
 				validCodeBase64: '',
 				ruleForm: {
 					account: 'superAdmin',
@@ -149,18 +150,13 @@
 				]
 			}
 		},
-		computed: {
-			captchaOpen() {
-				return this.sysBaseConfig.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN === 'true'
-			}
-		},
 		watch: {
 			'config.theme': function (val) {
 				document.body.setAttribute('data-theme', val)
 			},
 			'config.lang': function (val) {
 				this.$i18n.locale = val
-				this.$TOOL.data.set('APP_LANG', val)
+				tool.data.set('APP_LANG', val)
 			}
 		},
 		created() {
@@ -175,6 +171,7 @@
 					data.forEach((item) => {
 						formData.value[item.configKey] = item.configValue
 					})
+					this.captchaOpen = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
 					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
 					store.commit('SET_sysBaseConfig', formData.value)
 					this.refreshSwitch()
@@ -185,7 +182,7 @@
 			// 通过开关加载内容
 			refreshSwitch() {
 				// 判断是否开启验证码
-				if (this.captchaOpen) {
+				if (this.captchaOpen === 'true') {
 					// 加载验证码
 					this.loginCaptcha()
 					// 加入校验
@@ -216,6 +213,7 @@
 						afterLogin(loginToken)
 					} catch (err) {
 						this.loading = false
+						this.loginCaptcha()
 					}
 				})
 			},
