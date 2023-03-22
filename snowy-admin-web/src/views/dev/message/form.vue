@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="发送站内信"
-		:width="500"
+		:width="550"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
@@ -35,7 +33,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="sendLoading">发送</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 	<user-selector-plus
 		ref="UserSelectorPlus"
 		page-url="/sys/org/userSelector"

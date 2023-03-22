@@ -1,12 +1,10 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="授权移动端资源"
 		:width="drawerWidth"
 		:visible="visible"
 		:destroy-on-close="true"
 		:show-pagination="false"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-spin :spinning="spinningLoading">
@@ -53,7 +51,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="grantMobileResourceForm">

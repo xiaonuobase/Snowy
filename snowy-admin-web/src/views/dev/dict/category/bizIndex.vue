@@ -108,7 +108,7 @@
 	}
 	// 重置
 	const reset = () => {
-		searchFormRef.value.resetFields();
+		searchFormRef.value.resetFields()
 		table.value.refresh(true)
 	}
 	// 加载左侧的树

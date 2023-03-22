@@ -1,78 +1,107 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		:title="formData.id ? '编辑移动端菜单' : '增加移动端菜单'"
-		:width="600"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
-			<a-form-item label="上级菜单：" name="parentId">
-				<a-tree-select
-					v-model:value="formData.parentId"
-					v-model:treeExpandedKeys="defaultExpandedKeys"
-					style="width: 100%"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-					placeholder="请选择上级菜单"
-					allow-clear
-					tree-default-expand-all
-					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'title',
-						value: 'id'
-					}"
-					selectable="false"
-					tree-line
-					@change="parentChange(formData.parentId)"
-				></a-tree-select>
-			</a-form-item>
-			<a-form-item label="名称：" name="title">
-				<a-input v-model:value="formData.title" placeholder="请输入名称" allow-clear />
-			</a-form-item>
-			<a-form-item label="菜单类型：" name="menuType">
-				<a-radio-group
-					v-model:value="formData.menuType"
-					button-style="solid"
-					:options="menuTypeOptions"
-					option-type="button"
-				>
-				</a-radio-group>
-			</a-form-item>
-			<a-form-item v-if="formData.menuType !== 'CATALOG'" name="path">
-				<template #label>
-					<a-tooltip>
-						<template #title> 类型为内外链条时，输入https开头的链接即可（例：https://xiaonuo.vip） </template>
-						<question-circle-outlined />
-					</a-tooltip>
-					&nbsp {{ formData.menuType === 'MENU' || formData.menuType === 'CATALOG' ? '界面地址' : 'https链接地址' }}：
-				</template>
-				<a-input v-model:value="formData.path" placeholder="请输入" allow-clear />
-			</a-form-item>
-			<a-form-item label="图标：" name="icon">
-				<a-input v-model:value="formData.icon" style="width: calc(100% - 70px)" placeholder="请选择图标" allow-clear />
-				<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
-			</a-form-item>
-			<a-form-item label="颜色：" name="color">
-				<color-picker v-model:value="formData.color" />
-			</a-form-item>
-			<a-form-item label="是否正规则：" name="regType">
-				<a-radio-group v-model:value="formData.regType" placeholder="请选择正规则" :options="regTypeOptions" />
-			</a-form-item>
-			<a-form-item label="可用状态：" name="status">
-				<a-radio-group v-model:value="formData.status" placeholder="请选择可用状态" :options="statusOptions" />
-			</a-form-item>
-			<a-form-item label="排序码：" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="1000" />
-			</a-form-item>
+			<a-row :gutter="16">
+				<a-col :span="12">
+					<a-form-item label="上级菜单：" name="parentId">
+						<a-tree-select
+							v-model:value="formData.parentId"
+							v-model:treeExpandedKeys="defaultExpandedKeys"
+							style="width: 100%"
+							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+							placeholder="请选择上级菜单"
+							allow-clear
+							tree-default-expand-all
+							:tree-data="treeData"
+							:field-names="{
+								children: 'children',
+								label: 'title',
+								value: 'id'
+							}"
+							selectable="false"
+							tree-line
+							@change="parentChange(formData.parentId)"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="名称：" name="title">
+						<a-input v-model:value="formData.title" placeholder="请输入名称" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="菜单类型：" name="menuType">
+						<a-radio-group
+							v-model:value="formData.menuType"
+							button-style="solid"
+							:options="menuTypeOptions"
+							option-type="button"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12" v-if="formData.menuType !== 'CATALOG'">
+					<a-form-item name="path">
+						<template #label>
+							<a-tooltip>
+								<template #title> 类型为内外链时，输入https开头的链接即可（例：https://xiaonuo.vip） </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp
+							{{ formData.menuType === 'MENU' || formData.menuType === 'CATALOG' ? '界面地址' : 'https链接地址' }}：
+						</template>
+						<a-input v-model:value="formData.path" placeholder="请输入" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="图标：" name="icon">
+						<a-input
+							v-model:value="formData.icon"
+							style="width: calc(100% - 70px)"
+							placeholder="请选择图标"
+							allow-clear
+						/>
+						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="颜色：" name="color">
+						<color-picker v-model:value="formData.color" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="是否正规则：" name="regType">
+						<a-radio-group v-model:value="formData.regType" placeholder="请选择正规则" :options="regTypeOptions" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="可用状态：" name="status">
+						<a-radio-group v-model:value="formData.status" placeholder="请选择可用状态" :options="statusOptions" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="排序码：" name="sortCode">
+						<a-input-number
+							style="width: 100%"
+							v-model:value="formData.sortCode"
+							placeholder="请输入排序码"
+							:max="1000"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 		<template #footer>
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
 		</template>
 		<icon-mobile-selector ref="iconSelector" @iconCallBack="iconCallBack" />
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="mobileMenuForm">
@@ -130,7 +159,8 @@
 			regType: 'YES',
 			status: 'ENABLE',
 			category: 'MENU',
-			menuType: 'MENU'
+			menuType: 'MENU',
+			sortCode: 99
 		}
 		if (record) {
 			let recordData = cloneDeep(record)

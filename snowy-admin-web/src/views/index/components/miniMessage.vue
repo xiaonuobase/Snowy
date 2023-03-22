@@ -14,14 +14,11 @@
 				</template>
 			</a-list>
 		</div>
-
-		<a-drawer
+		<xn-form-container
 			title="详情"
-			:width="600"
+			:width="700"
 			:visible="visible"
 			:destroy-on-close="true"
-			:body-style="{ paddingBottom: '80px' }"
-			:footer-style="{ textAlign: 'right' }"
 			@close="onClose"
 		>
 			<a-form ref="formRef" :model="formData" layout="vertical">
@@ -53,7 +50,7 @@
 					</s-table>
 				</a-form-item>
 			</a-form>
-		</a-drawer>
+		</xn-form-container>
 	</a-card>
 </template>
 

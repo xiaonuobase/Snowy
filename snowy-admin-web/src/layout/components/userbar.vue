@@ -43,29 +43,30 @@
 				</a-menu>
 			</template>
 		</a-dropdown>
-		<div class="setting panel-item" @click="openSetting">
+		<div v-if="setDeawer === 'true'" class="setting panel-item" @click="openSetting">
 			<layout-outlined />
 		</div>
 	</div>
 
 	<!-- 整体风格设置抽屉 -->
 	<a-drawer v-model:visible="settingDialog" :closable="false" width="300">
-		<setting></setting>
+		<setting />
 	</a-drawer>
 	<!-- 搜索面板 -->
-	<a-modal
+	<xn-form-container
+		title="搜索"
 		:visible="searchActive"
 		:closable="false"
 		:footer="null"
-		width="600px"
+		:width="600"
 		style="overflow: hidden"
 		destroyOnClose
 		dialogClass="searchModal"
 		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '14px' }"
-		@cancel="searchPanelClose"
+		@close="searchPanelClose"
 	>
 		<panel-search ref="panelSearch" @close="searchPanelClose" />
-	</a-modal>
+	</xn-form-container>
 </template>
 
 <script>
@@ -93,7 +94,8 @@
 				settingDialog: false,
 				userInfo: {},
 				userName: '',
-				userNameF: ''
+				userNameF: '',
+				setDeawer: import.meta.env.VITE_SET_DRAWER
 			}
 		},
 		computed: {

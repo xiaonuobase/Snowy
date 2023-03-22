@@ -323,9 +323,11 @@
 		}
 		if (selectedRowKeys.value.length > 0) {
 			const params = {
-				userIds: selectedRowKeys.value.map((m) => {
-					return m
-				}).join()
+				userIds: selectedRowKeys.value
+					.map((m) => {
+						return m
+					})
+					.join()
 			}
 			exportBatchUser(params)
 			return

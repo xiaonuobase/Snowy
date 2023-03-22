@@ -1,12 +1,10 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="授权资源"
 		:width="drawerWidth"
 		:visible="visible"
 		:destroy-on-close="true"
 		:show-pagination="false"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-spin :spinning="spinningLoading">
@@ -53,7 +51,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="grantResourceForm">
@@ -61,7 +59,6 @@
 	import tool from '@/utils/tool'
 	import roleApi from '@/api/sys/roleApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import { remove } from 'lodash-es'
 	const spinningLoading = ref(false)
 	let firstShowMap = $ref({})
 	const emit = defineEmits({ successful: null })

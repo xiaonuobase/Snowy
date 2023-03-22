@@ -10,13 +10,11 @@
 			</a-timeline>
 			<div class="add-schedule" @click="addSchedule"><plus-circle-two-tone /> 新增日程</div>
 		</a-card>
-		<a-drawer
+		<xn-form-container
 			title="增加日程"
-			:width="600"
+			:width="700"
 			:visible="visible"
 			:destroy-on-close="true"
-			:body-style="{ paddingBottom: '80px' }"
-			:footer-style="{ textAlign: 'right' }"
 			@close="onClose"
 		>
 			<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
@@ -36,7 +34,7 @@
 				<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 			</template>
-		</a-drawer>
+		</xn-form-container>
 	</div>
 </template>
 

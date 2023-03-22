@@ -63,10 +63,15 @@ const DEFAULT_CONFIG = {
 	// 默认整体主题
 	SNOWY_THEME: 'dark',
 
+	// 整体表单风格
+	SNOWY_FORM_STYLE: 'drawer',
+
 	// 成功色
 	success: '#52c41a',
+
 	// 警告色
 	warning: '#faad14',
+
 	// 错误色
 	error: '#f5222f',
 

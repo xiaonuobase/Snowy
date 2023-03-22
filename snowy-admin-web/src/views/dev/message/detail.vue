@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="详情"
-		:width="600"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
@@ -35,7 +33,7 @@
 				</s-table>
 			</a-form-item>
 		</a-form>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="messageDetail">

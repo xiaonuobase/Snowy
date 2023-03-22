@@ -70,6 +70,15 @@
 				<a-form-item label="菜单排他展开">
 					<a-switch v-model:checked="sideUniqueOpen" />
 				</a-form-item>
+				<a-form-item label="表单风格">
+					<a-select
+						v-model:value="formStyle"
+						style="width: 80px"
+						size="small"
+						:options="xnFormStyleOptions"
+						@change="formStyleChange"
+					/>
+				</a-form-item>
 			</a-form>
 			<a-alert
 				message="以上配置可实时预览，开发者可在 config/index.js 中配置默认值，不建议在生产环境下开放布局设置"
@@ -80,14 +89,15 @@
 </template>
 
 <script>
-	import { colorList } from '../../config/settingConfig'
-	import { ThemeModeEnum } from '../../utils/enum'
+	import { colorList } from '@/config/settingConfig'
+	import { ThemeModeEnum } from '@/utils/enum'
+	import tool from '@/utils/tool'
 
 	export default defineComponent({
 		data() {
 			return {
 				// 整体风格
-				sideStyle: this.$TOOL.data.get('SNOWY_THEME') || this.$store.state.global.theme,
+				sideStyle: tool.data.get('SNOWY_THEME') || this.$store.state.global.theme,
 				sideStyleList: [
 					{
 						tips: '暗色主题风格',
@@ -105,7 +115,7 @@
 						style: 'snowy-setting-checkbox-item-realdark'
 					}
 				],
-				layout: this.$TOOL.data.get('SNOWY_LAYOUT') || this.$store.state.global.layout,
+				layout: tool.data.get('SNOWY_LAYOUT') || this.$store.state.global.layout,
 				layoutList: [
 					{
 						tips: '经典',
@@ -118,18 +128,29 @@
 						style: 'snowy-setting-layout-menu-doublerow'
 					}
 				],
+				xnFormStyleOptions: [
+					{
+						label: '抽屉',
+						value: 'drawer'
+					},
+					{
+						label: '对话框',
+						value: 'modal'
+					}
+				],
 				topHanderThemeColorOpen:
-					this.$TOOL.data.get('SNOWY_TOP_HANDER_THEME_COLOR_OPEN') || this.$store.state.global.topHanderThemeColorOpen,
+					tool.data.get('SNOWY_TOP_HANDER_THEME_COLOR_OPEN') || this.$store.state.global.topHanderThemeColorOpen,
 				topHanderThemeColorSpread:
-					this.$TOOL.data.get('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD') ||
+					tool.data.get('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD') ||
 					this.$store.state.global.topHanderThemeColorSpread,
-				menuIsCollapse: this.$TOOL.data.get('SNOWY_MENU_COLLAPSE') || this.$store.state.global.menuIsCollapse,
-				sideUniqueOpen: this.$TOOL.data.get('SNOWY_SIDE_UNIQUE_OPEN') || this.$store.state.global.sideUniqueOpen,
-				layoutTagsOpen: this.$TOOL.data.get('SNOWY_LAYOUT_TAGS_OPEN') || this.$store.state.global.layoutTagsOpen,
-				breadcrumbOpen: this.$TOOL.data.get('SNOWY_BREADCRUMD_OPEN') || this.$store.state.global.breadcrumbOpen,
-				moduleUnfoldOpen: this.$TOOL.data.get('SNOWY_MODULE_UNFOLD_OPEN') || this.$store.state.global.moduleUnfoldOpen,
-				theme: this.$TOOL.data.get('APP_THEME') || this.$store.state.global.theme,
-				themeColor: this.$TOOL.data.get('SNOWY_THEME_COLOR') || this.$store.state.global.themeColor,
+				menuIsCollapse: tool.data.get('SNOWY_MENU_COLLAPSE') || this.$store.state.global.menuIsCollapse,
+				sideUniqueOpen: tool.data.get('SNOWY_SIDE_UNIQUE_OPEN') || this.$store.state.global.sideUniqueOpen,
+				layoutTagsOpen: tool.data.get('SNOWY_LAYOUT_TAGS_OPEN') || this.$store.state.global.layoutTagsOpen,
+				breadcrumbOpen: tool.data.get('SNOWY_BREADCRUMD_OPEN') || this.$store.state.global.breadcrumbOpen,
+				moduleUnfoldOpen: tool.data.get('SNOWY_MODULE_UNFOLD_OPEN') || this.$store.state.global.moduleUnfoldOpen,
+				theme: tool.data.get('APP_THEME') || this.$store.state.global.theme,
+				themeColor: tool.data.get('SNOWY_THEME_COLOR') || this.$store.state.global.themeColor,
+				formStyle: tool.data.get('SNOWY_FORM_STYLE') || this.$store.state.global.formStyle,
 				colorList
 			}
 		},
@@ -137,42 +158,42 @@
 			menuIsCollapse() {
 				this.$store.commit('TOGGLE_menuIsCollapse')
 				if (this.$store.state.global.menuIsCollapse) {
-					this.$TOOL.data.set('SNOWY_MENU_COLLAPSE', true)
+					tool.data.set('SNOWY_MENU_COLLAPSE', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_MENU_COLLAPSE', false)
+					tool.data.set('SNOWY_MENU_COLLAPSE', false)
 				}
 			},
 			sideUniqueOpen() {
 				this.$store.commit('TOGGLE_sideUniqueOpen')
 				if (this.$store.state.global.sideUniqueOpen) {
-					this.$TOOL.data.set('SNOWY_SIDE_UNIQUE_OPEN', true)
+					tool.data.set('SNOWY_SIDE_UNIQUE_OPEN', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_SIDE_UNIQUE_OPEN', false)
+					tool.data.set('SNOWY_SIDE_UNIQUE_OPEN', false)
 				}
 			},
 			layoutTagsOpen() {
 				this.$store.commit('TOGGLE_layoutTagsOpen')
 				if (this.$store.state.global.layoutTagsOpen) {
-					this.$TOOL.data.set('SNOWY_LAYOUT_TAGS_OPEN', true)
+					tool.data.set('SNOWY_LAYOUT_TAGS_OPEN', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_LAYOUT_TAGS_OPEN', false)
+					tool.data.set('SNOWY_LAYOUT_TAGS_OPEN', false)
 				}
 			},
 			breadcrumbOpen() {
 				this.$store.commit('TOGGLE_breadcrumbOpen')
 				if (this.$store.state.global.breadcrumbOpen) {
-					this.$TOOL.data.set('SNOWY_BREADCRUMD_OPEN', true)
+					tool.data.set('SNOWY_BREADCRUMD_OPEN', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_BREADCRUMD_OPEN', false)
+					tool.data.set('SNOWY_BREADCRUMD_OPEN', false)
 				}
 			},
 			topHanderThemeColorOpen() {
 				this.$store.commit('TOGGLE_topHanderThemeColorOpen')
 				if (this.$store.state.global.topHanderThemeColorOpen) {
-					this.$TOOL.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', true)
+					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', true)
 				} else {
 					// 关闭顶栏主题色
-					this.$TOOL.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', false)
+					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', false)
 					// 这个时候我们吧通栏的设置也给搞为false
 					this.topHanderThemeColorSpread = false
 				}
@@ -180,17 +201,17 @@
 			topHanderThemeColorSpread() {
 				this.$store.commit('TOGGLE_topHanderThemeColorSpread')
 				if (this.$store.state.global.topHanderThemeColorSpread) {
-					this.$TOOL.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', true)
+					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', false)
+					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', false)
 				}
 			},
 			moduleUnfoldOpen() {
 				this.$store.commit('TOGGLE_moduleUnfoldOpen')
 				if (this.$store.state.global.moduleUnfoldOpen) {
-					this.$TOOL.data.set('SNOWY_MODULE_UNFOLD_OPEN', true)
+					tool.data.set('SNOWY_MODULE_UNFOLD_OPEN', true)
 				} else {
-					this.$TOOL.data.set('SNOWY_MODULE_UNFOLD_OPEN', false)
+					tool.data.set('SNOWY_MODULE_UNFOLD_OPEN', false)
 				}
 			},
 		},
@@ -199,19 +220,24 @@
 			setSideStyle(value) {
 				this.$store.commit('SET_theme', value)
 				this.sideStyle = value
-				this.$TOOL.data.set('SNOWY_THEME', value)
+				tool.data.set('SNOWY_THEME', value)
 			},
 			// 设置整体界面布局
 			layoutStyle(value) {
 				this.$store.commit('SET_layout', value)
-				this.$TOOL.data.set('SNOWY_LAYOUT', value)
+				tool.data.set('SNOWY_LAYOUT', value)
 				this.layout = value
 			},
 			// 切换颜色
 			tagColor(value) {
 				this.themeColor = value
-				this.$TOOL.data.set('SNOWY_THEME_COLOR', value)
+				tool.data.set('SNOWY_THEME_COLOR', value)
 				this.$store.commit('SET_themeColor', value)
+			},
+			// 切换表单风格
+			formStyleChange(value) {
+				tool.data.set('SNOWY_FORM_STYLE', value)
+				this.$store.commit('SET_formStyle', value)
 			}
 		}
 	})

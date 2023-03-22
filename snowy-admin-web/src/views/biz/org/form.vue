@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		:title="formData.id ? '编辑机构' : '增加机构'"
-		:width="500"
+		:width="550"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
@@ -25,7 +23,7 @@
 					}"
 					selectable="false"
 					tree-line
-				></a-tree-select>
+				/>
 			</a-form-item>
 			<a-form-item label="机构名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入机构名称" allow-clear />
@@ -36,8 +34,7 @@
 					:options="orgCategoryOptions"
 					style="width: 100%"
 					placeholder="请选择机构分类"
-				>
-				</a-select>
+				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
 				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
@@ -61,7 +58,7 @@
 			:radio-model="true"
 			@onBack="userBack"
 		/>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="bizOrgForm">
@@ -170,5 +167,3 @@
 		onOpen
 	})
 </script>
-
-<style scoped></style>

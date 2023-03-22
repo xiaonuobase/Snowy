@@ -4,7 +4,7 @@
 			<slot :name="slotKey" />
 		</template>
 	</Modal>
-	<Drawer v-else :visible="visible" v-bind="$attrs">
+	<Drawer v-else :visible="visible" v-bind="$attrs" :footer-style="{ textAlign: 'right' }">
 		<template v-for="slotKey in slotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
@@ -28,10 +28,6 @@
 		},
 		inheritAttrs: false,
 		props: {
-			type: {
-				type: String,
-				default: FormContainerTypeEnum.MODAL
-			},
 			visible: {
 				type: Boolean,
 				default: false,
@@ -45,7 +41,7 @@
 				return Object.keys(this.$slots)
 			},
 			isModal() {
-				return this.type === FormContainerTypeEnum.MODAL
+				return FormContainerTypeEnum.MODAL === this.$store.state.global.formStyle
 			}
 		},
 		methods: {

@@ -1,101 +1,123 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		:title="formData.id ? '编辑菜单' : '增加菜单'"
-		:width="500"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
-			<a-form-item label="显示名称：" name="title">
-				<a-input v-model:value="formData.title" placeholder="请输入显示名称" allow-clear />
-			</a-form-item>
-			<a-form-item label="菜单类型：" name="menuType">
-				<a-radio-group
-					v-model:value="formData.menuType"
-					button-style="solid"
-					:options="categoryOptions"
-					option-type="button"
-				/>
-			</a-form-item>
-			<a-form-item label="上级菜单：" name="parentId">
-				<a-tree-select
-					v-model:value="formData.parentId"
-					v-model:treeExpandedKeys="defaultExpandedKeys"
-					style="width: 100%"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-					placeholder="请选择上级菜单"
-					allow-clear
-					tree-default-expand-all
-					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'title',
-						value: 'id'
-					}"
-					selectable="false"
-					tree-line
-					@change="parentChange(formData.parentId)"
-				/>
-			</a-form-item>
-			<a-form-item v-if="formData.menuType !== 'CATALOG'" name="path">
-				<template #label>
-					<a-tooltip>
-						<template #title>
-							类型为内外链条时，输入https开头的链接即可（例：https://xiaonuo.vip）,正常路由前面必须有反斜杠！
+			<a-row :gutter="16">
+				<a-col :span="12">
+					<a-form-item label="显示名称：" name="title">
+						<a-input v-model:value="formData.title" placeholder="请输入显示名称" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="菜单类型：" name="menuType">
+						<a-radio-group
+							v-model:value="formData.menuType"
+							button-style="solid"
+							:options="categoryOptions"
+							option-type="button"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="上级菜单：" name="parentId">
+						<a-tree-select
+							v-model:value="formData.parentId"
+							v-model:treeExpandedKeys="defaultExpandedKeys"
+							style="width: 100%"
+							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+							placeholder="请选择上级菜单"
+							allow-clear
+							tree-default-expand-all
+							:tree-data="treeData"
+							:field-names="{
+								children: 'children',
+								label: 'title',
+								value: 'id'
+							}"
+							selectable="false"
+							tree-line
+							@change="parentChange(formData.parentId)"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12" v-if="formData.menuType !== 'CATALOG'">
+					<a-form-item name="path">
+						<template #label>
+							<a-tooltip>
+								<template #title>
+									类型为内外链条时，输入https开头的链接即可（例：https://xiaonuo.vip）,正常路由前面必须有反斜杠！
+								</template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp
+							{{ formData.menuType === 'MENU' || formData.menuType === 'CATALOG' ? '路由地址' : 'https链接地址' }}：
 						</template>
-						<question-circle-outlined />
-					</a-tooltip>
-					&nbsp {{ formData.menuType === 'MENU' || formData.menuType === 'CATALOG' ? '路由地址' : 'https链接地址' }}：
-				</template>
-				<a-input v-model:value="formData.path" placeholder="请输入路由地址" allow-clear />
-			</a-form-item>
-			<a-form-item v-if="formData.menuType === 'MENU'" name="component">
-				<template #label>
-					<a-tooltip>
-						<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
-						<question-circle-outlined />
-					</a-tooltip>
-					&nbsp 组件地址：
-				</template>
-				<a-input
-					v-model:value="formData.component"
-					addon-before="src/views/"
-					placeholder="请输入组件地址"
-					allow-clear
-				/>
-			</a-form-item>
-			<a-form-item v-if="formData.menuType === 'MENU'" name="name">
-				<template #label>
-					<a-tooltip>
-						<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
-						<question-circle-outlined />
-					</a-tooltip>
-					&nbsp 别名：
-				</template>
-				<a-input
-					v-model:value="formData.name"
-					addon-before="setup name="
-					placeholder="请输入组件组件中name属性"
-					allow-clear
-				/>
-			</a-form-item>
-			<a-form-item label="图标：" name="icon">
-				<a-input v-model:value="formData.icon" style="width: calc(100% - 70px)" placeholder="请选择图标" allow-clear />
-				<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
-			</a-form-item>
-			<a-form-item label="排序:" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
-			</a-form-item>
+						<a-input v-model:value="formData.path" placeholder="请输入路由地址" allow-clear />
+					</a-form-item>
+				</a-col>
+				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+					<a-form-item name="component">
+						<template #label>
+							<a-tooltip>
+								<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 组件地址：
+						</template>
+						<a-input
+							v-model:value="formData.component"
+							addon-before="src/views/"
+							placeholder="请输入组件地址"
+							allow-clear
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+					<a-form-item name="name">
+						<template #label>
+							<a-tooltip>
+								<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							&nbsp 别名：
+						</template>
+						<a-input
+							v-model:value="formData.name"
+							addon-before="setup name="
+							placeholder="请输入组件组件中name属性"
+							allow-clear
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="图标：" name="icon">
+						<a-input
+							v-model:value="formData.icon"
+							style="width: calc(100% - 70px)"
+							placeholder="请选择图标"
+							allow-clear
+						/>
+						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
+					<a-form-item label="排序:" name="sortCode">
+						<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 		<template #footer>
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup>

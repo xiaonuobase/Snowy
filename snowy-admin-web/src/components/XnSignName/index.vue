@@ -1,5 +1,5 @@
 <template>
-	<a-modal ref="signModel" v-model:visible="visible" :width="600" title="电子签名" @cancel="handleClear" @ok="handleOk">
+	<xn-form-container ref="signModel" v-model:visible="visible" :width="700" title="电子签名" @close="handleClear" @ok="handleOk">
 		<a-row :gutter="5">
 			<a-col :span="15">
 				<div style="border: 1px solid rgb(236 236 236)">
@@ -40,7 +40,11 @@
 				<a-button @click="handleReset">清屏</a-button>
 			</a-space>
 		</div>
-	</a-modal>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="handleClear">取消</a-button>
+			<a-button type="primary" @click="handleOk">确定</a-button>
+		</template>
+	</xn-form-container>
 </template>
 
 <script setup>

@@ -1,10 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="文件上传"
-		:width="500"
+		:width="550"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		:bodyStyle="{ 'padding-top': '0px' }"
 		@close="onClose"
 	>
@@ -54,11 +53,10 @@
 				</a-spin>
 			</a-tab-pane>
 		</a-tabs>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="uploadForm">
-	import { message } from 'ant-design-vue'
 	import fileApi from '@/api/dev/fileApi'
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })

@@ -1,5 +1,5 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="预览"
 		:width="1200"
 		:visible="visible"
@@ -25,7 +25,7 @@
 				</a-tab-pane>
 			</a-tabs>
 		</a-spin>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="genPreview">

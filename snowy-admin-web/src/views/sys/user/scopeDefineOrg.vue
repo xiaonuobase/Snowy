@@ -2,7 +2,7 @@
 	<a-modal
 		v-model:visible="visible"
 		title="选择机构"
-		:width="400"
+		:width="500"
 		:mask-closable="false"
 		:destroy-on-close="true"
 		@ok="handleOk"

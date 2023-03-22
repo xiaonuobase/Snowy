@@ -1,10 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="发送邮件"
 		:width="1000"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		:bodyStyle="{ 'padding-top': '0px' }"
 		@close="onClose"
 	>
@@ -23,7 +22,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="sendLoading">发送</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="emailForm">

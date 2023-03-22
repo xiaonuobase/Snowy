@@ -140,7 +140,7 @@
 	}
 	// 重置
 	const reset = () => {
-		searchFormRef.value.resetFields();
+		searchFormRef.value.resetFields()
 		table.value.refresh(true)
 	}
 	const engineOptions = tool.dictList('SMS_ENGINE')

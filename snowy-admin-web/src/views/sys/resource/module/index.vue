@@ -111,7 +111,7 @@
 	}
 	// 重置
 	const reset = () => {
-		formRef.value.resetFields();
+		formRef.value.resetFields()
 		table.value.refresh(true)
 	}
 	// 删除

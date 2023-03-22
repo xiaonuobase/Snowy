@@ -1,14 +1,13 @@
 <template>
-    <a-drawer
+    <xn-form-container
         <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(configList[i].needTableId) { %>
         :title="formData.${configList[i].fieldNameCamelCase} ? '编辑${functionName}' : '增加${functionName}'"
         <% } %>
         <% } %>
-        :width="600"
+        :width="700"
         :visible="visible"
         :destroy-on-close="true"
-        :footer-style="{ textAlign: 'right' }"
         @close="onClose"
     >
         <a-form ref="formRef" :model="formData" :rules="formRules" layout="${formLayout}">
@@ -74,7 +73,7 @@
             <a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
             <a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
         </template>
-    </a-drawer>
+    </xn-form-container>
 </template>
 
 <script setup name="${classNameFirstLower}Form">

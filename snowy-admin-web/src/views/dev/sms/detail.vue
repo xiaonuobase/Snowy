@@ -1,10 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="详情"
-		:width="600"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
@@ -23,7 +22,7 @@
 			回执信息：
 			<XnHighlightjs language="JSON" :code="receiptInfo"></XnHighlightjs>
 		</a-space>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="smsDetail">

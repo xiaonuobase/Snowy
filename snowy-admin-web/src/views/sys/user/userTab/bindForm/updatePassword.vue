@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="修改密码"
-		:width="600"
+		:width="550"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
@@ -32,7 +30,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="updatePassword">

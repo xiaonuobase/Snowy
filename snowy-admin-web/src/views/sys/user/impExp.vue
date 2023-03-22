@@ -1,10 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="导入导出"
-		:width="620"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<span
@@ -33,7 +32,7 @@
 				</div>
 			</template>
 		</a-alert>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="userImpExp">

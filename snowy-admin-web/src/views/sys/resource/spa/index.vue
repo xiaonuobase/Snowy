@@ -1,5 +1,4 @@
 <template>
-	<a-alert style="margin-bottom: 10px" message="温馨提示：排序第一条为首页页面！" show-icon type="warning" closable />
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
 		<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
@@ -166,7 +165,7 @@
 	}
 	// 重置
 	const reset = () => {
-		formRef.value.resetFields();
+		formRef.value.resetFields()
 		table.value.refresh(true)
 	}
 	// 删除

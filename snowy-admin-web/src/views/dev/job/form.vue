@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		:title="formData.id ? '编辑定时任务' : '增加定时任务'"
-		:width="500"
+		:width="550"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
@@ -29,7 +27,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
 		</template>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="devJobForm">

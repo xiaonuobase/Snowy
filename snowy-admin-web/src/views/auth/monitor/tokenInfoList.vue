@@ -1,11 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="令牌列表"
 		:width="650"
 		:visible="visible"
 		:destroy-on-close="true"
-		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-button
@@ -71,7 +69,7 @@
 				</template>
 			</template>
 		</a-table>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup>

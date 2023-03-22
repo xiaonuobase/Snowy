@@ -2,7 +2,7 @@
 	<a-modal
 		v-model:visible="visible"
 		:title="formData.id ? '编辑按钮' : '增加按钮'"
-		:width="500"
+		:width="550"
 		:mask-closable="false"
 		:destroy-on-close="true"
 		@ok="onSubmit"

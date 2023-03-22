@@ -1,10 +1,9 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="详情"
-		:width="600"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
@@ -16,7 +15,7 @@
 			<a-descriptions-item label="时间">{{ formData.opTime }}</a-descriptions-item>
 			<a-descriptions-item label="用户">{{ formData.opUser }}</a-descriptions-item>
 		</a-descriptions>
-	</a-drawer>
+	</xn-form-container>
 </template>
 
 <script setup name="vislogDetail">

@@ -1,11 +1,10 @@
 <template>
-	<a-drawer
+	<xn-form-container
 		title="按钮权限"
-		:width="650"
+		:width="700"
 		:visible="visible"
 		:destroy-on-close="true"
 		:body-style="{ paddingBottom: '80px' }"
-		:footer-style="{ textAlign: 'right' }"
 		@close="onClose"
 	>
 		<s-table
@@ -34,7 +33,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-drawer>
+	</xn-form-container>
 	<Form ref="buttonForm" @successful="table.refresh(true)" />
 </template>
 

@@ -50,6 +50,8 @@ export default {
 		theme: getCacheConfig('SNOWY_THEME'),
 		// 主题颜色
 		themeColor: toolDataGet('SNOWY_THEME_COLOR') || config.COLOR,
+		// 整体表单风格
+		formStyle: getCacheConfig('SNOWY_FORM_STYLE'),
 		// 用户信息
 		userInfo: toolDataGet('USER_INFO') || {},
 		// 系统配置
@@ -96,6 +98,9 @@ export default {
 		},
 		TOGGLE_moduleUnfoldOpen(state) {
 			state.moduleUnfoldOpen = !state.moduleUnfoldOpen
+		},
+		SET_formStyle(state, key) {
+			state.formStyle = key
 		},
 		SET_userInfo(state, key) {
 			state.userInfo = key
