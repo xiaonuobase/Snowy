@@ -121,7 +121,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     private static final String SNOWY_SYS_DEFAULT_WORKBENCH_DATA_KEY = "SNOWY_SYS_DEFAULT_WORKBENCH_DATA";
 
-    private static final String USER_CACHE_KEY = "user-validCode:";
+    private static final String USER_VALID_CODE_CACHE_KEY = "user-validCode:";
 
     public static final String USER_CACHE_ALL_KEY = "sys-user:all";
 
@@ -399,7 +399,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 将请求号返回前端
         sysUserPicValidCodeResult.setValidCodeReqNo(validCodeReqNo);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_CACHE_KEY + validCodeReqNo, validCode, 5 * 60);
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + validCodeReqNo, validCode, 5 * 60);
         return sysUserPicValidCodeResult;
     }
 
@@ -409,21 +409,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @author xuyuxiang
      * @date 2022/8/25 14:29
      **/
-    private void validValidCode(String validCode, String validCodeReqNo) {
+    private void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
         // 依据请求号，取出缓存中的验证码进行校验
-        Object existValidCode = commonCacheOperator.get(USER_CACHE_KEY + validCodeReqNo);
+        Object existValidCode;
+        if(ObjectUtil.isEmpty(phoneOrEmail)) {
+            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
+        } else {
+            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+        }
         // 为空则直接验证码错误
         if (ObjectUtil.isEmpty(existValidCode)) {
             throw new CommonException("验证码错误");
         }
+        // 移除该验证码
+        if(ObjectUtil.isEmpty(phoneOrEmail)) {
+            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
+        } else {
+            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+        }
         // 不一致则直接验证码错误
         if (!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
-            // 移除该验证码
-            commonCacheOperator.remove(USER_CACHE_KEY + validCodeReqNo);
             throw new CommonException("验证码错误");
         }
-        // 移除该验证码
-        commonCacheOperator.remove(USER_CACHE_KEY + validCodeReqNo);
     }
 
     @Override
@@ -435,7 +442,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("手机号码：{}格式错误", phone);
         }
         // 执行校验验证码
-        validValidCode(sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
+        validValidCode(null, sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
         // 根据手机号获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机码：{}不存在", phone);
@@ -454,7 +461,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //devSmsApi.sendSmsTencent(null, phone, null, "验证码模板号", phoneValidCode);
 
         // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_CACHE_KEY + phoneValidCodeReqNo, phoneValidCode, 5 * 60);
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, 5 * 60);
         // 返回请求号
         return phoneValidCodeReqNo;
     }
@@ -468,7 +475,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 执行校验验证码
-        validValidCode(sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
+        validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在", email);
@@ -483,7 +490,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         devEmailApi.sendTextEmailLocal(email, "找回密码邮件", content, CollectionUtil.newArrayList());
 
         // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_CACHE_KEY + emailValidCodeReqNo, emailValidCode, 5 * 60);
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + email + StrUtil.UNDERLINE + emailValidCodeReqNo, emailValidCode, 5 * 60);
         // 返回请求号
         return emailValidCodeReqNo;
     }
@@ -491,7 +498,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void findPasswordByPhone(SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam) {
         // 执行校验验证码
-        validValidCode(sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
+        validValidCode(sysUserFindPwdByPhoneParam.getPhone(), sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
                 sysUserFindPwdByPhoneParam.getPhone()).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()))));
@@ -500,7 +507,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void findPasswordByEmail(SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam) {
         // 执行校验验证码
-        validValidCode(sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
+        validValidCode(sysUserFindPwdByEmailParam.getEmail(), sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail,
                 sysUserFindPwdByEmailParam.getEmail()).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByEmailParam.getNewPassword()))));
