@@ -21,6 +21,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
+import vip.xiaonuo.common.util.CommonEmailUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
 
@@ -59,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_KEY = "SNOWY_SYS_DEFAULT_CAPTCHA_OPEN";
 
-    private static final String AUTH_CACHE_KEY = "auth-validCode:";
+    private static final String AUTH_VALID_CODE_CACHE_KEY = "auth-validCode:";
 
     @Resource(name = "loginUserApi")
     private SaBaseLoginUserApi loginUserApi;
@@ -93,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         // 将请求号返回前端
         authPicValidCodeResult.setValidCodeReqNo(validCodeReqNo);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(AUTH_CACHE_KEY + validCodeReqNo, validCode, 5 * 60);
+        commonCacheOperator.put(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo, validCode, 5 * 60);
         return authPicValidCodeResult;
     }
 
@@ -106,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
         // 验证码请求号
         String validCodeReqNo = authGetPhoneValidCodeParam.getValidCodeReqNo();
         // 校验参数
-        validPhoneValidCodeParam(phone, validCode, validCodeReqNo, type);
+        validPhoneValidCodeParam(null, validCode, validCodeReqNo, type);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -118,10 +120,10 @@ public class AuthServiceImpl implements AuthService {
 
         // TODO 使用腾讯云执行发送验证码，将验证码作为短信内容的参数变量放入，
         // TODO sdkAppId和签名不传则使用系统默认配置的sdkAppId和签名，支持传入多个参数，逗号拼接，示例："张三,15038****76,进行中"
-        devSmsApi.sendSmsTencent("1400522364", phone, "小诺开源技术", "1502357", phoneValidCode);
+        devSmsApi.sendSmsTencent("sdkAppId", phone, "签名", "模板编码", phoneValidCode);
 
         // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(AUTH_CACHE_KEY + phoneValidCodeReqNo, phoneValidCode, 5 * 60);
+        commonCacheOperator.put(AUTH_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, 5 * 60);
         // 返回请求号
         return phoneValidCodeReqNo;
     }
@@ -132,21 +134,28 @@ public class AuthServiceImpl implements AuthService {
      * @author xuyuxiang
      * @date 2022/8/25 15:26
      **/
-    private void validValidCode(String validCode, String validCodeReqNo) {
+    private void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
         // 依据请求号，取出缓存中的验证码进行校验
-        Object existValidCode = commonCacheOperator.get(AUTH_CACHE_KEY + validCodeReqNo);
+        Object existValidCode;
+        if(ObjectUtil.isEmpty(phoneOrEmail)) {
+            existValidCode = commonCacheOperator.get(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo);
+        } else {
+            existValidCode = commonCacheOperator.get(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+        }
         // 为空则直接验证码错误
         if(ObjectUtil.isEmpty(existValidCode)) {
             throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
         }
-        // 不一致则直接验证码错误
-        if(!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
-            // 移除该验证码
-            commonCacheOperator.remove(AUTH_CACHE_KEY + validCodeReqNo);
-            throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
-        }
         // 移除该验证码
-        commonCacheOperator.remove(AUTH_CACHE_KEY + validCodeReqNo);
+        if(ObjectUtil.isEmpty(phoneOrEmail)) {
+            commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo);
+        } else {
+            commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+        }
+        // 不一致则直接验证码错误
+        if (!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
+            throw new CommonException("验证码错误");
+        }
     }
 
     /**
@@ -155,20 +164,25 @@ public class AuthServiceImpl implements AuthService {
      * @author xuyuxiang
      * @date 2022/8/25 14:29
      **/
-    private void validPhoneValidCodeParam(String phone, String validCode, String validCodeReqNo, String type) {
+    private void validPhoneValidCodeParam(String phoneOrEmail, String validCode, String validCodeReqNo, String type) {
         // 验证码正确则校验手机号格式
-        if(!PhoneUtil.isMobile(phone)) {
-            throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+        if(ObjectUtil.isEmpty(phoneOrEmail)) {
+            // 执行校验验证码
+            validValidCode(null, validCode, validCodeReqNo);
+        } else {
+            if(!PhoneUtil.isMobile(phoneOrEmail) && !CommonEmailUtil.isEmail(phoneOrEmail)) {
+                throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+            }
+            // 执行校验验证码
+            validValidCode(phoneOrEmail, validCode, validCodeReqNo);
         }
-        // 执行校验验证码
-        validValidCode(validCode, validCodeReqNo);
         // 根据手机号获取用户信息，判断用户是否存在，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            if(ObjectUtil.isEmpty(loginUserApi.getUserByPhone(phone))) {
+            if(ObjectUtil.isEmpty(loginUserApi.getUserByPhone(phoneOrEmail))) {
                 throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
             }
         } else {
-            if(ObjectUtil.isEmpty(clientLoginUserApi.getClientUserByPhone(phone))) {
+            if(ObjectUtil.isEmpty(clientLoginUserApi.getClientUserByPhone(phoneOrEmail))) {
                 throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
             }
         }
@@ -205,7 +219,7 @@ public class AuthServiceImpl implements AuthService {
                     throw new CommonException(AuthExceptionEnum.VALID_CODE_REQ_NO_EMPTY.getValue());
                 }
                 // 执行校验验证码
-                validValidCode(validCode, validCodeReqNo);
+                validValidCode(null, validCode, validCodeReqNo);
             }
         }
         // SM2解密并获得前端传来的密码哈希值
