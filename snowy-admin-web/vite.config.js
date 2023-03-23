@@ -78,7 +78,7 @@ export default defineConfig(({ command, mode }) => {
 					manualChunks: {
 						echarts: ['echarts'],
 						'ant-design-vue': ['ant-design-vue'],
-						vue: ['vue', 'vue-router', 'vuex', 'vue-i18n']
+						vue: ['vue', 'vue-router', 'pinia', 'vue-i18n']
 					}
 				}
 			},

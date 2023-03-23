@@ -1,11 +1,22 @@
 <template>
 	<div v-if="moduleUnfoldOpen">
-		<a-menu v-model:selectedKeys="selectedKeys" mode="horizontal" v-if="menu && menu.length > 1" class="module-menu" id="moduleMunu">
-			<a-menu-item v-for="item in menu" :key="item.id" style="padding-right: 5px;position: relative;" @click="moduleClick(item.id)">
+		<a-menu
+			v-model:selectedKeys="selectedKeys"
+			mode="horizontal"
+			v-if="menu && menu.length > 1"
+			class="module-menu"
+			id="moduleMunu"
+		>
+			<a-menu-item
+				v-for="item in menu"
+				:key="item.id"
+				style="padding-right: 5px; position: relative"
+				@click="moduleClick(item.id)"
+			>
 				<template #icon>
-					<component :is="item.meta.icon"/>
+					<component :is="item.meta.icon" />
 				</template>
-				<span style="margin-left:-5px">{{ item.meta.title }}</span>
+				<span style="margin-left: -5px">{{ item.meta.title }}</span>
 			</a-menu-item>
 		</a-menu>
 	</div>
@@ -33,18 +44,23 @@
 <script setup>
 	import router from '@/router'
 	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore } from '@/store'
 	import { watch } from 'vue'
+	import { storeToRefs } from 'pinia'
+
+	const store = globalStore()
+
+	const { moduleUnfoldOpen, topHanderThemeColorOpen } = storeToRefs(store)
+	const moduleBackColor = ref(topHanderThemeColorOpen)
 
 	// 监听目录是否折叠
-	watch(() => store.state.global.moduleUnfoldOpen, (newValue) => {
-		moduleUnfoldOpen.value = newValue
+	watch(moduleUnfoldOpen, (newValue) => {
 		nextTick(() => {
 			setModuleBackColor()
 		})
 	})
 	// 监听是否开启了顶栏颜色
-	watch(() => store.state.global.topHanderThemeColorOpen, (newValue) => {
+	watch(topHanderThemeColorOpen, (newValue) => {
 		moduleBackColor.value = newValue
 		setModuleBackColor()
 	})
@@ -60,9 +76,6 @@
 		})
 	}
 
-	const moduleUnfoldOpen = ref(store.state.global.moduleUnfoldOpen)
-	const moduleBackColor = ref(store.state.global.topHanderThemeColorOpen)
-
 	onMounted(() => {
 		setModuleBackColor()
 	})
@@ -71,17 +84,19 @@
 		if (moduleUnfoldOpen.value) {
 			try {
 				const moduleMunu = document.getElementById('moduleMunu')
-				moduleBackColor.value? moduleMunu.classList.add('module-menu-color')
+				moduleBackColor.value
+					? moduleMunu.classList.add('module-menu-color')
 					: moduleMunu.classList.remove('module-menu-color')
-			} catch (err) { }
+			} catch (err) {}
 			setSelectedKeys()
 		}
 	}
 	// 设置选中
 	const setSelectedKeys = () => {
 		// 顶部应用列表让显示出来默认的，不这么实现不会显示的，相信老俞
-		moduleBackColor.value? selectedKeys.value = new Array([])
-			: selectedKeys.value = [tool.data.get('SNOWY_MENU_MODULE_ID')]
+		moduleBackColor.value
+			? (selectedKeys.value = new Array([]))
+			: (selectedKeys.value = [tool.data.get('SNOWY_MENU_MODULE_ID')])
 	}
 </script>
 
@@ -119,15 +134,16 @@
 	.module-comp:hover {
 		background: var(--header-color-split);
 	}
-	.ant-menu-horizontal > .ant-menu-item::after, .ant-menu-horizontal > .ant-menu-submenu::after {
+	.ant-menu-horizontal > .ant-menu-item::after,
+	.ant-menu-horizontal > .ant-menu-submenu::after {
 		content: none;
 	}
-	.module-menu{
+	.module-menu {
 		line-height: 50px;
 		border-bottom: 0px;
 		width: 105%;
 	}
-	.module-menu-color{
+	.module-menu-color {
 		color: white;
 		background-color: var(--primary-color);
 	}

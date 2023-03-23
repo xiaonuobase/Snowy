@@ -36,6 +36,7 @@
 		"js-pinyin": "^0.1.9",
 		"lodash-es": "^4.17.21",
 		"nprogress": "0.2.0",
+		"pinia": "^2.0.33",
 		"screenfull": "^6.0.2",
 		"sm-crypto": "^0.3.11",
 		"snowflake-id": "^1.1.0",
@@ -47,8 +48,7 @@
 		"vue-router": "^4.1.6",
 		"vue3-colorpicker": "2.0.4",
 		"vue3-tree-org": "^4.1.1",
-		"vuedraggable-es": "^4.1.1",
-		"vuex": "^4.1.0"
+		"vuedraggable-es": "^4.1.1"
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^0.29.3",

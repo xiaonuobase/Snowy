@@ -81,6 +81,8 @@
 	import devUserMessage from './message.vue'
 	import panelSearch from './panel-search/index.vue'
 	import mixinSearch from './mixins/search'
+	import { mapState } from 'pinia'
+	import { globalStore } from '@/store'
 	export default {
 		components: {
 			setting,
@@ -99,18 +101,9 @@
 			}
 		},
 		computed: {
-			ismobile() {
-				return this.$store.state.global.ismobile
-			},
-			userInfoWatch() {
-				return this.$store.state.global.userInfo
-			}
+			...mapState(globalStore, ['ismobile', 'userInfo'])
 		},
-		watch: {
-			userInfoWatch(newVal, oldVal) {
-				this.userInfo = newVal
-			}
-		},
+
 		created() {
 			// 获取默认语言
 			this.lang = new Array(this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG)

@@ -1,5 +1,6 @@
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'pinia'
 import hotkeys from 'hotkeys-js'
+import { searchStore } from '@/store'
 
 export default {
 	mounted() {
@@ -19,19 +20,16 @@ export default {
 		hotkeys.unbind(this.searchHotkey.close)
 	},
 	computed: {
-		...mapState('search', {
+		...mapState(searchStore, {
 			searchActive: (state) => state.active,
 			searchHotkey: (state) => state.hotkey
 		})
 	},
 	methods: {
-		...mapMutations({
-			searchToggle: 'search/toggle',
-			searchSet: 'search/set'
-		}),
+		...mapActions(searchStore, ['toggleActive', 'setActive']),
 		// 接收点击搜索按钮
 		handleSearchClick() {
-			this.searchToggle()
+			this.toggleActive()
 			if (this.searchActive) {
 				setTimeout(() => {
 					if (this.$refs.panelSearch) {
@@ -42,7 +40,7 @@ export default {
 		},
 		searchPanelOpen() {
 			if (!this.searchActive) {
-				this.searchSet(true)
+				this.setActive(true)
 				setTimeout(() => {
 					if (this.$refs.panelSearch) {
 						this.$refs.panelSearch.focus()
@@ -53,7 +51,7 @@ export default {
 		// 关闭搜索面板
 		searchPanelClose() {
 			if (this.searchActive) {
-				this.searchSet(false)
+				this.setActive(false)
 			}
 		}
 	}

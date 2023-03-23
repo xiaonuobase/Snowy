@@ -78,7 +78,8 @@
 
 <script>
 	import Fuse from 'fuse.js'
-	import { mapState } from 'vuex'
+	import { mapState } from 'pinia'
+	import { searchStore } from '@/store'
 
 	export default {
 		data() {
@@ -89,7 +90,7 @@
 			}
 		},
 		computed: {
-			...mapState('search', ['pool']),
+			...mapState(searchStore, ['pool']),
 			// 这份数据是展示在搜索面板下面的
 			resultsList() {
 				return this.results.length === 0 || this.searchText === '' ? this.pool : this.results
@@ -207,22 +208,22 @@
 </script>
 
 <style lang="less" scoped>
-	:deep(.ant-input){
+	:deep(.ant-input) {
 		height: 35px;
 	}
-	:deep(.ant-input:not(:first-child)){
+	:deep(.ant-input:not(:first-child)) {
 		padding-left: 10px;
 	}
-	:deep(.ant-input-prefix){
+	:deep(.ant-input-prefix) {
 		font-size: 20px;
 	}
-	:deep(.ant-list-sm .ant-list-item){
+	:deep(.ant-list-sm .ant-list-item) {
 		padding: 4px 16px;
 	}
-	:deep(.ant-list-item-meta){
+	:deep(.ant-list-item-meta) {
 		align-items: center;
 	}
-	:deep(.ant-list-item.active){
+	:deep(.ant-list-item.active) {
 		background-color: var(--primary-1);
 	}
 	.search-box {

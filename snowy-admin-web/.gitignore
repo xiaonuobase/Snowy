@@ -14,7 +14,6 @@ pnpm-debug.log*
 
 # other files
 stats.html
-package-lock.json
 auto-imports.d.ts
 
 # Editor directories and files

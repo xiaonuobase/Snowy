@@ -6,8 +6,9 @@
 
 <script setup name="App">
 	import i18n from '@/locales'
-	import store from '@/store'
+	import { globalStore } from '@/store'
 
-	store.commit('initTheme')
+	const store = globalStore()
+	store.initTheme()
 	const locale = i18n.global.messages[i18n.global.locale].lang
 </script>

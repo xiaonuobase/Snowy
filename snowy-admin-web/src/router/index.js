@@ -19,8 +19,7 @@ import userRoutes from '@/config/route'
 import tool from '@/utils/tool'
 import { cloneDeep } from 'lodash-es'
 const modules = import.meta.glob('/src/views/**/**.vue')
-import store from '@/store'
-const sysBaseConfig = tool.data.get('SNOWY_SYS_BASE_CONFIG') || store.state.global.sysBaseConfig
+import { globalStore, searchStore } from '@/store'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
@@ -42,7 +41,7 @@ const router = createRouter({
 })
 
 // 设置标题
-document.title = sysBaseConfig.SNOWY_SYS_NAME
+// document.title = sysBaseConfig.SNOWY_SYS_NAME
 
 // 判断是否已加载过动态/静态路由
 const isGetRouter = ref(false)
@@ -57,6 +56,9 @@ const whiteList = exportWhiteListFromRouter(whiteListRouters)
 
 router.beforeEach(async (to, from, next) => {
 	NProgress.start()
+	const store = globalStore()
+
+	const sysBaseConfig = tool.data.get('SNOWY_SYS_BASE_CONFIG') || store.sysBaseConfig
 	// 动态标题
 	document.title = to.meta.title
 		? `${to.meta.title} - ${sysBaseConfig.SNOWY_SYS_NAME}`
@@ -109,7 +111,9 @@ router.beforeEach(async (to, from, next) => {
 		menuRouter.forEach((item) => {
 			router.addRoute('layout', item)
 		})
-		store.commit('search/init', menuRouter)
+
+		const search_store = searchStore()
+		search_store.init(menuRouter)
 		isGetRouter.value = true
 		next({ ...to, replace: true })
 		return false
