@@ -78,15 +78,15 @@
 				<a-form-item label="菜单排他展开">
 					<a-switch :checked="sideUniqueOpen" @change="toggleState('sideUniqueOpen')" />
 				</a-form-item>
-        <a-form-item label="表单风格">
-          <a-select
-              v-model:value="formStyle"
-              style="width: 80px"
-              size="small"
-              :options="xnFormStyleOptions"
-              @change="formStyleChange"
-          />
-        </a-form-item>
+				<a-form-item label="表单风格">
+					<a-select
+						:value="formStyle"
+						class="w-[80px]"
+						size="small"
+						:options="xnFormStyleOptions"
+						@change="formStyleChange"
+					/>
+				</a-form-item>
 			</a-form>
 			<a-alert
 				message="以上配置可实时预览，开发者可在 config/index.js 中配置默认值，不建议在生产环境下开放布局设置"
@@ -101,7 +101,7 @@
 	import { ThemeModeEnum } from '../../utils/enum'
 	import { globalStore } from '@/store'
 	import { mapState, mapStores } from 'pinia'
-  import tool from '@/utils/tool'
+	import tool from '@/utils/tool'
 
 	const toolDataNameMap = {
 		menuIsCollapse: 'MENU_COLLAPSE',
@@ -147,16 +147,16 @@
 						style: 'snowy-setting-layout-menu-doublerow'
 					}
 				],
-        xnFormStyleOptions: [
-          {
-            label: '抽屉',
-            value: 'drawer'
-          },
-          {
-            label: '对话框',
-            value: 'modal'
-          }
-        ],
+				xnFormStyleOptions: [
+					{
+						label: '抽屉',
+						value: 'drawer'
+					},
+					{
+						label: '对话框',
+						value: 'modal'
+					}
+				],
 				colorList
 			}
 		},
@@ -172,7 +172,8 @@
 				'breadcrumbOpen',
 				'moduleUnfoldOpen',
 				'topHanderThemeColorOpen',
-				'topHanderThemeColorSpread'
+				'topHanderThemeColorSpread',
+				'formStyle'
 			])
 		},
 		mounted() {},
@@ -186,31 +187,31 @@
 			toggleState(stateName) {
 				this.globalStore.toggleConfig(stateName)
 				const toolDataName = toolDataNameMap[stateName]
-        tool.data.set(`SNOWY_${toolDataName}`, this.globalStore[stateName])
+				tool.data.set(`SNOWY_${toolDataName}`, this.globalStore[stateName])
 			},
-      // 设置整体风格主题
+			// 设置整体风格主题
 			setSideStyle(value) {
 				this.globalStore.setTheme(value)
 				this.sideStyle = value
-        tool.data.set('SNOWY_THEME', value)
+				tool.data.set('SNOWY_THEME', value)
 			},
-      // 设置整体界面布局
+			// 设置整体界面布局
 			layoutStyle(value) {
 				this.globalStore.setLayout(value)
-        tool.data.set('SNOWY_LAYOUT', value)
+				tool.data.set('SNOWY_LAYOUT', value)
 				this.layout = value
 			},
-      // 切换颜色
+			// 切换颜色
 			tagColor(value) {
 				this.globalStore.themeColor = value
-        tool.data.set('SNOWY_THEME_COLOR', value)
+				tool.data.set('SNOWY_THEME_COLOR', value)
 				this.globalStore.setThemeColor(value)
 			},
-      // 切换表单风格
-      formStyleChange(value) {
-        tool.data.set('SNOWY_FORM_STYLE', value)
-        this.$store.commit('SET_formStyle', value)
-      }
+			// 切换表单风格
+			formStyleChange(value) {
+				tool.data.set('SNOWY_FORM_STYLE', value)
+				this.globalStore.setFormStyle(value)
+			}
 		}
 	})
 </script>

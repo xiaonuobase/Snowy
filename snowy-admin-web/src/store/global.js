@@ -42,6 +42,8 @@ export const globalStore = defineStore({
 		theme: getCacheConfig('SNOWY_THEME'),
 		// 主题颜色
 		themeColor: toolDataGet('SNOWY_THEME_COLOR') || config.COLOR,
+		// 整体表单风格
+		formStyle: getCacheConfig('SNOWY_FORM_STYLE'),
 		// 用户信息
 		userInfo: toolDataGet('USER_INFO') || {},
 		// 系统配置
@@ -72,23 +74,8 @@ export const globalStore = defineStore({
 		toggleConfig(key) {
 			this[key] = !this[key]
 		},
-		toggle_SideUniqueOpen() {
-			this.sideUniqueOpen = !this.sideUniqueOpen
-		},
-		toggle_LayoutTagsOpen() {
-			this.layoutTagsOpen = !this.layoutTagsOpen
-		},
-		toggle_BreadcrumbOpen() {
-			this.breadcrumbOpen = !this.breadcrumbOpen
-		},
-		toggle_TopHanderThemeColorOpen() {
-			this.topHanderThemeColorOpen = !this.topHanderThemeColorOpen
-		},
-		toggle_TopHanderThemeColorSpread() {
-			this.topHanderThemeColorSpread = !this.topHanderThemeColorSpread
-		},
-		toggle_ModuleUnfoldOpen() {
-			this.moduleUnfoldOpen = !this.moduleUnfoldOpen
+		setFormStyle(key) {
+			this.formStyle = key
 		},
 		setUserInfo(key) {
 			this.userInfo = key
