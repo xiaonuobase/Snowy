@@ -528,7 +528,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                     .doWrite(bizUserExportResultList);
             CommonDownloadUtil.download(tempFile, response);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 人员导出异常：", e);
             CommonResponseUtil.renderError(response, "导出失败");
         } finally {
             FileUtil.del(tempFile);
@@ -582,7 +582,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             // 下载
             CommonDownloadUtil.download(resultFile, response);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 导出人员个人信息异常：", e);
             CommonResponseUtil.renderError(response, "导出失败");
         } finally {
             // 删除临时文件

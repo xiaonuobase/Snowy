@@ -69,17 +69,16 @@ public class GlobalExceptionUtil {
                 commonResult = CommonResult.get(HttpStatus.HTTP_BAD_METHOD, "请求方法仅支持GET或POST", null);
             }
         } else if (e instanceof HttpMessageNotReadableException) {
-
+            log.error(">>> 参数传递格式异常：", e);
             // 如果是参数传递格式不支持异常 415
             if (e.getMessage().contains("JSON parse error")) {
-                e.printStackTrace();
                 //JSON格式转换错误特殊提示
                 commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "参数格式错误", null);
             } else {
                 commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "请使用JSON方式传参", null);
             }
         } else if (e instanceof HttpMediaTypeNotSupportedException) {
-            e.printStackTrace();
+            log.error(">>> 参数传递格式异常：", e);
             // 如果是JSON参数格式错误异常 415
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "参数格式错误", null);
         } else if (e instanceof MethodArgumentNotValidException) {
@@ -104,7 +103,7 @@ public class GlobalExceptionUtil {
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, missingServletRequestParameterException.getMessage(), null);
         }
         else if (e instanceof MultipartException) {
-
+            log.error(">>> 文件上传参数异常：", e);
             //文件上传错误特殊提示
             commonResult = CommonResult.error("请使用multipart/form-data方式上传文件");
         } else if (e instanceof MissingServletRequestPartException) {
@@ -125,11 +124,11 @@ public class GlobalExceptionUtil {
                     CommonException commonException = (CommonException) secondCause;
                     commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
                 } else {
-                    e.printStackTrace();
+                    log.error(">>> 数据操作异常：", e);
                     commonResult = CommonResult.error("数据操作异常");
                 }
             } else {
-                e.printStackTrace();
+                log.error(">>> 数据操作异常：", e);
                 commonResult = CommonResult.error("数据操作异常");
             }
         } else if (e instanceof CommonException) {
@@ -139,12 +138,10 @@ public class GlobalExceptionUtil {
             commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
         }  else {
             // 未知异常打印详情
-            e.printStackTrace();
-
+            log.error(">>> 服务器未知异常：{}, 请求地址：{}", e, CommonServletUtil.getRequest().getRequestURL());
             // 未知异常返回服务器异常
             commonResult = CommonResult.error("服务器异常");
         }
-        log.error(">>> {}，请求地址：{}", commonResult.getMsg(), CommonServletUtil.getRequest().getRequestURL());
         return commonResult;
     }
 

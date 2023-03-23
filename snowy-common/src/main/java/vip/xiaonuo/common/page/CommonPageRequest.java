@@ -16,6 +16,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2021/12/18 14:43
  */
+@Slf4j
 public class CommonPageRequest {
 
     private static final String PAGE_SIZE_PARAM_NAME = "size";
@@ -53,7 +55,7 @@ public class CommonPageRequest {
                     size = PAGE_SIZE_MAX_VALUE;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(">>> 分页条数转换异常：", e);
                 size = 20;
             }
         }
@@ -64,7 +66,7 @@ public class CommonPageRequest {
             try {
                 page = Convert.toInt(pageString);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(">>> 分页页数转换异常：", e);
                 page = 1;
             }
         }

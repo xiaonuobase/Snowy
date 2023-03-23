@@ -67,14 +67,13 @@ public class CommonNetWorkInfoUtil {
             result.put("UP", upSpeed + (upSpeed.endsWith("B")?"/S":"B/S"));
             result.put("DOWN", downSpeed + (downSpeed.endsWith("B")?"/S":"B/S"));
         } catch (Exception e) {
-            log.info(">>> 网络测速失败，原因：");
-            e.printStackTrace();
+            log.info(">>> 网络测速失败：", e);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.info(">>> 网络测速失败：", e);
                 }
             }
             Optional.ofNullable(pro).ifPresent(Process::destroy);
@@ -119,7 +118,7 @@ public class CommonNetWorkInfoUtil {
                 arr[1] = tx;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 网络测速异常：", e);
         }
         return arr;
     }

@@ -400,7 +400,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             // 移动完毕删除临时目录
             FileUtil.del(tempFolder);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 代码生成异常：", e);
             throw new CommonException("代码生成异常");
         }
     }
@@ -517,7 +517,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             });
             genBasicPreviewResult.setGenBasicCodeBackendResultList(genBasicCodeBackendResultList);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 代码生成异常：", e);
             throw new CommonException("代码生成异常");
         }
         return genBasicPreviewResult;
