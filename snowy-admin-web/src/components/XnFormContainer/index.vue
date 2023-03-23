@@ -15,6 +15,8 @@
 	import { Drawer, Modal } from 'ant-design-vue'
 	import { modalProps } from 'ant-design-vue/es/modal/Modal'
 	import { drawerProps } from 'ant-design-vue/es/drawer'
+	import { mapState } from 'pinia'
+	import { globalStore } from '@/store'
 
 	const FormContainerTypeEnum = {
 		DRAWER: 'drawer',
@@ -37,11 +39,12 @@
 			...drawerProps
 		},
 		computed: {
+			...mapState(globalStore, ['formStyle']),
 			slotKeys() {
 				return Object.keys(this.$slots)
 			},
 			isModal() {
-				return FormContainerTypeEnum.MODAL === this.$store.state.global.formStyle
+				return FormContainerTypeEnum.MODAL === this.formStyle
 			}
 		},
 		methods: {

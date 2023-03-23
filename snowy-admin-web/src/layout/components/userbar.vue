@@ -94,7 +94,6 @@
 			return {
 				lang: [],
 				settingDialog: false,
-				userInfo: {},
 				userName: '',
 				userNameF: '',
 				setDeawer: import.meta.env.VITE_SET_DRAWER
@@ -107,7 +106,6 @@
 		created() {
 			// 获取默认语言
 			this.lang = new Array(this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG)
-			this.userInfo = this.$TOOL.data.get('USER_INFO')
 			this.userName = this.userInfo?.userName || ''
 			this.userNameF = this.userName.substring(0, 1)
 		},
