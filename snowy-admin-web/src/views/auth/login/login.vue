@@ -120,7 +120,7 @@
 			return {
 				activeKey: 'userAccount',
 				sysBaseConfig: store.state.global.sysBaseConfig || tool.data.get('SNOWY_SYS_BASE_CONFIG'),
-				captchaOpen: tool.data.get('SNOWY_SYS_BASE_CONFIG').SNOWY_SYS_DEFAULT_CAPTCHA_OPEN,
+				captchaOpen: config.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN,
 				validCodeBase64: '',
 				ruleForm: {
 					account: 'superAdmin',
