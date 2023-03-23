@@ -39,7 +39,10 @@
 	import { required } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore } from '@/store'
+
+	const store = globalStore()
+
 	const formRef = ref()
 	// 获取用户信息
 	const userInfo = tool.data.get('USER_INFO')
@@ -61,7 +64,7 @@
 				userCenterApi.userUpdateUserInfo(formData.value).then(() => {
 					submitLoading.value = false
 					// 更新前端缓存
-					store.commit('SET_userInfo', formData.value)
+					store.setUserInfo(formData.value)
 					tool.data.set('USER_INFO', formData.value)
 				})
 			})

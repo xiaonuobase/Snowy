@@ -4,7 +4,7 @@
 		<a-layout>
 			<a-layout-sider
 				v-if="!ismobile"
-				v-model:collapsed="$store.state.global.menuIsCollapse"
+				v-model:collapsed="menuIsCollapse"
 				:trigger="null"
 				collapsible
 				:theme="sideTheme"
@@ -18,7 +18,7 @@
 						</div>
 					</div>
 				</header>
-				<div :class="$store.state.global.menuIsCollapse ? 'aminui-side isCollapse' : 'aminui-side'">
+				<div :class="menuIsCollapse ? 'aminui-side isCollapse' : 'aminui-side'">
 					<div class="adminui-side-scroll">
 						<a-menu
 							v-model:openKeys="openKeys"
@@ -51,8 +51,8 @@
 				<a-layout-content class="main-content-wrapper">
 					<div id="adminui-main" class="adminui-main">
 						<router-view v-slot="{ Component }">
-							<keep-alive :include="$store.state.keepAlive.keepLiveRoute">
-								<component :is="Component" :key="$route.name" v-if="$store.state.keepAlive.routeShow" />
+							<keep-alive :include="keepLiveRoute">
+								<component :is="Component" :key="$route.name" v-if="routeShow" />
 							</keep-alive>
 						</router-view>
 						<iframe-view></iframe-view>
@@ -115,7 +115,7 @@
 			<a-layout-sider
 				v-if="!ismobile"
 				v-show="layoutSiderDowbleMenu"
-				v-model:collapsed="$store.state.global.menuIsCollapse"
+				v-model:collapsed="menuIsCollapse"
 				:trigger="null"
 				width="170"
 				collapsible
@@ -125,7 +125,7 @@
 					<h2 class="snowy-title">{{ pmenu.meta.title }}</h2>
 				</div>
 				<a-menu
-					v-model:collapsed="$store.state.global.menuIsCollapse"
+					v-model:collapsed="menuIsCollapse"
 					v-model:openKeys="openKeys"
 					v-model:selectedKeys="selectedKeys"
 					mode="inline"
@@ -152,14 +152,14 @@
 				<a-layout-content class="main-content-wrapper">
 					<div id="adminui-main" class="adminui-main">
 						<router-view v-slot="{ Component }">
-							<keep-alive :include="$store.state.keepAlive.keepLiveRoute">
-								<component :is="Component" v-if="$store.state.keepAlive.routeShow" :key="$route.name" />
+							<keep-alive :include="keepLiveRoute">
+								<component :is="Component" v-if="routeShow" :key="$route.name" />
 							</keep-alive>
 						</router-view>
 						<iframe-view></iframe-view>
 						<div class="main-bottom-wrapper">
 							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-									sysBaseConfig.SNOWY_SYS_COPYRIGHT
+								sysBaseConfig.SNOWY_SYS_COPYRIGHT
 							}}</a>
 						</div>
 					</div>
@@ -183,8 +183,8 @@
 	import iframeView from './components/iframeView.vue'
 	import moduleMenu from './components/moduleMenu.vue'
 	import { ThemeModeEnum } from '@/utils/enum'
-	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore, keepAliveStore } from '@/store'
+	import { mapState, mapActions } from 'pinia'
 
 	export default defineComponent({
 		name: 'Index',
@@ -208,39 +208,30 @@
 				onSelectTag: false,
 				selectedKeys: [],
 				openKeys: [],
-				openKeysOther: [],
-				sysBaseConfig: tool.data.get('SNOWY_SYS_BASE_CONFIG') || store.state.global.sysBaseConfig
+				openKeysOther: []
 			}
 		},
 		computed: {
+			...mapState(globalStore, [
+				'theme',
+				'ismobile',
+				'layout',
+				'layoutTagsOpen',
+				'menuIsCollapse',
+				'breadcrumbOpen',
+				'topHanderThemeColorOpen',
+				'topHanderThemeColor',
+				'sideUniqueOpen',
+				'sysBaseConfig'
+			]),
+			...mapState(keepAliveStore, ['keepLiveRoute', 'routeShow']),
 			sideTheme() {
-				const theme = this.$store.state.global.theme
+				const theme = this.theme
 				return theme === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : theme
 			},
 			secondMenuSideTheme() {
-				const theme = this.$store.state.global.theme
+				const theme = this.theme
 				return theme === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : ThemeModeEnum.LIGHT
-			},
-			ismobile() {
-				return this.$store.state.global.ismobile
-			},
-			layout() {
-				return this.$store.state.global.layout
-			},
-			layoutTagsOpen() {
-				return this.$store.state.global.layoutTagsOpen
-			},
-			menuIsCollapse() {
-				return this.$store.state.global.menuIsCollapse
-			},
-			breadcrumbOpen() {
-				return this.$store.state.global.breadcrumbOpen
-			},
-			topHanderThemeColorOpen() {
-				return this.$store.state.global.topHanderThemeColorOpen
-			},
-			topHanderThemeColorSpread() {
-				return this.$store.state.global.topHanderThemeColorSpread
 			}
 		},
 		watch: {
@@ -294,6 +285,7 @@
 			this.switchoverTopHanderThemeColor()
 		},
 		methods: {
+			...mapActions(globalStore, ['setTheme', 'setIsmobile', 'setLayout', 'setMenuIsCollapse']),
 			// 切换应用
 			switchModule(id) {
 				const menu = this.moduleMenu
@@ -335,11 +327,7 @@
 			},
 			onLayoutResize() {
 				const clientWidth = document.body.clientWidth
-				if (clientWidth < 992) {
-					this.$store.commit('SET_ismobile', true)
-				} else {
-					this.$store.commit('SET_ismobile', false)
-				}
+				this.setIsmobile(clientWidth < 992)
 			},
 			// 路由监听高亮
 			showThis() {
@@ -361,7 +349,7 @@
 					if (!this.onSelectTag) {
 						const pidKey = this.getParentKeys(this.menu, active)
 						this.openKeys = pidKey
-					} else if (this.$store.state.global.sideUniqueOpen) {
+					} else if (this.sideUniqueOpen) {
 						const pidKey = this.getParentKeys(this.menu, active)
 						this.openKeys = pidKey
 					}
@@ -412,7 +400,7 @@
 			},
 			// 菜单展开/关闭的回调
 			onOpenChange(keys) {
-				if (this.$store.state.global.sideUniqueOpen) {
+				if (this.sideUniqueOpen) {
 					// 获取最新的
 					const openKey = keys[keys.length - 1]
 					if (keys.length > 1) {
@@ -477,19 +465,19 @@
 					: header.classList.remove('snowy-header-primary-color')
 				// 判断是否开启了通栏
 				const headerLogin = document.getElementById('snowyHeaderLogo')
-				try{
+				try {
 					this.topHanderThemeColorSpread
 						? headerLogin.classList.add('snowy-header-logo-primary-color')
 						: headerLogin.classList.remove('snowy-header-logo-primary-color')
-				}catch (e) { }
+				} catch (e) {}
 				// 如果是双排菜单，吧第二排的也给渲染了
 				if (this.layout === 'doublerow') {
 					const snowyDoublerowSideTop = document.getElementById('snowyDoublerowSideTop')
-					try{
+					try {
 						this.topHanderThemeColorSpread
 							? snowyDoublerowSideTop.classList.add('snowy-doublerow-side-top-primary-color')
 							: snowyDoublerowSideTop.classList.remove('snowy-doublerow-side-top-primary-color')
-					}catch (e) { }
+					} catch (e) {}
 				}
 			}
 		}

@@ -9,14 +9,15 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 import { nextTick } from 'vue'
-import store from '@/store'
+import { viewTagsStore } from '@/store'
 
 export function beforeEach(to, from) {
 	const adminMain = document.querySelector('#adminui-main')
 	if (!adminMain) {
 		return false
 	}
-	store.commit('updateViewTags', {
+	const store = viewTagsStore()
+	store.updateViewTags({
 		fullPath: from.fullPath,
 		scrollTop: adminMain.scrollTop
 	})
@@ -28,7 +29,8 @@ export function afterEach(to) {
 		return false
 	}
 	nextTick(() => {
-		const beforeRoute = store.state.viewTags.viewTags.filter((v) => v.fullPath == to.fullPath)[0]
+		const store = viewTagsStore()
+		const beforeRoute = store.viewTags.filter((v) => v.fullPath == to.fullPath)[0]
 		if (beforeRoute) {
 			adminMain.scrollTop = beforeRoute.scrollTop || 0
 		}

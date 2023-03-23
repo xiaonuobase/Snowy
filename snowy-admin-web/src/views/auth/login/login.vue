@@ -108,7 +108,8 @@
 	import config from '@/config'
 	import configApi from '@/api/dev/configApi'
 	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
+	import { mapActions, mapState } from 'pinia'
 
 	export default {
 		name: 'Login',
@@ -119,7 +120,6 @@
 		data() {
 			return {
 				activeKey: 'userAccount',
-				sysBaseConfig: store.state.global.sysBaseConfig || tool.data.get('SNOWY_SYS_BASE_CONFIG'),
 				captchaOpen: config.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN,
 				validCodeBase64: '',
 				ruleForm: {
@@ -150,6 +150,12 @@
 				]
 			}
 		},
+		computed: {
+			...mapState(globalStore, ['sysBaseConfig']),
+			// captchaOpen() {
+			// 	return this.sysBaseConfig.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN === 'true'
+			// }
+		},
 		watch: {
 			'config.theme': function (val) {
 				document.body.setAttribute('data-theme', val)
@@ -160,9 +166,9 @@
 			}
 		},
 		created() {
-			store.commit('clearViewTags')
-			store.commit('clearKeepLive')
-			store.commit('clearIframeList')
+			this.clearViewTags()
+			this.clearKeepLive()
+			this.clearIframeList()
 		},
 		mounted() {
 			let formData = ref(config.SYS_BASE_CONFIG)
@@ -173,12 +179,16 @@
 					})
 					this.captchaOpen = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
 					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
-					store.commit('SET_sysBaseConfig', formData.value)
+					this.setSysBaseConfig(formData.value)
 					this.refreshSwitch()
 				}
 			})
 		},
 		methods: {
+			...mapActions(keepAliveStore, ['clearKeepLive']),
+			...mapActions(viewTagsStore, ['clearViewTags']),
+			...mapActions(iframeStore, ['clearIframeList']),
+			...mapActions(globalStore, ['setSysBaseConfig']),
 			// 通过开关加载内容
 			refreshSwitch() {
 				// 判断是否开启验证码

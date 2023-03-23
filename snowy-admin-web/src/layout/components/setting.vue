@@ -4,9 +4,9 @@
 			<h3>整体风格设置</h3>
 			<div class="snowy-setting-checkbox">
 				<a-tooltip v-for="(a, i) in sideStyleList" :key="i" placement="top">
-					<template #title
-						><span>{{ a.tips }}</span></template
-					>
+					<template #title>
+						<span>{{ a.tips }}</span>
+					</template>
 					<div :class="['snowy-setting-checkbox-item', a.style]" @click="setSideStyle(a.value)">
 						<check-outlined v-if="sideStyle === a.value" class="snowy-setting-checkbox-item-select-icon" />
 					</div>
@@ -15,9 +15,10 @@
 			<h3>整体界面布局</h3>
 			<div class="snowy-setting-checkbox">
 				<a-tooltip v-for="(a, i) in layoutList" :key="i" placement="top">
-					<template #title
-						><span>{{ a.tips }}</span></template
-					>
+					<template #title>
+						<span>{{ a.tips }}</span>
+					</template>
+
 					<div :class="['snowy-setting-checkbox-item', a.style]" @click="layoutStyle(a.value)">
 						<div class="snowy-setting-layout-menu-doublerow-inner" />
 						<check-outlined v-if="layout === a.value" class="snowy-setting-checkbox-item-select-icon" />
@@ -40,45 +41,52 @@
 			</div>
 			<div :style="{ marginBottom: '24px' }">
 				<span
-					><h4>顶栏应用主题色：<a-switch style="float: right" v-model:checked="topHanderThemeColorOpen" /></h4
+					><h4>
+						顶栏应用主题色：<a-switch
+							style="float: right"
+							:checked="topHanderThemeColorOpen"
+							@change="changeTopHanderThemeColorOpen"
+						/></h4
 				></span>
 			</div>
 			<div :style="{ marginBottom: '24px' }">
-				<span
-					><h4>
+				<span>
+					<h4>
 						顶栏主题色通栏：<a-switch
 							style="float: right"
-							v-model:checked="topHanderThemeColorSpread"
+							:checked="topHanderThemeColorSpread"
 							:disabled="!topHanderThemeColorOpen"
-						/></h4
-				></span>
+							@change="changeTopHanderThemeColorOpen"
+						/>
+					</h4>
+				</span>
 			</div>
 			<a-divider />
 			<a-form ref="form" style="text-align: right">
 				<a-form-item label="模块坞">
-					<a-switch v-model:checked="moduleUnfoldOpen" />
+					<a-switch :checked="moduleUnfoldOpen" @change="toggleState('moduleUnfoldOpen')" />
 				</a-form-item>
 				<a-form-item label="面包屑">
-					<a-switch v-model:checked="breadcrumbOpen" />
+					<a-switch :checked="breadcrumbOpen" @change="toggleState('breadcrumbOpen')" />
 				</a-form-item>
 				<a-form-item label="多标签">
-					<a-switch v-model:checked="layoutTagsOpen" />
+					<a-switch :checked="layoutTagsOpen" @change="toggleState('layoutTagsOpen')" />
 				</a-form-item>
 				<a-form-item label="折叠菜单">
-					<a-switch v-model:checked="menuIsCollapse" />
+					<a-switch :checked="menuIsCollapse" @change="toggleState('menuIsCollapse')" />
 				</a-form-item>
 				<a-form-item label="菜单排他展开">
-					<a-switch v-model:checked="sideUniqueOpen" />
+					<a-switch :checked="sideUniqueOpen" @change="toggleState('sideUniqueOpen')" />
 				</a-form-item>
-				<a-form-item label="表单风格">
-					<a-select
-						v-model:value="formStyle"
-						style="width: 80px"
-						size="small"
-						:options="xnFormStyleOptions"
-						@change="formStyleChange"
-					/>
-				</a-form-item>
+        <a-form-item label="表单风格">
+          <a-select
+              v-model:value="formStyle"
+              style="width: 80px"
+              size="small"
+              :options="xnFormStyleOptions"
+              @change="formStyleChange"
+          />
+        </a-form-item>
 			</a-form>
 			<a-alert
 				message="以上配置可实时预览，开发者可在 config/index.js 中配置默认值，不建议在生产环境下开放布局设置"
@@ -89,15 +97,27 @@
 </template>
 
 <script>
-	import { colorList } from '@/config/settingConfig'
-	import { ThemeModeEnum } from '@/utils/enum'
-	import tool from '@/utils/tool'
+	import { colorList } from '../../config/settingConfig'
+	import { ThemeModeEnum } from '../../utils/enum'
+	import { globalStore } from '@/store'
+	import { mapState, mapStores } from 'pinia'
+  import tool from '@/utils/tool'
+
+	const toolDataNameMap = {
+		menuIsCollapse: 'MENU_COLLAPSE',
+		sideUniqueOpen: 'SIDE_UNIQUE_OPEN',
+		layoutTagsOpen: 'LAYOUT_TAGS_OPEN',
+		breadcrumbOpen: 'BREADCRUMD_OPEN',
+		topHanderThemeColorOpen: 'TOP_HANDER_THEME_COLOR_OPEN',
+		topHanderThemeColorSpread: 'TOP_HANDER_THEME_COLOR_SPREAD',
+		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN'
+	}
 
 	export default defineComponent({
 		data() {
 			return {
 				// 整体风格
-				sideStyle: tool.data.get('SNOWY_THEME') || this.$store.state.global.theme,
+				sideStyle: tool.data.get('SNOWY_THEME') || this.theme,
 				sideStyleList: [
 					{
 						tips: '暗色主题风格',
@@ -115,7 +135,6 @@
 						style: 'snowy-setting-checkbox-item-realdark'
 					}
 				],
-				layout: tool.data.get('SNOWY_LAYOUT') || this.$store.state.global.layout,
 				layoutList: [
 					{
 						tips: '经典',
@@ -128,117 +147,70 @@
 						style: 'snowy-setting-layout-menu-doublerow'
 					}
 				],
-				xnFormStyleOptions: [
-					{
-						label: '抽屉',
-						value: 'drawer'
-					},
-					{
-						label: '对话框',
-						value: 'modal'
-					}
-				],
-				topHanderThemeColorOpen:
-					tool.data.get('SNOWY_TOP_HANDER_THEME_COLOR_OPEN') || this.$store.state.global.topHanderThemeColorOpen,
-				topHanderThemeColorSpread:
-					tool.data.get('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD') ||
-					this.$store.state.global.topHanderThemeColorSpread,
-				menuIsCollapse: tool.data.get('SNOWY_MENU_COLLAPSE') || this.$store.state.global.menuIsCollapse,
-				sideUniqueOpen: tool.data.get('SNOWY_SIDE_UNIQUE_OPEN') || this.$store.state.global.sideUniqueOpen,
-				layoutTagsOpen: tool.data.get('SNOWY_LAYOUT_TAGS_OPEN') || this.$store.state.global.layoutTagsOpen,
-				breadcrumbOpen: tool.data.get('SNOWY_BREADCRUMD_OPEN') || this.$store.state.global.breadcrumbOpen,
-				moduleUnfoldOpen: tool.data.get('SNOWY_MODULE_UNFOLD_OPEN') || this.$store.state.global.moduleUnfoldOpen,
-				theme: tool.data.get('APP_THEME') || this.$store.state.global.theme,
-				themeColor: tool.data.get('SNOWY_THEME_COLOR') || this.$store.state.global.themeColor,
-				formStyle: tool.data.get('SNOWY_FORM_STYLE') || this.$store.state.global.formStyle,
+        xnFormStyleOptions: [
+          {
+            label: '抽屉',
+            value: 'drawer'
+          },
+          {
+            label: '对话框',
+            value: 'modal'
+          }
+        ],
 				colorList
 			}
 		},
-		watch: {
-			menuIsCollapse() {
-				this.$store.commit('TOGGLE_menuIsCollapse')
-				if (this.$store.state.global.menuIsCollapse) {
-					tool.data.set('SNOWY_MENU_COLLAPSE', true)
-				} else {
-					tool.data.set('SNOWY_MENU_COLLAPSE', false)
-				}
-			},
-			sideUniqueOpen() {
-				this.$store.commit('TOGGLE_sideUniqueOpen')
-				if (this.$store.state.global.sideUniqueOpen) {
-					tool.data.set('SNOWY_SIDE_UNIQUE_OPEN', true)
-				} else {
-					tool.data.set('SNOWY_SIDE_UNIQUE_OPEN', false)
-				}
-			},
-			layoutTagsOpen() {
-				this.$store.commit('TOGGLE_layoutTagsOpen')
-				if (this.$store.state.global.layoutTagsOpen) {
-					tool.data.set('SNOWY_LAYOUT_TAGS_OPEN', true)
-				} else {
-					tool.data.set('SNOWY_LAYOUT_TAGS_OPEN', false)
-				}
-			},
-			breadcrumbOpen() {
-				this.$store.commit('TOGGLE_breadcrumbOpen')
-				if (this.$store.state.global.breadcrumbOpen) {
-					tool.data.set('SNOWY_BREADCRUMD_OPEN', true)
-				} else {
-					tool.data.set('SNOWY_BREADCRUMD_OPEN', false)
-				}
-			},
-			topHanderThemeColorOpen() {
-				this.$store.commit('TOGGLE_topHanderThemeColorOpen')
-				if (this.$store.state.global.topHanderThemeColorOpen) {
-					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', true)
-				} else {
-					// 关闭顶栏主题色
-					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_OPEN', false)
-					// 这个时候我们吧通栏的设置也给搞为false
-					this.topHanderThemeColorSpread = false
-				}
-			},
-			topHanderThemeColorSpread() {
-				this.$store.commit('TOGGLE_topHanderThemeColorSpread')
-				if (this.$store.state.global.topHanderThemeColorSpread) {
-					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', true)
-				} else {
-					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', false)
-				}
-			},
-			moduleUnfoldOpen() {
-				this.$store.commit('TOGGLE_moduleUnfoldOpen')
-				if (this.$store.state.global.moduleUnfoldOpen) {
-					tool.data.set('SNOWY_MODULE_UNFOLD_OPEN', true)
-				} else {
-					tool.data.set('SNOWY_MODULE_UNFOLD_OPEN', false)
-				}
-			},
+		computed: {
+			...mapStores(globalStore),
+			...mapState(globalStore, [
+				'theme',
+				'themeColor',
+				'layout',
+				'menuIsCollapse',
+				'sideUniqueOpen',
+				'layoutTagsOpen',
+				'breadcrumbOpen',
+				'moduleUnfoldOpen',
+				'topHanderThemeColorOpen',
+				'topHanderThemeColorSpread'
+			])
 		},
+		mounted() {},
 		methods: {
-			// 设置整体风格主题
-			setSideStyle(value) {
-				this.$store.commit('SET_theme', value)
-				this.sideStyle = value
-				tool.data.set('SNOWY_THEME', value)
+			changeTopHanderThemeColorOpen() {
+				this.toggleState('topHanderThemeColorOpen')
+				if (!this.topHanderThemeColorOpen) {
+					this.globalStore.topHanderThemeColorSpread = false
+				}
 			},
-			// 设置整体界面布局
+			toggleState(stateName) {
+				this.globalStore.toggleConfig(stateName)
+				const toolDataName = toolDataNameMap[stateName]
+        tool.data.set(`SNOWY_${toolDataName}`, this.globalStore[stateName])
+			},
+      // 设置整体风格主题
+			setSideStyle(value) {
+				this.globalStore.setTheme(value)
+				this.sideStyle = value
+        tool.data.set('SNOWY_THEME', value)
+			},
+      // 设置整体界面布局
 			layoutStyle(value) {
-				this.$store.commit('SET_layout', value)
-				tool.data.set('SNOWY_LAYOUT', value)
+				this.globalStore.setLayout(value)
+        tool.data.set('SNOWY_LAYOUT', value)
 				this.layout = value
 			},
-			// 切换颜色
+      // 切换颜色
 			tagColor(value) {
-				this.themeColor = value
-				tool.data.set('SNOWY_THEME_COLOR', value)
-				this.$store.commit('SET_themeColor', value)
+				this.globalStore.themeColor = value
+        tool.data.set('SNOWY_THEME_COLOR', value)
+				this.globalStore.setThemeColor(value)
 			},
-			// 切换表单风格
-			formStyleChange(value) {
-				tool.data.set('SNOWY_FORM_STYLE', value)
-				this.$store.commit('SET_formStyle', value)
-			}
+      // 切换表单风格
+      formStyleChange(value) {
+        tool.data.set('SNOWY_FORM_STYLE', value)
+        this.$store.commit('SET_formStyle', value)
+      }
 		}
 	})
 </script>

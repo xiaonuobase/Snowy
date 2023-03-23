@@ -1,18 +1,8 @@
-/* eslint-disable eqeqeq */
-<!--
- * @Descripttion: 处理iframe持久化，涉及store(VUEX)
- * @version: 1.0
- * @Author: sakuya
- * @Date: 2021年6月30日13:20:41
- * @LastEditors:
- * @LastEditTime:
--->
-
 <template>
-	<div v-show="$route.meta.type == 'iframe'" class="iframe-pages">
+	<div v-show="$route.meta.type === 'iframe'" class="iframe-pages">
 		<iframe
 			v-for="item in iframeList"
-			v-show="$route.meta.url == item.meta.url"
+			v-show="$route.meta.url === item.meta.url"
 			:key="item.meta.url"
 			:src="item.meta.url"
 			frameborder="0"
@@ -21,20 +11,16 @@
 </template>
 
 <script>
+	import { mapState, mapActions } from 'pinia'
+	import { iframeStore, globalStore } from '@/store'
+
 	export default {
 		data() {
 			return {}
 		},
 		computed: {
-			iframeList() {
-				return this.$store.state.iframe.iframeList
-			},
-			ismobile() {
-				return this.$store.state.global.ismobile
-			},
-			layoutTags() {
-				return this.$store.state.global.layoutTags
-			}
+			...mapState(iframeStore, ['iframeList']),
+			...mapState(globalStore, ['ismobile', 'layoutTags'])
 		},
 		watch: {
 			$route(e) {
@@ -46,16 +32,16 @@
 		},
 		mounted() {},
 		methods: {
+			...mapActions(iframeStore, ['setIframeList', 'pushIframeList', 'clearIframeList']),
 			push(route) {
-				// eslint-disable-next-line eqeqeq
-				if (route.meta.type == 'iframe') {
+				if (route.meta.type === 'iframe') {
 					if (this.ismobile || !this.layoutTags) {
-						this.$store.commit('setIframeList', route)
+						this.setIframeList(route)
 					} else {
-						this.$store.commit('pushIframeList', route)
+						this.pushIframeList(route)
 					}
 				} else if (this.ismobile || !this.layoutTags) {
-					this.$store.commit('clearIframeList')
+					this.clearIframeList()
 				}
 			}
 		}

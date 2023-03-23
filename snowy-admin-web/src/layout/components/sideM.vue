@@ -19,8 +19,8 @@
 
 <script>
 	import NavMenu from './NavMenu.vue'
-	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore } from '@/store'
+	import { mapState } from 'pinia'
 
 	export default {
 		components: {
@@ -69,9 +69,11 @@
 		data() {
 			return {
 				visible: false,
-				menu: [],
-				sysBaseConfig: tool.data.get('SNOWY_SYS_BASE_CONFIG') || store.state.global.sysBaseConfig
+				menu: []
 			}
+		},
+		computed: {
+			...mapState(globalStore, ['sysBaseConfig'])
 		},
 		created() {
 			const menu = this.$router.getMenu()

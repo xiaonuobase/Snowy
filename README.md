@@ -102,7 +102,7 @@ snowy
       |-layout == 基础布局
       |-locales == 多语言配置
       |-router == 基础路由配置
-      |-store == VUEX缓存配置
+      |-store == Pinia缓存配置
       |-style == 样式风格配置
       |-utils == 工具类
       |-views == 所有视图界面

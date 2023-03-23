@@ -66,7 +66,7 @@
 	import { onMounted } from 'vue'
 	import { useRoute } from 'vue-router'
 	import tool from '@/utils/tool'
-	import store from '@/store'
+	import { globalStore } from '@/store'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import accountBasic from './userTab/accountBasic.vue'
 	import CropUpload from '@/components/CropUpload/index.vue'
@@ -74,6 +74,8 @@
 	import shortcutSetting from './userTab/shortcutSetting.vue'
 	import accountBind from './userTab/accountBind.vue'
 	import userMessage from './userTab/userMessage.vue'
+
+	const global_store = globalStore()
 
 	const userInfo = ref(tool.data.get('USER_INFO'))
 	const cropUpload = ref()
@@ -126,7 +128,7 @@
 			userInfo.value.avatar = data
 			// 更新缓存
 			tool.data.set('USER_INFO', userInfo.value)
-			store.commit('SET_userInfo', userInfo.value)
+			global_store.setUserInfo(userInfo.value)
 		})
 	}
 	// 签名板组件回调
@@ -138,7 +140,7 @@
 			userInfo.value.signature = value
 			// 更新缓存
 			tool.data.set('USER_INFO', userInfo.value)
-			store.commit('SET_userInfo', userInfo.value)
+			global_store.setUserInfo(userInfo.value)
 		})
 	}
 </script>

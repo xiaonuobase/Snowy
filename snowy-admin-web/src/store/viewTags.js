@@ -8,43 +8,46 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-/* eslint-disable eqeqeq */
-export default {
-	state: {
+import { defineStore } from 'pinia'
+
+export const viewTagsStore = defineStore({
+	id: 'viewTags',
+	state: () => ({
 		viewTags: []
-	},
-	mutations: {
-		pushViewTags(state, route) {
-			const target = state.viewTags.find((item) => item.fullPath === route.fullPath)
+	}),
+	getters: {},
+	actions: {
+		pushViewTags(route) {
+			const target = this.viewTags.find((item) => item.fullPath === route.fullPath)
 			const isName = route.name
 			if (!target && isName) {
-				state.viewTags.push(route)
+				this.viewTags.push(route)
 			}
 		},
-		removeViewTags(state, route) {
-			state.viewTags.forEach((item, index) => {
+		removeViewTags(route) {
+			this.viewTags.forEach((item, index) => {
 				if (item.fullPath === route.fullPath) {
-					state.viewTags.splice(index, 1)
+					this.viewTags.splice(index, 1)
 				}
 			})
 		},
-		updateViewTags(state, route) {
-			state.viewTags.forEach((item) => {
+		updateViewTags(route) {
+			this.viewTags.forEach((item) => {
 				if (item.fullPath == route.fullPath) {
-					item = Object.assign(item, route)
+					Object.assign(item, route)
 				}
 			})
 		},
-		updateViewTagsTitle(state, title = '') {
+		updateViewTagsTitle(title = '') {
 			const nowFullPath = location.hash.substring(1)
-			state.viewTags.forEach((item) => {
+			this.viewTags.forEach((item) => {
 				if (item.fullPath == nowFullPath) {
 					item.meta.title = title
 				}
 			})
 		},
-		clearViewTags(state) {
-			state.viewTags = []
+		clearViewTags() {
+			this.viewTags = []
 		}
 	}
-}
+})

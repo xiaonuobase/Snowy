@@ -1,29 +1,25 @@
 import '@/utils/objects'
+import { defineStore } from 'pinia'
 
-export default {
-	namespaced: true,
-	state: {
-		// 搜索面板激活状态
+export const searchStore = defineStore({
+	id: 'search',
+	state: () => ({
 		active: false,
-		// 快捷键
 		hotkey: {
 			open: 's',
 			close: 'esc'
 		},
-		// 所有可以搜索的页面
 		pool: []
-	},
-	mutations: {
-		// 切换激活状态
-		toggle(state) {
-			state.active = !state.active
+	}),
+	getters: {},
+	actions: {
+		toggleActive() {
+			this.active = !this.active
 		},
-		// 设置激活模式
-		set(state, active) {
-			state.active = active
+		setActive(active) {
+			this.active = active
 		},
-		// 初始化
-		init(state, menu) {
+		init(menu) {
 			const pool = []
 			const getFullName = function (meta) {
 				if (meta.breadcrumb) {
@@ -40,7 +36,7 @@ export default {
 					if ('menu' === m.meta.type) {
 						if (m.children) {
 							push(m.children)
-						} else if (m.children === null){
+						} else if (m.children === null) {
 							pool.push({
 								icon: m.meta.icon,
 								path: m.path,
@@ -55,7 +51,7 @@ export default {
 				})
 			}
 			push(menu)
-			state.pool = pool
+			this.pool = pool
 		}
 	}
-}
+})

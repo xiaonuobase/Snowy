@@ -8,37 +8,39 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-export default {
-	state: {
+import { defineStore } from 'pinia'
+
+export const keepAliveStore = defineStore({
+	id: 'keepAlive',
+	state: () => ({
 		keepLiveRoute: [],
 		routeKey: null,
 		routeShow: true
-	},
-	mutations: {
-		pushKeepLive(state, component) {
-			if (!state.keepLiveRoute.includes(component)) {
-				state.keepLiveRoute.push(component)
-			}
-		},
-		removeKeepLive(state, component) {
-			const index = state.keepLiveRoute.indexOf(component)
-			if (index !== -1) {
-				state.keepLiveRoute.splice(index, 1)
-			}
-		},
-		clearKeepLive(state) {
-			state.keepLiveRoute = []
-		},
-		setRouteKey(state, key) {
-			state.routeKey = key
-		},
-		setRouteShow(state, key) {
-			state.routeShow = key
-		}
-	},
+	}),
+	getters: {},
 	actions: {
-		setRouteKey({ commit }, key) {
-			commit('setRouteKey', key)
+		pushKeepLive(component) {
+			if (!this.keepLiveRoute.includes(component)) {
+				this.keepLiveRoute.push(component)
+			}
+		},
+		removeKeepLive(component) {
+			const index = this.keepLiveRoute.indexOf(component)
+			if (index !== -1) {
+				this.keepLiveRoute.splice(index, 1)
+			}
+		},
+		clearKeepLive() {
+			this.keepLiveRoute = []
+		},
+		setRouteKey(key) {
+			this.routeKey = key
+		},
+		setRouteShow(key) {
+			this.routeShow = key
+		},
+		setRouteKeyAction(key) {
+			this.setRouteKey(key)
 		}
 	}
-}
+})
