@@ -53,10 +53,11 @@ public class GlobalErrorViewController {
             } else {
                 commonResult = CommonResult.error();
             }
-            Exception exception = (Exception) model;
-            log.error(">>> 服务器未知异常：", exception);
+            if(model instanceof Exception){
+                Exception exception = (Exception) model;
+                log.error(">>> 服务器未知异常：", exception);
+            }
         }
-
         return commonResult;
     }
 }
