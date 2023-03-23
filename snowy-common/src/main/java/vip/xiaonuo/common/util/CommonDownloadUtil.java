@@ -15,6 +15,7 @@ package vip.xiaonuo.common.util;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.URLUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -26,6 +27,7 @@ import java.io.IOException;
  * @author xuyuxiang
  * @date 2020/8/5 21:45
  */
+@Slf4j
 public class CommonDownloadUtil {
 
     /**
@@ -55,7 +57,7 @@ public class CommonDownloadUtil {
             response.setContentType("application/octet-stream;charset=UTF-8");
             IoUtil.write(response.getOutputStream(), true, fileBytes);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(">>> 文件下载异常：", e);
         }
     }
 }

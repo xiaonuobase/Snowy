@@ -58,11 +58,10 @@ public class AuthExceptionUtil {
             commonResult = CommonResult.error(saTokenException.getMessage());
         } else {
             // 未知异常才打印
-            e.printStackTrace();
+            log.error(">>> 服务器未知异常：{}，请求地址：{}", e.getMessage(), SaHolder.getRequest().getUrl());
             // 未知异常返回服务器异常（此处不可能执行进入，因为本方法处理的一定是SaToken的异常，此处仅为安全性考虑）
             commonResult = CommonResult.error("服务器异常");
         }
-        log.error(">>> {}，请求地址：{}", commonResult.getMsg(), SaHolder.getRequest().getUrl());
         return commonResult;
     }
 }

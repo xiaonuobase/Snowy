@@ -13,6 +13,7 @@
 package vip.xiaonuo.common.util;
 
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import vip.xiaonuo.common.exception.CommonException;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author xuyuxiang
  * @date 2020/3/30 15:09
  */
+@Slf4j
 public class CommonServletUtil {
 
     /**
@@ -66,7 +68,7 @@ public class CommonServletUtil {
         try {
             servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 非Web上下文无法获取Request：", e);
             throw new CommonException("非Web上下文无法获取Request");
         }
         if (servletRequestAttributes == null) {
@@ -81,7 +83,7 @@ public class CommonServletUtil {
         try {
             servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(">>> 非Web上下文无法获取Response：", e);
             throw new CommonException("非Web上下文无法获取Response");
         }
         if (servletRequestAttributes == null) {

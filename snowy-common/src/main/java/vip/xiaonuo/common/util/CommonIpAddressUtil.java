@@ -56,16 +56,16 @@ public class CommonIpAddressUtil {
         try {
             cBuff = Searcher.loadContentFromFile(dbPath);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new CommonException("CommonIpAddressUtil初始化失败，原因：", e.getMessage());
+            log.error(">>> CommonIpAddressUtil初始化异常：", e);
+            throw new CommonException("CommonIpAddressUtil初始化异常");
         }
 
         // 2、使用上述的 cBuff 创建一个完全基于内存的查询对象。
         try {
             searcher = Searcher.newWithBuffer(cBuff);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new CommonException("CommonIpAddressUtil初始化失败，原因：", e.getMessage());
+            log.error(">>> CommonIpAddressUtil初始化异常：", e);
+            throw new CommonException("CommonIpAddressUtil初始化异常");
         }
     }
 
@@ -83,7 +83,7 @@ public class CommonIpAddressUtil {
                 String remoteHost = ServletUtil.getClientIP(request);
                 return LOCAL_REMOTE_HOST.equals(remoteHost) ? Ipv4Util.LOCAL_IP : remoteHost;
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(">>> 获取客户端ip异常：", e);
                 return Ipv4Util.LOCAL_IP;
             }
         }
