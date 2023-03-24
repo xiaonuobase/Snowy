@@ -582,8 +582,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
-            menuIdList = sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
-                    SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue());
+            menuIdList.addAll(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
+                    SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
         }
 
         // 获取所有的菜单和模块以及单页面列表，并按分类和排序码排序
