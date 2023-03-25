@@ -185,6 +185,7 @@
 	import { ThemeModeEnum } from '@/utils/enum'
 	import { globalStore, keepAliveStore } from '@/store'
 	import { mapState, mapActions } from 'pinia'
+	import tool from '@/utils/tool'
 
 	export default defineComponent({
 		name: 'Index',
@@ -220,6 +221,7 @@
 				'menuIsCollapse',
 				'breadcrumbOpen',
 				'topHanderThemeColorOpen',
+				'topHanderThemeColorSpread',
 				'topHanderThemeColor',
 				'sideUniqueOpen',
 				'sysBaseConfig'
@@ -264,7 +266,7 @@
 			window.addEventListener('resize', this.onLayoutResize)
 			this.moduleMenu = this.$router.getMenu()
 			// 获取缓存中的菜单模块是哪个
-			const menuModuleId = this.$TOOL.data.get('SNOWY_MENU_MODULE_ID')
+			const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
 			let menu = []
 			if (menuModuleId) {
 				// 防止切换一个无此应用的人
@@ -293,7 +295,7 @@
 					const menus = menu.filter((item) => item.id === id)[0].children
 					if (menus.length > 0) {
 						// 将此模块的唯一值加入缓存
-						this.$TOOL.data.set('SNOWY_MENU_MODULE_ID', id)
+						tool.data.set('SNOWY_MENU_MODULE_ID', id)
 						// 正儿八百的菜单
 						this.menu = this.filterUrl(menus)
 						// 然后将其跳转至指定界面，默认始终取排序第一的

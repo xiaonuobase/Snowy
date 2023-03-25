@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="修改密码"
-		:width="550"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="修改密码" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
 			<a-form-item label="旧密码：" name="password" has-feedback>
 				<a-input

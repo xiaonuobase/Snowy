@@ -8,7 +8,7 @@
 						<span>{{ a.tips }}</span>
 					</template>
 					<div :class="['snowy-setting-checkbox-item', a.style]" @click="setSideStyle(a.value)">
-						<check-outlined v-if="sideStyle === a.value" class="snowy-setting-checkbox-item-select-icon" />
+						<check-outlined v-if="theme === a.value" class="snowy-setting-checkbox-item-select-icon" />
 					</div>
 				</a-tooltip>
 			</div>
@@ -56,7 +56,7 @@
 							style="float: right"
 							:checked="topHanderThemeColorSpread"
 							:disabled="!topHanderThemeColorOpen"
-							@change="changeTopHanderThemeColorOpen"
+							@change="changeTopHanderThemeColorSpread"
 						/>
 					</h4>
 				</span>
@@ -81,7 +81,7 @@
 				<a-form-item label="表单风格">
 					<a-select
 						:value="formStyle"
-						class="w-[80px]"
+						style="width: 80px"
 						size="small"
 						:options="xnFormStyleOptions"
 						@change="formStyleChange"
@@ -97,8 +97,8 @@
 </template>
 
 <script>
-	import { colorList } from '../../config/settingConfig'
-	import { ThemeModeEnum } from '../../utils/enum'
+	import { colorList } from '@/config/settingConfig'
+	import { ThemeModeEnum } from '@/utils/enum'
 	import { globalStore } from '@/store'
 	import { mapState, mapStores } from 'pinia'
 	import tool from '@/utils/tool'
@@ -112,12 +112,9 @@
 		topHanderThemeColorSpread: 'TOP_HANDER_THEME_COLOR_SPREAD',
 		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN'
 	}
-
 	export default defineComponent({
 		data() {
 			return {
-				// 整体风格
-				sideStyle: tool.data.get('SNOWY_THEME') || this.theme,
 				sideStyleList: [
 					{
 						tips: '暗色主题风格',
@@ -182,7 +179,11 @@
 				this.toggleState('topHanderThemeColorOpen')
 				if (!this.topHanderThemeColorOpen) {
 					this.globalStore.topHanderThemeColorSpread = false
+					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', false)
 				}
+			},
+			changeTopHanderThemeColorSpread() {
+				this.toggleState('topHanderThemeColorSpread')
 			},
 			toggleState(stateName) {
 				this.globalStore.toggleConfig(stateName)
@@ -192,18 +193,15 @@
 			// 设置整体风格主题
 			setSideStyle(value) {
 				this.globalStore.setTheme(value)
-				this.sideStyle = value
 				tool.data.set('SNOWY_THEME', value)
 			},
 			// 设置整体界面布局
 			layoutStyle(value) {
 				this.globalStore.setLayout(value)
 				tool.data.set('SNOWY_LAYOUT', value)
-				this.layout = value
 			},
 			// 切换颜色
 			tagColor(value) {
-				this.globalStore.themeColor = value
 				tool.data.set('SNOWY_THEME_COLOR', value)
 				this.globalStore.setThemeColor(value)
 			},

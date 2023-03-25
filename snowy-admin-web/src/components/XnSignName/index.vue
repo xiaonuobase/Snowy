@@ -1,5 +1,12 @@
 <template>
-	<xn-form-container ref="signModel" v-model:visible="visible" :width="700" title="电子签名" @close="handleClear" @ok="handleOk">
+	<xn-form-container
+		ref="signModel"
+		v-model:visible="visible"
+		:width="700"
+		title="电子签名"
+		@close="handleClear"
+		@ok="handleOk"
+	>
 		<a-row :gutter="5">
 			<a-col :span="15">
 				<div style="border: 1px solid rgb(236 236 236)">
