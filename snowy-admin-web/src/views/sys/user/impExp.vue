@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="导入导出"
-		:width="700"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="导入导出" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<span
 			>导入数据格式严格按照系统模板进行数据录入，请点击
 			<a-button type="primary" size="small" @click="downloadImportUserTemplate">下载模板</a-button>

@@ -79,9 +79,9 @@
 		},
 		computed: {
 			...mapState(viewTagsStore, ['viewTags']),
-      tagList() {
-        return this.viewTags
-      }
+			tagList() {
+				return this.viewTags
+			}
 		},
 		watch: {
 			$route(to) {

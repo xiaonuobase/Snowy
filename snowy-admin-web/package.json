@@ -10,8 +10,8 @@
 	"license": "Apache-2.0",
 	"author": "yubaoshan",
 	"scripts": {
-		"serve": "vite",
-		"dev": "vite --mode development",
+		"serve": "vite --host 0.0.0.0",
+		"dev": "vite --mode development --host 0.0.0.0",
 		"preview": "vite preview",
 		"build": "vite build --mode production",
 		"prod": "vite  --mode production"
