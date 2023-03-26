@@ -37,6 +37,7 @@
 		"lodash-es": "4.17.21",
 		"nprogress": "0.2.0",
 		"pinia": "2.0.33",
+		"qs": "6.11.1",
 		"screenfull": "6.0.2",
 		"sm-crypto": "0.3.11",
 		"snowflake-id": "1.1.0",
