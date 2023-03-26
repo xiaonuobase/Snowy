@@ -10,7 +10,8 @@
 			<a-menu-item
 				v-for="item in menu"
 				:key="item.id"
-				style="padding-right: 5px; position: relative"
+				class="!px-3"
+				style="position: relative"
 				@click="moduleClick(item.id)"
 			>
 				<template #icon>
