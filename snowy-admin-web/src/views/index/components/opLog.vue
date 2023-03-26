@@ -25,7 +25,7 @@
 
 	// 是否展示更多按钮
 	const displayMore = () => {
-		return userInfo.roleCodeList && userInfo.roleCodeList.indexOf('super') !== -1
+		return userInfo.roleCodeList && userInfo.roleCodeList.toString().indexOf('superAdmin') !== -1
 	}
 	const seleOpLogList = () => {
 		indexApi.indexOpLogList().then((data) => {
