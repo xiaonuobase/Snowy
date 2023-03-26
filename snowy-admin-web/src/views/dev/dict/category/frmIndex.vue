@@ -12,40 +12,40 @@
 			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 		</a-col>
 		<a-col :span="19">
+			<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
+				<a-row :gutter="24">
+					<a-col :span="8">
+						<a-form-item name="searchKey" label="字典名称">
+							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入字典名称" />
+						</a-form-item>
+					</a-col>
+					<a-col :span="8">
+						<a-button type="primary" @click="$refs.table.refresh(true)">
+							<template #icon><SearchOutlined /></template>
+							查询
+						</a-button>
+						<a-button class="snowy-buttom-left" @click="reset">
+							<template #icon><redo-outlined /></template>
+							重置
+						</a-button>
+					</a-col>
+				</a-row>
+			</a-form>
+			<a-divider class="m-3 mx-0"/>
 			<s-table
 				ref="table"
 				:columns="columns"
 				:data="loadData"
 				:expand-row-by-click="true"
 				bordered
+				:tool-config="toolConfig"
 				:row-key="(record) => record.id"
 			>
 				<template #operator class="table-operator">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-						<a-row :gutter="24">
-							<a-col :span="8">
-								<a-form-item name="searchKey" label="字典名称">
-									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入字典名称"></a-input>
-								</a-form-item>
-							</a-col>
-							<a-col :span="8">
-								<a-button type="primary" @click="$refs.table.refresh(true)">
-									<template #icon><SearchOutlined /></template>
-									查询
-								</a-button>
-								<a-button class="snowy-buttom-left" @click="reset">
-									<template #icon><redo-outlined /></template>
-									重置
-								</a-button>
-							</a-col>
-							<a-col :span="8">
-								<a-button type="primary" @click="form.onOpen(undefined, 'FRM', searchFormState.parentId)">
-									<template #icon><plus-outlined /></template>
-									新增
-								</a-button>
-							</a-col>
-						</a-row>
-					</a-form>
+					<a-button type="primary" @click="form.onOpen(undefined, 'FRM', searchFormState.parentId)">
+						<template #icon><plus-outlined /></template>
+						新增
+					</a-button>
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'category'">
@@ -96,6 +96,7 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
+	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
