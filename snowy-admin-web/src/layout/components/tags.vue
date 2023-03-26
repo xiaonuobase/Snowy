@@ -60,7 +60,7 @@
 <script>
 	import tool from '@/utils/tool'
 	import XnContextMenu from '@/components/XnContextMenu/index.vue'
-	import { iframeStore, keepAliveStore, viewTagsStore } from '@/store'
+	import {globalStore, iframeStore, keepAliveStore, viewTagsStore} from '@/store'
 	import { mapState, mapActions } from 'pinia'
 
 	export default {
@@ -79,6 +79,7 @@
 		},
 		computed: {
 			...mapState(viewTagsStore, ['viewTags']),
+			...mapState(globalStore, ['layoutTagsOpen']),
 			tagList() {
 				return this.viewTags
 			}
@@ -86,6 +87,9 @@
 		watch: {
 			$route(to) {
 				this.addViewTags(to)
+			},
+			layoutTagsOpen() {
+				this.closeOtherCacheTabs()
 			}
 		},
 		created() {
@@ -161,7 +165,6 @@
 			// 增加tag
 			addViewTags(route) {
 				this.activeKey = route.fullPath
-
 				if (route.name && !route.meta.fullpage) {
 					this.pushViewTags(route)
 					this.pushKeepLive(route.name)
@@ -239,6 +242,13 @@
 					} else {
 						this.closeSelectedTag(tag, false)
 					}
+				})
+			},
+			// 多标签功能关闭时关闭被缓存的标签
+			closeOtherCacheTabs () {
+				const tags = [...this.tagList]
+				tags.forEach((tag) => {
+					this.closeSelectedTag(tag, false)
 				})
 			},
 			// TAB 最大化（包括标签栏）
