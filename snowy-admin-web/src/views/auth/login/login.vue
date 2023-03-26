@@ -152,9 +152,6 @@
 		},
 		computed: {
 			...mapState(globalStore, ['sysBaseConfig']),
-			// captchaOpen() {
-			// 	return this.sysBaseConfig.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN === 'true'
-			// }
 		},
 		watch: {
 			'config.theme': function (val) {
