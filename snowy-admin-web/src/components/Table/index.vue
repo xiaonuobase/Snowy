@@ -6,6 +6,7 @@
 	import './index.less'
 
 	export default {
+		name: 'STable',
 		components: {
 			draggable,
 			columnSetting
@@ -42,8 +43,8 @@
 				default: 1
 			},
 			size: {
-				type: String,
-				default: '10'
+				type: Number,
+				default: 10
 			},
 			showSizeChanger: {
 				type: Boolean,
@@ -143,7 +144,7 @@
 				(['auto', true].includes(this.showPagination) &&
 					Object.assign({}, this.localPagination, {
 						current: localPageNum,
-						size: this.size, //this.compSize, size// 改动
+						pageSize: this.size, //this.compSize, size// 改动
 						showSizeChanger: this.showSizeChanger,
 						defaultPageSize: this.defaultPageSize,
 						pageSizeOptions: this.pageSizeOptions,
@@ -168,7 +169,7 @@
 						{},
 						{
 							current: 1,
-							size: this.size
+							pageSize: this.localPagination.pageSize
 						}
 					))
 				this.loadData()
@@ -187,11 +188,12 @@
 							(pagination && pagination.current) ||
 							(this.showPagination && this.localPagination.current) ||
 							this.pageNum,
+						// 此处后端使用size作为分页参数
 						size:
 							(pagination && pagination.pageSize) ||
 							(this.showPagination && this.localPagination.pageSize) ||
 							this.pageSize ||
-							this.localPagination.size
+							this.localPagination.pageSize
 					},
 					(sorter &&
 						sorter.field && {
@@ -227,7 +229,7 @@
 									showTotal: (total, range) => {
 										return `${range[0]}-${range[1]} 共 ${total} 条 `
 									},
-									size: (pagination && pagination.size) || this.localPagination.size
+									pageSize: (pagination && pagination.pageSize) || this.localPagination.pageSize
 								})) ||
 							false
 						// 后端数据records为null保存修复
