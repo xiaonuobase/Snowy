@@ -10,6 +10,7 @@
  */
 // 统一的请求发送
 import axios from 'axios'
+import qs from 'qs'
 import { Modal, message, notification } from 'ant-design-vue'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
@@ -108,8 +109,25 @@ service.interceptors.response.use(
 		} else {
 			// 统一成功提示
 			const responseUrl = response.config.url
-			const apiNameArray = ['add', 'edit', 'delete', 'update', 'grant', 'reset', 'start', 'stop',
-				'pass', 'disable', 'enable', 'revoke', 'suspend', 'active', 'turn', 'adjust', 'reject']
+			const apiNameArray = [
+				'add',
+				'edit',
+				'delete',
+				'update',
+				'grant',
+				'reset',
+				'start',
+				'stop',
+				'pass',
+				'disable',
+				'enable',
+				'revoke',
+				'suspend',
+				'active',
+				'turn',
+				'adjust',
+				'reject'
+			]
 			apiNameArray.forEach((apiName) => {
 				if (responseUrl.includes(apiName)) {
 					message.success(data.msg)
@@ -131,37 +149,37 @@ service.interceptors.response.use(
 	}
 )
 
+// 适配器, 用于适配不同的请求方式
 export const baseRequest = (url, value = {}, method = 'post', options = {}) => {
 	url = sysConfig.API_URL + url
 	if (method === 'post') {
 		return service.post(url, value, options)
 	} else if (method === 'get') {
-		return service.get(url, {
-			params: value,
-			...options
-		})
+		return service.get(url, { params: value, ...options })
 	} else if (method === 'formdata') {
-		return service({
-			method: 'post',
-			url,
-			data: value,
-			// 转换数据的方法
-			transformRequest: [
-				function (data) {
-					let ret = ''
-					for (const it in data) {
-						ret += `${encodeURIComponent(it)}=${encodeURIComponent(data[it])}&`
-					}
-					ret = ret.substring(0, ret.length - 1)
-					return ret
-				}
-			],
-			// 设置请求头
+		// form-data表单提交的方式
+		return service.post(url, qs.stringify(value), {
 			headers: {
 				'Content-Type': 'multipart/form-data'
-			}
+			},
+			...options
+		})
+	} else {
+		// 其他请求方式，例如：put、delete
+		return service({
+			method: method,
+			url: url,
+			data: value,
+			...options
 		})
 	}
 }
+
+// 模块内的请求, 会自动加上模块的前缀
+export const moduleRequest =
+	(moduleUrl) =>
+	(url, ...arg) => {
+		return baseRequest(moduleUrl + url, ...arg)
+	}
 
 export default service
