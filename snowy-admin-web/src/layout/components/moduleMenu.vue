@@ -1,5 +1,5 @@
 <template>
-	<div v-if="moduleUnfoldOpen">
+	<div class="layout-items-center" v-if="moduleUnfoldOpen">
 		<a-menu
 			v-model:selectedKeys="selectedKeys"
 			mode="horizontal"
@@ -141,7 +141,7 @@
 	.module-menu {
 		line-height: 50px;
 		border-bottom: 0px;
-		width: 105%;
+		min-width: 200px;
 	}
 	.module-menu-color {
 		color: white;
