@@ -141,7 +141,8 @@
 	.module-menu {
 		line-height: 50px;
 		border-bottom: 0px;
-		min-width: 200px;
+		min-width: 100px;
+		flex: 0 0 auto;
 	}
 	.module-menu-color {
 		color: white;
