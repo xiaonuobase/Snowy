@@ -26,9 +26,9 @@
 				</a-tooltip>
 			</div>
 			<a-divider />
-			<div :style="{ marginBottom: '24px' }">
+			<div class="mb-4">
 				<h3>主题色</h3>
-				<div style="height: 50px">
+				<div class="h-[50px]">
 					<a-tooltip v-for="(item, index) in colorList" :key="index" class="snowy-setting-theme-color-colorBlock">
 						<template #title>
 							<span>{{ item.key }}</span>
@@ -39,30 +39,21 @@
 					</a-tooltip>
 				</div>
 			</div>
-			<div :style="{ marginBottom: '24px' }">
-				<span
-					><h4>
-						顶栏应用主题色：<a-switch
-							style="float: right"
-							:checked="topHanderThemeColorOpen"
-							@change="changeTopHanderThemeColorOpen"
-						/></h4
-				></span>
+			<div class="mb-4 layout-slide">
+				<h4 class="">顶栏应用主题色：</h4>
+				<a-switch :checked="topHanderThemeColorOpen" @change="changeTopHanderThemeColorOpen" />
 			</div>
-			<div :style="{ marginBottom: '24px' }">
-				<span>
-					<h4>
-						顶栏主题色通栏：<a-switch
-							style="float: right"
-							:checked="topHanderThemeColorSpread"
-							:disabled="!topHanderThemeColorOpen"
-							@change="changeTopHanderThemeColorSpread"
-						/>
-					</h4>
-				</span>
+			<div class="mb-4 layout-slide">
+				<h4>顶栏主题色通栏：</h4>
+				<a-switch
+					style="float: right"
+					:checked="topHanderThemeColorSpread"
+					:disabled="!topHanderThemeColorOpen"
+					@change="changeTopHanderThemeColorSpread"
+				/>
 			</div>
 			<a-divider />
-			<a-form ref="form" style="text-align: right">
+			<a-form ref="form" class="text-right">
 				<a-form-item label="模块坞">
 					<a-switch :checked="moduleUnfoldOpen" @change="toggleState('moduleUnfoldOpen')" />
 				</a-form-item>
@@ -81,7 +72,7 @@
 				<a-form-item label="表单风格">
 					<a-select
 						:value="formStyle"
-						style="width: 80px"
+						class="!w-[80px]"
 						size="small"
 						:options="xnFormStyleOptions"
 						@change="formStyleChange"
