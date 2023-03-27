@@ -14,6 +14,7 @@ package vip.xiaonuo.sys.modular.resource.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
@@ -48,6 +49,10 @@ import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -97,11 +102,45 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             lambdaQueryWrapper.like(SysMenu::getTitle, sysMenuTreeParam.getSearchKey());
         }
         List<SysMenu> resourceList = this.list(lambdaQueryWrapper);
+
+        // 填充上层的父级菜单
+        this.fillParentSysMenuInfo(resourceList);
+
         List<TreeNode<String>> treeNodeList = resourceList.stream().map(sysMenu ->
                 new TreeNode<>(sysMenu.getId(), sysMenu.getParentId(),
                         sysMenu.getTitle(), sysMenu.getSortCode()).setExtra(JSONUtil.parseObj(sysMenu)))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    private void fillParentSysMenuInfo(List<SysMenu> resourceList) {
+        if(CollUtil.isNotEmpty(resourceList)){
+            List<SysMenu> parentRelationSysMenus = resourceList.stream().filter(distinctByKey(SysMenu::getParentId)).collect(Collectors.toList());
+
+            List<String> parentIds = null;
+            if(CollUtil.isNotEmpty(parentRelationSysMenus)){
+                parentIds = CollUtil.newArrayList();
+                for(SysMenu parentRelationSysMenu : parentRelationSysMenus){
+                    if(!StrUtil.equals(parentRelationSysMenu.getParentId(),"0")){
+                        parentIds.add(parentRelationSysMenu.getParentId());
+                    }
+                }
+            }
+            if(CollUtil.isNotEmpty(parentIds)){
+                LambdaQueryWrapper<SysMenu> parentSysMenuLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                parentSysMenuLambdaQueryWrapper.in(SysMenu::getId,parentIds);
+                List<SysMenu> parentSysMenus = this.list(parentSysMenuLambdaQueryWrapper);
+                if(CollUtil.isNotEmpty(parentSysMenus)){
+                    this.fillParentSysMenuInfo(parentSysMenus);
+                    resourceList.addAll(parentSysMenus);
+                }
+            }
+        }
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
     @Transactional(rollbackFor = Exception.class)
