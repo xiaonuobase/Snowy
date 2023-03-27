@@ -27,6 +27,9 @@ const getCacheConfig = (value) => {
 	return data
 }
 
+/**
+ * deprecated 请使用 useGlobalStore
+ */
 export const globalStore = defineStore({
 	id: 'global',
 	state: () => ({
@@ -95,3 +98,5 @@ export const globalStore = defineStore({
 		}
 	}
 })
+
+export const useGlobalStore = globalStore
