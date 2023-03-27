@@ -4,11 +4,14 @@ import dictApi from '@/api/dev/dictApi'
 import router from '@/router'
 import tool from '@/utils/tool'
 import { message } from 'ant-design-vue'
+import { useGlobalStore } from '@/store'
 
 export const afterLogin = async (loginToken) => {
 	tool.data.set('TOKEN', loginToken)
 	// 获取登录的用户信息
 	const loginUser = await loginApi.getLoginUser()
+	const globalStore = useGlobalStore()
+	globalStore.setUserInfo(loginUser)
 	tool.data.set('USER_INFO', loginUser)
 
 	// 获取用户的菜单
