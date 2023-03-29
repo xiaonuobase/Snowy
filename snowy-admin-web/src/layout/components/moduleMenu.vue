@@ -142,7 +142,7 @@
 	.module-menu {
 		line-height: 50px;
 		border-bottom: 0px;
-		min-width: 100px;
+		width: 105%;
 		flex: 0 0 auto;
 	}
 	.module-menu-color {
