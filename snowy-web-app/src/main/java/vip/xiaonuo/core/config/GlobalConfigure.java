@@ -200,28 +200,22 @@ public class GlobalConfigure implements WebMvcConfigurer {
                     SaRouter.match("/**")
                             // 排除无需登录接口
                             .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
+                            // 排除B端的超管校验接口
+                            .notMatch(CollectionUtil.newArrayList(SUPER_PERMISSION_PATH_ARR))
                             // 排除C端认证接口
                             .notMatch(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
                             // 校验B端登录
                             .check(r1 -> StpUtil.checkLogin());
 
-                    // C端的接口校验C端登录
-                    SaRouter.match("/**")
-                            // 排除无需登录接口
-                            .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
-                            // 匹配C端认证接口
-                            .match(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
-                            // 校验C端登录
-                            .check(r1 -> StpClientUtil.checkLogin());
-
                     // B端的超管接口校验B端超管角色
-                    SaRouter.match("/**")
-                            // 排除无需登录接口
-                            .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
-                            // 匹配超管接口
-                            .match(CollectionUtil.newArrayList(SUPER_PERMISSION_PATH_ARR))
+                    SaRouter.match(CollectionUtil.newArrayList(SUPER_PERMISSION_PATH_ARR))
                             // 校验B端超管角色
                             .check(r1 -> StpUtil.checkRole(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue()));
+
+                    // C端的接口校验C端登录
+                    SaRouter.match(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
+                            // 校验C端登录
+                            .check(r1 -> StpClientUtil.checkLogin());
                 })
 
                 // 前置函数：在每次认证函数之前执行
