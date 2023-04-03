@@ -21,7 +21,7 @@
 			</a-menu-item>
 		</a-menu>
 	</div>
-	<div v-else>
+	<div v-else  class="panel-item hidden-sm-and-down">
 		<a-popover v-if="menu.length > 1" placement="bottomLeft">
 			<template #content>
 				<a-row :gutter="[0, 5]" class="module-row">
@@ -35,9 +35,7 @@
 					</div>
 				</a-row>
 			</template>
-			<div class="module-comp">
-				<appstore-outlined />
-			</div>
+			<appstore-outlined />
 		</a-popover>
 	</div>
 </template>
@@ -122,18 +120,6 @@
 	.module-card-font {
 		color: white;
 		font-size: 8px;
-	}
-	.module-comp {
-		display: flex;
-		padding: 0 15px;
-		height: 49px;
-		text-align: center;
-		justify-content: center;
-		align-items: center;
-		cursor: pointer;
-	}
-	.module-comp:hover {
-		background: var(--header-color-split);
 	}
 	.ant-menu-horizontal > .ant-menu-item::after,
 	.ant-menu-horizontal > .ant-menu-submenu::after {

@@ -28,17 +28,21 @@
 							@select="onSelect"
 							@openChange="onOpenChange"
 						>
-							<NavMenu :nav-menus="menu"></NavMenu>
+							<NavMenu :nav-menus="menu" />
 						</a-menu>
 					</div>
 				</div>
 			</a-layout-sider>
 			<!-- 手机端情况下的左侧菜单 -->
-			<Side-m v-if="ismobile"></Side-m>
+			<Side-m v-if="ismobile" />
 			<!-- 右侧布局 -->
 			<a-layout>
 				<div id="snowyHeader" class="snowy-header">
 					<div class="snowy-header-left" style="padding-left: 0px">
+						<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
+							<MenuUnfoldOutlined v-if="menuIsCollapse" />
+							<MenuFoldOutlined v-else />
+						</div>
 						<moduleMenu @switchModule="switchModule" />
 						<Topbar v-if="!ismobile && breadcrumbOpen" />
 					</div>
@@ -47,7 +51,7 @@
 					</div>
 				</div>
 				<!-- 多标签 -->
-				<Tags v-if="!ismobile && layoutTagsOpen"></Tags>
+				<Tags v-if="!ismobile && layoutTagsOpen" />
 				<a-layout-content class="main-content-wrapper">
 					<div id="adminui-main" class="adminui-main">
 						<router-view v-slot="{ Component }">
@@ -55,7 +59,7 @@
 								<component :is="Component" :key="$route.name" v-if="routeShow" />
 							</keep-alive>
 						</router-view>
-						<iframe-view></iframe-view>
+						<iframe-view />
 						<div class="main-bottom-wrapper">
 							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
 								sysBaseConfig.SNOWY_SYS_COPYRIGHT
@@ -132,14 +136,18 @@
 					:theme="secondMenuSideTheme"
 					@select="onSelect"
 				>
-					<NavMenu :nav-menus="nextMenu"></NavMenu>
+					<NavMenu :nav-menus="nextMenu" />
 				</a-menu>
 			</a-layout-sider>
 			<!-- 手机端情况下的左侧菜单 -->
-			<Side-m v-if="ismobile"></Side-m>
+			<Side-m v-if="ismobile" />
 			<a-layout>
 				<div id="snowyHeader" class="snowy-header">
 					<div class="snowy-header-left" style="padding-left: 0px">
+						<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
+							<MenuUnfoldOutlined v-if="menuIsCollapse" />
+							<MenuFoldOutlined v-else />
+						</div>
 						<moduleMenu @switchModule="switchModule" />
 						<Topbar v-if="!ismobile && breadcrumbOpen" />
 					</div>
@@ -156,7 +164,7 @@
 								<component :is="Component" v-if="routeShow" :key="$route.name" />
 							</keep-alive>
 						</router-view>
-						<iframe-view></iframe-view>
+						<iframe-view />
 						<div class="main-bottom-wrapper">
 							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
 								sysBaseConfig.SNOWY_SYS_COPYRIGHT
@@ -184,7 +192,7 @@
 	import moduleMenu from './components/moduleMenu.vue'
 	import { ThemeModeEnum } from '@/utils/enum'
 	import { globalStore, keepAliveStore } from '@/store'
-	import { mapState, mapActions } from 'pinia'
+	import { mapState, mapStores, mapActions } from 'pinia'
 	import tool from '@/utils/tool'
 
 	export default defineComponent({
@@ -213,6 +221,7 @@
 			}
 		},
 		computed: {
+			...mapStores(globalStore),
 			...mapState(globalStore, [
 				'theme',
 				'ismobile',
@@ -453,6 +462,9 @@
 						newMap.push(item)
 					})
 				return newMap
+			},
+			menuIsCollapseClick() {
+				this.globalStore.toggleConfig('menuIsCollapse')
 			},
 			// 退出最大化
 			exitMaximize() {

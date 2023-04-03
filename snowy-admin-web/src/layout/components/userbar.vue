@@ -204,18 +204,6 @@
 		align-items: center;
 		height: 100%;
 	}
-	.user-bar .panel-item {
-		padding: 0 10px;
-		cursor: pointer;
-		height: 100%;
-		display: flex;
-		align-items: center;
-	}
-	.user-bar .panel-item i {
-	}
-	.user-bar .panel-item:hover {
-		background: var(--header-color-split);
-	}
 	.user-bar .user-avatar {
 		height: 49px;
 		display: flex;
