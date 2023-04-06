@@ -192,7 +192,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         }
         if(ObjectUtil.isNotEmpty(bizUserAddParam.getEmail())) {
             if(!CommonEmailUtil.isEmail(bizUserAddParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", bizUserAddParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", bizUserAddParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
                     .eq(BizUser::getEmail, bizUserAddParam.getEmail())) > 0) {
@@ -247,7 +247,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         }
         if(ObjectUtil.isNotEmpty(bizUserEditParam.getEmail())) {
             if(!CommonEmailUtil.isEmail(bizUserEditParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", bizUserEditParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", bizUserEditParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
                     .eq(BizUser::getEmail, bizUserEditParam.getEmail())

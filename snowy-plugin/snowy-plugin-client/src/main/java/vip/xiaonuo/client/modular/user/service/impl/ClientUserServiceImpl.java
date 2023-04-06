@@ -153,7 +153,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         }
         if(ObjectUtil.isNotEmpty(clientUserAddParam.getEmail())) {
             if(!CommonEmailUtil.isEmail(clientUserAddParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", clientUserAddParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", clientUserAddParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
                     .eq(ClientUser::getEmail, clientUserAddParam.getEmail())) > 0) {
@@ -188,7 +188,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         }
         if(ObjectUtil.isNotEmpty(clientUserEditParam.getEmail())) {
             if(!CommonEmailUtil.isEmail(clientUserEditParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", clientUserEditParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", clientUserEditParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
                     .eq(ClientUser::getEmail, clientUserEditParam.getEmail())

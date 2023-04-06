@@ -265,7 +265,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if (ObjectUtil.isNotEmpty(sysUserAddParam.getEmail())) {
             if (!CommonEmailUtil.isEmail(sysUserAddParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", sysUserAddParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", sysUserAddParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
                     .eq(SysUser::getEmail, sysUserAddParam.getEmail())) > 0) {
@@ -309,7 +309,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if (ObjectUtil.isNotEmpty(sysUserEditParam.getEmail())) {
             if (!CommonEmailUtil.isEmail(sysUserEditParam.getEmail())) {
-                throw new CommonException("邮箱：{}格式错误", sysUserEditParam.getPhone());
+                throw new CommonException("邮箱：{}格式错误", sysUserEditParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
                     .eq(SysUser::getEmail, sysUserEditParam.getEmail())
@@ -470,7 +470,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public String findPasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
         // 邮箱
         String email = sysUserGetEmailValidCodeParam.getEmail();
-        // 验证码正确则校验手机号格式
+        // 验证码正确则校验邮箱格式
         if (!CommonEmailUtil.isEmail(email)) {
             throw new CommonException("邮箱：{}格式错误", email);
         }
