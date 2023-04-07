@@ -85,10 +85,12 @@ import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.resource.entity.SysButton;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
+import vip.xiaonuo.sys.modular.resource.entity.SysModule;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceMenuTypeEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
+import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.enums.SysRoleDataScopeCategoryEnum;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
@@ -154,6 +156,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private SysRoleService sysRoleService;
+
+    @Resource
+    private SysModuleService sysModuleService;
 
     @Resource
     private SysMenuService sysMenuService;
@@ -618,9 +623,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<SysMenu> resultList = CollectionUtil.newArrayList();
 
         // 获取拥有的菜单列表
-        List<String> finalMenuIdList = menuIdList;
         List<SysMenu> menuList = allMenuList.stream().filter(sysMenu ->
-                finalMenuIdList.contains(sysMenu.getId())).collect(Collectors.toList());
+                menuIdList.contains(sysMenu.getId())).collect(Collectors.toList());
 
         // 对获取到的角色对应的菜单列表进行处理，获取父列表
         menuList.forEach(sysMenu -> execRecursionFindParent(allMenuList, sysMenu.getId(), resultList));
@@ -781,8 +785,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void grantResource(SysUserGrantResourceParam sysUserGrantResourceParam) {
         String id = sysUserGrantResourceParam.getId();
+        SysUserIdParam sysUserIdParam = new SysUserIdParam();
+        List<String> roleIdList = this.ownRole(sysUserIdParam);
+        if(ObjectUtil.isEmpty(roleIdList)) {
+            throw new CommonException("非超管角色用户不可被授权系统模块菜单资源");
+        }
+        boolean hasSuperAdminRole = sysRoleService.listByIds(roleIdList).stream().map(SysRole::getCode).collect(Collectors.toSet())
+                .contains(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue());
         List<String> menuIdList = sysUserGrantResourceParam.getGrantInfoList().stream()
                 .map(SysUserGrantResourceParam.SysUserGrantResource::getMenuId).collect(Collectors.toList());
+        if(!hasSuperAdminRole) {
+            if(ObjectUtil.isNotEmpty(menuIdList)) {
+                Set<String> sysModuleIdList = sysMenuService.listByIds(menuIdList).stream().map(SysMenu::getModule).collect(Collectors.toSet());
+                boolean containsSystemModule = sysModuleService.listByIds(sysModuleIdList).stream().map(SysModule::getCode)
+                        .collect(Collectors.toSet()).contains(SysBuildInEnum.BUILD_IN_MODULE_CODE.getValue());
+                if(containsSystemModule) {
+                    throw new CommonException("非超管角色用户不可被授权系统模块菜单资源");
+                }
+            }
+        }
         List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(),

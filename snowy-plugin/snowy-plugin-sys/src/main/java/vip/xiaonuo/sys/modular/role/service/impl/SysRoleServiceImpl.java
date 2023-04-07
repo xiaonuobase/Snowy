@@ -48,8 +48,10 @@ import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
+import vip.xiaonuo.sys.modular.resource.entity.SysModule;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
+import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.enums.SysRoleCategoryEnum;
 import vip.xiaonuo.sys.modular.role.mapper.SysRoleMapper;
@@ -63,6 +65,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -79,6 +82,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Resource
     private SysOrgService sysOrgService;
+
+    @Resource
+    private SysModuleService sysModuleService;
 
     @Resource
     private SysMenuService sysMenuService;
@@ -218,8 +224,19 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public void grantResource(SysRoleGrantResourceParam sysRoleGrantResourceParam) {
         String id = sysRoleGrantResourceParam.getId();
+        SysRole sysRole = this.queryEntity(id);
         List<String> menuIdList = sysRoleGrantResourceParam.getGrantInfoList().stream()
                 .map(SysRoleGrantResourceParam.SysRoleGrantResource::getMenuId).collect(Collectors.toList());
+        if(!SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue().equals(sysRole.getCode())) {
+            if(ObjectUtil.isNotEmpty(menuIdList)) {
+                Set<String> sysModuleIdList = sysMenuService.listByIds(menuIdList).stream().map(SysMenu::getModule).collect(Collectors.toSet());
+                boolean containsSystemModule = sysModuleService.listByIds(sysModuleIdList).stream().map(SysModule::getCode)
+                        .collect(Collectors.toSet()).contains(SysBuildInEnum.BUILD_IN_MODULE_CODE.getValue());
+                if(containsSystemModule) {
+                    throw new CommonException("非超管角色不可被授权系统模块菜单资源");
+                }
+            }
+        }
         List<String> extJsonList = sysRoleGrantResourceParam.getGrantInfoList().stream()
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue(),
