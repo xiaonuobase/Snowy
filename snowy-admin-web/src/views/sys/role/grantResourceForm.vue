@@ -7,6 +7,7 @@
 		:show-pagination="false"
 		@close="onClose"
 	>
+		<a-alert message="非超管角色不可授权系统模块菜单资源" banner class="mb-2"/>
 		<a-spin :spinning="spinningLoading">
 			<a-radio-group v-model:value="moduleId" button-style="solid" style="padding-bottom: 10px">
 				<a-radio-button
