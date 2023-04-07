@@ -54,7 +54,7 @@
 	}*/
 
 	/** 滚动条 */
-	/*:deep(.hljs,.hljs-container) {
+	:deep(.hljs,.hljs-container) {
 		max-height: 300px!important;
 		overflow-x: auto;
 	}
@@ -87,5 +87,5 @@
 
 	::-webkit-scrollbar-button {
 		display: none;
-	}*/
+	}
 </style>
