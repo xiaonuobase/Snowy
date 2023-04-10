@@ -15,6 +15,8 @@
 	import 'tinymce/plugins/link' // 超链接
 	import 'tinymce/plugins/preview' // 预览
 	import 'tinymce/plugins/table' // 表格
+	import 'tinymce/plugins/lists' // 列表编号
+	import 'tinymce/plugins/advlist' //高级列表编号
 
 	export default {
 		components: {
@@ -39,12 +41,12 @@
 			},
 			plugins: {
 				type: [String, Array],
-				default: 'code image link preview table'
+				default: 'code image link preview table lists advlist'
 			},
 			toolbar: {
 				type: [String, Array],
 				default:
-					'undo redo |  forecolor backcolor bold italic underline strikethrough link | formatselect fontselect fontsizeselect | \
+					'undo redo |  forecolor backcolor bold italic underline strikethrough link | blocks fontfamily fontsize | \
 					alignleft aligncenter alignright alignjustify outdent indent lineheight | bullist numlist | \
 					image table  preview | code selectall'
 			}
