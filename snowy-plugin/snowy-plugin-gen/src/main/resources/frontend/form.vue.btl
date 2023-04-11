@@ -1,176 +1,176 @@
 <template>
-    <xn-form-container
-        <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(configList[i].needTableId) { %>
-        :title="formData.${configList[i].fieldNameCamelCase} ? '编辑${functionName}' : '增加${functionName}'"
-        <% } %>
-        <% } %>
-        :width="700"
-        :visible="visible"
-        :destroy-on-close="true"
-        @close="onClose"
-    >
-        <a-form ref="formRef" :model="formData" :rules="formRules" layout="${formLayout}">
-        <% if(gridWhether) { %>
-            <a-row :gutter="16">
-            <% for(var i = 0; i < configList.~size; i++) { %>
-            <% if(!configList[i].needTableId && configList[i].whetherAddUpdate) { %>
-                <a-col :span="12">
-                    <a-form-item label="${configList[i].fieldRemark}：" name="${configList[i].fieldNameCamelCase}">
-                        <% if(configList[i].effectType == 'input') { %>
-                        <a-input v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" allow-clear />
-                        <% } else if (configList[i].effectType == 'textarea') {%>
-                        <a-textarea v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
-                        <% } else if (configList[i].effectType == 'select') {%>
-                        <a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                        <% } else if (configList[i].effectType == 'radio') {%>
-                        <a-radio-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                        <% } else if (configList[i].effectType == 'checkbox') {%>
-                        <a-checkbox-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                        <% } else if (configList[i].effectType == 'datepicker') {%>
-                        <a-date-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
-                        <% } else if (configList[i].effectType == 'timepicker') {%>
-                        <a-time-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
-                        <% } else if (configList[i].effectType == 'inputNumber') {%>
-                        <a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="10000" style="width: 100%" />
-                        <% } else if (configList[i].effectType == 'slider') {%>
-                        <a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" :max="1000" style="width: 100%" />
-                        <% } %>
-                    </a-form-item>
-                </a-col>
-            <% } %>
-            <% } %>
-            </a-row>
-        <% } else { %>
-        <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(!configList[i].needTableId && configList[i].whetherAddUpdate) { %>
-            <a-form-item label="${configList[i].fieldRemark}：" name="${configList[i].fieldNameCamelCase}">
-                <% if(configList[i].effectType == 'input') { %>
-                <a-input v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" allow-clear />
-                <% } else if (configList[i].effectType == 'textarea') {%>
-                <a-textarea v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
-                <% } else if (configList[i].effectType == 'select') {%>
-                <a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                <% } else if (configList[i].effectType == 'radio') {%>
-                <a-radio-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                <% } else if (configList[i].effectType == 'checkbox') {%>
-                <a-checkbox-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
-                <% } else if (configList[i].effectType == 'datepicker') {%>
-                <a-date-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
-                <% } else if (configList[i].effectType == 'timepicker') {%>
-                <a-time-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
-                <% } else if (configList[i].effectType == 'inputNumber') {%>
-                <a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :min="1" :max="10000" style="width: 100%" />
-                <% } else if (configList[i].effectType == 'slider') {%>
-                <a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请滑动${configList[i].fieldRemark}" :max="1000" style="width: 100%" />
-                <% } %>
-            </a-form-item>
-        <% } %>
-        <% } %>
-        <% } %>
-        </a-form>
-        <template #footer>
-            <a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
-            <a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
-        </template>
-    </xn-form-container>
+	<xn-form-container
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(configList[i].needTableId) { %>
+		:title="formData.${configList[i].fieldNameCamelCase} ? '编辑${functionName}' : '增加${functionName}'"
+		<% } %>
+		<% } %>
+		:width="700"
+		:visible="visible"
+		:destroy-on-close="true"
+		@close="onClose"
+	>
+		<a-form ref="formRef" :model="formData" :rules="formRules" layout="${formLayout}">
+		<% if(gridWhether) { %>
+			<a-row :gutter="16">
+			<% for(var i = 0; i < configList.~size; i++) { %>
+			<% if(!configList[i].needTableId && configList[i].whetherAddUpdate) { %>
+				<a-col :span="12">
+					<a-form-item label="${configList[i].fieldRemark}：" name="${configList[i].fieldNameCamelCase}">
+						<% if(configList[i].effectType == 'input') { %>
+						<a-input v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" allow-clear />
+						<% } else if (configList[i].effectType == 'textarea') {%>
+						<a-textarea v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
+						<% } else if (configList[i].effectType == 'select') {%>
+						<a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+						<% } else if (configList[i].effectType == 'radio') {%>
+						<a-radio-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+						<% } else if (configList[i].effectType == 'checkbox') {%>
+						<a-checkbox-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+						<% } else if (configList[i].effectType == 'datepicker') {%>
+						<a-date-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
+						<% } else if (configList[i].effectType == 'timepicker') {%>
+						<a-time-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
+						<% } else if (configList[i].effectType == 'inputNumber') {%>
+						<a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="10000" style="width: 100%" />
+						<% } else if (configList[i].effectType == 'slider') {%>
+						<a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" :max="1000" style="width: 100%" />
+						<% } %>
+					</a-form-item>
+				</a-col>
+			<% } %>
+			<% } %>
+			</a-row>
+		<% } else { %>
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(!configList[i].needTableId && configList[i].whetherAddUpdate) { %>
+			<a-form-item label="${configList[i].fieldRemark}：" name="${configList[i].fieldNameCamelCase}">
+				<% if(configList[i].effectType == 'input') { %>
+				<a-input v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" allow-clear />
+				<% } else if (configList[i].effectType == 'textarea') {%>
+				<a-textarea v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
+				<% } else if (configList[i].effectType == 'select') {%>
+				<a-select v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+				<% } else if (configList[i].effectType == 'radio') {%>
+				<a-radio-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+				<% } else if (configList[i].effectType == 'checkbox') {%>
+				<a-checkbox-group v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+				<% } else if (configList[i].effectType == 'datepicker') {%>
+				<a-date-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
+				<% } else if (configList[i].effectType == 'timepicker') {%>
+				<a-time-picker v-model:value="formData.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${configList[i].fieldRemark}" style="width: 100%" />
+				<% } else if (configList[i].effectType == 'inputNumber') {%>
+				<a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :min="1" :max="10000" style="width: 100%" />
+				<% } else if (configList[i].effectType == 'slider') {%>
+				<a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请滑动${configList[i].fieldRemark}" :max="1000" style="width: 100%" />
+				<% } %>
+			</a-form-item>
+		<% } %>
+		<% } %>
+		<% } %>
+		</a-form>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
+		</template>
+	</xn-form-container>
 </template>
 
 <script setup name="${classNameFirstLower}Form">
-    <%
-    var iptTool = 0;
-    for(var i = 0; i < configList.~size; i++) {
-        if(!configList[i].needTableId) {
-        if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
-            iptTool++;
-        }
-        }
-    }
-    %>
-    <% if(iptTool > 0) { %>
-    import tool from '@/utils/tool'
-    <% } %>
-    import { cloneDeep } from 'lodash-es'
-    import { required } from '@/utils/formRules'
-    import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
-    // 抽屉状态
-    const visible = ref(false)
-    const emit = defineEmits({ successful: null })
-    const formRef = ref()
-    // 表单数据
-    const formData = ref({})
-    const submitLoading = ref(false)
-    <% for(var i = 0; i < configList.~size; i++) { %>
-    <% if(!configList[i].needTableId) { %>
-    <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
-    const ${configList[i].fieldNameCamelCase}Options = ref([])
-    <% } %>
-    <% } %>
-    <% } %>
+	<%
+	var iptTool = 0;
+	for(var i = 0; i < configList.~size; i++) {
+		if(!configList[i].needTableId) {
+		if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
+			iptTool++;
+		}
+		}
+	}
+	%>
+	<% if(iptTool > 0) { %>
+	import tool from '@/utils/tool'
+	<% } %>
+	import { cloneDeep } from 'lodash-es'
+	import { required } from '@/utils/formRules'
+	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
+	// 抽屉状态
+	const visible = ref(false)
+	const emit = defineEmits({ successful: null })
+	const formRef = ref()
+	// 表单数据
+	const formData = ref({})
+	const submitLoading = ref(false)
+	<% for(var i = 0; i < configList.~size; i++) { %>
+	<% if(!configList[i].needTableId) { %>
+	<% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+	const ${configList[i].fieldNameCamelCase}Options = ref([])
+	<% } %>
+	<% } %>
+	<% } %>
 
-    // 打开抽屉
-    const onOpen = (record) => {
-        visible.value = true
-        if (record) {
-            let recordData = cloneDeep(record)
-            <% for(var i = 0; i < configList.~size; i++) { %>
-            <% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
-            recordData.${configList[i].fieldNameCamelCase} = JSON.parse(recordData.${configList[i].fieldNameCamelCase})
-            <% } %>
-            <% } %>
-            formData.value = Object.assign({}, recordData)
-        }
-        <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(!configList[i].needTableId) { %>
-        <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
-        ${configList[i].fieldNameCamelCase}Options.value = tool.dictList('${configList[i].dictTypeCode}')
-        <% } %>
-        <% } %>
-        <% } %>
-    }
-    // 关闭抽屉
-    const onClose = () => {
-        formRef.value.resetFields()
-        formData.value = {}
-        visible.value = false
-    }
-    // 默认要校验的
-    const formRules = {
-        <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(!configList[i].needTableId) { %>
-        <% if(configList[i].required) { %>
-        ${configList[i].fieldNameCamelCase}: [required('请输入${configList[i].fieldRemark}')],
-        <% } %>
-        <% } %>
-        <% } %>
-    }
-    // 验证并提交数据
-    const onSubmit = () => {
-        formRef.value.validate().then(() => {
-            submitLoading.value = true
-            const formDataParam = cloneDeep(formData.value)
-            <% for(var i = 0; i < configList.~size; i++) { %>
-            <% if(configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
-            formDataParam.${configList[i].fieldNameCamelCase} = JSON.stringify(formDataParam.${configList[i].fieldNameCamelCase})
-            <% } %>
-            <% } %>
-            ${classNameFirstLower}Api
-                <% for(var i = 0; i < configList.~size; i++) { %>
-                <% if(configList[i].needTableId) { %>
-                .${classNameFirstLower}SubmitForm(formDataParam, !formDataParam.${configList[i].fieldNameCamelCase})
-                <% } %>
-                <% } %>
-                .then(() => {
-                    onClose()
-                    emit('successful')
-                })
-                .finally(() => {
-                    submitLoading.value = false
-                })
-        })
-    }
-    // 抛出函数
-    defineExpose({
-        onOpen
-    })
+	// 打开抽屉
+	const onOpen = (record) => {
+		visible.value = true
+		if (record) {
+			let recordData = cloneDeep(record)
+			<% for(var i = 0; i < configList.~size; i++) { %>
+			<% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
+			recordData.${configList[i].fieldNameCamelCase} = JSON.parse(recordData.${configList[i].fieldNameCamelCase})
+			<% } %>
+			<% } %>
+			formData.value = Object.assign({}, recordData)
+		}
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(!configList[i].needTableId) { %>
+		<% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+		${configList[i].fieldNameCamelCase}Options.value = tool.dictList('${configList[i].dictTypeCode}')
+		<% } %>
+		<% } %>
+		<% } %>
+	}
+	// 关闭抽屉
+	const onClose = () => {
+		formRef.value.resetFields()
+		formData.value = {}
+		visible.value = false
+	}
+	// 默认要校验的
+	const formRules = {
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(!configList[i].needTableId) { %>
+		<% if(configList[i].required) { %>
+		${configList[i].fieldNameCamelCase}: [required('请输入${configList[i].fieldRemark}')],
+		<% } %>
+		<% } %>
+		<% } %>
+	}
+	// 验证并提交数据
+	const onSubmit = () => {
+		formRef.value.validate().then(() => {
+			submitLoading.value = true
+			const formDataParam = cloneDeep(formData.value)
+			<% for(var i = 0; i < configList.~size; i++) { %>
+			<% if(configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
+			formDataParam.${configList[i].fieldNameCamelCase} = JSON.stringify(formDataParam.${configList[i].fieldNameCamelCase})
+			<% } %>
+			<% } %>
+			${classNameFirstLower}Api
+				<% for(var i = 0; i < configList.~size; i++) { %>
+				<% if(configList[i].needTableId) { %>
+				.${classNameFirstLower}SubmitForm(formDataParam, !formDataParam.${configList[i].fieldNameCamelCase})
+				<% } %>
+				<% } %>
+				.then(() => {
+					onClose()
+					emit('successful')
+				})
+				.finally(() => {
+					submitLoading.value = false
+				})
+		})
+	}
+	// 抛出函数
+	defineExpose({
+		onOpen
+	})
 </script>
