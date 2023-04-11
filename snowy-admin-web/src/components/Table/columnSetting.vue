@@ -45,17 +45,26 @@
 			}
 		},
 		mounted() {
-			this.columnsSetting = this.columns.map((value) => ({
-				...value,
-				checked: true
-			}))
-			this.originColumns = [...this.columnsSetting]
+			this.columnsSetting = this.columns.map((value) => {
+				if (value.checked == undefined) {
+					return {
+						...value,
+						checked: true
+					}
+				} else return value
+			})
+			// 这里要用深的拷贝，否则，勾选了字段时会修改了originColumns里的内容
+			this.originColumns = this.columnsSetting.map((value) => ({ ...value }))
+			// 处理全选组件
+			const notCheckedList = this.columnsSetting.filter((value) => !value.checked)
+			if (notCheckedList.length) this.checkAll = false
 		},
 		methods: {
 			reset() {
-				this.originColumns = [...this.columnsSetting]
+				this.columnsSetting = this.originColumns.map((value) => ({ ...value }))
 				this.indeterminate = false
-				this.checkAll = true
+				const checkedList = this.columnsSetting.filter((value) => value.checked)
+				this.checkAll = checkedList.length === this.columnsSetting.length
 				this.emitColumnChange()
 			},
 			onChange() {
