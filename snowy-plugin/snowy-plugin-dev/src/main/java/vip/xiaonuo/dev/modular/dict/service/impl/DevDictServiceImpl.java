@@ -63,7 +63,8 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         queryWrapper.lambda().select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
                 DevDict::getDictValue, DevDict::getSortCode);
         if (ObjectUtil.isNotEmpty(devDictPageParam.getParentId())) {
-            queryWrapper.lambda().eq(DevDict::getParentId, devDictPageParam.getParentId());
+            queryWrapper.lambda().eq(DevDict::getParentId, devDictPageParam.getParentId())
+                    .or().eq(DevDict::getId, devDictPageParam.getParentId());
         }
         if (ObjectUtil.isNotEmpty(devDictPageParam.getCategory())) {
             queryWrapper.lambda().eq(DevDict::getCategory, devDictPageParam.getCategory());

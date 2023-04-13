@@ -31,7 +31,7 @@
 					</a-col>
 				</a-row>
 			</a-form>
-			<a-divider class="m-3 mx-0"/>
+			<a-divider class="m-3 mx-0" />
 			<s-table
 				ref="table"
 				:columns="columns"
@@ -48,6 +48,10 @@
 					</a-button>
 				</template>
 				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'level'">
+						<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
+						<a-tag color="green" v-else>子级</a-tag>
+					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="form.onOpen(record, 'BIZ')">编辑</a>
 						<a-divider type="vertical" />
@@ -70,11 +74,13 @@
 	const columns = [
 		{
 			title: '字典名称',
-			dataIndex: 'dictLabel'
+			dataIndex: 'dictLabel',
+			width: 350
 		},
 		{
 			title: '字典值',
-			dataIndex: 'dictValue'
+			dataIndex: 'dictValue',
+			width: 350
 		},
 		{
 			title: '排序',
@@ -103,8 +109,27 @@
 	const loadData = (parameter) => {
 		loadTreeData()
 		parameter.category = 'BIZ'
-		return dictApi.dictPage(Object.assign(parameter, searchFormState)).then((res) => {
-			return res
+		return dictApi.dictPage(Object.assign(parameter, searchFormState)).then((data) => {
+			if (data.records) {
+				if (searchFormState.parentId) {
+					let dataArray = []
+					data.records.forEach((item) => {
+						const obj = data.records.find((f) => f.id === item.parentId)
+						if (!obj) {
+							dataArray.push(item)
+						}
+					})
+					if (dataArray.length === 1) {
+						data.records.forEach((item) => {
+							if (item.id === dataArray[0].id) {
+								item.level = '上级'
+							}
+						})
+					}
+					dataArray = []
+				}
+			}
+			return data
 		})
 	}
 	// 重置
@@ -127,8 +152,16 @@
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys && selectedKeys.length > 0) {
 			searchFormState.parentId = selectedKeys.toString()
+			if (!columns.find((f) => f.title === '层级')) {
+				columns.splice(2, 0, {
+					title: '层级',
+					dataIndex: 'level',
+					width: 100
+				})
+			}
 		} else {
 			delete searchFormState.parentId
+			columns.splice(2, 1)
 		}
 		table.value.refresh(true)
 	}
