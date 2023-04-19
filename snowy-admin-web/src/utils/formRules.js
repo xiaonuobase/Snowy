@@ -42,5 +42,10 @@ export const rules = {
 		pattern: /^\d{1,}$/,
 		message: '填写内容必须是纯数字',
 		trigger: 'blur'
+	},
+	price: {
+		pattern: /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/,
+		message: '只支持正数金额',
+		trigger: 'blur'
 	}
 }
