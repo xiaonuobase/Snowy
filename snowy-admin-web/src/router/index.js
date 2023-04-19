@@ -85,6 +85,9 @@ router.beforeEach(async (to, from, next) => {
 		isGetRouter.value = false
 		next()
 		return false
+	} else {
+		// 这里需要使用 localStorage 保存登录之前要访问的页面
+		tool.data.set('LAST_VIEWS_PATH', to.fullPath)
 	}
 	if (!token) {
 		next({

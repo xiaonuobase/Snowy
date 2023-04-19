@@ -16,12 +16,16 @@ export const afterLogin = async (loginToken) => {
 
 	// 获取用户的菜单
 	const menu = await userCenterApi.userLoginMenu()
-	const indexMenu = menu[0].children[0].path
+	let indexMenu = menu[0].children[0].path
 	tool.data.set('MENU', menu)
 	// 重置系统默认应用
 	tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
 	message.success('登录成功')
-	router.replace({
+	if (!!tool.data.get('LAST_VIEWS_PATH')) {
+		// 如果有缓存，将其登录跳转到最后访问的路由
+		indexMenu = tool.data.get('LAST_VIEWS_PATH')
+	}
+	await router.replace({
 		path: indexMenu
 	})
 	dictApi.dictTree().then((data) => {
