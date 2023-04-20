@@ -73,7 +73,7 @@ import vip.xiaonuo.common.util.*;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
 import vip.xiaonuo.sys.api.SysUserApi;
-import vip.xiaonuo.sys.modular.user.result.BizUserExportResult;
+import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
