@@ -151,6 +151,32 @@ snowy
 
 > 视频由小诺开源技术团队王同学（每天一点）进行录制
 
+## 架构原理图:fire:
+* 业务架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=9ModuV8g&path=%7BshareItemLink%3A9ModuV8g%7D%2F"/>
+</p>
+
+* 应用架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=9MofgHWg&path=%7BshareItemLink%3A9MofgHWg%7D%2F"/>
+</p>
+
+* 数据架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=9Mof3msg&path=%7BshareItemLink%3A9Mof3msg%7D%2F"/>
+</p>
+
+* 技术架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=9MogF8ww&path=%7BshareItemLink%3A9MogF8ww%7D%2F"/>
+</p>
+
+* 部署架构
+<p align="center">
+    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&shareID=9MogXWKQ&path=%7BshareItemLink%3A9MogXWKQ%7D%2F"/>
+</p>
+
 ## 效果图:fire:
 
 <table>
