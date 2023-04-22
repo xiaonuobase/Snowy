@@ -27,12 +27,12 @@
 						<a-row :gutter="24">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
-									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入职位名"></a-input>
+									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入职位名" />
 								</a-form-item>
 							</a-col>
 							<a-col :span="12">
-								<a-button type="primary" class="primarySele" @click="loadData(searchFormState)"> 查询 </a-button>
-								<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()"> 重置 </a-button>
+								<a-button type="primary" class="primarySele" @click="loadData()"> 查询 </a-button>
+								<a-button class="snowy-buttom-left" @click="() => reset()"> 重置 </a-button>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -134,7 +134,7 @@
 	// 选中表格的ref 名称
 	const selectedTable = ref()
 	const tableRecordNum = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const searchFormRef = ref()
 	const cardLoading = ref(true)
 	// 替换treeNode 中 title,key,children
@@ -184,14 +184,11 @@
 	}
 	// 查询主表格数据
 	const loadData = () => {
-		posSelectorPlusApi.posSelector(props.pageUrl, searchFormState).then((res) => {
+		posSelectorPlusApi.posSelector(props.pageUrl, searchFormState.value).then((res) => {
 			// 总共多少条
 			tableRecordNum.value = res.length
 			tableData.value = res
-			// 如果无查询条件，查询到已加载的
-			if (JSON.stringify(searchFormState) === '{}') {
-				loadCheckedKey()
-			}
+			loadCheckedKey()
 		})
 	}
 	// 加载已选中的
@@ -254,9 +251,9 @@
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.orgId = selectedKeys.toString()
+			searchFormState.value.orgId = selectedKeys.toString()
 		} else {
-			delete searchFormState.orgId
+			delete searchFormState.value.orgId
 		}
 		loadData()
 	}
@@ -279,8 +276,15 @@
 		}
 		handleClose()
 	}
+	// 重置
+	const reset = () => {
+		delete searchFormState.value.searchKey
+		loadData()
+	}
 	const handleClose = () => {
-		searchFormState = reactive({})
+		searchFormState.value = {}
+		tableRecordNum.value = 0
+		tableData.value = []
 		visible = false
 	}
 

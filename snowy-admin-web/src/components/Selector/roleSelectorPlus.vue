@@ -27,12 +27,12 @@
 						<a-row :gutter="24">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
-									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名"></a-input>
+									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名" />
 								</a-form-item>
 							</a-col>
 							<a-col :span="12">
-								<a-button type="primary" class="primarySele" @click="loadData(searchFormState)"> 查询 </a-button>
-								<a-button class="snowy-buttom-left" @click="() => searchFormRef.resetFields()"> 重置 </a-button>
+								<a-button type="primary" class="primarySele" @click="loadData()"> 查询 </a-button>
+								<a-button class="snowy-buttom-left" @click="() => reset()"> 重置 </a-button>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -134,7 +134,7 @@
 	// 选中表格的ref 名称
 	const selectedTable = ref()
 	const tableRecordNum = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const searchFormRef = ref()
 	const cardLoading = ref(true)
 	// 替换treeNode 中 title,key,children
@@ -229,16 +229,13 @@
 	const loadData = () => {
 		// 如果不是用全局的，我们每次查询加上这个条件
 		if (!roleGlobal) {
-			searchFormState.category = 'ORG'
+			searchFormState.value.category = 'ORG'
 		}
-		roleSelectorPlusApi.roleSelector(props.pageUrl, searchFormState).then((res) => {
+		roleSelectorPlusApi.roleSelector(props.pageUrl, searchFormState.value).then((res) => {
 			// 总共多少条
 			tableRecordNum.value = res.length
 			tableData.value = res
-			// 如果无查询条件，查询到已加载的
-			if (JSON.stringify(searchFormState) === '{}') {
-				loadCheckedKey()
-			}
+			loadCheckedKey()
 		})
 	}
 	// 加载已选中的
@@ -302,15 +299,15 @@
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
 			if (selectedKeys[0] === 'GLOBAL') {
-				searchFormState.category = selectedKeys[0]
-				delete searchFormState.orgId
+				searchFormState.value.category = selectedKeys[0]
+				delete searchFormState.value.orgId
 			} else {
-				searchFormState.orgId = selectedKeys.toString()
-				delete searchFormState.category
+				searchFormState.value.orgId = selectedKeys.toString()
+				delete searchFormState.value.category
 			}
 		} else {
-			delete searchFormState.category
-			delete searchFormState.orgId
+			delete searchFormState.value.category
+			delete searchFormState.value.orgId
 		}
 		loadData()
 	}
@@ -332,8 +329,15 @@
 		}
 		handleClose()
 	}
+	// 重置
+	const reset = () => {
+		delete searchFormState.value.searchKey
+		loadData()
+	}
 	const handleClose = () => {
-		searchFormState = reactive({})
+		searchFormState.value = {}
+		tableRecordNum.value = 0
+		tableData.value = []
 		visible = false
 	}
 
