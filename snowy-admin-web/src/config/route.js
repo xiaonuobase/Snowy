@@ -25,7 +25,7 @@ const routes = {
 			children: []
 		}
 	],
-	// 默认首页、用户中心
+	// 默认首页、个人中心
 	menu: [
 		{
 			id: '001',
@@ -42,11 +42,11 @@ const routes = {
 		},
 		{
 			id: '002',
-			name: 'usercenter',
-			path: '/usercenter12',
-			component: 'userCenter/index',
+			name: 'userCenter',
+			path: '/userCenter',
+			component: 'sys/user/userCenter',
 			meta: {
-				title: '用户中心',
+				title: '个人中心',
 				type: 'menu',
 				hidden: true
 			},

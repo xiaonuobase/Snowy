@@ -25,6 +25,20 @@ export const afterLogin = async (loginToken) => {
 		// 如果有缓存，将其登录跳转到最后访问的路由
 		indexMenu = tool.data.get('LAST_VIEWS_PATH')
 	}
+	// 如果存在退出后换新账号登录，进行重新匹配，匹配无果则默认首页
+	if (menu) {
+		let routerTag = 0
+		menu.forEach((item) => {
+			if (item.children) {
+				if (JSON.stringify(item.children).indexOf(indexMenu) > -1) {
+					routerTag++
+				}
+			}
+		})
+		if (routerTag === 0) {
+			indexMenu = menu[0].children[0].path
+		}
+	}
 	await router.replace({
 		path: indexMenu
 	})

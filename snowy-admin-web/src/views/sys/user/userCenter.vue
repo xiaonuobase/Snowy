@@ -62,7 +62,7 @@
 	<CropUpload ref="cropUpload" :img-src="userInfo.avatar" @successful="cropUploadSuccess" />
 </template>
 
-<script setup>
+<script setup name="userCenter">
 	import { onMounted } from 'vue'
 	import { useRoute } from 'vue-router'
 	import tool from '@/utils/tool'
