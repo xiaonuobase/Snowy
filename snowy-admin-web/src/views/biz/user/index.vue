@@ -107,9 +107,9 @@
 							</a-popconfirm>
 							<a-divider
 								type="vertical"
-								v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')"
+								v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])"
 							/>
-							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'], 'and')">
+							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])">
 								<a class="ant-dropdown-link">
 									{{ $t('common.more') }}
 									<DownOutlined />
