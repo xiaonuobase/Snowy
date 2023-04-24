@@ -878,6 +878,8 @@ create table gen_basic (
    ID                   VARCHAR(20)          not null,
    DB_TABLE             VARCHAR(255)         null,
    DB_TABLE_KEY         VARCHAR(255)         null,
+   PLUGIN_NAME          varchar(255)         null,
+   MODULE_NAME          varchar(255)         null,
    TABLE_PREFIX         VARCHAR(255)         null,
    GENERATE_TYPE        VARCHAR(255)         null,
    MODULE               VARCHAR(255)         null,
@@ -895,7 +897,7 @@ create table gen_basic (
    CREATE_USER          VARCHAR(20)          null,
    UPDATE_TIME          DATE                 null,
    UPDATE_USER          VARCHAR(20)          null,
-   constraint PK_gen_basic primary key (ID)
+  constraint PK_gen_basic primary key (ID)
 );
 
 comment on table gen_basic is
@@ -909,6 +911,12 @@ comment on column gen_basic.DB_TABLE is
 
 comment on column gen_basic.DB_TABLE_KEY is
 '主表主键';
+
+comment on column gen_basic.PLUGIN_NAME is
+'插件名';
+
+comment on column gen_basic.MODULE_NAME is
+'模块名';
 
 comment on column gen_basic.TABLE_PREFIX is
 '移除表前缀';
