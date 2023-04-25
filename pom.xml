@@ -50,7 +50,7 @@
         <jackson.datatype.jsr310.version>2.14.2</jackson.datatype.jsr310.version>
         <jackson.module.parameter.names.version>2.14.2</jackson.module.parameter.names.version>
         <javax.mail.version>1.6.2</javax.mail.version>
-        <jettison.version>1.5.3</jettison.version>
+        <jettison.version>1.5.4</jettison.version>
         <junit.version>4.13.2</junit.version>
         <just.auth.version>1.16.5</just.auth.version>
         <knife4j.version>2.0.9</knife4j.version>
