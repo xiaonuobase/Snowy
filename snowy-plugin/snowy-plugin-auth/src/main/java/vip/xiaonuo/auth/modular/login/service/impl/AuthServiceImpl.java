@@ -175,15 +175,16 @@ public class AuthServiceImpl implements AuthService {
             }
             // 执行校验验证码
             validValidCode(phoneOrEmail, validCode, validCodeReqNo);
-        }
-        // 根据手机号获取用户信息，判断用户是否存在，根据B端或C端判断
-        if(SaClientTypeEnum.B.getValue().equals(type)) {
-            if(ObjectUtil.isEmpty(loginUserApi.getUserByPhone(phoneOrEmail))) {
-                throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
-            }
-        } else {
-            if(ObjectUtil.isEmpty(clientLoginUserApi.getClientUserByPhone(phoneOrEmail))) {
-                throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
+
+            // 根据手机号获取用户信息，判断用户是否存在，根据B端或C端判断
+            if(SaClientTypeEnum.B.getValue().equals(type)) {
+                if(ObjectUtil.isEmpty(loginUserApi.getUserByPhone(phoneOrEmail))) {
+                    throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
+                }
+            } else {
+                if(ObjectUtil.isEmpty(clientLoginUserApi.getClientUserByPhone(phoneOrEmail))) {
+                    throw new CommonException(AuthExceptionEnum.PHONE_ERROR.getValue());
+                }
             }
         }
     }
