@@ -37,7 +37,7 @@ public enum CommonSortOrderEnum {
     }
 
     public static void validate(String value) {
-        boolean flag = ASC.getValue().toLowerCase().equals(value) || DESC.getValue().toLowerCase().equals(value);
+        boolean flag = ASC.getValue().equals(value) || DESC.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持该排序方式：{}", value);
         }
