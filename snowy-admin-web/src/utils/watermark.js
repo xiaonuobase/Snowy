@@ -8,7 +8,7 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-import store from '@/store'
+import tool from '@/utils/tool'
 export const watermark = {
 	set: function (text1, text2) {
 		const canvas = document.createElement('canvas')
@@ -34,7 +34,7 @@ export const watermark = {
             left:0;
             width:100vw;
             height:100vh;
-            z-index:99;
+            z-index:99999;
             pointer-events:none;
             background-repeat:repeat;
             mix-blend-mode: multiply;
@@ -46,8 +46,13 @@ export const watermark = {
 		//此方法是防止用户通过控制台修改样式去除水印效果
 		/* MutationObserver 是一个可以监听DOM结构变化的接口。 */
 		const observer = new MutationObserver(() => {
-			const wmInstance = document.querySelector('.watermark')
-			if ((wmInstance && wmInstance.getAttribute('style') !== styleStr) || !wmInstance) {
+			// 此处根据用户登录状态，判断是否终止监听，避免用户退出后登录页面仍然有水印
+			if (!tool.data.get('TOKEN')){
+				this.close()
+				observer.disconnect()
+			}
+			const wmInstance = document.body.querySelector('.watermark')
+			if (!wmInstance || (wmInstance.getAttribute('style') !== styleStr)) {
 				//如果标签在，只修改了属性，重新赋值属性
 				if (wmInstance) {
 					// 避免一直触发
@@ -56,7 +61,7 @@ export const watermark = {
 					wmInstance.setAttribute('style', styleStr)
 				} else {
 					/* 此处根据用户登录状态，判断是否终止监听，避免用户退出后登录页面仍然有水印 */
-					if (store.getters.token) {
+					if (tool.data.get('TOKEN')) {
 						//标签被移除，重新添加标签
 						// console.log('水印标签被移除了');
 						document.body.appendChild(watermark)
@@ -74,8 +79,10 @@ export const watermark = {
 	},
 	close: function () {
 		/* 关闭页面的水印，即要移除水印标签 */
-		let watermark = document.querySelector('.watermark')
-		document.body.removeChild(watermark)
+		let watermark = document.body.querySelector('.watermark')
+		if (watermark){
+			document.body.removeChild(watermark)
+		}
 	}
 }
 // 使用方法
