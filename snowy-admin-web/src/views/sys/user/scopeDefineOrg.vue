@@ -1,7 +1,7 @@
 <template>
 	<a-modal
 		v-model:visible="visible"
-		title="选择机构"
+		title="选择组织"
 		:width="500"
 		:mask-closable="false"
 		:destroy-on-close="true"

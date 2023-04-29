@@ -25,6 +25,40 @@
 					<template v-if="column.key === 'api'">
 						<a-checkbox @update:checked="(val) => onCheckAllChange(val)"> 接口 </a-checkbox>
 					</template>
+					<template v-if="column.key === 'dataScope'">
+						<span>{{ column.title }}</span>
+						<a-radio-group v-model:value="scopeRadioValue" @change="radioChange" style="padding: 0 10px">
+							<a-radio value="SCOPE_ALL"> 全部 </a-radio>
+							<a-radio value="SCOPE_SELF"> 仅自已 </a-radio>
+							<a-radio value="SCOPE_ORG"> 所属组织 </a-radio>
+							<a-radio value="SCOPE_ORG_CHILD"> 所属组织及以下 </a-radio>
+						</a-radio-group>
+					</template>
+				</template>
+				<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+					<div style="padding: 8px">
+						<a-input
+							ref="searchInput"
+							placeholder="请输入接口或接口名称"
+							:value="selectedKeys[0]"
+							style="width: 188px; margin-bottom: 8px; display: block"
+							@change="(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+							@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
+						/>
+						<a-button
+							type="primary"
+							size="small"
+							style="width: 90px; margin-right: 8px"
+							@click="handleSearch(selectedKeys, confirm, column.dataIndex)"
+						>
+							<template #icon><SearchOutlined /></template>
+							搜索
+						</a-button>
+						<a-button size="small" style="width: 90px" @click="handleReset(clearFilters)"> 重置 </a-button>
+					</div>
+				</template>
+				<template #customFilterIcon="{ filtered }">
+					<search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'api'">
@@ -55,7 +89,7 @@
 								</a-radio>
 							</template>
 							<a-button v-if="record.dataScope[4].check" type="link" size="small" @click="handleDefineOrg(record)"
-								>选择机构</a-button
+								>选择组织</a-button
 							>
 						</template>
 					</template>
@@ -71,11 +105,12 @@
 </template>
 
 <script setup name="grantResourceForm">
+	import { SearchOutlined } from '@ant-design/icons-vue'
 	import userApi from '@/api/sys/userApi'
 	import roleApi from '@/api/sys/roleApi'
 	import ScopeDefineOrg from './scopeDefineOrg.vue'
 
-	let visible = ref(false)
+	const visible = ref(false)
 	const spinningLoading = ref(false)
 	const scopeDefineOrgModal = ref(null)
 	const emit = defineEmits({ successful: null })
@@ -85,14 +120,30 @@
 	const drawerWidth = 1000
 	// 自动获取宽度，默认获取浏览器的宽度的90%
 	//(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) * 0.9
-	let loadDatas = ref([])
+	const loadDatas = ref([])
+	// 标题接口列搜索, 数据范围默认
+	const scopeRadioValue = ref()
+	const state = reactive({
+		searchText: '',
+		searchedColumn: ''
+	})
+	const searchInput = ref()
 
 	const columns = [
 		{
 			key: 'api',
 			title: '接口',
 			dataIndex: 'api',
-			width: 380
+			width: 380,
+			customFilterDropdown: true,
+			onFilter: (value, record) => record.api.includes(value),
+			onFilterDropdownVisibleChange: (visible) => {
+				if (visible) {
+					setTimeout(() => {
+						searchInput.value.focus()
+					}, 100)
+				}
+			}
 		},
 		{
 			key: 'dataScope',
@@ -232,6 +283,7 @@
 	const onClose = () => {
 		// 将这些缓存的给清空
 		loadDatas.value = []
+		scopeRadioValue.value = ''
 		visible.value = false
 	}
 	// 全选
@@ -318,6 +370,29 @@
 			.finally(() => {
 				submitLoading.value = false
 			})
+	}
+	// 标题接口列搜索
+	const handleSearch = (selectedKeys, confirm, dataIndex) => {
+		confirm()
+		state.searchText = selectedKeys[0]
+		state.searchedColumn = dataIndex
+	}
+	// 标题接口列搜索重置
+	const handleReset = (clearFilters) => {
+		clearFilters()
+		state.searchText = ''
+	}
+	// 标题数据范围列radio-group事件
+	const radioChange = (obj) => {
+		loadDatas.value.forEach((data) => {
+			data.dataScope.forEach((data) => {
+				if (obj.target.value === data.value) {
+					data.check = true
+				} else {
+					data.check = false
+				}
+			})
+		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

@@ -5,8 +5,13 @@
 		:visible="visible"
 		:destroy-on-close="true"
 		:show-pagination="false"
-		@close="onClose">
-		<a-alert message="注：此功能界面需要与代码查询条件配合使用，并非所有接口都需设置数据范围，多用于业务模块！" type="warning" closable/>
+		@close="onClose"
+	>
+		<a-alert
+			message="注：此功能界面需要与代码查询条件配合使用，并非所有接口都需设置数据范围，多用于业务模块！"
+			type="warning"
+			closable
+		/>
 		<a-spin :spinning="spinningLoading">
 			<a-table
 				class="mt-4"
@@ -14,31 +19,30 @@
 				:columns="columns"
 				:data-source="loadDatas"
 				:row-key="(record) => record.api"
-				bordered>
+				bordered
+			>
 				<template #headerCell="{ column }">
 					<template v-if="column.key === 'api'">
 						<a-checkbox @update:checked="(val) => onCheckAllChange(val)"> 接口 </a-checkbox>
 					</template>
 					<template v-if="column.key === 'dataScope'">
 						<span>{{ column.title }}</span>
-						<a-radio-group v-model:value="scopeRadioValue"
-									   @change="radioChange" style="padding: 0 10px">
+						<a-radio-group v-model:value="scopeRadioValue" @change="radioChange" style="padding: 0 10px">
 							<a-radio value="SCOPE_ALL"> 全部 </a-radio>
 							<a-radio value="SCOPE_SELF"> 仅自已 </a-radio>
-							<a-radio value="SCOPE_ORG"> 所属机构 </a-radio>
-							<a-radio value="SCOPE_ORG_CHILD"> 所属机构及以下 </a-radio>
+							<a-radio value="SCOPE_ORG"> 所属组织 </a-radio>
+							<a-radio value="SCOPE_ORG_CHILD"> 所属组织及以下 </a-radio>
 						</a-radio-group>
 					</template>
 				</template>
-				<!---->
 				<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
 					<div style="padding: 8px">
 						<a-input
 							ref="searchInput"
-							:placeholder="`Search ${column.dataIndex}`"
+							placeholder="请输入接口或接口名称"
 							:value="selectedKeys[0]"
 							style="width: 188px; margin-bottom: 8px; display: block"
-							@change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+							@change="(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])"
 							@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
 						/>
 						<a-button
@@ -48,17 +52,14 @@
 							@click="handleSearch(selectedKeys, confirm, column.dataIndex)"
 						>
 							<template #icon><SearchOutlined /></template>
-							Search
+							搜索
 						</a-button>
-						<a-button size="small" style="width: 90px" @click="handleReset(clearFilters)">
-							Reset
-						</a-button>
+						<a-button size="small" style="width: 90px" @click="handleReset(clearFilters)"> 重置 </a-button>
 					</div>
 				</template>
 				<template #customFilterIcon="{ filtered }">
 					<search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
 				</template>
-				<!---->
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'api'">
 						<a-checkbox :checked="record.check" @update:checked="(val) => changeApi(record, val)">
@@ -71,7 +72,8 @@
 								<a-radio
 									v-model:checked="item.check"
 									:name="item.title"
-									@change="(evt) => changeDataScope(record, evt)">
+									@change="(evt) => changeDataScope(record, evt)"
+								>
 									<a-badge
 										v-if="
 											(item.value === 'SCOPE_ORG_DEFINE') &
@@ -79,13 +81,15 @@
 											(item.scopeDefineOrgIdList !== undefined)
 										"
 										:count="item.scopeDefineOrgIdList.length"
-										:number-style="{ backgroundColor: '#52c41a' }">
-										{{ item.title }}</a-badge>
+										:number-style="{ backgroundColor: '#52c41a' }"
+									>
+										{{ item.title }}</a-badge
+									>
 									<div v-else>{{ item.title }}</div>
 								</a-radio>
 							</template>
 							<a-button v-if="record.dataScope[4].check" type="link" size="small" @click="handleDefineOrg(record)"
-							>选择机构</a-button
+								>选择组织</a-button
 							>
 						</template>
 					</template>
@@ -101,12 +105,11 @@
 </template>
 
 <script setup name="grantResourceForm">
-	import { SearchOutlined } from '@ant-design/icons-vue';
+	import { SearchOutlined } from '@ant-design/icons-vue'
 	import roleApi from '@/api/sys/roleApi'
-	import { remove } from 'lodash-es'
 	import ScopeDefineOrg from './scopeDefineOrg.vue'
 
-	let visible = ref(false)
+	const visible = ref(false)
 	const spinningLoading = ref(false)
 	const scopeDefineOrgModal = ref(null)
 	const emit = defineEmits({ successful: null })
@@ -121,9 +124,9 @@
 	const scopeRadioValue = ref()
 	const state = reactive({
 		searchText: '',
-		searchedColumn: '',
-	});
-	const searchInput = ref();
+		searchedColumn: ''
+	})
+	const searchInput = ref()
 
 	const columns = [
 		{
@@ -133,13 +136,13 @@
 			width: 380,
 			customFilterDropdown: true,
 			onFilter: (value, record) => record.api.includes(value),
-			onFilterDropdownVisibleChange: visible => {
+			onFilterDropdownVisibleChange: (visible) => {
 				if (visible) {
 					setTimeout(() => {
-						searchInput.value.focus();
-					}, 100);
+						searchInput.value.focus()
+					}, 100)
 				}
-			},
+			}
 		},
 		{
 			key: 'dataScope',
@@ -204,13 +207,13 @@
 			},
 			{
 				id: `SCOPE_ORG_${id}`,
-				title: '所属机构',
+				title: '所属组织',
 				value: 'SCOPE_ORG',
 				check: false
 			},
 			{
 				id: `SCOPE_ORG_CHILD_${id}`,
-				title: '所属机构及以下',
+				title: '所属组织及以下',
 				value: 'SCOPE_ORG_CHILD',
 				check: false
 			},
@@ -369,28 +372,27 @@
 	}
 	// 标题接口列搜索
 	const handleSearch = (selectedKeys, confirm, dataIndex) => {
-		confirm();
-		state.searchText = selectedKeys[0];
-		state.searchedColumn = dataIndex;
+		confirm()
+		state.searchText = selectedKeys[0]
+		state.searchedColumn = dataIndex
 	}
 	// 标题接口列搜索重置
-	const handleReset = clearFilters => {
-		clearFilters();
-		state.searchText = '';
+	const handleReset = (clearFilters) => {
+		clearFilters()
+		state.searchText = ''
 	}
 	// 标题数据范围列radio-group事件
 	const radioChange = (obj) => {
 		loadDatas.value.forEach((data) => {
 			data.dataScope.forEach((data) => {
-				if (obj.target.value === data.value){
+				if (obj.target.value === data.value) {
 					data.check = true
-				}else {
+				} else {
 					data.check = false
 				}
 			})
 		})
 	}
-
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
 		onOpen
