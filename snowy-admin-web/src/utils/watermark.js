@@ -47,12 +47,12 @@ export const watermark = {
 		/* MutationObserver 是一个可以监听DOM结构变化的接口。 */
 		const observer = new MutationObserver(() => {
 			// 此处根据用户登录状态，判断是否终止监听，避免用户退出后登录页面仍然有水印
-			if (!tool.data.get('TOKEN')){
+			if (!tool.data.get('TOKEN')) {
 				this.close()
 				observer.disconnect()
 			}
 			const wmInstance = document.body.querySelector('.watermark')
-			if (!wmInstance || (wmInstance.getAttribute('style') !== styleStr)) {
+			if (!wmInstance || wmInstance.getAttribute('style') !== styleStr) {
 				//如果标签在，只修改了属性，重新赋值属性
 				if (wmInstance) {
 					// 避免一直触发
@@ -80,7 +80,7 @@ export const watermark = {
 	close: function () {
 		/* 关闭页面的水印，即要移除水印标签 */
 		let watermark = document.body.querySelector('.watermark')
-		if (watermark){
+		if (watermark) {
 			document.body.removeChild(watermark)
 		}
 	}
