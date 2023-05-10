@@ -99,7 +99,13 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public void download(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
-        DevFile devFile = this.queryEntity(devFileIdParam.getId());
+        DevFile devFile;
+        try {
+            devFile = this.queryEntity(devFileIdParam.getId());
+        } catch (Exception e) {
+            CommonResponseUtil.renderError(response, e.getMessage());
+            return;
+        }
         if(!devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
             CommonResponseUtil.renderError(response, "非本地文件不支持此方式下载，id值为：" + devFile.getId());
             return;
