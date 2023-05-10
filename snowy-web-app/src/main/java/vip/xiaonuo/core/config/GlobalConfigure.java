@@ -570,7 +570,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
                 //为空则设置createTime
                 Object createTime = metaObject.getValue(CREATE_TIME);
                 if (ObjectUtil.isNull(createTime)) {
-                    setFieldValByName(CREATE_TIME, new Date(), metaObject);
+                    setFieldValByName(CREATE_TIME, DateTime.now(), metaObject);
                 }
             } catch (ReflectionException ignored) { }
         }

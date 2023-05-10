@@ -127,11 +127,11 @@ public class CommonTimeFormatUtil {
         long seconds = secondsParam % ONE_MINUTE_SECONDS;
         if(days > 0) {
             result = days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
-        }else if(hours > 0) {
+        } else if(hours > 0) {
             result = hours + "小时" + minutes + "分钟" + seconds + "秒";
-        }else if(minutes > 0) {
+        } else if(minutes > 0) {
             result = minutes + "分钟" + seconds + "秒";
-        }else{
+        } else {
             result = seconds + "秒";
         }
         return result;

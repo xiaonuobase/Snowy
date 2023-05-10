@@ -1025,7 +1025,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 JSONObject jsonObject = this.doImport(allUserList, sysUserImportParamList.get(i), i);
                 if(jsonObject.getBool("success")) {
                     successCount += 1;
-                } else{
+                } else {
                     errorCount += 1;
                     errorDetail.add(jsonObject);
                 }

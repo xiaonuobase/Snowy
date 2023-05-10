@@ -308,7 +308,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             DatabaseMetaData metaData = conn.getMetaData();
             String url = metaData.getURL();
             String schema = null;
-            if (url.toLowerCase().contains("oracle")) {
+            if (url.toLowerCase().contains("jdbc:oracle")) {
                 schema = metaData.getUserName();
             }
             List<GenBasicTableColumnResult> columns = new ArrayList<>();
