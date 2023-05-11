@@ -54,8 +54,8 @@ public class GlobalErrorViewController {
                 commonResult = CommonResult.error();
             }
             if(model instanceof Exception){
-                Exception exception = (Exception) model;
-                log.error(">>> 服务器未知异常：", exception);
+                Exception e = (Exception) model;
+                log.error(">>> 服务器未知异常，具体信息：", e);
             }
         }
         return commonResult;

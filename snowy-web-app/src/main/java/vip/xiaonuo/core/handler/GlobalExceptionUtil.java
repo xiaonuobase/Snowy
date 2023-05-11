@@ -107,7 +107,7 @@ public class GlobalExceptionUtil {
             //文件上传错误特殊提示
             commonResult = CommonResult.error("请使用multipart/form-data方式上传文件");
         } else if (e instanceof MissingServletRequestPartException) {
-
+            log.error(">>> 文件上传参数异常：", e);
             //文件上传错误特殊提示
             commonResult = CommonResult.error("请选择要上传的文件并检查文件参数名称是否正确");
         } else if (e instanceof SaTokenException) {
@@ -138,7 +138,7 @@ public class GlobalExceptionUtil {
             commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
         }  else {
             // 未知异常打印详情
-            log.error(">>> 服务器未知异常：{}, 请求地址：{}", e, CommonServletUtil.getRequest().getRequestURL());
+            log.error(">>> 服务器未知异常，请求地址：{}，具体信息：", CommonServletUtil.getRequest().getRequestURL(), e);
             // 未知异常返回服务器异常
             commonResult = CommonResult.error("服务器异常");
         }
