@@ -69,7 +69,7 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
             }
         } else {
             // throwable为空，则直接返回默认异常
-            return BeanUtil.beanToMap(CommonResult.error("服务器异常，请求地址：" + CommonServletUtil.getRequest().getRequestURL()));
+            return BeanUtil.beanToMap(CommonResult.error());
         }
     }
 }
