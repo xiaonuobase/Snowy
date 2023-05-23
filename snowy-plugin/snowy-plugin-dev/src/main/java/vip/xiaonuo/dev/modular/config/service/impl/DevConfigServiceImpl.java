@@ -156,12 +156,14 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
                 if(devConfigResultList.size() != 1 || !devConfigResultList.get(0).equals(DevConfigCategoryEnum.BIZ_DEFINE.getValue())) {
                     throw new CommonException("不可删除系统内置配置");
                 }
-                devConfigList.forEach(devConfig -> {
+                List<DevConfig> deleteDevConfigList = this.listByIds(devConfigIdList);
+                // 执行删除
+                this.removeByIds(devConfigIdList);
+
+                deleteDevConfigList.forEach(devConfig -> {
                     // 移除对应的缓存
                     commonCacheOperator.remove(CONFIG_CACHE_KEY + devConfig.getConfigKey());
                 });
-                // 执行删除
-                this.removeByIds(devConfigIdList);
             }
         }
     }
