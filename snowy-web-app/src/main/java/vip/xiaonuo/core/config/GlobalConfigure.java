@@ -48,6 +48,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -75,6 +76,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -509,19 +511,25 @@ public class GlobalConfigure implements WebMvcConfigurer {
 
         @Override
         public String getDatabaseId(DataSource dataSource) throws SQLException {
-            String url = dataSource.getConnection().getMetaData().getURL().toLowerCase();
-            if (url.contains("jdbc:oracle")) {
-                return "oracle";
-            } else if (url.contains("jdbc:postgresql")) {
-                return "pgsql";
-            } else if (url.contains("jdbc:mysql")) {
-                return "mysql";
-            } else if (url.contains("jdbc:dm")) {
-                return "dm";
-            } else if (url.contains("jdbc:kingbase")) {
-                return "kingbase";
-            }  else {
-                return "mysql";
+            Connection conn = null;
+            try {
+                conn = dataSource.getConnection();
+                String url = conn.getMetaData().getURL().toLowerCase();
+                if (url.contains("jdbc:oracle")) {
+                    return "oracle";
+                } else if (url.contains("jdbc:postgresql")) {
+                    return "pgsql";
+                } else if (url.contains("jdbc:mysql")) {
+                    return "mysql";
+                } else if (url.contains("jdbc:dm")) {
+                    return "dm";
+                } else if (url.contains("jdbc:kingbase")) {
+                    return "kingbase";
+                }  else {
+                    return "mysql";
+                }
+            } finally {
+                JdbcUtils.closeConnection(conn);
             }
         }
     }
