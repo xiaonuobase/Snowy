@@ -113,6 +113,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/configuration/security",
             "/ureport/**",
             "/druid/**",
+            "/images/**",
 
             /* 认证相关 */
             "/auth/c/getPicCaptcha",
