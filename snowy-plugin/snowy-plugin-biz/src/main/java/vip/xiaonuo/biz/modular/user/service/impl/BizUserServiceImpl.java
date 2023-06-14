@@ -186,7 +186,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 throw new CommonException("手机号码：{}格式错误", bizUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
-                    .eq(BizUser::getPhone, bizUserAddParam.getPhone())) > 0) {
+                    .eq(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(bizUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", bizUserAddParam.getPhone());
             }
         }
@@ -240,7 +240,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 throw new CommonException("手机号码：{}格式错误", bizUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
-                    .eq(BizUser::getPhone, bizUserEditParam.getPhone())
+                    .eq(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(bizUserEditParam.getPhone()))
                     .ne(BizUser::getId, bizUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", bizUserEditParam.getPhone());
             }

@@ -264,7 +264,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("手机号码：{}格式错误", sysUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
-                    .eq(SysUser::getPhone, sysUserAddParam.getPhone())) > 0) {
+                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserAddParam.getPhone());
             }
         }
@@ -307,7 +307,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("手机号码：{}格式错误", sysUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
-                    .eq(SysUser::getPhone, sysUserEditParam.getPhone())
+                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserEditParam.getPhone()))
                     .ne(SysUser::getId, sysUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserEditParam.getPhone());
             }
@@ -784,30 +784,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void grantResource(SysUserGrantResourceParam sysUserGrantResourceParam) {
-        String id = sysUserGrantResourceParam.getId();
-        SysUserIdParam sysUserIdParam = new SysUserIdParam();
-        List<String> roleIdList = this.ownRole(sysUserIdParam);
-        if(ObjectUtil.isEmpty(roleIdList)) {
-            throw new CommonException("非超管角色用户不可被授权系统模块菜单资源");
-        }
-        boolean hasSuperAdminRole = sysRoleService.listByIds(roleIdList).stream().map(SysRole::getCode).collect(Collectors.toSet())
-                .contains(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue());
         List<String> menuIdList = sysUserGrantResourceParam.getGrantInfoList().stream()
                 .map(SysUserGrantResourceParam.SysUserGrantResource::getMenuId).collect(Collectors.toList());
-        if(!hasSuperAdminRole) {
-            if(ObjectUtil.isNotEmpty(menuIdList)) {
-                Set<String> sysModuleIdList = sysMenuService.listByIds(menuIdList).stream().map(SysMenu::getModule).collect(Collectors.toSet());
-                boolean containsSystemModule = sysModuleService.listByIds(sysModuleIdList).stream().map(SysModule::getCode)
-                        .collect(Collectors.toSet()).contains(SysBuildInEnum.BUILD_IN_MODULE_CODE.getValue());
-                if(containsSystemModule) {
+        if(ObjectUtil.isNotEmpty(menuIdList)) {
+            SysUserIdParam sysUserIdParam = new SysUserIdParam();
+            sysUserIdParam.setId(sysUserGrantResourceParam.getId());
+            List<String> roleIdList = this.ownRole(sysUserIdParam);
+            Set<String> sysModuleIdList = sysMenuService.listByIds(menuIdList).stream().map(SysMenu::getModule).collect(Collectors.toSet());
+            boolean containsSystemModule = sysModuleService.listByIds(sysModuleIdList).stream().map(SysModule::getCode)
+                    .collect(Collectors.toSet()).contains(SysBuildInEnum.BUILD_IN_MODULE_CODE.getValue());
+            if(containsSystemModule) {
+                if(ObjectUtil.isEmpty(roleIdList)) {
                     throw new CommonException("非超管角色用户不可被授权系统模块菜单资源");
+                } else {
+                    boolean hasSuperAdminRole = sysRoleService.listByIds(roleIdList).stream().map(SysRole::getCode).collect(Collectors.toSet())
+                            .contains(SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue());
+                    if(!hasSuperAdminRole) {
+                        throw new CommonException("非超管角色用户不可被授权系统模块菜单资源");
+                    }
                 }
             }
+            List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                    .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+            sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
         }
-        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
-                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-        sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(),
-                extJsonList);
     }
 
     @Override
@@ -858,7 +858,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("手机号码：{}格式错误", sysUserUpdateInfoParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>().ne(SysUser::getId, sysUser.getId())
-                    .eq(SysUser::getPhone, sysUserUpdateInfoParam.getPhone())) > 0) {
+                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserUpdateInfoParam.getPhone());
             }
         }

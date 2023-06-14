@@ -147,7 +147,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
                 throw new CommonException("手机号码：{}格式错误", clientUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
-                    .eq(ClientUser::getPhone, clientUserAddParam.getPhone())) > 0) {
+                    .eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(clientUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", clientUserAddParam.getPhone());
             }
         }
@@ -181,7 +181,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
                 throw new CommonException("手机号码：{}格式错误", clientUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
-                    .eq(ClientUser::getPhone, clientUserEditParam.getPhone())
+                    .eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(clientUserEditParam.getPhone()))
                     .ne(ClientUser::getId, clientUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", clientUserEditParam.getPhone());
             }
