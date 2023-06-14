@@ -116,7 +116,6 @@ service.interceptors.response.use(
 				'update',
 				'grant',
 				'reset',
-				'start',
 				'stop',
 				'pass',
 				'disable',
@@ -126,7 +125,8 @@ service.interceptors.response.use(
 				'active',
 				'turn',
 				'adjust',
-				'reject'
+				'reject',
+				'saveDraft'
 			]
 			apiNameArray.forEach((apiName) => {
 				if (responseUrl.includes(apiName)) {
