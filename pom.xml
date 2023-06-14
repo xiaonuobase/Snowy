@@ -40,7 +40,7 @@
         <easypoi.version>4.3.0</easypoi.version>
         <fastjson.version>2.0.24</fastjson.version>
         <gson.version>2.8.9</gson.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <hutool.version>5.8.12</hutool.version>
         <ip2region.version>2.6.3</ip2region.version>
         <jackson.annotations.version>2.14.2</jackson.annotations.version>
