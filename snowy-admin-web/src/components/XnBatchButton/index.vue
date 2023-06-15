@@ -5,9 +5,9 @@
 		@visibleChange="batchVisibleChange"
 		@confirm="deleteBatch"
 	>
-		<a-button :type="props.buttonType" :danger="props.buttonDanger">
+		<a-button :type="props.buttonType" :danger="props.buttonDanger" :size="props.size" :loading="buttonLoading">
 			<template #icon v-if="props.icon">
-				<component :is="props.icon" />
+				<component :is="props.icon" :style="{ color: props.color }" />
 			</template>
 			{{ props.buttonName }}
 		</a-button>
@@ -18,6 +18,7 @@
 	import { message } from 'ant-design-vue'
 	const batchVisible = ref(false)
 	const emit = defineEmits({ batchCallBack: null })
+	const buttonLoading = ref(false)
 	const props = defineProps({
 		buttonName: {
 			type: String,
@@ -35,9 +36,17 @@
 			type: String,
 			default: () => ''
 		},
+		size: {
+			type: String,
+			default: () => 'middle'
+		},
 		selectedRowKeys: {
 			type: Array,
 			default: () => []
+		},
+		color: {
+			type: String,
+			default: () => ''
 		}
 	})
 	// 参数校验
@@ -63,5 +72,13 @@
 		})
 		// 发起方法调用，谁的谁来实现
 		emit('batchCallBack', params)
+	}
+	// 打开loading
+	const loading = () => {
+		buttonLoading.value = true
+	}
+	// 关闭loading
+	const closeLoading = () => {
+		buttonLoading.value = true
 	}
 </script>
