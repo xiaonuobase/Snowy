@@ -64,7 +64,7 @@ github下载地址（镜像）：[https://github.com/xiaonuobase/Snowy](https://
 ### 前端支撑
 | 插件 | 版本   | 用途 |
 |--- | ----- | ----- |
-| node.js | 最新版 |  JavaScript运行环境 |
+| node.js | ≥16 |  JavaScript运行环境 |
 
 ### 启动前端
 
