@@ -46,12 +46,7 @@ public class DevLogUtil {
      */
     public static void executeOperationLog(CommonLog commonLog, String userName, JoinPoint joinPoint, String resultJson) {
         HttpServletRequest request = CommonServletUtil.getRequest();
-        String loginId = StpUtil.getLoginIdAsString();
-        if (ObjectUtil.isEmpty(loginId)) {
-            loginId = "-1";
-        }
         DevLog devLog = genBasOpLog();
-        String finalLoginId = loginId;
         ThreadUtil.execute(() -> {
             devLog.setCategory(DevLogCategoryEnum.OPERATE.getValue());
             devLog.setName(commonLog.value());
@@ -64,7 +59,6 @@ public class DevLogUtil {
             devLog.setOpTime(DateTime.now());
             devLog.setOpUser(userName);
             creatLogSignValue(devLog);
-            devLog.setCreateUser(finalLoginId);
             devLogService.save(devLog);
         });
     }
@@ -142,11 +136,16 @@ public class DevLogUtil {
     private static DevLog genBasOpLog() {
         HttpServletRequest request = CommonServletUtil.getRequest();
         String ip = CommonIpAddressUtil.getIp(request);
+        String loginId = StpUtil.getLoginIdAsString();
+        if (ObjectUtil.isEmpty(loginId)) {
+            loginId = "-1";
+        }
         DevLog devLog = new DevLog();
         devLog.setOpIp(CommonIpAddressUtil.getIp(request));
         devLog.setOpAddress(CommonIpAddressUtil.getCityInfo(ip));
         devLog.setOpBrowser(CommonUaUtil.getBrowser(request));
         devLog.setOpOs(CommonUaUtil.getOs(request));
+        devLog.setCreateUser(loginId);
         return devLog;
     }
 
