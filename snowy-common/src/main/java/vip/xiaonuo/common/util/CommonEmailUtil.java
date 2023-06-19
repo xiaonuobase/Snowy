@@ -13,7 +13,6 @@
 package vip.xiaonuo.common.util;
 
 import cn.hutool.core.lang.Validator;
-import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import vip.xiaonuo.common.exception.CommonException;
 
@@ -43,7 +42,7 @@ public class CommonEmailUtil {
      **/
     public static void validEmail(String emails) {
         StrUtil.split(emails, StrUtil.COMMA).forEach(email -> {
-            if(!ReUtil.isMatch("^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", email)) {
+            if(!isEmail(email)) {
                 throw new CommonException("邮件地址：{}格式错误", email);
             }
         });
