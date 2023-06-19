@@ -12,9 +12,11 @@
  */
 package vip.xiaonuo.dev.modular.log.util;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import org.aspectj.lang.JoinPoint;
 import vip.xiaonuo.common.annotation.CommonLog;
@@ -44,7 +46,12 @@ public class DevLogUtil {
      */
     public static void executeOperationLog(CommonLog commonLog, String userName, JoinPoint joinPoint, String resultJson) {
         HttpServletRequest request = CommonServletUtil.getRequest();
+        String loginId = StpUtil.getLoginIdAsString();
+        if (ObjectUtil.isEmpty(loginId)) {
+            loginId = "-1";
+        }
         DevLog devLog = genBasOpLog();
+        String finalLoginId = loginId;
         ThreadUtil.execute(() -> {
             devLog.setCategory(DevLogCategoryEnum.OPERATE.getValue());
             devLog.setName(commonLog.value());
@@ -57,6 +64,7 @@ public class DevLogUtil {
             devLog.setOpTime(DateTime.now());
             devLog.setOpUser(userName);
             creatLogSignValue(devLog);
+            devLog.setCreateUser(finalLoginId);
             devLogService.save(devLog);
         });
     }
