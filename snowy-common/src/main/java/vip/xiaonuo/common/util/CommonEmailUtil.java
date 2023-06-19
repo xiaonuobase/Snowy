@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.common.util;
 
+import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import vip.xiaonuo.common.exception.CommonException;
@@ -31,7 +32,7 @@ public class CommonEmailUtil {
      * @date 2022/8/15 13:32
      **/
     public static boolean isEmail(String email) {
-        return ReUtil.isMatch("^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", email);
+        return  Validator.isEmail(email);
     }
 
     /**
