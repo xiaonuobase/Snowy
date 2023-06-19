@@ -193,8 +193,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 try {
                     devFile.setThumbnail(ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(file.getBytes()),
                             100, 100, null), suffix));
-                } catch (IOException e) {
-                    throw new CommonException("文件上传失败，获取文件流错误");
+                } catch (Exception ignored) {
                 }
             }
         }
