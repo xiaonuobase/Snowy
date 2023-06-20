@@ -62,7 +62,7 @@
         <mybatis.version>3.5.10</mybatis.version>
         <mysql.connector.java.version>8.0.28</mysql.connector.java.version>
         <netty.common.version>4.1.89.Final</netty.common.version>
-        <netty.handler.version>4.1.89.Final</netty.handler.version>
+        <netty.handler.version>4.1.94.Final</netty.handler.version>
         <okhttp3.version>4.10.0</okhttp3.version>
         <okio.version>3.3.0</okio.version>
         <oracle.connector.java.version>21.5.0.0</oracle.connector.java.version>
