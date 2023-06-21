@@ -136,8 +136,13 @@ public class DevLogUtil {
     private static DevLog genBasOpLog() {
         HttpServletRequest request = CommonServletUtil.getRequest();
         String ip = CommonIpAddressUtil.getIp(request);
-        String loginId = StpUtil.getLoginIdAsString();
-        if (ObjectUtil.isEmpty(loginId)) {
+        String loginId;
+        try {
+            loginId = StpUtil.getLoginIdAsString();
+            if (ObjectUtil.isEmpty(loginId)) {
+                loginId = "-1";
+            }
+        } catch (Exception e) {
             loginId = "-1";
         }
         DevLog devLog = new DevLog();
