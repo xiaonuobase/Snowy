@@ -41,5 +41,13 @@ export default {
 	// 获取组织详情
 	orgDetail(data) {
 		return request('detail', data, 'get')
+	},
+	// 获取组织树选择器
+	orgOrgTreeSelector(data) {
+		return request('orgTreeSelector', data, 'get')
+	},
+	// 获取用户选择器
+	orgUserSelector(data) {
+		return request('userSelector', data, 'get')
 	}
 }

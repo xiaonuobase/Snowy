@@ -52,9 +52,10 @@
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 		<user-selector-plus
-			ref="UserSelectorPlus"
-			page-url="/sys/org/userSelector"
-			org-url="/sys/org/orgTreeSelector"
+			ref="userSelectorPlusRef"
+			:org-tree-api="selectorApiFunction.orgTreeApi"
+			:user-page-api="selectorApiFunction.userPageApi"
+			:checked-user-list-api="selectorApiFunction.checkedUserListApi"
 			:radio-model="true"
 			@onBack="userBack"
 		/>
@@ -63,16 +64,16 @@
 
 <script setup name="orgForm">
 	import { required } from '@/utils/formRules'
-	import { message } from 'ant-design-vue'
 	import orgApi from '@/api/sys/orgApi'
-	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import userCenterApi from '@/api/sys/userCenterApi'
+	import UserSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
 	let visible = $ref(false)
-	let UserSelectorPlus = ref()
+	let userSelectorPlusRef = ref()
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
@@ -128,7 +129,7 @@
 	const openSelector = (id) => {
 		let checkedUserIds = []
 		checkedUserIds.push(id)
-		UserSelectorPlus.value.showUserPlusModal(checkedUserIds)
+		userSelectorPlusRef.value.showUserPlusModal(checkedUserIds)
 	}
 	// 人员选择器回调
 	const userBack = (value) => {
@@ -159,6 +160,24 @@
 					submitLoading.value = false
 				})
 		})
+	}
+	// 传递设计器需要的API
+	const selectorApiFunction = {
+		orgTreeApi: (param) => {
+			return orgApi.orgOrgTreeSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		userPageApi: (param) => {
+			return orgApi.orgUserSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		checkedUserListApi: (param) => {
+			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

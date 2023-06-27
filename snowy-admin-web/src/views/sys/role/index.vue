@@ -101,8 +101,9 @@
 	<Form ref="form" @successful="table.refresh(true)" />
 	<user-selector-plus
 		ref="userselectorPlusRef"
-		page-url="/sys/role/userSelector"
-		org-url="/sys/role/orgTreeSelector"
+		:org-tree-api="selectorApiFunction.orgTreeApi"
+		:user-page-api="selectorApiFunction.userPageApi"
+		:checked-user-list-api="selectorApiFunction.checkedUserListApi"
 		@onBack="userCallBack"
 	/>
 </template>
@@ -111,6 +112,7 @@
 	import { Empty } from 'ant-design-vue'
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import grantResourceForm from './grantResourceForm.vue'
 	import grantMobileResourceForm from './grantMobileResourceForm.vue'
 	import grantPermissionForm from './grantPermissionForm.vue'
@@ -270,6 +272,24 @@
 			})
 		}
 		roleApi.roleGrantUser(param).then(() => {})
+	}
+	// 传递设计器需要的API
+	const selectorApiFunction = {
+		orgTreeApi: (param) => {
+			return roleApi.roleOrgTreeSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		userPageApi: (param) => {
+			return roleApi.roleUserSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		checkedUserListApi: (param) => {
+			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 </script>
 

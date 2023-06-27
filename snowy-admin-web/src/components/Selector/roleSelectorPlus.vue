@@ -44,6 +44,7 @@
 						:columns="commons"
 						:data-source="tableData"
 						:expand-row-by-click="true"
+						:loading="pageLoading"
 						bordered
 					>
 						<template #title>
@@ -61,6 +62,17 @@
 							</template>
 						</template>
 					</a-table>
+					<div class="mt-2">
+						<a-pagination
+							v-if="!isEmpty(tableData)"
+							v-model:current="current"
+							v-model:page-size="pageSize"
+							:total="total"
+							size="small"
+							showSizeChanger
+							@change="paginationChange"
+						/>
+					</div>
 				</div>
 			</a-col>
 			<a-col :span="6">
@@ -71,6 +83,7 @@
 						:columns="selectedCommons"
 						:data-source="selectedData"
 						:expand-row-by-click="true"
+						:loading="selectedTableListLoading"
 						bordered
 					>
 						<template #title>
@@ -92,11 +105,10 @@
 </template>
 
 <script setup name="roleSelectorPlus">
-	import roleSelectorPlusApi from '@/api/components/Selector/roleSelectorPlusApi'
 	import { message } from 'ant-design-vue'
-	import { remove } from 'lodash-es'
+	import { remove, isEmpty } from 'lodash-es'
 	// 弹窗是否打开
-	let visible = $ref(false)
+	const visible = ref(false)
 	// 主表格common
 	const commons = [
 		{
@@ -137,26 +149,24 @@
 	const searchFormState = ref({})
 	const searchFormRef = ref()
 	const cardLoading = ref(true)
+	const pageLoading = ref(false)
+	const selectedTableListLoading = ref(false)
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	// 获取机构树数据
 	const treeData = ref()
 	//  默认展开二级树的节点id
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const emit = defineEmits({ onBack: null })
 	const tableData = ref([])
 	const selectedData = ref([])
 	const recordIds = ref()
 	const props = defineProps({
-		pageUrl: {
-			type: String,
-			default: '',
-			required: true
+		rolePageApi: {
+			type: Function
 		},
-		orgUrl: {
-			type: String,
-			default: '',
-			required: true
+		orgTreeApi: {
+			type: Function
 		},
 		// 是否是单选
 		radioModel: {
@@ -175,6 +185,9 @@
 			type: Boolean,
 			default: true,
 			required: false
+		},
+		checkedRoleListApi: {
+			type: Function
 		}
 	})
 	// 是否是单选
@@ -183,47 +196,67 @@
 	const dataIsConverterFlw = props.dataIsConverterFlw
 	// 是否展示‘全局’这个节点
 	const roleGlobal = props.roleGlobal
+	// 分页相关
+	const current = ref(0) // 当前页数
+	const pageSize = ref(0) // 每页条数
+	const total = ref(0) // 数据总数
 
 	// 打开弹框
 	const showRolePlusModal = (ids) => {
-		visible = true
+		visible.value = true
 		if (dataIsConverterFlw) {
 			ids = goDataConverter(ids)
 		}
 		recordIds.value = ids
-		// 获取机构树
-		roleSelectorPlusApi.treeSelector(props.orgUrl).then((res) => {
-			cardLoading.value = false
-			if (res !== null) {
-				treeData.value = res
-				// 树中插入全局角色类型
-				if (roleGlobal) {
-					const globalRoleType = [
-						{
-							id: 'GLOBAL',
-							parentId: '-1',
-							name: '全局'
-						}
-					]
-					treeData.value = globalRoleType.concat(res)
-				}
-
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
+		if (props.orgTreeApi) {
+			// 获取机构树
+			props.orgTreeApi().then((data) => {
+				cardLoading.value = false
+				if (data !== null) {
+					treeData.value = data
+					// 树中插入全局角色类型
+					if (roleGlobal) {
+						const globalRoleType = [
+							{
+								id: 'GLOBAL',
+								parentId: '-1',
+								name: '全局'
+							}
+						]
+						treeData.value = globalRoleType.concat(data)
 					}
-				})
-			}
-		})
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
+						}
+					})
+				}
+			})
+		}
 		loadData()
+		if (props.checkedRoleListApi) {
+			if (isEmpty(recordIds.value)) {
+				return
+			}
+			const param = {
+				idList: recordIds.value
+			}
+			selectedTableListLoading.value = true
+			props.checkedRoleListApi(param).then((data) => {
+				selectedData.value = data
+			})
+			.finally(() => {
+				selectedTableListLoading.value = false
+			})
+		}
 	}
 	// 查询主表格数据
 	const loadData = () => {
@@ -231,25 +264,32 @@
 		if (!roleGlobal) {
 			searchFormState.value.category = 'ORG'
 		}
-		roleSelectorPlusApi.roleSelector(props.pageUrl, searchFormState.value).then((res) => {
-			// 总共多少条
-			tableRecordNum.value = res.length
-			tableData.value = res
-			loadCheckedKey()
+		pageLoading.value = true
+		props.rolePageApi(searchFormState.value).then((data) => {
+			current.value = data.current
+			pageSize.value = data.size
+			total.value = data.total
+			// 重置、赋值
+			tableData.value = []
+			tableRecordNum.value = 0
+			tableData.value = data.records
+			if (data.records) {
+				tableRecordNum.value = data.records.length
+			} else {
+				tableRecordNum.value = 0
+			}
+		})
+		.finally(() => {
+			pageLoading.value = false
 		})
 	}
-	// 加载已选中的
-	const loadCheckedKey = () => {
-		selectedData.value = []
-		if (recordIds.value.length > 0) {
-			recordIds.value.forEach((item) => {
-				tableData.value.forEach((table) => {
-					if (item === table.id) {
-						selectedData.value.push(table)
-					}
-				})
-			})
+	// pageSize改变回调分页事件
+	const paginationChange = (page, pageSize) => {
+		const param = {
+			current: page,
+			size: pageSize
 		}
+		loadData(param)
 	}
 	const judge = () => {
 		if (radioModel && selectedData.value.length > 0) {
@@ -338,7 +378,11 @@
 		searchFormState.value = {}
 		tableRecordNum.value = 0
 		tableData.value = []
-		visible = false
+		current.value = 0
+		pageSize.value = 0
+		total.value = 0
+		selectedData.value = []
+		visible.value = false
 	}
 
 	// 数据进入后转换

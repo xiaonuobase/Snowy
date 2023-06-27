@@ -53,8 +53,9 @@
 		</template>
 		<user-selector-plus
 			ref="UserSelectorPlus"
-			page-url="/biz/org/userSelector"
-			org-url="/biz/org/orgTreeSelector"
+			:org-tree-api="selectorApiFunction.orgTreeApi"
+			:user-page-api="selectorApiFunction.userPageApi"
+			:checked-user-list-api="selectorApiFunction.checkedUserListApi"
 			:radio-model="true"
 			@onBack="userBack"
 		/>
@@ -64,6 +65,7 @@
 <script setup name="bizOrgForm">
 	import { required } from '@/utils/formRules'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import tool from '@/utils/tool'
 
@@ -161,6 +163,24 @@
 					})
 			})
 			.catch(() => {})
+	}
+	// 传递设计器需要的API
+	const selectorApiFunction = {
+		orgTreeApi: (param) => {
+			return bizOrgApi.orgTreeSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		userPageApi: (param) => {
+			return bizOrgApi.orgUserSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		checkedUserListApi: (param) => {
+			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

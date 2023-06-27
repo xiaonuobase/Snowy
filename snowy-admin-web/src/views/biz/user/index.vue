@@ -143,8 +143,9 @@
 	<Form ref="form" @successful="table.refresh(true)" />
 	<role-selector-plus
 		ref="RoleSelectorPlus"
-		page-url="/biz/user/roleSelector"
-		org-url="/biz/user/orgTreeSelector"
+		:org-tree-api="selectorApiFunction.orgTreeApi"
+		:role-page-api="selectorApiFunction.rolePageApi"
+		:checked-role-list-api="selectorApiFunction.checkedRoleListApi"
 		:role-global="false"
 		@onBack="roleBack"
 	/>
@@ -154,6 +155,7 @@
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import bizUserApi from '@/api/biz/bizUserApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
 
@@ -389,6 +391,24 @@
 		bizUserApi.userExportUserInfo(params).then((res) => {
 			downloadUtil.resultDownload(res)
 		})
+	}
+	// 传递设计器需要的API
+	const selectorApiFunction = {
+		orgTreeApi: (param) => {
+			return bizUserApi.userOrgTreeSelector(param).then((orgTree) => {
+				return Promise.resolve(orgTree)
+			})
+		},
+		rolePageApi: (param) => {
+			return bizUserApi.userRoleSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		checkedRoleListApi: (param) => {
+			return userCenterApi.userCenterGetRoleListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 </script>
 

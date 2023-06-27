@@ -35,9 +35,10 @@
 		</template>
 	</xn-form-container>
 	<user-selector-plus
-		ref="UserSelectorPlus"
-		page-url="/sys/org/userSelector"
-		org-url="/sys/org/orgTreeSelector"
+		ref="userSelectorPlusRef"
+		:org-tree-api="selectorApiFunction.orgTreeApi"
+		:user-page-api="selectorApiFunction.userPageApi"
+		:checked-user-list-api="selectorApiFunction.checkedUserListApi"
 		@onBack="userBack"
 	/>
 </template>
@@ -46,11 +47,13 @@
 	import { required } from '@/utils/formRules'
 	import { message } from 'ant-design-vue'
 	import messageApi from '@/api/dev/messageApi'
-	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import userApi from '@/api/sys/userApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
+	import UserSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import tool from '@/utils/tool'
 
 	const sendLoading = ref(false)
-	let UserSelectorPlus = ref()
+	const userSelectorPlusRef = ref()
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
@@ -85,7 +88,7 @@
 				ids.push(item.id)
 			})
 		}
-		UserSelectorPlus.value.showUserPlusModal(ids)
+		userSelectorPlusRef.value.showUserPlusModal(ids)
 	}
 	// 人员选择回调
 	const userBack = (value) => {
@@ -121,6 +124,24 @@
 			ids.push(item.id)
 		})
 		formData.value.receiverIdList = ids
+	}
+	// 传递设计器需要的API
+	const selectorApiFunction = {
+		orgTreeApi: (param) => {
+			return userApi.userOrgTreeSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		userPageApi: (param) => {
+			return userApi.userSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		checkedUserListApi: (param) => {
+			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

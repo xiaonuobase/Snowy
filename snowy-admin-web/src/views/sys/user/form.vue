@@ -425,13 +425,14 @@
 	const selePositionData = (orgId, type) => {
 		if (orgId) {
 			const param = {
-				orgId: orgId
+				orgId: orgId,
+				size: -1
 			}
-			userApi.userPositionSelector(param).then((res) => {
-				positionData.value = res
+			userApi.userPositionSelector(param).then((data) => {
+				positionData.value = data.records
 			})
-			userApi.userSelector(param).then((res) => {
-				directorData.value = res
+			userApi.userSelector(param).then((data) => {
+				directorData.value = data.records
 			})
 			// 此类型代表选择的时候重置后面的职位
 			if (type === 0) {
@@ -478,8 +479,8 @@
 		const userList = await userApi.userSelector(param)
 		const obj = {
 			orgId: data.orgId,
-			posList: posList,
-			userList: userList
+			posList: posList.records,
+			userList: userList.records
 		}
 		childrenOrgPosArray.value.push(obj)
 	}

@@ -85,5 +85,13 @@ export default {
 	// 获取权限授权树
 	rolePermissionTreeSelector(data) {
 		return request('permissionTreeSelector', data, 'get')
+	},
+	// 获取角色选择器
+	roleRoleSelector(data) {
+		return request('roleSelector', data, 'get')
+	},
+	// 获取用户选择器
+	roleUserSelector(data) {
+		return request('userSelector', data, 'get')
 	}
 }

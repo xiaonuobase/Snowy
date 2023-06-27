@@ -44,6 +44,7 @@
 						:columns="commons"
 						:data-source="tableData"
 						:expand-row-by-click="true"
+						:loading="pageLoading"
 						bordered
 					>
 						<template #title>
@@ -61,6 +62,17 @@
 							</template>
 						</template>
 					</a-table>
+					<div class="mt-2">
+						<a-pagination
+							v-if="!isEmpty(tableData)"
+							v-model:current="current"
+							v-model:page-size="pageSize"
+							:total="total"
+							size="small"
+							showSizeChanger
+							@change="paginationChange"
+						/>
+					</div>
 				</div>
 			</a-col>
 			<a-col :span="6">
@@ -71,6 +83,7 @@
 						:columns="selectedCommons"
 						:data-source="selectedData"
 						:expand-row-by-click="true"
+						:loading="selectedTableListLoading"
 						bordered
 					>
 						<template #title>
@@ -92,11 +105,10 @@
 </template>
 
 <script setup name="userSelectorPlus">
-	import userSelectorPlusApi from '@/api/components/Selector/userSelectorPlusApi'
 	import { message } from 'ant-design-vue'
-	import { remove } from 'lodash-es'
+	import { remove, isEmpty } from 'lodash-es'
 	// 弹窗是否打开
-	let visible = $ref(false)
+	const visible = ref(false)
 	// 主表格common
 	const commons = [
 		{
@@ -137,72 +149,103 @@
 	const searchFormState = ref({})
 	const searchFormRef = ref()
 	const cardLoading = ref(true)
+	const pageLoading = ref(false)
+	const selectedTableListLoading = ref(false)
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	// 获取机构树数据
 	const treeData = ref()
 	//  默认展开二级树的节点id
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const emit = defineEmits({ onBack: null })
 	const tableData = ref([])
 	const selectedData = ref([])
 	const recordIds = ref()
-	const props = defineProps(['pageUrl', 'orgUrl', 'radioModel', 'dataIsConverterFlw'])
+	const props = defineProps(['radioModel', 'dataIsConverterFlw', 'orgTreeApi', 'userPageApi', 'checkedUserListApi'])
 	// 是否是单选
 	const radioModel = props.radioModel || false
 	// 数据是否转换成工作流格式
 	const dataIsConverterFlw = props.dataIsConverterFlw || false
+	// 分页相关
+	const current = ref(0) // 当前页数
+	const pageSize = ref(0) // 每页条数
+	const total = ref(0) // 数据总数
 
 	// 打开弹框
 	const showUserPlusModal = (ids = []) => {
-		visible = true
+		visible.value = true
 		if (dataIsConverterFlw) {
 			ids = goDataConverter(ids)
 		}
 		recordIds.value = ids
-		// 获取机构树
-		userSelectorPlusApi.treeSelector(props.orgUrl).then((res) => {
-			cardLoading.value = false
-			if (res !== null) {
-				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
+		// 加载机构树
+		if (props.orgTreeApi) {
+			// 获取机构树
+			props.orgTreeApi().then((data) => {
+				cardLoading.value = false
+				if (data !== null) {
+					treeData.value = data
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
-			}
-		})
+					})
+				}
+			})
+		}
 		loadData()
+		if (props.checkedUserListApi) {
+			if (isEmpty(recordIds.value)) {
+				return
+			}
+			const param = {
+				idList: recordIds.value
+			}
+			selectedTableListLoading.value = true
+			props.checkedUserListApi(param).then((data) => {
+				selectedData.value = data
+			})
+			.finally(() => {
+				selectedTableListLoading.value = false
+			})
+		}
 	}
 	// 查询主表格数据
 	const loadData = () => {
-		userSelectorPlusApi.userSelector(props.pageUrl, searchFormState.value).then((res) => {
-			// 总共多少条
-			tableRecordNum.value = res.length
-			tableData.value = res
-			loadCheckedKey()
+		pageLoading.value = true
+		props.userPageApi(searchFormState.value).then((data) => {
+			current.value = data.current
+			pageSize.value = data.size
+			total.value = data.total
+			// 重置、赋值
+			tableData.value = []
+			tableRecordNum.value = 0
+			tableData.value = data.records
+			if (data.records) {
+				tableRecordNum.value = data.records.length
+			} else {
+				tableRecordNum.value = 0
+			}
+		})
+		.finally(() => {
+			pageLoading.value = false
 		})
 	}
-	// 加载已选中的
-	const loadCheckedKey = () => {
-		selectedData.value = []
-		if (recordIds.value.length > 0) {
-			recordIds.value.forEach((item) => {
-				tableData.value.forEach((table) => {
-					if (item === table.id) {
-						selectedData.value.push(table)
-					}
-				})
-			})
+	// pageSize改变回调分页事件
+	const paginationChange = (page, pageSize) => {
+		const param = {
+			current: page,
+			size: pageSize
 		}
+		loadData(param)
 	}
 	const judge = () => {
 		if (radioModel && selectedData.value.length > 0) {
@@ -285,7 +328,11 @@
 		searchFormState.value = {}
 		tableRecordNum.value = 0
 		tableData.value = []
-		visible = false
+		current.value = 0
+		pageSize.value = 0
+		total.value = 0
+		selectedData.value = []
+		visible.value = false
 	}
 
 	// 数据进入后转换

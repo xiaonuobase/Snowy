@@ -81,5 +81,21 @@ export default {
 	// 读取登录用户站内信详情
 	userLoginUnreadMessageDetail(data) {
 		return request('loginUnreadMessageDetail', data, 'get')
+	},
+	// 根据id集合获取组织集合
+	userCenterGetOrgListByIdList(data) {
+		return request('getOrgListByIdList', data)
+	},
+	// 根据id集合获取用户集合
+	userCenterGetUserListByIdList(data) {
+		return request('getUserListByIdList', data)
+	},
+	// 根据id集合获取职位集合
+	userCenterGetPositionListByIdList(data) {
+		return request('getPositionListByIdList', data)
+	},
+	// 根据id集合获取角色集合
+	userCenterGetRoleListByIdList(data) {
+		return request('getRoleListByIdList', data)
 	}
 }
