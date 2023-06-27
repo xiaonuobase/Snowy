@@ -67,20 +67,14 @@
 
         <!-- 达梦数据库 -->
         <!--<dependency>
-            <groupId>DmJdbcDriver18</groupId>
+            <groupId>com.dameng</groupId>
             <artifactId>DmJdbcDriver18</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/resources/lib/DmJdbcDriver18.jar</systemPath>
         </dependency>-->
 
         <!-- 人大金仓数据库 -->
         <!--<dependency>
-            <groupId>kingbase8-8.6.0</groupId>
-            <artifactId>kingbase8-8.6.0</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/resources/lib/kingbase8-8.6.0.jar</systemPath>
+            <groupId>cn.com.kingbase</groupId>
+            <artifactId>kingbase8</artifactId>
         </dependency>-->
 
         <!-- 登录鉴权插件 -->
