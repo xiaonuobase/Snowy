@@ -457,7 +457,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysRoleSelectorUserParam.getOrgId(), sysRoleSelectorUserParam.getSearchKey())) {
-            return sysUserService.getCachedAllUserSelectorList();
+            return sysUserService.getAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getOrgId())) {
                 // 如果机构id不为空，则查询该机构所在顶级机构下的所有人

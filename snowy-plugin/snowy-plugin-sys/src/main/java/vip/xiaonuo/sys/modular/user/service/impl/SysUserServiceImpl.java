@@ -1498,7 +1498,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysUserSelectorUserParam.getOrgId(), sysUserSelectorUserParam.getSearchKey())) {
-            return this.getCachedAllUserSelectorList();
+            return this.getAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
                         // 如果机构id不为空，则查询该机构所在顶级机构下的所有人

@@ -311,7 +311,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysOrgSelectorUserParam.getOrgId(), sysOrgSelectorUserParam.getSearchKey())) {
-            return sysUserService.getCachedAllUserSelectorList();
+            return sysUserService.getAllUserSelectorList();
         } else {
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
                 // 如果组织id不为空，则查询该组织所在顶级组织下的所有人
