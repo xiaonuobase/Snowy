@@ -230,14 +230,14 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
     }
 
     @Override
-    public List<BizPosition> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
+    public Page<BizPosition> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
         LambdaQueryWrapper<BizPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             lambdaQueryWrapper.in(BizPosition::getOrgId, loginUserDataScope);
         } else {
-            return CollectionUtil.newArrayList();
+            return new Page<>();
         }
         // 查询部分字段
         lambdaQueryWrapper.select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
@@ -249,6 +249,6 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             lambdaQueryWrapper.like(BizPosition::getName, bizPositionSelectorPositionParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(BizPosition::getSortCode);
-        return this.list(lambdaQueryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 }

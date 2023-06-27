@@ -154,7 +154,7 @@ public class BizPositionController {
     @ApiOperation("获取岗位选择器")
     @SaCheckPermission("/biz/position/positionSelector")
     @GetMapping("/biz/position/positionSelector")
-    public CommonResult<List<BizPosition>> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
+    public CommonResult<Page<BizPosition>> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
         return CommonResult.data(bizPositionService.positionSelector(bizPositionSelectorPositionParam));
     }
 }

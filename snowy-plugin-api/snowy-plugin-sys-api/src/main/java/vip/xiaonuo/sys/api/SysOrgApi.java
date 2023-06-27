@@ -14,6 +14,7 @@ package vip.xiaonuo.sys.api;
 
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -55,5 +56,5 @@ public interface SysOrgApi {
      * @author xuyuxiang
      * @date 2022/7/22 14:45
      **/
-    List<JSONObject> orgListSelector(String parentId);
+    Page<JSONObject> orgListSelector(String parentId);
 }

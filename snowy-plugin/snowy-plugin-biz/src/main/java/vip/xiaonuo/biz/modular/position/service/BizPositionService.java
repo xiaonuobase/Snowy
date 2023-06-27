@@ -100,5 +100,5 @@ public interface BizPositionService extends IService<BizPosition> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<BizPosition> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam);
+    Page<BizPosition> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam);
 }

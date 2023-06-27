@@ -381,12 +381,12 @@ public interface SysUserService extends IService<SysUser> {
     List<SysUserPositionResult> loginPositionInfo(SysUserIdParam sysUserIdParam);
 
     /**
-     * 获取缓存的所有用户选择器
+     * 获取所有用户选择器
      *
      * @author xuyuxiang
      * @date 2022/7/25 19:42
      **/
-    List<SysUser> getCachedAllUserSelectorList();
+    Page<SysUser> getAllUserSelectorList();
 
     /* ====用户部分所需要用到的选择器==== */
 
@@ -404,7 +404,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/7/22 13:34
      **/
-    List<SysOrg> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam);
+    Page<SysOrg> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam);
 
     /**
      * 获取职位选择器
@@ -412,7 +412,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<SysPosition> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam);
+    Page<SysPosition> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam);
 
     /**
      * 获取角色选择器
@@ -420,7 +420,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<SysRole> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam);
+    Page<SysRole> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam);
 
     /**
      * 获取用户选择器
@@ -428,7 +428,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<SysUser> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam);
+    Page<SysUser> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam);
 
     /**
      * 获取登录用户的站内信分页
@@ -445,4 +445,36 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2022/9/6 17:39
      */
     SysUserMessageDetailResult loginMessageDetail(SysUserMessageIdParam sysUserMessageIdParam);
+
+    /**
+     * 根据id集合获取组织集合
+     *
+     * @author xuyuxiang
+     * @date 2023/6/25 11:03
+     **/
+    List<SysOrg> getOrgListByIdList(SysUserIdListParam sysUserIdListParam);
+
+    /**
+     * 根据id集合获取用户集合
+     *
+     * @author xuyuxiang
+     * @date 2023/6/25 11:03
+     **/
+    List<SysUser> getUserListByIdList(SysUserIdListParam sysUserIdListParam);
+
+    /**
+     * 根据id集合获取职位集合
+     *
+     * @author xuyuxiang
+     * @date 2023/6/25 11:03
+     **/
+    List<SysPosition> getPositionListByIdList(SysUserIdListParam sysUserIdListParam);
+
+    /**
+     * 根据id集合获取角色集合
+     *
+     * @author xuyuxiang
+     * @date 2023/6/25 11:03
+     **/
+    List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam);
 }

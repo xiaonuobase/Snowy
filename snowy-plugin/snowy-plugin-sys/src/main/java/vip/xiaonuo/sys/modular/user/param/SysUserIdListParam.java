@@ -16,33 +16,22 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 /**
- * 角色选择器参数
+ * 用户id集合参数
  *
  * @author xuyuxiang
- * @date 2022/7/26 16:02
+ * @date 2022/4/21 16:13
  **/
 @Getter
 @Setter
-public class SysUserSelectorRoleParam {
+public class SysUserIdListParam {
 
-    /** 当前页 */
-    @ApiModelProperty(value = "当前页码")
-    private Integer current;
-
-    /** 每页条数 */
-    @ApiModelProperty(value = "每页条数")
-    private Integer size;
-
-    /** 组织id */
-    @ApiModelProperty(value = "组织id")
-    private String orgId;
-
-    /** 角色分类 */
-    @ApiModelProperty(value = "角色分类")
-    private String category;
-
-    /** 名称关键词 */
-    @ApiModelProperty(value = "名称关键词")
-    private String searchKey;
+    /** id集合 */
+    @ApiModelProperty(value = "id集合", required = true)
+    @NotNull(message = "idList不能为空")
+    private List<String> idList;
 }

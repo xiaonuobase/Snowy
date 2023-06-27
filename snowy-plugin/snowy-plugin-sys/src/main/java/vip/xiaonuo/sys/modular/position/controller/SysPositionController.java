@@ -146,7 +146,7 @@ public class SysPositionController {
     @ApiOperationSupport(order = 7)
     @ApiOperation("获取职位选择器")
     @GetMapping("/sys/position/positionSelector")
-    public CommonResult<List<SysPosition>> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
+    public CommonResult<Page<SysPosition>> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
         return CommonResult.data(sysPositionService.positionSelector(sysPositionSelectorPositionParam));
     }
 }

@@ -288,7 +288,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public List<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {
+    public Page<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {
         LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
@@ -300,15 +300,16 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             lambdaQueryWrapper.like(SysOrg::getName, sysOrgSelectorOrgListParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        return this.list(lambdaQueryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 
     @Override
-    public List<SysUser> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
+    public Page<SysUser> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
-        // 如果查询条件为空，则从缓存中查询
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
+                SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
+        // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysOrgSelectorUserParam.getOrgId(), sysOrgSelectorUserParam.getSearchKey())) {
             return sysUserService.getCachedAllUserSelectorList();
         } else {
@@ -319,14 +320,14 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
                     lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
                 } else {
-                    return CollectionUtil.newArrayList();
+                    return new Page<>();
                 }
             }
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getSearchKey())) {
                 lambdaQueryWrapper.like(SysUser::getName, sysOrgSelectorUserParam.getSearchKey());
             }
             lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-            return sysUserService.list(lambdaQueryWrapper);
+            return sysUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
         }
     }
 

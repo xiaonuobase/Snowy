@@ -12,8 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.position.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysPositionApi;
 import vip.xiaonuo.sys.modular.position.param.SysPositionSelectorPositionParam;
@@ -40,11 +42,12 @@ public class SysPositionApiProvider implements SysPositionApi {
         return sysPositionService.queryEntity(positionId).getName();
     }
 
+    @SuppressWarnings("ALL")
     @Override
-    public List<JSONObject> positionSelector(String orgId, String searchKey) {
+    public Page<JSONObject> positionSelector(String orgId, String searchKey) {
         SysPositionSelectorPositionParam sysPositionSelectorPositionParam = new SysPositionSelectorPositionParam();
         sysPositionSelectorPositionParam.setOrgId(orgId);
         sysPositionSelectorPositionParam.setSearchKey(searchKey);
-        return sysPositionService.positionSelector(sysPositionSelectorPositionParam).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+        return BeanUtil.toBean(sysPositionService.positionSelector(sysPositionSelectorPositionParam), Page.class);
     }
 }

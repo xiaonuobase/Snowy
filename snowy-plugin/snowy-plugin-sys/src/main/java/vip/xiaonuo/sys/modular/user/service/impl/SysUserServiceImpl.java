@@ -1423,21 +1423,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysUser> getCachedAllUserSelectorList() {
-        // 从缓存中取
-        Object cacheValue = commonCacheOperator.get(USER_CACHE_ALL_KEY);
-        if(ObjectUtil.isNotEmpty(cacheValue)) {
-            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), SysUser.class);
-        }
-        // 只查询部分字段
-        List<SysUser> userList = this.list(new LambdaQueryWrapper<SysUser>().select(SysUser::getId, SysUser::getOrgId,
-                SysUser::getId, SysUser::getPositionId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode)
-                .orderByAsc(SysUser::getSortCode));
-        if(ObjectUtil.isNotEmpty(userList)) {
-            // 更新到缓存
-            commonCacheOperator.put(USER_CACHE_ALL_KEY, userList);
-        }
-        return userList;
+    public Page<SysUser> getAllUserSelectorList() {
+        return this.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<SysUser>().select(SysUser::getId,
+                SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount, SysUser::getName,
+                SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate).orderByAsc(SysUser::getSortCode));
     }
 
     /* ====用户部分所需要用到的选择器==== */
@@ -1452,7 +1441,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysOrg> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam) {
+    public Page<SysOrg> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam) {
         LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
@@ -1464,11 +1453,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             lambdaQueryWrapper.like(SysOrg::getName, sysUserSelectorOrgListParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        return sysOrgService.list(lambdaQueryWrapper);
+        return sysOrgService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 
     @Override
-    public List<SysPosition> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam) {
+    public Page<SysPosition> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam) {
         LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
@@ -1480,11 +1469,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             lambdaQueryWrapper.like(SysPosition::getName, sysUserSelectorPositionParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysPosition::getSortCode);
-        return sysPositionService.list(lambdaQueryWrapper);
+        return sysPositionService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 
     @Override
-    public List<SysRole> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam) {
+    public Page<SysRole> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam) {
         LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.select(SysRole::getId, SysRole::getOrgId, SysRole::getName,
                 SysRole::getCategory, SysRole::getSortCode);
@@ -1498,33 +1487,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             lambdaQueryWrapper.like(SysRole::getName, sysUserSelectorRoleParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysRole::getSortCode);
-        return sysRoleService.list(lambdaQueryWrapper);
+        return sysRoleService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 
     @Override
-    public List<SysUser> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam) {
+    public Page<SysUser> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode);
-        // 如果查询条件为空，则从缓存中查询
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
+                SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
+        // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysUserSelectorUserParam.getOrgId(), sysUserSelectorUserParam.getSearchKey())) {
             return this.getCachedAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
-                // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
-                List<String> parentAndChildOrgIdList = CollStreamUtil.toList(sysOrgService.getParentAndChildListById(sysOrgService
+                        // 如果机构id不为空，则查询该机构所在顶级机构下的所有人
+                        List<String> parentAndChildOrgIdList = CollStreamUtil.toList(sysOrgService.getParentAndChildListById(sysOrgService
                         .getCachedAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
                     lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
                 } else {
-                    return CollectionUtil.newArrayList();
+                    return new Page<>();
                 }
             }
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
                 lambdaQueryWrapper.like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
             }
             lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-            return this.list(lambdaQueryWrapper);
+            return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
         }
     }
 
@@ -1539,5 +1529,43 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUserMessageDetailResult loginMessageDetail(SysUserMessageIdParam sysUserMessageIdParam) {
         return JSONUtil.toBean(devMessageApi.detail(sysUserMessageIdParam.getId()), SysUserMessageDetailResult.class);
+    }
+
+    @Override
+    public List<SysOrg> getOrgListByIdList(SysUserIdListParam sysUserIdListParam) {
+        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName, SysOrg::getCategory, SysOrg::getSortCode)
+                .in(SysOrg::getId, sysUserIdListParam.getIdList()).orderByAsc(SysOrg::getSortCode);
+        return sysOrgService.list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<SysUser> getUserListByIdList(SysUserIdListParam sysUserIdListParam) {
+        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 只查询部分字段
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode)
+                .in(SysUser::getId, sysUserIdListParam.getIdList()).orderByAsc(SysUser::getSortCode);
+        return this.list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<SysPosition> getPositionListByIdList(SysUserIdListParam sysUserIdListParam) {
+        LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
+                SysPosition::getCategory, SysPosition::getSortCode)
+                .in(SysPosition::getId, sysUserIdListParam.getIdList()).orderByAsc(SysPosition::getSortCode);
+        return sysPositionService.list(lambdaQueryWrapper);
+    }
+
+    @Override
+    public List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam) {
+        LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(SysRole::getId, SysRole::getOrgId, SysRole::getName,
+                SysRole::getCategory, SysRole::getSortCode)
+                .in(SysRole::getId, sysUserIdListParam.getIdList()).orderByAsc(SysRole::getSortCode);
+        return sysRoleService.list(lambdaQueryWrapper);
     }
 }

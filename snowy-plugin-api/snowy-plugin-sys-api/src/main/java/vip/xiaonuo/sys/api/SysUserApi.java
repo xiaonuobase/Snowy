@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.api;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -102,5 +103,5 @@ public interface SysUserApi {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<JSONObject> userSelector(String orgId, String searchKey);
+    Page<JSONObject> userSelector(String orgId, String searchKey);
 }

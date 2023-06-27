@@ -12,11 +12,13 @@
  */
 package vip.xiaonuo.sys.modular.role.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.sys.api.SysRoleApi;
@@ -65,13 +67,15 @@ public class SysRoleApiProvider implements SysRoleApi {
         return sysRoleService.count(new LambdaQueryWrapper<SysRole>().in(SysRole::getOrgId, orgIdList)) > 0;
     }
 
+    @SuppressWarnings("ALL")
     @Override
-    public List<JSONObject> roleSelector(String orgId, String category, String searchKey) {
+    public Page<JSONObject> roleSelector(String orgId, String category, String searchKey, List<String> dataScopeList) {
         SysRoleSelectorRoleParam sysRoleSelectorRoleParam = new SysRoleSelectorRoleParam();
         sysRoleSelectorRoleParam.setOrgId(orgId);
         sysRoleSelectorRoleParam.setCategory(category);
         sysRoleSelectorRoleParam.setSearchKey(searchKey);
-        return sysRoleService.roleSelector(sysRoleSelectorRoleParam).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+        sysRoleSelectorRoleParam.setDataScopeList(dataScopeList);
+        return BeanUtil.toBean(sysRoleService.roleSelector(sysRoleSelectorRoleParam), Page.class);
     }
 
     @Transactional(rollbackFor = Exception.class)

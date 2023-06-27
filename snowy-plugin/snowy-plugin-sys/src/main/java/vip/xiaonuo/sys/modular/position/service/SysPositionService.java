@@ -108,5 +108,5 @@ public interface SysPositionService extends IService<SysPosition> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam);
+    Page<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam);
 }

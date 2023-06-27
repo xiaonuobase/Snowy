@@ -25,6 +25,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.position.entity.SysPosition;
+import vip.xiaonuo.sys.modular.role.entity.SysRole;
+import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.*;
 import vip.xiaonuo.sys.modular.user.result.SysUserMessageDetailResult;
 import vip.xiaonuo.sys.modular.user.result.SysUserMessageResult;
@@ -293,5 +297,57 @@ public class SysUserCenterController {
     @GetMapping("/sys/userCenter/loginUnreadMessageDetail")
     public CommonResult<SysUserMessageDetailResult> loginMessageDetail(@Valid SysUserMessageIdParam sysUserMessageIdParam) {
         return CommonResult.data(sysUserService.loginMessageDetail(sysUserMessageIdParam));
+    }
+
+    /**
+     * 根据id集合获取组织集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 18)
+    @ApiOperation("根据id集合获取组织集合")
+    @PostMapping("/sys/userCenter/getOrgListByIdList")
+    public CommonResult<List<SysOrg>> getOrgListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
+        return CommonResult.data(sysUserService.getOrgListByIdList(sysUserIdListParam));
+    }
+
+    /**
+     * 根据id集合获取用户集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 19)
+    @ApiOperation("根据id集合获取用户集合")
+    @PostMapping("/sys/userCenter/getUserListByIdList")
+    public CommonResult<List<SysUser>> getUserListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
+        return CommonResult.data(sysUserService.getUserListByIdList(sysUserIdListParam));
+    }
+
+    /**
+     * 根据id集合获取职位集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 20)
+    @ApiOperation("根据id集合获取职位集合")
+    @PostMapping("/sys/userCenter/getPositionListByIdList")
+    public CommonResult<List<SysPosition>> getPositionListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
+        return CommonResult.data(sysUserService.getPositionListByIdList(sysUserIdListParam));
+    }
+
+    /**
+     * 根据id集合获取角色集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 21)
+    @ApiOperation("根据id集合获取角色集合")
+    @PostMapping("/sys/userCenter/getRoleListByIdList")
+    public CommonResult<List<SysRole>> getRoleListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
+        return CommonResult.data(sysUserService.getRoleListByIdList(sysUserIdListParam));
     }
 }

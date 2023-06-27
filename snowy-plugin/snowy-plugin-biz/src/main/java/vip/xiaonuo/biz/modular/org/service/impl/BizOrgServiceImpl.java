@@ -368,17 +368,18 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     @Override
-    public List<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
+    public Page<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
         LambdaQueryWrapper<BizUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             lambdaQueryWrapper.in(BizUser::getOrgId, loginUserDataScope);
         } else {
-            return CollectionUtil.newArrayList();
+            return new Page<>();
         }
         // 只查询部分字段
-        lambdaQueryWrapper.select(BizUser::getId, BizUser::getOrgId, BizUser::getAccount, BizUser::getName);
+        lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
+                BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
         if(ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getOrgId())) {
             lambdaQueryWrapper.eq(BizUser::getOrgId, bizOrgSelectorUserParam.getOrgId());
         }
@@ -386,7 +387,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             lambdaQueryWrapper.like(BizUser::getName, bizOrgSelectorUserParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(BizUser::getSortCode);
-        return bizUserService.list(lambdaQueryWrapper);
+        return bizUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 
     /* ====以下为各种递归方法==== */

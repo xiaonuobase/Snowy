@@ -160,7 +160,7 @@ public class SysOrgController {
     @ApiOperationSupport(order = 8)
     @ApiOperation("获取用户选择器")
     @GetMapping("/sys/org/userSelector")
-    public CommonResult<List<SysUser>> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
+    public CommonResult<Page<SysUser>> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
         return CommonResult.data(sysOrgService.userSelector(sysOrgSelectorUserParam));
     }
 }

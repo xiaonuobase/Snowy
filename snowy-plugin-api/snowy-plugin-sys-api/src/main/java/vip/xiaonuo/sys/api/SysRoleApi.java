@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.api;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public interface SysRoleApi {
      * @author xuyuxiang
      * @date 2022/7/22 14:49
      **/
-    List<JSONObject> roleSelector(String orgId, String category, String searchKey);
+    Page<JSONObject> roleSelector(String orgId, String category, String searchKey, List<String> dataScopeList);
 
     /**
      * 代码生成菜单按钮授权

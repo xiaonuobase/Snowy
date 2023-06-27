@@ -203,7 +203,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     }
 
     @Override
-    public List<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
+    public Page<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
         LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
@@ -215,6 +215,6 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
             lambdaQueryWrapper.like(SysPosition::getName, sysPositionSelectorPositionParam.getSearchKey());
         }
         lambdaQueryWrapper.orderByAsc(SysPosition::getSortCode);
-        return this.list(lambdaQueryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }
 }

@@ -26,8 +26,16 @@ import lombok.Setter;
 @Setter
 public class BizUserSelectorRoleParam {
 
+    /** 当前页 */
+    @ApiModelProperty(value = "当前页码")
+    private Integer current;
+
+    /** 每页条数 */
+    @ApiModelProperty(value = "每页条数")
+    private Integer size;
+
     /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 1)
+    @ApiModelProperty(value = "组织id")
     private String orgId;
 
     /** 角色分类 */

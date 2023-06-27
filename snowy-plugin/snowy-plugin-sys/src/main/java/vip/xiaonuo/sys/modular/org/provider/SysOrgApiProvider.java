@@ -12,10 +12,12 @@
  */
 package vip.xiaonuo.sys.modular.org.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysOrgApi;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -57,10 +59,11 @@ public class SysOrgApiProvider implements SysOrgApi {
         return sysOrgService.orgTreeSelector();
     }
 
+    @SuppressWarnings("ALL")
     @Override
-    public List<JSONObject> orgListSelector(String parentId) {
+    public Page<JSONObject> orgListSelector(String parentId) {
         SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam = new SysOrgSelectorOrgListParam();
         sysOrgSelectorOrgListParam.setParentId(parentId);
-        return sysOrgService.orgListSelector(sysOrgSelectorOrgListParam).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+        return BeanUtil.toBean(sysOrgService.orgListSelector(sysOrgSelectorOrgListParam), Page.class);
     }
 }

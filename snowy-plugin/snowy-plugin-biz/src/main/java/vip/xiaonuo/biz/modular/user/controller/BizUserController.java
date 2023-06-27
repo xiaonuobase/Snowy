@@ -268,7 +268,7 @@ public class BizUserController {
     @ApiOperation("获取机构列表选择器")
     @SaCheckPermission("/biz/user/orgListSelector")
     @GetMapping("/biz/user/orgListSelector")
-    public CommonResult<List<BizOrg>> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam) {
+    public CommonResult<Page<BizOrg>> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam) {
         return CommonResult.data(bizUserService.orgListSelector(bizUserSelectorOrgListParam));
     }
 
@@ -282,7 +282,7 @@ public class BizUserController {
     @ApiOperation("获取岗位选择器")
     @SaCheckPermission("/biz/user/positionSelector")
     @GetMapping("/biz/user/positionSelector")
-    public CommonResult<List<BizPosition>> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam) {
+    public CommonResult<Page<BizPosition>> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam) {
         return CommonResult.data(bizUserService.positionSelector(bizUserSelectorPositionParam));
     }
 
@@ -296,7 +296,7 @@ public class BizUserController {
     @ApiOperation("获取角色选择器")
     @SaCheckPermission("/biz/user/roleSelector")
     @GetMapping("/biz/user/roleSelector")
-    public CommonResult<List<BizUserRoleResult>> roleSelector(BizUserSelectorRoleParam bizUserSelectorRoleParam) {
+    public CommonResult<Page<BizUserRoleResult>> roleSelector(BizUserSelectorRoleParam bizUserSelectorRoleParam) {
         return CommonResult.data(bizUserService.roleSelector(bizUserSelectorRoleParam));
     }
 
@@ -310,7 +310,7 @@ public class BizUserController {
     @ApiOperation("获取人员选择器")
     @SaCheckPermission("/biz/user/userSelector")
     @GetMapping("/biz/user/userSelector")
-    public CommonResult<List<BizUser>> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {
+    public CommonResult<Page<BizUser>> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {
         return CommonResult.data(bizUserService.userSelector(bizUserSelectorUserParam));
     }
 }

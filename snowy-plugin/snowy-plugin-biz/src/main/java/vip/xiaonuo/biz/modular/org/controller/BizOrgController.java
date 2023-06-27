@@ -169,7 +169,7 @@ public class BizOrgController {
     @ApiOperation("获取人员选择器")
     @SaCheckPermission("/biz/org/userSelector")
     @GetMapping("/biz/org/userSelector")
-    public CommonResult<List<BizUser>> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
+    public CommonResult<Page<BizUser>> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
         return CommonResult.data(bizOrgService.userSelector(bizOrgSelectorUserParam));
     }
 }

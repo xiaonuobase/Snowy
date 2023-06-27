@@ -182,7 +182,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<SysRole> roleSelector(SysRoleSelectorRoleParam sysRoleSelectorRoleParam);
+    Page<SysRole> roleSelector(SysRoleSelectorRoleParam sysRoleSelectorRoleParam);
 
     /**
      * 获取用户选择器
@@ -190,5 +190,5 @@ public interface SysRoleService extends IService<SysRole> {
      * @author xuyuxiang
      * @date 2022/8/22 13:39
      **/
-    List<SysUser> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam);
+    Page<SysUser> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam);
 }

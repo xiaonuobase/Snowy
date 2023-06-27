@@ -153,7 +153,7 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/7/22 13:34
      **/
-    List<BizOrg> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam);
+    Page<BizOrg> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam);
 
     /**
      * 获取岗位选择器
@@ -161,7 +161,7 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<BizPosition> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam);
+    Page<BizPosition> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam);
 
     /**
      * 获取角色选择器
@@ -169,7 +169,7 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<BizUserRoleResult> roleSelector(BizUserSelectorRoleParam bizUserSelectorRoleParam);
+    Page<BizUserRoleResult> roleSelector(BizUserSelectorRoleParam bizUserSelectorRoleParam);
 
     /**
      * 获取人员选择器
@@ -177,5 +177,5 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<BizUser> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam);
+    Page<BizUser> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam);
 }

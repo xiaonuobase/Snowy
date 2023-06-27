@@ -12,11 +12,13 @@
  */
 package vip.xiaonuo.sys.modular.user.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.sys.api.SysUserApi;
@@ -136,11 +138,12 @@ public class SysUserApiProvider implements SysUserApi {
         return result.get();
     }
 
+    @SuppressWarnings("ALL")
     @Override
-    public List<JSONObject> userSelector(String orgId, String searchKey) {
+    public Page<JSONObject> userSelector(String orgId, String searchKey) {
         SysUserSelectorUserParam sysUserSelectorUserParam = new SysUserSelectorUserParam();
         sysUserSelectorUserParam.setOrgId(orgId);
         sysUserSelectorUserParam.setSearchKey(searchKey);
-        return sysUserService.userSelector(sysUserSelectorUserParam).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+        return BeanUtil.toBean(sysUserService.userSelector(sysUserSelectorUserParam), Page.class);
     }
 }

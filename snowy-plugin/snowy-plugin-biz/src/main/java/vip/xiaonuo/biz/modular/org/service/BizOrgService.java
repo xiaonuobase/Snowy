@@ -86,7 +86,7 @@ public interface BizOrgService extends IService<BizOrg> {
     BizOrg queryEntity(String id);
 
     /**
-     * 获取缓存的所有机构
+     * 获取所有机构
      *
      * @author xuyuxiang
      * @date 2022/7/25 19:42
@@ -123,5 +123,5 @@ public interface BizOrgService extends IService<BizOrg> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam);
+    Page<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam);
 }
