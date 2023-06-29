@@ -257,23 +257,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     @Override
-    public List<BizOrg> getCachedAllOrgList() {
-        // 从缓存中取
-        Object cacheValue = commonCacheOperator.get(ORG_CACHE_ALL_KEY);
-        if(ObjectUtil.isNotEmpty(cacheValue)) {
-            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), BizOrg.class);
-        }
-        List<BizOrg> orgList = this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
-        if(ObjectUtil.isNotEmpty(orgList)) {
-            // 更新到缓存
-            commonCacheOperator.put(ORG_CACHE_ALL_KEY, JSONUtil.toJsonStr(orgList));
-        }
-        return orgList;
+    public List<BizOrg> getAllOrgList() {
+        return this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
     }
 
     @Override
     public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
-        List<BizOrg> cachedAllOrgList = this.getCachedAllOrgList();
+        List<BizOrg> cachedAllOrgList = this.getAllOrgList();
         List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(bizOrg ->
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
                 .collect(Collectors.toList()), "0");

@@ -91,7 +91,7 @@ public interface BizOrgService extends IService<BizOrg> {
      * @author xuyuxiang
      * @date 2022/7/25 19:42
      **/
-    List<BizOrg> getCachedAllOrgList();
+    List<BizOrg> getAllOrgList();
 
     /**
      * 根据机构全名称获取机构id，有则返回，无则创建
