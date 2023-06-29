@@ -46,6 +46,7 @@
 						:expand-row-by-click="true"
 						:loading="pageLoading"
 						bordered
+						:pagination="false"
 					>
 						<template #title>
 							<span>待选择列表 {{ tableRecordNum }} 条</span>
