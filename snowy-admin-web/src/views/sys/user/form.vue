@@ -431,7 +431,7 @@
 			userApi.userPositionSelector(param).then((data) => {
 				positionData.value = data.records
 			})
-			userApi.userSelector(param).then((data) => {
+			userApi.userSelector().then((data) => {
 				directorData.value = data.records
 			})
 			// 此类型代表选择的时候重置后面的职位

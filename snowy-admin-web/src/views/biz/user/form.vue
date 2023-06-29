@@ -433,7 +433,7 @@
 			bizUserApi.userPositionSelector(param).then((data) => {
 				positionData.value = data.records
 			})
-			bizUserApi.userSelector(param).then((data) => {
+			bizUserApi.userSelector().then((data) => {
 				directorData.value = data.records
 			})
 			// 此类型代表选择的时候重置后面的职位
