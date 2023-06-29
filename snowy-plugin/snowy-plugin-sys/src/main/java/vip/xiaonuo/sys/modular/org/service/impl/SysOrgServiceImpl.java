@@ -314,11 +314,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             return sysUserService.getAllUserSelectorList();
         } else {
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
-                // 如果组织id不为空，则查询该组织所在顶级组织下的所有人
-                List<String> parentAndChildOrgIdList = CollStreamUtil.toList(this.getParentAndChildListById(this
+                // 如果组织id不为空，则查询该组织及其子组织下的所有人
+                List<String> childOrgIdList = CollStreamUtil.toList(this.getChildListById(this
                         .getCachedAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
-                if (ObjectUtil.isNotEmpty(parentAndChildOrgIdList)) {
-                    lambdaQueryWrapper.in(SysUser::getOrgId, parentAndChildOrgIdList);
+                if (ObjectUtil.isNotEmpty(childOrgIdList)) {
+                    lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
                 } else {
                     return new Page<>();
                 }

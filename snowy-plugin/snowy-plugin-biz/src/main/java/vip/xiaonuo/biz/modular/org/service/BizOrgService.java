@@ -94,12 +94,60 @@ public interface BizOrgService extends IService<BizOrg> {
     List<BizOrg> getAllOrgList();
 
     /**
-     * 根据机构全名称获取机构id，有则返回，无则创建
+     * 根据组织全名称获取组织id，有则返回，无则创建
      *
      * @author xuyuxiang
      * @date 2023/3/7 15:44
      **/
     String getOrgIdByOrgFullNameWithCreate(String orgFullName);
+
+    /**
+     * 根据id获取父子数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    List<BizOrg> getParentAndChildListById(List<BizOrg> originDataList, String id, boolean includeSelf);
+
+    /**
+     * 根据id获取所有的子数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    List<BizOrg> getChildListById(List<BizOrg> originDataList, String id, boolean includeSelf);
+
+    /**
+     * 根据id获取所有的父数据列表
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    List<BizOrg> getParentListById(List<BizOrg> originDataList, String id, boolean includeSelf);
+
+    /**
+     * 根据id获取数据
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    BizOrg getById(List<BizOrg> originDataList, String id);
+
+    /**
+     * 根据id获取父数据
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    BizOrg getParentById(List<BizOrg> originDataList, String id);
+
+    /**
+     * 根据id获取子数据
+     *
+     * @author xuyuxiang
+     * @date 2022/8/15 14:55
+     **/
+    BizOrg getChildById(List<BizOrg> originDataList, String id);
 
     /**
      * 获取机构树选择器

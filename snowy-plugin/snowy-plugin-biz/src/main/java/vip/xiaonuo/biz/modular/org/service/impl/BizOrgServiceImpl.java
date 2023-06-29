@@ -389,13 +389,15 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     /* ====以下为各种递归方法==== */
 
+    @Override
     public List<BizOrg> getParentAndChildListById(List<BizOrg> originDataList, String id, boolean includeSelf) {
         List<BizOrg> parentListById = this.getParentListById(originDataList, id, false);
         List<BizOrg> childListById = this.getChildListById(originDataList, id, true);
         parentListById.addAll(childListById);
         return parentListById;
     }
-    
+
+    @Override
     public List<BizOrg> getChildListById(List<BizOrg> originDataList, String id, boolean includeSelf) {
         List<BizOrg> resultList = CollectionUtil.newArrayList();
         execRecursionFindChild(originDataList, id, resultList);
@@ -408,6 +410,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         return resultList;
     }
 
+    @Override
     public List<BizOrg> getParentListById(List<BizOrg> originDataList, String id, boolean includeSelf) {
         List<BizOrg> resultList = CollectionUtil.newArrayList();
         execRecursionFindParent(originDataList, id, resultList);
@@ -419,6 +422,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         }
         return resultList;
     }
+
 
     public void execRecursionFindChild(List<BizOrg> originDataList, String id, List<BizOrg> resultList) {
         originDataList.forEach(item -> {
@@ -441,16 +445,19 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         });
     }
 
+    @Override
     public BizOrg getById(List<BizOrg> originDataList, String id) {
         int index = CollStreamUtil.toList(originDataList, BizOrg::getId).indexOf(id);
         return index == -1?null:originDataList.get(index);
     }
 
+    @Override
     public BizOrg getParentById(List<BizOrg> originDataList, String id) {
         BizOrg self = this.getById(originDataList, id);
         return ObjectUtil.isNotEmpty(self)?self:this.getById(originDataList, self.getParentId());
     }
 
+    @Override
     public BizOrg getChildById(List<BizOrg> originDataList, String id) {
         int index = CollStreamUtil.toList(originDataList, BizOrg::getParentId).indexOf(id);
         return index == -1?null:originDataList.get(index);
