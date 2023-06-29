@@ -199,7 +199,7 @@
 	const roleGlobal = props.roleGlobal
 	// 分页相关
 	const current = ref(0) // 当前页数
-	const pageSize = ref(0) // 每页条数
+	const pageSize = ref(20) // 每页条数
 	const total = ref(0) // 数据总数
 
 	// 打开弹框
@@ -242,6 +242,7 @@
 				}
 			})
 		}
+		searchFormState.value.size = pageSize.value
 		loadData()
 		if (props.checkedRoleListApi) {
 			if (isEmpty(recordIds.value)) {
@@ -268,7 +269,6 @@
 		pageLoading.value = true
 		props.rolePageApi(searchFormState.value).then((data) => {
 			current.value = data.current
-			pageSize.value = data.size
 			total.value = data.total
 			// 重置、赋值
 			tableData.value = []
@@ -286,11 +286,9 @@
 	}
 	// pageSize改变回调分页事件
 	const paginationChange = (page, pageSize) => {
-		const param = {
-			current: page,
-			size: pageSize
-		}
-		loadData(param)
+		searchFormState.value.current = page
+		searchFormState.value.size = pageSize
+		loadData()
 	}
 	const judge = () => {
 		if (radioModel && selectedData.value.length > 0) {
@@ -338,6 +336,7 @@
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
+		searchFormState.value.current = 0
 		if (selectedKeys.length > 0) {
 			if (selectedKeys[0] === 'GLOBAL') {
 				searchFormState.value.category = selectedKeys[0]
@@ -380,7 +379,7 @@
 		tableRecordNum.value = 0
 		tableData.value = []
 		current.value = 0
-		pageSize.value = 0
+		pageSize.value = 20
 		total.value = 0
 		selectedData.value = []
 		visible.value = false
@@ -430,10 +429,10 @@
 		overflow: auto;
 	}
 	.cardTag {
-		margin-left: 10px;
+		margin-left: 20px;
 	}
 	.primarySele {
-		margin-right: 10px;
+		margin-right: 20px;
 	}
 	.ant-form-item {
 		margin-bottom: 0 !important;
