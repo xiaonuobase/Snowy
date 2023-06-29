@@ -1501,7 +1501,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return this.getAllUserSelectorList();
         } else {
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
-                // 如果机构id不为空，则查询该机构极其子机构下的所有人
+                // 如果组织id不为空，则查询该组织及其子组织下的所有人
                 List<String> childOrgIdList = CollStreamUtil.toList(sysOrgService.getChildListById(sysOrgService
                         .getCachedAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {

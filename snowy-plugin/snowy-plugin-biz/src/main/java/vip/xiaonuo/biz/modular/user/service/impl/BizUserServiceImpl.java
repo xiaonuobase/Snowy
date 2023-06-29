@@ -705,8 +705,15 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         // 只查询部分字段
         lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
                 BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
-        if(ObjectUtil.isNotEmpty(bizUserSelectorUserParam.getOrgId())) {
-            lambdaQueryWrapper.eq(BizUser::getOrgId, bizUserSelectorUserParam.getOrgId());
+        if (ObjectUtil.isNotEmpty(bizUserSelectorUserParam.getOrgId())) {
+            // 如果机构id不为空，则查询该机构及其子机构下的所有人
+            List<String> childOrgIdList = CollStreamUtil.toList(bizOrgService.getChildListById(bizOrgService
+                    .getAllOrgList(), bizUserSelectorUserParam.getOrgId(), true), BizOrg::getId);
+            if (ObjectUtil.isNotEmpty(childOrgIdList)) {
+                lambdaQueryWrapper.in(BizUser::getOrgId, childOrgIdList);
+            } else {
+                return new Page<>();
+            }
         }
         if(ObjectUtil.isNotEmpty(bizUserSelectorUserParam.getSearchKey())) {
             lambdaQueryWrapper.like(BizUser::getName, bizUserSelectorUserParam.getSearchKey());

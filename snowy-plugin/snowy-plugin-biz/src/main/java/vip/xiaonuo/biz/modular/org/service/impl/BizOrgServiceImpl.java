@@ -370,8 +370,15 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         // 只查询部分字段
         lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
                 BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
-        if(ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getOrgId())) {
-            lambdaQueryWrapper.eq(BizUser::getOrgId, bizOrgSelectorUserParam.getOrgId());
+        if (ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getOrgId())) {
+            // 如果机构id不为空，则查询该机构及其子机构下的所有人
+            List<String> childOrgIdList = CollStreamUtil.toList(this.getChildListById(this
+                    .getAllOrgList(), bizOrgSelectorUserParam.getOrgId(), true), BizOrg::getId);
+            if (ObjectUtil.isNotEmpty(childOrgIdList)) {
+                lambdaQueryWrapper.in(BizUser::getOrgId, childOrgIdList);
+            } else {
+                return new Page<>();
+            }
         }
         if(ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getSearchKey())) {
             lambdaQueryWrapper.like(BizUser::getName, bizOrgSelectorUserParam.getSearchKey());
