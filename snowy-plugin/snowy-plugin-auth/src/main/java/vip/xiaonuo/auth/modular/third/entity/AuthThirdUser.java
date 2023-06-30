@@ -21,7 +21,7 @@ import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
 
 /**
- * 第三放登录实体
+ * 第三方登录实体
  *
  * @author xuyuxiang
  * @date 2022/7/9 14:29
