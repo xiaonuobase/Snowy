@@ -76,25 +76,25 @@
 						</a-col>
 						<a-col :span="8">
 							<a-form-item label="选择职位：" name="positionId">
-								<a-select
+								<xn-page-select
+									ref="xnPositionPageSelectRef"
 									v-model:value="formData.positionId"
-									:options="positionData"
-									:field-names="{ label: 'name', value: 'id' }"
-									style="width: 100%"
 									placeholder="请选择职位"
 									allow-clear
+									:page-function="selectApiFunction.positionSelector"
+									:echo-function="selectApiFunction.echoPosition"
 								/>
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
 							<a-form-item label="选择主管：" name="directorId">
-								<a-select
+								<xn-page-select
+									ref="xnUserPageSelectRef"
 									v-model:value="formData.directorId"
-									:options="directorData"
-									:field-names="{ label: 'name', value: 'id' }"
-									style="width: 100%"
 									placeholder="请选择主管"
 									allow-clear
+									:page-function="selectApiFunction.userSelector"
+									:echo-function="selectApiFunction.echoUser"
 								/>
 							</a-form-item>
 						</a-col>
@@ -137,7 +137,6 @@
 									>
 										<a-tree-select
 											v-model:value="positionInfo.orgId"
-											show-search
 											style="width: 100%"
 											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 											placeholder="请选择组织"
@@ -146,7 +145,7 @@
 											:tree-data="treeData"
 											:tree-default-expanded-keys="treeDefaultExpandedKeys"
 											:field-names="{ children: 'children', label: 'name', value: 'id' }"
-											@select="childOrgSelect(positionInfo, 0)"
+											@select="childOrgSelect(positionInfo, 0, index)"
 										/>
 									</a-form-item>
 								</a-col>
@@ -155,25 +154,25 @@
 										:name="['positionJson', index, 'positionId']"
 										:rules="{ required: true, message: '请选择职位' }"
 									>
-										<a-select
+										<xn-page-select
+											ref="xnChildPositionPageSelectRef"
 											v-model:value="positionInfo.positionId"
-											:options="childPosData(positionInfo.orgId)"
-											:field-names="{ label: 'name', value: 'id' }"
-											style="width: 100%"
 											placeholder="请选择职位"
 											allow-clear
+											:page-function="selectApiFunction.childPositionSelector"
+											:echo-function="selectApiFunction.echoPosition"
 										/>
 									</a-form-item>
 								</a-col>
 								<a-col :span="7">
 									<a-form-item :name="['positionJson', index, 'directorId']">
-										<a-select
+										<xn-page-select
+											ref="xnChildUserPageSelectRef"
 											v-model:value="positionInfo.directorId"
-											:options="childUserData(positionInfo.orgId)"
-											:field-names="{ label: 'name', value: 'id' }"
-											style="width: 100%"
 											placeholder="请选择主管"
 											allow-clear
+											:page-function="selectApiFunction.childUserSelector"
+											:echo-function="selectApiFunction.echoUser"
 										/>
 									</a-form-item>
 								</a-col>
@@ -327,29 +326,28 @@
 
 <script setup>
 	import userApi from '@/api/sys/userApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import { required } from '@/utils/formRules'
 	import tool from '@/utils/tool'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	const activeTabsKey = ref('1')
 	const emit = defineEmits({ successful: null })
 	const formLoading = ref(false)
 	const treeData = ref([])
 	const treeDefaultExpandedKeys = ref([])
-	// 主职职位数据
-	let positionData = ref([])
-	// 主职主管人员数据
-	let directorData = ref([])
-
-	// 定义一个装机构跟职位的壳
-	let childrenOrgPosArray = ref([])
+	// 分页select组件dom定义
+	const xnPositionPageSelectRef = ref()
+	const xnUserPageSelectRef = ref()
+	const xnChildPositionPageSelectRef = ref()
+	const xnChildUserPageSelectRef = ref()
 	// 表单数据
-	let formData = ref({})
+	const formData = ref({})
 
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
-		visible = true
+		visible.value = true
 		formData.value = {
 			gender: '男',
 			positionJson: []
@@ -390,9 +388,7 @@
 	const onClose = () => {
 		treeData.value = []
 		treeDefaultExpandedKeys.value = []
-		positionData.value = []
-		directorData.value = []
-		visible = false
+		visible.value = false
 	}
 	// 回显数据
 	const convertFormData = (record) => {
@@ -402,17 +398,22 @@
 		// 查询详情
 		userApi.userDetail(param).then((data) => {
 			if (data.positionJson) {
-				const positionJsonLocal = JSON.parse(data.positionJson).map((item) => {
-					childOrgSelect(item)
-					return item
-				})
 				// 替换表单中的格式与后端查到的
-				data.positionJson = positionJsonLocal
+				data.positionJson = JSON.parse(data.positionJson)
 			}
 			formData.value = Object.assign(formData.value, data)
+			// 这里再写一次是因为上面需要先加载增行，下面再进行循环赋值
+			if (data.positionJson) {
+				// 遍历进行补充
+				data.positionJson.map((item, index) => {
+					childOrgSelect(item, 1, index)
+					return item
+				})
+			}
 			selePositionData(formData.value.orgId)
 		})
 	}
+
 	// 默认要校验的
 	const formRules = {
 		account: [required('请输入账号')],
@@ -424,16 +425,14 @@
 	// 机构选择后查询对应的职位
 	const selePositionData = (orgId, type) => {
 		if (orgId) {
-			const param = {
-				orgId: orgId,
-				size: -1
+			const xnPositionPageSelectParam = {
+				orgId: orgId
 			}
-			userApi.userPositionSelector(param).then((data) => {
-				positionData.value = data.records
-			})
-			userApi.userSelector().then((data) => {
-				directorData.value = data.records
-			})
+			xnPositionPageSelectRef.value.onPage(xnPositionPageSelectParam)
+			const xnUserPageSelectParam = {
+				orgId: orgId
+			}
+			xnUserPageSelectRef.value.onPage(xnUserPageSelectParam)
 			// 此类型代表选择的时候重置后面的职位
 			if (type === 0) {
 				formData.value.positionId = undefined
@@ -442,6 +441,40 @@
 		} else {
 			formData.value.positionId = undefined
 			formData.value.directorId = undefined
+		}
+	}
+	// 传递选择组件需要的API
+	const selectApiFunction = {
+		positionSelector: (param) => {
+			return userApi.userPositionSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		userSelector: (param) => {
+			return userApi.userSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		childPositionSelector: (param) => {
+			return userApi.userPositionSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		childUserSelector: (param) => {
+			return userApi.userSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		// 通过id回显数据接口
+		echoPosition: (param) => {
+			return userCenterApi.userCenterGetPositionListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		echoUser: (param) => {
+			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+				return Promise.resolve(data)
+			})
 		}
 	}
 	// 附属职位信息增行
@@ -459,12 +492,13 @@
 	const delDomains = (index) => {
 		formData.value.positionJson.splice(index, 1)
 	}
+
 	// 子表行内选择机构
-	const childOrgSelect = async (data, type) => {
+	const childOrgSelect = (data, type, index) => {
 		// 说明正在切换机构，我们就将他的后面的设置空
 		if (type === 0) {
-			formData.value.positionJson.filter((item) => {
-				if (item.orgId === data.orgId) {
+			formData.value.positionJson.filter((item, serial) => {
+				if (item.orgId === data.orgId && serial === index) {
 					item.positionId = undefined
 					item.directorId = undefined
 				}
@@ -473,30 +507,10 @@
 		const param = {
 			orgId: data.orgId
 		}
-		// 查询职位
-		const posList = await userApi.userPositionSelector(param)
-		// 查询人员
-		const userList = await userApi.userSelector(param)
-		const obj = {
-			orgId: data.orgId,
-			posList: posList.records,
-			userList: userList.records
-		}
-		childrenOrgPosArray.value.push(obj)
-	}
-	// 获取行内职位数据
-	const childPosData = (value) => {
-		const resultData = childrenOrgPosArray.value.filter((item) => item.orgId === value)
-		if (resultData.length > 0) {
-			return resultData[0].posList
-		}
-	}
-	// 获取行内用户数据
-	const childUserData = (value) => {
-		const resultData = childrenOrgPosArray.value.filter((item) => item.orgId === value)
-		if (resultData.length > 0) {
-			return resultData[0].userList
-		}
+		nextTick(() => {
+			xnChildPositionPageSelectRef.value[index].onPage(param)
+			xnChildUserPageSelectRef.value[index].onPage(param)
+		})
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
