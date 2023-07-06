@@ -33,11 +33,11 @@ public enum CommonSortOrderEnum {
     private final String value;
 
     CommonSortOrderEnum(String value) {
-        this.value = value;
+        this.value = value.toUpperCase();
     }
 
     public static void validate(String value) {
-        boolean flag = ASC.getValue().equals(value) || DESC.getValue().equals(value);
+        boolean flag = ASC.getValue().toLowerCase().equals(value) || DESC.getValue().toLowerCase().equals(value);
         if(!flag) {
             throw new CommonException("不支持该排序方式：{}", value);
         }
