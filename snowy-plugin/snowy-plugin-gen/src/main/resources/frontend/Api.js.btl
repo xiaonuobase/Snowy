@@ -19,7 +19,7 @@ export default {
 	},
 	// 提交${functionName}表单 edit为true时为编辑，默认为新增
 	${classNameFirstLower}SubmitForm(data, edit = false) {
-		return request(edit ? 'add' : 'edit', data)
+		return request(edit ? 'edit' : 'add', data)
 	},
 	// 删除${functionName}
 	${classNameFirstLower}Delete(data) {
