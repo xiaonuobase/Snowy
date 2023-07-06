@@ -108,7 +108,7 @@
 			.then(() => {
 				submitLoading.value = true
 				bizPositionApi
-					.submitForm(formData.value, !formData.value.id)
+					.submitForm(formData.value, formData.value.id)
 					.then(() => {
 						visible = false
 						emit('successful')

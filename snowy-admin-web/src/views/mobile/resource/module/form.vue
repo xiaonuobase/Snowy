@@ -73,7 +73,7 @@
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value.validate().then(() => {
-			moduleApi.submitForm(formData.value, !formData.value.id).then(() => {
+			moduleApi.submitForm(formData.value, formData.value.id).then(() => {
 				onClose()
 				emit('successful')
 			})

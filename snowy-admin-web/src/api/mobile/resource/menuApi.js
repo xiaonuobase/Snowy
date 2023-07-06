@@ -19,7 +19,7 @@ export default {
 	},
 	// 提交移动端菜单表单 edit为true时为编辑，默认为新增
 	mobileMenuSubmitForm(data, edit = false) {
-		return request(edit ? 'add' : 'edit', data)
+		return request(edit ? 'edit' : 'add', data)
 	},
 	// 更改菜单所属模块
 	mobileMenuChangeModule(data) {

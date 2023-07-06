@@ -69,7 +69,7 @@
 				parentId: recordData.value.id
 			}
 			const param = Object.assign(defParam, formData.value)
-			fieldApi.submitForm(param, !formData.value.id).then((res) => {
+			fieldApi.submitForm(param, formData.value.id).then((res) => {
 				onClose()
 				emit('successful')
 			})

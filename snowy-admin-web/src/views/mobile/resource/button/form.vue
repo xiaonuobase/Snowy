@@ -61,7 +61,7 @@
 				parentId: recordData.value.id
 			}
 			const param = Object.assign(defParam, formData.value)
-			buttonApi.mobileButtonSubmitForm(param, !formData.value.id).then(() => {
+			buttonApi.mobileButtonSubmitForm(param, formData.value.id).then(() => {
 				onClose()
 				emit('successful')
 			})

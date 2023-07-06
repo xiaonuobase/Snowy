@@ -111,7 +111,7 @@
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value.validate().then(() => {
-			dictApi.submitForm(formData.value, !formData.value.id).then(() => {
+			dictApi.submitForm(formData.value, formData.value.id).then(() => {
 				visible = false
 				emit('successful')
 			})

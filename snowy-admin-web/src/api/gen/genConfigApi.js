@@ -9,7 +9,7 @@ export default {
 	},
 	// 提交表单 edit为true时为编辑，默认为新增
 	submitForm(data, edit = false) {
-		return request(edit ? 'add' : 'edit', data)
+		return request(edit ? 'edit' : 'add', data)
 	},
 	// 删除代码生成详情配置
 	configDelete(data) {

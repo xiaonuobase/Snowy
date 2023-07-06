@@ -104,7 +104,7 @@
 	const onSubmit = () => {
 		formRef.value.validate().then(() => {
 			submitLoading.value = true
-			positionApi.submitForm(formData.value, !formData.value.id).then(() => {
+			positionApi.submitForm(formData.value, formData.value.id).then(() => {
 				visible = false
 				submitLoading.value = false
 				emit('successful')

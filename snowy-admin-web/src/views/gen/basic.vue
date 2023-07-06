@@ -397,7 +397,7 @@
 				.then(() => {
 					submitLoading.value = true
 					genBasicApi
-						.submitForm(formData.value, !formData.value.id)
+						.submitForm(formData.value, formData.value.id)
 						.then((data) => {
 							resolve(data)
 						})

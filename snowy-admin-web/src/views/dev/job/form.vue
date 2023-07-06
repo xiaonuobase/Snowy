@@ -84,7 +84,7 @@
 		formRef.value.validate().then(() => {
 			submitLoading.value = true
 			jobApi
-				.submitForm(formData.value, !formData.value.id)
+				.submitForm(formData.value, formData.value.id)
 				.then(() => {
 					onClose()
 					emit('successful')
