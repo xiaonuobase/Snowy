@@ -426,10 +426,7 @@
 				orgId: orgId
 			}
 			xnPositionPageSelectRef.value.onPage(xnPositionPageSelectParam)
-			const xnUserPageSelectParam = {
-				orgId: orgId
-			}
-			xnUserPageSelectRef.value.onPage(xnUserPageSelectParam)
+			xnUserPageSelectRef.value.onPage()
 			// 此类型代表选择的时候重置后面的职位
 			if (type === 0) {
 				formData.value.positionId = undefined
@@ -520,7 +517,7 @@
 			}
 			formLoading.value = true
 			bizUserApi
-				.submitForm(formDatas, !formDatas.id)
+				.submitForm(formDatas, formDatas.id)
 				.then(() => {
 					onClose()
 					emit('successful')

@@ -58,7 +58,7 @@
 	})
 
 	// 请求数据
-	const onPage = (param) => {
+	const onPage = (param = {}) => {
 		if (props.pageFunction) {
 			initParams.value = param
 			initParams.value.size = props.pageSize
