@@ -162,7 +162,7 @@
 			const param = parameterChanges(formData.value)
 			submitLoading.value = true
 			spaApi
-				.submitForm(param, !param.id)
+				.submitForm(param, param.id)
 				.then(() => {
 					visible = false
 					emit('successful')

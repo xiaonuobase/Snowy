@@ -223,7 +223,7 @@
 			submitLoading.value = true
 			const formDataParam = parameterChanges(cloneDeep(formData.value))
 			mobileMenuApi
-				.mobileMenuSubmitForm(formDataParam, !formDataParam.id)
+				.mobileMenuSubmitForm(formDataParam, formDataParam.id)
 				.then(() => {
 					onClose()
 					emit('successful')

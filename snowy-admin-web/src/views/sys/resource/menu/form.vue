@@ -208,7 +208,7 @@
 			.then(() => {
 				const param = parameterChanges(formData.value)
 				submitLoading.value = true
-				menuApi.submitForm(param, !!param.id).then(() => {
+				menuApi.submitForm(param, param.id).then(() => {
 					onClose()
 					emit('successful')
 				})
