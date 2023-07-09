@@ -61,14 +61,14 @@ public class DevSmsAliyunUtil {
         /* accessKeySecret */
         String accessKeySecret = devConfigApi.getValueByKey(SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET_KEY);
 
-        if(ObjectUtil.isEmpty(accessKeyId)) {
+        if(ObjectUtil.isEmpty(accessKeySecret)) {
             throw new CommonException("阿里云短信操作客户端未正确配置：accessKeySecret为空");
         }
 
         /* endpoint */
         String endpoint = devConfigApi.getValueByKey(SNOWY_SMS_ALIYUN_END_POINT_KEY);
 
-        if(ObjectUtil.isEmpty(accessKeyId)) {
+        if(ObjectUtil.isEmpty(endpoint)) {
             throw new CommonException("阿里云短信操作客户端未正确配置：endpoint为空");
         }
 
