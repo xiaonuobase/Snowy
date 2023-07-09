@@ -53,6 +53,7 @@ public class DevLogUtil {
             devLog.setExeStatus(DevLogExeStatusEnum.SUCCESS.getValue());
             devLog.setClassName(joinPoint.getTarget().getClass().getName());
             devLog.setMethodName(joinPoint.getSignature().getName());
+            devLog.setReqMethod(request.getMethod());
             devLog.setReqUrl(request.getRequestURI());
             devLog.setParamJson(CommonJoinPointUtil.getArgsJsonString(joinPoint));
             devLog.setResultJson(resultJson);
