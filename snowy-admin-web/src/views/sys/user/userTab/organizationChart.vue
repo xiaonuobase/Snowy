@@ -22,7 +22,13 @@
 	import userCenterApi from '@/api/sys/userCenterApi'
 	let data = ref({})
 	userCenterApi.userLoginOrgTree().then((res) => {
-		data.value = res[0]
+		const userInfo = tool.data.get('USER_INFO')
+		res = Array.from(res)
+		res.forEach((item) => {
+			if (item.id === userInfo.orgId) {
+				data.value = item
+			}
+		})
 	})
 </script>
 
