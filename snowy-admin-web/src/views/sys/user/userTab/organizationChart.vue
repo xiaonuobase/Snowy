@@ -18,6 +18,7 @@
 <script setup name="organizationChart">
 	import { Vue3TreeOrg } from 'vue3-tree-org'
 	import 'vue3-tree-org/lib/vue3-tree-org.css'
+	import tool from '@/utils/tool'
 
 	import userCenterApi from '@/api/sys/userCenterApi'
 	let data = ref({})
