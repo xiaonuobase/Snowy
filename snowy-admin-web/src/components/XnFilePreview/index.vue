@@ -1,19 +1,24 @@
 <template>
-	<a-button type="primary" @click="emit('goBack')" class="go-back-button">
-		<template #icon><rollback-outlined /></template>
-		返回
-	</a-button>
+	<a-space class="go-back-button">
+		<a-button type="primary" :href="props.src" target="_blank">
+			<template #icon><download-outlined /></template>
+		</a-button>
+		<a-button type="primary" @click="emit('goBack')" >
+			<template #icon><rollback-outlined /></template>
+			返回
+		</a-button>
+	</a-space>
 	<a-card :bordered="false" :body-style="{ padding: '0px' }">
 		<vue-office-docx
 			v-if="props.fileType === 'doc' || props.fileType === 'docx'"
 			:src="props.src"
-			style="height: 83vh"
+			style="height: 82vh"
 			@rendered="renderedHandler"
 		/>
 		<vue-office-excel
 			v-else-if="props.fileType === 'xls' || props.fileType === 'xlsx'"
 			:src="props.src"
-			style="height: 83vh"
+			style="height: 82vh"
 			@rendered="renderedHandler"
 			@error="errorHandler"
 		/>
@@ -34,7 +39,7 @@
 				props.fileType.toLowerCase() === 'svg'
 			"
 			:src="props.src"
-			style="width: 100%"
+			style="max-width: 100%"
 		/>
 		<a-result v-else status="warning" title="不支持预览的文件类型" />
 	</a-card>
