@@ -89,7 +89,9 @@
 							idList: [modelValue.value]
 						}
 						props.echoFunction(param).then((data) => {
-							options.value.push(data[0])
+							if (data[0]){
+								options.value.push(data[0])
+							}
 						})
 					}
 				}
