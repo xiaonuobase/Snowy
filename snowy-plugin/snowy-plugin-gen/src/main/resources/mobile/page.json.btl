@@ -1,0 +1,47 @@
+// 二选一 将代码复制到page.json文件中
+
+// 不使用分包
+{
+	"path": "pages/${moduleName}/${busName}/index",
+	"style": {
+    	"navigationBarTitleText": "${functionName}管理",
+    	"enablePullDownRefresh": true,
+    	//#ifdef H5
+    	"navigationStyle": "custom"
+    	//#endif
+    }
+}, {
+	"path": "pages/${moduleName}/${busName}/form",
+    "style": {
+		"navigationBarTitleText": "${functionName}管理",
+		"enablePullDownRefresh": false,
+		//#ifdef H5
+		"navigationStyle": "custom"
+		//#endif
+	}
+},
+
+
+// 使用分包（微信小程序开发主包不能超过2m，所以建议使用分包）
+{
+    "root": "pages/${moduleName}/${busName}",
+	"pages": [{
+		"path": "index",
+		"style": {
+			"navigationBarTitleText": "${functionName}管理",
+			"enablePullDownRefresh": true,
+			//#ifdef H5
+			"navigationStyle": "custom"
+			//#endif
+		}
+	},{
+		"path": "form",
+		"style": {
+			"navigationBarTitleText": "${functionName}管理",
+			"enablePullDownRefresh": false,
+			//#ifdef H5
+			"navigationStyle": "custom"
+			//#endif
+		}
+	}]
+}

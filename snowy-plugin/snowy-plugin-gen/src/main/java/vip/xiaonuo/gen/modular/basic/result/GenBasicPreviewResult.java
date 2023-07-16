@@ -40,6 +40,10 @@ public class GenBasicPreviewResult {
     @ApiModelProperty(value = "后端代码结果集", position = 3)
     private List<GenBasicCodeResult> genBasicCodeBackendResultList;
 
+    /** 前端代码结果集 */
+    @ApiModelProperty(value = "移动端代码结果集", position = 4)
+    private List<GenBasicCodeResult> genBasicCodeMobileResultList;
+
     @Getter
     @Setter
     public static class GenBasicCodeResult {

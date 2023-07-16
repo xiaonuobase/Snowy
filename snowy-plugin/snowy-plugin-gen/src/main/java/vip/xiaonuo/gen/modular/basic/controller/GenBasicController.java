@@ -28,6 +28,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
+import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
@@ -192,6 +193,19 @@ public class GenBasicController {
     @GetMapping(value = "/gen/basic/previewGen")
     public CommonResult<GenBasicPreviewResult> previewGen(@Valid GenBasicIdParam genBasicIdParam) {
         return CommonResult.data(genBasicService.previewGen(genBasicIdParam));
+    }
+
+    /**
+     * 获取所有移动端模块
+     *
+     * @author 每天一点
+     * @date 2023/7/15 22:36
+     */
+    @ApiOperationSupport(order = 11)
+    @ApiOperation("获取所有移动端模块")
+    @GetMapping("/gen/basic/mobileModuleSelector")
+    public CommonResult<List<GenBasicMobileModuleSelectorResult>> mobileModuleSelector() {
+        return CommonResult.data(genBasicService.mobileModuleSelector());
     }
 }
 

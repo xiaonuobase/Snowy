@@ -36,7 +36,14 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-form-item label="生成方式：" name="generateType">
+					<a-form-item name="generateType">
+						<template #label>
+							<a-tooltip>
+								<template #title>注：移动端代码生成目前只支持【压缩包】方式。</template>
+								<question-circle-outlined />
+								生成方式：
+							</a-tooltip>
+						</template>
 						<a-radio-group v-model:value="formData.generateType" :options="generateTypeOptions"> </a-radio-group>
 					</a-form-item>
 				</a-col>
@@ -70,6 +77,17 @@
 							selectable="false"
 							tree-line
 						></a-tree-select>
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-form-item label="移动端所属模块：" name="mobileModule">
+						<a-select
+							v-model:value="formData.mobileModule"
+							:options="mobileModuleList"
+							style="width: 100%"
+							placeholder="请选择移动端所属模块"
+						>
+						</a-select>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -172,6 +190,7 @@
 	// 表单数据
 	const formData = ref({})
 	// 定义
+	const mobileModuleList = ref([])
 	const tableList = ref([])
 	const tableColumns = ref([])
 	const menuTreeData = ref([])
@@ -266,6 +285,22 @@
 				}
 			}
 		})
+
+		// 获取移动端模块
+		submitLoading.value = true
+		genBasicApi
+			.basicMobileModuleSelector()
+			.then((data) => {
+				mobileModuleList.value = data.map((item) => {
+					return {
+						value: item['id'],
+						label: item['name']
+					}
+				})
+			})
+			.finally(() => {
+				submitLoading.value = false
+			})
 	}
 	// 默认要校验的
 	const formRules = {
@@ -277,6 +312,7 @@
 		generateType: [required('请选择生成方式')],
 		module: [required('请选择所属模块')],
 		menuPid: [required('请选择上级目录')],
+		mobileModule: [required('请选择移动端所属模块')],
 		functionName: [required('请输入功能名')],
 		busName: [required('请输入业务名')],
 		className: [required('请输入类名')],

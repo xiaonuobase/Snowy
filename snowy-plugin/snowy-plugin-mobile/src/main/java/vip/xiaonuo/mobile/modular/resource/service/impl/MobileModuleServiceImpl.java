@@ -18,6 +18,8 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -135,5 +137,15 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
             throw new CommonException("模块不存在，id值为：{}", id);
         }
         return mobileModule;
+    }
+
+    @Override
+    public List<JSONObject> mobileModuleSelector() {
+        LambdaQueryWrapper<MobileModule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.select(MobileModule::getId, MobileModule::getTitle);
+        lambdaQueryWrapper.eq(MobileModule::getCategory, MobileResourceCategoryEnum.MODULE.getValue());
+        lambdaQueryWrapper.orderByAsc(MobileModule::getSortCode);
+        return this.list(lambdaQueryWrapper).stream().map(item -> JSONUtil.createObj().set("id", item.getId()).set("name", item.getTitle()))
+                .collect(Collectors.toList());
     }
 }

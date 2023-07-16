@@ -49,6 +49,7 @@ import vip.xiaonuo.gen.modular.basic.enums.GenEffectTypeEnum;
 import vip.xiaonuo.gen.modular.basic.enums.GenYesNoEnum;
 import vip.xiaonuo.gen.modular.basic.mapper.GenBasicMapper;
 import vip.xiaonuo.gen.modular.basic.param.*;
+import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
@@ -56,6 +57,7 @@ import vip.xiaonuo.gen.modular.basic.service.GenBasicService;
 import vip.xiaonuo.gen.modular.config.entity.GenConfig;
 import vip.xiaonuo.gen.modular.config.param.GenConfigAddParam;
 import vip.xiaonuo.gen.modular.config.service.GenConfigService;
+import vip.xiaonuo.mobile.api.MobileModuleApi;
 import vip.xiaonuo.sys.api.SysButtonApi;
 import vip.xiaonuo.sys.api.SysMenuApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
@@ -69,6 +71,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * 代码生成基础Service接口实现类
@@ -97,6 +100,15 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
             JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "views"),
             JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "views"));
+
+    private static final List<JSONObject> GEN_MOBILE_FILE_LIST = CollectionUtil.newArrayList(
+            JSONUtil.createObj().set("name", "page.json.btl"),
+            JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
+            JSONUtil.createObj().set("name", "search.vue.btl").set("path",  "pages"),
+            JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "pages"),
+            JSONUtil.createObj().set("name", "more.vue.btl").set("path",  "pages"),
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "pages"));
+
 
     private static final List<JSONObject> GEN_BACKEND_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "Controller.java.btl").set("path", "controller"),
@@ -140,6 +152,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     @Resource
     private SysRoleApi sysRoleApi;
+
+    @Resource
+    private MobileModuleApi mobileModuleApi;
 
     @Override
     public Page<GenBasic> page(GenBasicPageParam genBasicPageParam) {
@@ -443,6 +458,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         genBasicPreviewResult.getGenBasicCodeBackendResultList().forEach(genBasicCodeResult ->
                 FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
                         + "backend" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
+        // 生成移动端代码到临时目录
+        genBasicPreviewResult.getGenBasicCodeMobileResultList().forEach(genBasicCodeResult ->
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
+                        + "mobile" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
         return tempFolder;
     }
 
@@ -520,11 +539,53 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 genBasicCodeBackendResultList.add(genBasicCodeBackendResult);
             });
             genBasicPreviewResult.setGenBasicCodeBackendResultList(genBasicCodeBackendResultList);
+
+            // 移动端基础路径
+            String genMobileBasicPath = "";
+            // 移动端
+            GroupTemplate groupTemplateMobile = new GroupTemplate(new ClasspathResourceLoader("mobile"), Configuration.defaultConfiguration());
+            List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeMobileResultList = CollectionUtil.newArrayList();
+            GEN_MOBILE_FILE_LIST.forEach(fileJsonObject -> {
+                String fileTemplateName = fileJsonObject.getStr("name");
+                String fileTemplatePath = "";
+                if (!"page.json.btl".equals(fileTemplateName)){
+                    fileTemplatePath = fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName();
+                }
+                GenBasicPreviewResult.GenBasicCodeResult genBasicCodeMobileResult = new GenBasicPreviewResult.GenBasicCodeResult();
+                Template templateMobile = groupTemplateMobile.getTemplate(fileTemplateName);
+                templateMobile.binding(bindingJsonObject);
+                String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
+                if(fileTemplateName.equalsIgnoreCase("Api.js.btl")) {
+                    resultName = StrUtil.lowerFirst(genBasic.getClassName()) + resultName;
+                    genBasicCodeMobileResult.setCodeFileName(resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + resultName);
+                } else if("page.json.btl".equals(fileTemplateName)) {
+                    genBasicCodeMobileResult.setCodeFileName(resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + resultName);
+                } else {
+                    genBasicCodeMobileResult.setCodeFileName(resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + genBasic.getBusName() + File.separator + resultName);
+                }
+                genBasicCodeMobileResult.setCodeFileContent(templateMobile.render());
+                genBasicCodeMobileResultList.add(genBasicCodeMobileResult);
+            });
+            genBasicPreviewResult.setGenBasicCodeMobileResultList(genBasicCodeMobileResultList);
         } catch (Exception e) {
             log.error(">>> 代码生成异常：", e);
             throw new CommonException("代码生成异常");
         }
         return genBasicPreviewResult;
+    }
+
+    /**
+     * 获取移动端模块
+     * @author 每天一点
+     * @date 2023/7/15 22:38
+     */
+    @Override
+    public List<GenBasicMobileModuleSelectorResult> mobileModuleSelector() {
+        return mobileModuleApi.mobileModuleSelector().stream()
+                .map(jsonObject -> JSONUtil.toBean(jsonObject, GenBasicMobileModuleSelectorResult.class)).collect(Collectors.toList());
     }
 
     /**
@@ -575,6 +636,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("menuComponent", genBasic.getModuleName() + StrUtil.SLASH + genBasic.getBusName() + StrUtil.SLASH + "index");
         // 模块ID
         bindingJsonObject.set("moduleId", genBasic.getModule());
+        // 移动端模块ID
+        bindingJsonObject.set("mobileModuleId", genBasic.getMobileModule());
         // 添加按钮ID
         bindingJsonObject.set("addButtonId", IdWorker.getIdStr());
         // 编辑按钮ID

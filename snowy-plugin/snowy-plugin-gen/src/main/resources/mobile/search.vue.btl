@@ -1,0 +1,123 @@
+<template>
+    <%
+    var searchCount = 0;
+    var row = 0;
+    %>
+    <% for(var i = 0; i < configList.~size; i++) { %>
+       <% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
+    <% } %>
+    <uni-popup ref="popupRef" type="bottom" safeArea background-color="#ffffff">
+        <view class="container">
+            <% if (searchCount > 0) { %>
+            <uni-forms ref="formRef" :model="searchFormState" label-position="top" labelWidth="100px">
+                <% for(var i = 0; i < configList.~size; i++) { %>
+                <% if(!configList[i].needTableId && configList[i].needPage) { %>
+                <% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-easyinput v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+                </uni-forms-item>
+                <% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                	<snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
+                </uni-forms-item>
+                <% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-number-box v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"/>
+                </uni-forms-item>
+                <% } else if (configList[i].effectType == 'datepicker') {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-datetime-picker v-model="searchFormState.${configList[i].fieldNameCamelCase}" type="datetimerange"/>
+                </uni-forms-item>
+                <% } else {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-easyinput v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+                </uni-forms-item>
+                <% } %>
+                <% } %>
+                <% } %>
+            </uni-forms>
+            <% } %>
+            <uni-row :gutter="10">
+                <uni-col :span="12">
+            		<button class="btn-reset" type="default" @click="reset">重置</button>
+            	</uni-col>
+            	<uni-col :span="12">
+            		<button class="btn-sub" type="primary" @click="confirm">确认</button>
+            	</uni-col>
+            </uni-row>
+        </view>
+    </uni-popup>
+</template>
+<script setup name="${classNameFirstLower}Search">
+    <%
+        var iptTool = 0;
+        if (searchCount > 0) {
+            for(var i = 0; i < configList.~size; i++) {
+                if(!configList[i].needTableId) {
+                if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
+                    iptTool++;
+                }
+                }
+            }
+        }
+    %>
+    <% if(iptTool > 0) { %>
+    import tool from '@/plugins/tool'
+    import SnowySelPicker from '@/components/snowy-sel-picker.vue'
+    <% } %>
+    import { ref } from "vue"
+    const emits = defineEmits(['reset', 'confirm'])
+    const props = defineProps({
+    	searchFormState: {
+    		type: Object,
+    		required: true
+    	},
+    })
+
+    <% if (searchCount > 0) { %>
+    <% for(var i = 0; i < configList.~size; i++) { %>
+    <% if(!configList[i].needTableId && configList[i].needPage) { %>
+    <% if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+    const ${configList[i].fieldNameCamelCase}Options = tool.dictList('${configList[i].dictTypeCode}')
+    <% } %>
+    <% } %>
+    <% } %>
+    <% } %>
+
+    // 弹出ref
+    const popupRef = ref()
+    // 打开
+    const open = () => {
+    	popupRef.value.open()
+    }
+    const reset = () =>{
+        // 重置数据
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(!configList[i].needTableId && configList[i].needPage) { %>
+        props.searchFormState.${configList[i].fieldNameCamelCase} = ''
+        <% } %>
+        <% } %>
+    	emits('reset', props.searchFormState)
+    }
+    const confirm = () => {
+    	popupRef.value.close()
+    	emits('confirm', props.searchFormState)
+    }
+    defineExpose({
+    	open
+    })
+</script>
+<style lang="scss" scoped>
+	.container {
+		margin: 15upx;
+		border-radius: 5upx;
+		padding: 5upx;
+		background-color: $uni-white;
+		.btn-reset {
+
+		}
+		.btn-sub {
+			background-color: $uni-primary;
+		}
+	}
+</style>

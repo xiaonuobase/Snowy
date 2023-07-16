@@ -27,6 +27,12 @@
             <artifactId>snowy-plugin-sys-api</artifactId>
         </dependency>
 
+        <!-- 引入移动端接口，用于选择模块功能 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-mobile-api</artifactId>
+        </dependency>
+
         <!-- beetl模板引擎 -->
         <dependency>
             <groupId>com.ibeetl</groupId>

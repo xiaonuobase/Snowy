@@ -55,6 +55,11 @@
 							codeTypeList: data.genBasicCodeFrontendResultList
 						},
 						{
+							codeTypeKey: 'mobile',
+							codeTypeTitle: '移动端代码',
+							codeTypeList: data.genBasicCodeMobileResultList
+						},
+						{
 							codeTypeKey: 'backend',
 							codeTypeTitle: '后端代码',
 							codeTypeList: data.genBasicCodeBackendResultList
@@ -85,9 +90,12 @@
 		onOpen
 	})
 </script>
-<style type="less" scoped>
+<style lang="less" scoped>
 	.gen-preview-content {
 		height: calc(100vh - 160px);
 		overflow: auto;
+	}
+	:deep(.hljs) {
+		max-height: 600px!important;
 	}
 </style>

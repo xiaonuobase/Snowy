@@ -1,0 +1,119 @@
+<template>
+    <view class="container">
+        <uni-forms ref="formRef" :model="formData" label-position="top" :rules="rules" validate-trigger="blur" labelWidth="100px">
+            <% for(var i = 0; i < configList.~size; i++) { %>
+            <% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].fieldNameCamelCase != 'tenantId') { %>
+            <% if(configList[i].effectType == 'input') { %>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+            	<uni-easyinput v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'textarea') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+            	<uni-easyinput type="textarea" v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'select') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+                <snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="formData.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请选择${configList[i].fieldRemark}' }]">
+                <uni-data-checkbox :multiple="${configList[i].effectType == 'checkbox'?true:false}" :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"> </uni-data-checkbox>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'datepicker' || configList[i].effectType == 'timepicker') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请选择${configList[i].fieldRemark}' }]">
+                <uni-datetime-picker type=${configList[i].effectType == 'timepicker'?'datetime':'date'} v-model="formData.${configList[i].fieldNameCamelCase}" > </uni-datetime-picker>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'inputNumber') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+                <uni-number-box v-model="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="100"></uni-number-box>
+            </uni-forms-item>
+            <% } else if (configList[i].effectType == 'slider') {%>
+            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+                <slider :value="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="100" :step="1" @change="(e)=>{formData.${configList[i].fieldNameCamelCase} = e.detail.value}"></slider>
+            </uni-forms-item>
+            <% } %>
+            <% } %>
+            <% } %>
+        </uni-forms>
+        <button class="btn-sub" type="primary" @click="submit">提交</button>
+    </view>
+</template>
+
+<script setup name="${classNameFirstLower}Form">
+    <%
+    var iptTool = 0;
+    for(var i = 0; i < configList.~size; i++) {
+        if(!configList[i].needTableId) {
+        if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
+            iptTool++;
+        }
+        }
+    }
+    %>
+    <% if(iptTool > 0) { %>
+    import tool from '@/plugins/tool'
+    import SnowySelPicker from '@/components/snowy-sel-picker.vue'
+    <% } %>
+    import XEUtils from "xe-utils"
+    import { onLoad } from "@dcloudio/uni-app"
+    import { ${classNameFirstLower}Detail, ${classNameFirstLower}SubmitForm } from '@/api/${moduleName}/${classNameFirstLower}Api'
+    import { reactive, ref, getCurrentInstance } from "vue"
+
+    const { proxy } = getCurrentInstance()
+    const formRef = ref()
+    const formData = ref({})
+
+    // 常用正则规则大全：https://any86.github.io/any-rule/
+    // 去pages/biz/user/form.vue中寻找示例
+    const rules = reactive({
+
+	})
+
+    <% for(var i = 0; i < configList.~size; i++) { %>
+    <% if(!configList[i].needTableId) { %>
+    <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+    const ${configList[i].fieldNameCamelCase}Options = ref([])
+    <% } %>
+    <% } %>
+    <% } %>
+    onLoad((option) => {
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(!configList[i].needTableId) { %>
+        <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+        ${configList[i].fieldNameCamelCase}Options.value = tool.dictList('${configList[i].dictTypeCode}')
+        <% } %>
+        <% } %>
+        <% } %>
+        if(!option.id){
+            return
+        }
+        ${classNameFirstLower}Detail({
+            id: option.id
+        }).then(res => {
+            formData.value = res?.data
+        })
+    })
+    const submit = () => {
+        formRef.value.validate().then(res => {
+            ${classNameFirstLower}SubmitForm(formData.value, !formData.value.id).then(respond => {
+				uni.$emit('formBack', {
+					data: respond.data
+				})
+				uni.navigateBack({
+					delta: 1
+				})
+			})
+        })
+    }
+</script>
+<style lang="scss" scoped>
+	.container {
+		margin: 15upx;
+		border-radius: 5upx;
+		padding: 25upx;
+		background-color: $uni-white;
+		.btn-sub {
+			background-color: $uni-primary;
+		}
+	}
+</style>

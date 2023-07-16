@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
+import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
@@ -119,4 +120,12 @@ public interface GenBasicService extends IService<GenBasic> {
      * @date 2022/10/28 17:08
      **/
     GenBasicPreviewResult previewGen(GenBasicIdParam genBasicIdParam);
+
+    /**
+     * 获取移动端模块
+     *
+     * @author 每天一点
+     * @date 2023/7/15 22:28
+     **/
+    List<GenBasicMobileModuleSelectorResult> mobileModuleSelector();
 }

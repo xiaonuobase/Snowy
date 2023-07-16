@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.mobile.modular.resource.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
@@ -77,4 +78,12 @@ public interface MobileModuleService extends IService<MobileModule> {
      * @date 2022/4/24 21:18
      */
     MobileModule queryEntity(String id);
+
+    /**
+     * 获取移动端模块选择器
+     *
+     * @author 每天一点
+     * @date 2023/7/15 21:52
+     */
+    List<JSONObject> mobileModuleSelector();
 }

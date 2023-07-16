@@ -41,5 +41,9 @@ export default {
 	// 预览代码生成
 	basicPreviewGen(data) {
 		return request('previewGen', data, 'get')
+	},
+	// 获取所有移动端模块
+	basicMobileModuleSelector(data) {
+		return request('mobileModuleSelector', data, 'get')
 	}
 }
