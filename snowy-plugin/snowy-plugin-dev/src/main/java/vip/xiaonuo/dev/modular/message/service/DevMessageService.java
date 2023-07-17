@@ -65,6 +65,14 @@ public interface DevMessageService extends IService<DevMessage> {
     List<DevMessage> list(DevMessageListParam devMessageListParam);
 
     /**
+     * 获取未读站内信数量
+     *
+     * @author diantu
+     * @date 2023/7/10
+     */
+    Long unreadCount(String loginId);
+
+    /**
      * 删除站内信
      *
      * @author xuyuxiang

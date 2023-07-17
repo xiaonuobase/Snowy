@@ -32,7 +32,7 @@ import javax.annotation.Resource;
  * @date 2022/6/21 14:57
  **/
 @Api(tags = "监控控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 8)
+@ApiSupport(author = "SNOWY_TEAM", order = 9)
 @RestController
 @Validated
 public class DevMonitorController {

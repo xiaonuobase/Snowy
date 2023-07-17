@@ -33,6 +33,7 @@
 		"echarts": "5.4.0",
 		"echarts-stat": "1.2.0",
 		"enquire.js": "2.1.6",
+		"event-source-polyfill": "^1.0.31",
 		"fuse.js": "6.6.2",
 		"highlight.js": "11.6.0",
 		"hotkeys-js": "3.10.1",

@@ -6,7 +6,7 @@
 		<div v-if="!ismobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
-		<!--<devUserMessage />-->
+		<devUserMessage />
 		<a-dropdown class="user panel-item">
 			<div class="user-avatar">
 				<a-avatar :src="userInfo.avatar" />

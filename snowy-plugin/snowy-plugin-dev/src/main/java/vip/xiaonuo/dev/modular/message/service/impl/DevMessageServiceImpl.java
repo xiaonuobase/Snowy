@@ -44,7 +44,6 @@ import vip.xiaonuo.dev.modular.relation.entity.DevRelation;
 import vip.xiaonuo.dev.modular.relation.enums.DevRelationCategoryEnum;
 import vip.xiaonuo.dev.modular.relation.service.DevRelationService;
 import vip.xiaonuo.sys.api.SysUserApi;
-
 import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.List;
@@ -64,6 +63,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
 
     @Resource
     private DevRelationService devRelationService;
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -152,6 +152,13 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
         return CollectionUtil.newArrayList();
     }
 
+    @Override
+    public Long unreadCount(String loginId){
+        return devRelationService.getRelationListByTargetIdAndCategory(loginId,
+                DevRelationCategoryEnum.MSG_TO_USER.getValue()).stream().filter(devRelation -> JSONUtil
+                .parseObj(devRelation.getExtJson()).getBool("read").equals(false)).count();
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<DevMessageIdParam> devMessageIdParamList) {
@@ -206,4 +213,5 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
         }
         return devMessage;
     }
+
 }

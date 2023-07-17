@@ -38,6 +38,10 @@ export default {
 	indexMessageDetail(data) {
 		return request('message/detail', data, 'get')
 	},
+	//站内信全部标记已读
+	indexMessageAllMarkRead(data) {
+		return request('message/allMessageMarkRead', data, 'get')
+	},
 	// 获取当前用户访问日志列表
 	indexVisLogList(data) {
 		return request('visLog/list', data, 'get')

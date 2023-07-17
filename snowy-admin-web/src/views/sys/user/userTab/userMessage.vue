@@ -30,7 +30,7 @@
 			</div>
 		</a-col>
 	</a-row>
-	<detail ref="detailRef" />
+	<detail ref="detailRef" @refresh="refresh"/>
 </template>
 
 <script setup name="userMessage">
@@ -69,6 +69,9 @@
 		return userCenterApi.userLoginUnreadMessagePage(parameter).then((data) => {
 			return data
 		})
+	}
+	const refresh = () => {
+		table.value.refresh(false)
 	}
 	// 点击左侧菜单切换数据查询
 	const handleClick = () => {

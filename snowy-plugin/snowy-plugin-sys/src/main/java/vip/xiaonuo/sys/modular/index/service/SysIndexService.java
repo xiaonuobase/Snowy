@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.index.service;
 
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
@@ -67,6 +68,14 @@ public interface SysIndexService {
     SysIndexMessageDetailResult messageDetail(SysIndexMessageIdParam sysIndexMessageIdParam);
 
     /**
+     * 站内信全部标记已读
+     *
+     * @author diantu
+     * @date 2023/7/10
+     */
+    void allMessageMarkRead();
+
+    /**
      * 获取当前用户访问日志列表
      *
      * @author xuyuxiang
@@ -81,4 +90,12 @@ public interface SysIndexService {
      * @date 2022/9/4 15:11
      */
     List<SysIndexOpLogListResult> opLogList();
+
+    /**
+     * 创建连接
+     *
+     * @author diantu
+     * @date 2023/7/10
+     **/
+    public SseEmitter createSseConnect(String clientId);
 }

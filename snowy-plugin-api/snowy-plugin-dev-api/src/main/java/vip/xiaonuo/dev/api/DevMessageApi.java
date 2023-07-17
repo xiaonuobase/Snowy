@@ -76,6 +76,14 @@ public interface DevMessageApi {
     List<JSONObject> list(List<String> receiverIdList, Integer limit);
 
     /**
+     * 获取未读站内信数量
+     *
+     * @author diantu
+     * @date 2023/7/10
+     */
+    Long unreadCount(String loginId);
+
+    /**
      * 获取站内信分页
      *
      * @author xuyuxiang
@@ -91,5 +99,13 @@ public interface DevMessageApi {
      * @date 2022/4/24 20:08
      */
     JSONObject detail(String id);
+
+    /**
+     * 站内信全部标记已读
+     *
+     * @author diantu
+     * @date 2023/7/10
+     */
+    void allMessageMarkRead();
 
 }

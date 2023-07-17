@@ -12,9 +12,11 @@
  */
 package vip.xiaonuo.dev.modular.message.provider;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevMessageApi;
@@ -22,6 +24,9 @@ import vip.xiaonuo.dev.modular.message.param.DevMessageIdParam;
 import vip.xiaonuo.dev.modular.message.param.DevMessageListParam;
 import vip.xiaonuo.dev.modular.message.param.DevMessageSendParam;
 import vip.xiaonuo.dev.modular.message.service.DevMessageService;
+import vip.xiaonuo.dev.modular.relation.entity.DevRelation;
+import vip.xiaonuo.dev.modular.relation.enums.DevRelationCategoryEnum;
+import vip.xiaonuo.dev.modular.relation.service.DevRelationService;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -38,6 +43,9 @@ public class DevMessageProvider implements DevMessageApi {
 
     @Resource
     private DevMessageService devMessageService;
+
+    @Resource
+    private DevRelationService devRelationService;
 
     @Override
     public void sendMessage(List<String> receiverIdList, String subject) {
@@ -73,6 +81,11 @@ public class DevMessageProvider implements DevMessageApi {
     }
 
     @Override
+    public Long unreadCount(String loginId){
+        return devMessageService.unreadCount(loginId);
+    }
+
+    @Override
     public Page<JSONObject> page(List<String> receiverIdList, String category) {
         return devMessageService.page(receiverIdList, category);
     }
@@ -82,5 +95,15 @@ public class DevMessageProvider implements DevMessageApi {
         DevMessageIdParam devMessageIdParam = new DevMessageIdParam();
         devMessageIdParam.setId(id);
         return JSONUtil.parseObj(devMessageService.detail(devMessageIdParam));
+    }
+
+    @Override
+    public void allMessageMarkRead(){
+        // 设置为已读
+        String myMessageExtJson = "{\"read\":true}";
+        devRelationService.update(new LambdaUpdateWrapper<DevRelation>()
+                .eq(DevRelation::getTargetId, StpUtil.getLoginIdAsString())
+                .eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue())
+                .set(DevRelation::getExtJson, myMessageExtJson));
     }
 }

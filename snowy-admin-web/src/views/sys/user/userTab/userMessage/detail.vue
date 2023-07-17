@@ -32,6 +32,7 @@
 
 <script setup name="messageDetail">
 	import userCenterApi from '@/api/sys/userCenterApi'
+	const emits = defineEmits(["refresh"]);
 	const receiveInfoList = ref([])
 
 	// 默认是关闭状态
@@ -77,6 +78,7 @@
 	const onClose = () => {
 		receiveInfoList.value = []
 		visible = false
+		emits("refresh");
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

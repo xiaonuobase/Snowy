@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
@@ -119,12 +120,26 @@ public class SysIndexController {
     }
 
     /**
+     * 站内信全部标记已读
+     *
+     * @author diantu
+     * @date 2023/7/10
+     */
+    @ApiOperationSupport(order = 6)
+    @ApiOperation("站内信全部标记已读")
+    @GetMapping("/dev/message/allMessageMarkRead")
+    public CommonResult<String> allMessageMarkRead() {
+        sysIndexService.allMessageMarkRead();
+        return CommonResult.ok();
+    }
+
+    /**
      * 获取当前用户访问日志列表
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 7)
     @ApiOperation("获取当前用户访问日志列表")
     @GetMapping("/sys/index/visLog/list")
     public CommonResult<List<SysIndexVisLogListResult>> visLogList() {
@@ -137,10 +152,23 @@ public class SysIndexController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 8)
     @ApiOperation("获取当前用户操作日志列表")
     @GetMapping("/sys/index/opLog/list")
     public CommonResult<List<SysIndexOpLogListResult>> opLogList() {
         return CommonResult.data(sysIndexService.opLogList());
+    }
+
+    /**
+     * 创建sse连接
+     *
+     * @author diantu
+     * @date 2023/7/10
+     **/
+    @ApiOperationSupport(order = 9)
+    @ApiOperation("创建sse连接")
+    @GetMapping("/dev/message/createSseConnect")
+    public SseEmitter createSseConnect(String clientId){
+        return sysIndexService.createSseConnect(clientId);
     }
 }
