@@ -48,9 +48,11 @@ public class DevSseEmitterController {
     @ApiOperationSupport(order = 1)
     @ApiOperation("创建sse连接")
     @GetMapping("/dev/sse/createConnect")
-    public SseEmitter createConnect(String clientId, @RequestParam(required = false)Boolean setHeartBeat,
+    public SseEmitter createConnect(String clientId,
+                                    @RequestParam(required = false)Boolean setHeartBeat,
+                                    @RequestParam(required = false)Boolean defaultHeartbeat,
                                     @RequestParam(required = false)Consumer<CommonSseParam> consumer){
-        return devSseEmitterService.createSseConnect(clientId,setHeartBeat,consumer);
+        return devSseEmitterService.createSseConnect(clientId,setHeartBeat,defaultHeartbeat,consumer);
     }
 
     /**

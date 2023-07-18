@@ -125,6 +125,6 @@ public class SysIndexServiceImpl implements SysIndexService {
             //发送消息
             devSseApi.sendMessageToOneClient(m.getClientId(), String.valueOf(unreadMessageNum));
         };
-        return devSseApi.createSseConnect(clientId,true,consumer);
+        return devSseApi.createSseConnect(clientId,true,false,consumer);
     }
 }

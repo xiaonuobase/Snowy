@@ -30,7 +30,7 @@ public interface DevSseEmitterService {
      * @author diantu
      * @date 2023/7/3
      **/
-    public SseEmitter createSseConnect(String clientId,Boolean setHeartBeat, Consumer<CommonSseParam> consumer);
+    public SseEmitter createSseConnect(String clientId,Boolean setHeartBeat,Boolean defaultHeartbeat,Consumer<CommonSseParam> consumer);
 
     /**
      * 关闭连接

@@ -39,8 +39,8 @@ public class DevSseProvider implements DevSseApi {
      * @date 2023/7/5
      **/
     @Override
-    public SseEmitter createSseConnect(String clientId, Boolean setHeartBeat, Consumer<CommonSseParam> consumer) {
-        return devSseEmitterService.createSseConnect(clientId,setHeartBeat,consumer);
+    public SseEmitter createSseConnect(String clientId, Boolean setHeartBeat, Boolean defaultHeartbeat, Consumer<CommonSseParam> consumer) {
+        return devSseEmitterService.createSseConnect(clientId,setHeartBeat,defaultHeartbeat,consumer);
     }
 
     /**
