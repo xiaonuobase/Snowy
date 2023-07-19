@@ -138,7 +138,9 @@ public class DevSseCacheUtil {
         }
         Map<String,Object> map = new ConcurrentHashMap<>();
         map.put(DevSseEmitterParameterEnum.EMITTER.getValue(),emitter);
-        map.put(DevSseEmitterParameterEnum.FUTURE.getValue(), future);
+        if(future!=null){
+            map.put(DevSseEmitterParameterEnum.FUTURE.getValue(), future);
+        }
         map.put(DevSseEmitterParameterEnum.LOGINID.getValue(), loginId);
         sseCache.put(clientId, map);
     }
