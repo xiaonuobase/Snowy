@@ -29,8 +29,8 @@
 				</s-table>
 			</div>
 		</a-col>
+		<detail ref="detailRef" @refresh="refresh" />
 	</a-row>
-	<detail ref="detailRef" @refresh="refresh"/>
 </template>
 
 <script setup name="userMessage">

@@ -40,7 +40,7 @@ export default {
 	},
 	//站内信全部标记已读
 	indexMessageAllMarkRead(data) {
-		return request('message/allMessageMarkRead', data, 'get')
+		return request('message/allMessageMarkRead', data)
 	},
 	// 获取当前用户访问日志列表
 	indexVisLogList(data) {

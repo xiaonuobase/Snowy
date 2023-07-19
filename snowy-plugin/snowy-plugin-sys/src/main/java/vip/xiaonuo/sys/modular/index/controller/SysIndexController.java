@@ -127,7 +127,7 @@ public class SysIndexController {
      */
     @ApiOperationSupport(order = 6)
     @ApiOperation("站内信全部标记已读")
-    @GetMapping("/dev/message/allMessageMarkRead")
+    @PostMapping("/sys/index/message/allMessageMarkRead")
     public CommonResult<String> allMessageMarkRead() {
         sysIndexService.allMessageMarkRead();
         return CommonResult.ok();
