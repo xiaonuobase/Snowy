@@ -76,16 +76,9 @@
 		if (record) {
 			formData.value = Object.assign({}, record)
 		}
-		// 获取机构树并加入顶级
+		// 获取机构树
 		orgApi.orgTree().then((res) => {
-			treeData.value = [
-				{
-					id: 0,
-					parentId: '-1',
-					name: '顶级',
-					children: res
-				}
-			]
+			treeData.value = res
 		})
 	}
 	// 关闭抽屉
