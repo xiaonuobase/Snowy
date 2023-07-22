@@ -3,7 +3,7 @@
 		<a-button type="primary" :href="props.src" target="_blank">
 			<template #icon><download-outlined /></template>
 		</a-button>
-		<a-button type="primary" @click="emit('goBack')" >
+		<a-button type="primary" @click="emit('goBack')">
 			<template #icon><rollback-outlined /></template>
 			返回
 		</a-button>

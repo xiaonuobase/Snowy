@@ -126,6 +126,27 @@ tool.dictList = (dictValue) => {
 	return []
 }
 
+// 树形翻译 需要指定最顶级的 parentValue  和当级的value
+tool.translateTree = (parentValue, value) => {
+	const tree = tool.dictDataAll().find((item) => item.dictValue === parentValue)
+	const targetNode = findNodeByValue(tree, value)
+	return targetNode ? targetNode.dictLabel : ''
+}
+const findNodeByValue = (node, value) => {
+	if (node.dictValue === value) {
+		return node
+	}
+	if (node.children) {
+		for (let i = 0; i < node.children.length; i++) {
+			const result = findNodeByValue(node.children[i], value)
+			if (result) {
+				return result
+			}
+		}
+	}
+	return null
+}
+
 // 生成UUID
 tool.snowyUuid = () => {
 	let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
