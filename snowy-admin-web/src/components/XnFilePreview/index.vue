@@ -10,20 +10,20 @@
 	</a-space>
 	<a-card :bordered="false" :body-style="{ padding: '0px' }">
 		<vue-office-docx
-			v-if="props.fileType === 'doc' || props.fileType === 'docx'"
+			v-if="props.fileType.toLowerCase() === 'doc' || props.fileType.toLowerCase() === 'docx'"
 			:src="props.src"
 			style="height: 82vh"
 			@rendered="renderedHandler"
 		/>
 		<vue-office-excel
-			v-else-if="props.fileType === 'xls' || props.fileType === 'xlsx'"
+			v-else-if="props.fileType.toLowerCase() === 'xls' || props.fileType.toLowerCase() === 'xlsx'"
 			:src="props.src"
 			style="height: 82vh"
 			@rendered="renderedHandler"
 			@error="errorHandler"
 		/>
 		<vue-office-pdf
-			v-else-if="props.fileType === 'pdf'"
+			v-else-if="props.fileType.toLowerCase() === 'pdf'"
 			:src="props.src"
 			@rendered="renderedHandler"
 			@error="errorHandler"
@@ -65,7 +65,7 @@
 			default: '',
 			required: true
 		},
-		// 上传方式 defaults || drag
+		// 文件类型
 		fileType: {
 			type: String,
 			default: 'defaults',
