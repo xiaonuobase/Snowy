@@ -60,7 +60,7 @@
 <script>
 	import tool from '@/utils/tool'
 	import XnContextMenu from '@/components/XnContextMenu/index.vue'
-	import {globalStore, iframeStore, keepAliveStore, viewTagsStore} from '@/store'
+	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
 	import { mapState, mapActions } from 'pinia'
 
 	export default {
@@ -245,7 +245,7 @@
 				})
 			},
 			// 多标签功能关闭时关闭被缓存的标签
-			closeOtherCacheTabs () {
+			closeOtherCacheTabs() {
 				const tags = [...this.tagList]
 				tags.forEach((tag) => {
 					this.closeSelectedTag(tag, false)

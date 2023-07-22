@@ -12,7 +12,7 @@ import { message } from 'ant-design-vue'
 
 export default {
 	// 对下载的流进行处理，直接从浏览器下载下来
-	resultDownload (res) {
+	resultDownload(res) {
 		if (res.data.type === 'application/json') {
 			// 错误以及无权限
 			const reader = new FileReader(res.data)
