@@ -503,7 +503,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 Template templateFront = groupTemplateFront.getTemplate(fileTemplateName);
                 templateFront.binding(bindingJsonObject);
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
-                if(fileTemplateName.equalsIgnoreCase("Api.js.btl")) {
+                if("Api.js.btl".equalsIgnoreCase(fileTemplateName)) {
                     resultName = StrUtil.lowerFirst(genBasic.getClassName()) + resultName;
                     genBasicCodeFrontResult.setCodeFileName(resultName);
                     genBasicCodeFrontResult.setCodeFileWithPathName(genFrontBasicPath + fileTemplatePath + File.separator + resultName);
@@ -530,7 +530,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 Template templateBackend = groupTemplateBackEnd.getTemplate(fileTemplateName);
                 templateBackend.binding(bindingJsonObject);
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
-                if(fileTemplateName.equalsIgnoreCase("Entity.java.btl")) {
+                if("Entity.java.btl".equalsIgnoreCase(fileTemplateName)) {
                     resultName = ".java";
                 }
                 genBasicCodeBackendResult.setCodeFileName(genBasic.getClassName() + resultName);
@@ -555,7 +555,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 Template templateMobile = groupTemplateMobile.getTemplate(fileTemplateName);
                 templateMobile.binding(bindingJsonObject);
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
-                if(fileTemplateName.equalsIgnoreCase("Api.js.btl")) {
+                if("Api.js.btl".equalsIgnoreCase(fileTemplateName)) {
                     resultName = StrUtil.lowerFirst(genBasic.getClassName()) + resultName;
                     genBasicCodeMobileResult.setCodeFileName(resultName);
                     genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + resultName);

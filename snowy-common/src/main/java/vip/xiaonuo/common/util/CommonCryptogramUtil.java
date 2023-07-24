@@ -95,7 +95,7 @@ public class CommonCryptogramUtil {
         sm4Options8.setMode("cbc");
         sm4Options8.setIv("fedcba98765432100123456789abcdef");
         String docString =  Sm4.decrypt(str, KEY, sm4Options8);
-        if (docString.equals("")) {
+        if ("".equals(docString)) {
             log.warn(">>> 字段解密失败，返回原文值：{}", str);
             return str;
         } else {

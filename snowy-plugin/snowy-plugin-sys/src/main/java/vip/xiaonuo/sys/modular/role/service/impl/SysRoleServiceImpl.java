@@ -336,9 +336,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         List<SysMenu> sysMenuList = CollectionUtil.newArrayList();
         List<SysMenu> sysButtonList = CollectionUtil.newArrayList();
         allMenuAndButtonAndFieldList.forEach(sysMenu -> {
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) sysModuleList.add(sysMenu);
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) sysMenuList.add(sysMenu);
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.BUTTON.getValue())) sysButtonList.add(sysMenu);
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) {
+                sysModuleList.add(sysMenu);
+            }
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
+                sysMenuList.add(sysMenu);
+            }
+            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.BUTTON.getValue())) {
+                sysButtonList.add(sysMenu);
+            }
         });
         List<SysRoleGrantResourceTreeResult.SysRoleGrantResourceMenuResult> leafMenuList = CollectionUtil.newArrayList();
         SysMenu rootSysMenu = new SysMenu();
@@ -485,7 +491,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         JSONObject jsonObject = JSONUtil.createObj();
         if(ObjectUtil.isNotEmpty(resultList)) {
             Tree<String> currentNode = resultList.get(0);
-            if(currentNode.getId().equals("0") || currentNode.getParentId().equals("0")) {
+            if("0".equals(currentNode.getId()) || "0".equals(currentNode.getParentId())) {
                 jsonObject.set("parentId", sysMenu.getId());
                 jsonObject.set("parentName", sysMenu.getTitle());
             } else {

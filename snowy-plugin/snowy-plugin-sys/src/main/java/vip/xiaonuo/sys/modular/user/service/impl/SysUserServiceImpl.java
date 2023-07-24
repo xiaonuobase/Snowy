@@ -689,7 +689,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             // 将根菜单的父id设置为模块的id
             if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if (sysMenu.getParentId().equals("0")) {
+                if ("0".equals(sysMenu.getParentId())) {
                     sysMenu.setParentId(sysMenu.getModule());
                 }
             }

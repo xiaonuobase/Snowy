@@ -302,7 +302,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         bizOrg.setName(orgName);
         bizOrg.setCode(RandomUtil.randomString(10));
         bizOrg.setParentId(parentId);
-        bizOrg.setCategory(parentId.equals("0")?BizOrgCategoryEnum.COMPANY.getValue():BizOrgCategoryEnum.DEPT.getValue());
+        bizOrg.setCategory("0".equals(parentId)?BizOrgCategoryEnum.COMPANY.getValue():BizOrgCategoryEnum.DEPT.getValue());
         bizOrg.setSortCode(99);
         this.save(bizOrg);
         // 发布增加事件

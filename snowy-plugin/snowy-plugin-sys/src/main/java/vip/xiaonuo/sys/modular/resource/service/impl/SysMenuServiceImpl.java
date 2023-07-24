@@ -155,7 +155,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         List<SysMenu> originDataList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getCategory,
                 SysResourceCategoryEnum.MENU.getValue()));
-        if(!sysMenuAddParam.getParentId().equals("0")) {
+        if(!"0".equals(sysMenuAddParam.getParentId())) {
             SysMenu parentMenu = this.getById(originDataList, sysMenuAddParam.getParentId());
             if(ObjectUtil.isEmpty(parentMenu)) {
                 throw new CommonException("上级菜单不存在，id值为：{}", sysMenuAddParam.getParentId());
@@ -175,7 +175,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public String addForGenMenu(String parentId, String busName, String title, String module, String path) {
         // 参数校验
-        if(!parentId.equals("0")) {
+        if(!"0".equals(parentId)) {
             SysMenu parentMenu = this.queryEntity(parentId);
             if(ObjectUtil.isEmpty(parentMenu)) {
                 throw new CommonException("上级菜单不存在，id值为：{}", parentId);
@@ -249,7 +249,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if(errorLevel) {
             throw new CommonException("不可选择上级菜单：{}", this.getById(originDataList, sysMenu.getParentId()).getName());
         }
-        if(!sysMenuEditParam.getParentId().equals("0")) {
+        if(!"0".equals(sysMenuEditParam.getParentId())) {
             SysMenu parentMenu = this.getById(originDataList, sysMenuEditParam.getParentId());
             if(ObjectUtil.isEmpty(parentMenu)) {
                 throw new CommonException("上级菜单不存在，id值为：{}", sysMenuEditParam.getParentId());
@@ -267,7 +267,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void changeModule(SysMenuChangeModuleParam sysMenuChangeModuleParam) {
         SysMenu sysMenu = this.queryEntity(sysMenuChangeModuleParam.getId());
-        if(!sysMenu.getParentId().equals("0")) {
+        if(!"0".equals(sysMenu.getParentId())) {
             throw new CommonException("非顶级菜单不可修改所属模块");
         }
         List<SysMenu> sysMenuList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getCategory,

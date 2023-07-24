@@ -88,7 +88,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         }
         List<MobileMenu> originDataList = this.list(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getCategory,
                 MobileResourceCategoryEnum.MENU.getValue()));
-        if(!mobileMenuAddParam.getParentId().equals("0")) {
+        if(!"0".equals(mobileMenuAddParam.getParentId())) {
             MobileMenu parentMenu = this.getById(originDataList, mobileMenuAddParam.getParentId());
             if(ObjectUtil.isEmpty(parentMenu)) {
                 throw new CommonException("上级菜单不存在，id值为：{}", mobileMenuAddParam.getParentId());
@@ -118,7 +118,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         if(errorLevel) {
             throw new CommonException("不可选择上级菜单：{}", this.getById(originDataList, mobileMenu.getParentId()).getTitle());
         }
-        if(!mobileMenuEditParam.getParentId().equals("0")) {
+        if(!"0".equals(mobileMenuEditParam.getParentId())) {
             MobileMenu parentMenu = this.getById(originDataList, mobileMenuEditParam.getParentId());
             if(ObjectUtil.isEmpty(parentMenu)) {
                 throw new CommonException("上级菜单不存在，id值为：{}", mobileMenuEditParam.getParentId());
@@ -133,7 +133,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
     @Override
     public void changeModule(MobileMenuChangeModuleParam mobileMenuChangeModuleParam) {
         MobileMenu mobileMenu = this.queryEntity(mobileMenuChangeModuleParam.getId());
-        if(!mobileMenu.getParentId().equals("0")) {
+        if(!"0".equals(mobileMenu.getParentId())) {
             throw new CommonException("非顶级菜单不可修改所属模块");
         }
         List<MobileMenu> mobileMenuList = this.list(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getCategory,
@@ -215,9 +215,15 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
             return CollectionUtil.newArrayList();
         }
         allModuleAndMenuList.forEach(mobileMenu -> {
-            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MODULE.getValue())) mobileModuleList.add(mobileMenu);
-            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) mobileMenuList.add(mobileMenu);
-            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) mobileButtonList.add(mobileMenu);
+            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MODULE.getValue())) {
+                mobileModuleList.add(mobileMenu);
+            }
+            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) {
+                mobileMenuList.add(mobileMenu);
+            }
+            if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.BUTTON.getValue())) {
+                mobileButtonList.add(mobileMenu);
+            }
         });
         List<JSONObject> leafMenuList = CollectionUtil.newArrayList();
         List<TreeNode<String>> treeNodeList = mobileMenuList.stream().map(mobileMenu ->
@@ -323,7 +329,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
             }
             // 将根菜单的父id设置为模块的id
             if (mobileMenu.getCategory().equals(MobileResourceCategoryEnum.MENU.getValue())) {
-                if (mobileMenu.getParentId().equals("0")) {
+                if ("0".equals(mobileMenu.getParentId())) {
                     mobileMenu.setParentId(mobileMenu.getModule());
                 }
             }
@@ -356,7 +362,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         JSONObject jsonObject = JSONUtil.createObj();
         if(ObjectUtil.isNotEmpty(resultList)) {
             Tree<String> currentNode = resultList.get(0);
-            if(currentNode.getId().equals("0") || currentNode.getParentId().equals("0")) {
+            if("0".equals(currentNode.getId()) || "0".equals(currentNode.getParentId())) {
                 jsonObject.set("parentId", mobileMenu.getId());
                 jsonObject.set("parentName", mobileMenu.getTitle());
             } else {

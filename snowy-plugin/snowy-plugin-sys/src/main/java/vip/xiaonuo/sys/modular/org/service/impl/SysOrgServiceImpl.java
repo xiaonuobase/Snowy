@@ -264,7 +264,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         sysOrg.setName(orgName);
         sysOrg.setCode(RandomUtil.randomString(10));
         sysOrg.setParentId(parentId);
-        sysOrg.setCategory(parentId.equals("0")?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
+        sysOrg.setCategory("0".equals(parentId)?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
         sysOrg.setSortCode(99);
         this.save(sysOrg);
         // 发布增加事件

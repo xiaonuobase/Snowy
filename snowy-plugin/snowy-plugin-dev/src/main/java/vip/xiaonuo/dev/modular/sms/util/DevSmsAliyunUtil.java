@@ -110,7 +110,7 @@ public class DevSmsAliyunUtil {
             SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
             SendSmsResponseBody body = sendSmsResponse.getBody();
             String code = body.getCode().toLowerCase();
-            if(code.equals("ok")) {
+            if("ok".equals(code)) {
                 return JSONUtil.toJsonStr(body);
             } else {
                 throw new CommonException(body.getMessage());

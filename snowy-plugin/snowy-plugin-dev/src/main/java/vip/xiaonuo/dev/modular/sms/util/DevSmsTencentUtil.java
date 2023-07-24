@@ -119,7 +119,7 @@ public class DevSmsTencentUtil {
             SendSmsResponse sendSmsResponse = client.SendSms(sendSmsRequest);
             SendStatus sendStatus = sendSmsResponse.getSendStatusSet()[0];
             String code = sendStatus.getCode().toLowerCase();
-            if(code.equals("ok")) {
+            if("ok".equals(code)) {
                 return JSONUtil.toJsonStr(sendSmsResponse);
             } else {
                 throw new CommonException(sendStatus.getMessage());
