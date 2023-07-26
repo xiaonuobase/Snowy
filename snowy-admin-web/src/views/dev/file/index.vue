@@ -77,6 +77,7 @@
 							class="record-img"
 							v-else-if="record.suffix === 'ppt' || record.suffix === 'pptx'"
 						/>
+						<img src="/src/assets/images/fileImg/pdf.png" class="record-img" v-else-if="record.suffix === 'pdf'" />
 						<img src="/src/assets/images/fileImg/txt.png" class="record-img" v-else-if="record.suffix === 'txt'" />
 						<img src="/src/assets/images/fileImg/html.png" class="record-img" v-else-if="record.suffix === 'html'" />
 						<img src="/src/assets/images/fileImg/file.png" class="record-img" v-else />
