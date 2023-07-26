@@ -130,13 +130,13 @@
     }
     // 更多操作
     const moreRef = ref()
-    const moreClick = (record) => {
-    	moreRef.value.open(record)
+    const moreTapItem = (item, index) => {
+        moreRef.value.open(item)
     }
 </script>
 
 <style lang="scss" scoped>
-    .${classNameFirstLower}-list {
+    .${busName}-list {
     	margin: 15upx;
     	border-radius: 5upx;
     	.item {
