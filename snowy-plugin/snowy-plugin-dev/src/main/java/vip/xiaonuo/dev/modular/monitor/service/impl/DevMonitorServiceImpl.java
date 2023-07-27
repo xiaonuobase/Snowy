@@ -121,13 +121,6 @@ public class DevMonitorServiceImpl implements DevMonitorService {
         devMonitorStorageInfo.setStorageUseRate(NumberUtil.mul(NumberUtil.div(storageUsed.doubleValue(), storageTotal.doubleValue(), 4), 100));
         devMonitorServerResult.setDevMonitorStorageInfo(devMonitorStorageInfo);
 
-        // 网络信息
-        DevMonitorServerResult.DevMonitorNetworkInfo devMonitorNetworkInfo = new DevMonitorServerResult.DevMonitorNetworkInfo();
-        Map<String, String> networkUpRate = CommonNetWorkInfoUtil.getNetworkUpRate();
-        devMonitorNetworkInfo.setUpLinkRate(networkUpRate.get("UP"));
-        devMonitorNetworkInfo.setDownLinkRate(networkUpRate.get("DOWN"));
-        devMonitorServerResult.setDevMonitorNetworkInfo(devMonitorNetworkInfo);
-
         // 服务器信息
         OsInfo osInfo = SystemUtil.getOsInfo();
         DevMonitorServerResult.DevMonitorServerInfo devMonitorServerInfo = new DevMonitorServerResult.DevMonitorServerInfo();
@@ -158,6 +151,24 @@ public class DevMonitorServiceImpl implements DevMonitorService {
         devMonitorJvmInfo.setJavaVersion(SystemUtil.get("java.version", false));
         devMonitorJvmInfo.setJavaPath(SystemUtil.get("java.home", false));
         devMonitorServerResult.setDevMonitorJvmInfo(devMonitorJvmInfo);
+        return devMonitorServerResult;
+    }
+
+    /**
+     * 获取服务器网络情况
+     *
+     * @author diantu
+     * @date 2023/7/27
+     */
+    @Override
+    public DevMonitorServerResult networkInfo(){
+        DevMonitorServerResult devMonitorServerResult = new DevMonitorServerResult();
+        // 网络信息
+        DevMonitorServerResult.DevMonitorNetworkInfo devMonitorNetworkInfo = new DevMonitorServerResult.DevMonitorNetworkInfo();
+        Map<String, String> networkUpRate = CommonNetWorkInfoUtil.getNetworkUpRate();
+        devMonitorNetworkInfo.setUpLinkRate(networkUpRate.get("UP"));
+        devMonitorNetworkInfo.setDownLinkRate(networkUpRate.get("DOWN"));
+        devMonitorServerResult.setDevMonitorNetworkInfo(devMonitorNetworkInfo);
         return devMonitorServerResult;
     }
 }

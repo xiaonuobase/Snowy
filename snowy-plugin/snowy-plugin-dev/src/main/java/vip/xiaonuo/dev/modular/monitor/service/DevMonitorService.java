@@ -29,4 +29,12 @@ public interface DevMonitorService {
      * @date 2022/9/1 16:02
      */
     DevMonitorServerResult serverInfo();
+
+    /**
+     * 获取服务器网络情况
+     *
+     * @author diantu
+     * @date 2023/7/27
+     */
+    DevMonitorServerResult networkInfo();
 }

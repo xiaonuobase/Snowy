@@ -52,4 +52,17 @@ public class DevMonitorController {
     public CommonResult<DevMonitorServerResult> serverInfo() {
         return CommonResult.data(devMonitorService.serverInfo());
     }
+
+    /**
+     * 获取服务器网络情况
+     *
+     * @author diantu
+     * @date 2023/7/27
+     */
+    @ApiOperationSupport(order = 2)
+    @ApiOperation("获取服务器网络情况")
+    @GetMapping("/dev/monitor/networkInfo")
+    public CommonResult<DevMonitorServerResult> networkInfo() {
+        return CommonResult.data(devMonitorService.networkInfo());
+    }
 }

@@ -58,27 +58,34 @@
 			</a-col>
 			<a-col :span="6">
 				<a-card title="网络信息" :bordered="false" class="monitor-center-row-col-card">
-					<a-statistic
-						title="上行速率"
-						:value="devMonitorNetworkInfo.upLinkRate"
-						:precision="2"
-						:value-style="{ color: '#3f8600' }"
-					>
-						<template #prefix>
-							<arrow-up-outlined />
-						</template>
-					</a-statistic>
-					<a-statistic
-						class="mt-4"
-						title="下行速率"
-						:value="devMonitorNetworkInfo.downLinkRate"
-						:precision="2"
-						:value-style="{ color: '#cf1322' }"
-					>
-						<template #prefix>
-							<arrow-down-outlined />
-						</template>
-					</a-statistic>
+					<template #extra>
+						<a-button title="测速" :loading="networkSpinning" @click="getMonitorNetworkInfo">
+							<template #icon><UiwDashboard /></template>
+						</a-button>
+					</template>
+					<a-spin :spinning="networkSpinning">
+						<a-statistic
+							title="上行速率"
+							:value="devMonitorNetworkInfo.upLinkRate"
+							:precision="2"
+							:value-style="{ color: '#3f8600' }"
+						>
+							<template #prefix>
+								<arrow-up-outlined />
+							</template>
+						</a-statistic>
+						<a-statistic
+							class="mt-4"
+							title="下行速率"
+							:value="devMonitorNetworkInfo.downLinkRate"
+							:precision="2"
+							:value-style="{ color: '#cf1322' }"
+						>
+							<template #prefix>
+								<arrow-down-outlined />
+							</template>
+						</a-statistic>
+					</a-spin>
 				</a-card>
 			</a-col>
 		</a-row>
@@ -139,6 +146,7 @@
 	import { onMounted } from 'vue'
 	import monitorApi from '@/api/dev/monitorApi'
 	const spinning = ref(false)
+	const networkSpinning = ref(false)
 	// CPU信息
 	const devMonitorCpuInfo = ref({})
 	// 内存信息
@@ -154,18 +162,28 @@
 
 	onMounted(() => {
 		getMonitorServerInfo()
+		getMonitorNetworkInfo()
 	})
 
 	const getMonitorServerInfo = () => {
 		spinning.value = true
 		monitorApi.monitorServerInfo().then((data) => {
 			spinning.value = false
+			networkSpinning.value = true
 			devMonitorCpuInfo.value = data.devMonitorCpuInfo
 			devMonitorMemoryInfo.value = data.devMonitorMemoryInfo
 			devMonitorStorageInfo.value = data.devMonitorStorageInfo
-			devMonitorNetworkInfo.value = data.devMonitorNetworkInfo
 			devMonitorServerInfo.value = data.devMonitorServerInfo
 			devMonitorJvmInfo.value = data.devMonitorJvmInfo
+		})
+	}
+
+	const getMonitorNetworkInfo = () => {
+		networkSpinning.value = true
+		networkSpinning.value = spinning.value ? false : networkSpinning.value
+		monitorApi.monitorNetworkInfo().then((data) => {
+			networkSpinning.value = false
+			devMonitorNetworkInfo.value = data.devMonitorNetworkInfo
 		})
 	}
 
@@ -185,5 +203,8 @@
 <style scoped>
 	.monitor-center-row-col-card {
 		text-align: center;
+	}
+	:deep(.ant-card-extra) {
+		padding: 8px 0!important;
 	}
 </style>

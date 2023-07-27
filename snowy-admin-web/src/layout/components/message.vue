@@ -101,7 +101,7 @@
 			})
 			// 监听错误事件
 			source.addEventListener('error', (e) => {
-				console.error('发生错误，消息事实获取已断开与服务器的连接')
+				console.error('发生错误，消息实时获取已断开与服务器的连接')
 				source.close()
 			})
 		} else {
