@@ -216,8 +216,14 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        // 定义机构集合
+        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScope);
+            // 获取所有机构
+            List<BizOrg> allOrgList = bizOrgService.list();
+            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
+            List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
+            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScopeFullList);
         } else {
             return CollectionUtil.newArrayList();
         }

@@ -155,6 +155,7 @@
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import bizUserApi from '@/api/biz/bizUserApi'
+	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
@@ -237,8 +238,8 @@
 		table.value.refresh(true)
 	}
 	// 左侧树查询
-	bizUserApi
-		.userOrgTreeSelector()
+	bizOrgApi
+		.orgTree()
 		.then((res) => {
 			cardLoading.value = false
 			if (res !== null) {

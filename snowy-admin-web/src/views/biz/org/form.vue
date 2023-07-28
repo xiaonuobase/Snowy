@@ -102,7 +102,7 @@
 			})
 		}
 		// 获取机构树并加入顶级
-		bizOrgApi.orgTree().then((res) => {
+		bizOrgApi.orgTreeSelector().then((res) => {
 			treeData.value = [
 				{
 					id: 0,

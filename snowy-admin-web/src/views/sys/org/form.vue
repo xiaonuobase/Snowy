@@ -102,7 +102,7 @@
 			})
 		}
 		// 获取机构树并加入顶级
-		orgApi.orgTree().then((res) => {
+		orgApi.orgOrgTreeSelector().then((res) => {
 			treeData.value = [
 				{
 					id: 0,

@@ -37,5 +37,13 @@ export default {
 	// 获取岗位详情
 	positionDetail(data) {
 		return request('detail', data, 'get')
+	},
+	// 获取机构树选择器
+	positionOrgTreeSelector(data) {
+		return request('orgTreeSelector', data, 'get')
+	},
+	// 获取岗位选择器
+	positionPositionSelector(data) {
+		return request('positionSelector', data, 'get')
 	}
 }

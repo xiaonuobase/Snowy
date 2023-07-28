@@ -50,14 +50,13 @@
 
 <script setup name="bizPositionForm">
 	import { required } from '@/utils/formRules'
-	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import bizPositionApi from '@/api/biz/bizPositionApi'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
@@ -67,7 +66,7 @@
 
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
-		visible = true
+		visible.value = true
 		formData.value = {
 			sortCode: 99
 		}
@@ -78,13 +77,13 @@
 			formData.value = Object.assign({}, record)
 		}
 		// 获取机构树
-		bizOrgApi.orgTree().then((res) => {
+		bizPositionApi.positionOrgTreeSelector().then((res) => {
 			treeData.value = res
 		})
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {
@@ -103,7 +102,7 @@
 				bizPositionApi
 					.submitForm(formData.value, formData.value.id)
 					.then(() => {
-						visible = false
+						visible.value = false
 						emit('successful')
 					})
 					.finally(() => {
@@ -117,5 +116,3 @@
 		onOpen
 	})
 </script>
-
-<style scoped></style>

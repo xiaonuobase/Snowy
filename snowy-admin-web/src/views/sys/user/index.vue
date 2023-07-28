@@ -153,6 +153,7 @@
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import userApi from '@/api/sys/userApi'
+	import orgApi from '@/api/sys/orgApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
@@ -231,7 +232,7 @@
 		})
 	}
 	// 左侧树查询
-	userApi.userOrgTreeSelector().then((res) => {
+	orgApi.orgTree().then((res) => {
 		cardLoading.value = false
 		if (res !== null) {
 			treeData.value = res
