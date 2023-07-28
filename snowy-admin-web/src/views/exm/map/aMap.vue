@@ -1,5 +1,5 @@
 <template>
-	<a-map ref="map" api-key="87528cfa68513cbc7574ff94704664fc" @complete="handleComplete"
+	<a-map ref="map" api-key="******" @complete="handleComplete"
 		   @marker-click="handleMarkerClick"></a-map>
 </template>
 

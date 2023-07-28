@@ -1,5 +1,5 @@
 <template>
-	<b-map ref="map" api-key="NtTydKuftIVXAy526uWXZoHS86lg0KeW" @complete="handleComplete"
+	<b-map ref="map" api-key="******" @complete="handleComplete"
 		   @marker-click="handleMarkerClick"></b-map>
 </template>
 
