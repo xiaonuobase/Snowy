@@ -17,6 +17,7 @@
 		"prod": "vite  --mode production"
 	},
 	"dependencies": {
+		"@amap/amap-jsapi-loader": "1.0.1",
 		"@ant-design/colors": "7.0.0",
 		"@ant-design/icons-vue": "6.1.0",
 		"@antv/g2plot": "2.4.28",
