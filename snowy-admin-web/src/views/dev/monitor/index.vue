@@ -167,24 +167,31 @@
 
 	const getMonitorServerInfo = () => {
 		spinning.value = true
-		monitorApi.monitorServerInfo().then((data) => {
-			spinning.value = false
-			networkSpinning.value = true
-			devMonitorCpuInfo.value = data.devMonitorCpuInfo
-			devMonitorMemoryInfo.value = data.devMonitorMemoryInfo
-			devMonitorStorageInfo.value = data.devMonitorStorageInfo
-			devMonitorServerInfo.value = data.devMonitorServerInfo
-			devMonitorJvmInfo.value = data.devMonitorJvmInfo
-		})
+		monitorApi
+			.monitorServerInfo()
+			.then((data) => {
+				devMonitorCpuInfo.value = data.devMonitorCpuInfo
+				devMonitorMemoryInfo.value = data.devMonitorMemoryInfo
+				devMonitorStorageInfo.value = data.devMonitorStorageInfo
+				devMonitorServerInfo.value = data.devMonitorServerInfo
+				devMonitorJvmInfo.value = data.devMonitorJvmInfo
+			})
+			.finally(() => {
+				spinning.value = false
+			})
 	}
 
 	const getMonitorNetworkInfo = () => {
 		networkSpinning.value = true
-		networkSpinning.value = spinning.value ? false : networkSpinning.value
-		monitorApi.monitorNetworkInfo().then((data) => {
-			networkSpinning.value = false
-			devMonitorNetworkInfo.value = data.devMonitorNetworkInfo
-		})
+		monitorApi
+			.monitorNetworkInfo()
+			.then((data) => {
+				networkSpinning.value = false
+				devMonitorNetworkInfo.value = data.devMonitorNetworkInfo
+			})
+			.finally(() => {
+				networkSpinning.value = false
+			})
 	}
 
 	// 获取颜色 30以下绿色，30-80蓝色， 80往上红色
@@ -205,6 +212,6 @@
 		text-align: center;
 	}
 	:deep(.ant-card-extra) {
-		padding: 8px 0!important;
+		padding: 8px 0 !important;
 	}
 </style>
