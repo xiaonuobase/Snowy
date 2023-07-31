@@ -9,6 +9,7 @@ import hljsCommon from 'highlight.js/lib/common'
 import hljsVuePlugin from '@highlightjs/vue-plugin'
 import STable from './components/Table/index.vue'
 import Ellipsis from './components/Ellipsis/index.vue'
+import DragModal from './components/DragModal/index.vue'
 
 export default {
 	install(app) {
@@ -20,6 +21,7 @@ export default {
 		// 注册常用组件
 		app.component('STable', STable)
 		app.component('Ellipsis', Ellipsis)
+		app.component('DragModal', DragModal)
 
 		// 统一注册antdv图标
 		for (const icon in antdvIcons) {

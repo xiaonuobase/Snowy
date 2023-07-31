@@ -59,7 +59,6 @@
 		:closable="false"
 		:footer="null"
 		:width="600"
-		style="overflow: hidden"
 		destroyOnClose
 		dialogClass="searchModal"
 		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '14px' }"
