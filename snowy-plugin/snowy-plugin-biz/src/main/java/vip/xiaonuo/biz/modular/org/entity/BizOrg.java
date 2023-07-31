@@ -15,10 +15,13 @@ package vip.xiaonuo.biz.modular.org.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fhs.core.trans.anno.Trans;
+import com.fhs.core.trans.constant.TransType;
 import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.common.pojo.CommonEntity;
 
 /**
@@ -43,6 +46,7 @@ public class BizOrg extends CommonEntity implements TransPojo {
     /** 主管id */
     @ApiModelProperty(value = "主管id", position = 3)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type = TransType.SIMPLE, target = BizUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
     /** 名称 */

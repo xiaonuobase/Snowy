@@ -41,8 +41,8 @@
 			</a-form-item>
 			<a-form-item label="指定主管：" name="directorId">
 				<a-button type="link" style="padding-left: 0px" @click="openSelector(formData.directorId)">选择</a-button>
-				<a-tag v-if="formData.directorId && extJson.length > 0" color="orange" closable @close="closeUserTag">{{
-					extJson[0].name
+				<a-tag v-if="formData.directorId && formData.directorName" color="orange" closable @close="closeUserTag">{{
+						formData.directorName
 				}}</a-tag>
 				<a-input v-show="false" v-model:value="formData.directorId" />
 			</a-form-item>
@@ -79,13 +79,11 @@
 	const formData = ref({})
 	// 定义机构元素
 	const treeData = ref([])
-	const extJson = ref([])
 	const submitLoading = ref(false)
 
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
 		visible = true
-		extJson.value = ref([])
 		formData.value = {
 			sortCode: 99
 		}
@@ -98,7 +96,6 @@
 			}
 			bizOrgApi.orgDetail(param).then((data) => {
 				formData.value = Object.assign({}, data)
-				extJson.value = JSON.parse(formData.value.extJson) || []
 			})
 		}
 		// 获取机构树并加入顶级
@@ -133,17 +130,18 @@
 	}
 	// 人员选择器回调
 	const userBack = (value) => {
-		extJson.value = value
 		if (value.length > 0) {
 			formData.value.directorId = value[0].id
+			formData.value.directorName = value[0].name
 		} else {
 			formData.value.directorId = ''
+			formData.value.directorName = ''
 		}
 	}
 	// 通过小标签删除主管
 	const closeUserTag = () => {
-		extJson.value = []
 		formData.value.directorId = ''
+		formData.value.directorName = ''
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
@@ -151,7 +149,6 @@
 			.validate()
 			.then(() => {
 				submitLoading.value = true
-				formData.value.extJson = JSON.stringify(extJson.value)
 				bizOrgApi
 					.submitForm(formData.value, formData.value.id)
 					.then(() => {
