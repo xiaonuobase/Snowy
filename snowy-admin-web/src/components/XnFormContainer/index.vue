@@ -14,7 +14,7 @@
 <script>
 	import { mapState } from 'pinia'
 	import { globalStore } from '@/store'
-	import DragModal from "@/components/DragModal/index.vue";
+	import DragModal from '@/components/DragModal/index.vue'
 
 	const FormContainerTypeEnum = {
 		DRAWER: 'drawer',

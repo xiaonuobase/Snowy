@@ -5,44 +5,44 @@ AMap
 
 该组件由 [小诺开源技术](https://www.xiaonuo.vip) 封装
 
-
 ### 使用方式
 
 ```vue
+
 <template>
-	<a-map ref="map" api-key="******" @complete="handleComplete"
-		   @marker-click="handleMarkerClick"></a-map>
+	<gaode-map ref="map" api-key="******" @complete="handleComplete"
+				   @marker-click="handleMarkerClick" />
 </template>
 
 <script setup name="exmAMap">
-import AMap from '@/components/Map/aMap/index.vue'
+	import GaodeMap from '@/components/Map/gaodeMap/index.vue'
 
-const map = ref(null)
+	const map = ref(null)
 
-const handleComplete = () => {
-	// 渲染 点标记
-  	map.value.renderMarker(
-		[
-			{
-				position: [116.39, 39.9],
-				title: 'TA',
-				content: 'CA',
-				label: {
-					content: 'LCA'
+	const handleComplete = () => {
+		// 渲染 点标记
+		map.value.renderMarker(
+			[
+				{
+					position: [116.39, 39.9],
+					title: 'TA',
+					content: 'CA',
+					label: {
+						content: 'LCA'
+					}
+				},
+				{
+					position: [116.33, 39.5],
+					title: 'TB',
+					icon: '//vdata.amap.com/icons/b18/1/2.png'
 				}
-			},
-			{
-				position: [116.33, 39.5],
-				title: 'TB',
-				icon: '//vdata.amap.com/icons/b18/1/2.png'
-			}
-		]
-	)
-}
+			]
+		)
+	}
 
-const handleMarkerClick = (position) => {
-	map.value.openInfoWindow(position)
-}
+	const handleMarkerClick = (position) => {
+		map.value.openInfoWindow(position)
+	}
 </script>
 ```
 
