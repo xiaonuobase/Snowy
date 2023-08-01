@@ -90,12 +90,20 @@ public interface SysUserApi {
     List<String> getUserIdListByPositionIdList(List<String> positionIdList);
 
     /**
-     * 根据用户id和组织id和职位id获取上级主管id
+     * 根据用户id和组织id和职位id和主管层级获取上级主管id
      *
      * @author xuyuxiang
      * @date 2022/6/6 14:50
      **/
-    String getSupervisorIdByUserIdAndOrgIdAndPositionId(String userId, String orgId, String positionId);
+    JSONObject getSupervisorIdBySupervisorLevel(List<String> userIdList, String userId, String orgId, String supervisorLevel);
+
+    /**
+     * 根据用户id和组织id和职位id和终点主管层级获取上级主管id集合
+     *
+     * @author xuyuxiang
+     * @date 2022/6/6 14:50
+     **/
+    List<String> getMulSupervisorIdListByEndLevel(String userId, String orgId, String endLevel);
 
     /**
      * 获取用户选择器

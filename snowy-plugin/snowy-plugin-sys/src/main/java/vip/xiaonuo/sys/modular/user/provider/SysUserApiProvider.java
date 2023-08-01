@@ -14,6 +14,7 @@ package vip.xiaonuo.sys.modular.user.provider;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -109,33 +110,109 @@ public class SysUserApiProvider implements SysUserApi {
     }
 
     @Override
-    public String getSupervisorIdByUserIdAndOrgIdAndPositionId(String userId, String orgId, String positionId) {
+    public JSONObject getSupervisorIdBySupervisorLevel(List<String> userIdList, String userId, String orgId, String supervisorLevel) {
         SysUser sysUser = sysUserService.queryEntity(userId);
         String userOrgId = sysUser.getOrgId();
-        String userPositionId = sysUser.getPositionId();
         String positionJson = sysUser.getPositionJson();
         AtomicReference<String> result = new AtomicReference<>();
-        if(ObjectUtil.isAllNotEmpty(userOrgId, userPositionId)) {
-            if(userOrgId.equals(orgId) && userPositionId.equals(positionId)) {
+        // 先查主职位主管
+        if(ObjectUtil.isAllNotEmpty(userOrgId)) {
+            if(userOrgId.equals(orgId)) {
                 String directorId = sysUser.getDirectorId();
                 if(ObjectUtil.isNotEmpty(directorId)) {
-                    return directorId;
+                    result.set(directorId);
                 }
             }
         }
-        if(ObjectUtil.isNotEmpty(positionJson)) {
-            JSONUtil.parseArray(positionJson).forEach(object -> {
-                JSONObject jsonObject = JSONUtil.parseObj(object);
-                String tempPositionId = jsonObject.getStr("positionId");
-                String directorId = jsonObject.getStr("directorId");
-                if(ObjectUtil.isNotEmpty(tempPositionId) && tempPositionId.equals(positionId)) {
-                    if(ObjectUtil.isNotEmpty(directorId)) {
-                        result.set(directorId);
+        // 再查兼职职位主管
+        if(ObjectUtil.isEmpty(result.get())) {
+            if(ObjectUtil.isNotEmpty(positionJson)) {
+                JSONUtil.parseArray(positionJson).forEach(object -> {
+                    JSONObject jsonObject = JSONUtil.parseObj(object);
+                    String partTimeOrgId = jsonObject.getStr("orgId");
+                    if(ObjectUtil.isNotEmpty(partTimeOrgId) && orgId.equals(partTimeOrgId)) {
+                        String partTimDirectorId = jsonObject.getStr("directorId");
+                        if(ObjectUtil.isNotEmpty(partTimDirectorId)) {
+                            // 存在多个相同兼职职位，后者覆盖前者
+                            result.set(partTimDirectorId);
+                        }
+                    }
+                });
+            }
+        }
+        // 查询结果
+        String resultUserId = result.get();
+        // 如果要求查最高层级主管
+        if(supervisorLevel.equals("-1")) {
+            if(ObjectUtil.isEmpty(resultUserId)) {
+                // 查不到，则当前用户就是最高层级主管
+                if(ObjectUtil.isEmpty(userIdList)) {
+                    return JSONUtil.createObj().set("id", userId).set("idList", CollectionUtil.newArrayList(userId));
+                } else {
+                    return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
+                }
+            } else {
+                if(ObjectUtil.isNotEmpty(userIdList)) {
+                    if(userIdList.contains(resultUserId)) {
+                        // 如果查出的结果已经出现过，意味着出现了循环主管，则当前的userId就是最高级主管
+                        return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
                     }
                 }
-            });
+                // 如果结果为空，则将查询的结果放入集合
+                userIdList.add(resultUserId);
+                // 继续查询
+                return this.getSupervisorIdBySupervisorLevel(userIdList, resultUserId, orgId, supervisorLevel);
+            }
+        } else {
+            // 如果要求查指定层级主管
+            if(ObjectUtil.isEmpty(resultUserId)) {
+                // 最直接主管查不到，则没有上级之说
+                return JSONUtil.createObj().set("id", null).set("idList", CollectionUtil.newArrayList());
+            } else {
+                // 由最低级向高级查，首先主管级别减1
+                String nextLevel = Convert.toStr(Convert.toInt(supervisorLevel) - 1);
+                // 如果减1后级别为0，表示查一级直属主管
+                if(nextLevel.equals("0")) {
+                    // 则当前结果就是一级直属主管
+                    return JSONUtil.createObj().set("id", resultUserId).set("idList", CollectionUtil.newArrayList(resultUserId));
+                } else {
+                    if(ObjectUtil.isNotEmpty(userIdList)) {
+                        if(userIdList.contains(resultUserId)) {
+                            // 如果查出的结果已经出现过，意味着出现了循环主管，则当前的userId就暂定是满足层级的主管
+                            return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
+                        }
+                    }
+                    // 如果查出的结果没有出现过，则将查询的结果放入集合
+                    userIdList.add(resultUserId);
+                    // 继续查更高层级主管
+                    return this.getSupervisorIdBySupervisorLevel(userIdList, resultUserId, orgId, nextLevel);
+                }
+            }
         }
-        return result.get();
+    }
+
+    @Override
+    public List<String> getMulSupervisorIdListByEndLevel(String userId, String orgId, String endLevel) {
+        List<String> resultList = CollectionUtil.newArrayList();
+        if(endLevel.equals("-1")) {
+            List<String> idList = this.getSupervisorIdBySupervisorLevel(CollectionUtil.newArrayList(), userId, orgId, endLevel)
+                    .getBeanList("idList", String.class);
+            if(ObjectUtil.isNotEmpty(idList)) {
+                resultList.addAll(idList);
+            }
+        } else {
+            Integer levelValue = Convert.toInt(endLevel);
+            for (int i = 1; i < levelValue; i++) {
+                String supervisorId = this.getSupervisorIdBySupervisorLevel(CollectionUtil.newArrayList(), userId, orgId,
+                        Convert.toStr(i)).getStr("id");
+                if(ObjectUtil.isNotEmpty(supervisorId)) {
+                    resultList.add(supervisorId);
+                } else {
+                    break;
+                }
+            }
+        }
+        return resultList;
     }
 
     @SuppressWarnings("ALL")
