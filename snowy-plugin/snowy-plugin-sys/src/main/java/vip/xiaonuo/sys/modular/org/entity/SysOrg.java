@@ -15,11 +15,14 @@ package vip.xiaonuo.sys.modular.org.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fhs.core.trans.anno.Trans;
+import com.fhs.core.trans.constant.TransType;
 import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
+import vip.xiaonuo.sys.modular.user.entity.SysUser;
 
 /**
  * 组织实体
@@ -43,6 +46,7 @@ public class SysOrg extends CommonEntity implements TransPojo {
     /** 主管id */
     @ApiModelProperty(value = "主管id", position = 3)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @Trans(type = TransType.SIMPLE, target = SysUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
     /** 名称 */

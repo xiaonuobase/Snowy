@@ -42,7 +42,7 @@
 			<a-form-item label="指定主管：" name="directorId">
 				<a-button type="link" style="padding-left: 0px" @click="openSelector(formData.directorId)">选择</a-button>
 				<a-tag v-if="formData.directorId && formData.directorName" color="orange" closable @close="closeUserTag">{{
-						formData.directorName
+					formData.directorName
 				}}</a-tag>
 				<a-input v-show="false" v-model:value="formData.directorId" />
 			</a-form-item>
