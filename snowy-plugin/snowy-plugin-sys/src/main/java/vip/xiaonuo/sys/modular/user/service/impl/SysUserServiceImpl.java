@@ -804,10 +804,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                 }
             }
-            List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
-                    .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-            sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
         }
+        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
     }
 
     @Override
