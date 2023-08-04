@@ -4,6 +4,9 @@
 	import draggable from 'vuedraggable-es'
 	import columnSetting from './columnSetting.vue'
 	import './index.less'
+	import i18n from '@/locales'
+
+	const {t} = i18n.global
 
 	export default {
 		name: 'STable',
@@ -155,7 +158,13 @@
 				false
 			this.needTotalList = this.initTotalList(this.columns)
 			this.loadData()
-			this.columnsSetting = this.columns
+			this.columnsSetting = this.columns.map(c => {
+				const tt = c.title
+				if (typeof tt === "string") {
+					c.title = () => t(tt)
+				}
+				return c
+			})
 		},
 		methods: {
 			/**
