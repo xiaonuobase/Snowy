@@ -80,7 +80,7 @@ public class DevFileMinIoUtil {
         String endpoint = devConfigApi.getValueByKey(SNOWY_FILE_MINIO_END_POINT_KEY);
 
         if(ObjectUtil.isEmpty(endpoint)) {
-            throw new CommonException("MINIO文件操作客户端未正确配置：secretKey为空");
+            throw new CommonException("MINIO文件操作客户端未正确配置：endpoint为空");
         }
 
         /* 默认BucketName */
