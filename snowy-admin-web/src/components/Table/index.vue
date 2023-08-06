@@ -158,13 +158,13 @@
 				false
 			this.needTotalList = this.initTotalList(this.columns)
 			this.loadData()
-			this.columnsSetting = this.columns.map((c) => {
+			this.columnsSetting = this.columns/*.map((c) => {
 				const tt = c.title
 				if (typeof tt === 'string') {
 					c.title = () => t(tt)
 				}
 				return c
-			})
+			})*/
 		},
 		methods: {
 			/**
