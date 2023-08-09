@@ -1,9 +1,9 @@
 <template>
-	<drag-modal v-if="isModal" :visible="visible" v-bind="$attrs">
+	<a-modal v-if="isModal" :visible="visible" @cancel="cancel" v-bind="$attrs">
 		<template v-for="slotKey in slotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
-	</drag-modal>
+	</a-modal>
 	<a-drawer v-else :visible="visible" v-bind="$attrs" :footer-style="{ textAlign: 'right' }">
 		<template v-for="slotKey in slotKeys" #[slotKey]>
 			<slot :name="slotKey" />
@@ -14,7 +14,6 @@
 <script>
 	import { mapState } from 'pinia'
 	import { globalStore } from '@/store'
-	import DragModal from '@/components/DragModal/index.vue'
 
 	const FormContainerTypeEnum = {
 		DRAWER: 'drawer',
@@ -22,7 +21,6 @@
 	}
 	export default {
 		name: 'XnFormContainer',
-		components: { DragModal },
 		inheritAttrs: false,
 		props: {
 			visible: {
@@ -38,6 +36,11 @@
 			},
 			isModal() {
 				return FormContainerTypeEnum.MODAL === this.formStyle
+			}
+		},
+		methods: {
+			cancel() {
+				this.$emit('close')
 			}
 		}
 	}
