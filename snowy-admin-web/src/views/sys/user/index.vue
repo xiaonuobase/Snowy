@@ -60,7 +60,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.orgId)">
+							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.orgId)">
 								<template #icon><plus-outlined /></template>
 								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
 							</a-button>
@@ -90,7 +90,7 @@
 							<a-switch :loading="loading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)">{{ $t('common.editButton') }}</a>
+							<a @click="formRef.onOpen(record)">{{ $t('common.editButton') }}</a>
 							<a-divider type="vertical" />
 							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
 								<a-button type="link" danger size="small">
@@ -135,31 +135,32 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="table.refresh()" />
 	<role-selector-plus
-		ref="RoleSelectorPlus"
+		ref="RoleSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
 		:checked-role-list-api="selectorApiFunction.checkedRoleListApi"
 		@onBack="roleBack"
 	/>
 	<ImpExp ref="ImpExpRef" />
-	<grantResourceForm ref="grantResourceFormRef" @successful="table.refresh(true)" />
-	<grantPermissionForm ref="grantPermissionFormRef" @successful="table.refresh(true)" />
+	<grantResourceForm ref="grantResourceFormRef" @successful="table.refresh()" />
+	<grantPermissionForm ref="grantPermissionFormRef" @successful="table.refresh()" />
 </template>
 
 <script setup name="sysUser">
 	import { message, Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import userApi from '@/api/sys/userApi'
 	import orgApi from '@/api/sys/orgApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
+	import RoleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
 	import ImpExp from './impExp.vue'
-	import grantResourceForm from './grantResourceForm.vue'
-	import grantPermissionForm from './grantPermissionForm.vue'
+	import GrantResourceForm from './grantResourceForm.vue'
+	import GrantPermissionForm from './grantPermissionForm.vue'
 
 	const columns = [
 		{
@@ -211,14 +212,14 @@
 	]
 	const statusData = tool.dictList('COMMON_STATUS')
 	const searchFormRef = ref()
-	let defaultExpandedKeys = ref([])
-	let searchFormState = reactive({})
+	const defaultExpandedKeys = ref([])
+	const searchFormState = ref({})
 	const table = ref(null)
 	const treeData = ref([])
 	const selectedRowKeys = ref([])
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
-	let form = ref(null)
-	let RoleSelectorPlus = ref()
+	const formRef = ref(null)
+	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
 	const cardLoading = ref(true)
@@ -227,7 +228,7 @@
 	const grantPermissionFormRef = ref()
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return userApi.userPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return userApi.userPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -236,19 +237,21 @@
 		cardLoading.value = false
 		if (res !== null) {
 			treeData.value = res
-			// 默认展开2级
-			treeData.value.forEach((item) => {
-				// 因为0的顶级
-				if (item.parentId === '0') {
-					defaultExpandedKeys.value.push(item.id)
-					// 取到下级ID
-					if (item.children) {
-						item.children.forEach((items) => {
-							defaultExpandedKeys.value.push(items.id)
-						})
+			if (isEmpty(defaultExpandedKeys.value)) {
+				// 默认展开2级
+				treeData.value.forEach((item) => {
+					// 因为0的顶级
+					if (item.parentId === '0') {
+						defaultExpandedKeys.value.push(item.id)
+						// 取到下级ID
+						if (item.children) {
+							item.children.forEach((items) => {
+								defaultExpandedKeys.value.push(items.id)
+							})
+						}
 					}
-				}
-			})
+				})
+			}
 		}
 	})
 	// 列表选择配置
@@ -273,9 +276,9 @@
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.orgId = selectedKeys.toString()
+			searchFormState.value.orgId = selectedKeys.toString()
 		} else {
-			delete searchFormState.orgId
+			delete searchFormState.value.orgId
 		}
 		table.value.refresh(true)
 	}
@@ -315,7 +318,7 @@
 	}
 	// 批量导出校验并加参数
 	const exportBatchUserVerify = () => {
-		if ((selectedRowKeys.value.length < 1) & !searchFormState.searchKey & !searchFormState.userStatus) {
+		if ((selectedRowKeys.value.length < 1) & !searchFormState.value.searchKey & !searchFormState.value.userStatus) {
 			message.warning('请输入查询条件或勾选要导出的信息')
 		}
 		if (selectedRowKeys.value.length > 0) {
@@ -329,10 +332,10 @@
 			exportBatchUser(params)
 			return
 		}
-		if (searchFormState.searchKey || searchFormState.userStatus) {
+		if (searchFormState.value.searchKey || searchFormState.value.userStatus) {
 			const params = {
-				searchKey: searchFormState.searchKey,
-				userStatus: searchFormState.userStatus
+				searchKey: searchFormState.value.searchKey,
+				userStatus: searchFormState.value.userStatus
 			}
 			exportBatchUser(params)
 		}
@@ -358,7 +361,7 @@
 			id: record.id
 		}
 		userApi.userOwnRole(param).then((data) => {
-			RoleSelectorPlus.value.showRolePlusModal(data)
+			RoleSelectorPlusRef.value.showRolePlusModal(data)
 		})
 	}
 	// 角色选择回调

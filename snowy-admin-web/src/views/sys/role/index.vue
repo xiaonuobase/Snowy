@@ -49,7 +49,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.category, searchFormState.orgId)">
+							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.category, searchFormState.orgId)">
 								<template #icon><plus-outlined /></template>
 								新增角色
 							</a-button>
@@ -61,7 +61,7 @@
 							{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)">编辑</a>
+							<a @click="formRef.onOpen(record)">编辑</a>
 							<a-divider type="vertical" />
 							<a-popconfirm title="确定删除此角色？" @confirm="removeOrg(record)">
 								<a-button type="link" danger size="small">删除</a-button>
@@ -95,10 +95,10 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<grantResourceForm ref="GrantResourceForm" @successful="table.refresh(true)" />
-	<grantMobileResourceForm ref="GrantMobileResourceForm" @successful="table.refresh(true)" />
-	<grantPermissionForm ref="GrantPermissionForm" @successful="table.refresh(true)" />
-	<Form ref="form" @successful="table.refresh(true)" />
+	<grantResourceForm ref="GrantResourceForm" @successful="table.refresh()" />
+	<grantMobileResourceForm ref="GrantMobileResourceForm" @successful="table.refresh()" />
+	<grantPermissionForm ref="GrantPermissionForm" @successful="table.refresh()" />
+	<Form ref="formRef" @successful="table.refresh()" />
 	<user-selector-plus
 		ref="userselectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
@@ -110,13 +110,14 @@
 
 <script setup name="sysRole">
 	import { Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import grantResourceForm from './grantResourceForm.vue'
-	import grantMobileResourceForm from './grantMobileResourceForm.vue'
-	import grantPermissionForm from './grantPermissionForm.vue'
-	import userSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
+	import GrantResourceForm from './grantResourceForm.vue'
+	import GrantMobileResourceForm from './grantMobileResourceForm.vue'
+	import GrantPermissionForm from './grantPermissionForm.vue'
+	import UserSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import Form from './form.vue'
 
 	const columns = [
@@ -132,7 +133,8 @@
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode'
+			dataIndex: 'sortCode',
+			width: 100
 		},
 		{
 			title: '操作',
@@ -141,13 +143,13 @@
 			width: '200px'
 		}
 	]
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -158,15 +160,15 @@
 	}
 	// 定义tableDOM
 	const table = ref()
-	const form = ref()
+	const formRef = ref()
 	const GrantResourceForm = ref()
 	const GrantMobileResourceForm = ref()
 	const GrantPermissionForm = ref()
 	const userselectorPlusRef = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	// 默认展开的节点
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
@@ -176,7 +178,7 @@
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		let param = Object.assign(parameter, searchFormState)
+		let param = Object.assign(parameter, searchFormState.value)
 		return roleApi.rolePage(param).then((res) => {
 			return res
 		})
@@ -199,34 +201,36 @@
 				}
 			]
 			treeData.value = globalRoleType.concat(res)
-			// 默认展开2级
-			treeData.value.forEach((item) => {
-				// 因为0的顶级
-				if (item.parentId === '0') {
-					defaultExpandedKeys.value.push(item.id)
-					// 取到下级ID
-					if (item.children) {
-						item.children.forEach((items) => {
-							defaultExpandedKeys.value.push(items.id)
-						})
+			if (isEmpty(defaultExpandedKeys.value)) {
+				// 默认展开2级
+				treeData.value.forEach((item) => {
+					// 因为0的顶级
+					if (item.parentId === '0') {
+						defaultExpandedKeys.value.push(item.id)
+						// 取到下级ID
+						if (item.children) {
+							item.children.forEach((items) => {
+								defaultExpandedKeys.value.push(items.id)
+							})
+						}
 					}
-				}
-			})
+				})
+			}
 		}
 	})
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
 			if (selectedKeys[0] === 'GLOBAL') {
-				searchFormState.category = selectedKeys[0]
-				delete searchFormState.orgId
+				searchFormState.value.category = selectedKeys[0]
+				delete searchFormState.value.orgId
 			} else {
-				searchFormState.orgId = selectedKeys.toString()
-				delete searchFormState.category
+				searchFormState.value.orgId = selectedKeys.toString()
+				delete searchFormState.value.category
 			}
 		} else {
-			delete searchFormState.category
-			delete searchFormState.orgId
+			delete searchFormState.value.category
+			delete searchFormState.value.orgId
 		}
 		table.value.refresh(true)
 	}

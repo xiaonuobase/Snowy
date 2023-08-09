@@ -18,7 +18,7 @@
 					<a-row :gutter="24">
 						<a-col :span="8">
 							<a-form-item name="searchKey" label="名称关键词">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入组织名称关键词"></a-input>
+								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入组织名称关键词" />
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
@@ -47,7 +47,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.parentId)">
+							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.parentId)">
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>
@@ -59,7 +59,7 @@
 							{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)">编辑</a>
+							<a @click="formRef.onOpen(record)">编辑</a>
 							<a-divider type="vertical" />
 							<a-popconfirm title="删除此组织与下级组织吗？" @confirm="removeOrg(record)">
 								<a-button type="link" danger size="small">删除</a-button>
@@ -70,11 +70,12 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="table.refresh()" />
 </template>
 
 <script setup name="sysOrg">
-	import { message, Empty } from 'ant-design-vue'
+	import { Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
 
@@ -89,7 +90,8 @@
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode'
+			dataIndex: 'sortCode',
+			width: 100
 		},
 		{
 			title: '操作',
@@ -98,13 +100,13 @@
 			width: '150px'
 		}
 	]
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -115,11 +117,11 @@
 	}
 	// 定义tableDOM
 	const table = ref(null)
-	const form = ref()
+	const formRef = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	// 默认展开的节点
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
@@ -128,7 +130,7 @@
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		loadTreeData()
-		return orgApi.orgPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return orgApi.orgPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -143,28 +145,30 @@
 			cardLoading.value = false
 			if (res !== null) {
 				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
+				if (isEmpty(defaultExpandedKeys.value)) {
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
+					})
+				}
 			}
 		})
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.parentId = selectedKeys.toString()
+			searchFormState.value.parentId = selectedKeys.toString()
 		} else {
-			delete searchFormState.parentId
+			delete searchFormState.value.parentId
 		}
 		table.value.refresh(true)
 	}

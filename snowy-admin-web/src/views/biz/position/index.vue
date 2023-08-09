@@ -51,7 +51,7 @@
 						<a-space>
 							<a-button
 								type="primary"
-								@click="form.onOpen(undefined, searchFormState.orgId)"
+								@click="formRef.onOpen(undefined, searchFormState.orgId)"
 								v-if="hasPerm('bizPositionAdd')"
 							>
 								<template #icon><plus-outlined /></template>
@@ -69,7 +69,7 @@
 							{{ $TOOL.dictTypeData('POSITION_CATEGORY', record.category) }}
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)" v-if="hasPerm('bizPositionEdit')">编辑</a>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizPositionEdit')">编辑</a>
 							<a-divider type="vertical" v-if="hasPerm(['bizPositionEdit', 'bizPositionDelete'], 'and')" />
 							<a-popconfirm title="确定删除此岗位？" @confirm="removeOrg(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('bizPositionDelete')">删除</a-button>
@@ -80,11 +80,12 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="table.refresh(true)" />
 </template>
 
 <script setup name="bizPosition">
 	import { Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import bizPositionApi from '@/api/biz/bizPositionApi'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
@@ -129,11 +130,11 @@
 	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	// 定义tableDOM
 	const table = ref(null)
-	const form = ref()
+	const formRef = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	// 默认展开的节点
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
@@ -141,7 +142,7 @@
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return bizPositionApi.positionPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return bizPositionApi.positionPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -157,19 +158,21 @@
 			cardLoading.value = false
 			if (res !== null) {
 				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
+				if (isEmpty(defaultExpandedKeys.value)) {
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
+					})
+				}
 			}
 		})
 		.finally(() => {
@@ -178,9 +181,9 @@
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.orgId = selectedKeys.toString()
+			searchFormState.value.orgId = selectedKeys.toString()
 		} else {
-			delete searchFormState.orgId
+			delete searchFormState.value.orgId
 		}
 		table.value.refresh(true)
 	}

@@ -63,7 +63,7 @@
 						<a-space>
 							<a-button
 								type="primary"
-								@click="form.onOpen(undefined, searchFormState.orgId)"
+								@click="formRef.onOpen(undefined, searchFormState.orgId)"
 								v-if="hasPerm('bizUserAdd')"
 							>
 								<template #icon><plus-outlined /></template>
@@ -98,7 +98,7 @@
 							<span v-else>{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</span>
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)" v-if="hasPerm('bizUserEdit')">{{ $t('common.editButton') }}</a>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">{{ $t('common.editButton') }}</a>
 							<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
 							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" @confirm="removeUser(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')">{{
@@ -140,9 +140,9 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="table.refresh()" />
 	<role-selector-plus
-		ref="RoleSelectorPlus"
+		ref="RoleSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
 		:checked-role-list-api="selectorApiFunction.checkedRoleListApi"
@@ -152,12 +152,13 @@
 </template>
 <script setup name="bizUser">
 	import { message, Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import bizUserApi from '@/api/biz/bizUserApi'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import roleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
+	import RoleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
 
 	const columns = [
@@ -213,22 +214,20 @@
 	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	const statusData = tool.dictList('COMMON_STATUS')
 	const searchFormRef = ref()
-	let defaultExpandedKeys = ref([])
-	let searchFormState = reactive({})
+	const defaultExpandedKeys = ref([])
+	const searchFormState = ref({})
 	const table = ref(null)
 	const treeData = ref([])
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
-	let form = ref(null)
-	let RoleSelector = ref()
-	let RoleSelectorPlus = ref()
+	const formRef = ref(null)
+	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
 	const cardLoading = ref(true)
-	const ImpExpRef = ref()
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return bizUserApi.userPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return bizUserApi.userPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -244,19 +243,21 @@
 			cardLoading.value = false
 			if (res !== null) {
 				treeData.value = res
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
+				if (isEmpty(defaultExpandedKeys.value)) {
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
+							}
 						}
-					}
-				})
+					})
+				}
 			}
 		})
 		.finally(() => {
@@ -267,7 +268,7 @@
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -279,9 +280,9 @@
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.orgId = selectedKeys.toString()
+			searchFormState.value.orgId = selectedKeys.toString()
 		} else {
-			delete searchFormState.orgId
+			delete searchFormState.value.orgId
 		}
 		table.value.refresh(true)
 	}
@@ -321,7 +322,7 @@
 	}
 	// 批量导出校验并加参数
 	const exportBatchUserVerify = () => {
-		if ((selectedRowKeys.value.length < 1) & !searchFormState.searchKey & !searchFormState.userStatus) {
+		if ((selectedRowKeys.value.length < 1) & !searchFormState.value.searchKey & !searchFormState.value.userStatus) {
 			message.warning('请输入查询条件或勾选要导出的信息')
 		}
 		if (selectedRowKeys.value.length > 0) {
@@ -335,10 +336,10 @@
 			exportBatchUser(params)
 			return
 		}
-		if (searchFormState.searchKey || searchFormState.userStatus) {
+		if (searchFormState.value.searchKey || searchFormState.value.userStatus) {
 			const params = {
-				searchKey: searchFormState.searchKey,
-				userStatus: searchFormState.userStatus
+				searchKey: searchFormState.value.searchKey,
+				userStatus: searchFormState.value.userStatus
 			}
 			exportBatchUser(params)
 		}
@@ -364,7 +365,7 @@
 			id: record.id
 		}
 		bizUserApi.userOwnRole(param).then((data) => {
-			RoleSelectorPlus.value.showRolePlusModal(data)
+			RoleSelectorPlusRef.value.showRolePlusModal(data)
 		})
 	}
 	// 角色选择回调

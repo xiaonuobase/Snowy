@@ -76,6 +76,7 @@
 
 <script setup name="sysPosition">
 	import { Empty } from 'ant-design-vue'
+	import { isEmpty } from 'lodash-es'
 	import positionApi from '@/api/sys/positionApi'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
@@ -91,7 +92,8 @@
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode'
+			dataIndex: 'sortCode',
+			width: 100
 		},
 		{
 			title: '操作',
@@ -100,13 +102,13 @@
 			width: '150px'
 		}
 	]
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -119,9 +121,9 @@
 	const table = ref(null)
 	const form = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	// 默认展开的节点
-	let defaultExpandedKeys = ref([])
+	const defaultExpandedKeys = ref([])
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
@@ -129,7 +131,7 @@
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return positionApi.positionPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return positionApi.positionPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -143,27 +145,29 @@
 		cardLoading.value = false
 		if (res !== null) {
 			treeData.value = res
-			// 默认展开2级
-			treeData.value.forEach((item) => {
-				// 因为0的顶级
-				if (item.parentId === '0') {
-					defaultExpandedKeys.value.push(item.id)
-					// 取到下级ID
-					if (item.children) {
-						item.children.forEach((items) => {
-							defaultExpandedKeys.value.push(items.id)
-						})
+			if (isEmpty(defaultExpandedKeys.value)) {
+				// 默认展开2级
+				treeData.value.forEach((item) => {
+					// 因为0的顶级
+					if (item.parentId === '0') {
+						defaultExpandedKeys.value.push(item.id)
+						// 取到下级ID
+						if (item.children) {
+							item.children.forEach((items) => {
+								defaultExpandedKeys.value.push(items.id)
+							})
+						}
 					}
-				}
-			})
+				})
+			}
 		}
 	})
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {
-			searchFormState.orgId = selectedKeys.toString()
+			searchFormState.value.orgId = selectedKeys.toString()
 		} else {
-			delete searchFormState.orgId
+			delete searchFormState.value.orgId
 		}
 		table.value.refresh(true)
 	}
