@@ -319,7 +319,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -468,7 +468,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             if (ObjectUtil.isNotEmpty(sysRoleSelectorUserParam.getOrgId())) {
                 // 如果组织id不为空，则查询该组织及其子极其子下的所有人
                 List<String> childOrgIdList = CollStreamUtil.toList(sysOrgService.getChildListById(sysOrgService
-                        .getCachedAllOrgList(), sysRoleSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                        .getAllOrgList(), sysRoleSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
                     lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
                 } else {

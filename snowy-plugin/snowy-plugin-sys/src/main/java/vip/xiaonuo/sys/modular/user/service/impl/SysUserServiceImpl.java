@@ -966,7 +966,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
         List<JSONObject> resultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
         List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
         List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
@@ -1363,7 +1363,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysUserPositionResult> loginPositionInfo(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<SysUserPositionResult> sysUserPositionResultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         String primaryOrgId = sysUser.getOrgId();
         SysOrg primarySysOrg = sysOrgService.getById(sysOrgList, primaryOrgId);
         if (ObjectUtil.isEmpty(primarySysOrg)) {
@@ -1432,7 +1432,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                         new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -1502,7 +1502,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
                 // 如果组织id不为空，则查询该组织及其子组织下的所有人
                 List<String> childOrgIdList = CollStreamUtil.toList(sysOrgService.getChildListById(sysOrgService
-                        .getCachedAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                        .getAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
                     lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
                 } else {

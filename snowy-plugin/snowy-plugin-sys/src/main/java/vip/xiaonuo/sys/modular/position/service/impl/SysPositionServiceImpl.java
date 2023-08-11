@@ -195,7 +195,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());

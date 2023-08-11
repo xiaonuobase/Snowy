@@ -99,7 +99,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<Tree<String>> tree() {
-        List<SysOrg> sysOrgList = this.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = this.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
                         sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
@@ -136,7 +136,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if(repeatName) {
             throw new CommonException("存在重复的同级组织，名称为：{}", sysOrg.getName());
         }
-        List<SysOrg> originDataList = this.getCachedAllOrgList();
+        List<SysOrg> originDataList = this.getAllOrgList();
         boolean errorLevel = this.getChildListById(originDataList, sysOrg.getId(), true).stream()
                 .map(SysOrg::getId).collect(Collectors.toList()).contains(sysOrg.getParentId());
         if(errorLevel) {
@@ -153,7 +153,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public void delete(List<SysOrgIdParam> sysOrgIdParamList) {
         List<String> orgIdList = CollStreamUtil.toList(sysOrgIdParamList, SysOrgIdParam::getId);
         if(ObjectUtil.isNotEmpty(orgIdList)) {
-            List<SysOrg> allOrgList = this.getCachedAllOrgList();
+            List<SysOrg> allOrgList = this.getAllOrgList();
             // 获取所有子组织
             List<String> toDeleteOrgIdList = CollectionUtil.newArrayList();
             orgIdList.forEach(orgId -> toDeleteOrgIdList.addAll(this.getChildListById(allOrgList, orgId, true).stream()
@@ -209,7 +209,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public List<SysOrg> getCachedAllOrgList() {
+    public List<SysOrg> getAllOrgList() {
         // 从缓存中取
         Object cacheValue = commonCacheOperator.get(ORG_CACHE_ALL_KEY);
         if(ObjectUtil.isNotEmpty(cacheValue)) {
@@ -225,7 +225,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
-        List<SysOrg> cachedAllOrgList = this.getCachedAllOrgList();
+        List<SysOrg> cachedAllOrgList = this.getAllOrgList();
         List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList()), "0");
@@ -280,7 +280,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = this.getCachedAllOrgList();
+        List<SysOrg> sysOrgList = this.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
@@ -316,7 +316,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getOrgId())) {
                 // 如果组织id不为空，则查询该组织及其子组织下的所有人
                 List<String> childOrgIdList = CollStreamUtil.toList(this.getChildListById(this
-                        .getCachedAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                        .getAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
                     lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
                 } else {

@@ -91,7 +91,7 @@ public interface SysOrgService extends IService<SysOrg> {
      * @author xuyuxiang
      * @date 2022/7/25 19:42
      **/
-    List<SysOrg> getCachedAllOrgList();
+    List<SysOrg> getAllOrgList();
 
     /**
      * 根据组织全名称获取组织id，有则返回，无则创建
