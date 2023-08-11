@@ -13,10 +13,6 @@ export default {
 	${classNameFirstLower}Page(data) {
 		return request('page', data, 'get')
 	},
-	// 获取${functionName}列表
-	${classNameFirstLower}List(data) {
-		return request('list', data, 'get')
-	},
 	// 提交${functionName}表单 edit为true时为编辑，默认为新增
 	${classNameFirstLower}SubmitForm(data, edit = false) {
 		return request(edit ? 'edit' : 'add', data)

@@ -8,14 +8,6 @@ export function ${classNameFirstLower}Page(data) {
         data: data
     })
 }
-// 获取${functionName}列表
-export function ${classNameFirstLower}List(data) {
-	return request({
-        url: '/${moduleName}/${busName}/list',
-        method: 'get',
-        data: data
-    })
-}
 // 提交${functionName}表单 add为false时为编辑，默认为新增
 export function ${classNameFirstLower}SubmitForm(data, add = true) {
 	return request({
