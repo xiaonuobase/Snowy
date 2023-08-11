@@ -52,4 +52,8 @@ public class SysRoleSelectorRoleParam {
     /** 数据范围信息 */
     @ApiModelProperty(value = "数据范围信息")
     private List<String> dataScopeList;
+
+    /** 是否排除超管 */
+    @ApiModelProperty(value = "是否排除超管")
+    private boolean excludeSuperAdmin = false;
 }

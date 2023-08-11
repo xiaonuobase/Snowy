@@ -10,42 +10,36 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.api;
+package vip.xiaonuo.biz.modular.user.enums;
 
-import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import java.util.List;
+import lombok.Getter;
+import vip.xiaonuo.common.exception.CommonException;
 
 /**
- * 角色API
+ * 角色分类枚举
  *
  * @author xuyuxiang
- * @date 2022/6/6 11:36
+ * @date 2022/4/21 19:56
  **/
-public interface SysRoleApi {
+@Getter
+public enum BizRoleCategoryEnum {
 
-    /**
-     * 判断组织下是否存在角色
-     *
-     * @author xuyuxiang
-     * @date 2022/8/2 11:16
-     */
-    boolean orgHasRole(List<String> orgIdList);
+    /** 全局 */
+    GLOBAL("GLOBAL"),
 
-    /**
-     * 获取角色选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/7/22 14:49
-     **/
-    Page<JSONObject> roleSelector(String orgId, String category, String searchKey, List<String> dataScopeList, boolean excludeSuperAdmin);
+    /** 组织 */
+    ORG("ORG");
 
-    /**
-     * 代码生成菜单按钮授权
-     *
-     * @author xuyuxiang
-     * @date 2022/11/1 15:58
-     **/
-    void grantForGenMenuAndButton(String menuId);
+    private final String value;
+
+    BizRoleCategoryEnum(String value) {
+        this.value = value;
+    }
+
+    public static void validate(String value) {
+        boolean flag = GLOBAL.getValue().equals(value) || ORG.getValue().equals(value);
+        if(!flag) {
+            throw new CommonException("不支持的角色分类：{}", value);
+        }
+    }
 }

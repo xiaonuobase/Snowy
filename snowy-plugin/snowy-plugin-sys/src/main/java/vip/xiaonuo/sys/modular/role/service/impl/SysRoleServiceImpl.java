@@ -451,6 +451,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         if(ObjectUtil.isNotEmpty(sysRoleSelectorRoleParam.getDataScopeList())) {
             lambdaQueryWrapper.in(SysRole::getOrgId, sysRoleSelectorRoleParam.getDataScopeList());
         }
+        // 排除超管角色
+        if(sysRoleSelectorRoleParam.isExcludeSuperAdmin()) {
+            lambdaQueryWrapper.ne(SysRole::getCode, SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue());
+        }
         lambdaQueryWrapper.orderByAsc(SysRole::getSortCode);
         return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
     }

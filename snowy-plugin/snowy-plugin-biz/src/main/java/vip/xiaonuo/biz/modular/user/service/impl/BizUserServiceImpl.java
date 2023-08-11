@@ -59,6 +59,7 @@ import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
+import vip.xiaonuo.biz.modular.user.enums.BizRoleCategoryEnum;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.mapper.BizUserMapper;
 import vip.xiaonuo.biz.modular.user.param.*;
@@ -685,13 +686,19 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             if(ObjectUtil.isNotEmpty(bizUserSelectorRoleParam.getOrgId())) {
                 if(loginUserDataScope.contains(bizUserSelectorRoleParam.getOrgId())) {
                     return BeanUtil.toBean(sysRoleApi.roleSelector(bizUserSelectorRoleParam.getOrgId(), bizUserSelectorRoleParam.getCategory(),
-                            bizUserSelectorRoleParam.getSearchKey(), loginUserDataScope), Page.class);
+                            bizUserSelectorRoleParam.getSearchKey(), loginUserDataScope, true), Page.class);
                 } else {
                     return new Page<>();
                 }
             } else {
-                return BeanUtil.toBean(sysRoleApi.roleSelector(bizUserSelectorRoleParam.getOrgId(), bizUserSelectorRoleParam.getCategory(),
-                        bizUserSelectorRoleParam.getSearchKey(), loginUserDataScope), Page.class);
+                if (ObjectUtil.isNotEmpty(bizUserSelectorRoleParam.getCategory()) & BizRoleCategoryEnum.GLOBAL.getValue().equals(bizUserSelectorRoleParam.getCategory())) {
+                    // 查询系统级别的
+                    return BeanUtil.toBean(sysRoleApi.roleSelector(null, bizUserSelectorRoleParam.getCategory(),
+                            bizUserSelectorRoleParam.getSearchKey(), null, true), Page.class);
+                } else {
+                    return BeanUtil.toBean(sysRoleApi.roleSelector(null, bizUserSelectorRoleParam.getCategory(),
+                            bizUserSelectorRoleParam.getSearchKey(), loginUserDataScope, true), Page.class);
+                }
             }
         } else {
             return new Page<>();
