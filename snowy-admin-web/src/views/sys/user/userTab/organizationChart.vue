@@ -2,9 +2,10 @@
 	<div style="height: 500px">
 		<vue3-tree-org
 			style="background: var(--card-actions-background)"
-			:data="data"
+			:data="treeData"
 			:tool-bar="{ scale: true, restore: false, expand: false, zoom: true, fullscreen: true }"
 			:disabled="false"
+			:center="true"
 			:scalable="true"
 			:draggable-on-node="false"
 			:node-draggable="false"
@@ -18,26 +19,19 @@
 <script setup name="organizationChart">
 	import { Vue3TreeOrg } from 'vue3-tree-org'
 	import 'vue3-tree-org/lib/vue3-tree-org.css'
-	import tool from '@/utils/tool'
-
 	import userCenterApi from '@/api/sys/userCenterApi'
-	let data = ref({})
-	userCenterApi.userLoginOrgTree().then((res) => {
-		const userInfo = tool.data.get('USER_INFO')
-		res = Array.from(res)
-		res.forEach((item) => {
-			if (item.id === userInfo.orgId) {
-				data.value = item
-			}
-		})
+	const treeData = ref({})
+	userCenterApi.userLoginOrgTree().then((data) => {
+		treeData.value = data[0]
 	})
 </script>
 
-<style>
-	.tree-org-node__content {
-		background: var(--body-background) !important;
+<style lang="less" scoped>
+	:deep(tree-org-node__content) {
+		background: var(--body-background);
 	}
-	.tree-org {
-		padding-top: 10px !important;
+	:deep(.tree-org) {
+		padding-top: 10px;
+		padding-left: 10px;
 	}
 </style>

@@ -75,7 +75,7 @@
 								<template #overlay>
 									<a-menu>
 										<a-menu-item>
-											<a @click="GrantResourceForm.onOpen(record)">授权资源</a>
+											<a @click="grantResourceFormRef.onOpen(record)">授权资源</a>
 										</a-menu-item>
 										<a-menu-item>
 											<a @click="GrantMobileResourceForm.onOpen(record)">授权移动端资源</a>
@@ -95,7 +95,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<grantResourceForm ref="GrantResourceForm" @successful="table.refresh()" />
+	<grantResourceForm ref="grantResourceFormRef" @successful="table.refresh()" />
 	<grantMobileResourceForm ref="GrantMobileResourceForm" @successful="table.refresh()" />
 	<grantPermissionForm ref="GrantPermissionForm" @successful="table.refresh()" />
 	<Form ref="formRef" @successful="table.refresh()" />
@@ -161,7 +161,7 @@
 	// 定义tableDOM
 	const table = ref()
 	const formRef = ref()
-	const GrantResourceForm = ref()
+	const grantResourceFormRef = ref()
 	const GrantMobileResourceForm = ref()
 	const GrantPermissionForm = ref()
 	const userselectorPlusRef = ref()

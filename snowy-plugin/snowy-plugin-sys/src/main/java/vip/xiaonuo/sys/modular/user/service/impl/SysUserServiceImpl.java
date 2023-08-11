@@ -833,15 +833,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
-        List<SysOrg> sysOrgList = sysOrgService.getCachedAllOrgList();
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+        List<SysOrg> originDataList = sysOrgService.getAllOrgList();
+        List<SysOrg> sysOrgList = sysOrgService.getParentListById(originDataList, sysUser.getOrgId(), true);
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
-            if (ObjectUtil.isNotEmpty(sysUser.getOrgId())) {
-                if (sysOrg.getId().equals(sysUser.getOrgId())) {
-                    treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
-                            .set("background", "var(--primary-color)")));
-                }
+            if (sysOrg.getId().equals(sysUser.getOrgId())) {
+                treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
+                        .set("background", "var(--primary-color)")));
             }
             return treeNode;
         }).collect(Collectors.toList());
