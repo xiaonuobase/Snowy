@@ -1,0 +1,108 @@
+<template>
+	<xn-form-container title="编辑字典" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
+		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical" :label-col="labelCol">
+			<a-form-item label="上级字典：" name="parentId">
+				<a-tree-select
+					:disabled="true"
+					v-model:value="formData.parentId"
+					v-model:treeExpandedKeys="defaultExpandedKeys"
+					style="width: 100%"
+					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+					placeholder="请选择上级字典"
+					allow-clear
+					:tree-data="treeData"
+					:field-names="{
+						children: 'children',
+						label: 'name',
+						value: 'id'
+					}"
+					selectable="false"
+					treeLine
+				/>
+			</a-form-item>
+			<a-form-item label="字典名称：" name="dictLabel">
+				<a-input v-model:value="formData.dictLabel" placeholder="请输入字典名称" allow-clear />
+			</a-form-item>
+			<a-form-item label="字典值：" name="dictValue">
+				<a-input v-model:value="formData.dictValue" placeholder="请输入字典值" allow-clear :disabled="true" />
+			</a-form-item>
+			<a-form-item label="排序：" name="sortCode">
+				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="1000" />
+			</a-form-item>
+		</a-form>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button type="primary" @click="onSubmit">保存</a-button>
+		</template>
+	</xn-form-container>
+</template>
+
+<script setup name="dictForm">
+	import { required } from '@/utils/formRules'
+	import bizDictApi from '@/api/biz/bizDictApi'
+
+	// 定义emit事件
+	const emit = defineEmits({ successful: null })
+	// 默认是关闭状态
+	const visible = ref(false)
+	const formRef = ref()
+	// 表单数据
+	const formData = ref({})
+	// 定义树元素
+	const treeData = ref([])
+	// 默认展开的节点(顶级)
+	const defaultExpandedKeys = ref([0])
+
+	// 打开抽屉
+	const onOpen = (record, parentId) => {
+		visible.value = true
+		formData.value = {
+			sortCode: 99
+		}
+		if (parentId) {
+			formData.value.parentId = parentId
+		}
+		if (record) {
+			formData.value = Object.assign({}, record)
+		}
+		bizDictApi.dictTree().then((res) => {
+			treeData.value = [
+				{
+					id: 0,
+					parentId: '-1',
+					name: '顶级',
+					children: res
+				}
+			]
+		})
+	}
+	// 关闭抽屉
+	const onClose = () => {
+		visible.value = false
+	}
+	// 默认要校验的
+	const formRules = {
+		dictLabel: [required('请输入字典名称')],
+		dictValue: [required('请选择字典值')],
+		sortCode: [required('请选择排序')]
+	}
+	// 表单固定label实现
+	const labelCol = ref({
+		style: {
+			width: '100px'
+		}
+	})
+	// 验证并提交数据
+	const onSubmit = () => {
+		formRef.value.validate().then(() => {
+			bizDictApi.submitForm(formData.value).then(() => {
+				visible.value = false
+				emit('successful')
+			})
+		})
+	}
+	// 调用这个函数将子组件的一些数据和方法暴露出去
+	defineExpose({
+		onOpen
+	})
+</script>

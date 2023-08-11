@@ -78,10 +78,10 @@
 											<a @click="grantResourceFormRef.onOpen(record)">授权资源</a>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="GrantMobileResourceForm.onOpen(record)">授权移动端资源</a>
+											<a @click="grantMobileResourceFormRef.onOpen(record)">授权移动端资源</a>
 										</a-menu-item>
 										<a-menu-item>
-											<a @click="GrantPermissionForm.onOpen(record)">授权权限</a>
+											<a @click="grantPermissionFormRef.onOpen(record)">授权权限</a>
 										</a-menu-item>
 										<a-menu-item>
 											<a @click="openRoleUserSelector(record)">授权用户</a>
@@ -96,8 +96,8 @@
 		</a-col>
 	</a-row>
 	<grantResourceForm ref="grantResourceFormRef" @successful="table.refresh()" />
-	<grantMobileResourceForm ref="GrantMobileResourceForm" @successful="table.refresh()" />
-	<grantPermissionForm ref="GrantPermissionForm" @successful="table.refresh()" />
+	<grantMobileResourceForm ref="grantMobileResourceFormRef" @successful="table.refresh()" />
+	<grantPermissionForm ref="grantPermissionFormRef" @successful="table.refresh()" />
 	<Form ref="formRef" @successful="table.refresh()" />
 	<user-selector-plus
 		ref="userselectorPlusRef"
@@ -162,8 +162,8 @@
 	const table = ref()
 	const formRef = ref()
 	const grantResourceFormRef = ref()
-	const GrantMobileResourceForm = ref()
-	const GrantPermissionForm = ref()
+	const grantMobileResourceFormRef = ref()
+	const grantPermissionFormRef = ref()
 	const userselectorPlusRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
