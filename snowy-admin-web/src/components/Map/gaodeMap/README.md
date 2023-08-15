@@ -7,6 +7,12 @@ AMap
 
 ### 使用方式
 
+```text
+申请key
+```
+
+访问 [高德地图官网](https://console.amap.com/dev/index) 注册账号，申请应用获得key
+
 ```vue
 
 <template>
@@ -48,17 +54,18 @@ AMap
 
 ### Prop属性
 
-| 名称            | 说明                  | 类型      | 默认值    |
-|---------------|---------------------|---------|--------|
-| mid           | 容器ID                | String  | 时间戳    |
-| apiKey        | 地图Key               | String  |        |
-| center        | 地图中心点               | String  | 自动定位   |
-| plugins       | 地图控件                | Array   |        |
-| viewMode      | 效果：2D，3D            | String  | 3D     |
-| zoom          | 地图缩放比例              | Number  | 12     |
-| pitch         | 地图俯仰角度，有效范围 0-83    | String  | 50     |
-| mapStyle      | 地图样式                | String  | normal |
-| markerCluster | 点聚合                 | Boolean | true   |
+| 名称            | 说明                | 类型       | 默认值       |
+|---------------|-------------------|----------|-----------|
+| mid           | 容器ID              | String   | 时间戳       |
+| height        | 容器高度              | Number   | 800，单位px  |
+| apiKey        | 地图Key             | String   |           |
+| center        | 地图中心点             | String   | 自动定位      |
+| plugins       | 地图控件              | Array    |           |
+| viewMode      | 效果：2D，3D          | String   | 3D        |
+| zoom          | 地图缩放比例            | Number   | 12        |
+| pitch         | 地图俯仰角度，有效范围 0-83  | String   | 50        |
+| mapStyle      | 地图样式              | String   | normal    |
+| markerCluster | 点聚合               | Boolean  | true      |
 
 #### 地图控件
 

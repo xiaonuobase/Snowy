@@ -7,8 +7,13 @@ BMap
 
 ### 使用方式
 
-```vue
+```text
+申请key
+```
 
+访问 [百度地图官网](https://lbsyun.baidu.com/apiconsole/center#/home) 注册账号，申请应用获得key
+
+```vue
 <template>
 	<baidu-map ref="map" api-key="******" @complete="handleComplete"
 				   @marker-click="handleMarkerClick" />
@@ -48,17 +53,18 @@ BMap
 
 ### Prop属性
 
-| 名称            | 说明           | 类型     | 默认值  |
-|---------------|--------------|--------|------|
-| mid           | 容器ID         | String | 时间戳  |
-| apiKey        | 地图Key        | String |      |
-| center        | 地图中心点        | String | 自动定位 |
-| plugins       | 地图控件         | Array  |      |
-| viewMode      | 效果：2D，3D     | String | 3D   |
-| rotationAngle | 旋转角度         | Number | 60   |
-| tiltAngle     | 倾斜角度         | Number | 70   |
-| zoom          | 地图缩放比例       | Number | 12   |
-| mapStyle      | 地图样式：个性化地图   | String |      |
+| 名称            | 说明         | 类型     | 默认值      |
+|---------------|------------|--------|----------|
+| mid           | 容器ID       | String | 时间戳      |
+| height        | 容器高度       | Number | 800，单位px |
+| apiKey        | 地图Key      | String |          |
+| center        | 地图中心点      | String | 自动定位     |
+| plugins       | 地图控件       | Array  |          |
+| viewMode      | 效果：2D，3D   | String | 3D       |
+| rotationAngle | 旋转角度       | Number | 60       |
+| tiltAngle     | 倾斜角度       | Number | 70       |
+| zoom          | 地图缩放比例     | Number | 12       |
+| mapStyle      | 地图样式：个性化地图 | String |          |
 
 #### 地图控件
 

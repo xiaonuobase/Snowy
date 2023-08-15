@@ -1,5 +1,5 @@
 <template>
-	<div class="gaodeMap">
+	<div class="gaodeMap" :style="{height: `${height}px`}">
 		<div :id="`container-${mid}`" style="width: 100%; height: 100%">地图资源加载中...</div>
 	</div>
 </template>
@@ -12,6 +12,10 @@
 		mid: {
 			type: Number,
 			default: new Date().getTime()
+		},
+		height: {
+			type: Number,
+			default: 800
 		},
 		apiKey: {
 			type: String,
@@ -392,7 +396,6 @@
 		padding: 0;
 		margin: 0;
 		width: 100%;
-		height: 800px;
 
 		input[type='radio'] {
 			-webkit-appearance: radio;

@@ -1,15 +1,20 @@
 <template>
-	<div class="baiduMap">
+	<div class="baiduMap" :style="{height: `${height}px`}">
 		<div :id="`container-${mid}`" style="width: 100%; height: 100%">地图资源加载中...</div>
 	</div>
 </template>
 <!--BMapGL官网：https://lbsyun.baidu.com/index.php?title=jspopularGL-->
 <script setup name="baiduMap">
 	import { onMounted, onUnmounted, shallowRef } from 'vue'
+
 	const props = defineProps({
 		mid: {
 			type: Number,
 			default: new Date().getTime()
+		},
+		height: {
+			type: Number,
+			default: 800
 		},
 		apiKey: {
 			type: String,
@@ -50,6 +55,7 @@
 	const baiduMap = shallowRef(null)
 	const baiduMapPointArr = ref([])
 	const baiduMapInfoWindowObj = ref({})
+
 	const init = () => {
 		// 创建script脚本 引入api
 		const script = document.createElement('script')
@@ -58,7 +64,10 @@
 		const head = document.getElementsByTagName('head')[0]
 		head.appendChild(script)
 	}
-	// 初始化 地图
+
+	/**
+	 * 初始化 地图
+	 */
 	window.initMap = () => {
 		baiduMap.value = new BMapGL.Map(`container-${props.mid}`)
 		// 滚轮放大缩小
@@ -88,7 +97,10 @@
 			})
 		}
 	}
-	// 初始化 控制控件
+
+	/**
+	 * 初始化 控制控件
+	 */
 	const initControlPlugin = () => {
 		// 比例尺
 		props.plugins.includes('BMap.ScaleControl') && baiduMap.value.addControl(new BMapGL.ScaleControl())
@@ -99,7 +111,11 @@
 		// 3D控件
 		props.plugins.includes('BMap.NavigationControl3D') && baiduMap.value.addControl(new BMapGL.NavigationControl3D())
 	}
-	// 渲染 点标记
+
+	/**
+	 * 渲染 点标记
+	 * @param dataArr
+	 */
 	const renderMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const point = new BMapGL.Point(d.position[0], d.position[1])
@@ -359,6 +375,5 @@
 		padding: 0;
 		margin: 0;
 		width: 100%;
-		height: 800px;
 	}
 </style>
