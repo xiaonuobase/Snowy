@@ -422,7 +422,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                                             apiName = annotationValue;
                                         }
                                     }
-                                    permissionResult.add(patternsCondition.getPatterns().iterator().next() + StrUtil.BRACKET_START + apiName + StrUtil.BRACKET_END);
+                                    String nm = StrUtil.BRACKET_START + apiName + StrUtil.BRACKET_END;
+                                    patternsCondition.getPatterns().forEach(pt -> permissionResult.add(pt + nm));
                                 }
                             }
                         }));
