@@ -80,9 +80,7 @@
 			})
 	}
 
-	/**
-	 * 初始化 地图
-	 */
+	// 初始化 地图
 	const initMap = () => {
 		gaodeMap.value = new AMap.Map(`container-${props.mid}`, {
 			viewMode: props.viewMode,
@@ -106,9 +104,7 @@
 		})
 	}
 
-	/**
-	 * 初始化 控制控件
-	 */
+	// 初始化 控制控件
 	const initControlPlugin = () => {
 		// 工具条，控制地图的缩放、平移等
 		props.plugins.includes('AMap.ToolBar') && gaodeMap.value.addControl(new AMap.ToolBar({}))
@@ -122,10 +118,7 @@
 		props.plugins.includes('AMap.Geolocation') && gaodeMap.value.addControl(new AMap.Geolocation({}))
 	}
 
-	/**
-	 * 渲染 点标记
-	 * @param dataArr
-	 */
+	// 渲染 点标记
 	const renderMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const marker = new AMap.Marker({
@@ -149,10 +142,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 圆点标记
-	 * @param dataArr
-	 */
+	// 渲染 圆点标记
 	const renderCircleMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const marker = new AMap.CircleMarker({
@@ -182,11 +172,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 简单点标记
-	 * @param dataArr
-	 * @param theme
-	 */
+	// 渲染 简单点标记
 	const renderSimpleMarker = (dataArr, theme = 'default') => {
 		dataArr.forEach((d) => {
 			const marker = new AMapUI.SimpleMarker({
@@ -218,10 +204,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 字体点标记
-	 * @param dataArr
-	 */
+	// 渲染 字体点标记
 	const renderAwesomeMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const marker = new AMapUI.AwesomeMarker({
@@ -250,9 +233,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 设置 视图级别
-	 */
+	// 设置 视图级别
 	const setFitView = () => {
 		// 点聚合
 		props.markerCluster && new AMap.MarkerCluster(gaodeMap.value, gaodeMapMarkerArr.value)
@@ -261,11 +242,7 @@
 		gaodeMap.value.setFitView(gaodeMapMarkerArr.value)
 	}
 
-	/**
-	 * 渲染 线
-	 * @param dataArr
-	 * @param option
-	 */
+	// 渲染 线
 	const renderPolyline = (dataArr, option = {}) => {
 		const path = []
 		dataArr.forEach((d) => {
@@ -287,12 +264,7 @@
 		gaodeMap.value.setFitView([polyline])
 	}
 
-	/**
-	 * 渲染 圆
-	 * @param position
-	 * @param radius
-	 * @param option
-	 */
+	// 渲染 圆
 	const renderCircle = (position, radius, option) => {
 		const circle = new AMap.Circle({
 			center: new AMap.LngLat(position[0], position[1]),
@@ -309,11 +281,7 @@
 		gaodeMap.value.setFitView([circle])
 	}
 
-	/**
-	 * 渲染 面
-	 * @param dataArr
-	 * @param option
-	 */
+	// 渲染 面
 	const renderPolygon = (dataArr, option = {}) => {
 		const path = []
 		dataArr.forEach((d) => {
@@ -334,10 +302,7 @@
 		gaodeMap.value.setFitView([polygon])
 	}
 
-	/**
-	 * 渲染 信息窗体
-	 * @param dataArr
-	 */
+	// 渲染 信息窗体
 	const renderInfoWindow = (dataArr) => {
 		dataArr.forEach((d) => {
 			gaodeMapInfoWindowObj.value[d.position] = new AMap.InfoWindow({
@@ -351,10 +316,7 @@
 		})
 	}
 
-	/**
-	 * 打开 信息窗体
-	 * @param position
-	 */
+	// 打开 信息窗体
 	const openInfoWindow = (position) => {
 		const infoWindow = gaodeMapInfoWindowObj.value[position]
 		if (infoWindow) {
@@ -362,9 +324,7 @@
 		}
 	}
 
-	/**
-	 * 清理 覆盖物
-	 */
+	// 清理 覆盖物
 	const clearOverlay = () => {
 		gaodeMap.value.clearMap()
 	}

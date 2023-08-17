@@ -65,9 +65,7 @@
 		head.appendChild(script)
 	}
 
-	/**
-	 * 初始化 地图
-	 */
+	// 初始化 地图
 	window.initMap = () => {
 		baiduMap.value = new BMapGL.Map(`container-${props.mid}`)
 		// 滚轮放大缩小
@@ -98,9 +96,7 @@
 		}
 	}
 
-	/**
-	 * 初始化 控制控件
-	 */
+	// 初始化 控制控件
 	const initControlPlugin = () => {
 		// 比例尺
 		props.plugins.includes('BMap.ScaleControl') && baiduMap.value.addControl(new BMapGL.ScaleControl())
@@ -112,10 +108,7 @@
 		props.plugins.includes('BMap.NavigationControl3D') && baiduMap.value.addControl(new BMapGL.NavigationControl3D())
 	}
 
-	/**
-	 * 渲染 点标记
-	 * @param dataArr
-	 */
+	// 渲染 点标记
 	const renderMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const point = new BMapGL.Point(d.position[0], d.position[1])
@@ -138,10 +131,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 图标标记
-	 * @param dataArr
-	 */
+	// 渲染 图标标记
 	const renderIconMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const point = new BMapGL.Point(d.position[0], d.position[1])
@@ -166,10 +156,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 3D圆点标记
-	 * @param dataArr
-	 */
+	// 渲染 3D圆点标记
 	const render3DCircleMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const point = new BMapGL.Point(d.position[0], d.position[1])
@@ -201,10 +188,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 3D图标标记
-	 * @param dataArr
-	 */
+	// 渲染 3D图标标记
 	const render3DIconMarker = (dataArr) => {
 		dataArr.forEach((d) => {
 			const point = new BMapGL.Point(d.position[0], d.position[1])
@@ -232,11 +216,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 线
-	 * @param dataArr
-	 * @param option
-	 */
+	// 渲染 线
 	const renderPolyline = (dataArr, option = {}) => {
 		dataArr.forEach((d) => {
 			baiduMapPointArr.value.push(new BMapGL.Point(d.position[0], d.position[1]))
@@ -253,12 +233,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 圆
-	 * @param position
-	 * @param radius
-	 * @param option
-	 */
+	// 渲染 圆
 	const renderCircle = (position, radius, option = {}) => {
 		const point = new BMapGL.Point(position[0], position[1])
 		baiduMapPointArr.value.push(point)
@@ -273,11 +248,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 渲染 面
-	 * @param dataArr
-	 * @param option
-	 */
+	// 渲染 面
 	const renderPolygon = (dataArr, option = {}) => {
 		dataArr.forEach((d) => {
 			baiduMapPointArr.value.push(new BMapGL.Point(d.position[0], d.position[1]))
@@ -296,10 +267,7 @@
 		setFitView()
 	}
 
-	/**
-	 * 设置 视图级别
-	 * @param point
-	 */
+	// 设置 视图级别
 	const setFitView = (point) => {
 		if (!point) {
 			const viewPort = baiduMap.value.getViewport(baiduMapPointArr.value)
@@ -316,10 +284,7 @@
 		}
 	}
 
-	/**
-	 * 渲染 信息窗体
-	 * @param dataArr
-	 */
+	// 渲染 信息窗体
 	const renderInfoWindow = (dataArr) => {
 		dataArr.forEach((d) => {
 			baiduMapInfoWindowObj.value[d.position] = new BMapGL.InfoWindow(d.content.join('<br>'), {
@@ -330,10 +295,7 @@
 		})
 	}
 
-	/**
-	 * 打开 信息窗体
-	 * @param position
-	 */
+	// 打开 信息窗体
 	const openInfoWindow = (position) => {
 		const infoWindow = baiduMapInfoWindowObj.value[position]
 		if (infoWindow) {
@@ -341,9 +303,7 @@
 		}
 	}
 
-	/**
-	 * 清理 覆盖物
-	 */
+	// 清理 覆盖物
 	const clearOverlay = () => {
 		baiduMap.value.clearOverlays()
 	}
