@@ -3,8 +3,8 @@
 		<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 			<a-row :gutter="24">
 				<a-col :span="8">
-					<a-form-item name="engine" label="主题关键词">
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入站内信主题关键词"></a-input>
+					<a-form-item name="searchKey" label="主题关键词">
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入站内信主题关键词" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -48,14 +48,14 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="form" @successful="table.refresh()" />
 	<detail ref="detailRef" />
 </template>
 
 <script setup name="devMessage">
 	import messageApi from '@/api/dev/messageApi'
 	import Form from './form.vue'
-	import detail from './detail.vue'
+	import Detail from './detail.vue'
 
 	const columns = [
 		{
@@ -82,13 +82,13 @@
 			width: '150px'
 		}
 	]
-	let selectedRowKeys = ref([])
+	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
 		alert: {
 			show: false,
 			clear: () => {
-				selectedRowKeys = ref([])
+				selectedRowKeys.value = ref([])
 			}
 		},
 		rowSelection: {
@@ -101,11 +101,11 @@
 	const table = ref(null)
 	const form = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const detailRef = ref()
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return messageApi.messagePage(Object.assign(parameter, searchFormState)).then((data) => {
+		return messageApi.messagePage(Object.assign(parameter, searchFormState.value)).then((data) => {
 			return data
 		})
 	}
@@ -133,7 +133,7 @@
 	}
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
