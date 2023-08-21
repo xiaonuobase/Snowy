@@ -121,8 +121,8 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     public Page<BizUser> page(BizUserPageParam bizUserPageParam) {
         QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
         if (ObjectUtil.isNotEmpty(bizUserPageParam.getSearchKey())) {
-            queryWrapper.lambda().like(BizUser::getAccount, bizUserPageParam.getSearchKey()).or()
-                    .like(BizUser::getName, bizUserPageParam.getSearchKey());
+            queryWrapper.lambda().and(q -> q.like(BizUser::getAccount, bizUserPageParam.getSearchKey())
+                    .or().like(BizUser::getName, bizUserPageParam.getSearchKey()));
         }
         if (ObjectUtil.isNotEmpty(bizUserPageParam.getOrgId())) {
             queryWrapper.lambda().eq(BizUser::getOrgId, bizUserPageParam.getOrgId());
@@ -413,9 +413,9 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 queryWrapper.lambda().in(BizUser::getId, StrUtil.split(bizUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
-                    queryWrapper.lambda().like(BizUser::getAccount, bizUserExportParam.getSearchKey())
+                    queryWrapper.lambda().and(q -> q.like(BizUser::getAccount, bizUserExportParam.getSearchKey())
                             .or().like(BizUser::getName, bizUserExportParam.getSearchKey())
-                            .or().like(BizUser::getPhone, bizUserExportParam.getSearchKey());
+                            .or().like(BizUser::getPhone, bizUserExportParam.getSearchKey()));
                 }
                 if (ObjectUtil.isNotEmpty(bizUserExportParam.getUserStatus())) {
                     queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());

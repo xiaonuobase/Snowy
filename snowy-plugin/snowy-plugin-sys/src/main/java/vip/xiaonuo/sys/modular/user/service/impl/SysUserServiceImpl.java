@@ -216,8 +216,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Page<SysUser> page(SysUserPageParam sysUserPageParam) {
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getSearchKey())) {
-            queryWrapper.lambda().like(SysUser::getAccount, sysUserPageParam.getSearchKey()).or()
-                    .like(SysUser::getName, sysUserPageParam.getSearchKey());
+            queryWrapper.lambda().and(q -> q.like(SysUser::getAccount, sysUserPageParam.getSearchKey()).or()
+                    .like(SysUser::getName, sysUserPageParam.getSearchKey()));
         }
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getOrgId())) {
             queryWrapper.lambda().eq(SysUser::getOrgId, sysUserPageParam.getOrgId());
@@ -1176,9 +1176,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 queryWrapper.lambda().in(SysUser::getId, StrUtil.split(sysUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
-                    queryWrapper.lambda().like(SysUser::getAccount, sysUserExportParam.getSearchKey())
+                    queryWrapper.lambda().and(q -> q.like(SysUser::getAccount, sysUserExportParam.getSearchKey())
                             .or().like(SysUser::getName, sysUserExportParam.getSearchKey())
-                            .or().like(SysUser::getPhone, sysUserExportParam.getSearchKey());
+                            .or().like(SysUser::getPhone, sysUserExportParam.getSearchKey()));
                 }
                 if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
                     queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());

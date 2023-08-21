@@ -63,8 +63,8 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
         queryWrapper.lambda().select(BizDict::getId, BizDict::getParentId, BizDict::getCategory, BizDict::getDictLabel,
                 BizDict::getDictValue, BizDict::getSortCode).eq(BizDict::getCategory, BizDictCategoryEnum.BIZ.getValue());
         if (ObjectUtil.isNotEmpty(bizDictPageParam.getParentId())) {
-            queryWrapper.lambda().eq(BizDict::getParentId, bizDictPageParam.getParentId())
-                    .or().eq(BizDict::getId, bizDictPageParam.getParentId());
+            queryWrapper.lambda().and(q -> q.eq(BizDict::getParentId, bizDictPageParam.getParentId())
+                    .or().eq(BizDict::getId, bizDictPageParam.getParentId()));
         }
         if (ObjectUtil.isNotEmpty(bizDictPageParam.getSearchKey())) {
             queryWrapper.lambda().like(BizDict::getDictLabel, bizDictPageParam.getSearchKey());
