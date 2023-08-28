@@ -14,8 +14,7 @@
 	</a-spin>
 </template>
 
-<script setup name="xnPageSelector">
-	import { cloneDeep } from 'lodash-es'
+<script setup>
 	import { watch } from 'vue'
 
 	const current = ref(1) // 当前页数
@@ -60,24 +59,23 @@
 	// 请求数据
 	const onPage = (param = {}) => {
 		if (props.pageFunction) {
-			initParams.value = param
-			initParams.value.size = props.pageSize
+			initParams.value = { ...initParams.value, ...param, size: props.pageSize };
 			// 加载API
-			spinning.value = true
-			props
-				.pageFunction(initParams.value)
+			spinning.value = true;
+			props.pageFunction(initParams.value)
 				.then((data) => {
-					initParams.value.current = data.current
+					// 更新当前页码
+					initParams.value.current = data.current;
 					// 加载完后设置总数
-					total.value = data.total
-					options.value = data.records
-					queryEcho()
+					total.value = data.total;
+					options.value = data.records;
+					queryEcho();
 				})
 				.finally(() => {
-					spinning.value = false
-				})
+					spinning.value = false;
+				});
 		}
-	}
+	};
 	const queryEcho = () => {
 		// 如果带有查询的方法，那么我们去给查询回显
 		if (props.echoFunction) {
@@ -90,7 +88,7 @@
 						}
 						props.echoFunction(param).then((data) => {
 							if (data[0]){
-								options.value.push(data[0])
+								options.value.unshift(data[0])
 							}
 						})
 					}
@@ -119,27 +117,29 @@
 	const handlePagination = () => {
 		// 判断已有数量是否小于总量
 		if (options.value.length < total.value) {
-			const param = cloneDeep(initParams.value)
-			param.current = initParams.value.current + 1
-			spinning.value = true
-			props
-				.pageFunction(param)
+			const param = { ...initParams.value, current: initParams.value.current + 1 };
+			spinning.value = true;
+			props.pageFunction(param)
 				.then((data) => {
 					if (data.records.length > 0) {
-						options.value = [...cloneDeep(options.value), ...data.records].filter((item, index, self) => {
-							return (
-								self.findIndex((f) => {
-									return f.id === item.id
-								}) === index
-							)
-						})
+						// 更新当前页码
+						initParams.value.current = data.current;
+						// 合并新旧数据
+						const newOptions = [...options.value, ...data.records];
+						// 使用 id 去重
+						const uniqueOptions = newOptions.reduce((acc, cur) => {
+							acc[cur.id] = cur;
+							return acc;
+						}, {});
+						options.value = Object.values(uniqueOptions);
 					}
 				})
 				.finally(() => {
-					spinning.value = false
-				})
+					spinning.value = false;
+				});
 		}
-	}
+	};
+
 	defineExpose({
 		onPage
 	})
