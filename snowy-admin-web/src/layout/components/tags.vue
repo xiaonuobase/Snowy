@@ -39,6 +39,7 @@
 			ref="tabs"
 			@edit="onTabRemove"
 			@tabClick="onTabClick"
+			@mouseup="onTabUp"
 		>
 			<template #leftExtra>
 				<div class="snowy-admin-tabs-arrow" @click="scrollLeft">
@@ -116,7 +117,11 @@
 			handleTabContextMenu(evt) {
 				evt.preventDefault()
 				let target = evt.target
-				if (target.classList.contains('ant-tabs-tab-btn')) {
+				// 修复关闭时出现"使用了错误的类型或对象"的问题
+				while (!target.classList.contains('ant-tabs-tab')) {
+					if (target.classList.contains('ant-tabs')) {
+						return
+					}
 					target = target.parentNode
 				}
 				const tabList = document.querySelectorAll('.ant-tabs-nav-list .ant-tabs-tab')
@@ -132,6 +137,14 @@
 				if (action === 'remove') {
 					const tag = this.tagList.find((tag) => tag.fullPath === tabKey)
 					this.closeSelectedTag(tag)
+				}
+			},
+			// 处理鼠标放开事件
+			onTabUp(e) {
+				// 鼠标中键
+				if (e.which === 2) {
+					this.handleTabContextMenu(e)
+					this.closeTabs()
 				}
 			},
 			getTabWrapEl() {

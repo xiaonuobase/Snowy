@@ -68,17 +68,11 @@
 			},
 			// 右键事件事件处理
 			contextMenuHandler(e) {
-				//兼容ie写法
-				let obj = e.srcElement ? e.srcElement : e.target
-				let cs = obj.attributes['class']
-				cs = cs ? cs.nodeValue : cs
-				if(cs&&cs!=='ant-tabs-tab-remove'){
-					this.x = e.clientX
-					this.y = e.clientY
-					this.layout()
-					this.$emit('update:show', true)
-					this.$emit('get-context-menu', e)
-				}
+				this.x = e.clientX
+				this.y = e.clientY
+				this.layout()
+				this.$emit('update:show', true)
+				this.$emit('get-context-menu', e)
 				e.preventDefault()
 			},
 			// 布局
