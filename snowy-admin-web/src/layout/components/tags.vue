@@ -120,6 +120,7 @@
 				// 修复关闭时出现"使用了错误的类型或对象"的问题
 				while (!target.classList.contains('ant-tabs-tab')) {
 					if (target.classList.contains('ant-tabs')) {
+						this.currentContextMenuTabIndex = 0
 						return
 					}
 					target = target.parentNode
