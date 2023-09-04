@@ -14,5 +14,3 @@
 </template>
 
 <script setup name="g2CiYunTu"></script>
-
-<style scoped></style>

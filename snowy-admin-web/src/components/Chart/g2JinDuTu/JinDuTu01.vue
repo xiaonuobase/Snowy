@@ -38,5 +38,3 @@
 		gauge.render()
 	})
 </script>
-
-<style scoped></style>

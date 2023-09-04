@@ -28,5 +28,3 @@
 		bar.render()
 	})
 </script>
-
-<style scoped></style>

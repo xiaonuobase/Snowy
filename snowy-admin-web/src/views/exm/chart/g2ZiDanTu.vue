@@ -14,5 +14,3 @@
 </template>
 
 <script setup name="g2ZiDanTu"></script>
-
-<style scoped></style>

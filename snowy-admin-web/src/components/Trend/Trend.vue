@@ -1,44 +1,32 @@
 <template>
-	<div :class="[prefixCls, reverseColor && 'reverse-color']">
+	<div :class="[props.prefixCls, props.reverseColor && 'reverse-color']">
 		<span>
 			<slot name="term"></slot>
 			<span class="item-text">
 				<slot></slot>
 			</span>
 		</span>
-		<span v-if="`${flag}` === 'up'" :class="[flag]"><caret-up-outlined /></span>
-		<span v-else :class="[flag]"><caret-down-outlined /></span>
+		<span v-if="`${props.flag}` === 'up'" :class="[props.flag]"><caret-up-outlined /></span>
+		<span v-else :class="[props.flag]"><caret-down-outlined /></span>
 	</div>
 </template>
 
-<script>
-	import { defineComponent } from 'vue'
+<script setup name="Trend">
 	import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons-vue'
-	export default defineComponent({
-		name: 'Trend',
-		components: {
-			CaretUpOutlined,
-			CaretDownOutlined
+	const props = defineProps({
+		prefixCls: {
+			type: String,
+			default: 'ant-pro-trend'
 		},
-		props: {
-			prefixCls: {
-				type: String,
-				default: 'ant-pro-trend'
-			},
-			/**
-			 * 上升下降标识：up|down
-			 */
-			flag: {
-				type: String,
-				required: true
-			},
-			/**
-			 * 颜色反转
-			 */
-			reverseColor: {
-				type: Boolean,
-				default: false
-			}
+		// 上升下降标识：up|down
+		flag: {
+			type: String,
+			required: true
+		},
+		// 颜色反转
+		reverseColor: {
+			type: Boolean,
+			default: false
 		}
 	})
 </script>

@@ -30,5 +30,3 @@
 		linePlot.render()
 	})
 </script>
-
-<style scoped></style>

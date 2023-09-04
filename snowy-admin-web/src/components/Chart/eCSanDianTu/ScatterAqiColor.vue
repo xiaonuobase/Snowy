@@ -262,5 +262,3 @@
 		}
 	})
 </script>
-
-<style scoped></style>

@@ -322,5 +322,3 @@
 		}
 	})
 </script>
-
-<style scoped></style>

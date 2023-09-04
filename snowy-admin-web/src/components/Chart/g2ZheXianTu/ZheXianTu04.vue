@@ -46,5 +46,3 @@
 			})
 	})
 </script>
-
-<style scoped></style>

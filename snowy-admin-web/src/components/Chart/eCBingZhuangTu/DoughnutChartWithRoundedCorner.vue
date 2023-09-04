@@ -55,5 +55,3 @@
 		Echarts.setOption(option)
 	})
 </script>
-
-<style scoped></style>

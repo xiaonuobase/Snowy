@@ -29,5 +29,3 @@
 	import TemperatureGaugeChart from '@/components/Chart/eCYiBiaoTu/TemperatureGaugeChart.vue'
 	import GrogressGauge from '@/components/Chart/eCYiBiaoTu/GrogressGauge.vue'
 </script>
-
-<style scoped></style>

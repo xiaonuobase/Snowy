@@ -87,5 +87,3 @@
 		stackedBarPlot.render()
 	})
 </script>
-
-<style scoped></style>

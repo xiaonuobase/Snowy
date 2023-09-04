@@ -136,5 +136,3 @@
 		columnPlot.render()
 	})
 </script>
-
-<style scoped></style>

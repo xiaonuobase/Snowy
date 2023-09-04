@@ -14,5 +14,3 @@
 </template>
 
 <script setup name="g2LouDouTu"></script>
-
-<style scoped></style>

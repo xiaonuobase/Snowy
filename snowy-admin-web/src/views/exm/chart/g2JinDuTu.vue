@@ -24,5 +24,3 @@
 </template>
 
 <script setup name="g2JinDuTu"></script>
-
-<style scoped></style>

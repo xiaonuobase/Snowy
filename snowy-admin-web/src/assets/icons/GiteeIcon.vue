@@ -22,5 +22,3 @@
 		name: 'Gitee'
 	}
 </script>
-
-<style scoped></style>

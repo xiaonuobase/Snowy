@@ -29,5 +29,3 @@
 	import CustomizedFunnel from '@/components/Chart/eCLouDouTu/CustomizedFunnel.vue'
 	import MultipleFunnels from '@/components/Chart/eCLouDouTu/MultipleFunnels.vue'
 </script>
-
-<style scoped></style>

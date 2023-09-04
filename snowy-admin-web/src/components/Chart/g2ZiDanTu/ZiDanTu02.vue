@@ -94,5 +94,3 @@
 		bulletPlot.render()
 	})
 </script>
-
-<style scoped></style>

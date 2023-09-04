@@ -18,5 +18,3 @@
 	import BasicCandlestick from '@/components/Chart/eCKXianTu/BasicCandlestick.vue'
 	import ShangHaiIndex from '@/components/Chart/eCKXianTu/ShangHaiIndex.vue'
 </script>
-
-<style scoped></style>

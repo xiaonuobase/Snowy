@@ -24,5 +24,3 @@
 </template>
 
 <script setup name="g2MianJiTu"></script>
-
-<style scoped></style>

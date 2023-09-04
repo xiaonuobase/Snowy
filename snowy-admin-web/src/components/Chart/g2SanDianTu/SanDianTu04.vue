@@ -335,5 +335,3 @@
 		scatterPlot.render()
 	})
 </script>
-
-<style scoped></style>

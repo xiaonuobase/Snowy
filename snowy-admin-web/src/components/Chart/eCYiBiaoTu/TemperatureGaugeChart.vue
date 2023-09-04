@@ -145,5 +145,3 @@
 		}, 2000)
 	})
 </script>
-
-<style scoped></style>

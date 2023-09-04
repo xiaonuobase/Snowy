@@ -118,5 +118,3 @@
 		stackedColumnPlot.render()
 	})
 </script>
-
-<style scoped></style>

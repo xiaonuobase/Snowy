@@ -9,5 +9,3 @@
 </template>
 
 <script setup name="eCHengTiaoTu"></script>
-
-<style scoped></style>

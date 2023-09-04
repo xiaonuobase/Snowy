@@ -29,5 +29,3 @@
 	import StackedAreaChart from '@/components/Chart/eCXianXingTu/StackedAreaChart.vue'
 	import StepLine from '@/components/Chart/eCXianXingTu/StepLine.vue'
 </script>
-
-<style scoped></style>

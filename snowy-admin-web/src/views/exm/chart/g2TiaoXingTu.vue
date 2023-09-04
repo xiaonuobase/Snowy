@@ -24,5 +24,3 @@
 </template>
 
 <script setup name="g2TiaoXingTu"></script>
-
-<style scoped></style>

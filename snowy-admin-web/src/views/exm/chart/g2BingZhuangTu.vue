@@ -24,5 +24,3 @@
 </template>
 
 <script setup name="g2BingZhuangTu"></script>
-
-<style scoped></style>

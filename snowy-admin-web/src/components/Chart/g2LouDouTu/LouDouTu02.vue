@@ -46,5 +46,3 @@
 		funnelPlot.render()
 	})
 </script>
-
-<style scoped></style>

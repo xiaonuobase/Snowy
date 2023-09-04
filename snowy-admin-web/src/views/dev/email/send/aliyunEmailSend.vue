@@ -28,7 +28,12 @@
 			/>
 		</a-form-item>
 		<a-form-item label="邮件正文" name="content" v-if="sendType === 'HTML'">
-			<xn-editor v-model="formData.content" placeholder="请输入邮件正文" :height="200"></xn-editor>
+			<xn-editor
+				v-model="formData.content"
+				placeholder="请输入邮件正文"
+				:height="200"
+				:file-upload-function="apiFunction.fileUploadApi"
+			/>
 		</a-form-item>
 		<a-form-item label="模板名：" name="templateName" v-if="sendType === 'TMP'">
 			<a-input v-model:value="formData.templateName" placeholder="请输入预先创建且通过审核的模板名称" allow-clear />
@@ -45,11 +50,10 @@
 <script setup name="aliyunEmailSend">
 	import { message } from 'ant-design-vue'
 	import XnEditor from '@/components/Editor/index.vue'
-	import { required, rules } from '@/utils/formRules'
+	import { required } from '@/utils/formRules'
 	import emailApi from '@/api/dev/emailApi'
 	import fileApi from '@/api/dev/fileApi'
 
-	const uploadRef = ref()
 	// 发送文本方式
 	const sendType = ref('TXT')
 	// 定义emit事件
@@ -102,6 +106,14 @@
 					})
 			}
 		})
+	}
+	// 传递文件上传需要的API
+	const apiFunction = {
+		fileUploadApi: (param) => {
+			return fileApi.fileUploadDynamicReturnUrl(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		}
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

@@ -145,7 +145,7 @@
 	})
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 	.circle {
 		border-radius: 50%;
 	}

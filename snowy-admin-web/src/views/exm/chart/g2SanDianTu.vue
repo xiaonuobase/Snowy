@@ -24,5 +24,3 @@
 </template>
 
 <script setup name="g2SanDianTu"></script>
-
-<style scoped></style>

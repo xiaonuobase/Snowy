@@ -29,5 +29,3 @@
 	import EffectScatterChart from '@/components/Chart/eCSanDianTu/EffectScatterChart.vue'
 	import ScatterAqiColor from '@/components/Chart/eCSanDianTu/ScatterAqiColor.vue'
 </script>
-
-<style scoped></style>

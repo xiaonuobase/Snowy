@@ -9,5 +9,3 @@
 </template>
 
 <script setup name="eCZheZhuTu"></script>
-
-<style scoped></style>

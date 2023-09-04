@@ -33,5 +33,3 @@
 		piePlot.render()
 	})
 </script>
-
-<style scoped></style>

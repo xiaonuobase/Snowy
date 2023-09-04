@@ -212,33 +212,37 @@
 				idList: recordIds.value
 			}
 			selectedTableListLoading.value = true
-			props.checkedPosListApi(param).then((data) => {
-				selectedData.value = data
-			})
-			.finally(() => {
-				selectedTableListLoading.value = false
-			})
+			props
+				.checkedPosListApi(param)
+				.then((data) => {
+					selectedData.value = data
+				})
+				.finally(() => {
+					selectedTableListLoading.value = false
+				})
 		}
 	}
 	// 查询主表格数据
 	const loadData = () => {
 		pageLoading.value = true
-		props.posPageApi(searchFormState.value).then((data) => {
-			current.value = data.current
-			total.value = data.total
-			// 重置、赋值
-			tableData.value = []
-			tableRecordNum.value = 0
-			tableData.value = data.records
-			if (data.records) {
-				tableRecordNum.value = data.records.length
-			} else {
+		props
+			.posPageApi(searchFormState.value)
+			.then((data) => {
+				current.value = data.current
+				total.value = data.total
+				// 重置、赋值
+				tableData.value = []
 				tableRecordNum.value = 0
-			}
-		})
-		.finally(() => {
-			pageLoading.value = false
-		})
+				tableData.value = data.records
+				if (data.records) {
+					tableRecordNum.value = data.records.length
+				} else {
+					tableRecordNum.value = 0
+				}
+			})
+			.finally(() => {
+				pageLoading.value = false
+			})
 	}
 	// pageSize改变回调分页事件
 	const paginationChange = (page, pageSize) => {

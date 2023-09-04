@@ -29,5 +29,3 @@
 	import BarChartWithNegativeValue from '@/components/Chart/eCZhuZhuangTu/BarChartWithNegativeValue.vue'
 	import WatermarkEChartsDownload from '@/components/Chart/eCZhuZhuangTu/WatermarkEChartsDownload.vue'
 </script>
-
-<style scoped></style>

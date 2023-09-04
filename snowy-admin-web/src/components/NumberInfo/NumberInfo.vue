@@ -1,52 +1,44 @@
 <template>
-	<div :class="[prefixCls]">
+	<div :class="[props.prefixCls]">
 		<slot name="subtitle">
-			<div :class="[`${prefixCls}-subtitle`]">{{ typeof subTitle === 'string' ? subTitle : subTitle() }}</div>
+			<div :class="[`${props.prefixCls}-subtitle`]">
+				{{ typeof props.subTitle === 'string' ? props.subTitle : props.subTitle() }}
+			</div>
 		</slot>
 		<div class="number-info-value">
-			<span>{{ total }}</span>
+			<span>{{ props.total }}</span>
 			<span class="sub-total">
-				{{ subTotal }}
-				<span v-if="`${status}` === 'up'"><caret-up-outlined /></span>
+				{{ props.subTotal }}
+				<span v-if="`${props.status}` === 'up'"><caret-up-outlined /></span>
 				<span v-else><caret-down-outlined /></span>
 			</span>
 		</div>
 	</div>
 </template>
 
-<script>
-	import { defineComponent } from 'vue'
+<script setup name="NumberInfo">
 	import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons-vue'
-	export default defineComponent({
-		name: 'NumberInfo',
-		components: {
-			CaretUpOutlined,
-			CaretDownOutlined
+
+	const props = defineProps({
+		prefixCls: {
+			type: String,
+			default: 'ant-pro-number-info'
 		},
-		props: {
-			prefixCls: {
-				type: String,
-				default: 'ant-pro-number-info'
-			},
-			total: {
-				type: Number,
-				required: true
-			},
-			subTotal: {
-				type: Number,
-				required: true
-			},
-			subTitle: {
-				type: [String, Function],
-				default: ''
-			},
-			status: {
-				type: String,
-				default: 'up'
-			}
+		total: {
+			type: Number,
+			required: true
 		},
-		data() {
-			return {}
+		subTotal: {
+			type: Number,
+			required: true
+		},
+		subTitle: {
+			type: [String, Function],
+			default: ''
+		},
+		status: {
+			type: String,
+			default: 'up'
 		}
 	})
 </script>

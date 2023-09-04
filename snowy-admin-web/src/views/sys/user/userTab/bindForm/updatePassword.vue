@@ -75,5 +75,3 @@
 		onOpen
 	})
 </script>
-
-<style scoped></style>

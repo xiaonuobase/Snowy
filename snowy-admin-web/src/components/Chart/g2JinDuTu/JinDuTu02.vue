@@ -20,5 +20,3 @@
 		liquidPlot.render()
 	})
 </script>
-
-<style scoped></style>

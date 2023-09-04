@@ -32,5 +32,3 @@
 		barPlot.render()
 	})
 </script>
-
-<style scoped></style>

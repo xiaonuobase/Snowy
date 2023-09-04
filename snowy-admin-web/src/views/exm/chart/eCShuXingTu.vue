@@ -7,5 +7,3 @@
 <script setup name="eCShuXingTu">
 	import TreeWithPolylineEdge from '@/components/Chart/eCShuXingTu/TreeWithPolylineEdge.vue'
 </script>
-
-<style scoped></style>
