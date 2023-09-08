@@ -63,6 +63,8 @@ public class AuthServiceImpl implements AuthService {
 
     private static final String AUTH_VALID_CODE_CACHE_KEY = "auth-validCode:";
 
+    private static final String LOGIN_ERROR_TIMES_KEY_PREFIX = "login-error-times:";
+
     @Resource(name = "loginUserApi")
     private SaBaseLoginUserApi loginUserApi;
 
@@ -191,6 +193,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String doLogin(AuthAccountPasswordLoginParam authAccountPasswordLoginParam, String type) {
+        // 判断账号是否被封禁
+        isDisableTime(authAccountPasswordLoginParam.getAccount());
         // 获取账号
         String account = authAccountPasswordLoginParam.getAccount();
         // 获取密码
@@ -238,8 +242,12 @@ public class AuthServiceImpl implements AuthService {
                 throw new CommonException(AuthExceptionEnum.ACCOUNT_ERROR.getValue());
             }
             if (!saBaseLoginUser.getPassword().equals(passwordHash)) {
+                // 记录登录次数 和 过期时间
+                saveLoginTimes(account);
                 throw new CommonException(AuthExceptionEnum.PWD_ERROR.getValue());
             }
+            // 删除redis 中的key
+            clearLoginErrorTimes(account);
             // 执行B端登录
             return execLoginB(saBaseLoginUser, device);
         } else {
@@ -285,6 +293,53 @@ public class AuthServiceImpl implements AuthService {
             // 执行C端登录
             return execLoginC(saBaseClientLoginUser, device);
         }
+    }
+
+    /**
+     * 是否封禁状态
+     * 如果被封禁了，执行以下逻辑，返回前端还需等待的时间
+     */
+    private void isDisableTime(String userAccount) {
+        // disableTime = -2表示未被封禁
+        long disableTime = StpUtil.getDisableTime(userAccount);
+        if (disableTime > 0) {
+            if (disableTime > 60) {
+                throw new CommonException(userAccount + "账号已被封禁, 请再"+ disableTime/60+ "分钟后重新尝试登录!!");
+            }
+            throw new CommonException(userAccount + "账号已被封禁, 请再"+ disableTime+ "秒后重新尝试登录!!");
+        }
+    }
+
+    // redis中保存登录错误次数
+    private void saveLoginTimes(String userAccount){
+        String loginErrorKey = LOGIN_ERROR_TIMES_KEY_PREFIX + userAccount;
+        Integer number = (Integer) commonCacheOperator.get(loginErrorKey);
+        if (number == null) {
+            // 如果redis中没有保存，代表失败第一次
+            number = 2;
+            commonCacheOperator.put(loginErrorKey, number,5 * 60);
+            return;
+        }
+        if (number < 5) {
+            number++;
+            commonCacheOperator.put(loginErrorKey, number,5 * 60);
+            return;
+        }
+        // 第五次封禁账号,第六次进入isDisableTime方法，返回用户还需等待时间
+        StpUtil.disable(userAccount, 5 * 60);
+        // 删除redis 中的key
+        clearLoginErrorTimes(userAccount);
+
+    }
+
+    /**
+     * 登录成功、清空登录次数
+     * @param userAccount 账号
+     */
+    private void clearLoginErrorTimes(String userAccount) {
+        String loginErrorKey = LOGIN_ERROR_TIMES_KEY_PREFIX + userAccount;
+        // 删除redis中的key
+        commonCacheOperator.remove(loginErrorKey);
     }
 
     /**
