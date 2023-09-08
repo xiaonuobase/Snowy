@@ -1,36 +1,34 @@
 <template>
-	<div class="d2-panel-search-item" :class="hoverMode ? 'can-hover' : ''" flex>
+	<div class="d2-panel-search-item" :class="props.hoverMode ? 'can-hover' : ''" flex>
 		<div class="d2-panel-search-item__icon" flex-box="0">
 			<div class="d2-panel-search-item__icon-box" flex="main:center cross:center">
-				<a-icon v-if="item.icon" :type="item.icon" />
+				<a-icon v-if="props.item.icon" :type="props.item.icon" />
 				<a-icon v-else type="menu" />
 			</div>
 		</div>
 		<div class="d2-panel-search-item__info" flex-box="1" flex="dir:top">
 			<div class="d2-panel-search-item__info-title" flex-box="1" flex="cross:center">
-				<span>{{ item.title }}</span>
+				<span>{{ props.item.title }}</span>
 			</div>
 			<div class="d2-panel-search-item__info-fullTitle" flex-box="0">
-				<span>{{ item.fullTitle }}</span>
+				<span>{{ props.item.fullTitle }}</span>
 			</div>
 			<div class="d2-panel-search-item__info-path" flex-box="0">
-				<span>{{ item.path }}</span>
+				<span>{{ props.item.path }}</span>
 			</div>
 		</div>
 	</div>
 </template>
 
-<script>
-	export default {
-		props: {
-			item: {
-				default: () => ({})
-			},
-			hoverMode: {
-				default: false
-			}
+<script setup>
+	const props = defineProps({
+		item: {
+			default: () => ({})
+		},
+		hoverMode: {
+			default: false
 		}
-	}
+	})
 </script>
 
 <style lang="less" scoped>

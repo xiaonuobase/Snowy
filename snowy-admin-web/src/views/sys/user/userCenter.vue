@@ -77,7 +77,9 @@
 
 	const global_store = globalStore()
 
-	const userInfo = ref(tool.data.get('USER_INFO'))
+	const userInfo = computed(() => {
+		return global_store.userInfo
+	})
 	const cropUpload = ref()
 	const avatarLoading = ref(false)
 	const uploadLogo = () => {

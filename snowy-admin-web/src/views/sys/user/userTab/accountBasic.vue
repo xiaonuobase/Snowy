@@ -39,15 +39,14 @@
 	import { required } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
+	import { cloneDeep } from 'lodash-es'
 	import { globalStore } from '@/store'
 
 	const store = globalStore()
 
 	const formRef = ref()
-	// 获取用户信息
-	const userInfo = tool.data.get('USER_INFO')
 	let formData = ref({})
-	formData.value = userInfo
+	formData.value = cloneDeep(store.userInfo)
 	const submitLoading = ref(false)
 	// 默认要校验的
 	const formRules = {
@@ -64,7 +63,7 @@
 				userCenterApi.userUpdateUserInfo(formData.value).then(() => {
 					submitLoading.value = false
 					// 更新前端缓存
-					store.setUserInfo(formData.value)
+					store.setUserInfo(cloneDeep(formData.value))
 					tool.data.set('USER_INFO', formData.value)
 				})
 			})

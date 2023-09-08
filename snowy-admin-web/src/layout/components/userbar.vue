@@ -1,12 +1,11 @@
 <template>
 	<div class="user-bar">
-		<div v-if="!ismobile" class="search panel-item hidden-sm-and-down" @click="handleSearchClick">
-			<search-outlined />
-		</div>
-		<div v-if="!ismobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
+		<!-- 搜索面板 -->
+		<panel-search v-if="!isMobile" />
+		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
-		<devUserMessage />
+		<dev-user-message />
 		<a-dropdown class="user panel-item">
 			<div class="user-avatar">
 				<a-avatar :src="userInfo.avatar" />
@@ -30,7 +29,7 @@
 				</a-menu>
 			</template>
 		</a-dropdown>
-		<a-dropdown v-if="!ismobile" class="panel-item">
+		<a-dropdown v-if="!isMobile" class="panel-item">
 			<global-outlined />
 			<template #overlay>
 				<a-menu :selected-keys="lang">
@@ -43,7 +42,7 @@
 				</a-menu>
 			</template>
 		</a-dropdown>
-		<div v-if="setDeawer === 'true'" class="setting panel-item" @click="openSetting">
+		<div v-if="setDrawer === 'true'" class="setting panel-item" @click="openSetting">
 			<layout-outlined />
 		</div>
 	</div>
@@ -52,141 +51,109 @@
 	<a-drawer v-model:visible="settingDialog" :closable="false" width="300">
 		<setting />
 	</a-drawer>
-	<!-- 搜索面板 -->
-	<xn-form-container
-		title="搜索"
-		:visible="searchActive"
-		:closable="false"
-		:footer="null"
-		:width="600"
-		destroyOnClose
-		dialogClass="searchModal"
-		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '14px' }"
-		@close="searchPanelClose"
-	>
-		<panel-search ref="panelSearch" @close="searchPanelClose" />
-	</xn-form-container>
 </template>
 
-<script>
+<script setup name="layoutUserBar">
 	import { createVNode } from 'vue'
 	import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
-	import screenfull from 'screenfull'
+	import { Modal } from 'ant-design-vue'
+	import i18n from '@/locales/index'
+	import screenFull from 'screenfull'
 	import { message } from 'ant-design-vue'
-	import setting from './setting.vue'
+	import Setting from './setting.vue'
 	import router from '@/router'
 	import tool from '@/utils/tool'
+	import config from '@/config/index'
 	import loginApi from '@/api/auth/loginApi'
-	import devUserMessage from './message.vue'
-	import panelSearch from './panel-search/index.vue'
-	import mixinSearch from './mixins/search'
-	import { mapState } from 'pinia'
+	import DevUserMessage from './message.vue'
+	import PanelSearch from './panel-search/index.vue'
 	import { globalStore } from '@/store'
-	export default {
-		components: {
-			setting,
-			devUserMessage,
-			panelSearch
-		},
-		mixins: [mixinSearch],
-		data() {
-			return {
-				lang: [],
-				settingDialog: false,
-				userName: '',
-				userNameF: '',
-				setDeawer: import.meta.env.VITE_SET_DRAWER
-			}
-		},
-		computed: {
-			...mapState(globalStore, ['ismobile', 'userInfo'])
-		},
 
-		created() {
-			// 获取默认语言
-			this.lang = new Array(this.$TOOL.data.get('APP_LANG') || this.$CONFIG.LANG)
-			this.userName = this.userInfo?.userName || ''
-			this.userNameF = this.userName.substring(0, 1)
-		},
-		methods: {
-			// 个人信息
-			handleUser(key) {
-				if (key === 'uc') {
-					router.push({ path: '/usercenter' })
-				}
-				if (key === 'clearCache') {
-					this.$confirm({
-						title: '提示',
-						content: '确认清理所有缓存？',
-						icon: createVNode(ExclamationCircleOutlined),
-						maskClosable: false,
-						okText: '确定',
-						cancelText: '取消',
-						onOk() {
-							message.loading('正在清理中...', 1)
+	const lang = ref(new Array(tool.data.get('APP_LANG') || config.LANG))
+	const settingDialog = ref(false)
+	const setDrawer = ref(import.meta.env.VITE_SET_DRAWER)
+	const store = globalStore()
+	const isMobile = computed(() => {
+		return store.ismobile
+	})
+	const userInfo = computed(() => {
+		return store.userInfo
+	})
+	const userName = ref(userInfo.value?.userName || '')
+
+	// 个人信息
+	const handleUser = (key) => {
+		if (key === 'uc') {
+			router.push({ path: '/usercenter' })
+		}
+		if (key === 'clearCache') {
+			Modal.confirm({
+				title: '提示',
+				content: '确认清理所有缓存？',
+				icon: createVNode(ExclamationCircleOutlined),
+				maskClosable: false,
+				okText: '确定',
+				cancelText: '取消',
+				onOk() {
+					message.loading('正在清理中...', 1)
+					tool.data.clear()
+					setTimeout(() => {
+						router.replace({ path: '/login' })
+						location.reload()
+					}, 100)
+				},
+				onCancel() {}
+			})
+		}
+		if (key === 'outLogin') {
+			Modal.confirm({
+				title: '提示',
+				content: '确认退出当前用户？',
+				icon: createVNode(ExclamationCircleOutlined),
+				maskClosable: false,
+				onOk() {
+					// 取得缓存中的token
+					const token = tool.data.get('TOKEN')
+					const param = {
+						token: token
+					}
+					message.loading('退出中...', 1)
+					loginApi
+						.logout(param)
+						.then(() => {
+							// 清理掉个人的一些信息
+							tool.data.remove('TOKEN')
+							tool.data.remove('USER_INFO')
+							tool.data.remove('MENU')
+							tool.data.remove('PERMISSIONS')
+							router.replace({ path: '/login' })
+						})
+						.catch(() => {
 							tool.data.clear()
-							setTimeout(() => {
-								router.replace({ path: '/login' })
-								location.reload()
-							}, 100)
-						},
-						onCancel() {}
-					})
-				}
-				if (key === 'outLogin') {
-					this.$confirm({
-						title: '提示',
-						content: '确认退出当前用户？',
-						icon: createVNode(ExclamationCircleOutlined),
-						maskClosable: false,
-						onOk() {
-							// 取得缓存中的token
-							const token = tool.data.get('TOKEN')
-							const param = {
-								token: token
-							}
-							message.loading('退出中...', 1)
-							loginApi
-								.logout(param)
-								.then(() => {
-									// message.c
-									// 清理掉个人的一些信息
-									tool.data.remove('TOKEN')
-									tool.data.remove('USER_INFO')
-									tool.data.remove('MENU')
-									tool.data.remove('PERMISSIONS')
-									router.replace({ path: '/login' })
-								})
-								.catch(() => {
-									tool.data.clear()
-									router.replace({ path: '/login' })
-									location.reload()
-								})
-						},
-						onCancel() {}
-					})
-				}
-			},
-			// 设置多语言语种
-			handleIn18(key) {
-				this.lang = []
-				this.lang.push(key)
-				this.$i18n.locale = key
-				this.$TOOL.data.set('APP_LANG', key)
-			},
-			// 设置抽屉
-			openSetting() {
-				this.settingDialog = true
-			},
-			// 全屏
-			fullscreen() {
-				const element = document.documentElement
-				if (screenfull.isEnabled) {
-					screenfull.toggle(element)
-				}
-			},
-			// 搜索
-			fullSearch() {}
+							router.replace({ path: '/login' })
+							location.reload()
+						})
+				},
+				onCancel() {}
+			})
+		}
+	}
+	// 设置多语言语种
+	const handleIn18 = (key) => {
+		lang.value = []
+		lang.value.push(key)
+		i18n.locale = key
+		tool.data.set('APP_LANG', key)
+	}
+	// 设置抽屉
+	const openSetting = () => {
+		settingDialog.value = true
+	}
+	// 全屏
+	const fullscreen = () => {
+		const element = document.documentElement
+		if (screenFull.isEnabled) {
+			screenFull.toggle(element)
 		}
 	}
 </script>
