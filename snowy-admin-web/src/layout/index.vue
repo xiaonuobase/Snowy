@@ -1,184 +1,186 @@
 <template>
-	<!-- 经典布局 -->
-	<template v-if="layout === 'classical'">
-		<a-layout>
-			<a-layout-sider
-				v-if="!ismobile"
-				v-model:collapsed="menuIsCollapse"
-				:trigger="null"
-				collapsible
-				:theme="sideTheme"
-				width="210"
-			>
-				<header id="snowyHeaderLogo" class="snowy-header-logo">
-					<div class="snowy-header-left">
-						<div class="logo-bar">
-							<img class="logo" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-							<span>{{ sysBaseConfig.SNOWY_SYS_NAME }}</span>
-						</div>
-					</div>
-				</header>
-				<div :class="menuIsCollapse ? 'aminui-side isCollapse' : 'aminui-side'">
-					<div class="adminui-side-scroll">
-						<a-menu
-							v-model:openKeys="openKeys"
-							v-model:selectedKeys="selectedKeys"
-							:theme="sideTheme"
-							mode="inline"
-							@select="onSelect"
-							@openChange="onOpenChange"
-						>
-							<NavMenu :nav-menus="menu" />
-						</a-menu>
-					</div>
-				</div>
-			</a-layout-sider>
-			<!-- 手机端情况下的左侧菜单 -->
-			<Side-m v-if="ismobile" />
-			<!-- 右侧布局 -->
+	<div class="aminui">
+		<!-- 经典布局 -->
+		<template v-if="layout === 'classical'">
 			<a-layout>
-				<div id="snowyHeader" class="snowy-header">
-					<div class="snowy-header-left" style="padding-left: 0px">
-						<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
-							<MenuUnfoldOutlined v-if="menuIsCollapse" />
-							<MenuFoldOutlined v-else />
-						</div>
-						<moduleMenu @switchModule="switchModule" />
-						<Topbar v-if="!ismobile && breadcrumbOpen" />
-					</div>
-					<div class="snowy-header-right">
-						<userbar />
-					</div>
-				</div>
-				<!-- 多标签 -->
-				<Tags v-if="!ismobile && layoutTagsOpen" />
-				<a-layout-content class="main-content-wrapper">
-					<div id="adminui-main" class="adminui-main">
-						<router-view v-slot="{ Component }">
-							<keep-alive :include="keepLiveRoute">
-								<component :is="Component" :key="$route.name" v-if="routeShow" />
-							</keep-alive>
-						</router-view>
-						<iframe-view />
-						<div class="main-bottom-wrapper">
-							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-								sysBaseConfig.SNOWY_SYS_COPYRIGHT
-							}}</a>
-						</div>
-					</div>
-				</a-layout-content>
-			</a-layout>
-		</a-layout>
-	</template>
-
-	<!-- 双排菜单布局 -->
-	<template v-else-if="layout === 'doublerow'">
-		<a-layout>
-			<a-layout-sider v-if="!ismobile" width="80" :theme="sideTheme" :trigger="null" collapsible>
-				<header id="snowyHeaderLogo" class="snowy-header-logo">
-					<div class="snowy-header-left">
-						<div class="logo-bar">
-							<router-link to="/">
-								<img class="logo" :title="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-							</router-link>
-						</div>
-					</div>
-				</header>
-				<a-menu v-model:selectedKeys="doublerowSelectedKey" :theme="sideTheme" class="snowy-doublerow-layout-menu">
-					<a-menu-item
-						v-for="item in menu"
-						:key="item.path"
-						style="
-							text-align: center;
-							border-radius: 2px;
-							height: auto;
-							line-height: 20px;
-							flex: none;
-							display: block;
-							padding: 12px 0 !important;
-						"
-						@click="showMenu(item)"
-					>
-						<a
-							v-if="item.meta && item.meta.type === 'link'"
-							:href="item.path"
-							target="_blank"
-							@click.stop="() => {}"
-						></a>
-						<template #icon>
-							<component :is="item.meta.icon" style="padding-left: 10px" />
-						</template>
-						<div class="snowy-doublerow-layout-menu-item-fort-div">
-							<span class="snowy-doublerow-layout-menu-item-fort-div-span">
-								{{ item.meta.title }}
-							</span>
-						</div>
-					</a-menu-item>
-				</a-menu>
-			</a-layout-sider>
-			<a-layout-sider
-				v-if="!ismobile"
-				v-show="layoutSiderDowbleMenu"
-				v-model:collapsed="menuIsCollapse"
-				:trigger="null"
-				width="170"
-				collapsible
-				:theme="secondMenuSideTheme"
-			>
-				<div v-if="!menuIsCollapse" id="snowyDoublerowSideTop" class="snowy-doublerow-side-top">
-					<h2 class="snowy-title">{{ pmenu.meta.title }}</h2>
-				</div>
-				<a-menu
+				<a-layout-sider
+					v-if="!ismobile"
 					v-model:collapsed="menuIsCollapse"
-					v-model:openKeys="openKeys"
-					v-model:selectedKeys="selectedKeys"
-					mode="inline"
-					:theme="secondMenuSideTheme"
-					@select="onSelect"
+					:trigger="null"
+					collapsible
+					:theme="sideTheme"
+					width="210"
 				>
-					<NavMenu :nav-menus="nextMenu" />
-				</a-menu>
-			</a-layout-sider>
-			<!-- 手机端情况下的左侧菜单 -->
-			<Side-m v-if="ismobile" />
-			<a-layout>
-				<div id="snowyHeader" class="snowy-header">
-					<div class="snowy-header-left" style="padding-left: 0px">
-						<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
-							<MenuUnfoldOutlined v-if="menuIsCollapse" />
-							<MenuFoldOutlined v-else />
+					<header id="snowyHeaderLogo" class="snowy-header-logo">
+						<div class="snowy-header-left">
+							<div class="logo-bar">
+								<img class="logo" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+								<span>{{ sysBaseConfig.SNOWY_SYS_NAME }}</span>
+							</div>
 						</div>
-						<moduleMenu @switchModule="switchModule" />
-						<Topbar v-if="!ismobile && breadcrumbOpen" />
-					</div>
-					<div class="snowy-header-right">
-						<userbar />
-					</div>
-				</div>
-				<!-- 多标签 -->
-				<Tags v-if="!ismobile && layoutTagsOpen"></Tags>
-				<a-layout-content class="main-content-wrapper">
-					<div id="adminui-main" class="adminui-main">
-						<router-view v-slot="{ Component }">
-							<keep-alive :include="keepLiveRoute">
-								<component :is="Component" v-if="routeShow" :key="$route.name" />
-							</keep-alive>
-						</router-view>
-						<iframe-view />
-						<div class="main-bottom-wrapper">
-							<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-								sysBaseConfig.SNOWY_SYS_COPYRIGHT
-							}}</a>
+					</header>
+					<div :class="menuIsCollapse ? 'aminui-side isCollapse' : 'aminui-side'">
+						<div class="adminui-side-scroll">
+							<a-menu
+								v-model:openKeys="openKeys"
+								v-model:selectedKeys="selectedKeys"
+								:theme="sideTheme"
+								mode="inline"
+								@select="onSelect"
+								@openChange="onOpenChange"
+							>
+								<NavMenu :nav-menus="menu" />
+							</a-menu>
 						</div>
 					</div>
-				</a-layout-content>
+				</a-layout-sider>
+				<!-- 手机端情况下的左侧菜单 -->
+				<Side-m v-if="ismobile" />
+				<!-- 右侧布局 -->
+				<a-layout>
+					<div id="snowyHeader" class="snowy-header">
+						<div class="snowy-header-left" style="padding-left: 0px">
+							<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
+								<MenuUnfoldOutlined v-if="menuIsCollapse" />
+								<MenuFoldOutlined v-else />
+							</div>
+							<moduleMenu @switchModule="switchModule" />
+							<Topbar v-if="!ismobile && breadcrumbOpen" />
+						</div>
+						<div class="snowy-header-right">
+							<userbar />
+						</div>
+					</div>
+					<!-- 多标签 -->
+					<Tags v-if="!ismobile && layoutTagsOpen" />
+					<a-layout-content class="main-content-wrapper">
+						<div id="adminui-main" class="adminui-main">
+							<router-view v-slot="{ Component }">
+								<keep-alive :include="keepLiveRoute">
+									<component :is="Component" :key="$route.name" v-if="routeShow" />
+								</keep-alive>
+							</router-view>
+							<iframe-view />
+							<div class="main-bottom-wrapper">
+								<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
+										sysBaseConfig.SNOWY_SYS_COPYRIGHT
+									}}</a>
+							</div>
+						</div>
+					</a-layout-content>
+				</a-layout>
 			</a-layout>
-		</a-layout>
-	</template>
+		</template>
 
-	<!-- 退出最大化 -->
-	<div class="main-maximize-exit" @click="exitMaximize">
-		<fullscreen-exit-outlined style="color: #fff" />
+		<!-- 双排菜单布局 -->
+		<template v-else-if="layout === 'doublerow'">
+			<a-layout>
+				<a-layout-sider v-if="!ismobile" width="80" :theme="sideTheme" :trigger="null" collapsible>
+					<header id="snowyHeaderLogo" class="snowy-header-logo">
+						<div class="snowy-header-left">
+							<div class="logo-bar">
+								<router-link to="/">
+									<img class="logo" :title="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+								</router-link>
+							</div>
+						</div>
+					</header>
+					<a-menu v-model:selectedKeys="doublerowSelectedKey" :theme="sideTheme" class="snowy-doublerow-layout-menu">
+						<a-menu-item
+							v-for="item in menu"
+							:key="item.path"
+							style="
+								text-align: center;
+								border-radius: 2px;
+								height: auto;
+								line-height: 20px;
+								flex: none;
+								display: block;
+								padding: 12px 0 !important;
+							"
+							@click="showMenu(item)"
+						>
+							<a
+								v-if="item.meta && item.meta.type === 'link'"
+								:href="item.path"
+								target="_blank"
+								@click.stop="() => {}"
+							></a>
+							<template #icon>
+								<component :is="item.meta.icon" style="padding-left: 10px" />
+							</template>
+							<div class="snowy-doublerow-layout-menu-item-fort-div">
+								<span class="snowy-doublerow-layout-menu-item-fort-div-span">
+									{{ item.meta.title }}
+								</span>
+							</div>
+						</a-menu-item>
+					</a-menu>
+				</a-layout-sider>
+				<a-layout-sider
+					v-if="!ismobile"
+					v-show="layoutSiderDowbleMenu"
+					v-model:collapsed="menuIsCollapse"
+					:trigger="null"
+					width="170"
+					collapsible
+					:theme="secondMenuSideTheme"
+				>
+					<div v-if="!menuIsCollapse" id="snowyDoublerowSideTop" class="snowy-doublerow-side-top">
+						<h2 class="snowy-title">{{ pmenu.meta.title }}</h2>
+					</div>
+					<a-menu
+						v-model:collapsed="menuIsCollapse"
+						v-model:openKeys="openKeys"
+						v-model:selectedKeys="selectedKeys"
+						mode="inline"
+						:theme="secondMenuSideTheme"
+						@select="onSelect"
+					>
+						<NavMenu :nav-menus="nextMenu" />
+					</a-menu>
+				</a-layout-sider>
+				<!-- 手机端情况下的左侧菜单 -->
+				<Side-m v-if="ismobile" />
+				<a-layout>
+					<div id="snowyHeader" class="snowy-header">
+						<div class="snowy-header-left" style="padding-left: 0px">
+							<div v-if="!ismobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
+								<MenuUnfoldOutlined v-if="menuIsCollapse" />
+								<MenuFoldOutlined v-else />
+							</div>
+							<moduleMenu @switchModule="switchModule" />
+							<Topbar v-if="!ismobile && breadcrumbOpen" />
+						</div>
+						<div class="snowy-header-right">
+							<userbar />
+						</div>
+					</div>
+					<!-- 多标签 -->
+					<Tags v-if="!ismobile && layoutTagsOpen"></Tags>
+					<a-layout-content class="main-content-wrapper">
+						<div id="adminui-main" class="adminui-main">
+							<router-view v-slot="{ Component }">
+								<keep-alive :include="keepLiveRoute">
+									<component :is="Component" v-if="routeShow" :key="$route.name" />
+								</keep-alive>
+							</router-view>
+							<iframe-view />
+							<div class="main-bottom-wrapper">
+								<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
+										sysBaseConfig.SNOWY_SYS_COPYRIGHT
+									}}</a>
+							</div>
+						</div>
+					</a-layout-content>
+				</a-layout>
+			</a-layout>
+		</template>
+
+		<!-- 退出最大化 -->
+		<div class="main-maximize-exit" @click="exitMaximize">
+			<fullscreen-exit-outlined style="color: #fff" />
+		</div>
 	</div>
 </template>
 
