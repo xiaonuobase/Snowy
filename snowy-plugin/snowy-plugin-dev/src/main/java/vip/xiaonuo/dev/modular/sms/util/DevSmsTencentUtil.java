@@ -97,8 +97,8 @@ public class DevSmsTencentUtil {
             if(ObjectUtil.isEmpty(sdkAppId)) {
                 // sdkAppId为空，则获取默认sdkAppId
                 DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
-                signName = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID_KEY);
-                if(ObjectUtil.isEmpty(signName)) {
+                sdkAppId = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID_KEY);
+                if(ObjectUtil.isEmpty(sdkAppId)) {
                     throw new CommonException("腾讯云短信操作客户端未正确配置：sdkAppId为空");
                 }
             }
