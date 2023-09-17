@@ -75,7 +75,6 @@ public class GenBasicEditParam {
 
     /** 移动端所属模块 */
     @ApiModelProperty(value = "移动端所属模块", required = true, position = 10)
-    @NotNull(message = "mobileModule不能为空")
     private String mobileModule;
 
     /** 功能名 */

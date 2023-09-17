@@ -70,7 +70,6 @@ public class GenBasicAddParam {
 
     /** 移动端所属模块 */
     @ApiModelProperty(value = "移动端所属模块", required = true, position = 9)
-    @NotNull(message = "mobileModule不能为空")
     private String mobileModule;
 
     /** 功能名 */

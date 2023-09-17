@@ -14,6 +14,7 @@ INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${editButtonId}', '${menuId}', '编�
 INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${deleteButtonId}', '${menuId}', '删除${functionName}', NULL, '${classNameFirstLower}Delete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, '4', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 
+<% if (mobileModuleId != null && mobileModuleId != '') { %>
 INSERT INTO "SNOWY"."MOBILE_RESOURCE" VALUES ('${menuId}', '0', '${functionName}管理', NULL, 'MENU', '${mobileModuleId}', 'MENU', '/pages/${moduleName}/${busName}/index', 'apartment-outlined',  '#1890ff', 'YES', 'ENABLE', 99, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 INSERT INTO "SNOWY"."MOBILE_RESOURCE" VALUES ('${addButtonId}', '${menuId}', '新增${functionName}', 'mobile${className}Add', 'BUTTON', NULL, NULL, NULL, NULL,  NULL, NULL, NULL, 1, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
@@ -21,3 +22,4 @@ INSERT INTO "SNOWY"."MOBILE_RESOURCE" VALUES ('${addButtonId}', '${menuId}', '�
 INSERT INTO "SNOWY"."MOBILE_RESOURCE" VALUES ('${editButtonId}', '${menuId}', '编辑${functionName}', 'mobile${className}Edit', 'BUTTON', NULL, NULL, NULL, NULL,  NULL, NULL, NULL, 2, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 INSERT INTO "SNOWY"."MOBILE_RESOURCE" VALUES ('${deleteButtonId}', '${menuId}', '删除${functionName}', 'mobile${className}Delete', 'BUTTON', NULL, NULL, NULL, NULL,  NULL, NULL, NULL, 3, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+<% } %>

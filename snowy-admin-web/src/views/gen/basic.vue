@@ -86,6 +86,7 @@
 							:options="mobileModuleList"
 							style="width: 100%"
 							placeholder="请选择移动端所属模块"
+							allow-clear
 						>
 						</a-select>
 					</a-form-item>
@@ -312,7 +313,6 @@
 		generateType: [required('请选择生成方式')],
 		module: [required('请选择所属模块')],
 		menuPid: [required('请选择上级目录')],
-		mobileModule: [required('请选择移动端所属模块')],
 		functionName: [required('请输入功能名')],
 		busName: [required('请输入业务名')],
 		className: [required('请输入类名')],

@@ -6,47 +6,42 @@
     <% for(var i = 0; i < configList.~size; i++) { %>
        <% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
     <% } %>
-    <uni-popup ref="popupRef" type="bottom" safeArea background-color="#ffffff">
+    <uv-popup ref="popRef" mode="bottom" bg-color="null" z-index="99">
         <view class="container">
+            <view class="close">
+                <icon type="clear" :size="20" color="#5677fc" @click="close"></icon>
+            </view>
             <% if (searchCount > 0) { %>
-            <uni-forms ref="formRef" :model="searchFormState" label-position="top" labelWidth="100px">
+            <uv-form ref="formRef" :model="searchFormState" label-position="top" labelWidth="auto" :labelStyle="{marginBottom: '25rpx', fontSize: '27rpx', color: '#606266'}">
                 <% for(var i = 0; i < configList.~size; i++) { %>
                 <% if(!configList[i].needTableId && configList[i].needPage) { %>
                 <% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
-                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                    <uni-easyinput v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
-                </uni-forms-item>
+                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
+                    <uv-input v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-input>
+                </uv-form-item>
                 <% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
-                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                	<snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
-                </uni-forms-item>
-                <% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
-                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                    <uni-number-box v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"/>
-                </uni-forms-item>
-                <% } else if (configList[i].effectType == 'datepicker') {%>
-                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                    <uni-datetime-picker v-model="searchFormState.${configList[i].fieldNameCamelCase}" type="datetimerange"/>
-                </uni-forms-item>
+                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
+                    <snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
+                </uv-form-item>
                 <% } else {%>
-                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-                    <uni-easyinput v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
-                </uni-forms-item>
+                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
+                    <uv-input v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-input>
+                </uv-form-item>
                 <% } %>
                 <% } %>
                 <% } %>
-            </uni-forms>
+            </uv-form>
             <% } %>
-            <uni-row :gutter="10">
-                <uni-col :span="12">
-            		<button class="btn-reset" type="default" @click="reset">重置</button>
-            	</uni-col>
-            	<uni-col :span="12">
-            		<button class="btn-sub" type="primary" @click="confirm">确认</button>
-            	</uni-col>
-            </uni-row>
+            <uv-row :gutter="10">
+                <uv-col :span="6">
+                    <tui-button height="90rpx" type="gray" @click="reset">重置</tui-button>
+                </uv-col>
+                <uv-col :span="6">
+                    <tui-button height="90rpx" type="primary" @click="confirm">确认</tui-button>
+                </uv-col>
+            </uv-row>
         </view>
-    </uni-popup>
+    </uv-popup>
 </template>
 <script setup name="${classNameFirstLower}Search">
     <%
@@ -63,17 +58,15 @@
     %>
     <% if(iptTool > 0) { %>
     import tool from '@/plugins/tool'
-    import SnowySelPicker from '@/components/snowy-sel-picker.vue'
     <% } %>
     import { ref } from "vue"
     const emits = defineEmits(['reset', 'confirm'])
     const props = defineProps({
     	searchFormState: {
-    		type: Object,
-    		required: true
+            type: Object,
+            required: true
     	},
     })
-
     <% if (searchCount > 0) { %>
     <% for(var i = 0; i < configList.~size; i++) { %>
     <% if(!configList[i].needTableId && configList[i].needPage) { %>
@@ -83,12 +76,9 @@
     <% } %>
     <% } %>
     <% } %>
-
-    // 弹出ref
-    const popupRef = ref()
-    // 打开
+    const popRef = ref()
     const open = () => {
-    	popupRef.value.open()
+    	popRef.value.open()
     }
     const reset = () =>{
         // 重置数据
@@ -100,24 +90,25 @@
     	emits('reset', props.searchFormState)
     }
     const confirm = () => {
-    	popupRef.value.close()
+    	popRef.value.close()
     	emits('confirm', props.searchFormState)
+    }
+    const close = () => {
+        popRef.value.close()
     }
     defineExpose({
     	open
     })
 </script>
 <style lang="scss" scoped>
-	.container {
-		margin: 15upx;
-		border-radius: 5upx;
-		padding: 5upx;
-		background-color: $uni-white;
-		.btn-reset {
-
-		}
-		.btn-sub {
-			background-color: $uni-primary;
-		}
-	}
+    .container {
+        margin: 5rpx;
+        border-radius: 10rpx;
+        padding: 20rpx;
+        background-color: white;
+        .close {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
 </style>

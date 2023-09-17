@@ -459,6 +459,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
                         + "backend" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
         // 生成移动端代码到临时目录
+        if (ObjectUtil.isEmpty(genBasic.getMobileModule())){
+            return tempFolder;
+        }
         genBasicPreviewResult.getGenBasicCodeMobileResultList().forEach(genBasicCodeResult ->
                 FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
                         + "mobile" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
@@ -541,6 +544,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             genBasicPreviewResult.setGenBasicCodeBackendResultList(genBasicCodeBackendResultList);
 
             // 移动端基础路径
+            if (ObjectUtil.isEmpty(genBasic.getMobileModule())){
+                return genBasicPreviewResult;
+            }
             String genMobileBasicPath = "";
             // 移动端
             GroupTemplate groupTemplateMobile = new GroupTemplate(new ClasspathResourceLoader("mobile"), Configuration.defaultConfiguration());

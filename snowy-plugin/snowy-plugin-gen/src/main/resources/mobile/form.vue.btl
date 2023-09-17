@@ -1,44 +1,53 @@
 <template>
-    <view class="container">
-        <uni-forms ref="formRef" :model="formData" label-position="top" :rules="rules" validate-trigger="blur" labelWidth="100px">
+    <view class="container snowy-shadow">
+        <uv-form ref="formRef" :model="formData" :rules="rules" label-position="top" labelWidth="auto" :labelStyle="{marginBottom: '25rpx', fontSize: '27rpx', color: '#606266'}">
             <% for(var i = 0; i < configList.~size; i++) { %>
             <% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].fieldNameCamelCase != 'tenantId') { %>
             <% if(configList[i].effectType == 'input') { %>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
-            	<uni-easyinput v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
-            </uni-forms-item>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+            	<uv-input v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-input>
+            </uv-form-item>
             <% } else if (configList[i].effectType == 'textarea') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
-            	<uni-easyinput type="textarea" v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
-            </uni-forms-item>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+            	<uv-textarea v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-textarea>
+            </uv-form-item>
             <% } else if (configList[i].effectType == 'select') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
                 <snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="formData.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
-            </uni-forms-item>
-            <% } else if (configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请选择${configList[i].fieldRemark}' }]">
-                <uni-data-checkbox :multiple="${configList[i].effectType == 'checkbox'?true:false}" :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"> </uni-data-checkbox>
-            </uni-forms-item>
-            <% } else if (configList[i].effectType == 'datepicker' || configList[i].effectType == 'timepicker') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请选择${configList[i].fieldRemark}' }]">
-                <uni-datetime-picker type=${configList[i].effectType == 'timepicker'?'datetime':'date'} v-model="formData.${configList[i].fieldNameCamelCase}" > </uni-datetime-picker>
-            </uni-forms-item>
+            </uv-form-item>
+            <% } else if (configList[i].effectType == 'radio') {%>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+                <uv-radio-group v-model="formData.${configList[i].fieldNameCamelCase}">
+                    <uv-radio :customStyle="{marginRight: '50rpx'}" v-for="(item, index) in ${configList[i].fieldNameCamelCase}Options" :key="index" :name="item.value" :label="item.text"></uv-radio>
+                </uv-radio-group>
+            </uv-form-item>
+            <% } else if (configList[i].effectType == 'checkbox') {%>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+                <uv-checkbox-group v-model="formData.${configList[i].fieldNameCamelCase}">
+                    <uv-checkbox :customStyle="{marginRight: '50rpx'}" v-for="(item, index) in ${configList[i].fieldNameCamelCase}Options" :key="index"  :name="item.value" :label="item.text"></uv-checkbox>
+                </uv-checkbox-group>
+            </uv-form-item>
+            <% } else if (configList[i].effectType == 'datepicker') {%>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+                <snowy-calendar v-model="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></snowy-calendar>
+            </uv-form-item>
+            <% } else if (configList[i].effectType == 'timepicker') {%>
+
             <% } else if (configList[i].effectType == 'inputNumber') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
-                <uni-number-box v-model="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="100"></uni-number-box>
-            </uni-forms-item>
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
+                <uv-number-box v-model="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="100"></uv-number-box>
+            </uv-form-item>
             <% } else if (configList[i].effectType == 'slider') {%>
-            <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}" :rules="[{ required: ${configList[i].required}, errorMessage: '请输入${configList[i].fieldRemark}' }]">
+            <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}" :required="${configList[i].required}">
                 <slider :value="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="100" :step="1" @change="(e)=>{formData.${configList[i].fieldNameCamelCase} = e.detail.value}"></slider>
-            </uni-forms-item>
+            </uv-form-item>
             <% } %>
             <% } %>
             <% } %>
-        </uni-forms>
-        <button class="btn-sub" type="primary" @click="submit">提交</button>
+        </uv-form>
+        <tui-button margin="50rpx 0" :preventClick="true" :shadow="true" @click="submit">提交</tui-button>
     </view>
 </template>
-
 <script setup name="${classNameFirstLower}Form">
     <%
     var iptTool = 0;
@@ -52,7 +61,6 @@
     %>
     <% if(iptTool > 0) { %>
     import tool from '@/plugins/tool'
-    import SnowySelPicker from '@/components/snowy-sel-picker.vue'
     <% } %>
     import XEUtils from "xe-utils"
     import { onLoad } from "@dcloudio/uni-app"
@@ -61,14 +69,27 @@
 
     const { proxy } = getCurrentInstance()
     const formRef = ref()
-    const formData = ref({})
-
-    // 常用正则规则大全：https://any86.github.io/any-rule/
+    const formData = ref({
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].fieldNameCamelCase != 'tenantId') { %>
+        ${configList[i].fieldNameCamelCase}: '',
+        <% } %>
+        <% } %>
+    })
+    // https://www.uvui.cn/components/form.html
     // 去pages/biz/user/form.vue中寻找示例
     const rules = reactive({
-
-	})
-
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(!configList[i].needTableId && configList[i].whetherAddUpdate && configList[i].fieldNameCamelCase != 'tenantId' && configList[i].required) { %>
+        ${configList[i].fieldNameCamelCase}: [{
+            type: 'string',
+            required: true,
+            message: '请输入${configList[i].fieldRemark}',
+            trigger: ['blur', 'change']
+        }],
+        <% } %>
+        <% } %>
+    })
     <% for(var i = 0; i < configList.~size; i++) { %>
     <% if(!configList[i].needTableId) { %>
     <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
@@ -96,24 +117,19 @@
     const submit = () => {
         formRef.value.validate().then(res => {
             ${classNameFirstLower}SubmitForm(formData.value, !formData.value.id).then(respond => {
-				uni.$emit('formBack', {
-					data: respond.data
-				})
-				uni.navigateBack({
-					delta: 1
-				})
-			})
+                uni.$emit('formBack', {
+                    data: respond.data
+                })
+                uni.navigateBack({
+                    delta: 1
+                })
+            })
         })
     }
 </script>
 <style lang="scss" scoped>
-	.container {
-		margin: 15upx;
-		border-radius: 5upx;
-		padding: 25upx;
-		background-color: $uni-white;
-		.btn-sub {
-			background-color: $uni-primary;
-		}
-	}
+    .container {
+        margin: 80rpx 0 0;
+        padding: 30rpx;
+    }
 </style>

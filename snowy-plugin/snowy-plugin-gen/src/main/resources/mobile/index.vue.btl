@@ -6,87 +6,59 @@
     <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
     <% } %>
-    <view>
-        <% if (searchCount > 0) { %>
-        <view class="sticky">
+    <% if (searchCount > 0) { %>
+    <% for(var i = 0; i < configList.~size; i++) { %>
+    <% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
+    <% if(row <= 1) { %>
+    <snowy-search placeholder="请输入${configList[i].fieldRemark}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" @confirm="loadData(true)" @clear="loadData(true)" :enableSenior="true" @seniorSearch="$refs.searchRef.open()"></snowy-search>
+    <% } %>
+    <% } %>
+    <% } %>
+    <search ref="searchRef" :searchFormState="searchFormState" @confirm="loadData(true)"></search>
+    <% } %>
+    <view class="${busName}-list">
+        <view class="item" v-for="(item, index) in ${classNameFirstLower}Data" :key="index" :index="index" @tap="moreTapItem(item, index)">
             <% for(var i = 0; i < configList.~size; i++) { %>
-            <% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
-            <% if(row <= 1) { %>
-            <uni-row>
-                <view style="display: flex; align-items: center; justify-content: center;">
-                    <uni-col :span="22">
-                        <uni-search-bar v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"  @confirm="loadData(true)" cancelButton="none"></uni-search-bar>
-                    </uni-col>
-                    <uni-col :span="2">
-                        <view style="color: #2979ff;" @click="$refs.searchRef.open()">
-                    	    <text>高级\n搜索</text>
-                    	</view>
-                    </uni-col>
-                </view>
-            </uni-row>
-            <% } %>
+            <% if(!configList[i].needTableId && configList[i].whetherTable && configList[i].fieldNameCamelCase != 'tenantId') { %>
+            <uv-row customStyle="margin-bottom: 15rpx">
+                <uv-col :span="1">
+                    <uv-icon size="18" name="tags-fill" color="#5677fc"></uv-icon>
+                </uv-col>
+                <uv-col :span="5">
+                    <view class="item-left">${configList[i].fieldRemark}</view>
+                </uv-col>
+                <uv-col :span="6" textAlign="right">
+                    <view class="item-right snowy-bold snowy-ellipsis"> {{ item.${configList[i].fieldNameCamelCase} }} </view>
+                </uv-col>
+            </uv-row>
             <% } %>
             <% } %>
         </view>
-        <search ref="searchRef" :searchFormState="searchFormState" @confirm="loadData(true)"></search>
-        <% } %>
-        <view class="${busName}-list">
-            <uni-list>
-                <uni-list-item v-for="(item, index) in ${classNameFirstLower}Data" :key="index" :showArrow="false" :clickable="true" @tap="moreTapItem(item, index)">
-                    <template v-slot:body>
-                        <view class="item">
-                            <% for(var i = 0; i < configList.~size; i++) { %>
-                            <% if(!configList[i].needTableId && configList[i].whetherTable && configList[i].fieldNameCamelCase != 'tenantId') { %>
-                            <view class="item-row">
-                                <uni-row>
-                                    <uni-col :span="4">
-                                    	<view class="item-row-title">${configList[i].fieldRemark}</view>
-                                    </uni-col>
-                                    <uni-col :span="20">
-                                    	<view class="item-row-content">{{ item.${configList[i].fieldNameCamelCase} }}</view>
-                                    </uni-col>
-                                </uni-row>
-                            </view>
-                            <% } %>
-                            <% } %>
-                        </view>
-                    </template>
-                </uni-list-item>
-            </uni-list>
-            <snowy-empty v-if="$utils.isEmpty(${classNameFirstLower}Data)" />
-        </view>
-        <!-- 新增悬浮按钮 -->
-        <uni-fab
-            v-if="hasPerm('mobile${className}Add')"
-        	horizontal="right"
-        	vertical="bottom"
-        	direction="horizontal"
-        	@fabClick="add"
-        	:pattern="{
-                color: '#7A7E83',
-                backgroundColor: '#fff',
-                selectedColor: '#007AFF',
-                buttonColor: '#007AFF',
-                iconColor: '#fff'
-            }">
-        </uni-fab>
-        <more ref="moreRef" @handleOk="loadData(true)"></more>
     </view>
+    <snowy-empty :fixed="true" v-if="$utils.isEmpty(${classNameFirstLower}Data)" />
+    <snowy-float-btn v-if="hasPerm('mobile${className}Add')" @click="add"></snowy-float-btn>
+    <more ref="moreRef" @handleOk="loadData(true)"></more>
 </template>
 
 <script setup name="${busName}">
     <% if (searchCount > 0) { %>
     import search from './search.vue'
     <% } %>
-    import SnowyEmpty from "@/components/snowy-empty.vue"
     import { ${classNameFirstLower}Page } from '@/api/${moduleName}/${classNameFirstLower}Api'
     import more from './more.vue'
     import XEUtils from 'xe-utils'
     import { onLoad, onShow, onReady, onPullDownRefresh, onReachBottom } from "@dcloudio/uni-app"
     import { reactive, ref, getCurrentInstance } from "vue"
-
     const { proxy } = getCurrentInstance()
-    const searchFormState = reactive({})
+    const searchFormState = reactive({
+        <% if (searchCount > 0) { %>
+        <% for(var i = 0; i < configList.~size; i++) { %>
+        <% if(!configList[i].needTableId && configList[i].needPage) { %>
+        ${configList[i].fieldNameCamelCase}: '',
+        <% } %>
+        <% } %>
+        <% } %>
+    })
     const parameter = reactive({
     	current: 1,
     	size: 10
@@ -136,22 +108,22 @@
 </script>
 
 <style lang="scss" scoped>
-    .${busName}-list {
-    	margin: 15upx;
-    	border-radius: 5upx;
-    	.item {
-    		width: 100vw;
-    		.item-row {
-    			margin: 20upx 10upx;
-    			.item-row-title {
-    				font-size: 25upx;
-    				color: #999;
-    			}
-    			.item-row-content {
-    				font-size: 25upx;
-    				text-align: right;
-    			}
-    		}
-    	}
-    	}
+    .${busName}-list {}
+    .item {
+        background: #ffffff;
+        margin: 20rpx 0;
+        padding: 25rpx;
+        box-shadow: 0 1px 2px #ccc;
+        border-radius: 15rpx;
+        .item-left {
+            color: #999;
+            font-size: 26rpx;
+        }
+        .item-right {
+            font-size: 26rpx;
+        }
+    }
+    .item:hover {
+        box-shadow: 1upx 5upx 5upx #5677fc;
+    }
 </style>

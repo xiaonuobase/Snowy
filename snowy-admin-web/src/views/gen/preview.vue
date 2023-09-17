@@ -55,11 +55,6 @@
 							codeTypeList: data.genBasicCodeFrontendResultList
 						},
 						{
-							codeTypeKey: 'mobile',
-							codeTypeTitle: '移动端代码',
-							codeTypeList: data.genBasicCodeMobileResultList
-						},
-						{
 							codeTypeKey: 'backend',
 							codeTypeTitle: '后端代码',
 							codeTypeList: data.genBasicCodeBackendResultList
@@ -70,6 +65,13 @@
 							codeTypeList: data.genBasicCodeSqlResultList
 						}
 					]
+					if (data.genBasicCodeMobileResultList){
+						codeTypeArray.value.push({
+							codeTypeKey: 'mobile',
+							codeTypeTitle: '移动端代码',
+							codeTypeList: data.genBasicCodeMobileResultList
+						})
+					}
 				} else {
 					message.warning('预览失败：请检查问题或反馈小诺官方')
 				}

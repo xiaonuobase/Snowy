@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 // 获取${functionName}分页
 export function ${classNameFirstLower}Page(data) {
-	return request({
+    return request({
         url: '/${moduleName}/${busName}/page',
         method: 'get',
         data: data
@@ -10,7 +10,7 @@ export function ${classNameFirstLower}Page(data) {
 }
 // 提交${functionName}表单 add为false时为编辑，默认为新增
 export function ${classNameFirstLower}SubmitForm(data, add = true) {
-	return request({
+    return request({
         url: '/${moduleName}/${busName}/'+ (add ? 'add' : 'edit'),
         method: 'post',
         data: data
@@ -18,7 +18,7 @@ export function ${classNameFirstLower}SubmitForm(data, add = true) {
 }
 // 删除${functionName}
 export function ${classNameFirstLower}Delete(data) {
-	return request({
+    return request({
         url: '/${moduleName}/${busName}/delete',
         method: 'post',
         data: data
@@ -26,7 +26,7 @@ export function ${classNameFirstLower}Delete(data) {
 }
 //  获取${functionName}详情
 export function ${classNameFirstLower}Detail(data) {
-	return request({
+    return request({
         url: '/${moduleName}/${busName}/detail',
         method: 'get',
         data: data

@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.gen.modular.basic.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -67,6 +69,7 @@ public class GenBasic extends CommonEntity {
 
     /** 移动端所属模块 */
     @ApiModelProperty(value = "移动端所属模块", position = 10)
+    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String mobileModule;
 
     /** 功能名 */
