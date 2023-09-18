@@ -107,10 +107,10 @@ public class AuthSessionServiceImpl implements AuthSessionService {
         Page<AuthSessionPageResult> defaultPage = CommonPageRequest.defaultPage();
         long current = defaultPage.getCurrent();
         int total = StpUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize()), true).size();
-        if(ObjectUtil.isNotEmpty(total)) {
+        if (ObjectUtil.isNotEmpty(total)) {
             defaultPage = new Page<>(current, defaultPage.getSize(), total);
             String keyword = "";
-            if(ObjectUtil.isNotEmpty(authSessionPageParam.getUserId())) {
+            if (ObjectUtil.isNotEmpty(authSessionPageParam.getUserId())) {
                 keyword = authSessionPageParam.getUserId();
             }
             List<String> userIdList = StpUtil.searchSessionId(keyword,
@@ -124,31 +124,37 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
                     long sessionTimeOut = saSession.getTimeout();
-                    if(sessionTimeOut == -1) {
+                    if (sessionTimeOut == -1) {
                         authSessionPageResult.setSessionTimeout("永久");
                     } else {
                         authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(saSession.getTimeout()));
                     }
-                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream().map(tokenSign -> {
-                        AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
-                        tokenSignInfo.setTokenValue(tokenSign.getValue());
-                        tokenSignInfo.setTokenDevice(tokenSign.getDevice());
-                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
-                        long tokenTimeoutConfig = StpUtil.stpLogic.getConfig().getTimeout();
-                        if(tokenTimeout == -1) {
-                            tokenSignInfo.setTokenTimeout("永久");
-                            tokenSignInfo.setTokenTimeoutPercent(100d);
-                        } else {
-                            tokenSignInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
-                                    .getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()))));
-                            if(tokenTimeoutConfig == -1) {
-                                tokenSignInfo.setTokenTimeoutPercent(0d);
-                            } else {
-                                tokenSignInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
-                            }
-                        }
-                        return tokenSignInfo;
-                    }).collect(Collectors.toList());
+                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream()
+                            .filter(tokenSign -> {
+                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                                return tokenTimeout != -2;  // 过滤掉tokenTimeout为-2的元素
+                            })
+                            .map(tokenSign -> {
+                                AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
+                                tokenSignInfo.setTokenValue(tokenSign.getValue());
+                                tokenSignInfo.setTokenDevice(tokenSign.getDevice());
+                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                                long tokenTimeoutConfig = StpUtil.stpLogic.getConfig().getTimeout();
+                                if (tokenTimeout == -1) {
+                                    tokenSignInfo.setTokenTimeout("永久");
+                                    tokenSignInfo.setTokenTimeoutPercent(100d);
+                                } else {
+                                    tokenSignInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
+                                            .getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()))));
+                                    if (tokenTimeoutConfig == -1) {
+                                        tokenSignInfo.setTokenTimeoutPercent(0d);
+                                    } else {
+                                        tokenSignInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
+                                    }
+                                }
+                                return tokenSignInfo;
+                            })
+                            .collect(Collectors.toList());
                     authSessionPageResult.setTokenCount(tokenInfoList.size());
                     authSessionPageResult.setTokenSignList(tokenInfoList);
                     return authSessionPageResult;
@@ -164,10 +170,10 @@ public class AuthSessionServiceImpl implements AuthSessionService {
         Page<AuthSessionPageResult> defaultPage = CommonPageRequest.defaultPage();
         long current = defaultPage.getCurrent();
         int total = StpClientUtil.searchSessionId("", -1, Convert.toInt(defaultPage.getSize()), true).size();
-        if(ObjectUtil.isNotEmpty(total)) {
+        if (ObjectUtil.isNotEmpty(total)) {
             defaultPage = new Page<>(current, defaultPage.getSize(), total);
             String keyword = "";
-            if(ObjectUtil.isNotEmpty(authSessionPageParam.getUserId())) {
+            if (ObjectUtil.isNotEmpty(authSessionPageParam.getUserId())) {
                 keyword = authSessionPageParam.getUserId();
             }
             List<String> userIdList = StpClientUtil.searchSessionId(keyword,
@@ -181,24 +187,27 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
                     long sessionTimeOut = saSession.getTimeout();
-                    if(sessionTimeOut == -1) {
+                    if (sessionTimeOut == -1) {
                         authSessionPageResult.setSessionTimeout("永久");
                     } else {
                         authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(saSession.getTimeout()));
                     }
-                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream().map(tokenSign -> {
+                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream().filter(tokenSign -> {
+                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                        return tokenTimeout != -2;  // 过滤掉tokenTimeout为-2的元素
+                    }).map(tokenSign -> {
                         AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
                         tokenSignInfo.setTokenValue(tokenSign.getValue());
                         tokenSignInfo.setTokenDevice(tokenSign.getDevice());
                         long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
                         long tokenTimeoutConfig = StpClientUtil.stpLogic.getConfig().getTimeout();
-                        if(tokenTimeout == -1) {
+                        if (tokenTimeout == -1) {
                             tokenSignInfo.setTokenTimeout("永久");
                             tokenSignInfo.setTokenTimeoutPercent(100d);
                         } else {
                             tokenSignInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
                                     .getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()))));
-                            if(tokenTimeoutConfig == -1) {
+                            if (tokenTimeoutConfig == -1) {
                                 tokenSignInfo.setTokenTimeoutPercent(0d);
                             } else {
                                 tokenSignInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
