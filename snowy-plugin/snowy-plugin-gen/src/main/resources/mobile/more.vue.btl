@@ -2,10 +2,10 @@
     <uv-popup ref="popRef" mode="bottom" bg-color="null" z-index="99">
         <view class="container">
             <tui-list-view unlined="all" background-color="transparent">
-                <tui-list-cell v-if="hasPerm('mobile${className}Edit')" :hover="true" :arrow="false" @click="edit" :radius="10" >
+                <tui-list-cell v-if="$snowy.hasPerm('mobile${className}Edit')" :hover="true" :arrow="false" @click="edit" :radius="10" >
                     <view class="item"> 编辑 </view>
                 </tui-list-cell>
-                <tui-list-cell v-if="hasPerm('mobile${className}Delete')" :hover="true" :arrow="false" @click="del" :radius="10" :margin-top="2">
+                <tui-list-cell v-if="$snowy.hasPerm('mobile${className}Delete')" :hover="true" :arrow="false" @click="del" :radius="10" :margin-top="2">
                     <view class="item"> 刪除 </view>
                 </tui-list-cell>
                 <tui-list-cell :hover="true" :arrow="false" @click="cancel" :margin-top="10" :radius="10">
@@ -17,7 +17,6 @@
 </template>
 <script setup name="${classNameFirstLower}More">
     import { ${classNameFirstLower}Delete } from '@/api/${moduleName}/${classNameFirstLower}Api'
-    import modal from '@/plugins/modal'
     import { reactive, ref, getCurrentInstance } from "vue"
     const emits = defineEmits(['handleOk'])
     const popRef = ref()
@@ -35,7 +34,7 @@
     }
     // 删除
     const del = () => {
-    	modal.confirm(`确定要删除吗？`).then(() => {
+    	uni.$snowy.modal.confirm(`确定要删除吗？`).then(() => {
             ${classNameFirstLower}Delete([{
                 id: record.value.id
             }]).then(res => {

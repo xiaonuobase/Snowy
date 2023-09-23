@@ -35,8 +35,8 @@
             <% } %>
         </view>
     </view>
-    <snowy-empty :fixed="true" v-if="$utils.isEmpty(${classNameFirstLower}Data)" />
-    <snowy-float-btn v-if="hasPerm('mobile${className}Add')" @click="add"></snowy-float-btn>
+    <snowy-empty :fixed="true" v-show="$xeu.isEmpty(${classNameFirstLower}Data)" />
+    <snowy-float-btn v-if="$snowy.hasPerm('mobile${className}Add')" @click="add"></snowy-float-btn>
     <more ref="moreRef" @handleOk="loadData(true)"></more>
 </template>
 
@@ -46,7 +46,6 @@
     <% } %>
     import { ${classNameFirstLower}Page } from '@/api/${moduleName}/${classNameFirstLower}Api'
     import more from './more.vue'
-    import XEUtils from 'xe-utils'
     import { onLoad, onShow, onReady, onPullDownRefresh, onReachBottom } from "@dcloudio/uni-app"
     import { reactive, ref, getCurrentInstance } from "vue"
     const { proxy } = getCurrentInstance()
@@ -71,7 +70,7 @@
         }
         Object.assign(parameter, searchFormState)
         ${classNameFirstLower}Page(parameter).then(res => {
-            if (XEUtils.isEmpty(res?.data?.records)){
+            if (uni.$xeu.isEmpty(res?.data?.records)){
             	return
             }
             ${classNameFirstLower}Data.value = ${classNameFirstLower}Data.value.concat(res.data.records)
@@ -83,7 +82,7 @@
     loadData(true)
     onShow(() => {
     	uni.$once('formBack', (data) => {
-    		loadData(true)
+            loadData(true)
     	})
     })
     // 下拉刷新
@@ -97,7 +96,7 @@
     // 新增
     const add = () => {
     	uni.navigateTo({
-    		url: '/pages/${moduleName}/${busName}/form'
+            url: '/pages/${moduleName}/${busName}/form'
     	})
     }
     // 更多操作

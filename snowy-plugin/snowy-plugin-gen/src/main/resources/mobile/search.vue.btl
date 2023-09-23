@@ -44,21 +44,6 @@
     </uv-popup>
 </template>
 <script setup name="${classNameFirstLower}Search">
-    <%
-        var iptTool = 0;
-        if (searchCount > 0) {
-            for(var i = 0; i < configList.~size; i++) {
-                if(!configList[i].needTableId) {
-                if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
-                    iptTool++;
-                }
-                }
-            }
-        }
-    %>
-    <% if(iptTool > 0) { %>
-    import tool from '@/plugins/tool'
-    <% } %>
     import { ref } from "vue"
     const emits = defineEmits(['reset', 'confirm'])
     const props = defineProps({
@@ -71,7 +56,7 @@
     <% for(var i = 0; i < configList.~size; i++) { %>
     <% if(!configList[i].needTableId && configList[i].needPage) { %>
     <% if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
-    const ${configList[i].fieldNameCamelCase}Options = tool.dictList('${configList[i].dictTypeCode}')
+    const ${configList[i].fieldNameCamelCase}Options = uni.$snowy.tool.dictList('${configList[i].dictTypeCode}')
     <% } %>
     <% } %>
     <% } %>

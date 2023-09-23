@@ -49,20 +49,6 @@
     </view>
 </template>
 <script setup name="${classNameFirstLower}Form">
-    <%
-    var iptTool = 0;
-    for(var i = 0; i < configList.~size; i++) {
-        if(!configList[i].needTableId) {
-        if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
-            iptTool++;
-        }
-        }
-    }
-    %>
-    <% if(iptTool > 0) { %>
-    import tool from '@/plugins/tool'
-    <% } %>
-    import XEUtils from "xe-utils"
     import { onLoad } from "@dcloudio/uni-app"
     import { ${classNameFirstLower}Detail, ${classNameFirstLower}SubmitForm } from '@/api/${moduleName}/${classNameFirstLower}Api'
     import { reactive, ref, getCurrentInstance } from "vue"
@@ -101,7 +87,7 @@
         <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(!configList[i].needTableId) { %>
         <% if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
-        ${configList[i].fieldNameCamelCase}Options.value = tool.dictList('${configList[i].dictTypeCode}')
+        ${configList[i].fieldNameCamelCase}Options.value = uni.$snowy.tool.dictList('${configList[i].dictTypeCode}')
         <% } %>
         <% } %>
         <% } %>
