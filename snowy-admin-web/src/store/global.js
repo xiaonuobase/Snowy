@@ -34,7 +34,7 @@ export const globalStore = defineStore({
 	id: 'global',
 	state: () => ({
 		// 移动端布局
-		ismobile: false,
+		isMobile: false,
 		// 布局
 		layout: getCacheConfig('SNOWY_LAYOUT'),
 		// 菜单是否折叠 toggle
@@ -46,9 +46,9 @@ export const globalStore = defineStore({
 		// 是否展示面包屑
 		breadcrumbOpen: getCacheConfig('SNOWY_BREADCRUMD_OPEN'),
 		// 顶栏是否应用主题色
-		topHanderThemeColorOpen: getCacheConfig('SNOWY_TOP_HANDER_THEME_COLOR_OPEN'),
+		topHeaderThemeColorOpen: getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_OPEN'),
 		// 顶栏主题色通栏
-		topHanderThemeColorSpread: getCacheConfig('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD'),
+		topHeaderThemeColorSpread: getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD'),
 		// 模块坞
 		moduleUnfoldOpen: getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'),
 		// 主题
@@ -60,12 +60,14 @@ export const globalStore = defineStore({
 		// 用户信息
 		userInfo: toolDataGet('USER_INFO') || {},
 		// 系统配置
-		sysBaseConfig: toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG
+		sysBaseConfig: toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG,
+		// 默认应用
+		module: getCacheConfig('SNOWY_MENU_MODULE_ID')
 	}),
 	getters: {},
 	actions: {
-		setIsmobile(key) {
-			this.ismobile = key
+		setIsMobile(key) {
+			this.isMobile = key
 		},
 		setLayout(key) {
 			this.layout = key
@@ -95,6 +97,9 @@ export const globalStore = defineStore({
 		},
 		setSysBaseConfig(key) {
 			this.sysBaseConfig = key
+		},
+		setModule(key) {
+			this.module = key
 		}
 	}
 })

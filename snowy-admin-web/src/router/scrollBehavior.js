@@ -12,7 +12,7 @@ import { nextTick } from 'vue'
 import { viewTagsStore } from '@/store'
 
 export function beforeEach(to, from) {
-	const adminMain = document.querySelector('#adminui-main')
+	const adminMain = document.querySelector('#admin-ui-main')
 	if (!adminMain) {
 		return false
 	}
@@ -24,7 +24,7 @@ export function beforeEach(to, from) {
 }
 
 export function afterEach(to) {
-	const adminMain = document.querySelector('#adminui-main')
+	const adminMain = document.querySelector('#admin-ui-main')
 	if (!adminMain) {
 		return false
 	}

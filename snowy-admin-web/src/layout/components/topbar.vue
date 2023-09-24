@@ -1,5 +1,5 @@
 <template>
-	<div class="adminui-topbar">
+	<div class="admin-ui-topbar">
 		<div class="left-panel">
 			<a-breadcrumb>
 				<template v-for="item in breadList" :key="item.title">

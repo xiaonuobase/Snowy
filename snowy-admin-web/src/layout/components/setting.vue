@@ -41,14 +41,14 @@
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="">顶栏应用主题色：</h4>
-				<a-switch :checked="topHanderThemeColorOpen" @change="changeTopHanderThemeColorOpen" />
+				<a-switch :checked="topHeaderThemeColorOpen" @change="changeTopHanderThemeColorOpen" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4>顶栏主题色通栏：</h4>
 				<a-switch
 					style="float: right"
-					:checked="topHanderThemeColorSpread"
-					:disabled="!topHanderThemeColorOpen"
+					:checked="topHeaderThemeColorSpread"
+					:disabled="!topHeaderThemeColorOpen"
 					@change="changeTopHanderThemeColorSpread"
 				/>
 			</div>
@@ -99,8 +99,8 @@
 		sideUniqueOpen: 'SIDE_UNIQUE_OPEN',
 		layoutTagsOpen: 'LAYOUT_TAGS_OPEN',
 		breadcrumbOpen: 'BREADCRUMD_OPEN',
-		topHanderThemeColorOpen: 'TOP_HANDER_THEME_COLOR_OPEN',
-		topHanderThemeColorSpread: 'TOP_HANDER_THEME_COLOR_SPREAD',
+		topHeaderThemeColorOpen: 'TOP_HEADER_THEME_COLOR_OPEN',
+		topHeaderThemeColorSpread: 'TOP_HEADER_THEME_COLOR_SPREAD',
 		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN'
 	}
 	export default defineComponent({
@@ -159,22 +159,22 @@
 				'layoutTagsOpen',
 				'breadcrumbOpen',
 				'moduleUnfoldOpen',
-				'topHanderThemeColorOpen',
-				'topHanderThemeColorSpread',
+				'topHeaderThemeColorOpen',
+				'topHeaderThemeColorSpread',
 				'formStyle'
 			])
 		},
 		mounted() {},
 		methods: {
 			changeTopHanderThemeColorOpen() {
-				this.toggleState('topHanderThemeColorOpen')
-				if (!this.topHanderThemeColorOpen) {
-					this.globalStore.topHanderThemeColorSpread = false
-					tool.data.set('SNOWY_TOP_HANDER_THEME_COLOR_SPREAD', false)
+				this.toggleState('topHeaderThemeColorOpen')
+				if (!this.topHeaderThemeColorOpen) {
+					this.globalStore.topHeaderThemeColorSpread = false
+					tool.data.set('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD', false)
 				}
 			},
 			changeTopHanderThemeColorSpread() {
-				this.toggleState('topHanderThemeColorSpread')
+				this.toggleState('topHeaderThemeColorSpread')
 			},
 			toggleState(stateName) {
 				this.globalStore.toggleConfig(stateName)

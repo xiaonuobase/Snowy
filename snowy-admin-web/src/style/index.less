@@ -33,20 +33,20 @@ a, button, input, textarea {
 }
 
 /* 大布局样式 */
-.aminui {
+.admin-ui {
 	overflow: hidden;
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	flex-flow: column;
 }
 
-.aminui-wrapper {
+.admin-ui-wrapper {
 	display: flex;
 	flex: 1;
 	overflow: auto;
 }
 
-.adminui-main {
+.admin-ui-main {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
@@ -222,16 +222,16 @@ a, button, input, textarea {
 }
 
 /* 面包屑 */
-.adminui-topbar {
+.admin-ui-topbar {
 	padding-left: 15px
 }
 
-.adminui-topbar .left-panel {
+.admin-ui-topbar .left-panel {
 	display: flex;
 	align-items: center;
 }
 
-.adminui-topbar .right-panel {
+.admin-ui-topbar .right-panel {
 	display: flex;
 	align-items: center;
 }
@@ -363,7 +363,7 @@ a, button, input, textarea {
 }
 
 /*页面最大化*/
-.aminui.main-maximize {
+.admin-ui.main-maximize {
 	.main-maximize-exit {
 		display: block;
 	}
@@ -436,9 +436,10 @@ a, button, input, textarea {
 
 // 滚动条，需要哪里，加哪个class
 body,
+.ant-scrolling-effect,
 .ant-drawer-wrapper-body,
 .ant-drawer-body,
-.aminui,
+.admin-ui,
 .ant-modal-wrap,
 .ant-transfer-list-content,
 .ant-card,
@@ -460,7 +461,7 @@ body,
 .gen-preview-content,
 .ant-menu,
 
-.adminui-main{
+.admin-ui-main{
 	&::-webkit-scrollbar {
 		/*滚动条整体样式*/
 		width : 0px;  /*高宽分别对应横竖滚动条的尺寸*/

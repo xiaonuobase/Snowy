@@ -20,13 +20,7 @@
 				<a-button type="primary" @click="leaveFor('/usercenter')">消息中心</a-button>
 			</a-space>
 		</a-drawer>
-		<xn-form-container
-			title="详情"
-			:width="700"
-			:visible="visible"
-			:destroy-on-close="true"
-			@close="onClose"
-		>
+		<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 			<a-form ref="formRef" :model="formData" layout="vertical">
 				<a-form-item label="主题：" name="subject">
 					<span>{{ formData.subject }}</span>
@@ -84,7 +78,10 @@
 			let clientId = tool.data.get('CLIENTID') ? tool.data.get('CLIENTID') : ''
 			let url = sysConfig.API_URL + '/dev/message/createSseConnect?clientId=' + clientId
 			// heartbeatTimeout:心跳超时监测 30s
-			let source = new EventSourcePolyfill(url, { headers: { token: tool.data.get('TOKEN') }, heartbeatTimeout: 30000 })
+			let source = new EventSourcePolyfill(url, {
+				headers: { token: tool.data.get('TOKEN') },
+				heartbeatTimeout: 300000
+			})
 			// 监听打开事件
 			source.addEventListener('open', (e) => {})
 			// 监听消息事件

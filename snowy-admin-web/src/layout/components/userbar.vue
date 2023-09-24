@@ -5,7 +5,7 @@
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
-		<dev-user-message />
+		<!--		<dev-user-message />-->
 		<a-dropdown class="user panel-item">
 			<div class="user-avatar">
 				<a-avatar :src="userInfo.avatar" />
@@ -74,7 +74,7 @@
 	const setDrawer = ref(import.meta.env.VITE_SET_DRAWER)
 	const store = globalStore()
 	const isMobile = computed(() => {
-		return store.ismobile
+		return store.isMobile
 	})
 	const userInfo = computed(() => {
 		return store.userInfo

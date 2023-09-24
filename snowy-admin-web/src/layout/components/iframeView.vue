@@ -20,7 +20,7 @@
 		},
 		computed: {
 			...mapState(iframeStore, ['iframeList']),
-			...mapState(globalStore, ['ismobile', 'layoutTags'])
+			...mapState(globalStore, ['isMobile', 'layoutTags'])
 		},
 		watch: {
 			$route(e) {
@@ -35,12 +35,12 @@
 			...mapActions(iframeStore, ['setIframeList', 'pushIframeList', 'clearIframeList']),
 			push(route) {
 				if (route.meta.type === 'iframe') {
-					if (this.ismobile || !this.layoutTags) {
+					if (this.isMobile || !this.layoutTags) {
 						this.setIframeList(route)
 					} else {
 						this.pushIframeList(route)
 					}
-				} else if (this.ismobile || !this.layoutTags) {
+				} else if (this.isMobile || !this.layoutTags) {
 					this.clearIframeList()
 				}
 			}

@@ -5,7 +5,7 @@
 			mode="horizontal"
 			v-if="menu && menu.length > 1"
 			class="module-menu"
-			id="moduleMunu"
+			id="moduleMenu"
 		>
 			<a-menu-item
 				v-for="item in menu"
@@ -21,7 +21,7 @@
 			</a-menu-item>
 		</a-menu>
 	</div>
-	<div v-else  class="panel-item hidden-sm-and-down">
+	<div v-else>
 		<a-popover v-if="menu.length > 1" placement="bottomLeft">
 			<template #content>
 				<a-row :gutter="[0, 5]" class="module-row">
@@ -35,7 +35,9 @@
 					</div>
 				</a-row>
 			</template>
-			<appstore-outlined />
+			<div class="panel-item hidden-sm-and-down module-card-scope">
+				<appstore-outlined />
+			</div>
 		</a-popover>
 	</div>
 </template>
@@ -49,24 +51,30 @@
 
 	const store = globalStore()
 
-	const { moduleUnfoldOpen, topHanderThemeColorOpen } = storeToRefs(store)
-	const moduleBackColor = ref(topHanderThemeColorOpen)
-
+	const { moduleUnfoldOpen, topHeaderThemeColorOpen } = storeToRefs(store)
+	const moduleBackColor = ref(topHeaderThemeColorOpen)
+	const module = computed(() => {
+		return store.module
+	})
 	// 监听目录是否折叠
 	watch(moduleUnfoldOpen, (newValue) => {
 		nextTick(() => {
 			setModuleBackColor()
 		})
 	})
+	watch(module, (newValue) => {
+		selectedKeys.value = [newValue]
+		setSelectedKeys()
+	})
 	// 监听是否开启了顶栏颜色
-	watch(topHanderThemeColorOpen, (newValue) => {
+	watch(topHeaderThemeColorOpen, (newValue) => {
 		moduleBackColor.value = newValue
 		setModuleBackColor()
 	})
 
 	const emit = defineEmits({ switchModule: null })
 	const menu = router.getMenu()
-	const selectedKeys = ref([tool.data.get('SNOWY_MENU_MODULE_ID')])
+	const selectedKeys = ref([module.value])
 	const moduleClick = (id) => {
 		emit('switchModule', id)
 		tool.data.set('SNOWY_MENU_MODULE_ID', id)
@@ -82,24 +90,24 @@
 	const setModuleBackColor = () => {
 		if (moduleUnfoldOpen.value) {
 			try {
-				const moduleMunu = document.getElementById('moduleMunu')
+				const moduleMenu = document.getElementById('moduleMenu')
 				moduleBackColor.value
-					? moduleMunu.classList.add('module-menu-color')
-					: moduleMunu.classList.remove('module-menu-color')
+					? moduleMenu.classList.add('module-menu-color')
+					: moduleMenu.classList.remove('module-menu-color')
 			} catch (err) {}
 			setSelectedKeys()
 		}
 	}
 	// 设置选中
 	const setSelectedKeys = () => {
-		// 顶部应用列表让显示出来默认的，不这么实现不会显示的，相信老俞
+		// 顶部应用列表让显示出来默认的
 		moduleBackColor.value
 			? (selectedKeys.value = new Array([]))
 			: (selectedKeys.value = [tool.data.get('SNOWY_MENU_MODULE_ID')])
 	}
 </script>
 
-<style type="less">
+<style lang="less">
 	.module-row {
 		max-width: 357px;
 	}
@@ -134,5 +142,8 @@
 	.module-menu-color {
 		color: white;
 		background-color: var(--primary-color);
+	}
+	.module-card-scope {
+		height: 49px;
 	}
 </style>
