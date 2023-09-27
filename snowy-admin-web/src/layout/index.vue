@@ -224,7 +224,6 @@
 		})
 	})
 	watch(topHeaderThemeColorOpen, (newValue) => {
-		console.log(topHeaderThemeColorOpen)
 		switchoverTopHeaderThemeColor()
 	})
 	watch(topHeaderThemeColorSpread, (newValue) => {
@@ -236,7 +235,6 @@
 	}
 	// 切换顶栏颜色
 	const switchoverTopHeaderThemeColor = () => {
-		console.log('刷新完之后' + topHeaderThemeColorOpen.value)
 		// 界面顶栏设置颜色
 		const header = document.getElementById('snowyHeader')
 		topHeaderThemeColorOpen.value
@@ -347,13 +345,19 @@
 			showThis()
 			const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
 			if (menus.length > 0) {
-				// 将此模块的唯一值加入缓存
-				tool.data.set('SNOWY_MENU_MODULE_ID', id)
 				// 正儿八百的菜单
 				menu.value = filterUrl(menus)
-				// 然后将其跳转至指定界面，默认始终取排序第一的
-				const path = traverseChild(menu.value)
-				router.push({ path })
+				const firstMenu = traverseChild(menu.value)
+				const path = firstMenu.path
+				// 如果是外链
+				if (firstMenu.menuType === 'LINK') {
+					window.open(path)
+				} else {
+					// 将此模块的唯一值加入缓存
+					tool.data.set('SNOWY_MENU_MODULE_ID', id)
+					// 然后将其跳转至指定界面，默认始终取排序第一的
+					router.push({ path })
+				}
 			} else {
 				message.warning('该模块下无任何菜单')
 			}
@@ -375,10 +379,10 @@
 			if (menu[0].children.length > 0) {
 				return traverseChild(menu[0].children)
 			} else {
-				return menu[0].path
+				return menu[0]
 			}
 		} else {
-			return menu[0].path
+			return menu[0]
 		}
 	}
 	// 退出最大化
