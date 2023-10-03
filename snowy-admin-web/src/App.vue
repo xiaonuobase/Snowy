@@ -10,5 +10,5 @@
 
 	const store = globalStore()
 	store.initTheme()
-	const locale = i18n.global.messages[i18n.global.locale].lang
+	const locale = i18n.global.messages.value[i18n.global.locale.value].lang
 </script>

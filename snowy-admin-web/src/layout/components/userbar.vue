@@ -57,7 +57,6 @@
 	import { createVNode } from 'vue'
 	import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 	import { Modal } from 'ant-design-vue'
-	import i18n from '@/locales/index'
 	import screenFull from 'screenfull'
 	import { message } from 'ant-design-vue'
 	import Setting from './setting.vue'
@@ -68,6 +67,8 @@
 	import DevUserMessage from './message.vue'
 	import PanelSearch from './panel-search/index.vue'
 	import { globalStore } from '@/store'
+	import { useI18n } from 'vue-i18n'
+	const { locale } = useI18n()
 
 	const lang = ref(new Array(tool.data.get('APP_LANG') || config.LANG))
 	const settingDialog = ref(false)
@@ -142,7 +143,7 @@
 	const handleIn18 = (key) => {
 		lang.value = []
 		lang.value.push(key)
-		i18n.locale = key
+		locale.value = key
 		tool.data.set('APP_LANG', key)
 	}
 	// 设置抽屉
