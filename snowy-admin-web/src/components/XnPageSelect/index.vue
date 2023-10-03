@@ -14,7 +14,7 @@
 	</a-spin>
 </template>
 
-<script setup>
+<script setup name="xnPageSelector">
 	import { watch } from 'vue'
 
 	const total = ref(0) // 数据总数
