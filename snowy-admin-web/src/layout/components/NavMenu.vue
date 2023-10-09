@@ -26,8 +26,6 @@
 </template>
 
 <script setup>
-	import { createVNode } from 'vue'
-
 	const props = defineProps({
 		navMenus: {
 			type: Array,

@@ -25,7 +25,6 @@
 						:theme="sideTheme"
 						mode="inline"
 						@select="onSelect"
-						@openChange="onOpenChange"
 					>
 						<NavMenu :nav-menus="menu" />
 					</a-menu>
@@ -327,7 +326,7 @@
 			const pidKey = getParentKeys(moduleMenu.value, route.path)
 			moduleMenu.value.forEach((item) => {
 				if (pidKey.includes(item.path)) {
-					tagSwitchModule(item.id, route.path)
+					tagSwitchModule(item.id)
 				}
 			})
 		}
@@ -397,21 +396,6 @@
 				}
 			}
 		})
-	}
-	// 菜单展开/关闭的回调
-	const onOpenChange = (keys) => {
-		if (sideUniqueOpen.value) {
-			// 获取最新的
-			const openKey = keys[keys.length - 1]
-			if (keys.length > 1) {
-				// 获取上级
-				openKeys.value = getParentKeys(menu.value, openKey)
-			} else {
-				openKeys.value = Array.of(openKey) // new Array(openKey);
-			}
-		} else {
-			openKeys.value = keys
-		}
 	}
 	// 获取上级keys
 	const getParentKeys = (data, val) => {
@@ -492,7 +476,6 @@
 		const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
 		// 正儿八百的菜单
 		menu.value = filterUrl(menus)
-		router.push({ path })
 	}
 	// 遍历子集获取一个path
 	const traverseChild = (menu) => {
