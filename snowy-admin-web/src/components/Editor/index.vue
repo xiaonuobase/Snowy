@@ -3,7 +3,6 @@
 </template>
 
 <script setup name="Editor">
-	import fileApi from '@/api/dev/fileApi'
 	import Editor from '@tinymce/tinymce-vue'
 	import tinymce from 'tinymce/tinymce'
 	import 'tinymce/themes/silver'
@@ -90,6 +89,7 @@
 	})
 	const contentValue = ref()
 	watch(props, (newValue) => {
+		contentValue.value = newValue.modelValue
 		emit('update:modelValue', newValue.modelValue)
 	})
 	watch(contentValue, (newValue) => {

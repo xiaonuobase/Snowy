@@ -234,9 +234,10 @@
 	}
 	// 关闭搜索面板
 	const searchPanelClose = () => {
-		if (searchActive.value) {
-			setActive(false)
+		if (!searchActive.value) {
+			return false
 		}
+		setActive(false)
 		results.value = []
 		if (inputRef.value.activated) {
 			inputRef.value.activated = false
