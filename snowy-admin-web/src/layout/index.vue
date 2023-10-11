@@ -52,7 +52,7 @@
 			<Tags v-if="!isMobile && layoutTagsOpen" />
 			<a-layout-content class="main-content-wrapper">
 				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }">
+					<router-view v-slot="{ Component }" :key="route.fullPath">
 						<keep-alive :include="keepLiveRoute">
 							<component :is="Component" :key="route.name" v-if="routeShow" />
 						</keep-alive>
@@ -145,7 +145,7 @@
 			<Tags v-if="!isMobile && layoutTagsOpen"></Tags>
 			<a-layout-content class="main-content-wrapper">
 				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }">
+					<router-view v-slot="{ Component }" :key="route.fullPath">
 						<keep-alive :include="keepLiveRoute">
 							<component :is="Component" v-if="routeShow" :key="route.name" />
 						</keep-alive>

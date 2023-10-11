@@ -15,6 +15,7 @@
 						v-model:bgColor="bgColor"
 						:width="800"
 						:height="400"
+						:quality="1"
 						:is-crop="isCrop"
 						:line-width="lineWidth"
 						:line-color="lineColor"

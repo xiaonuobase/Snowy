@@ -313,7 +313,7 @@
 	})
 
 	onUnmounted(() => {
-		baiduMap.value && baiduMap.value.destroy()
+		baiduMap.value && baiduMap.value.baseLayerAdded && baiduMap.value.destroy()
 	})
 
 	defineExpose({
