@@ -8,7 +8,7 @@ export default {
 		'closeIcon', // 自定义关闭图标 VNode | slot - 1.5.0
 		'confirmLoading', // 确定按钮 loading boolean 无
 		'destroyOnClose', // 关闭时销毁 Modal 里的子元素 boolean false
-		// 'footer', // 底部内容，当不需要默认底部按钮时，可以设为 :footer="null" string|slot 确定取消按钮
+		'footer', // 底部内容，当不需要默认底部按钮时，可以设为 :footer="null" string|slot 确定取消按钮
 		'forceRender', // 强制渲染 Modal boolean false
 		'getContainer', // 指定 Modal 挂载的 HTML 节点 (instance): HTMLElement () => document.body
 		'keyboard', // 是否支持键盘 esc 关闭 boolean true
@@ -20,9 +20,9 @@ export default {
 		'okButtonProps', // ok 按钮 props, 遵循 jsx规范 {props: ButtonProps, on: {}} -
 		'cancelButtonProps', // cancel 按钮 props, 遵循 jsx规范 {props: ButtonProps, on: {}} -
 		'title', // 标题 string|slot 无
-		'visible', // (v-model) 对话框是否可见 boolean 无
-		'width', // 宽度 string|number 520
-		'wrapClassName', // 对话框外层容器的类名 string -
+		// 'visible', // (v-model) 对话框是否可见 boolean 无
+		// 'width', // 宽度 string|number 520
+		// 'wrapClassName', // 对话框外层容器的类名 string -
 		'zIndex', // 设置 Modal 的 z-index Number 1000
 		'dialogStyle', // 可用于设置浮层的样式，调整浮层位置等 object - 1.6.1
 		'dialogClass' // 可用于设置浮层的类名 string
