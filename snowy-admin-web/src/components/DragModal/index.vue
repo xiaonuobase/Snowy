@@ -5,6 +5,7 @@
 		v-bind="$props"
 		:width="modalWidth"
 		:wrap-class-name="wrapClassName + fullscreenClass"
+		@cancel="handleCancel"
 	>
 		<template #closeIcon>
 			<template v-if="fullscreen">
@@ -16,7 +17,7 @@
 				</a-tooltip>
 			</template>
 			<a-tooltip title="关闭" placement="bottom">
-				<close-outlined @click="handleCancel" />
+				<close-outlined />
 			</a-tooltip>
 		</template>
 
@@ -154,9 +155,6 @@
 		methods: {
 			changeWidth(width) {
 				this.modalWidth = width
-			},
-			getPopupContainer(trigger) {
-				return trigger?.parentElement ?? document.body
 			},
 			handleFullScreen(e) {
 				e?.stopPropagation()
