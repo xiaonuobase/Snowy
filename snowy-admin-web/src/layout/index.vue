@@ -41,7 +41,7 @@
 						<MenuUnfoldOutlined v-if="menuIsCollapse" />
 						<MenuFoldOutlined v-else />
 					</div>
-					<moduleMenu @switchModule="switchModule" />
+					<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" />
 					<top-bar v-if="!isMobile && breadcrumbOpen" />
 				</div>
 				<div class="snowy-header-right">
@@ -134,7 +134,7 @@
 		<a-layout>
 			<div id="snowyHeader" class="snowy-header">
 				<div class="snowy-header-left" style="padding-left: 0px">
-					<moduleMenu @switchModule="switchModule" />
+					<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" />
 					<top-bar v-if="!isMobile && breadcrumbOpen" />
 				</div>
 				<div class="snowy-header-right">
@@ -191,6 +191,7 @@
 	const openKeys = ref([])
 	const onSelectTag = ref(false)
 	const moduleMenu = ref([])
+	const moduleMenuShow = ref(true)
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
 	const currentRoute = ref()
@@ -492,5 +493,9 @@
 	// 退出最大化
 	const exitMaximize = () => {
 		document.getElementById('app').classList.remove('main-maximize')
+		moduleMenuShow.value = false
+		nextTick(() => {
+			moduleMenuShow.value = true
+		})
 	}
 </script>
