@@ -151,7 +151,6 @@ service.interceptors.response.use(
 
 // 适配器, 用于适配不同的请求方式
 export const baseRequest = (url, value = {}, method = 'post', options = {}) => {
-	url = sysConfig.API_URL + url
 	if (method === 'post') {
 		return service.post(url, value, options)
 	} else if (method === 'get') {
