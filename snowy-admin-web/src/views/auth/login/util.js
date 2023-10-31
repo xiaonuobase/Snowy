@@ -39,11 +39,11 @@ export const afterLogin = async (loginToken) => {
 			indexMenu = menu[0].children[0].path
 		}
 	}
-	await router.replace({
-		path: indexMenu
-	})
 	dictApi.dictTree().then((data) => {
 		// 设置字典到store中
 		tool.data.set('DICT_TYPE_TREE_DATA', data)
+	})
+	await router.replace({
+		path: indexMenu
 	})
 }
