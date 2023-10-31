@@ -96,7 +96,7 @@
 						<template #label>
 							<a-tooltip>
 								<template #title>
-									不想吧代码生成到本框架指定插件名称下，可以新建一个plugin模块，并这里改为新的名字。
+									不想把代码生成到本框架指定插件名称下，可以新建一个plugin模块，并在这里改为新的名字。
 								</template>
 								<question-circle-outlined />
 							</a-tooltip>
