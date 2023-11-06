@@ -2,7 +2,7 @@
 	<a-card :bordered="false">
 		<template #title> 快捷方式 </template>
 		<a-row :gutter="10">
-			<a-col :span="6" :key="shortcut.id" v-for="shortcut in shortcutList">
+			<a-col :span="6" :key="shortcut.id" v-for="shortcut in shortcutList" :xs="12" :sm="8" :md="6" :lg="8" :xl="6">
 				<shortcutCard
 					:icon="shortcut.icon ? shortcut.icon : 'menu-outlined'"
 					:label="shortcut.title"
@@ -16,7 +16,7 @@
 <script setup name="shortcut">
 	import router from '@/router'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import shortcutCard from '@/components/ShortcutCard/index.vue'
+	import ShortcutCard from '@/components/ShortcutCard/index.vue'
 	import { onMounted } from 'vue'
 	const shortcutList = ref([])
 

@@ -272,7 +272,7 @@
 		// 展开的
 		nextTick(() => {
 			// 取得默认路由地址并设置展开
-			const active = route.meta.active || route.fullPath
+			const active = route.meta.active || route.path
 			selectedKeys.value = new Array(active)
 			const pidKey = getParentKeys(pMenu.value.children, active)
 			const nextTickMenu = pMenu.value.children
@@ -316,6 +316,8 @@
 	showThis()
 
 	onMounted(() => {
+		onLayoutResize()
+		window.addEventListener('resize', onLayoutResize)
 		switchoverTopHeaderThemeColor()
 	})
 	watch(route, (newValue) => {

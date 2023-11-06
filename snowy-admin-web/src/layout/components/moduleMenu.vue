@@ -3,7 +3,7 @@
 		<a-menu
 			v-model:selectedKeys="selectedKeys"
 			mode="horizontal"
-			v-if="menu && menu.length > 1"
+			v-if="menu && menu.length > 1 && !isMobile"
 			class="module-menu"
 			id="moduleMenu"
 		>
@@ -22,7 +22,7 @@
 		</a-menu>
 	</div>
 	<div v-else>
-		<a-popover v-if="menu.length > 1" placement="bottomLeft">
+		<a-popover v-if="menu.length > 1 && !isMobile" placement="bottomLeft">
 			<template #content>
 				<a-row :gutter="[0, 5]" class="module-row">
 					<div v-for="item in menu" :key="item.id">
@@ -55,6 +55,9 @@
 	const moduleBackColor = ref(topHeaderThemeColorOpen)
 	const module = computed(() => {
 		return store.module
+	})
+	const isMobile = computed(() => {
+		return store.isMobile
 	})
 	// 监听目录是否折叠
 	watch(moduleUnfoldOpen, (newValue) => {

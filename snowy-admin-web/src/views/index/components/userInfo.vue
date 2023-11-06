@@ -12,7 +12,7 @@
 					<span style="color: #6d737b; margin: 2px">{{ userInfo.orgName }} | {{ userInfo.positionName }}</span>
 				</div>
 			</div>
-			<span style="margin: 2px">
+			<span class="snowy-index-userinfo-time">
 				{{ currentTime }}
 			</span>
 		</div>
@@ -42,5 +42,13 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+	}
+	.snowy-index-userinfo-time {
+		margin: 2px
+	}
+	@media (max-width: 992px) {
+		.snowy-index-userinfo-time {
+			display: none;
+		}
 	}
 </style>

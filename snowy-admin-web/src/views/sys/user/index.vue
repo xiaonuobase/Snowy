@@ -1,7 +1,7 @@
 <template>
 	<a-row>
-		<a-col :span="5">
-			<a-card class="cardImp" :bordered="false" :loading="cardLoading">
+		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
+			<a-card class="cardImp mb-3" :bordered="false" :loading="cardLoading">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
@@ -13,7 +13,7 @@
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 			</a-card>
 		</a-col>
-		<a-col :span="19">
+		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
 			<a-card :bordered="false" style="margin-bottom: 10px">
 				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 					<a-row :gutter="24">

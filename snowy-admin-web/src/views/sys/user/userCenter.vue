@@ -1,6 +1,6 @@
 <template>
-	<a-row :gutter="24">
-		<a-col :md="24" :lg="7" style="padding-right: 0px">
+	<a-row :gutter="10">
+		<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="mb-3">
 			<a-card :bordered="false">
 				<div class="account-center-avatarHolder">
 					<div class="avatar">
@@ -32,8 +32,7 @@
 				</div>
 			</a-card>
 		</a-col>
-
-		<a-col :md="24" :lg="17">
+		<a-col :xs="24" :sm="24" :md="17" :lg="17" :xl="17">
 			<a-card
 				:bordered="false"
 				style="width: 100%"

@@ -7,7 +7,6 @@
 
 <script setup name="exmNestRoutor">
 	import { useRouter, useRoute } from 'vue-router'
-	import { defineComponent, ref } from 'vue'
 
 	const router = useRouter()
 	const route = useRoute()

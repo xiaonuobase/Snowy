@@ -190,7 +190,7 @@
 			},
 			// 高亮tag
 			isActive(route) {
-				return route.fullPath === this.$route.fullPath
+				return route.path === this.$route.path
 			},
 			// 关闭tag
 			closeSelectedTag(tag, autoPushLatestView = true) {

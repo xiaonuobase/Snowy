@@ -18,10 +18,17 @@ export const viewTagsStore = defineStore({
 	getters: {},
 	actions: {
 		pushViewTags(route) {
-			const target = this.viewTags.find((item) => item.fullPath === route.fullPath)
+			const target = this.viewTags.find((item) => item.path === route.path)
 			const isName = route.name
 			if (!target && isName) {
 				this.viewTags.push(route)
+			}
+			if (target) {
+				this.viewTags.forEach((item) => {
+					if (item.path === route.path) {
+						Object.assign(item, route)
+					}
+				})
 			}
 		},
 		removeViewTags(route) {
