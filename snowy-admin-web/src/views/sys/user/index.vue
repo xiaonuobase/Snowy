@@ -1,7 +1,7 @@
 <template>
-	<a-row>
+	<a-row :gutter="10">
 		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<a-card class="cardImp mb-3" :bordered="false" :loading="cardLoading">
+			<a-card class="mb-3" :bordered="false" :loading="cardLoading">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
@@ -411,9 +411,6 @@
 </script>
 
 <style scoped>
-	.cardImp {
-		margin-right: 10px;
-	}
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}

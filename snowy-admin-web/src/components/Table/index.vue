@@ -307,14 +307,6 @@
 						</span>
 					)
 				})
-				// 绘制 清空 按钮
-				const clearItem =
-					typeof this.alert === 'boolean' && this.alert
-						? this.renderClear(this.clearSelected)
-						: typeof this.alert.clear === 'function'
-						? this.renderClear(this.alert.clear)
-						: null
-
 				// 绘制 alert 组件
 				if (alert) {
 					const showAlert =
@@ -323,21 +315,28 @@
 							this.alert.show &&
 							typeof this.rowSelection.selectedRowKeys !== 'undefined') ||
 						this.alert
-					const message = (
-						<div>
-							<span className="mr-3">
-								已选择:{' '}
-								<a className="font-6">
-									{this.rowSelection && this.rowSelection.selectedRowKeys
-										? this.rowSelection.selectedRowKeys.length
-										: 0}
-								</a>
-							</span>
-							{needTotalItems}
-							{clearItem}
-						</div>
-					)
 					if (showAlert) {
+						// 绘制 清空 按钮
+						const clearItem =
+							typeof this.alert === 'boolean' && this.alert
+								? this.renderClear(this.clearSelected)
+								: this.alert.clear && typeof this.alert.clear === 'function'
+								? this.renderClear(this.alert.clear)
+								: null
+						const message = (
+							<div>
+								<span className="mr-3">
+									已选择:{' '}
+									<a className="font-6">
+										{this.rowSelection && this.rowSelection.selectedRowKeys
+											? this.rowSelection.selectedRowKeys.length
+											: 0}
+									</a>
+								</span>
+								{needTotalItems}
+								{clearItem}
+							</div>
+						)
 						return <a-alert showIcon class="mb-4" message={message} />
 					}
 				}

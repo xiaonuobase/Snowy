@@ -1,7 +1,7 @@
 <template>
-	<a-row>
-		<a-col :span="5">
-			<a-card class="cardImp" :bordered="false" :loading="cardLoading">
+	<a-row :gutter="10">
+		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
+			<a-card :bordered="false" :loading="cardLoading">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
@@ -12,7 +12,7 @@
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 			</a-card>
 		</a-col>
-		<a-col :span="19">
+		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
 			<a-card :bordered="false" style="margin-bottom: 10px">
 				<a-form
 					ref="searchFormRef"
@@ -31,7 +31,7 @@
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="reset">
+							<a-button class="snowy-button-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								重置
 							</a-button>
@@ -184,13 +184,10 @@
 </script>
 
 <style lang="less" scoped>
-	.cardImp {
-		margin-right: 10px;
-	}
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.snowy-buttom-left {
+	.snowy-button-left {
 		margin-left: 8px;
 	}
 </style>
