@@ -17,8 +17,6 @@
 		data() {
 			return {
 				needTotalList: [],
-				selectedRows: [],
-				selectedRowKeys: [],
 				localLoading: false,
 				localDataSource: [],
 				localPagination: Object.assign({}, this.pagination),
@@ -65,11 +63,6 @@
 				type: Object,
 				default: null
 			},
-			/** @Deprecated */
-			showAlertInfo: {
-				type: Boolean,
-				default: false
-			},
 			showPagination: {
 				type: [String, Boolean],
 				default: 'auto'
@@ -81,19 +74,6 @@
 			pageSizeOptions: {
 				type: Array,
 				default: () => ['10', '20', '50', '100']
-			},
-			/**
-			 * enable page URI mode
-			 *
-			 * e.g:
-			 * /users/1
-			 * /users/2
-			 * /users/3?queryParam=test
-			 * ...
-			 */
-			pageURI: {
-				type: Boolean,
-				default: false
 			},
 			extraTool: {
 				type: Array,
@@ -111,16 +91,6 @@
 			}
 		}),
 		watch: {
-			'localPagination.current': function (val) {
-				this.pageURI &&
-					this.$router.push({
-						...this.$route,
-						name: this.$route.name,
-						params: Object.assign({}, this.$route.params, {
-							current: val
-						})
-					})
-			},
 			pageNum(val) {
 				Object.assign(this.localPagination, {
 					current: val
@@ -142,7 +112,7 @@
 		},
 		created() {
 			const { current } = this.$route.params
-			const localPageNum = (this.pageURI && current && parseInt(current)) || this.pageNum
+			const localPageNum = (current && parseInt(current)) || this.pageNum
 			this.localPagination =
 				(['auto', true].includes(this.showPagination) &&
 					Object.assign({}, this.localPagination, {
@@ -158,7 +128,8 @@
 				false
 			this.needTotalList = this.initTotalList(this.columns)
 			this.loadData()
-			this.columnsSetting = this.columns/*.map((c) => {
+			this.columnsSetting = this.columns
+			/*.map((c) => {
 				const tt = c.title
 				if (typeof tt === 'string') {
 					c.title = () => t(tt)
@@ -167,11 +138,7 @@
 			})*/
 		},
 		methods: {
-			/**
-			 * 表格重新加载方法
-			 * 如果参数为 true, 则强制刷新到第一页
-			 * @param bool Boolean
-			 */
+			// 表格重新加载方法 如果参数为 true, 则强制刷新到第一页
 			refresh(bool = false) {
 				bool &&
 					(this.localPagination = Object.assign(
@@ -183,12 +150,7 @@
 					))
 				this.loadData()
 			},
-			/**
-			 * 加载数据方法
-			 * @param {Object} pagination 分页选项器
-			 * @param {Object} filters 过滤条件
-			 * @param {Object} sorter 排序条件
-			 */
+			// 加载数据方法 分页选项器 过滤条件 排序条件
 			loadData(pagination, filters, sorter) {
 				this.localLoading = true
 				const parameter = Object.assign(
@@ -219,11 +181,7 @@
 					}
 				)
 				const result = this.data(parameter)
-				// eslint-disable-next-line
-        		if (
-					(typeof result === 'object' || typeof result === 'function') &&
-					typeof result.then === 'function'
-				) {
+				if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
 					result.then((r) => {
 						if (r == null) {
 							this.localLoading = false
@@ -292,14 +250,12 @@
 					})
 				return totalList
 			},
-			/**
-			 * 用于更新已选中的列表数据 total 统计
-			 * @param selectedRowKeys
-			 * @param selectedRows
-			 */
+			// 用于更新已选中的列表数据 total 统计
 			updateSelect(selectedRowKeys, selectedRows) {
-				this.selectedRows = selectedRows
-				this.selectedRowKeys = selectedRowKeys
+				if (this.rowSelection) {
+					this.rowSelection.selectedRows = selectedRows
+					this.rowSelection.selectedRowKeys = selectedRowKeys
+				}
 				const list = this.needTotalList
 				this.needTotalList = list.map((item) => {
 					return {
@@ -311,44 +267,38 @@
 					}
 				})
 			},
-			/**
-			 * 清空 table 已选中项
-			 */
+			// 清空 table 已选中项
 			clearSelected() {
 				if (this.rowSelection) {
 					this.rowSelection.onChange([], [])
 					this.updateSelect([], [])
 				}
 			},
-			/**
-			 * 刷新并清空已选
-			 */
+			// 刷新并清空已选
 			clearRefreshSelected(bool = false) {
 				this.refresh(bool)
 				this.clearSelected()
 			},
-			/**
-			 * 处理交给 table 使用者去处理 clear 事件时，内部选中统计同时调用
-			 * @param callback
-			 * @returns {*}
-			 */
+			// 处理交给 table 使用者去处理 clear 事件时，内部选中统计同时调用
 			renderClear(callback) {
-				if (this.selectedRowKeys.length <= 0) return null
-				return (
-					<a
-						className="ml-6"
-						onClick={() => {
-							callback()
-							this.clearSelected()
-						}}>
-						{' '}
-						清空{' '}
-					</a>
-				)
+				if (this.rowSelection && this.rowSelection.selectedRowKeys && this.rowSelection.selectedRowKeys.length > 0) {
+					return (
+						<a
+							className="ml-6"
+							onClick={() => {
+								callback()
+								this.clearSelected()
+							}}>
+							{' '}
+							清空{' '}
+						</a>
+					)
+				} else {
+					return null
+				}
 			},
 			renderAlert() {
 				// 绘制统计列数据
-				// eslint-disable-next-line no-unused-vars
 				const needTotalItems = this.needTotalList.map((item) => {
 					return (
 						<span className="mr-3">
@@ -358,25 +308,38 @@
 					)
 				})
 				// 绘制 清空 按钮
-				// eslint-disable-next-line no-unused-vars
 				const clearItem =
 					typeof this.alert === 'boolean' && this.alert
 						? this.renderClear(this.clearSelected)
 						: typeof this.alert.clear === 'function'
 						? this.renderClear(this.alert.clear)
 						: null
+
 				// 绘制 alert 组件
 				if (alert) {
+					const showAlert =
+						(typeof this.alert === 'object' &&
+							this.alert !== null &&
+							this.alert.show &&
+							typeof this.rowSelection.selectedRowKeys !== 'undefined') ||
+						this.alert
 					const message = (
 						<div>
 							<span className="mr-3">
-								已选择: <a className="font-6">{this.selectedRows.length}</a>
+								已选择:{' '}
+								<a className="font-6">
+									{this.rowSelection && this.rowSelection.selectedRowKeys
+										? this.rowSelection.selectedRowKeys.length
+										: 0}
+								</a>
 							</span>
 							{needTotalItems}
 							{clearItem}
 						</div>
 					)
-					return <a-alert showIcon class="mb-4" message={message} />
+					if (showAlert) {
+						return <a-alert showIcon class="mb-4" message={message} />
+					}
 				}
 			},
 			columnChange(val) {
@@ -485,13 +448,6 @@
 		render() {
 			let props = {}
 			const localKeys = Object.keys(this.$data)
-			const showAlert =
-				(typeof this.alert === 'object' &&
-					this.alert !== null &&
-					this.alert.show &&
-					typeof this.rowSelection.selectedRowKeys !== 'undefined') ||
-				this.alert
-
 			Object.keys(tableProps()).forEach((k) => {
 				const localKey = `local${k.substring(0, 1).toUpperCase()}${k.substring(1)}`
 				if (localKeys.includes(localKey)) {
@@ -499,23 +455,10 @@
 					return props[k]
 				}
 				if (k === 'rowSelection') {
-					if (showAlert && this.rowSelection) {
+					if (this.rowSelection) {
 						// 如果需要使用alert，则重新绑定 rowSelection 事件
 						props[k] = {
 							...this.rowSelection,
-							selectedRows: this.selectedRows,
-							selectedRowKeys: this.selectedRowKeys,
-							onChange: (selectedRowKeys, selectedRows) => {
-								this.updateSelect(selectedRowKeys, selectedRows)
-								typeof this[k].onChange !== 'undefined' && this[k].onChange(selectedRowKeys, selectedRows)
-							}
-						}
-						return props[k]
-					} else if (!showAlert && this.rowSelection) {
-						props[k] = {
-							...this.rowSelection,
-							selectedRows: this.selectedRows,
-							selectedRowKeys: this.selectedRowKeys,
 							onChange: (selectedRowKeys, selectedRows) => {
 								this.updateSelect(selectedRowKeys, selectedRows)
 								typeof this[k].onChange !== 'undefined' && this[k].onChange(selectedRowKeys, selectedRows)
@@ -535,6 +478,14 @@
 					size: this.customSize, // 注意这个size是a-table组件需要的，这里不能跟别的地方成为compSize
 					columns: this.columnsSetting.filter((value) => value.checked === undefined || value.checked)
 				}
+				// 如果在使用界面每配置scroll，那么使用全局的，对缩小屏幕下横向滚动条左右滑动
+				if (!props.scroll) {
+					props.scroll = { x: 1000 }
+					// 对于界面上要显示的字段太多，默认加上横向滚动条
+					if (props.columns && props.columns.length > 10) {
+						props.scroll = { x: 1200 }
+					}
+				}
 				return props[k]
 			})
 			const table = (
@@ -552,7 +503,7 @@
 			return (
 				<div className="table-wrapper">
 					{this.renderHeader()}
-					{showAlert ? this.renderAlert() : null}
+					{this.renderAlert()}
 					{table}
 				</div>
 			)
