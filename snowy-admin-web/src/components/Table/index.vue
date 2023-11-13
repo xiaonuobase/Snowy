@@ -63,6 +63,14 @@
 				type: Object,
 				default: null
 			},
+			lineSelection: {
+				type: Boolean,
+				default: false
+			},
+			customRow: {
+				type: Function,
+				default: undefined
+			},
 			showPagination: {
 				type: [String, Boolean],
 				default: 'auto'
@@ -467,6 +475,48 @@
 					} else if (!this.rowSelection) {
 						// 如果没打算开启 rowSelection 则清空默认的选择项
 						props[k] = null
+						return props[k]
+					}
+				}
+				if (k === 'customRow') {
+					if (this.lineSelection && this.rowSelection) {
+						// 如果需要 整行选择，则重新绑定 customRow 事件
+						props[k] = (record, index) => {
+							return {
+								...(typeof this.customRow !== 'undefined' && this.customRow(record, index)),
+								onClick: (event) => {
+									// 若存在原onClick则执行
+									typeof this[k] !== 'undefined' &&
+										typeof this[k](record, index).onClick !== 'undefined' &&
+										this[k](record, index).onClick(event)
+									// 记录为disabled则直接返回，默认为不可选
+									const rowDisabled =
+										typeof this.rowSelection.getCheckboxProps !== 'undefined' &&
+										this.rowSelection.getCheckboxProps(record).disabled
+									if (rowDisabled) return
+									// 过滤自定义按钮的非空白区域
+									const classList = event.target?.classList
+									if (!classList.contains('ant-table-cell')) return
+									const key = (typeof this.rowKey === 'function' && this.rowKey(record)) || this.rowKey || index
+									let selectedRows = this.rowSelection.selectedRows
+									let selectedRowKeys = this.rowSelection.selectedRowKeys
+									const rowType = this.rowSelection?.type || 'checkbox'
+
+									if (rowType === 'radio' || this.rowSelection.selectedRowKeys === undefined) {
+										selectedRowKeys = [key]
+										selectedRows = [record]
+									} else if (!this.rowSelection.selectedRowKeys?.includes(key)) {
+										selectedRowKeys.push(key)
+										selectedRows.push(record)
+									} else {
+										const index = this.rowSelection.selectedRowKeys?.findIndex((itemKey) => itemKey === key)
+										selectedRows.splice(index, 1)
+										selectedRowKeys.splice(index, 1)
+									}
+									this.updateSelect(selectedRowKeys, selectedRows)
+								}
+							}
+						}
 						return props[k]
 					}
 				}
