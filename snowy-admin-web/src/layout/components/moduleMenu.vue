@@ -146,6 +146,9 @@
 		color: white;
 		background-color: var(--primary-color);
 	}
+	.module-menu-color .ant-menu-item {
+		color: white !important;
+	}
 	.module-card-scope {
 		height: 49px;
 	}
