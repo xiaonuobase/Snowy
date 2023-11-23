@@ -5,6 +5,7 @@ import router from '@/router'
 import tool from '@/utils/tool'
 import { message } from 'ant-design-vue'
 import { useGlobalStore } from '@/store'
+import routerUtil from '@/utils/routerUtil'
 
 export const afterLogin = async (loginToken) => {
 	tool.data.set('TOKEN', loginToken)
@@ -16,7 +17,7 @@ export const afterLogin = async (loginToken) => {
 
 	// 获取用户的菜单
 	const menu = await userCenterApi.userLoginMenu()
-	let indexMenu = menu[0].children[0].path
+	let indexMenu = routerUtil.getIndexMenu(menu).path
 	tool.data.set('MENU', menu)
 	// 重置系统默认应用
 	tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
@@ -36,7 +37,8 @@ export const afterLogin = async (loginToken) => {
 			}
 		})
 		if (routerTag === 0) {
-			indexMenu = menu[0].children[0].path
+			// 取首页
+			indexMenu = routerUtil.getIndexMenu(menu).path
 		}
 	}
 	dictApi.dictTree().then((data) => {

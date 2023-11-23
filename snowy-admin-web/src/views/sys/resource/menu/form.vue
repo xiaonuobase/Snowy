@@ -6,6 +6,7 @@
 		:destroy-on-close="true"
 		@close="onClose"
 	>
+		<a-alert class="mb-3" message="温馨提示：排序第一为首页！若有多个模块根据授权可见情况而变化。" type="warning" />
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
 				<a-col :span="12">
@@ -106,6 +107,15 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="12">
+					<a-form-item label="是否可见:" name="visible">
+						<a-radio-group
+							v-model:value="formData.visible"
+							button-style="solid"
+							:options="visibleOptions"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :span="12">
 					<a-form-item label="排序:" name="sortCode">
 						<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>
@@ -121,17 +131,17 @@
 </template>
 
 <script setup>
-	import { required, rules } from '@/utils/formRules'
+	import { required } from '@/utils/formRules'
 	import SnowflakeId from 'snowflake-id'
 	import tool from '@/utils/tool'
 	import menuApi from '@/api/sys/resource/menuApi'
 	import IconSelector from '@/components/Selector/iconSelector.vue'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	const treeData = ref([])
-	let iconSelector = ref()
+	const iconSelector = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
 	// 默认展开的节点(顶级)
@@ -142,13 +152,20 @@
 	// 打开抽屉
 	const onOpen = (record, module) => {
 		moduleId.value = module
-		visible = true
-		formData.value = {
-			menuType: 'MENU',
-			sortCode: 99
-		}
+		visible.value = true
 		if (record) {
-			formData.value = Object.assign({}, record)
+			formData.value = record
+			// 因为版本升级后该字段无参数，所以默认为可见
+			if (!record.visible) {
+				formData.value.visible = 'true'
+			}
+		} else {
+			formData.value = {
+				menuType: 'MENU',
+				visible: 'true',
+				sortCode: 99
+			}
+			formData.value = Object.assign(formData.value, record)
 		}
 		// 获取菜单树并加入顶级
 		const treeParam = {
@@ -168,7 +185,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 	// 选择上级加载模块的选择框
 	const parentChange = (value) => {
@@ -197,10 +214,21 @@
 		path: [required('请输入路由地址')],
 		name: [required('请输入组件中name属性')],
 		module: [required('请选择模块')],
-		component: [required('请输入组件地址')]
+		component: [required('请输入组件地址')],
+		visible: [required('请选择是否可见')]
 	}
 
 	const categoryOptions = tool.dictList('MENU_TYPE')
+	const visibleOptions = [
+		{
+			label: '显示',
+			value: 'true'
+		},
+		{
+			label: '隐藏',
+			value: 'false'
+		}
+	]
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value

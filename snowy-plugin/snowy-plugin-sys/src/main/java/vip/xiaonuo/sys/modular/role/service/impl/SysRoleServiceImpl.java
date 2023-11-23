@@ -50,6 +50,7 @@ import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.resource.entity.SysModule;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
+import vip.xiaonuo.sys.modular.resource.enums.SysResourceMenuTypeEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
@@ -356,8 +357,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 new TreeNode<>(sysMenu.getId(), sysMenu.getParentId(),
                         sysMenu.getTitle(), sysMenu.getSortCode())).collect(Collectors.toList());
         List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "-1");
+
         sysMenuList.forEach(sysMenu -> {
-            boolean isLeafMenu = this.getChildListById(sysMenuList, sysMenu.getId(), false).size() == 0;
+            // 排除菜单中的目录
+            boolean isLeafMenu = !"0".equals(sysMenu.getId())
+                    && !sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue());
             if(isLeafMenu) {
                 SysRoleGrantResourceTreeResult.SysRoleGrantResourceMenuResult sysRoleGrantResourceMenuResult =
                         new SysRoleGrantResourceTreeResult.SysRoleGrantResourceMenuResult();

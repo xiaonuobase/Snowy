@@ -269,7 +269,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
 
     @Override
     public List<Tree<String>> loginMobileMenuTree(List<String> menuIdList) {
-        // 获取所有的菜单和模块以及单页面列表，并按分类和排序码排序
+        // 获取所有的菜单和模块列表，并按分类和排序码排序
         List<MobileMenu> allModuleAndMenuAndSpaList = this.list(new LambdaQueryWrapper<MobileMenu>()
                 .in(MobileMenu::getCategory, MobileResourceCategoryEnum.MODULE.getValue(), MobileResourceCategoryEnum.MENU.getValue())
                 .orderByAsc(CollectionUtil.newArrayList(MobileMenu::getCategory, MobileMenu::getSortCode)));

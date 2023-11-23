@@ -108,6 +108,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -591,15 +593,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
         }
 
-        // 获取所有的菜单和模块以及单页面列表，并按分类和排序码排序
+        // 获取所有的菜单和模块列表，并按分类和排序码排序
         List<SysMenu> allModuleAndMenuAndSpaList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
-                .in(SysMenu::getCategory, SysResourceCategoryEnum.MODULE.getValue(), SysResourceCategoryEnum.MENU.getValue(),
-                        SysResourceCategoryEnum.SPA.getValue()).orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory,
-                        SysMenu::getSortCode)));
+                .in(SysMenu::getCategory, SysResourceCategoryEnum.MODULE.getValue(), SysResourceCategoryEnum.MENU.getValue())
+                .orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory,SysMenu::getSortCode)));
         // 全部以菜单承载
         List<SysMenu> allModuleList = CollectionUtil.newArrayList();
         List<SysMenu> allMenuList = CollectionUtil.newArrayList();
-        List<SysMenu> allSpaList = CollectionUtil.newArrayList();
         // 根据类型抽取
         allModuleAndMenuAndSpaList.forEach(sysMenu -> {
             boolean isModule = sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue());
@@ -611,11 +611,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (isMenu) {
                 // 抽取所有的菜单列表
                 allMenuList.add(sysMenu);
-            }
-            boolean isSpa = sysMenu.getCategory().equals(SysResourceCategoryEnum.SPA.getValue());
-            if (isSpa) {
-                // 抽取所有的单页面列表
-                allSpaList.add(sysMenu);
             }
         });
 
@@ -643,8 +638,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isEmpty(moduleList)) {
             // 如果系统中无模块（极端情况）
             if (ObjectUtil.isEmpty(allModuleList)) {
-                // 如果系统中无单页面，则返回空列表
-                if (ObjectUtil.isEmpty(allSpaList)) {
+                // 如果系统中无菜单，则返回空列表
+                if (ObjectUtil.isEmpty(allMenuList)) {
                     return CollectionUtil.newArrayList();
                 } else {
                     // 否则构造一个模块，并添加到拥有模块
@@ -667,17 +662,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取第一个模块
         SysMenu firstModule = moduleList.get(0);
 
-        // 将第一个模块作为所有单页面的所属模块，并添加
-        List<SysMenu> spaList = allSpaList.stream().peek(sysMenu -> {
-            sysMenu.setParentId(firstModule.getId());
-            sysMenu.setModule(firstModule.getId());
-        }).collect(Collectors.toList());
-
-        // 获取第一个单页面的id
-        String firstSpaId = spaList.get(0).getId();
-
-        // 将单页面放入集合
-        resultList.addAll(spaList);
+        // 获取第一个模块下的第一个菜单
+        Optional<SysMenu> sysMenus = menuList.stream()
+                .filter(sysMenu -> sysMenu.getModule().equals(firstModule.getId()))
+                .findFirst()
+                .filter(sysMenu -> !sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue()));
 
         // 最终处理，构造meta
         List<JSONObject> resultJsonObjectList = resultList.stream().map(sysMenu -> {
@@ -697,22 +686,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             JSONObject metaJsonObject = JSONUtil.createObj();
             metaJsonObject.set("icon", sysMenu.getIcon());
             metaJsonObject.set("title", sysMenu.getTitle());
-            metaJsonObject.set("type", sysMenu.getCategory().toLowerCase());
+            metaJsonObject.set("type", ObjectUtil.isEmpty(sysMenu.getMenuType())
+                    ? sysMenu.getCategory().toLowerCase() : sysMenu.getMenuType().toLowerCase());
             // 如果是菜单，则设置type菜单类型为小写
             if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
                 if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
+                    // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
+                    if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("false")) {
+                        metaJsonObject.set("hidden", true);
+                    }
                 }
-            }
-            // 如果是单页面
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.SPA.getValue())) {
-                metaJsonObject.set("type", SysResourceCategoryEnum.MENU.getValue().toLowerCase());
-                if (sysMenu.getId().equals(firstSpaId)) {
-                    // 如果是首页（第一个单页面）则设置affix
+                if (sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
+                    // 如果是首页，则设置affix
                     metaJsonObject.set("affix", true);
-                } else {
-                    // 否则隐藏该单页面
-                    metaJsonObject.set("hidden", true);
                 }
             }
             menuJsonObject.set("meta", metaJsonObject);

@@ -25,25 +25,12 @@ const routes = {
 			children: []
 		}
 	],
-	// 默认首页、个人中心
+	// 默认首页为个人中心
 	menu: [
 		{
 			id: '001',
-			name: 'index',
-			path: '/index',
-			component: 'index/index',
-			meta: {
-				title: '首页',
-				type: 'menu',
-				icon: 'bank-outlined',
-				affix: true
-			},
-			children: []
-		},
-		{
-			id: '002',
-			name: 'userCenter',
-			path: '/userCenter',
+			name: 'usercenter',
+			path: '/usercenter',
 			component: 'sys/user/userCenter',
 			meta: {
 				title: '个人中心',

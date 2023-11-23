@@ -25,6 +25,7 @@
 						:theme="sideTheme"
 						mode="inline"
 						@select="onSelect"
+						@openChange="onOpenChange"
 					>
 						<NavMenu :nav-menus="menu" />
 					</a-menu>
@@ -79,9 +80,14 @@
 					</div>
 				</div>
 			</header>
-			<a-menu v-model:selectedKeys="doublerowSelectedKey" :theme="sideTheme" class="snowy-doublerow-layout-menu">
+			<a-menu
+				v-model:selectedKeys="doublerowSelectedKey"
+				:theme="sideTheme"
+				class="snowy-doublerow-layout-menu"
+				v-for="item in menu"
+				:key="item.path"
+			>
 				<a-menu-item
-					v-for="item in menu"
 					:key="item.path"
 					style="
 						text-align: center;
@@ -93,8 +99,9 @@
 						padding: 12px 0 !important;
 					"
 					@click="showMenu(item)"
+					v-if="!item.meta.hidden"
 				>
-					<a v-if="item.meta && item.meta.type === 'link'" :href="item.path" target="_blank" @click.stop="() => {}"></a>
+					<a v-if="item.meta && item.meta.type === 'link'" :href="item.path" target="_blank" @click.stop="() => {}" />
 					<template #icon>
 						<component :is="item.meta.icon" style="padding-left: 10px" />
 					</template>
@@ -176,7 +183,7 @@
 	import TopBar from '@/layout/components/topbar.vue'
 	import { globalStore, keepAliveStore } from '@/store'
 	import { ThemeModeEnum } from '@/utils/enum'
-	import { useRouter, useRoute } from 'vue-router'
+	import { useRoute, useRouter } from 'vue-router'
 	import tool from '@/utils/tool'
 	import { message } from 'ant-design-vue'
 
@@ -194,7 +201,6 @@
 	const moduleMenuShow = ref(true)
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
-	const currentRoute = ref()
 	// computed计算方法 - start
 	const layout = computed(() => {
 		return store.layout
@@ -241,42 +247,33 @@
 	const secondMenuSideTheme = computed(() => {
 		return theme.value === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : ThemeModeEnum.LIGHT
 	})
-	// 转换外部链接的路由
-	const filterUrl = (map) => {
-		const newMap = []
-		const traverse = (maps) => {
-			maps &&
-				maps.forEach((item) => {
-					item.meta = item.meta ? item.meta : {}
-					// 处理隐藏
-					if (item.meta.hidden) {
-						return false
-					}
-					// 处理iframe
-					if (item.meta.type === 'iframe') {
-						item.path = `/i/${item.name}`
-					}
-					// 递归循环
-					if (item.children && item.children.length > 0) {
-						item.children = filterUrl(item.children)
-					}
-					newMap.push(item)
-				})
-		}
-		traverse(map)
-		return newMap
-	}
 	// 路由监听高亮
 	const showThis = () => {
 		pMenu.value = route.meta.breadcrumb ? route.meta.breadcrumb[0] : {}
 		// 展开的
 		nextTick(() => {
 			// 取得默认路由地址并设置展开
-			const active = route.meta.active || route.path
+			let active = route.meta.active || route.path
+			// 如果是目录，必须往下找
+			if (route.meta.type === 'catalog') {
+				active = traverseChild(pMenu.value.children, active).path
+			}
 			selectedKeys.value = new Array(active)
 			const pidKey = getParentKeys(pMenu.value.children, active)
+			// 判断是隐藏的路由，找其上级
+			if (route.meta.hidden && pidKey) {
+				if (pidKey.length > 1) {
+					selectedKeys.value = new Array(pidKey[1])
+				}
+			}
 			const nextTickMenu = pMenu.value.children
 			if (pidKey) {
+				const modelPidKey = getParentKeys(moduleMenu.value, route.path)
+				moduleMenu.value.forEach((item) => {
+					if (modelPidKey.includes(item.path)) {
+						tagSwitchModule(item.id)
+					}
+				})
 				const parentPath = pidKey[pidKey.length - 1]
 				if (layout.value === 'doublerow') {
 					// 这一串操作下来只为取到最上面的路由的孩子们，最后成为双排菜单的第二排
@@ -300,19 +297,17 @@
 	moduleMenu.value = router.getMenu()
 	// 获取缓存中的菜单模块是哪个
 	const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
-	let initMenu = []
 	if (menuModuleId) {
 		// 防止切换一个无此应用的人
 		const module = router.getMenu().filter((item) => item.id === menuModuleId)
 		if (module.length > 0) {
-			initMenu = module[0].children
+			menu.value = module[0].children
 		} else {
-			initMenu = router.getMenu()[0].children
+			menu.value = router.getMenu()[0].children
 		}
 	} else {
-		initMenu = router.getMenu()[0].children
+		menu.value = router.getMenu()[0].children
 	}
-	menu.value = filterUrl(initMenu)
 	showThis()
 
 	onMounted(() => {
@@ -321,18 +316,9 @@
 		switchoverTopHeaderThemeColor()
 	})
 	watch(route, (newValue) => {
-		currentRoute.value = route.path
 		// 清理选中的
 		selectedKeys.value = []
 		showThis()
-		if (layoutTagsOpen.value) {
-			const pidKey = getParentKeys(moduleMenu.value, route.path)
-			moduleMenu.value.forEach((item) => {
-				if (pidKey.includes(item.path)) {
-					tagSwitchModule(item.id)
-				}
-			})
-		}
 	})
 	// 监听是否开启了顶栏颜色
 	watch(layout, (newValue) => {
@@ -400,6 +386,21 @@
 			}
 		})
 	}
+	// 菜单展开/关闭的回调
+	const onOpenChange = (keys) => {
+		if (sideUniqueOpen.value) {
+			// 获取最新的
+			const openKey = keys[keys.length - 1]
+			if (keys.length > 1) {
+				// 获取上级
+				openKeys.value = getParentKeys(menu.value, openKey)
+			} else {
+				openKeys.value = Array.of(openKey) // new Array(openKey);
+			}
+		} else {
+			openKeys.value = keys
+		}
+	}
 	// 获取上级keys
 	const getParentKeys = (data, val) => {
 		const traverse = (array, val) => {
@@ -422,13 +423,29 @@
 	const showMenu = (route) => {
 		pMenu.value = route
 		if (pMenu.value.children) {
-			nextMenu.value = filterUrl(pMenu.value.children)
+			nextMenu.value = pMenu.value.children
 		}
 		if (!route.children || route.children.length === 0) {
 			layoutSiderDowbleMenu.value = false
 			router.push({ path: route.path })
 		} else {
-			layoutSiderDowbleMenu.value = true
+			if (route.children) {
+				let hidden = 0
+				route.children.forEach((item) => {
+					if (item.meta.hidden && item.meta.hidden === true) {
+						hidden++
+					}
+				})
+				// 如果全部都隐藏了，就跳转这个，不展开另一排
+				if (hidden === route.children.length) {
+					layoutSiderDowbleMenu.value = false
+					router.push({ path: route.path })
+				} else {
+					layoutSiderDowbleMenu.value = true
+				}
+			} else {
+				layoutSiderDowbleMenu.value = false
+			}
 		}
 		if (layout.value === 'doublerow') {
 			doublerowSelectedKey.value = [route.path]
@@ -454,7 +471,7 @@
 			const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
 			if (menus.length > 0) {
 				// 正儿八百的菜单
-				menu.value = filterUrl(menus)
+				menu.value = menus
 				const firstMenu = traverseChild(menu.value)
 				const path = firstMenu.path
 				// 如果是外链
@@ -472,21 +489,22 @@
 		}
 	}
 	// 通过标签切换应用
-	const tagSwitchModule = (id, path) => {
+	const tagSwitchModule = (id) => {
 		// 将此模块的唯一值加入缓存
 		tool.data.set('SNOWY_MENU_MODULE_ID', id)
 		store.setModule(id)
-		const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
 		// 正儿八百的菜单
-		menu.value = filterUrl(menus)
+		menu.value = moduleMenu.value.filter((item) => item.id === id)[0].children
 	}
-	// 遍历子集获取一个path
+	// 遍历获取子集
 	const traverseChild = (menu) => {
-		if (menu[0].children !== undefined) {
+		if (menu[0] && menu[0].children !== undefined) {
 			if (menu[0].children.length > 0) {
-				return traverseChild(menu[0].children)
-			} else {
-				return menu[0]
+				if (menu[0].children[0] && menu[0].children[0].meta.hidden && menu[0].children[0].meta.hidden === true) {
+					return menu[0]
+				} else {
+					return traverseChild(menu[0].children)
+				}
 			}
 		} else {
 			return menu[0]

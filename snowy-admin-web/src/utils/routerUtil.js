@@ -8,30 +8,30 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-import { baseRequest } from '@/utils/request'
-
-const request = (url, ...arg) => baseRequest(`/sys/spa/${url}`, ...arg)
-/**
- * 单页
- *
- * @author yubaoshan
- * @date 2022-09-22 22:33:20
- */
-export default {
-	// 获取菜单分页
-	spaPage(data) {
-		return request('page', data, 'get')
-	},
-	// 提交表单 edit为true时为编辑，默认为新增
-	submitForm(data, edit = false) {
-		return request(edit ? 'edit' : 'add', data)
-	},
-	// 删除菜单
-	spaDelete(data) {
-		return request('delete', data)
-	},
-	// 获取菜单详情
-	spaDetail(data) {
-		return request('detail', data, 'get')
+// 获取第一个界面
+const getIndexMenu = (menu) => {
+	let indexMenu = menu[0].children[0]
+	// 如果第一个菜单为目录，接着往下找
+	if (indexMenu.meta.type === 'catalog') {
+		indexMenu = traverseChild(menu)
 	}
+	return indexMenu
+}
+// 遍历进行判断，其中处理了被隐藏的
+const traverseChild = (menu) => {
+	if (menu[0] && menu[0].children !== undefined) {
+		if (menu[0].children.length > 0) {
+			if (menu[0].children[0] && menu[0].children[0].meta.hidden && menu[0].children[0].meta.hidden === true) {
+				return menu[0]
+			} else {
+				return traverseChild(menu[0].children)
+			}
+		}
+	} else {
+		return menu[0]
+	}
+}
+
+export default {
+	getIndexMenu
 }

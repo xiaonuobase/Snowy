@@ -10,6 +10,7 @@
  */
 import config from '@/config'
 import tool from '@/utils/tool'
+import routerUtil from '@/utils/routerUtil'
 
 // 系统路由
 const routes = [
@@ -17,7 +18,7 @@ const routes = [
 		name: 'layout',
 		path: '/',
 		component: () => import('@/layout/index.vue'),
-		redirect: tool.data.get('MENU') ? tool.data.get('MENU')[0].children[0].path : config.DASHBOARD_URL,
+		redirect: tool.data.get('MENU') ? routerUtil.getIndexMenu(tool.data.get('MENU')).path : config.DASHBOARD_URL,
 		children: []
 	},
 	{

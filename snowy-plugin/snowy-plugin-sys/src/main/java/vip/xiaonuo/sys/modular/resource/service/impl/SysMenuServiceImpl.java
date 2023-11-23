@@ -239,6 +239,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenu.getParentId())
                 .eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue()).eq(SysMenu::getTitle, sysMenu.getTitle())
                 .ne(SysMenu::getId, sysMenu.getId())) > 0;
+        // 不管是哪个改为菜单，设置组件为空
+        if(sysMenuEditParam.getMenuType().equals(SysResourceMenuTypeEnum.MENU.getValue())) {
+            sysMenuEditParam.setComponent(null);
+            sysMenuEditParam.setName(null);
+        }
         if(repeatTitle) {
             throw new CommonException("存在重复的菜单，名称为：{}", sysMenu.getTitle());
         }

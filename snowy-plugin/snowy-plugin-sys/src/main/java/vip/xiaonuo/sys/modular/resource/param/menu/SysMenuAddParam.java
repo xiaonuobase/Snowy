@@ -71,7 +71,11 @@ public class SysMenuAddParam {
     @ApiModelProperty(value = "图标", position = 9)
     private String icon;
 
+    /** 是否可见 */
+    @ApiModelProperty(value = "是否可见", position = 10)
+    private String visible;
+
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 10)
+    @ApiModelProperty(value = "扩展信息", position = 11)
     private String extJson;
 }

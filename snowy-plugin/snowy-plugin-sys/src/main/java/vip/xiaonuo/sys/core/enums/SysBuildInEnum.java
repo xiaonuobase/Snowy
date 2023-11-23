@@ -30,10 +30,7 @@ public enum SysBuildInEnum {
     BUILD_IN_ROLE_CODE("superAdmin", "超管"),
 
     /** 系统内置模块编码 */
-    BUILD_IN_MODULE_CODE("system", "系统内置"),
-
-    /** 系统内置单页面编码 */
-    BUILD_IN_SPA_CODE("system", "系统内置");
+    BUILD_IN_MODULE_CODE("system", "系统内置");
 
     private final String value;
 

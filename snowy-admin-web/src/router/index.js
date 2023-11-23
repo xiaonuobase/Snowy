@@ -86,8 +86,10 @@ router.beforeEach(async (to, from, next) => {
 		next()
 		return false
 	} else {
-		// 这里需要使用 localStorage 保存登录之前要访问的页面
-		tool.data.set('LAST_VIEWS_PATH', to.fullPath)
+		if (token) {
+			// 有token的时候才保存登录之前要访问的页面
+			tool.data.set('LAST_VIEWS_PATH', to.fullPath)
+		}
 	}
 	if (!token) {
 		next({
@@ -149,7 +151,28 @@ router.getMenu = () => {
 		const childrenApiMenu = apiMenu[0].children
 		apiMenu[0].children = [...userMenu, ...childrenApiMenu]
 	}
-	return apiMenu
+	return filterUrl(apiMenu)
+}
+
+const filterUrl = (map) => {
+	const newMap = []
+	const traverse = (maps) => {
+		maps &&
+			maps.forEach((item) => {
+				item.meta = item.meta ? item.meta : {}
+				// 处理iframe
+				if (item.meta.type === 'iframe') {
+					item.path = `/${item.name}`
+				}
+				// 递归循环
+				if (item.children && item.children.length > 0) {
+					item.children = filterUrl(item.children)
+				}
+				newMap.push(item)
+			})
+	}
+	traverse(map)
+	return newMap
 }
 
 // 转换
@@ -160,7 +183,7 @@ const filterAsyncRouter = (routerMap) => {
 		// 处理外部链接特殊路由
 		if (item.meta.type === 'iframe') {
 			item.meta.url = item.path
-			item.path = `/i/${item.name}`
+			item.path = `/${item.name}`
 		}
 		// MAP转路由对象
 		const route = {

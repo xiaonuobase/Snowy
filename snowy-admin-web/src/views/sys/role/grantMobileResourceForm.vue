@@ -84,7 +84,7 @@
 			key: 'title',
 			title: '菜单',
 			dataIndex: 'title',
-			width: 200
+			width: 240
 		},
 		{
 			key: 'button',

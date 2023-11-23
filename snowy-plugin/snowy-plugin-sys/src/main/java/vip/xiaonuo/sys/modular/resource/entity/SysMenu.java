@@ -82,12 +82,16 @@ public class SysMenu extends CommonEntity {
     @ApiModelProperty(value = "颜色", position = 12)
     private String color;
 
+    /** 是否可见 */
+    @ApiModelProperty(value = "是否可见", position = 13)
+    private String visible;
+
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 13)
+    @ApiModelProperty(value = "排序码", position = 14)
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 14)
+    @ApiModelProperty(value = "扩展信息", position = 15)
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

@@ -27,9 +27,6 @@ public enum SysResourceCategoryEnum {
     /** 模块 */
     MODULE("MODULE"),
 
-    /** 单页面 */
-    SPA("SPA"),
-
     /** 菜单 */
     MENU("MENU"),
 
@@ -43,7 +40,7 @@ public enum SysResourceCategoryEnum {
     }
 
     public static void validate(String value) {
-        boolean flag = MODULE.getValue().equals(value) || SPA.getValue().equals(value) || MENU.getValue().equals(value)
+        boolean flag = MODULE.getValue().equals(value) || MENU.getValue().equals(value)
                 || BUTTON.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持的资源分类：{}", value);

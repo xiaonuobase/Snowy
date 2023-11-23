@@ -63,6 +63,7 @@
 	import XnContextMenu from '@/components/XnContextMenu/index.vue'
 	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
 	import { mapState, mapActions } from 'pinia'
+	import routerUtil from '@/utils/routerUtil'
 
 	export default {
 		name: 'Tags',
@@ -95,7 +96,7 @@
 		},
 		created() {
 			const module = this.$router.getMenu()
-			const indexMenu = tool.data.get('MENU') ? tool.data.get('MENU')[0].children[0].path : this.$CONFIG.DASHBOARD_URL
+			const indexMenu = routerUtil.getIndexMenu(module).path
 			// eslint-disable-next-line eqeqeq
 			const dashboardRoute = this.treeFind(module, (node) => node.path === indexMenu)
 			if (dashboardRoute) {
