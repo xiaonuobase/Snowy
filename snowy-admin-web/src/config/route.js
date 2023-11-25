@@ -25,7 +25,7 @@ const routes = {
 			children: []
 		}
 	],
-	// 默认首页为个人中心
+	// 默认谁都有个人中心
 	menu: [
 		{
 			id: '001',
@@ -36,8 +36,7 @@ const routes = {
 				title: '个人中心',
 				type: 'menu',
 				hidden: true
-			},
-			children: []
+			}
 		}
 	]
 }

@@ -107,10 +107,9 @@ router.beforeEach(async (to, from, next) => {
 		if (apiMenu.length === 0) {
 			// 创建默认模块，显示默认菜单
 			apiMenu[0] = cloneDeep(userRoutes.module[0])
-			const userMenu = userRoutes.menu
-			const childrenApiMenu = apiMenu[0].children
-			apiMenu[0].children = [...userMenu, ...childrenApiMenu]
 		}
+		const childrenApiMenu = apiMenu[0].children
+		apiMenu[0].children = [...childrenApiMenu ? childrenApiMenu : [], ...userRoutes.menu]
 		let menuRouter = filterAsyncRouter(apiMenu)
 		menuRouter = flatAsyncRoutes(menuRouter)
 		menuRouter.forEach((item) => {
@@ -147,10 +146,9 @@ router.getMenu = () => {
 	if (apiMenu.length === 0) {
 		// 创建默认模块，显示默认菜单
 		apiMenu[0] = cloneDeep(userRoutes.module[0])
-		const userMenu = userRoutes.menu
-		const childrenApiMenu = apiMenu[0].children
-		apiMenu[0].children = [...userMenu, ...childrenApiMenu]
 	}
+	const childrenApiMenu = apiMenu[0].children
+	apiMenu[0].children = [...childrenApiMenu ? childrenApiMenu : [], ...userRoutes.menu]
 	return filterUrl(apiMenu)
 }
 
