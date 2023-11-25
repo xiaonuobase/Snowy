@@ -157,12 +157,12 @@
 			formData.value = record
 			// 因为版本升级后该字段无参数，所以默认为可见
 			if (!record.visible) {
-				formData.value.visible = 'true'
+				formData.value.visible = 'TRUE'
 			}
 		} else {
 			formData.value = {
 				menuType: 'MENU',
-				visible: 'true',
+				visible: 'TRUE',
 				sortCode: 99
 			}
 			formData.value = Object.assign(formData.value, record)
@@ -219,16 +219,7 @@
 	}
 
 	const categoryOptions = tool.dictList('MENU_TYPE')
-	const visibleOptions = [
-		{
-			label: '显示',
-			value: 'true'
-		},
-		{
-			label: '隐藏',
-			value: 'false'
-		}
-	]
+	const visibleOptions = tool.dictList('MENU_VISIBLE')
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value

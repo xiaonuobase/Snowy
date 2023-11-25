@@ -35,7 +35,7 @@
 		>
 			<template #operator class="table-operator">
 				<a-space>
-					<a-button type="primary" @click="form.onOpen(undefined, moduleType)">
+					<a-button type="primary" @click="formRef.onOpen(undefined, moduleType)">
 						<template #icon><plus-outlined /></template>
 						新增菜单
 					</a-button>
@@ -68,9 +68,22 @@
 						{{ $TOOL.dictTypeData('MENU_TYPE', record.menuType) }}
 					</a-tag>
 				</template>
+				<template v-if="column.dataIndex === 'visible'">
+					<a-tag v-if="record.visible === 'FALSE'">
+						{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
+					</a-tag>
+					<a-tag v-else color="green">
+						<span v-if="record.visible === 'TRUE'">
+							{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
+						</span>
+						<span v-else>
+							显示
+						</span>
+					</a-tag>
+				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>
-						<a @click="form.onOpen(record, moduleType)">编辑</a>
+						<a @click="formRef.onOpen(record, moduleType)">编辑</a>
 						<a-divider type="vertical" />
 						<a-popconfirm title="确定要删除此菜单吗？" @confirm="deleteMenu(record)">
 							<a-button type="link" danger size="small">删除</a-button>
@@ -88,7 +101,7 @@
 											<a @click="changeModuleFormRef.onOpen(record)">更改模块</a>
 										</a-menu-item>
 										<a-menu-item v-if="record.menuType === 'MENU'">
-											<a @click="button.onOpen(record)">按钮权限</a>
+											<a @click="buttonRef.onOpen(record)">按钮权限</a>
 										</a-menu-item>
 									</a-menu>
 								</template>
@@ -99,7 +112,7 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="table.refresh(true)" />
 	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)" />
 	<Button ref="button" />
 </template>
@@ -107,16 +120,15 @@
 <script setup name="sysMenu">
 	import menuApi from '@/api/sys/resource/menuApi'
 	import Form from './form.vue'
-	import changeModuleForm from './changeModuleForm.vue'
+	import ChangeModuleForm from './changeModuleForm.vue'
 	import Button from '../button/index.vue'
 	let searchFormState = reactive({})
 	const table = ref(null)
-	let form = ref()
-	let changeModuleFormRef = ref()
-	let button = ref()
-	let field = ref()
+	const formRef = ref()
+	const changeModuleFormRef = ref()
+	const buttonRef = ref()
 	const moduleType = ref()
-	let moduleTypeList = ref([])
+	const moduleTypeList = ref([])
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
 		{
@@ -130,7 +142,8 @@
 		},
 		{
 			title: '类型',
-			dataIndex: 'menuType'
+			dataIndex: 'menuType',
+			width: 100
 		},
 		{
 			title: '路由地址',
@@ -145,14 +158,13 @@
 			width: 150
 		},
 		{
-			title: '排序',
-			dataIndex: 'sortCode',
-			sorter: true
+			title: '是否可见',
+			dataIndex: 'visible',
+			width: 100
 		},
 		{
-			title: '创建时间',
-			dataIndex: 'createTime',
-			ellipsis: true,
+			title: '排序',
+			dataIndex: 'sortCode',
 			sorter: true
 		},
 		{

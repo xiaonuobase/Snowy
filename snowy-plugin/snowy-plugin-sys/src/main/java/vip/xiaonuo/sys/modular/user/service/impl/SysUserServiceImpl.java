@@ -693,7 +693,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
                     // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
-                    if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("false")) {
+                    if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
                         metaJsonObject.set("hidden", true);
                     }
                 }
