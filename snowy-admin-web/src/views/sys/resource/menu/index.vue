@@ -114,7 +114,7 @@
 	</a-card>
 	<Form ref="formRef" @successful="table.refresh(true)" />
 	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)" />
-	<Button ref="button" />
+	<Button ref="buttonRef" />
 </template>
 
 <script setup name="sysMenu">
