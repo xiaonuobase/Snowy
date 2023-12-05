@@ -26,6 +26,7 @@ import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.log.entity.DevLog;
 import vip.xiaonuo.dev.modular.log.param.DevLogDeleteParam;
+import vip.xiaonuo.dev.modular.log.param.DevLogIdParam;
 import vip.xiaonuo.dev.modular.log.param.DevLogPageParam;
 import vip.xiaonuo.dev.modular.log.result.DevLogOpBarChartDataResult;
 import vip.xiaonuo.dev.modular.log.result.DevLogOpPieChartDataResult;
@@ -34,6 +35,7 @@ import vip.xiaonuo.dev.modular.log.result.DevLogVisPieChartDataResult;
 import vip.xiaonuo.dev.modular.log.service.DevLogService;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -130,4 +132,15 @@ public class DevLogController {
     public CommonResult<List<DevLogOpPieChartDataResult>> opLogPieChartData() {
         return CommonResult.data(devLogService.opLogPieChartData());
     }
+
+    /**
+     * 依据id获取单条日志详情
+     */
+    @ApiOperationSupport(order = 6)
+    @ApiOperation("依据id获取日志详情")
+    @GetMapping("/dev/log/detail")
+    public CommonResult<DevLog> detail(@Valid DevLogIdParam devLogIdParam) {
+        return CommonResult.data(devLogService.detail(devLogIdParam));
+    }
+
 }

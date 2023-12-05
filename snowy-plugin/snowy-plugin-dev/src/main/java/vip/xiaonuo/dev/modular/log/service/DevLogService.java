@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.dev.modular.log.entity.DevLog;
 import vip.xiaonuo.dev.modular.log.param.DevLogDeleteParam;
+import vip.xiaonuo.dev.modular.log.param.DevLogIdParam;
 import vip.xiaonuo.dev.modular.log.param.DevLogPageParam;
 import vip.xiaonuo.dev.modular.log.result.DevLogOpBarChartDataResult;
 import vip.xiaonuo.dev.modular.log.result.DevLogOpPieChartDataResult;
@@ -39,6 +40,11 @@ public interface DevLogService extends IService<DevLog> {
      * @date 2022/4/24 20:08
      */
     Page<DevLog> page(DevLogPageParam devLogPageParam);
+
+    /**
+     * 获取单条日志详情
+     */
+    DevLog detail(DevLogIdParam devLogIdParam);
 
     /**
      * 清空日志
