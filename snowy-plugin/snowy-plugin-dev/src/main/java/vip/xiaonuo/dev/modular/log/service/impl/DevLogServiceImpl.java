@@ -57,6 +57,13 @@ public class DevLogServiceImpl extends ServiceImpl<DevLogMapper, DevLog> impleme
     @Override
     public Page<DevLog> page(DevLogPageParam devLogPageParam) {
         QueryWrapper<DevLog> queryWrapper = new QueryWrapper<>();
+        // page查询中排除较大的字段（提升查询速度）
+        queryWrapper.select(DevLog.class, info ->
+                !info.getColumn().equalsIgnoreCase("param_json")
+                        && !info.getColumn().equalsIgnoreCase("result_json")
+                        && !info.getColumn().equalsIgnoreCase("exe_message")
+                        && !info.getColumn().equalsIgnoreCase("sign_data")
+        );
         if(ObjectUtil.isNotEmpty(devLogPageParam.getCategory())) {
             queryWrapper.lambda().eq(DevLog::getCategory, devLogPageParam.getCategory());
         }
