@@ -22,6 +22,10 @@ export default {
 	logPage(data) {
 		return request('page', data, 'get')
 	},
+	// 获取日志详情
+	logDetail(data) {
+		return request('detail', data, 'get')
+	},
 	// 获取访问日志折线图数据
 	logVisLineChartData(data) {
 		return request('vis/lineChartData', data, 'get')

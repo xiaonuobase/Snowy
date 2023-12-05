@@ -53,7 +53,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>
-						<a @click="detailRef.onOpen(record)">详情</a>
+						<a @click="getDetail(record.id)">详情</a>
 					</a-space>
 				</template>
 			</template>
@@ -119,6 +119,13 @@
 			width: '100px'
 		}
 	]
+	// 获取日志详情
+	const getDetail = (id) => {
+		let param = { id: id }
+		logApi.logDetail(param).then((data) => {
+			detailRef.value.onOpen(data)
+		})
+	}
 	// 切换应用标签查询
 	const opLogTypeClock = (value) => {
 		searchFormState.category = value
