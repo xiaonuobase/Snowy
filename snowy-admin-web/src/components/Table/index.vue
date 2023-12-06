@@ -201,6 +201,7 @@
 									current: r.current, // pageNo, // 返回结果中的当前分页数
 									total: r.total, // totalRows, // 返回结果中的总记录数
 									showSizeChanger: this.showSizeChanger,
+									pageSizeOptions: this.pageSizeOptions,
 									showTotal: (total, range) => {
 										return `${range[0]}-${range[1]} 共 ${total} 条 `
 									},
