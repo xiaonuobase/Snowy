@@ -15,6 +15,7 @@ package vip.xiaonuo.common.pojo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,7 @@ import java.util.Date;
 public class CommonEntity implements Serializable {
 
     /** 删除标志 */
+    @JsonIgnore
     @TableLogic
     @ApiModelProperty(value = "删除标志", position = 999)
     @TableField(fill = FieldFill.INSERT)
