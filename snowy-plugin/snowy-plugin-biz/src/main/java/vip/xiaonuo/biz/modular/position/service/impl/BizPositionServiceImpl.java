@@ -78,6 +78,9 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         if(ObjectUtil.isNotEmpty(bizPositionPageParam.getCategory())) {
             queryWrapper.lambda().eq(BizPosition::getCategory, bizPositionPageParam.getCategory());
         }
+        if(ObjectUtil.isNotEmpty(bizPositionPageParam.getSearchKey())) {
+            queryWrapper.lambda().like(BizPosition::getName, bizPositionPageParam.getSearchKey());
+        }
         if(ObjectUtil.isAllNotEmpty(bizPositionPageParam.getSortField(), bizPositionPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(bizPositionPageParam.getSortOrder());
             queryWrapper.orderBy(true, bizPositionPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
