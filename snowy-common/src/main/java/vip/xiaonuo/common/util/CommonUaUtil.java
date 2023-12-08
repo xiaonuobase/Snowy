@@ -41,6 +41,9 @@ public class CommonUaUtil {
             return StrUtil.DASHED;
         } else {
             String browser = userAgent.getBrowser().toString();
+            if (StrUtil.isNotBlank(browser) && browser.length() > 250) {
+                browser = browser.substring(0, 250);
+            }
             return "Unknown".equals(browser) ? StrUtil.DASHED : browser;
         }
     }
@@ -57,6 +60,9 @@ public class CommonUaUtil {
             return StrUtil.DASHED;
         } else {
             String os = userAgent.getOs().toString();
+            if (StrUtil.isNotBlank(os) && os.length() > 250) {
+                os = os.substring(0, 250);
+            }
             return "Unknown".equals(os) ? StrUtil.DASHED : os;
         }
     }
