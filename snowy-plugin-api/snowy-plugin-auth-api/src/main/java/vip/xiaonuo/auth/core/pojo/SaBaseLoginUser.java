@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.auth.core.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -242,6 +243,7 @@ public abstract class SaBaseLoginUser {
     private List<DataScope> dataScopeList;
 
     /** 用户密码hash值 */
+    @JsonIgnore
     @ApiModelProperty(value = "用户密码hash值", position = 55)
     private String password;
 
