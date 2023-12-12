@@ -61,6 +61,7 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
@@ -837,6 +838,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void updateUserInfo(SysUserUpdateInfoParam sysUserUpdateInfoParam) {
+        String id = StpLoginUserUtil.getLoginUser().getId();
+        if (!StrUtil.equals(id,sysUserUpdateInfoParam.getId())){
+            throw new CommonException("禁止修改他人信息");
+        }
+
         SysUser sysUser = this.queryEntity(sysUserUpdateInfoParam.getId());
 
         if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getPhone())) {
