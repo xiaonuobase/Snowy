@@ -515,6 +515,8 @@
 										selectedRowKeys.splice(index, 1)
 									}
 									this.updateSelect(selectedRowKeys, selectedRows)
+									typeof this.rowSelection.onChange !== 'undefined' &&
+										this.rowSelection.onChange(selectedRowKeys, selectedRows)
 								}
 							}
 						}
