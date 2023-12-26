@@ -19,6 +19,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -107,7 +108,9 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
 
     private void checkParam(DevJobAddParam devJobAddParam) {
         DevJobCategoryEnum.validate(devJobAddParam.getCategory());
-        if(!CronExpression.isValidExpression(devJobAddParam.getCronExpression())) {
+        try {
+            CronPattern.of(devJobAddParam.getCronExpression());
+        } catch (Exception e) {
             throw new CommonException("cron表达式：{}格式不正确", devJobAddParam.getCronExpression());
         }
         try {

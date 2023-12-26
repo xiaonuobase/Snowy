@@ -3,4 +3,7 @@
 <mapper namespace="vip.xiaonuo.sys.modular.user.mapper.SysUserMapper">
 
 
+    <delete id="deleteIgnoreInterceptor">
+        DELETE FROM SYS_USER ${ew.customSqlSegment}
+    </delete>
 </mapper>

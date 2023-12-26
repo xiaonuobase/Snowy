@@ -44,6 +44,14 @@ public interface DevConfigService extends IService<DevConfig> {
     Page<DevConfig> page(DevConfigPageParam devConfigPageParam);
 
     /**
+     * 获取基础配置列表
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<DevConfig> sysBaseList();
+
+    /**
      * 获取配置列表
      *
      * @author xuyuxiang

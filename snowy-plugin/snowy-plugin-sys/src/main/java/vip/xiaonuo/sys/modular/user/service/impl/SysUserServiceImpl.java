@@ -104,13 +104,12 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 /**
@@ -539,8 +538,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         try {
             String suffix = Objects.requireNonNull(FileUtil.getSuffix(file.getOriginalFilename())).toLowerCase();
-            String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(file.getBytes()),
-                    100, 100, null), suffix);
+            BufferedImage image = ImgUtil.toImage(file.getBytes());
+            String base64;
+            if(image.getWidth() <= 200 && image.getHeight() <= 200) {
+                base64 = ImgUtil.toBase64DataUri(image, suffix);
+            } else {
+                base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(image, 200, 200, null), suffix);
+            }
             this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                     sysUser.getId()).set(SysUser::getAvatar, base64));
             return base64;

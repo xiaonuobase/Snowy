@@ -83,4 +83,11 @@ public class CommonCacheOperator {
         }
         return results;
     }
+
+    public void removeBatch(String pattern) {
+        Set<String> keys = redisTemplate.keys(CACHE_KEY_PREFIX + pattern);
+        if (keys != null) {
+            redisTemplate.delete(keys);
+        }
+    }
 }

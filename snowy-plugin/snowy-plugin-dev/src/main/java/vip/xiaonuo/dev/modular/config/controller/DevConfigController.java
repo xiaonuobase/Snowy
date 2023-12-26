@@ -26,7 +26,6 @@ import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.dev.modular.config.entity.DevConfig;
-import vip.xiaonuo.dev.modular.config.enums.DevConfigCategoryEnum;
 import vip.xiaonuo.dev.modular.config.param.*;
 import vip.xiaonuo.dev.modular.config.service.DevConfigService;
 
@@ -73,9 +72,7 @@ public class DevConfigController {
     @ApiOperation("获取系统基础配置")
     @GetMapping("/dev/config/sysBaseList")
     public CommonResult<List<DevConfig>> sysBaseList() {
-        DevConfigListParam devConfigListParam = new DevConfigListParam();
-        devConfigListParam.setCategory(DevConfigCategoryEnum.SYS_BASE.getValue());
-        return CommonResult.data(devConfigService.list(devConfigListParam));
+        return CommonResult.data(devConfigService.sysBaseList());
     }
 
     /**

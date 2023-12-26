@@ -16,7 +16,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -93,6 +92,14 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
     }
 
     @Override
+    public List<DevConfig> sysBaseList() {
+        DevConfigListParam devConfigListParam = new DevConfigListParam();
+        devConfigListParam.setCategory(DevConfigCategoryEnum.SYS_BASE.getValue());
+        return this.list(devConfigListParam).stream().filter(devConfig -> !devConfig.getConfigKey()
+                .equals(SNOWY_SYS_DEFAULT_PASSWORD_KEY)).collect(Collectors.toList());
+    }
+
+    @Override
     public List<DevConfig> list(DevConfigListParam devConfigListParam) {
         LambdaQueryWrapper<DevConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
@@ -101,11 +108,7 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
         if(ObjectUtil.isNotEmpty(devConfigListParam.getCategory())) {
             lambdaQueryWrapper.eq(DevConfig::getCategory, devConfigListParam.getCategory());
         }
-        return this.list(lambdaQueryWrapper).stream().peek(devConfig -> {
-            if(devConfig.getConfigKey().equals(SNOWY_SYS_DEFAULT_PASSWORD_KEY)) {
-                devConfig.setConfigValue(DesensitizedUtil.password(devConfig.getConfigValue()));
-            }
-        }).collect(Collectors.toList());
+        return this.list(lambdaQueryWrapper);
     }
 
     @Override
