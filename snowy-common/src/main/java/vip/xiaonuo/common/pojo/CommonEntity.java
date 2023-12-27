@@ -16,6 +16,9 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fhs.core.trans.anno.Trans;
+import com.fhs.core.trans.constant.TransType;
+import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +37,7 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class CommonEntity implements Serializable {
+public class CommonEntity implements Serializable, TransPojo {
 
     /** 删除标志 */
     @JsonIgnore
@@ -51,15 +54,27 @@ public class CommonEntity implements Serializable {
     /** 创建人 */
     @ApiModelProperty(value = "创建人", position = 1001)
     @TableField(fill = FieldFill.INSERT)
+    @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "createUser", ref = "createUser")
     private String createUser;
 
+    /** 创建人名称 */
+    @ApiModelProperty(value = "创建人名称", position = 1002)
+    @TableField(exist = false)
+    private String createUserName;
+
     /** 更新时间 */
-    @ApiModelProperty(value = "更新时间", position = 1002)
+    @ApiModelProperty(value = "更新时间", position = 1003)
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /** 更新人 */
-    @ApiModelProperty(value = "更新人", position = 1003)
+    @ApiModelProperty(value = "更新人", position = 1004)
     @TableField(fill = FieldFill.UPDATE)
+    @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "updateUser", ref = "updateUserName")
     private String updateUser;
+
+    /** 更新人名称 */
+    @ApiModelProperty(value = "更新人名称", position = 1005)
+    @TableField(exist = false)
+    private String updateUserName;
 }
