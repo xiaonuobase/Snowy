@@ -54,7 +54,7 @@ public class CommonEntity implements Serializable, TransPojo {
     /** 创建人 */
     @ApiModelProperty(value = "创建人", position = 1001)
     @TableField(fill = FieldFill.INSERT)
-    @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "createUser", ref = "createUser")
+    @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "createUser", ref = "createUserName")
     private String createUser;
 
     /** 创建人名称 */

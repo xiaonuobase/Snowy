@@ -30,7 +30,7 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 @Getter
 @Setter
 @TableName("SYS_POSITION")
-public class BizPosition extends CommonEntity implements TransPojo {
+public class BizPosition extends CommonEntity {
 
     /** id */
     @ApiModelProperty(value = "id", position = 1)

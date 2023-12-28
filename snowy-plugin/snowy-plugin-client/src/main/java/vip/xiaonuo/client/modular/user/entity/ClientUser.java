@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fhs.core.trans.anno.Trans;
 import com.fhs.core.trans.constant.TransType;
-import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +35,7 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName(value = "CLIENT_USER", autoResultMap = true)
-public class ClientUser extends CommonEntity implements TransPojo {
+public class ClientUser extends CommonEntity {
 
     /** id */
     @ApiModelProperty(value = "id", position = 1)

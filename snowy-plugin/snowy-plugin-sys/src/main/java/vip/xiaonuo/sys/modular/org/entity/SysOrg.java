@@ -17,7 +17,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fhs.core.trans.anno.Trans;
 import com.fhs.core.trans.constant.TransType;
-import com.fhs.core.trans.vo.TransPojo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +32,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 @Getter
 @Setter
 @TableName("SYS_ORG")
-public class SysOrg extends CommonEntity implements TransPojo {
+public class SysOrg extends CommonEntity {
 
     /** id */
     @ApiModelProperty(value = "id", position = 1)
