@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		// /* Bundler mode */
+		"allowJs": true,
+		"baseUrl": ".",
+		"outDir": "./dist",
+		"paths": {
+			"@/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*"]
+}
