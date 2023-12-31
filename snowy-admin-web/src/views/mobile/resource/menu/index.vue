@@ -190,7 +190,7 @@
 	}
 	// 切换模块标签查询菜单列表
 	const moduleClock = (value) => {
-		searchFormState.module = value
+		searchFormState.value.module = value
 		tableRef.value.refresh(true)
 	}
 	// 删除
