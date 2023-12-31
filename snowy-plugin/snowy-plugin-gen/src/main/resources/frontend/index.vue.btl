@@ -64,7 +64,7 @@
 				<% } %>
 				<% } %>
 				<a-col :span="6">
-					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+					<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
 					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 					<% if(searchCount > 3) { %>
 					<a @click="toggleAdvanced" style="margin-left: 8px">
@@ -77,7 +77,7 @@
 		</a-form>
 		<% } %>
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="options.alert.show"
@@ -129,7 +129,7 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="formRef" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="${busName}">
@@ -148,13 +148,14 @@
 	<% if(iptTool > 0) { %>
 	import tool from '@/utils/tool'
 	<% } %>
+	import { cloneDeep } from 'lodash-es'
 	import Form from './form.vue'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
 	<% if (searchCount > 0) { %>
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const searchFormRef = ref()
 	<% } %>
-	const table = ref()
+	const tableRef = ref()
 	const formRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 	<% if(searchCount > 3) { %>
@@ -183,7 +184,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '150px'
+			width: 150
 		})
 	}
 	const selectedRowKeys = ref([])
@@ -204,7 +205,7 @@
 	}
 	const loadData = (parameter) => {
 		<% if (searchCount > 0) { %>
-		const searchFormParam = JSON.parse(JSON.stringify(searchFormState))
+		const searchFormParam = cloneDeep(searchFormState.value)
 		<% for(var i = 0; i < configList.~size; i++) { %>
 		<% if(!configList[i].needTableId && configList[i].needPage) { %>
 		<% if (configList[i].effectType == 'datepicker') {%>
@@ -227,7 +228,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const delete${className} = (record) => {
@@ -241,13 +242,13 @@
 			}
 		]
 		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatch${className} = (params) => {
 		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 	<% if (searchCount > 0) { %>
