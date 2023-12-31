@@ -536,7 +536,8 @@
 	// 暴露子组件的方法
 	defineExpose({
 		clearRefreshSelected,
-		refresh
+		refresh,
+		clearSelected
 	})
 	onMounted(() => {
 		init()
