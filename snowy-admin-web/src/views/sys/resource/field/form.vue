@@ -26,17 +26,17 @@
 	import { required } from '@/utils/formRules'
 	import fieldApi from '@/api/sys/resource/fieldApi'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	const treeData = ref([])
-	const table = ref()
+	const tableRef = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
 	const recordData = ref()
 	// 打开弹框
 	const onOpen = (record, fieldData) => {
-		visible = true
+		visible.value = true
 		recordData.value = record
 		formData.value = {
 			sortCode: 99
@@ -48,7 +48,7 @@
 	// 关闭弹框
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {
@@ -57,7 +57,7 @@
 	}
 	// 加载按钮数据
 	const loadData = (parameter) => {
-		return fieldApi.fieldTree(Object.assign(parameter, searchFormState)).then((res) => {
+		return fieldApi.fieldTree(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}

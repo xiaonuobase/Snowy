@@ -22,7 +22,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
@@ -36,7 +36,7 @@
 			</a-card>
 			<a-card :bordered="false">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -70,7 +70,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="formRef" @successful="table.refresh()" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="sysOrg">
@@ -116,7 +116,7 @@
 		}
 	}
 	// 定义tableDOM
-	const table = ref(null)
+	const tableRef = ref(null)
 	const formRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
@@ -137,7 +137,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
@@ -170,7 +170,7 @@
 		} else {
 			delete searchFormState.value.parentId
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const removeOrg = (record) => {
@@ -180,13 +180,13 @@
 			}
 		]
 		orgApi.orgDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchOrg = (params) => {
 		orgApi.orgDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

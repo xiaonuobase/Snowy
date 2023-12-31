@@ -57,20 +57,20 @@
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
 	let userList = ref([])
 	// 打开抽屉
 	const onOpen = () => {
-		visible = true
+		visible.value = true
 		formData.value = {}
 	}
 	// 关闭抽屉
 	const onClose = () => {
 		emit('successful')
-		visible = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {

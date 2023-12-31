@@ -12,7 +12,7 @@
 			</a-form-item>
 			<a-form-item label="图标：" name="icon">
 				<a-input v-model:value="formData.icon" style="width: calc(100% - 70px)" placeholder="请选择图标" allow-clear />
-				<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
+				<a-button type="primary" @click="iconSelectorRef.showIconModal(formData.icon)">选择</a-button>
 			</a-form-item>
 			<a-form-item label="颜色：" name="color">
 				<color-picker v-model:value="formData.color" />
@@ -25,7 +25,7 @@
 			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit">保存</a-button>
 		</template>
-		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />
+		<Icon-selector ref="iconSelectorRef" @iconCallBack="iconCallBack" />
 	</xn-form-container>
 </template>
 
@@ -35,17 +35,17 @@
 	import moduleApi from '@/api/sys/resource/moduleApi'
 	import IconSelector from '@/components/Selector/iconSelector.vue'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	const treeData = ref([])
-	let iconSelector = ref()
+	const iconSelectorRef = ref()
 	// 表单数据
 	const formData = ref({})
 
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		formData.value = {
 			sortCode: 99
 		}
@@ -56,7 +56,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 	// 图标选择器回调
 	const iconCallBack = (value) => {

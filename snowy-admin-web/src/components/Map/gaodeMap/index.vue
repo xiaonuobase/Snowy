@@ -1,5 +1,5 @@
 <template>
-	<div class="gaodeMap" :style="{height: `${height}px`}">
+	<div class="gaodeMap" :style="{ height: `${height}px` }">
 		<div :id="`container-${mid}`" style="width: 100%; height: 100%">地图资源加载中...</div>
 	</div>
 </template>
@@ -26,6 +26,7 @@
 		},
 		plugins: {
 			type: Array,
+			// eslint-disable-next-line vue/require-valid-default-prop
 			default: ['AMap.ToolBar', 'AMap.Scale', 'AMap.HawkEye', 'AMap.MapType', 'AMap.Geolocation', 'AMap.MarkerCluster']
 		},
 		viewMode: {

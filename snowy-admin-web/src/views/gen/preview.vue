@@ -65,7 +65,7 @@
 							codeTypeList: data.genBasicCodeSqlResultList
 						}
 					]
-					if (data.genBasicCodeMobileResultList){
+					if (data.genBasicCodeMobileResultList) {
 						codeTypeArray.value.push({
 							codeTypeKey: 'mobile',
 							codeTypeTitle: '移动端代码',
@@ -98,6 +98,6 @@
 		overflow: auto;
 	}
 	:deep(.hljs) {
-		max-height: 600px!important;
+		max-height: 600px !important;
 	}
 </style>

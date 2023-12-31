@@ -13,10 +13,6 @@ export default {
 	mobileMenuTree(data) {
 		return request('tree', data, 'get')
 	},
-	// 获取移动端菜单列表
-	mobileMenuList(data) {
-		return request('list', data, 'get')
-	},
 	// 提交移动端菜单表单 edit为true时为编辑，默认为新增
 	mobileMenuSubmitForm(data, edit = false) {
 		return request(edit ? 'edit' : 'add', data)

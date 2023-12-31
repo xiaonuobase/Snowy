@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/dev/job/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/dev/job/` + url, ...arg)
 /**
  * 定时任务
  *
@@ -21,10 +21,6 @@ export default {
 	// 获取定时任务分页
 	jobPage(data) {
 		return request('page', data, 'get')
-	},
-	// 获取定时任务列表
-	jobList(data) {
-		return request('list', data, 'get')
 	},
 	// 提交表单 edit为true时为编辑，默认为新增
 	submitForm(data, edit = false) {

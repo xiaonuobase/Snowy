@@ -16,107 +16,99 @@
 		</a-menu>
 	</a-drawer>
 </template>
-
-<script>
+<script setup>
 	import NavMenu from './NavMenu.vue'
 	import { globalStore } from '@/store'
-	import { mapState } from 'pinia'
+	import { useRouter } from 'vue-router'
 
-	export default {
-		components: {
-			NavMenu
-		},
-		directives: {
-			drag(el) {
-				const oDiv = el // 当前元素
-				let firstTime = ''
-				let lastTime = ''
-				// 禁止选择网页上的文字
-				// document.onselectstart = function() {
-				// 	return false;
-				// };
-				oDiv.onmousedown = function (e) {
-					// 鼠标按下，计算当前元素距离可视区的距离
-					const disX = e.clientX - oDiv.offsetLeft
-					const disY = e.clientY - oDiv.offsetTop
-					document.onmousemove = function (e) {
-						oDiv.setAttribute('drag-flag', true)
-						firstTime = new Date().getTime()
-						// 通过事件委托，计算移动的距离
-						const l = e.clientX - disX
-						const t = e.clientY - disY
-						// 移动当前元素
-						if (t > 0 && t < document.body.clientHeight - 50) {
-							oDiv.style.top = `${t}px`
-						}
-						if (l > 0 && l < document.body.clientWidth - 50) {
-							oDiv.style.left = `${l}px`
-						}
-					}
-					document.onmouseup = function () {
-						lastTime = new Date().getTime()
-						if (lastTime - firstTime > 200) {
-							oDiv.setAttribute('drag-flag', false)
-						}
-						document.onmousemove = null
-						document.onmouseup = null
-					}
-					// return false不加的话可能导致黏连，就是拖到一个地方时div粘在鼠标上不下来，相当于onmouseup失效
-					return false
+	const router = useRouter()
+	const store = globalStore()
+
+	const vDrag = (el) => {
+		const oDiv = el // 当前元素
+		let firstTime = ''
+		let lastTime = ''
+		// 禁止选择网页上的文字
+		// document.onselectstart = function() {
+		// 	return false;
+		// };
+		oDiv.onmousedown = function (e) {
+			// 鼠标按下，计算当前元素距离可视区的距离
+			const disX = e.clientX - oDiv.offsetLeft
+			const disY = e.clientY - oDiv.offsetTop
+			document.onmousemove = function (e) {
+				oDiv.setAttribute('drag-flag', true)
+				firstTime = new Date().getTime()
+				// 通过事件委托，计算移动的距离
+				const l = e.clientX - disX
+				const t = e.clientY - disY
+				// 移动当前元素
+				if (t > 0 && t < document.body.clientHeight - 50) {
+					oDiv.style.top = `${t}px`
+				}
+				if (l > 0 && l < document.body.clientWidth - 50) {
+					oDiv.style.left = `${l}px`
 				}
 			}
-		},
-		data() {
-			return {
-				visible: false,
-				menu: []
-			}
-		},
-		computed: {
-			...mapState(globalStore, ['sysBaseConfig'])
-		},
-		created() {
-			const menu = this.$router.getMenu()
-			this.menu = this.filterUrl(menu)
-		},
-		methods: {
-			showMobileNav(e) {
-				const isdrag = e.currentTarget.getAttribute('drag-flag')
-				this.visible = true
-				if (isdrag === 'true') {
-					return false
-				} else {
-					this.visible = true
+			document.onmouseup = function () {
+				lastTime = new Date().getTime()
+				if (lastTime - firstTime > 200) {
+					oDiv.setAttribute('drag-flag', false)
 				}
-			},
-			// 当菜单被选中时
-			onSelect(obj) {
-				const pathLength = obj.keyPath.length
-				const path = obj.keyPath[pathLength - 1]
-				this.$router.push({ path })
-				this.visible = false
-			},
-			// 转换外部链接的路由
-			filterUrl(map) {
-				map.forEach((item, index) => {
-					item.meta = item.meta ? item.meta : {}
-					// 处理隐藏
-					if (item.meta.hidden) {
-						map.splice(index, 1)
-					}
-					// 处理http
-					// eslint-disable-next-line eqeqeq
-					if (item.meta.type == 'iframe') {
-						item.path = `/i/${item.name}`
-					}
-					// 递归循环
-					if (item.children && item.children.length > 0) {
-						item.children = this.filterUrl(item.children)
-					}
-				})
-				return map
+				document.onmousemove = null
+				document.onmouseup = null
 			}
+			// return false不加的话可能导致黏连，就是拖到一个地方时div粘在鼠标上不下来，相当于onmouseup失效
+			return false
 		}
+	}
+
+	const visible = ref(false)
+	const menu = ref([])
+
+	const sysBaseConfig = computed(() => {
+		return store.sysBaseConfig
+	})
+
+	onBeforeMount(() => {
+		const menus = router.getMenu()
+		menu.value = filterUrl(menus)
+	})
+
+	const showMobileNav = (e) => {
+		const isdrag = e.currentTarget.getAttribute('drag-flag')
+		visible.value = true
+		if (isdrag === 'true') {
+			return false
+		} else {
+			visible.value = true
+		}
+	}
+	// 当菜单被选中时
+	const onSelect = (obj) => {
+		const pathLength = obj.keyPath.length
+		const path = obj.keyPath[pathLength - 1]
+		router.push({ path })
+		visible.value = false
+	}
+	// 转换外部链接的路由
+	const filterUrl = (map) => {
+		map.forEach((item, index) => {
+			item.meta = item.meta ? item.meta : {}
+			// 处理隐藏
+			if (item.meta.hidden) {
+				map.splice(index, 1)
+			}
+			// 处理http
+			if (item.meta.type === 'iframe') {
+				item.path = `/i/${item.name}`
+			}
+			// 递归循环
+			if (item.children && item.children.length > 0) {
+				item.children = filterUrl(item.children)
+			}
+		})
+		return map
 	}
 </script>
 

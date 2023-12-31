@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/biz/user/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/biz/user/` + url, ...arg)
 /**
  * 人员接口api
  *

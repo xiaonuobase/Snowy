@@ -1,50 +1,48 @@
-<script lang="jsx">
+<template>
+	<ellipsis />
+</template>
+<script setup>
+	import { h } from 'vue'
 	import Tooltip from 'ant-design-vue/es/tooltip'
 	import { cutStrByFullLength, getStrFullLength } from './util'
+	import { useSlots } from 'vue'
+	const slots = useSlots()
 
-	export default {
-		name: 'Ellipsis',
-		components: {
-			Tooltip
+	const props = defineProps({
+		prefixCls: {
+			type: String,
+			default: 'ant-pro-ellipsis'
 		},
-		props: {
-			prefixCls: {
-				type: String,
-				default: 'ant-pro-ellipsis'
-			},
-			tooltip: {
-				type: Boolean
-			},
-			length: {
-				type: Number,
-				required: true
-			},
-			lines: {
-				type: Number,
-				default: 1
-			},
-			fullWidthRecognition: {
-				type: Boolean,
-				default: false
-			}
+		tooltip: {
+			type: Boolean
 		},
-		methods: {
-			getStrDom(str, fullLength) {
-				return <span>{cutStrByFullLength(str, this.length) + (fullLength > this.length ? '...' : '')}</span>
-			},
-			getTooltip(fullStr, fullLength) {
-				return <Tooltip title={fullStr}>{this.getStrDom(fullStr, fullLength)}</Tooltip>
-			}
+		length: {
+			type: Number,
+			required: true
 		},
-		render() {
-			const { tooltip, length } = this.$props
-			const str = this.$slots
-				.default()
-				.map((vNode) => vNode.children)
-				.join('')
-			const fullLength = getStrFullLength(str)
-			const strDom = tooltip && fullLength > length ? this.getTooltip(str, fullLength) : this.getStrDom(str, fullLength)
-			return strDom
+		lines: {
+			type: Number,
+			default: 1
+		},
+		fullWidthRecognition: {
+			type: Boolean,
+			default: false
 		}
+	})
+
+	const str = slots
+		.default()
+		.map((vNode) => vNode.children)
+		.join('')
+
+	const fullLength = getStrFullLength(str)
+	const showStr = cutStrByFullLength(str, props.length) + (fullLength > props.length ? '...' : '')
+
+	// 使用h函数注册渲染一个组件
+	const ellipsis = () => {
+		return props.tooltip && fullLength > props.length
+			? h(Tooltip, { title: str }, { default: () => showStr })
+			: // 引用组件时，需要设置默认值 default: () => xxx
+			  h('span', showStr)
 	}
 </script>

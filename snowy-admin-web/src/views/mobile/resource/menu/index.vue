@@ -16,7 +16,7 @@
 				<a-form-item name="searchKey">
 					<a-space>
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
-						<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+						<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
 						<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 					</a-space>
 				</a-form-item>
@@ -25,7 +25,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="options.alert.show"
@@ -91,8 +91,8 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="formRef" @successful="table.refresh(true)" />
-	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
+	<changeModuleForm ref="changeModuleFormRef" @successful="tableRef.refresh(true)" />
 	<Button ref="button" />
 </template>
 
@@ -102,10 +102,10 @@
 	import changeModuleForm from './changeModuleForm.vue'
 	import Button from '../button/index.vue'
 	import mobileMenuApi from '@/api/mobile/resource/menuApi'
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	let moduleList = ref([])
 	const module = ref()
-	const table = ref()
+	const tableRef = ref()
 	const formRef = ref()
 	const searchFormRef = ref()
 	const changeModuleFormRef = ref()
@@ -166,8 +166,8 @@
 			return mobileMenuApi.mobileMenuModuleSelector().then((data) => {
 				moduleList.value = data
 				module.value = data.length > 0 ? data[0].id : ''
-				searchFormState.module = module.value
-				return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState)).then((data) => {
+				searchFormState.value.module = module.value
+				return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState.value)).then((data) => {
 					if (data) {
 						return data
 					}
@@ -175,7 +175,7 @@
 				})
 			})
 		} else {
-			return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState)).then((data) => {
+			return mobileMenuApi.mobileMenuTree(Object.assign(parameter, searchFormState.value)).then((data) => {
 				if (data) {
 					return data
 				}
@@ -186,12 +186,12 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 切换模块标签查询菜单列表
 	const moduleClock = (value) => {
 		searchFormState.module = value
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const deleteMobileMenu = (record) => {
@@ -201,13 +201,13 @@
 			}
 		]
 		mobileMenuApi.mobileMenuDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchMobileMenu = (params) => {
 		mobileMenuApi.mobileMenuDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

@@ -13,8 +13,8 @@
 </template>
 
 <script setup name="emailConfig">
-	import localEmailForm from './localEmailForm.vue'
-	import aliyunEmailForm from './aliyunEmailForm.vue'
-	import tencentEmailForm from './tencentEmailForm.vue'
+	import LocalEmailForm from './localEmailForm.vue'
+	import AliyunEmailForm from './aliyunEmailForm.vue'
+	import TencentEmailForm from './tencentEmailForm.vue'
 	const activeKey = ref('localEmail')
 </script>

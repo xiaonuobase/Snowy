@@ -36,7 +36,7 @@
 	import jobApi from '@/api/dev/jobApi'
 	import Cron from '@/components/Cron/index.vue'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据
@@ -47,7 +47,7 @@
 
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		formData.value = {
 			sortCode: 99
 		}
@@ -67,7 +67,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 
 	// 默认要校验的

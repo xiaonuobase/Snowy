@@ -13,29 +13,23 @@ iconSelector
 ```vue
 <template>
 	<div>
-	   <a-button type="primary" @click="$refs.iconselector.showModal(iconValue)">选择</a-button>
-       <icon-selector ref="iconselector" @callBack="iconCallBack"/>
+			<a-button type="primary" @click="openIcon(iconValue)">选择</a-button>
+		  <icon-selector ref="iconselector" @iconCallBack="iconCallBack" />
     </div>
 </template>
 
-<script>
-import iconSelector from '@/components/Selector/iconSelector.vue'
+<script setup>
+	const iconselector = ref()  //  绑定ref="iconselector"
 
-export default {
-  name: 'YourView',
-  components: {
-    iconSelector
-  },
-  data () {
-    return {
-    }
-  },
-  methods: {
-    iconCallBack (icon) {
-      console.log('iconCallBack Icon', icon)
-    }
-  }
-}
+  // 打开icon选择器
+	const openIcon = (iconValue) => {
+		iconselector.value.showIconModal(iconValue)
+	}
+  	// 选择后回调
+	const iconCallBack = (value) => {
+      console.log('iconCallBack Icon', value)
+	}
+
 </script>
 ```
 

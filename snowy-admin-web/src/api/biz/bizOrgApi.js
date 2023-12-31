@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/biz/org/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/biz/org/` + url, ...arg)
 /**
  * 机构
  *

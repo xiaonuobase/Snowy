@@ -21,7 +21,7 @@ Table 重封装组件说明
 
 <template>
   <s-table
-    ref="table"
+    ref="tableRef"
     :rowKey="(record) => record.data.id"
     :columns="columns"
     :data="loadData"
@@ -99,94 +99,80 @@ export default {
 
 ```vue
 <template>
-  <s-table
-    ref="table"
-    :columns="columns"
-    :data="loadData"
-  >
-    <span slot="action" slot-scope="text, record">
-      <a>编辑</a>
-      <a-divider type="vertical"/>
-      <a-dropdown>
-        <a class="ant-dropdown-link">
-          更多 <a-icon type="down"/>
-        </a>
-        <a-menu slot="overlay">
-          <a-menu-item>
-            <a href="javascript:;">1st menu item</a>
-          </a-menu-item>
-          <a-menu-item>
-            <a href="javascript:;">2nd menu item</a>
-          </a-menu-item>
-          <a-menu-item>
-            <a href="javascript:;">3rd menu item</a>
-          </a-menu-item>
-        </a-menu>
-      </a-dropdown>
-    </span>
+  <s-table ref="tableRef" :columns="columns" :data="loadData" :alert="false" bordered :row-key="(record) => record.id">
+  <!-- #operator 插槽可以放入一些关于表格的操作，比如新增数据。 -->
+  <template #operator class="table-operator">
+      <a-space>
+        <a-button type="primary" @click="">
+          <template #icon><plus-outlined /></template>
+          新增
+        </a-button>
+      </a-space>
+    </template>
+    <!-- #bodyCell 放入column表格列需要显示的数据，可以通过判断进行一个自定义显示 -->
+   <template #bodyCell="{ column, record }">
+			<template >
+				<a-avatar style="width: 25px; height: 25px" />
+			</template>
+			<template v-if="column.dataIndex === 'status'">
+			  <!-- 进行自定义显示内容 -->
+			</template>
+      <!-- column.dataIndex === 'action' 时，可以进行编辑删除等关于这行数据的一个操作，操作内容可进行自定义 -->
+			<template v-if="column.dataIndex === 'action'">
+				<a @click="">编辑</a>
+			</template>
+		</template>
   </s-table>
 </template>
 
-<script>
+<script setup>
 import STable from '@/components/table/'
-
-export default {
-  components: {
-    STable,
+const tableRef = ref() //一定要进行一个表格的ref绑定
+const columns = ref([
+  {
+    title: '规则编号',
+    dataIndex: 'no',
   },
-  data() {
-    return {
-      columns: [
-        {
-          title: '规则编号',
-          dataIndex: 'no',
-        },
-        {
-          title: '描述',
-          dataIndex: 'description',
-        },
-        {
-          title: '服务调用次数',
-          dataIndex: 'callNo',
-        },
-        {
-          title: '状态',
-          dataIndex: 'status',
-        },
-        {
-          title: '更新时间',
-          dataIndex: 'updatedAt',
-        },
-        {
-          table: '操作',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' },
-        },
-      ],
-      // 查询条件参数
-      queryParam: {},
-      // 加载数据方法 必须为 Promise 对象
-      loadData: (parameter) => {
-        return this.$http.get('/service', {
-          params: Object.assign(parameter, this.queryParam),
-        }).then((res) => {
-          return res.result
-        })
-      },
-    }
+  {
+    title: '描述',
+    dataIndex: 'description',
   },
-  methods: {
-    edit(row) {
-      // axios 发送数据到后端 修改数据成功后
-      // 调用 refresh() 重新加载列表数据
-      // 这里 setTimeout 模拟发起请求的网络延迟..
-      setTimeout(() => {
-        this.$refs.table.refresh() // refresh() 不传参默认值 false 不刷新到分页第一页
-      }, 1500)
-
-    },
+  {
+    title: '服务调用次数',
+    dataIndex: 'callNo',
   },
+  {
+    title: '状态',
+    dataIndex: 'status',
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updatedAt',
+  },
+  {
+    table: '操作',
+    dataIndex: 'action',
+    scopedSlots: { customRender: 'action' },
+  },
+])
+const queryParam = ref({})
+// 加载按钮数据
+const loadData = (parameter) => {
+    return this.$http.get('/service', {
+      params: Object.assign(parameter, queryParam.value),
+    }).then((res) => {
+      return res.result
+    })
 }
+const edit = (row) => {
+    // axios 发送数据到后端 修改数据成功后
+    // 调用 refresh() 重新加载列表数据
+    // 这里 setTimeout 模拟发起请求的网络延迟..
+    setTimeout(() => {
+      tableRef.value.refresh() // refresh() 不传参默认值 false 不刷新到分页第一页
+    }, 1500)
+
+  }
 </script>
 ```
 
@@ -195,9 +181,9 @@ export default {
 内置方法
 ----
 
-通过 `this.$refs.table` 调用
+通过 `声明的ref去调用 ==> tableRef.value` 调用
 
-`this.$refs.table.refresh(true)` 刷新列表 (用户新增/修改数据后，重载列表数据)
+`tableRef.value.refresh(true)` 刷新列表 (用户新增/修改数据后，重载列表数据)
 
 > 注意：要调用 `refresh(bool)` 需要给表格组件设定 `ref` 值
 >
@@ -233,39 +219,83 @@ alert: {
 >
 > 文档中的结构有可能由于组件 bug 进行修正而改动。实际修改请以当时最新版本为准
 
-修改 `@/components/table/index.js`  第 156 行起
+修改 `@/components/table/index.js`  第 348 行起
 
 
 
 ```javascript
-result.then(r => {
-          this.localPagination = this.showPagination && Object.assign({}, this.localPagination, {
-            current: r.pageNo, // 返回结果中的当前分页数
-            total: r.totalCount, // 返回结果中的总记录数
-            showSizeChanger: this.showSizeChanger,
-            pageSize: (pagination && pagination.pageSize) ||
-              this.localPagination.pageSize
-          }) || false
-          // 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
-          if (r.data.length === 0 && this.showPagination && this.localPagination.current > 1) {
-            this.localPagination.current--
-            this.loadData()
-            return
-          }
+const data = reactive({
+		needTotalList: [],
+		localLoading: false,
+		localDataSource: [],
+		localPagination: Object.assign({}, props.pagination),
+		isFullscreen: false,
+		customSize: props.compSize,
+		columnsSetting: [],
+		localSettings: {
+			rowClassName: props.rowClassName,
+			rowClassNameSwitch: Boolean(props.rowClassName)
+		}
+	})
 
-          // 这里用于判断接口是否有返回 r.totalCount 且 this.showPagination = true 且 pageNo 和 pageSize 存在 且 totalCount 小于等于 pageNo * pageSize 的大小
-          // 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
-          try {
-            if ((['auto', true].includes(this.showPagination) && r.totalCount <= (r.pageNo * this.localPagination.pageSize))) {
-              this.localPagination.hideOnSinglePage = true
-            }
-          } catch (e) {
-            this.localPagination = false
-          }
-          console.log('loadData -> this.localPagination', this.localPagination)
-          this.localDataSource = r.data // 返回结果中的数组数据
-          this.localLoading = false
-        })
+// 这里的 data.xxx 是之前声明的
+// 在 loadData() 方法中去获取后端数据，进行一个数据的加载更新
+result.then((r) => {
+				if (r == null) {
+					data.localLoading = false
+					return
+				}
+				data.localPagination =
+					(props.showPagination &&
+						Object.assign({}, data.localPagination, {
+							current: r.current, // pageNo, // 返回结果中的当前分页数
+							total: r.total, // totalRows, // 返回结果中的总记录数
+							showSizeChanger: props.showSizeChanger,
+							pageSizeOptions: props.pageSizeOptions,
+							showTotal: (total, range) => {
+								return `${range[0]}-${range[1]} 共 ${total} 条 `
+							},
+							pageSize: (pagination && pagination.pageSize) || data.localPagination.pageSize
+						})) ||
+					false
+
+				// 后端数据records为null保存修复
+				if (r.records == null) {
+					r.records = []
+				}
+
+				// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
+				if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
+					data.localPagination.current--
+					loadData()
+					return
+				}
+				// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
+				try {
+					/*
+					if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.size))) {
+						data.localPagination.hideOnSinglePage = true
+					}
+					*/
+					if (!props.showPagination) {
+						data.localPagination.hideOnSinglePage = true
+					}
+				} catch (e) {
+					data.localPagination = false
+				}
+				// 返回结果中的数组数据
+				if (props.showPagination === false) {
+					// 既然配置了不分页，那么我们这里接收到肯定是数组
+					data.localDataSource = []
+					if (r instanceof Array) {
+						data.localDataSource = r
+					}
+				} else {
+					data.localDataSource = r.records
+				}
+				data.localLoading = false
+				getTableProps() // 获取到后端返回的数据后，需要调用一下获取table的props的方法去刷新table
+			})
 ```
 返回 JSON 例子：
 ```json
@@ -336,4 +366,4 @@ result.then(r => {
 更新时间
 ----
 
-该文档最后更新于： 2019-06-23 PM 17:19
+该文档最后更新于： 2023-12-27 PM 16:45

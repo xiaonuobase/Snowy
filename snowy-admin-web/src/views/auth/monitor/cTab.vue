@@ -1,5 +1,5 @@
 <template>
-	<s-table ref="table" :columns="columns" :data="loadDataC" :alert="false" bordered :row-key="(record) => record.id">
+	<s-table ref="tableRef" :columns="columns" :data="loadDataC" :alert="false" bordered :row-key="(record) => record.id">
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.dataIndex === 'avatar'">
 				<a-avatar :src="record.avatar" style="width: 25px; height: 25px" />
@@ -18,13 +18,13 @@
 			</template>
 		</template>
 	</s-table>
-	<token-info-list ref="tokenInfoList" @successful="table.refresh()" />
+	<token-info-list ref="tokenInfoList" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="monitorCTab">
 	import monitorApi from '@/api/auth/monitorApi'
 	import TokenInfoList from './tokenInfoList.vue'
-	const table = ref(null)
+	const tableRef = ref(null)
 	const tokenInfoList = ref()
 	const columns = [
 		{
@@ -83,7 +83,7 @@
 			}
 		]
 		monitorApi.monitorCExit(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 </script>

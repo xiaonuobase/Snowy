@@ -97,6 +97,7 @@
 				moduleBackColor.value
 					? moduleMenu.classList.add('module-menu-color')
 					: moduleMenu.classList.remove('module-menu-color')
+				// eslint-disable-next-line no-empty
 			} catch (err) {}
 			setSelectedKeys()
 		}

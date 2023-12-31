@@ -24,13 +24,13 @@
 	import fileApi from '@/api/dev/fileApi'
 
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		getFileDetail(record)
 	}
 	// 获取站内信列表
@@ -46,7 +46,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formData.value = {}
-		visible = false
+		visible.value = false
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

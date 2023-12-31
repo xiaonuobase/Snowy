@@ -61,17 +61,17 @@
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const activeKey = ref('Local')
 	const uploadLoading = ref(false)
 
 	// 打开抽屉
 	const openUpload = () => {
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 		emit('successful')
 	}
 	// 上传本地文件

@@ -39,16 +39,10 @@
 		switch (arguments.length) {
 			case 1:
 				return parseInt(Math.random() * minNum + 1, 10)
-				// eslint-disable-next-line no-unreachable
-				break
 			case 2:
 				return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10)
-				// eslint-disable-next-line no-unreachable
-				break
 			default:
 				return 0
-				// eslint-disable-next-line no-unreachable
-				break
 		}
 	}
 </script>

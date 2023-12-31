@@ -27,7 +27,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
@@ -41,7 +41,7 @@
 			</a-card>
 			<a-card :bordered="false" style="margin-bottom: 10px">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -95,7 +95,7 @@
 		})
 	}
 	// 定义tableDOM
-	const table = ref(null)
+	const tableRef = ref(null)
 	const formRef = ref()
 	const cardLoading = ref(true)
 	const searchFormRef = ref()
@@ -136,7 +136,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
@@ -166,11 +166,11 @@
 			delete searchFormState.value.parentId
 			columns.splice(2, 1)
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 表单界面回调
 	const formSuccessful = () => {
-		table.value.refresh()
+		tableRef.value.refresh()
 		refreshStoreDict()
 	}
 	// 刷新store中的字典

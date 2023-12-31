@@ -30,77 +30,132 @@ const getCacheConfig = (value) => {
 /**
  * deprecated 请使用 useGlobalStore
  */
-export const globalStore = defineStore({
-	id: 'global',
-	state: () => ({
-		// 移动端布局
-		isMobile: false,
-		// 布局
-		layout: getCacheConfig('SNOWY_LAYOUT'),
-		// 菜单是否折叠 toggle
-		menuIsCollapse: getCacheConfig('SNOWY_MENU_COLLAPSE'),
-		// 侧边菜单是否排他展开
-		sideUniqueOpen: getCacheConfig('SNOWY_SIDE_UNIQUE_OPEN'),
-		// 多标签栏
-		layoutTagsOpen: getCacheConfig('SNOWY_LAYOUT_TAGS_OPEN'),
-		// 是否展示面包屑
-		breadcrumbOpen: getCacheConfig('SNOWY_BREADCRUMD_OPEN'),
-		// 顶栏是否应用主题色
-		topHeaderThemeColorOpen: getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_OPEN'),
-		// 顶栏主题色通栏
-		topHeaderThemeColorSpread: getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD'),
-		// 模块坞
-		moduleUnfoldOpen: getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'),
-		// 主题
-		theme: getCacheConfig('SNOWY_THEME'),
-		// 主题颜色
-		themeColor: toolDataGet('SNOWY_THEME_COLOR') || config.COLOR,
-		// 整体表单风格
-		formStyle: getCacheConfig('SNOWY_FORM_STYLE'),
-		// 用户信息
-		userInfo: toolDataGet('USER_INFO') || {},
-		// 系统配置
-		sysBaseConfig: toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG,
-		// 默认应用
-		module: getCacheConfig('SNOWY_MENU_MODULE_ID')
-	}),
-	getters: {},
-	actions: {
-		setIsMobile(key) {
-			this.isMobile = key
-		},
-		setLayout(key) {
-			this.layout = key
-		},
-		setTheme(key) {
-			this.theme = key
-			const closeMessage = message.loading(`加载中...`)
-			changeColor(this.themeColor, key).then(closeMessage)
-		},
-		setThemeColor(key) {
-			this.themeColor = key
-			const closeMessage = message.loading(`加载中...`)
-			changeColor(key, this.theme).then(closeMessage)
-		},
-		initTheme() {
-			const closeMessage = message.loading(`加载中...`)
-			changeColor(this.themeColor, this.theme).then(closeMessage)
-		},
-		toggleConfig(key) {
-			this[key] = !this[key]
-		},
-		setFormStyle(key) {
-			this.formStyle = key
-		},
-		setUserInfo(key) {
-			this.userInfo = key
-		},
-		setSysBaseConfig(key) {
-			this.sysBaseConfig = key
-		},
-		setModule(key) {
-			this.module = key
+export const globalStore = defineStore('global', () => {
+	// 利用Vue3组合式API，ref()定义state的属性
+	// function() 定义actions
+	// computed 定义getters
+
+	// 定义state
+	// 移动端布局
+	const isMobile = ref(false)
+	// 布局
+	const layout = ref(getCacheConfig('SNOWY_LAYOUT'))
+
+	// 菜单是否折叠 toggle
+	const menuIsCollapse = ref(getCacheConfig('SNOWY_MENU_COLLAPSE'))
+	// 侧边菜单是否排他展开
+	const sideUniqueOpen = ref(getCacheConfig('SNOWY_SIDE_UNIQUE_OPEN'))
+	// 多标签栏
+	const layoutTagsOpen = ref(getCacheConfig('SNOWY_LAYOUT_TAGS_OPEN'))
+	// 是否展示面包屑
+	const breadcrumbOpen = ref(getCacheConfig('SNOWY_BREADCRUMD_OPEN'))
+	// 顶栏是否应用主题色
+	const topHeaderThemeColorOpen = ref(getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_OPEN'))
+	// 顶栏主题色通栏
+	const topHeaderThemeColorSpread = ref(getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD'))
+	// 模块坞
+	const moduleUnfoldOpen = ref(getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'))
+
+	// 主题
+	const theme = ref(getCacheConfig('SNOWY_THEME'))
+	// 主题颜色
+	const themeColor = ref(toolDataGet('SNOWY_THEME_COLOR') || config.COLOR)
+	// 整体表单风格
+	const formStyle = ref(getCacheConfig('SNOWY_FORM_STYLE'))
+	// 用户信息
+	const userInfo = ref(toolDataGet('USER_INFO') || {})
+	// 系统配置
+	const sysBaseConfig = ref(toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG)
+	// 默认应用
+	const module = ref(getCacheConfig('SNOWY_MENU_MODULE_ID'))
+
+	// 定义action
+	const setIsMobile = (key) => {
+		isMobile.value = key
+	}
+	const setLayout = (key) => {
+		layout.value = key
+	}
+	const setTheme = (key) => {
+		theme.value = key
+		const closeMessage = message.loading(`加载中...`)
+		changeColor(themeColor.value, key).then(closeMessage)
+	}
+	const setThemeColor = (key) => {
+		themeColor.value = key
+		const closeMessage = message.loading(`加载中...`)
+		changeColor(key, theme.value).then(closeMessage)
+	}
+	const initTheme = () => {
+		const closeMessage = message.loading(`加载中...`)
+		changeColor(themeColor.value, theme.value).then(closeMessage)
+	}
+	const toggleConfig = (key) => {
+		switch (key) {
+			case 'menuIsCollapse':
+				menuIsCollapse.value = !menuIsCollapse.value
+				break
+			case 'topHeaderThemeColorSpread':
+				topHeaderThemeColorSpread.value = !topHeaderThemeColorSpread.value
+				break
+			case 'sideUniqueOpen':
+				sideUniqueOpen.value = !sideUniqueOpen.value
+				break
+			case 'layoutTagsOpen':
+				layoutTagsOpen.value = !layoutTagsOpen.value
+				break
+			case 'breadcrumbOpen':
+				breadcrumbOpen.value = !breadcrumbOpen.value
+				break
+			case 'topHeaderThemeColorOpen':
+				topHeaderThemeColorOpen.value = !topHeaderThemeColorOpen.value
+				topHeaderThemeColorSpread.value = topHeaderThemeColorOpen.value
+					? topHeaderThemeColorSpread.value
+					: topHeaderThemeColorOpen.value
+				break
+			case 'moduleUnfoldOpen':
+				moduleUnfoldOpen.value = !moduleUnfoldOpen.value
+				break
 		}
+	}
+	const setFormStyle = (key) => {
+		formStyle.value = key
+	}
+	const setUserInfo = (key) => {
+		userInfo.value = key
+	}
+	const setSysBaseConfig = (key) => {
+		sysBaseConfig.value = key
+	}
+	const setModule = (key) => {
+		module.value = key
+	}
+	return {
+		isMobile,
+		layout,
+		menuIsCollapse,
+		sideUniqueOpen,
+		layoutTagsOpen,
+		breadcrumbOpen,
+		topHeaderThemeColorOpen,
+		topHeaderThemeColorSpread,
+		moduleUnfoldOpen,
+		theme,
+		themeColor,
+		formStyle,
+		userInfo,
+		sysBaseConfig,
+		module,
+		setIsMobile,
+		setLayout,
+		setTheme,
+		setThemeColor,
+		initTheme,
+		toggleConfig,
+		setFormStyle,
+		setUserInfo,
+		setSysBaseConfig,
+		setModule
 	}
 })
 

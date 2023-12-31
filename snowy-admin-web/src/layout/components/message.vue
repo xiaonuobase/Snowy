@@ -33,7 +33,7 @@
 				</a-form-item>
 				<a-form-item label="查收情况：" name="receiveInfoList">
 					<s-table
-						ref="table"
+						ref="tableRef"
 						:columns="columns"
 						:data="loadData"
 						:alert="false"
@@ -146,7 +146,7 @@
 			Object.assign(message, data)
 			formData.value = message
 			receiveInfoList.value = data.receiveInfoList
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 		unreadMessageNum.value = Math.max(unreadMessageNum.value - 1, 0)
 	}
@@ -161,7 +161,7 @@
 	const formRef = ref()
 	const receiveInfoList = ref([])
 	const formData = ref({})
-	const table = ref()
+	const tableRef = ref()
 	const columns = [
 		{
 			title: '姓名',

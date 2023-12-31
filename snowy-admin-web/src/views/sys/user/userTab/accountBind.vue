@@ -27,7 +27,7 @@
 
 <script setup>
 	import { message } from 'ant-design-vue'
-	import updatePassword from './bindForm/updatePassword.vue'
+	import UpdatePassword from './bindForm/updatePassword.vue'
 
 	const updatePasswordRef = ref()
 	// 获取绑定的情况

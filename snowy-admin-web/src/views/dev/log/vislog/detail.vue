@@ -20,18 +20,18 @@
 
 <script setup name="vislogDetail">
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	// 表单数据
 	const formData = ref({})
-	const table = ref()
+	const tableRef = ref()
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		formData.value = record
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

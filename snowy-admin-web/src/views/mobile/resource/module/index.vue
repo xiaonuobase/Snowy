@@ -8,7 +8,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
 					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
@@ -16,7 +16,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="options.alert.show"
@@ -27,7 +27,7 @@
 		>
 			<template #operator class="table-operator">
 				<a-space>
-					<a-button type="primary" @click="form.onOpen()">
+					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>
 						新增模块
 					</a-button>
@@ -42,7 +42,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>
-						<a @click="form.onOpen(record)">编辑</a>
+						<a @click="formRef.onOpen(record)">编辑</a>
 						<a-divider type="vertical" />
 						<a-popconfirm title="确定要删除此模块吗？" @confirm="deleteModule(record)">
 							<a-button type="link" danger size="small">删除</a-button>
@@ -52,16 +52,15 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup name="mobileModule">
 	import Form from './form.vue'
 	import moduleApi from '@/api/mobile/resource/moduleApi'
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const formRef = ref()
-	const table = ref()
-	let form = ref()
+	const tableRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
 		{
@@ -105,14 +104,14 @@
 		}
 	}
 	const loadData = (parameter) => {
-		return moduleApi.modulePage(Object.assign(parameter, searchFormState)).then((res) => {
+		return moduleApi.modulePage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
 	// 重置
 	const reset = () => {
 		formRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const deleteModule = (record) => {
@@ -122,13 +121,13 @@
 			}
 		]
 		moduleApi.moduleDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchModule = (params) => {
 		moduleApi.moduleDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

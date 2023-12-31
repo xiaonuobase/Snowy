@@ -61,7 +61,7 @@
 	import roleApi from '@/api/sys/roleApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	const spinningLoading = ref(false)
-	let firstShowMap = $ref({})
+	const firstShowMap = ref({})
 	const emit = defineEmits({ successful: null })
 	const submitLoading = ref(false)
 	// 抽屉的宽度
@@ -76,7 +76,7 @@
 			dataIndex: 'parentName',
 			customCell: (row, index) => {
 				const parentName = row.parentName
-				const indexArr = firstShowMap[parentName]
+				const indexArr = firstShowMap.value[parentName]
 				if (index === indexArr[0]) {
 					return { rowSpan: indexArr.length }
 				}
@@ -123,7 +123,7 @@
 		}
 	}
 	const checkFieldKeys = ['button']
-	let visible = $ref(false)
+	const visible = ref(false)
 	// 返回的数据模型，最终需要转换成这样
 	let resultDataModel = {
 		id: '',
@@ -132,8 +132,8 @@
 	// 打开抽屉
 	const onOpen = (record) => {
 		resultDataModel.id = record.id
-		visible = true
-		firstShowMap = {}
+		visible.value = true
+		firstShowMap.value = {}
 		loadData()
 	}
 	// 数据转换
@@ -175,10 +175,10 @@
 				// 缓存加入索引
 				module.menu.forEach((item, index) => {
 					// 下面就是用来知道不同的一级菜单里面有几个二级菜单，以及他们所在的索引
-					if (firstShowMap[item.parentName]) {
-						firstShowMap[item.parentName].push(index)
+					if (firstShowMap.value[item.parentName]) {
+						firstShowMap.value[item.parentName].push(index)
 					} else {
-						firstShowMap[item.parentName] = [index]
+						firstShowMap.value[item.parentName] = [index]
 					}
 				})
 			}
@@ -233,7 +233,7 @@
 		const moduleMenu = echoDatalist.value.find((f) => record.module === f.id)
 		const parentName = record.parentName
 		// 获取同一级菜单的所有索引
-		const indexArr = firstShowMap[parentName]
+		const indexArr = firstShowMap.value[parentName]
 		indexArr.forEach((indexItem) => {
 			// 获取同一级菜单的所有行
 			const row = moduleMenu.menu[indexItem]
@@ -247,8 +247,8 @@
 		echoDatalist.value = []
 		moduleId.value = ''
 		loadDatas.value = []
-		firstShowMap = {}
-		visible = false
+		firstShowMap.value = {}
+		visible.value = false
 	}
 	// 提交之前转换数据
 	const convertData = () => {

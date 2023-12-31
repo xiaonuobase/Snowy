@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/auth/third/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/auth/third/` + url, ...arg)
 /**
  * 三方登录
  *

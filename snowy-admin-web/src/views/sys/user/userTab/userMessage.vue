@@ -9,7 +9,7 @@
 		</a-col>
 		<a-col :span="20">
 			<div style="margin-top: -16px">
-				<s-table ref="table" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
+				<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'subject'">
 							<ellipsis :length="40" tooltip>
@@ -34,14 +34,14 @@
 </template>
 
 <script setup name="userMessage">
-	import detail from './userMessage/detail.vue'
+	import Detail from './userMessage/detail.vue'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 	import { nextTick } from 'vue'
 
 	const messageCategoryList = tool.dictList('MESSAGE_CATEGORY')
 	const selectedKeys = ref(new Array(messageCategoryList[0].value))
-	const table = ref()
+	const tableRef = ref()
 	const detailRef = ref()
 	const columns = [
 		{
@@ -71,13 +71,13 @@
 		})
 	}
 	const refresh = () => {
-		table.value.refresh(false)
+		tableRef.value.refresh(false)
 	}
 	// 点击左侧菜单切换数据查询
 	const handleClick = () => {
 		// 先让上面的变量赋值，咱在查询
 		nextTick(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 </script>

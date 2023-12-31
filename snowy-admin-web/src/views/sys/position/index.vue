@@ -23,7 +23,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
@@ -37,7 +37,7 @@
 			</a-card>
 			<a-card :bordered="false">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -48,7 +48,7 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="form.onOpen(undefined, searchFormState.orgId)">
+							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.orgId)">
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>
@@ -60,7 +60,7 @@
 							{{ $TOOL.dictTypeData('POSITION_CATEGORY', record.category) }}
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)">编辑</a>
+							<a @click="formRef.onOpen(record)">编辑</a>
 							<a-divider type="vertical" />
 							<a-popconfirm title="确定删除此职位？" @confirm="removeOrg(record)">
 								<a-button type="link" danger size="small">删除</a-button>
@@ -71,7 +71,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup name="sysPosition">
@@ -118,8 +118,8 @@
 		}
 	}
 	// 定义tableDOM
-	const table = ref(null)
-	const form = ref()
+	const tableRef = ref(null)
+	const formRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -138,7 +138,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
 	orgApi.orgTree().then((res) => {
@@ -169,7 +169,7 @@
 		} else {
 			delete searchFormState.value.orgId
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const removeOrg = (record) => {
@@ -179,13 +179,13 @@
 			}
 		]
 		positionApi.positionDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchPosition = (params) => {
 		positionApi.positionDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

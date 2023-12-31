@@ -8,7 +8,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-button type="primary" @click="table.refresh(true)">
+					<a-button type="primary" @click="tableRef.refresh(true)">
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
@@ -22,7 +22,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:expand-row-by-click="true"
@@ -33,7 +33,7 @@
 		>
 			<template #operator class="table-operator">
 				<a-space>
-					<a-button type="primary" @click="form.onOpen()"> 发送站内信 </a-button>
+					<a-button type="primary" @click="formRef.onOpen()"> 发送站内信 </a-button>
 					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchEmail" />
 				</a-space>
 			</template>
@@ -48,7 +48,7 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh()" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<detail ref="detailRef" />
 </template>
 
@@ -98,8 +98,8 @@
 		}
 	}
 	// 定义tableDOM
-	const table = ref(null)
-	const form = ref()
+	const tableRef = ref(null)
+	const formRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	const detailRef = ref()
@@ -112,7 +112,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const deleteMessage = (record) => {
@@ -122,13 +122,13 @@
 			}
 		]
 		messageApi.messageDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchEmail = (params) => {
 		messageApi.messageDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

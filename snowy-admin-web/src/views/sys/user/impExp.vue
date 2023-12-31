@@ -100,7 +100,7 @@
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
-	let visible = ref(false)
+	const visible = ref(false)
 	const submitLoading = ref(false)
 
 	// 打开抽屉

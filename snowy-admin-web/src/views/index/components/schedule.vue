@@ -10,13 +10,7 @@
 			</a-timeline>
 			<div class="add-schedule" @click="addSchedule"><plus-circle-two-tone /> 新增日程</div>
 		</a-card>
-		<xn-form-container
-			title="增加日程"
-			:width="700"
-			:visible="visible"
-			:destroy-on-close="true"
-			@close="onClose"
-		>
+		<xn-form-container title="增加日程" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 			<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 				<a-form-item label="时间：" name="scheduleTime">
 					<a-time-picker v-model:value="scheduleTime" value-format="HH:mm:ss" />
@@ -40,6 +34,11 @@
 
 <script setup name="schedule">
 	import dayjs from 'dayjs'
+	import weekday from 'dayjs/plugin/weekday'
+	import localeData from 'dayjs/plugin/localeData'
+	dayjs.extend(weekday)
+	dayjs.extend(localeData)
+
 	import { required } from '@/utils/formRules'
 	import { onMounted } from 'vue'
 	import indexApi from '@/api/sys/indexApi'

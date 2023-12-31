@@ -57,13 +57,11 @@ export const watermark = {
 				if (wmInstance) {
 					// 避免一直触发
 					// observer.disconnect();
-					// console.log('水印属性修改了');
 					wmInstance.setAttribute('style', styleStr)
 				} else {
 					/* 此处根据用户登录状态，判断是否终止监听，避免用户退出后登录页面仍然有水印 */
 					if (tool.data.get('TOKEN')) {
 						//标签被移除，重新添加标签
-						// console.log('水印标签被移除了');
 						document.body.appendChild(watermark)
 					} else {
 						observer.disconnect()

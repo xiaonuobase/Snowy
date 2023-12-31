@@ -53,9 +53,9 @@
 			<Tags v-if="!isMobile && layoutTagsOpen" />
 			<a-layout-content class="main-content-wrapper">
 				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }" :key="route.fullPath">
-						<keep-alive :include="keepLiveRoute">
-							<component :is="Component" :key="route.name" v-if="routeShow" />
+					<router-view v-slot="{ Component }">
+						<keep-alive :include="kStore.keepLiveRoute">
+							<component :is="Component" v-if="kStore.routeShow" :key="route.name" />
 						</keep-alive>
 					</router-view>
 					<iframe-view />
@@ -149,12 +149,12 @@
 				</div>
 			</div>
 			<!-- 多标签 -->
-			<Tags v-if="!isMobile && layoutTagsOpen"></Tags>
+			<Tags v-if="!isMobile && layoutTagsOpen" />
 			<a-layout-content class="main-content-wrapper">
 				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }" :key="route.fullPath">
-						<keep-alive :include="keepLiveRoute">
-							<component :is="Component" v-if="routeShow" :key="route.name" />
+					<router-view v-slot="{ Component }">
+						<keep-alive :include="kStore.keepLiveRoute">
+							<component :is="Component" v-if="kStore.routeShow" :key="route.name" />
 						</keep-alive>
 					</router-view>
 					<iframe-view />
@@ -215,6 +215,10 @@
 		return store.theme
 	})
 	const layoutTagsOpen = computed(() => {
+		// 当关闭多标签时，清理keepAlive的缓存
+		if (!store.layoutTagsOpen) {
+			kStore.keepLiveRoute = []
+		}
 		return store.layoutTagsOpen
 	})
 	const breadcrumbOpen = computed(() => {
@@ -234,12 +238,6 @@
 	})
 	const module = computed(() => {
 		return store.module
-	})
-	const keepLiveRoute = computed(() => {
-		return kStore.keepLiveRoute
-	})
-	const routeShow = computed(() => {
-		return kStore.routeShow
 	})
 	const sideTheme = computed(() => {
 		return theme.value === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : theme.value
@@ -355,6 +353,7 @@
 			topHeaderThemeColorSpread.value
 				? headerLogin.classList.add('snowy-header-logo-primary-color')
 				: headerLogin.classList.remove('snowy-header-logo-primary-color')
+			// eslint-disable-next-line no-empty
 		} catch (e) {}
 		// 如果是双排菜单，吧第二排的也给渲染了
 		if (layout.value === 'doublerow') {
@@ -363,6 +362,7 @@
 				topHeaderThemeColorSpread.value
 					? snowyDoublerowSideTop.classList.add('snowy-doublerow-side-top-primary-color')
 					: snowyDoublerowSideTop.classList.remove('snowy-doublerow-side-top-primary-color')
+				// eslint-disable-next-line no-empty
 			} catch (e) {}
 		}
 	}

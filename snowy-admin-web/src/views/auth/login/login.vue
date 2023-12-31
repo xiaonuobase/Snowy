@@ -97,140 +97,145 @@
 		</div>
 	</div>
 </template>
-
-<script>
+<script setup>
 	import loginApi from '@/api/auth/loginApi'
-	import phoneLoginForm from './phoneLoginForm.vue'
-	import threeLogin from './threeLogin.vue'
+	import PhoneLoginForm from './phoneLoginForm.vue'
+	import ThreeLogin from './threeLogin.vue'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
 	import { afterLogin } from './util'
-	import config from '@/config'
+	import configData from '@/config'
 	import configApi from '@/api/dev/configApi'
 	import tool from '@/utils/tool'
 	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
-	import { mapActions, mapState } from 'pinia'
+	const { proxy } = getCurrentInstance()
 
-	export default {
-		name: 'Login',
-		components: {
-			phoneLoginForm,
-			threeLogin
+	const activeKey = ref('userAccount')
+	const captchaOpen = ref(configData.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN)
+	const validCodeBase64 = ref('')
+	const loading = ref(false)
+
+	const ruleForm = reactive({
+		account: 'superAdmin',
+		password: '123456',
+		validCode: '',
+		validCodeReqNo: '',
+		autologin: false
+	})
+
+	const rules = reactive({
+		account: [required(proxy.$t('login.accountError'), 'blur')],
+		password: [required(proxy.$t('login.PWError'), 'blur')]
+	})
+	const lang = ref([
+		{
+			name: '简体中文',
+			value: 'zh-cn'
 		},
-		data() {
-			return {
-				activeKey: 'userAccount',
-				captchaOpen: config.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN,
-				validCodeBase64: '',
-				ruleForm: {
-					account: 'superAdmin',
-					password: '123456',
-					validCode: '',
-					validCodeReqNo: '',
-					autologin: false
-				},
-				rules: {
-					account: [required(this.$t('login.accountError'), 'blur')],
-					password: [required(this.$t('login.PWError'), 'blur')]
-				},
-				loading: false,
-				config: {
-					lang: tool.data.get('APP_LANG') || this.$CONFIG.LANG,
-					theme: tool.data.get('APP_THEME') || 'default'
-				},
-				lang: [
-					{
-						name: '简体中文',
-						value: 'zh-cn'
-					},
-					{
-						name: 'English',
-						value: 'en'
-					}
-				]
-			}
-		},
-		computed: {
-			...mapState(globalStore, ['sysBaseConfig']),
-		},
-		watch: {
-			'config.theme': function (val) {
-				document.body.setAttribute('data-theme', val)
-			},
-			'config.lang': function (val) {
-				this.$i18n.locale = val
-				tool.data.set('APP_LANG', val)
-			}
-		},
-		created() {
-			this.clearViewTags()
-			this.clearKeepLive()
-			this.clearIframeList()
-		},
-		mounted() {
-			let formData = ref(config.SYS_BASE_CONFIG)
-			configApi.configSysBaseList().then((data) => {
-				if (data) {
-					data.forEach((item) => {
-						formData.value[item.configKey] = item.configValue
-					})
-					this.captchaOpen = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
-					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
-					this.setSysBaseConfig(formData.value)
-					this.refreshSwitch()
-				}
-			})
-		},
-		methods: {
-			...mapActions(keepAliveStore, ['clearKeepLive']),
-			...mapActions(viewTagsStore, ['clearViewTags']),
-			...mapActions(iframeStore, ['clearIframeList']),
-			...mapActions(globalStore, ['setSysBaseConfig']),
-			// 通过开关加载内容
-			refreshSwitch() {
-				// 判断是否开启验证码
-				if (this.captchaOpen === 'true') {
-					// 加载验证码
-					this.loginCaptcha()
-					// 加入校验
-					this.rules.validCode = [required(this.$t('login.validError'), 'blur')]
-				}
-			},
-			// 获取验证码
-			loginCaptcha() {
-				loginApi.getPicCaptcha().then((data) => {
-					this.validCodeBase64 = data.validCodeBase64
-					this.ruleForm.validCodeReqNo = data.validCodeReqNo
+		{
+			name: 'English',
+			value: 'en'
+		}
+	])
+	const config = ref({
+		lang: tool.data.get('APP_LANG') || proxy.$CONFIG.LANG,
+		theme: tool.data.get('APP_THEME') || 'default'
+	})
+
+	const store = globalStore()
+	const kStore = keepAliveStore()
+	const iStore = iframeStore()
+	const vStore = viewTagsStore()
+
+	const setSysBaseConfig = store.setSysBaseConfig
+	const clearKeepLive = kStore.clearKeepLive
+	const clearIframeList = iStore.clearIframeList
+	const clearViewTags = vStore.clearViewTags
+
+	const sysBaseConfig = computed(() => {
+		return store.sysBaseConfig
+	})
+
+	onMounted(() => {
+		let formData = ref(configData.SYS_BASE_CONFIG)
+		configApi.configSysBaseList().then((data) => {
+			if (data) {
+				data.forEach((item) => {
+					formData.value[item.configKey] = item.configValue
 				})
-			},
-			// 用户名密码登录
-			async login() {
-				this.$refs.loginForm.validate().then(async () => {
-					this.loading = true
-					const loginData = {
-						account: this.ruleForm.account,
-						// 密码进行SM2加密，传输过程中看到的只有密文，后端存储使用hash
-						password: smCrypto.doSm2Encrypt(this.ruleForm.password),
-						validCode: this.ruleForm.validCode,
-						validCodeReqNo: this.ruleForm.validCodeReqNo
-					}
-					// 获取token
-					try {
-						const loginToken = await loginApi.login(loginData)
-						afterLogin(loginToken)
-					} catch (err) {
-						this.loading = false
-						this.loginCaptcha()
-					}
-				})
-			},
-			configLang(key) {
-				this.config.lang = key
+				captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
+				tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
+				setSysBaseConfig(formData.value)
+				refreshSwitch()
 			}
+		})
+	})
+
+	onBeforeMount(() => {
+		clearViewTags()
+		clearKeepLive()
+		clearIframeList()
+	})
+
+	// 监听语言
+	watch(
+		() => config.value.lang,
+		(newValue) => {
+			proxy.$i18n.locale = newValue
+			tool.data.set('APP_LANG', newValue)
+		}
+	)
+	// 主题
+	watch(
+		() => config.value.theme,
+		(newValue) => {
+			document.body.setAttribute('data-theme', newValue)
+		}
+	)
+	// 通过开关加载内容
+	const refreshSwitch = () => {
+		// 判断是否开启验证码
+		if (captchaOpen.value === 'true') {
+			// 加载验证码
+			loginCaptcha()
+			// 加入校验
+			rules.validCode = [required(proxy.$t('login.validError'), 'blur')]
 		}
 	}
-</script>
 
+	// 获取验证码
+	const loginCaptcha = () => {
+		loginApi.getPicCaptcha().then((data) => {
+			validCodeBase64.value = data.validCodeBase64
+			ruleForm.validCodeReqNo = data.validCodeReqNo
+		})
+	}
+	//登陆
+	const loginForm = ref()
+	const login = async () => {
+		loginForm.value.validate().then(async () => {
+			loading.value = true
+			const loginData = {
+				account: ruleForm.account,
+				// 密码进行SM2加密，传输过程中看到的只有密文，后端存储使用hash
+				password: smCrypto.doSm2Encrypt(ruleForm.password),
+				validCode: ruleForm.validCode,
+				validCodeReqNo: ruleForm.validCodeReqNo
+			}
+			// 获取token
+			try {
+				const loginToken = await loginApi.login(loginData)
+				afterLogin(loginToken)
+			} catch (err) {
+				loading.value = false
+				loginCaptcha()
+			}
+		})
+	}
+	const configLang = (key) => {
+		config.value.lang = key
+	}
+</script>
 <style lang="less">
 	@import 'login';
 </style>

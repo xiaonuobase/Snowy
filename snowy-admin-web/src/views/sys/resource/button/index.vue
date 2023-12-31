@@ -1,13 +1,7 @@
 <template>
-	<xn-form-container
-		title="按钮权限"
-		:width="700"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="按钮权限" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="false"
@@ -33,7 +27,7 @@
 			</template>
 		</s-table>
 	</xn-form-container>
-	<Form ref="buttonForm" @successful="table.refresh(true)" />
+	<Form ref="buttonForm" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup>
@@ -62,11 +56,11 @@
 	]
 	const toolConfig = { refresh: true, height: false, columnSetting: false, striped: false }
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const searchFormState = ref()
 	const buttonForm = ref()
 	const recordData = ref()
-	const table = ref()
+	const tableRef = ref()
 
 	// 打开抽屉
 	const onOpen = (record) => {
@@ -75,11 +69,11 @@
 			parentId: record.id,
 			category: 'BUTTON'
 		}
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 加载按钮数据
 	const loadData = (parameter) => {
@@ -95,7 +89,7 @@
 			}
 		]
 		buttonApi.buttonDelete(params).then((res) => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去

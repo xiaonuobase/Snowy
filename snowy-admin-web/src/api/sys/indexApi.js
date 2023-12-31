@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/sys/index/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/sys/index/` + url, ...arg)
 /**
  * 系统首页控制器
  *

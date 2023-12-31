@@ -72,7 +72,7 @@
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	let UserSelectorPlus = ref()
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
@@ -83,7 +83,7 @@
 
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
-		visible = true
+		visible.value = true
 		formData.value = {
 			sortCode: 99
 		}
@@ -112,7 +112,7 @@
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {
@@ -152,7 +152,7 @@
 				bizOrgApi
 					.submitForm(formData.value, formData.value.id)
 					.then(() => {
-						visible = false
+						visible.value = false
 						emit('successful')
 					})
 					.finally(() => {

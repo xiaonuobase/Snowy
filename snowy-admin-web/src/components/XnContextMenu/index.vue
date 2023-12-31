@@ -3,86 +3,80 @@
 		<slot></slot>
 	</div>
 </template>
+<script setup>
+	const props = defineProps({
+		target: null,
+		show: Boolean
+	})
 
-<script>
-	export default {
-		name: 'XnContextMenu',
-		props: {
-			target: null,
-			show: Boolean
-		},
-		data() {
-			return {
-				triggerShowFn: () => {},
-				triggerHideFn: () => {},
-				x: null,
-				y: null,
-				style: {},
-				binded: false
-			}
-		},
-		watch: {
-			show(show) {
-				if (show) {
-					this.bindHideEvents()
-				} else {
-					this.unbindHideEvents()
-				}
-			},
-			target(target) {
-				this.bindEvents()
-			}
-		},
-		mounted() {
-			this.bindEvents()
-		},
-		methods: {
-			// 初始化事件
-			bindEvents() {
-				this.$nextTick(() => {
-					if (!this.target || this.binded) return
-					this.triggerShowFn = this.contextMenuHandler.bind(this)
-					this.target.addEventListener('contextmenu', this.triggerShowFn)
-					this.binded = true
-				})
-			},
-			// 取消绑定事件
-			unbindEvents() {
-				if (!this.target) return
-				this.target.removeEventListener('contextmenu', this.triggerShowFn)
-			},
-			// 绑定隐藏菜单事件
-			bindHideEvents() {
-				this.triggerHideFn = this.clickDocumentHandler.bind(this)
-				document.addEventListener('mousedown', this.triggerHideFn)
-				document.addEventListener('mousewheel', this.triggerHideFn)
-			},
-			// 取消绑定隐藏菜单事件
-			unbindHideEvents() {
-				document.removeEventListener('mousedown', this.triggerHideFn)
-				document.removeEventListener('mousewheel', this.triggerHideFn)
-			},
-			// 鼠标按压事件处理器
-			clickDocumentHandler(e) {
-				this.$emit('update:show', false)
-			},
-			// 右键事件事件处理
-			contextMenuHandler(e) {
-				this.x = e.clientX
-				this.y = e.clientY
-				this.layout()
-				this.$emit('update:show', true)
-				this.$emit('get-context-menu', e)
-				e.preventDefault()
-			},
-			// 布局
-			layout() {
-				this.style = {
-					left: this.x + 'px',
-					top: this.y + 'px',
-					display: 'block'
-				}
-			}
+	const x = ref(null)
+	const y = ref(null)
+	const style = ref({})
+	const binded = ref(false)
+	const emit = defineEmits(['update:show', 'get-context-menu'])
+
+	// 监听show的变化
+	watch(
+		() => props.show,
+		(newValue) => {
+			newValue ? bindHideEvents() : unbindHideEvents()
 		}
+	)
+	watch(
+		() => props.target,
+		(newValue) => {
+			bindEvents()
+		}
+	)
+
+	// 初始化事件
+	const bindEvents = (e) => {
+		nextTick(() => {
+			if (!props.target || binded.value) return
+			props.target.addEventListener('contextmenu', contextMenuHandler)
+			binded.value = true
+		})
+	}
+
+	// 绑定隐藏菜单事件
+	const bindHideEvents = () => {
+		document.addEventListener('mousedown', clickDocumentHandler)
+		document.addEventListener('mousewheel', clickDocumentHandler)
+	}
+
+	// 取消绑定隐藏菜单事件
+	const unbindHideEvents = () => {
+		document.removeEventListener('mousedown', clickDocumentHandler)
+		document.removeEventListener('mousewheel', clickDocumentHandler)
+	}
+
+	// 鼠标按压事件处理器
+	const clickDocumentHandler = () => {
+		emit('update:show', false)
+	}
+
+	// 右键事件事件处理
+	const contextMenuHandler = (e) => {
+		x.value = e.clientX
+		y.value = e.clientY
+		layout()
+		emit('update:show', true)
+		emit('get-context-menu', e)
+		e.preventDefault()
+	}
+
+	// 布局
+	const layout = () => {
+		style.value = {
+			left: x.value + 'px',
+			top: y.value + 'px',
+			display: 'block'
+		}
+	}
+
+	// 取消绑定事件
+	const unbindEvents = () => {
+		if (!props.target) return
+		props.target.removeEventListener('contextmenu', contextMenuHandler)
 	}
 </script>

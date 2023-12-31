@@ -6,16 +6,13 @@
 		</template>
 	</a-result>
 </template>
-
-<script>
-	export default {
-		methods: {
-			gohome() {
-				location.href = '/'
-			},
-			goback() {
-				this.$router.go(-1)
-			}
-		}
+<script setup>
+	import { useRouter } from 'vue-router'
+	const router = useRouter()
+	const gohome = () => {
+		location.href = '/'
+	}
+	const goback = () => {
+		router.go(-1)
 	}
 </script>

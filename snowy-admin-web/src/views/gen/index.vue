@@ -1,7 +1,7 @@
 <template>
 	<a-card :bordered="false" v-if="indexShow">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadDate"
 			:expand-row-by-click="true"
@@ -43,7 +43,7 @@
 			</template>
 		</s-table>
 	</a-card>
-	<steps v-else ref="stepsRef" @successful="table.refresh(true)" @closed="closeConfig()" />
+	<steps v-else ref="stepsRef" @successful="tableRef.refresh(true)" @closed="closeConfig()" />
 	<genPreview ref="genPreviewRef" />
 </template>
 
@@ -54,7 +54,7 @@
 	import genPreview from './preview.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
 
-	const table = ref()
+	const tableRef = ref()
 	const indexShow = ref(true)
 	const stepsRef = ref()
 	const genPreviewRef = ref()
@@ -157,7 +157,7 @@
 		if (record.generateType === 'PRO') {
 			genBasicApi.basicExecGenPro(param).then(() => {
 				message.success('操作成功')
-				table.value.refresh()
+				tableRef.value.refresh()
 			})
 		} else {
 			// 下载压缩包
@@ -174,13 +174,13 @@
 			}
 		]
 		genBasicApi.basicDelete(params).then(() => {
-			table.value.refresh()
+			tableRef.value.refresh()
 		})
 	}
 	// 批量删除
 	const deleteBatchCodeGen = (params) => {
 		genBasicApi.basicDelete(params).then(() => {
-			table.value.refresh()
+			tableRef.value.refresh()
 		})
 	}
 	// 打开配置界面

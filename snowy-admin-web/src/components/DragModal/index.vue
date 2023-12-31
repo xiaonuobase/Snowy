@@ -2,7 +2,7 @@
 	<a-modal
 		:class="['my-modal', modalClass, simpleClass]"
 		:visible="visible"
-		v-bind="$props"
+		v-bind="props"
 		:width="modalWidth"
 		:wrap-class-name="wrapClassName + fullscreenClass"
 		@cancel="handleCancel"
@@ -27,283 +27,258 @@
 			<slot name="insertFooter"></slot>
 			<slot name="footer">
 				<a-button @click="handleCancel">
-					{{ $props.cancelText || '取消' }}
+					{{ props.cancelText || '取消' }}
 				</a-button>
 				<slot name="centerFooter"></slot>
 				<a-button type="primary" @click="handleOk" :loading="loading">
-					{{ $props.okText || '确定' }}
+					{{ props.okText || '确定' }}
 				</a-button>
 			</slot>
 			<slot name="appendFooter"></slot>
 		</template>
 	</a-modal>
 </template>
-<script>
-	import props from './props.js'
-
-	export default {
-		name: 'DragModal',
-		mixins: [props],
-		props: {
-			// 容器的类名
-			modalClass: {
-				type: String,
-				default: 'modal-box'
-			},
-			// 对话框外层容器的类名
-			wrapClassName: {
-				type: String,
-				default: ''
-			},
-			helpMessage: {
-				type: String
-			},
-			// 可全屏
-			fullscreen: {
-				type: Boolean,
-				default: true
-			},
-			// 可拖拽
-			drag: {
-				type: Boolean,
-				default: true
-			},
-			// 可拉伸
-			resize: {
-				type: Boolean,
-				default: false
-			},
-			// 是否显示
-			visible: {
-				type: Boolean,
-				default: false
-			},
-			// 标题
-			title: {
-				type: String,
-				default: undefined
-			},
-			// 宽度
-			width: {
-				type: [Number, String],
-				default: '70%'
-			},
-			loading: {
-				type: Boolean,
-				default: undefined
-			}
+<script setup>
+	import mixinProps from './props.js'
+	import { useSlots } from 'vue'
+	const slots = useSlots()
+	const props = defineProps({
+		...mixinProps,
+		// 容器的类名
+		modalClass: {
+			type: String,
+			default: 'modal-box'
 		},
-		emits: ['ok', 'close', 'fullscreen'],
-		data() {
-			return {
-				modalWidth: '',
-				contain: null,
-				// 拖拽
-				header: null,
-				modalContent: null,
-				mouseDownX: 0,
-				mouseDownY: 0,
-				deltaX: 0,
-				deltaY: 0,
-				sumX: 0,
-				sumY: 0,
-				onmousedown: false,
-				// 缩放
-				modalBody: null,
-				myBody: null,
-				prevModalWidth: 0,
-				prevModalHeight: 0,
-				prevBodyWidth: 0,
-				prevBodyHeight: 0,
-				startX: 0,
-				startY: 0,
-				// 全屏
-				fullscreenClass: '',
-				fullscreenStatus: false
-			}
+		// 对话框外层容器的类名
+		wrapClassName: {
+			type: String,
+			default: ''
 		},
-		computed: {
-			slotKeys() {
-				return Object.keys(this.$slots)
-			},
-			simpleClass() {
-				return Math.random().toString(36).substring(2)
-			}
+		helpMessage: {
+			type: String
 		},
-		watch: {
-			visible() {
-				this.$nextTick(() => {
-					this.initialEvent(this.visible)
-				})
-			},
-			fullscreenStatus() {
-				this.fullscreenClass = this.fullscreenStatus ? ' full-modal' : ''
-			}
+		// 可全屏
+		fullscreen: {
+			type: Boolean,
+			default: true
 		},
-		mounted() {
-			this.$nextTick(() => {
-				this.initialEvent(this.visible)
+		// 可拖拽
+		drag: {
+			type: Boolean,
+			default: true
+		},
+		// 可拉伸
+		resize: {
+			type: Boolean,
+			default: false
+		},
+		// 是否显示
+		visible: {
+			type: Boolean,
+			default: false
+		},
+		// 标题
+		title: {
+			type: String,
+			default: undefined
+		},
+		// 宽度
+		width: {
+			type: [Number, String],
+			default: '70%'
+		},
+		loading: {
+			type: Boolean,
+			default: undefined
+		}
+	})
+	const emit = defineEmits(['ok', 'close', 'fullscreen'])
+	const modalWidth = ref('')
+	const contain = ref(null)
+	// 拖拽
+	const header = ref(null)
+	const modalContent = ref(null)
+	const mouseDownX = ref(0)
+	const mouseDownY = ref(0)
+	const deltaX = ref(0)
+	const deltaY = ref(0)
+	const sumX = ref(0)
+	const sumY = ref(0)
+	const onmousedown = ref(false)
+	// 缩放
+	const modalBody = ref(null)
+	const myBody = ref(null)
+	const prevModalWidth = ref(0)
+	const prevModalHeight = ref(0)
+	const prevBodyWidth = ref(0)
+	const prevBodyHeight = ref(0)
+	const startX = ref(0)
+	const startY = ref(0)
+	// 全屏
+	const fullscreenClass = ref('')
+	const fullscreenStatus = ref(false)
+	const slotKeys = computed(() => {
+		return Object.keys(slots)
+	})
+	const simpleClass = computed(() => {
+		return Math.random().toString(36).substring(2)
+	})
+	onMounted(() => {
+		nextTick(() => {
+			initialEvent(props.visible)
+		})
+	})
+	watch(
+		() => props.visible,
+		(newValue) => {
+			nextTick(() => {
+				initialEvent(props.visible)
 			})
-		},
-		created() {},
-		beforeUnmount() {
-			this.removeMove()
-			document.removeEventListener('mouseup', this.removeUp, false)
-			this.removeResize()
-			document.removeEventListener('mouseup', this.removeResize)
-		},
-		methods: {
-			changeWidth(width) {
-				this.modalWidth = width
-			},
-			handleFullScreen(e) {
-				e?.stopPropagation()
-				e?.preventDefault()
+		}
+	)
+	watch(
+		() => fullscreenStatus.value,
+		(newValue) => {
+			fullscreenClass.value = fullscreenStatus.value ? ' full-modal' : ''
+		}
+	)
+	onBeforeUnmount(() => {
+		removeMove()
+		document.removeEventListener('mouseup', removeUp, false)
+		removeResize()
+		document.removeEventListener('mouseup', removeResize)
+	})
+	const changeWidth = (width) => {
+		modalWidth.value = width
+	}
+	const handleFullScreen = (e) => {
+		e?.stopPropagation()
+		e?.preventDefault()
 
-				this.fullscreenStatus = !this.fullscreenStatus
-				this.$emit('fullscreen', e)
-			},
-			handleOk(e) {
-				this.reset()
-				this.$emit('ok', e)
-			},
-			handleCancel(e) {
-				const classList = e.target?.classList
-				// 过滤自定义关闭按钮的空白区域
-				if (classList.contains('ant-modal-close-x') || classList.contains('ant-space-item')) {
-					return
+		fullscreenStatus.value = !fullscreenStatus.value
+		emit('fullscreen', e)
+	}
+	const handleOk = (e) => {
+		reset()
+		emit('ok', e)
+	}
+	const handleCancel = (e) => {
+		const classList = e.target?.classList
+		// 过滤自定义关闭按钮的空白区域
+		if (classList.contains('ant-modal-close-x') || classList.contains('ant-space-item')) {
+			return
+		}
+		reset()
+		emit('close', e)
+	}
+	const reset = () => {
+		// 拖拽
+		mouseDownX.value = 0
+		mouseDownY.value = 0
+		deltaX.value = 0
+		deltaY.value = 0
+		sumX.value = 0
+		sumY.value = 0
+		// 缩放
+		prevModalWidth.value = 0
+		prevModalHeight.value = 0
+		prevBodyWidth.value = 0
+		prevBodyHeight.value = 0
+		startX.value = 0
+		startY.value = 0
+		// 全屏
+		fullscreenStatus.value = false
+	}
+	const initialEvent = (visible) => {
+		if (visible) {
+			reset()
+			// 获取控件
+			document.removeEventListener('mouseup', removeUp, false)
+			contain.value = document.getElementsByClassName(simpleClass.value)[0]
+			changeWidth(props.width)
+			if (props.drag === true) {
+				header.value = contain.value.getElementsByClassName('ant-modal-header')[0]
+				modalContent.value = contain.value.getElementsByClassName('ant-modal-content')[0]
+				header.value.style.cursor = 'all-scroll'
+				modalContent.value.style.left = 0
+				modalContent.value.style.transform = 'translate(0px,0px)'
+				// 拖拽事件监听
+				header.value.onmousedown = (event) => {
+					onmousedown.value = true
+					mouseDownX.value = event.pageX
+					mouseDownY.value = event.pageY
+					document.body.onselectstart = () => false
+					document.addEventListener('mousemove', handleMove, false)
 				}
-				this.reset()
-				this.$emit('close', e)
-			},
-			reset() {
-				// 拖拽
-				this.mouseDownX = 0
-				this.mouseDownY = 0
-				this.deltaX = 0
-				this.deltaY = 0
-				this.sumX = 0
-				this.sumY = 0
-				// 缩放
-				this.prevModalWidth = 0
-				this.prevModalHeight = 0
-				this.prevBodyWidth = 0
-				this.prevBodyHeight = 0
-				this.startX = 0
-				this.startY = 0
-				// 全屏
-				this.fullscreenStatus = false
-			},
-			initialEvent(visible) {
-				// console.log('--------- 初始化')
-				// console.log('simpleClass===>', this.simpleClass)
-				// console.log('document===>', document)
-				if (visible) {
-					this.reset()
-					// 获取控件
-					document.removeEventListener('mouseup', this.removeUp, false)
-					this.contain = document.getElementsByClassName(this.simpleClass)[0]
-					// console.log('初始化-contain:', this.contain)
-					this.changeWidth(this.$props.width)
-					if (this.$props.drag === true) {
-						this.header = this.contain.getElementsByClassName('ant-modal-header')[0]
-						this.modalContent = this.contain.getElementsByClassName('ant-modal-content')[0]
-						this.header.style.cursor = 'all-scroll'
-						this.modalContent.style.left = 0
-						this.modalContent.style.transform = 'translate(0px,0px)'
-						// console.log('初始化-header:', this.header)
-						// console.log('初始化-modalContent:', this.modalContent)
-						// 拖拽事件监听
-						// this.contain.onmousedown = (event) => {
-						this.header.onmousedown = (event) => {
-							this.onmousedown = true
-							this.mouseDownX = event.pageX
-							this.mouseDownY = event.pageY
-							document.body.onselectstart = () => false
-							document.addEventListener('mousemove', this.handleMove, false)
-						}
-						document.addEventListener('mouseup', this.removeUp, false)
+				document.addEventListener('mouseup', removeUp, false)
+			}
+
+			if (props.resize === true) {
+				modalBody.value = contain.value.getElementsByClassName('ant-modal-content')[0]
+				myBody.value = contain.value.getElementsByClassName('ant-modal-body')[0]
+				modalBody.value.style.overflow = 'hidden'
+				modalBody.value.style.resize = 'both'
+				myBody.value.style.overflow = 'auto'
+				myBody.value.style.height = 'auto'
+				// 缩放事件监听
+				modalBody.value.onmousedown = (event) => {
+					event.preventDefault()
+					const rect = modalBody.value.getBoundingClientRect()
+					const rightBorder = rect.x + rect.width - 17
+					const bottomBorder = rect.y + rect.height - 17
+					if (event.clientX >= rightBorder && event.clientY >= bottomBorder) {
+						prevModalWidth.value = modalBody.value.offsetWidth
+						prevModalHeight.value = modalBody.value.offsetHeight
+						prevBodyWidth.value = myBody.value.offsetWidth
+						prevBodyHeight.value = myBody.value.offsetHeight
+						startX.value = event.clientX
+						startY.value = event.clientY
+						document.addEventListener('mousemove', handleResize)
 					}
-
-					if (this.$props.resize === true) {
-						this.modalBody = this.contain.getElementsByClassName('ant-modal-content')[0]
-						this.myBody = this.contain.getElementsByClassName('ant-modal-body')[0]
-						this.modalBody.style.overflow = 'hidden'
-						this.modalBody.style.resize = 'both'
-						this.myBody.style.overflow = 'auto'
-						this.myBody.style.height = 'auto'
-						// console.log('初始化-modalBody:', this.modalBody)
-						// console.log('初始化-myBody:', this.myBody)
-						// 缩放事件监听
-						this.modalBody.onmousedown = (event) => {
-							event.preventDefault()
-							const rect = this.modalBody.getBoundingClientRect()
-							const rightBorder = rect.x + rect.width - 17
-							const bottomBorder = rect.y + rect.height - 17
-							// console.log('rightBorder:' + rightBorder, 'clientX:' + event.clientX)
-							// console.log('bottomBorder:' + bottomBorder, 'clientY:' + event.clientY)
-							if (event.clientX >= rightBorder && event.clientY >= bottomBorder) {
-								this.prevModalWidth = this.modalBody.offsetWidth
-								this.prevModalHeight = this.modalBody.offsetHeight
-								this.prevBodyWidth = this.myBody.offsetWidth
-								this.prevBodyHeight = this.myBody.offsetHeight
-								this.startX = event.clientX
-								this.startY = event.clientY
-
-								document.addEventListener('mousemove', this.handleResize)
-							}
-							document.addEventListener('mouseup', this.removeResize)
-						}
-					}
+					document.addEventListener('mouseup', removeResize)
 				}
-			},
-			handleMove(event) {
-				if (this.fullscreenStatus) {
-					return
-				}
-				const delta1X = event.pageX - this.mouseDownX
-				const delta1Y = event.pageY - this.mouseDownY
-				this.deltaX = delta1X
-				this.deltaY = delta1Y
-				// console.log('delta1X:' + delta1X, 'sumX:' + this.sumX, 'delta1Y:' + delta1Y, 'sumY:' + this.sumY)
-				this.modalContent.style.transform = `translate(${delta1X + this.sumX}px, ${delta1Y + this.sumY}px)`
-			},
-			removeMove() {
-				document.removeEventListener('mousemove', this.handleMove, false)
-			},
-			removeUp(event) {
-				document.body.onselectstart = () => true
-				if (this.onmousedown && !(event.pageX === this.mouseDownX && event.pageY === this.mouseDownY)) {
-					this.onmousedown = false
-					this.sumX = this.sumX + this.deltaX
-					this.sumY = this.sumY + this.deltaY
-					// console.log('sumX:' + this.sumX, 'sumY:' + this.sumY)
-				}
-				this.removeMove()
-				// this.checkMove()
-			},
-			handleResize(event) {
-				if (this.fullscreenStatus) {
-					return
-				}
-				const diffX = event.clientX - this.startX
-				const diffY = event.clientY - this.startY
-				const minWidth = 180
-				const minHeight = 0
-
-				if (this.prevBodyWidth + diffX > minWidth) {
-					this.changeWidth(this.prevModalWidth + diffX + 'px')
-					// this.myBody.style.width = this.prevBodyWidth + diffX + 'px'
-				}
-				if (this.prevBodyHeight + diffY > minHeight) {
-					// this.modalBody.style.height = this.prevModalHeight + diffY + 'px'
-					this.myBody.style.height = this.prevBodyHeight + diffY + 'px'
-				}
-			},
-			removeResize() {
-				document.removeEventListener('mousemove', this.handleResize)
 			}
 		}
+	}
+	const handleMove = (event) => {
+		if (fullscreenStatus.value) {
+			return
+		}
+		const delta1X = event.pageX - mouseDownX.value
+		const delta1Y = event.pageY - mouseDownY.value
+		deltaX.value = delta1X
+		deltaY.value = delta1Y
+		modalContent.value.style.transform = `translate(${delta1X + sumX.value}px, ${delta1Y + sumY.value}px)`
+	}
+	const removeMove = () => {
+		document.removeEventListener('mousemove', handleMove, false)
+	}
+	const removeUp = (event) => {
+		document.body.onselectstart = () => true
+		if (onmousedown.value && !(event.pageX === mouseDownX.value && event.pageY === mouseDownY.value)) {
+			onmousedown.value = false
+			sumX.value = sumX.value + deltaX.value
+			sumY.value = sumY.value + deltaY.value
+		}
+		removeMove()
+	}
+	const handleResize = (event) => {
+		if (fullscreenStatus.value) {
+			return
+		}
+		const diffX = event.clientX - startX.value
+		const diffY = event.clientY - startY.value
+		const minWidth = 180
+		const minHeight = 0
+		if (prevBodyWidth.value + diffX > minWidth) {
+			changeWidth(prevModalWidth.value + diffX + 'px')
+		}
+		if (prevBodyHeight.value + diffY > minHeight) {
+			myBody.value.style.height = prevBodyHeight.value + diffY + 'px'
+		}
+	}
+	const removeResize = () => {
+		document.removeEventListener('mousemove', handleResize)
 	}
 </script>
 <style lang="less">

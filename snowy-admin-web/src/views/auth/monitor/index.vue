@@ -13,8 +13,8 @@
 </template>
 
 <script setup name="authMonitor">
-	import analyse from './analyse.vue'
-	import monitorBTab from './bTab.vue'
-	import monitorCTab from './cTab.vue'
+	import Analyse from './analyse.vue'
+	import MonitorBTab from './bTab.vue'
+	import MonitorCTab from './cTab.vue'
 	const activeKey = ref('1')
 </script>

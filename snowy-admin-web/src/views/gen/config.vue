@@ -1,7 +1,7 @@
 <template>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadDate"
 			:expand-row-by-click="true"
@@ -80,7 +80,7 @@
 	import genConfigApi from '@/api/gen/genConfigApi'
 	import { cloneDeep } from 'lodash-es'
 
-	const table = ref()
+	const tableRef = ref()
 	const recordData = ref()
 	const tableData = ref()
 
@@ -160,7 +160,7 @@
 	const onOpen = (record) => {
 		recordData.value = record
 		nextTick(() => {
-			table.value.refresh()
+			tableRef.value.refresh()
 		})
 	}
 	// 表格查询 返回 Promise 对象

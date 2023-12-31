@@ -10,7 +10,7 @@
 </template>
 
 <script setup name="smsConfig">
-	import aliyunSmsForm from './aliyunSmsForm.vue'
-	import tencentSmsForm from './tencentSmsForm.vue'
+	import AliyunSmsForm from './aliyunSmsForm.vue'
+	import TencentSmsForm from './tencentSmsForm.vue'
 	const activeKey = ref('aliyunSms')
 </script>

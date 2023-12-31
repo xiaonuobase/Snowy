@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/sys/menu/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/sys/menu/` + url, ...arg)
 /**
  * 菜单
  *

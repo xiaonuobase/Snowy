@@ -10,7 +10,7 @@
 </template>
 
 <script setup name="thirdConfig">
-	import wechatThirdForm from './wechatThirdForm.vue'
-	import giteeThirdForm from './giteeThirdForm.vue'
+	import WechatThirdForm from './wechatThirdForm.vue'
+	import GiteeThirdForm from './giteeThirdForm.vue'
 	const activeKey = ref('wechatThird')
 </script>

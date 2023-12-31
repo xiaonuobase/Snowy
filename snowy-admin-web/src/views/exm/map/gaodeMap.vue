@@ -1,5 +1,10 @@
 <template>
-	<gaode-map ref="map" api-key="87528cfa68513cbc7574ff94704664fc" @complete="handleComplete" @marker-click="handleMarkerClick" />
+	<gaode-map
+		ref="map"
+		api-key="87528cfa68513cbc7574ff94704664fc"
+		@complete="handleComplete"
+		@marker-click="handleMarkerClick"
+	/>
 </template>
 
 <script setup name="exmGaodeMap">

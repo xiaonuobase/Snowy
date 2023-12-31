@@ -8,14 +8,14 @@
 		@close="onClose"
 	>
 		<a-tabs v-model:activeKey="activeKey">
-			<a-tab-pane key="LocalEmailSend" tab="本地邮件">
-				<localEmailSend ref="LocalEmailSend" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+			<a-tab-pane key="localEmailSend" tab="本地邮件">
+				<localEmailSend ref="localEmailSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
-			<a-tab-pane key="AliyunEmailSend" tab="阿里云邮件">
-				<aliyunEmailSend ref="AliyunEmailSend" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+			<a-tab-pane key="aliyunEmailSend" tab="阿里云邮件">
+				<aliyunEmailSend ref="aliyunEmailSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
-			<a-tab-pane key="TencentEmailSend" tab="腾讯云邮件">
-				<tencentEmailSend ref="TencentEmailSend" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+			<a-tab-pane key="tencentEmailSend" tab="腾讯云邮件">
+				<tencentEmailSend ref="tencentEmailSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
 		</a-tabs>
 		<template #footer>
@@ -26,35 +26,35 @@
 </template>
 
 <script setup name="emailForm">
-	import localEmailSend from './send/localEmailSend.vue'
-	import aliyunEmailSend from './send/aliyunEmailSend.vue'
-	import tencentEmailSend from './send/tencentEmailSend.vue'
+	import LocalEmailSend from './send/localEmailSend.vue'
+	import AliyunEmailSend from './send/aliyunEmailSend.vue'
+	import TencentEmailSend from './send/tencentEmailSend.vue'
 
-	const LocalEmailSend = ref()
-	const AliyunEmailSend = ref()
-	const TencentEmailSend = ref()
+	const localEmailSendRef = ref()
+	const aliyunEmailSendRef = ref()
+	const tencentEmailSendRef = ref()
 
 	// 默认是关闭状态
-	let visible = $ref(false)
-	const activeKey = ref('LocalEmailSend')
+	const visible = ref(false)
+	const activeKey = ref('localEmailSend')
 	const sendLoading = ref(false)
 	// 打开抽屉
 	const onOpen = () => {
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
 		const tabActiveKey = activeKey.value
-		if (tabActiveKey === 'LocalEmailSend') {
-			LocalEmailSend.value.send()
-		} else if (tabActiveKey === 'AliyunEmailSend') {
-			AliyunEmailSend.value.send()
-		} else if (tabActiveKey === 'TencentEmailSend') {
-			TencentEmailSend.value.send()
+		if (tabActiveKey === 'localEmailSend') {
+			localEmailSendRef.value.send()
+		} else if (tabActiveKey === 'aliyunEmailSend') {
+			aliyunEmailSendRef.value.send()
+		} else if (tabActiveKey === 'tencentEmailSend') {
+			tencentEmailSendRef.value.send()
 		}
 	}
 	// 请求loading开始

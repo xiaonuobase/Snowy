@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/dev/monitor/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/dev/monitor/` + url, ...arg)
 /**
  * 监控
  *

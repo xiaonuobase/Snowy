@@ -20,7 +20,7 @@ export default {
 		searchKey: 'Search Key',
 		imports: 'Import',
 		more: 'More',
-		export: 'Export',
+		export: 'Export'
 	},
 	model: {
 		user: 'user',

@@ -26,7 +26,7 @@
 	import { required } from '@/utils/formRules'
 	import buttonApi from '@/api/mobile/resource/buttonApi'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
@@ -34,7 +34,7 @@
 	const recordData = ref()
 	// 打开弹框
 	const onOpen = (record, buttonData) => {
-		visible = true
+		visible.value = true
 		recordData.value = record
 		formData.value = {
 			sortCode: 99
@@ -46,7 +46,7 @@
 	// 关闭弹框
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {

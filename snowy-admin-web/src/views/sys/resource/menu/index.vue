@@ -23,7 +23,7 @@
 	</a-card>
 	<a-card :bordered="false" class="mt-2">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="options.alert.show"
@@ -112,8 +112,8 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="formRef" @successful="table.refresh(true)" />
-	<changeModuleForm ref="changeModuleFormRef" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
+	<changeModuleForm ref="changeModuleFormRef" @successful="tableRef.refresh(true)" />
 	<Button ref="buttonRef" />
 </template>
 
@@ -122,8 +122,8 @@
 	import Form from './form.vue'
 	import ChangeModuleForm from './changeModuleForm.vue'
 	import Button from '../button/index.vue'
-	let searchFormState = reactive({})
-	const table = ref(null)
+	const searchFormState = ref({})
+	const tableRef = ref(null)
 	const formRef = ref()
 	const changeModuleFormRef = ref()
 	const buttonRef = ref()
@@ -194,8 +194,8 @@
 			return menuApi.menuModuleSelector().then((data) => {
 				moduleTypeList.value = data
 				moduleType.value = data.length > 0 ? data[0].id : ''
-				searchFormState.module = moduleType.value
-				return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((data) => {
+				searchFormState.value.module = moduleType.value
+				return menuApi.menuTree(Object.assign(parameter, searchFormState.value)).then((data) => {
 					if (data) {
 						return data
 					} else {
@@ -204,7 +204,7 @@
 				})
 			})
 		} else {
-			return menuApi.menuTree(Object.assign(parameter, searchFormState)).then((data) => {
+			return menuApi.menuTree(Object.assign(parameter, searchFormState.value)).then((data) => {
 				if (data) {
 					return data
 				} else {
@@ -215,12 +215,12 @@
 	}
 	// 切换应用标签查询菜单列表
 	const moduleClock = (value) => {
-		searchFormState.module = value
-		table.value.refresh(true)
+		searchFormState.value.module = value
+		tableRef.value.refresh(true)
 	}
 	// 查询
 	const onSearch = () => {
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	/* const removeEmptyChildren = (data) => {
 		if (data == null || data.length === 0) return;
@@ -242,13 +242,13 @@
 			}
 		]
 		menuApi.menuDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchMenu = (params) => {
 		menuApi.menuDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

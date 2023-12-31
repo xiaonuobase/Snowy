@@ -1,6 +1,6 @@
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/gen/config/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/gen/config/` + url, ...arg)
 
 export default {
 	// 获取代码生成详情配置列表

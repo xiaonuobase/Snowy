@@ -22,7 +22,7 @@ export default {
 		searchKey: '关键词',
 		imports: '导入',
 		more: '更多',
-		export: '导出',
+		export: '导出'
 	},
 	model: {
 		user: '用户',

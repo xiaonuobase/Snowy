@@ -1,13 +1,7 @@
 <template>
-	<a-drawer
-		title="字段权限"
-		:width="650"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<a-drawer title="字段权限" :width="650" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="false"
@@ -33,7 +27,7 @@
 			</template>
 		</s-table>
 	</a-drawer>
-	<Form ref="fieldForm" @successful="table.refresh(true)" />
+	<Form ref="fieldForm" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup>
@@ -63,11 +57,11 @@
 	]
 	const toolConfig = { refresh: true, height: false, columnSetting: false, striped: false }
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const searchFormState = ref()
 	const fieldForm = ref()
 	const recordData = ref()
-	const table = ref()
+	const tableRef = ref()
 	// 打开抽屉
 	const onOpen = (record) => {
 		recordData.value = record
@@ -75,11 +69,11 @@
 			parentId: record.id,
 			category: 'FIELD'
 		}
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 加载字段数据
 	const loadData = (parameter) => {
@@ -95,7 +89,7 @@
 			}
 		]
 		fieldApi.fieldDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去

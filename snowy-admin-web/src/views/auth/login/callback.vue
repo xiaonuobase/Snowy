@@ -26,7 +26,6 @@
 	import loginApi from '@/api/auth/loginApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import dictApi from '@/api/dev/dictApi'
-	import { onMounted } from 'vue'
 
 	onMounted(() => {
 		// 获取当前url

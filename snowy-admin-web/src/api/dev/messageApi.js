@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/dev/message/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/dev/message/` + url, ...arg)
 /**
  * 站内信
  *

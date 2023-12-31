@@ -16,7 +16,7 @@
 			</a-form-item>
 			<a-form-item label="查收情况：" name="receiveInfoList">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:alert="false"
@@ -41,11 +41,11 @@
 	const receiveInfoList = ref([])
 
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
-	const table = ref()
+	const tableRef = ref()
 	const columns = [
 		{
 			title: '姓名',
@@ -59,7 +59,7 @@
 	]
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		getMessageList(record)
 	}
 	// 获取站内信列表
@@ -71,7 +71,7 @@
 			Object.assign(record, data)
 			formData.value = record
 			receiveInfoList.value = data.receiveInfoList
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	const loadData = () => {
@@ -82,7 +82,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		receiveInfoList.value = []
-		visible = false
+		visible.value = false
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

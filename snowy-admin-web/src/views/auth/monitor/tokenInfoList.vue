@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="令牌列表"
-		:width="650"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="令牌列表" :width="650" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-button
 			danger
 			style="margin-bottom: 10px"
@@ -104,7 +98,7 @@
 	// 字段数据
 	const loadData = ref([])
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	// 多选的
 	const selectedRowKeys = ref([])
 	const exitLoading = ref(false)
@@ -116,13 +110,13 @@
 	const onOpen = (tokenInfoList, type) => {
 		monitorType.value = type
 		loadData.value = cloneDeep(tokenInfoList)
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
 		loadData.value = []
 		monitorType.value = ''
-		visible = false
+		visible.value = false
 	}
 	// 多选
 	const rowSelection = {

@@ -18,7 +18,7 @@
 <script setup name="shortcutSetting">
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import { onMounted } from 'vue'
-	import menuTreeSelect from '@/components/TreeSelect/menuTreeSelect.vue'
+	import MenuTreeSelect from '@/components/TreeSelect/menuTreeSelect.vue'
 
 	const formRef = ref()
 	let formData = ref({})
@@ -31,8 +31,10 @@
 	})
 	const getUserLoginWorkbench = () => {
 		userCenterApi.userLoginWorkbench().then((data) => {
-			// 设置组件回显
-			menuTreeSelectRef.value.setSelectData(JSON.parse(data).shortcut)
+			if (data) {
+				// 设置组件回显
+				menuTreeSelectRef.value.setSelectData(JSON.parse(data).shortcut)
+			}
 		})
 	}
 

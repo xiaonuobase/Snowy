@@ -53,7 +53,7 @@
 				/>
 			</div>
 			<a-divider />
-			<a-form ref="form" class="text-right">
+			<a-form ref="formRef" class="text-right">
 				<a-form-item label="模块坞">
 					<a-switch :checked="moduleUnfoldOpen" @change="toggleState('moduleUnfoldOpen')" />
 				</a-form-item>
@@ -86,14 +86,12 @@
 		</div>
 	</div>
 </template>
-
-<script>
+<script setup>
 	import { colorList } from '@/config/settingConfig'
 	import { ThemeModeEnum } from '@/utils/enum'
 	import { globalStore } from '@/store'
-	import { mapState, mapStores } from 'pinia'
 	import tool from '@/utils/tool'
-
+	const store = globalStore()
 	const toolDataNameMap = {
 		menuIsCollapse: 'MENU_COLLAPSE',
 		sideUniqueOpen: 'SIDE_UNIQUE_OPEN',
@@ -103,109 +101,121 @@
 		topHeaderThemeColorSpread: 'TOP_HEADER_THEME_COLOR_SPREAD',
 		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN'
 	}
-	export default defineComponent({
-		data() {
-			return {
-				sideStyleList: [
-					{
-						tips: '暗色主题风格',
-						value: ThemeModeEnum.DARK,
-						style: 'snowy-setting-checkbox-item-dark'
-					},
-					{
-						tips: '亮色主题风格',
-						value: ThemeModeEnum.LIGHT,
-						style: 'snowy-setting-checkbox-item-light'
-					},
-					{
-						tips: '暗黑模式',
-						value: ThemeModeEnum.REAL_DARK,
-						style: 'snowy-setting-checkbox-item-realdark'
-					}
-				],
-				layoutList: [
-					{
-						tips: '经典',
-						value: 'classical',
-						style: 'snowy-setting-layout-menu-classical'
-					},
-					{
-						tips: '双排菜单',
-						value: 'doublerow',
-						style: 'snowy-setting-layout-menu-doublerow'
-					}
-				],
-				xnFormStyleOptions: [
-					{
-						label: '抽屉',
-						value: 'drawer'
-					},
-					{
-						label: '对话框',
-						value: 'modal'
-					}
-				],
-				colorList
-			}
+	const sideStyleList = ref([
+		{
+			tips: '暗色主题风格',
+			value: ThemeModeEnum.DARK,
+			style: 'snowy-setting-checkbox-item-dark'
 		},
-		computed: {
-			...mapStores(globalStore),
-			...mapState(globalStore, [
-				'theme',
-				'themeColor',
-				'layout',
-				'menuIsCollapse',
-				'sideUniqueOpen',
-				'layoutTagsOpen',
-				'breadcrumbOpen',
-				'moduleUnfoldOpen',
-				'topHeaderThemeColorOpen',
-				'topHeaderThemeColorSpread',
-				'formStyle'
-			])
+		{
+			tips: '亮色主题风格',
+			value: ThemeModeEnum.LIGHT,
+			style: 'snowy-setting-checkbox-item-light'
 		},
-		mounted() {},
-		methods: {
-			changeTopHanderThemeColorOpen() {
-				this.toggleState('topHeaderThemeColorOpen')
-				if (!this.topHeaderThemeColorOpen) {
-					this.globalStore.topHeaderThemeColorSpread = false
-					tool.data.set('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD', false)
-				}
-			},
-			changeTopHanderThemeColorSpread() {
-				this.toggleState('topHeaderThemeColorSpread')
-			},
-			toggleState(stateName) {
-				this.globalStore.toggleConfig(stateName)
-				const toolDataName = toolDataNameMap[stateName]
-				tool.data.set(`SNOWY_${toolDataName}`, this.globalStore[stateName])
-			},
-			// 设置整体风格主题
-			setSideStyle(value) {
-				this.globalStore.setTheme(value)
-				tool.data.set('SNOWY_THEME', value)
-			},
-			// 设置整体界面布局
-			layoutStyle(value) {
-				this.globalStore.setLayout(value)
-				tool.data.set('SNOWY_LAYOUT', value)
-			},
-			// 切换颜色
-			tagColor(value) {
-				tool.data.set('SNOWY_THEME_COLOR', value)
-				this.globalStore.setThemeColor(value)
-			},
-			// 切换表单风格
-			formStyleChange(value) {
-				tool.data.set('SNOWY_FORM_STYLE', value)
-				this.globalStore.setFormStyle(value)
-			}
+		{
+			tips: '暗黑模式',
+			value: ThemeModeEnum.REAL_DARK,
+			style: 'snowy-setting-checkbox-item-realdark'
 		}
+	])
+
+	const layoutList = ref([
+		{
+			tips: '经典',
+			value: 'classical',
+			style: 'snowy-setting-layout-menu-classical'
+		},
+		{
+			tips: '双排菜单',
+			value: 'doublerow',
+			style: 'snowy-setting-layout-menu-doublerow'
+		}
+	])
+
+	const xnFormStyleOptions = ref([
+		{
+			label: '抽屉',
+			value: 'drawer'
+		},
+		{
+			label: '对话框',
+			value: 'modal'
+		}
+	])
+
+	const theme = computed(() => {
+		return store.theme
 	})
+	const themeColor = computed(() => {
+		return store.themeColor
+	})
+	const layout = computed(() => {
+		return store.layout
+	})
+	const menuIsCollapse = computed(() => {
+		return store.menuIsCollapse
+	})
+	const sideUniqueOpen = computed(() => {
+		return store.sideUniqueOpen
+	})
+	const layoutTagsOpen = computed(() => {
+		return store.layoutTagsOpen
+	})
+	const breadcrumbOpen = computed(() => {
+		return store.breadcrumbOpen
+	})
+	const moduleUnfoldOpen = computed(() => {
+		return store.moduleUnfoldOpen
+	})
+	const topHeaderThemeColorOpen = computed(() => {
+		return store.topHeaderThemeColorOpen
+	})
+	const topHeaderThemeColorSpread = computed(() => {
+		return store.topHeaderThemeColorSpread
+	})
+	const formStyle = computed(() => {
+		return store.formStyle
+	})
+
+	const changeTopHanderThemeColorOpen = () => {
+		toggleState('topHeaderThemeColorOpen')
+		if (!topHeaderThemeColorOpen) {
+			store.topHeaderThemeColorSpread = false
+			tool.data.set('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD', false)
+		}
+	}
+
+	const changeTopHanderThemeColorSpread = () => {
+		toggleState('topHeaderThemeColorSpread')
+	}
+	const toggleState = (stateName) => {
+		store.toggleConfig(stateName)
+		const toolDataName = toolDataNameMap[stateName]
+		tool.data.set(`SNOWY_${toolDataName}`, store[stateName])
+	}
+	// 设置整体风格主题
+	const setSideStyle = (value) => {
+		store.setTheme(value)
+		tool.data.set('SNOWY_THEME', value)
+	}
+	// 设置整体界面布局
+	const layoutStyle = (value) => {
+		store.setLayout(value)
+		tool.data.set('SNOWY_LAYOUT', value)
+	}
+	// 切换颜色
+	const tagColor = (value) => {
+		tool.data.set('SNOWY_THEME_COLOR', value)
+		store.setThemeColor(value)
+	}
+	// 切换表单风格
+	const formStyleChange = (value) => {
+		tool.data.set('SNOWY_FORM_STYLE', value)
+		store.setFormStyle(value)
+	}
 </script>
 
-<style type="less" scoped>
+<style lang="less" scoped>
 	.snowy-setting-checkbox {
 		display: flex;
 		margin-bottom: 20px;

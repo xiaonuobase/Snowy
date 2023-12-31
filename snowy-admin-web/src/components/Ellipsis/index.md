@@ -8,12 +8,7 @@
 
 ```javascript
 import Ellipsis from '@/components/Ellipsis'
-
-export default {
-    components: {
-        Ellipsis
-    }
-}
+// vue3 不需要利用compoents去注册组件，引入后可直接使用
 ```
 
 

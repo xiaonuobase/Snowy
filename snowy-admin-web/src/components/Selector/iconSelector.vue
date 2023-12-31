@@ -36,69 +36,72 @@
 		</a-tabs>
 	</a-modal>
 </template>
-
-<script>
+<script setup>
 	import config from '@/config/iconSelect'
-	export default {
-		data() {
-			return {
-				visible: false,
-				iconData: [],
-				modelValue: '',
-				activeKey: 'default',
-				iconItemDefault: 'default'
-			}
-		},
-		mounted() {
-			this.iconData.push(...config.icons)
-		},
-		methods: {
-			// 打开
-			showIconModal(value) {
-				this.visible = true
-				this.defaultSetting(value)
-			},
-			// 默认配置
-			defaultSetting(value) {
-				if (value) {
-					this.modelValue = value
-					// 判断展开哪个
-					if (value.indexOf('-outlined') > -1 || value.indexOf('-filled') > -1 || value.indexOf('-two-tone') > -1) {
-						this.activeKey = 'default'
-						if (value.indexOf('-two-tone') > -1) {
-							this.iconItemDefault = 'twotone'
-						} else if (value.indexOf('-filled') > -1) {
-							this.iconItemDefault = 'filled'
-						}
-					} else if (value.indexOf('-extend') > -1) {
-						// 扩展列表
-						this.activeKey = 'extend'
-						// 如扩展其他顶部单选的情况，默认选中在这里配置,同时这里需要做判断
-						// this.iconItemDefault = '您的json中配置的'
-					}
+	const visible = ref(false)
+	const iconData = ref([])
+	const modelValue = ref('')
+	const activeKey = ref('default')
+	const iconItemDefault = ref('default')
+
+	onMounted(() => {
+		iconData.value.push(...config.icons)
+	})
+
+	// 打开
+	const showIconModal = (value) => {
+		visible.value = true
+		defaultSetting(value)
+	}
+
+	// 暴露子组件的方法
+	defineExpose({
+		showIconModal
+	})
+
+	// 默认配置
+	const defaultSetting = (value) => {
+		if (value) {
+			modelValue.value = value
+			// 判断展开哪个
+			if (value.indexOf('-outlined') > -1 || value.indexOf('-filled') > -1 || value.indexOf('-two-tone') > -1) {
+				activeKey.value = 'default'
+				if (value.indexOf('-two-tone') > -1) {
+					iconItemDefault.value = 'twotone'
+				} else if (value.indexOf('-filled') > -1) {
+					iconItemDefault.value = 'filled'
 				}
-			},
-			// 切换标签页，如果是切换到了没用额外的标签页的地方，我们将其置为默认
-			paneChange(e) {
-				if (e.indexOf('default') === -1) {
-					this.iconItemDefault = 'default'
-				}
-			},
-			// 切换icon风格
-			radioGroupChange(e) {
-				this.iconItemDefault = e.target.value
-			},
-			// 选择图标后关闭并返回
-			selectIcon(value) {
-				this.defaultValue = value
-				this.visible = false
-				// eslint-disable-next-line vue/require-explicit-emits
-				this.$emit('iconCallBack', this.defaultValue)
-			},
-			onCancel() {
-				this.visible = false
+			} else if (value.indexOf('-extend') > -1) {
+				// 扩展列表
+				activeKey.value = 'extend'
+				// 如扩展其他顶部单选的情况，默认选中在这里配置,同时这里需要做判断
+				// this.iconItemDefault = '您的json中配置的'
 			}
 		}
+	}
+
+	// 切换标签页，如果是切换到了没用额外的标签页的地方，我们将其置为默认
+	const paneChange = (e) => {
+		if (e.indexOf('default') === -1) {
+			iconItemDefault.value = 'default'
+		}
+	}
+
+	// 切换icon风格
+	const radioGroupChange = (e) => {
+		iconItemDefault.value = e.target.value
+	}
+	const emit = defineEmits(['iconCallBack'])
+
+	// 选择图标后关闭并返回
+	const selectIcon = (value) => {
+		visible.value = false
+		// eslint-disable-next-line vue/require-explicit-emits
+		emit('iconCallBack', value)
+	}
+
+	const onCancel = () => {
+		visible.value = false
 	}
 </script>
 

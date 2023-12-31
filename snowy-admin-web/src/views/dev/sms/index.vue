@@ -18,7 +18,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-button type="primary" @click="table.refresh(true)">
+					<a-button type="primary" @click="tableRef.refresh(true)">
 						<template #icon><SearchOutlined /></template>
 						查询
 					</a-button>
@@ -32,7 +32,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:expand-row-by-click="true"
@@ -43,7 +43,7 @@
 		>
 			<template #operator class="table-operator">
 				<a-space>
-					<a-button type="primary" @click="form.onOpen()">
+					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>
 						发送短信
 					</a-button>
@@ -64,20 +64,20 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
 	<detail ref="detailRef" />
 </template>
 
 <script setup name="devSms">
 	import smsApi from '@/api/dev/smsApi'
 	import Form from './form.vue'
-	import detail from './detail.vue'
+	import Detail from './detail.vue'
 	import tool from '@/utils/tool'
 
-	const table = ref(null)
-	const form = ref()
+	const tableRef = ref(null)
+	const formRef = ref()
 	const searchFormRef = ref()
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const detailRef = ref()
 
 	const columns = [
@@ -134,14 +134,14 @@
 	}
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		return smsApi.smsPage(Object.assign(parameter, searchFormState)).then((data) => {
+		return smsApi.smsPage(Object.assign(parameter, searchFormState.value)).then((data) => {
 			return data
 		})
 	}
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	const engineOptions = tool.dictList('SMS_ENGINE')
 	// 删除
@@ -152,13 +152,13 @@
 			}
 		]
 		smsApi.smsDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchSms = (params) => {
 		smsApi.smsDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

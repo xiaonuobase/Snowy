@@ -39,7 +39,7 @@
 				</div>
 				<div class="role-table">
 					<a-table
-						ref="table"
+						ref="tableRef"
 						size="small"
 						:columns="commons"
 						:data-source="tableData"
@@ -143,7 +143,7 @@
 		}
 	]
 	// 主表格的ref 名称
-	const table = ref()
+	const tableRef = ref()
 	// 选中表格的ref 名称
 	const selectedTable = ref()
 	const tableRecordNum = ref()
@@ -192,10 +192,13 @@
 		}
 	})
 	// 是否是单选
+	// eslint-disable-next-line vue/no-setup-props-destructure
 	const radioModel = props.radioModel
 	// 数据是否转换成工作流格式
+	// eslint-disable-next-line vue/no-setup-props-destructure
 	const dataIsConverterFlw = props.dataIsConverterFlw
 	// 是否展示‘全局’这个节点
+	// eslint-disable-next-line vue/no-setup-props-destructure
 	const roleGlobal = props.roleGlobal
 	// 分页相关
 	const current = ref(0) // 当前页数

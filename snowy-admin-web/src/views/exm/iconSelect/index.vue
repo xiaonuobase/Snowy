@@ -5,7 +5,7 @@
 			<a-button type="primary" @click="openIcon(iconValue)">选择</a-button>
 		</a-input-group>
 
-		<icon-selector ref="iconselector" @iconCallBack="iconCallBack" />
+		<icon-selector ref="iconselectorRef" @iconCallBack="iconCallBack" />
 	</a-card>
 
 	<a-card :bordered="false" title="图标展示" class="mt-3">
@@ -37,16 +37,16 @@
 </template>
 
 <script setup name="iconSelect">
-	import iconSelector from '@/components/Selector/iconSelector.vue'
+	import IconSelector from '@/components/Selector/iconSelector.vue'
 	import config from '@/config/iconSelect'
 	import { message } from 'ant-design-vue'
 
-	const iconselector = ref()
+	const iconselectorRef = ref()
 	const iconValue = ref('')
 
 	// 打开icon选择器
 	const openIcon = (iconValue) => {
-		iconselector.value.showIconModal(iconValue)
+		iconselectorRef.value.showIconModal(iconValue)
 	}
 	// 选择后回调
 	const iconCallBack = (value) => {

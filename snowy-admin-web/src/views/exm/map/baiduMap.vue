@@ -1,5 +1,10 @@
 <template>
-	<baidu-map ref="map" api-key="NtTydKuftIVXAy526uWXZoHS86lg0KeW" @complete="handleComplete" @marker-click="handleMarkerClick" />
+	<baidu-map
+		ref="map"
+		api-key="NtTydKuftIVXAy526uWXZoHS86lg0KeW"
+		@complete="handleComplete"
+		@marker-click="handleMarkerClick"
+	/>
 </template>
 
 <script setup name="exmBaiduMap">

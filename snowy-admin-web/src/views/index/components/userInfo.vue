@@ -21,6 +21,11 @@
 
 <script setup name="userInfo">
 	import dayjs from 'dayjs'
+	import weekday from 'dayjs/plugin/weekday'
+	import localeData from 'dayjs/plugin/localeData'
+	dayjs.extend(weekday)
+	dayjs.extend(localeData)
+
 	import { onBeforeUnmount } from 'vue'
 	import tool from '@/utils/tool'
 	const userInfo = tool.data.get('USER_INFO')
@@ -44,7 +49,7 @@
 		justify-content: center;
 	}
 	.snowy-index-userinfo-time {
-		margin: 2px
+		margin: 2px;
 	}
 	@media (max-width: 992px) {
 		.snowy-index-userinfo-time {

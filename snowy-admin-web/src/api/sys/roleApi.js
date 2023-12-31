@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/sys/role/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/sys/role/` + url, ...arg)
 /**
  * 角色
  *
@@ -21,10 +21,6 @@ export default {
 	// 获取角色分页
 	rolePage(data) {
 		return request('page', data, 'get')
-	},
-	// 获取角色列表
-	roleList(data) {
-		return request('list', data, 'get')
 	},
 	// 提交表单 edit为true时为编辑，默认为新增
 	submitForm(data, edit = false) {

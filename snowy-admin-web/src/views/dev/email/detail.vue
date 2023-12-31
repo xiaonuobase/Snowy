@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="详情"
-		:width="700"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
 			<a-descriptions-item label="邮件主题">{{ formData.subject }}</a-descriptions-item>
 			<a-descriptions-item label="邮件引擎">{{
@@ -44,13 +38,13 @@
 	import emailApi from '@/api/dev/emailApi'
 
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		getFileDetail(record)
 	}
 	// 获取站内信列表
@@ -66,7 +60,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formData.value = {}
-		visible = false
+		visible.value = false
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

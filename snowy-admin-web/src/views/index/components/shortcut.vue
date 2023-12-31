@@ -27,7 +27,9 @@
 
 	const getUserLoginWorkbench = () => {
 		userCenterApi.userLoginWorkbench().then((data) => {
-			shortcutList.value = JSON.parse(data).shortcut
+			if (data) {
+				shortcutList.value = JSON.parse(data).shortcut
+			}
 		})
 	}
 

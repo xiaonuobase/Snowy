@@ -37,46 +37,50 @@ const app = createApp(App)
 app.use(vueEsign)
 // 局部
 import vueEsign from 'vue-esign'
-components: { vueEsign }
+// vue3 中只需需引入组件就可以使用无需注册
 ```
 2. 页面中使用
-    **必须设置 `ref` ，用来调用组件的两个内置方法 `reset()` 和 `generate()`**
+    // 在组件中使用 ref="esign"
+    **在script中必须设置 `const esign = ref()` ，用来调用组件的两个内置方法 `reset()` 和 `generate()`**
 
   无需给组件设置 `style` 的宽高，如果画布的 `width`属性值没超出父元素的样式宽度，则该组件的样式宽度就是画布宽度，超出的话，组件样式宽度则是父元素的100%；  所以只需设置好父元素的宽度即可；
 ```html
-<!-- vue2 -->
-<vue-esign ref="esign" :width="800" :height="300" :isCrop="isCrop" :lineWidth="lineWidth" :lineColor="lineColor" :bgColor.sync="bgColor" />
+
 <!-- vue3 -->
-<vue-esign ref="esign" :width="800" :height="300" :isCrop="isCrop" :lineWidth="lineWidth" :lineColor="lineColor" v-model:bgColor="bgColor" />
+<vue-esign ref="esign" :width="800" :height="300" :isCrop="isCrop" :lineWidth="lineWidth" :lineColor="lineColor" v-model:bgColor="bgColor" :quality="1"/>
 
 <!-- isClearBgColor为false时，不必再给bgColor加sync修饰符或v-model -->
 
-<button @click="handleReset">清空画板</button>
-<button @click="handleGenerate">生成图片</button>
+<a-button type="primary" @click="handleGenerate">预览</a-button>
+<a-button @click="handleReset">清屏</a-button>
 ```
-```js
-data () {
-  return {
-    lineWidth: 6,
-    lineColor: '#000000',
-    bgColor: '',
-    resultImg: '',
-    isCrop: false
-  }
-},
-methods: {
-  handleReset () {
-    this.$refs.esign.reset()
-  },
-  handleGenerate () {
-    this.$refs.esign.generate().then(res => {
-      this.resultImg = res
-    }).catch(err => {
-      alert(err) // 画布没有签字时会执行这里 'Not Signned'
-    })
-  }
-}
-```
+
+```vue
+<script setup>
+	const esign = ref(false) // 相当于$ref
+
+  // 这里const相当于vue2中的data()
+	const resultImg = ref('')
+	const isCrop = ref(false)
+	const lineWidth = ref(6)
+	const lineColor = ref('#000000')
+	const bgColor = ref('')
+ 
+	const handleReset = () => {
+		esign.value.reset()
+		resultImg.value = ''
+	}
+	const handleGenerate = () => {
+		esign.value
+			.generate()
+			.then((res) => {
+				resultImg.value = res
+			})
+			.catch(() => {
+				message.warning('无任何签字') // 画布没有签字时会执行这里 'Not Signned'
+			})
+	}
+</script>
 3. 说明
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -95,7 +99,7 @@ methods: {
 
 **清空画布**
 ```js
-this.$refs.esign.reset()
+esign.value.reset()
 ```
 
 **生成图片**
@@ -103,7 +107,7 @@ this.$refs.esign.reset()
 ```js
 // 可选配置参数 ，在未设置format或quality属性时可在生成图片时配置 例如： {format:'image/jpeg', quality: 0.5}
 // this.$refs.esign.generate({format:'image/jpeg', quality: 0.5})
-this.$refs.esign.generate().then(res => {
+esign.value.generate().then(res => {
   console.log(res) // base64图片
 }).catch(err => {
   alert(err) // 画布没有签字时会执行这里 'Not Signned'

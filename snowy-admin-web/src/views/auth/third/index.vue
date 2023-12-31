@@ -14,7 +14,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
-					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
 					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
@@ -22,7 +22,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="false"
@@ -45,9 +45,9 @@
 <script setup name="authThird">
 	import thirdApi from '@/api/auth/thirdApi'
 	import tool from '@/utils/tool'
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const searchFormRef = ref()
-	const table = ref()
+	const tableRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
 		{
@@ -83,14 +83,14 @@
 		}
 	]
 	const loadData = (parameter) => {
-		return thirdApi.thirdPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return thirdApi.thirdPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields();
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 分类
 	const categoryOptions = tool.dictList('THIRD_CATEGORY')

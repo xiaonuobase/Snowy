@@ -1,6 +1,6 @@
 <template>
 	<s-table
-		ref="table"
+		ref="tableRef"
 		:columns="columns"
 		:data="loadData"
 		:alert="false"
@@ -10,7 +10,7 @@
 	>
 		<template #operator class="table-operator">
 			<a-space>
-				<a-button type="primary" @click="form.onOpen()">
+				<a-button type="primary" @click="formRef.onOpen()">
 					<template #icon>
 						<plus-outlined />
 					</template>
@@ -21,14 +21,14 @@
 					placeholder="请输入关键字"
 					enter-button
 					allowClear
-					@search="table.refresh(true)"
+					@search="tableRef.refresh(true)"
 				/>
 			</a-space>
 		</template>
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.key === 'action'">
 				<a-space>
-					<a @click="form.onOpen(record)">编辑</a>
+					<a @click="formRef.onOpen(record)">编辑</a>
 					<a-divider type="vertical" />
 					<a-popconfirm title="确定要删除此配置吗？" @confirm="deleteConfig(record)">
 						<a-button type="link" danger size="small">删除</a-button>
@@ -37,16 +37,15 @@
 			</template>
 		</template>
 	</s-table>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup name="sysModule">
 	import Form from './form.vue'
 	import configApi from '@/api/dev/configApi'
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const formRef = ref()
-	const table = ref()
-	let form = ref()
+	const tableRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
 		{
@@ -77,7 +76,7 @@
 		}
 	]
 	const loadData = (parameter) => {
-		return configApi.configPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return configApi.configPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
@@ -89,7 +88,7 @@
 			}
 		]
 		configApi.configDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 </script>

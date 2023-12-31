@@ -35,7 +35,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								{{ $t('common.searchButton') }}
 							</a-button>
@@ -49,7 +49,7 @@
 			</a-card>
 			<a-card :bordered="false">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -140,7 +140,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="formRef" @successful="table.refresh()" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<role-selector-plus
 		ref="RoleSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
@@ -216,7 +216,7 @@
 	const searchFormRef = ref()
 	const defaultExpandedKeys = ref([])
 	const searchFormState = ref({})
-	const table = ref(null)
+	const tableRef = ref(null)
 	const treeData = ref([])
 	const selectedRowKeys = ref([])
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
@@ -234,7 +234,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 左侧树查询
 	bizOrgApi
@@ -284,7 +284,7 @@
 		} else {
 			delete searchFormState.value.orgId
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 修改状态
 	const editStatus = (record) => {
@@ -293,7 +293,7 @@
 			bizUserApi
 				.userDisableUser(record)
 				.then(() => {
-					table.value.refresh()
+					tableRef.value.refresh()
 				})
 				.finally(() => {
 					loading.value = false
@@ -302,7 +302,7 @@
 			bizUserApi
 				.userEnableUser(record)
 				.then(() => {
-					table.value.refresh()
+					tableRef.value.refresh()
 				})
 				.finally(() => {
 					loading.value = false
@@ -317,7 +317,7 @@
 			}
 		]
 		bizUserApi.userDelete(params).then(() => {
-			table.value.refresh()
+			tableRef.value.refresh()
 		})
 	}
 	// 批量导出校验并加参数
@@ -348,13 +348,13 @@
 	const exportBatchUser = (params) => {
 		bizUserApi.userExport(params).then((res) => {
 			downloadUtil.resultDownload(res)
-			table.value.clearSelected()
+			tableRef.value.clearSelected()
 		})
 	}
 	// 批量删除
 	const deleteBatchUser = (params) => {
 		bizUserApi.userDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 	// 打开角色选择器

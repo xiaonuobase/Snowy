@@ -1,7 +1,7 @@
 <template>
 	<!-- 本组件这兄弟写的很好 请参照：https://blog.csdn.net/weixin_41897680/article/details/124925222-->
 	<div class="hljs-container" :codetype="props.language">
-		<highlightjs :language="props.language" :autodetect="!props.language" :code="props.code"></highlightjs>
+		<highlightjs :language="props.language" :autodetect="!props.language" :code="props.code" />
 	</div>
 </template>
 
@@ -54,8 +54,8 @@
 	}*/
 
 	/** 滚动条 */
-	:deep(.hljs,.hljs-container) {
-		max-height: 300px!important;
+	:deep(.hljs, .hljs-container) {
+		max-height: 300px !important;
 		overflow-x: auto;
 	}
 

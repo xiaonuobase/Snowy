@@ -21,7 +21,7 @@ export default {
 	RgbToHex(a, b, c) {
 		const hexs = [a.toString(16), b.toString(16), c.toString(16)]
 		for (let i = 0; i < 3; i++) {
-			if (hexs[i].length == 1) hexs[i] = `0${hexs[i]}`
+			if (hexs[i].length === 1) hexs[i] = `0${hexs[i]}`
 		}
 		return `#${hexs.join('')}`
 	},

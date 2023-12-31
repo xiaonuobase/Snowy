@@ -15,27 +15,22 @@
 		</div>
 	</div>
 </template>
+<script setup>
+	import { watch } from 'vue'
+	import { useRoute } from 'vue-router'
 
-<script>
-	export default {
-		data() {
-			return {
-				breadList: []
-			}
-		},
-		watch: {
-			$route() {
-				this.getBreadcrumb()
-			}
-		},
-		created() {
-			this.getBreadcrumb()
-		},
-		methods: {
-			getBreadcrumb() {
-				const matched = this.$route.meta.breadcrumb
-				this.breadList = matched
-			}
-		}
+	const route = useRoute()
+	const breadList = ref([])
+
+	watch(route, () => {
+		getBreadcrumb()
+	})
+
+	onBeforeMount(() => {
+		getBreadcrumb()
+	})
+
+	const getBreadcrumb = () => {
+		breadList.value = route.meta.breadcrumb
 	}
 </script>

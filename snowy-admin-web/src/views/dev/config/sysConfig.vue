@@ -102,7 +102,7 @@
 	import { message } from 'ant-design-vue'
 	import configApi from '@/api/dev/configApi'
 	import tool from '@/utils/tool'
-	import menuTreeSelect from '@/components/TreeSelect/menuTreeSelect.vue'
+	import MenuTreeSelect from '@/components/TreeSelect/menuTreeSelect.vue'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })

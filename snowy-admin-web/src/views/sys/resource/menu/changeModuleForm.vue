@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="更改模块"
-		:width="550"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="更改模块" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="显示名称：" name="title">
 				<span>{{ formData.title }}</span>
@@ -32,7 +26,7 @@
 	import menuApi from '@/api/sys/resource/menuApi'
 	import { getCurrentInstance } from 'vue'
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
@@ -41,7 +35,7 @@
 	const moduleTypeList = ref([])
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible = true
+		visible.value = true
 		if (record) {
 			formData.value = Object.assign({}, record)
 		}
@@ -53,7 +47,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		formRef.value.resetFields()
-		visible = false
+		visible.value = false
 	}
 
 	// 默认要校验的
@@ -76,7 +70,7 @@
 					emit('successful')
 				})
 				.finally(() => {
-					visible = false
+					visible.value = false
 				})
 		})
 	}

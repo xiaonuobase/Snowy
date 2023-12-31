@@ -109,7 +109,7 @@ router.beforeEach(async (to, from, next) => {
 			apiMenu[0] = cloneDeep(userRoutes.module[0])
 		}
 		const childrenApiMenu = apiMenu[0].children
-		apiMenu[0].children = [...childrenApiMenu ? childrenApiMenu : [], ...userRoutes.menu]
+		apiMenu[0].children = [...(childrenApiMenu ? childrenApiMenu : []), ...userRoutes.menu]
 		let menuRouter = filterAsyncRouter(apiMenu)
 		menuRouter = flatAsyncRoutes(menuRouter)
 		menuRouter.forEach((item) => {
@@ -148,7 +148,7 @@ router.getMenu = () => {
 		apiMenu[0] = cloneDeep(userRoutes.module[0])
 	}
 	const childrenApiMenu = apiMenu[0].children
-	apiMenu[0].children = [...childrenApiMenu ? childrenApiMenu : [], ...userRoutes.menu]
+	apiMenu[0].children = [...(childrenApiMenu ? childrenApiMenu : []), ...userRoutes.menu]
 	return filterUrl(apiMenu)
 }
 

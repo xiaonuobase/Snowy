@@ -9,10 +9,10 @@
 	>
 		<a-tabs v-model:activeKey="activeKey">
 			<a-tab-pane key="AliyunSmsSend" tab="阿里云短信">
-				<AliyunSmsSend ref="aliyunSmsSend" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+				<AliyunSmsSend ref="aliyunSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
 			<a-tab-pane key="TencentSmsSend" tab="腾讯云短信">
-				<TencentSmsSend ref="tencentSmsSend" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+				<TencentSmsSend ref="tencentSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
 		</a-tabs>
 		<template #footer>
@@ -26,28 +26,28 @@
 	import AliyunSmsSend from './send/AliyunSmsSend.vue'
 	import TencentSmsSend from './send/TencentSmsSend.vue'
 
-	const aliyunSmsSend = ref()
-	const tencentSmsSend = ref()
+	const aliyunSmsSendRef = ref()
+	const tencentSmsSendRef = ref()
 
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const activeKey = ref('AliyunSmsSend')
 	const sendLoading = ref(false)
 	// 打开抽屉
 	const onOpen = () => {
-		visible = true
+		visible.value = true
 	}
 	// 关闭抽屉
 	const onClose = () => {
-		visible = false
+		visible.value = false
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
 		const tabActiveKey = activeKey.value
 		if (tabActiveKey === 'AliyunSmsSend') {
-			aliyunSmsSend.value.send()
+			aliyunSmsSendRef.value.send()
 		} else if (tabActiveKey === 'TencentSmsSend') {
-			tencentSmsSend.value.send()
+			tencentSmsSendRef.value.send()
 		}
 	}
 	// 请求loading开始

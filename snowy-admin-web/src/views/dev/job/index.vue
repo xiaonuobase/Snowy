@@ -18,7 +18,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
-					<a-button type="primary" @click="table.refresh(true)">查询</a-button>
+					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
 					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
@@ -26,7 +26,7 @@
 	</a-card>
 	<a-card :bordered="false">
 		<s-table
-			ref="table"
+			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
 			:alert="options.alert.show"
@@ -37,7 +37,7 @@
 		>
 			<template #operator class="table-operator">
 				<a-space>
-					<a-button type="primary" @click="form.onOpen()">
+					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
@@ -64,7 +64,7 @@
 					<a-space>
 						<a @click="immediatelyRun(record)">立即运行</a>
 						<a-divider type="vertical" />
-						<a @click="form.onOpen(record)">编辑</a>
+						<a @click="formRef.onOpen(record)">编辑</a>
 						<a-divider type="vertical" />
 						<a-popconfirm title="确定要删除此定时任务吗？" @confirm="deleteJob(record)">
 							<a-button type="link" danger size="small">删除</a-button>
@@ -74,17 +74,17 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="form" @successful="table.refresh(true)" />
+	<Form ref="formRef" @successful="tableRef.refresh(true)" />
 </template>
 
 <script setup name="devJob">
 	import tool from '@/utils/tool'
 	import Form from './form.vue'
 	import jobApi from '@/api/dev/jobApi'
-	let searchFormState = reactive({})
+	const searchFormState = ref({})
 	const searchFormRef = ref()
-	const table = ref()
-	let form = ref()
+	const tableRef = ref()
+	const formRef = ref()
 	const statusLoading = ref(false)
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
@@ -141,14 +141,14 @@
 		}
 	}
 	const loadData = (parameter) => {
-		return jobApi.jobPage(Object.assign(parameter, searchFormState)).then((res) => {
+		return jobApi.jobPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
 	}
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 启停
 	const editJobStatus = (record) => {
@@ -157,7 +157,7 @@
 			jobApi
 				.jobStopJob(record)
 				.then(() => {
-					table.value.refresh()
+					tableRef.value.refresh()
 				})
 				.finally(() => {
 					statusLoading.value = false
@@ -166,7 +166,7 @@
 			jobApi
 				.jobRunJob(record)
 				.then(() => {
-					table.value.refresh()
+					tableRef.value.refresh()
 				})
 				.finally(() => {
 					statusLoading.value = false
@@ -179,7 +179,7 @@
 			id: record.id
 		}
 		jobApi.jobRunJobNow(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 删除
@@ -190,13 +190,13 @@
 			}
 		]
 		jobApi.jobDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchJob = (params) => {
 		jobApi.jobDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 	// 分类

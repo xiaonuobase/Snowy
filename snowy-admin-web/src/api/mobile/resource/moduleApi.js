@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/mobile/module/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/mobile/module/` + url, ...arg)
 /**
  * 类别
  *

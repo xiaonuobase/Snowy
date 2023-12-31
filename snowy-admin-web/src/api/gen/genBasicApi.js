@@ -1,6 +1,6 @@
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/gen/basic/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/gen/basic/` + url, ...arg)
 
 export default {
 	// 获取代码生成基础分页

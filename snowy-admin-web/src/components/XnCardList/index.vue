@@ -8,7 +8,7 @@
 							<a-tag color="orange">{{ item.title }}</a-tag>
 						</template>
 						<template #actions>
-							<template v-for="{ key, label, icon, color } in props.actions">
+							<template v-for="{ key, label, icon, color } in props.actions" :key="key">
 								<a-tooltip :title="label">
 									<component :is="icon" @click="doAction(key, item)" :style="{ color: color }" />
 								</a-tooltip>
@@ -22,8 +22,10 @@
 								<span class="xn-card-meta-title">{{ item.subTitle }}</span>
 							</template>
 							<template #description>
-								<div v-if="item.contents" v-for="content in item.contents">
-									<span>{{ content.label }}：{{ content.value }}</span>
+								<div v-if="item.contents">
+									<div v-for="content in item.contents" :key="content.value">
+										<span>{{ content.label }}：{{ content.value }}</span>
+									</div>
 								</div>
 							</template>
 						</a-card-meta>

@@ -41,7 +41,6 @@
 	import emailApi from '@/api/dev/emailApi'
 	import fileApi from '@/api/dev/fileApi'
 
-	const uploadRef = ref()
 	// 发送文本方式
 	const sendType = ref('TXT')
 	// 定义emit事件

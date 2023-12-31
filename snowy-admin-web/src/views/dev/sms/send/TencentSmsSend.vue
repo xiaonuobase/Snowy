@@ -41,7 +41,7 @@
 	// 定义emit事件
 	const emit = defineEmits({ loadingStart: null, loadingEnd: null })
 	// 默认是关闭状态
-	let visible = $ref(false)
+	const visible = ref(false)
 	const formRef = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})

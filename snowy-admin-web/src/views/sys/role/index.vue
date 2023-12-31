@@ -23,7 +23,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
@@ -37,7 +37,7 @@
 			</a-card>
 			<a-card :bordered="false">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -49,7 +49,10 @@
 				>
 					<template #operator class="table-operator">
 						<a-space>
-							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.category, searchFormState.orgId)">
+							<a-button
+								type="primary"
+								@click="formRef.onOpen(undefined, searchFormState.category, searchFormState.orgId)"
+							>
 								<template #icon><plus-outlined /></template>
 								新增角色
 							</a-button>
@@ -95,10 +98,10 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<grantResourceForm ref="grantResourceFormRef" @successful="table.refresh()" />
-	<grantMobileResourceForm ref="grantMobileResourceFormRef" @successful="table.refresh()" />
-	<grantPermissionForm ref="grantPermissionFormRef" @successful="table.refresh()" />
-	<Form ref="formRef" @successful="table.refresh()" />
+	<grantResourceForm ref="grantResourceFormRef" @successful="tableRef.refresh()" />
+	<grantMobileResourceForm ref="grantMobileResourceFormRef" @successful="tableRef.refresh()" />
+	<grantPermissionForm ref="grantPermissionFormRef" @successful="tableRef.refresh()" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<user-selector-plus
 		ref="userselectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
@@ -159,7 +162,7 @@
 		}
 	}
 	// 定义tableDOM
-	const table = ref()
+	const tableRef = ref()
 	const formRef = ref()
 	const grantResourceFormRef = ref()
 	const grantMobileResourceFormRef = ref()
@@ -186,7 +189,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
 	orgApi.orgTree().then((res) => {
@@ -232,7 +235,7 @@
 			delete searchFormState.value.category
 			delete searchFormState.value.orgId
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 可伸缩列
 	const handleResizeColumn = (w, col) => {
@@ -246,13 +249,13 @@
 			}
 		]
 		roleApi.roleDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchRole = (params) => {
 		roleApi.roleDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 	// 打开用户选择器

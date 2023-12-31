@@ -14,13 +14,7 @@
 				</template>
 			</a-list>
 		</div>
-		<xn-form-container
-			title="详情"
-			:width="700"
-			:visible="visible"
-			:destroy-on-close="true"
-			@close="onClose"
-		>
+		<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 			<a-form ref="formRef" :model="formData" layout="vertical">
 				<a-form-item label="主题：" name="subject">
 					<span>{{ formData.subject }}</span>
@@ -33,7 +27,7 @@
 				</a-form-item>
 				<a-form-item label="查收情况：" name="receiveInfoList">
 					<s-table
-						ref="table"
+						ref="tableRef"
 						:columns="columns"
 						:data="loadData"
 						:alert="false"
@@ -93,7 +87,7 @@
 			Object.assign(message, data)
 			formData.value = message
 			receiveInfoList.value = data.receiveInfoList
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 
@@ -107,7 +101,7 @@
 	const formRef = ref()
 	const receiveInfoList = ref([])
 	const formData = ref({})
-	const table = ref()
+	const tableRef = ref()
 	const columns = [
 		{
 			title: '姓名',

@@ -23,7 +23,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="8">
-							<a-button type="primary" @click="table.refresh(true)">
+							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
@@ -37,7 +37,7 @@
 			</a-card>
 			<a-card :bordered="false">
 				<s-table
-					ref="table"
+					ref="tableRef"
 					:columns="columns"
 					:data="loadData"
 					:expand-row-by-click="true"
@@ -51,7 +51,7 @@
 						<a-space>
 							<a-button
 								type="primary"
-								@click="form.onOpen(undefined, searchFormState.parentId)"
+								@click="formRef.onOpen(undefined, searchFormState.parentId)"
 								v-if="hasPerm('bizOrgAdd')"
 							>
 								<template #icon><plus-outlined /></template>
@@ -69,7 +69,7 @@
 							{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="form.onOpen(record)" v-if="hasPerm('bizOrgEdit')">编辑</a>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizOrgEdit')">编辑</a>
 							<a-divider type="vertical" v-if="hasPerm(['bizOrgEdit', 'bizOrgDelete'], 'and')" />
 							<a-popconfirm title="删除此机构与下级机构吗？" @confirm="removeOrg(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('bizOrgDelete')">删除</a-button>
@@ -80,7 +80,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<Form ref="form" @successful="table.refresh()" />
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="bizOrg">
@@ -129,8 +129,8 @@
 	}
 	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	// 定义tableDOM
-	const table = ref(null)
-	const form = ref()
+	const tableRef = ref(null)
+	const formRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -150,7 +150,7 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
@@ -188,7 +188,7 @@
 		} else {
 			delete searchFormState.value.parentId
 		}
-		table.value.refresh(true)
+		tableRef.value.refresh(true)
 	}
 	// 删除
 	const removeOrg = (record) => {
@@ -198,13 +198,13 @@
 			}
 		]
 		bizOrgApi.orgDelete(params).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchOrg = (params) => {
 		bizOrgApi.orgDelete(params).then(() => {
-			table.value.clearRefreshSelected()
+			tableRef.value.clearRefreshSelected()
 		})
 	}
 </script>

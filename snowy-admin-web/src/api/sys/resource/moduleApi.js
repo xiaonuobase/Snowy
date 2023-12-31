@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/sys/module/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/sys/module/` + url, ...arg)
 /**
  * 模块
  *

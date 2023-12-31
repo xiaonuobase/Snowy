@@ -16,9 +16,9 @@
 </template>
 
 <script setup name="fileConfig">
-	import localFileForm from './localFileForm.vue'
-	import aliyunFileForm from './aliyunFileForm.vue'
-	import tencentFileForm from './tencentFileForm.vue'
-	import minioFileForm from './minioFileForm.vue'
+	import LocalFileForm from './localFileForm.vue'
+	import AliyunFileForm from './aliyunFileForm.vue'
+	import TencentFileForm from './tencentFileForm.vue'
+	import MinioFileForm from './minioFileForm.vue'
 	const activeKey = ref('localFile')
 </script>

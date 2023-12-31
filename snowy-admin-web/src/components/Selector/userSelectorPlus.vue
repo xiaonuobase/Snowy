@@ -39,7 +39,7 @@
 				</div>
 				<div class="user-table">
 					<a-table
-						ref="table"
+						ref="tableRef"
 						size="small"
 						:columns="commons"
 						:data-source="tableData"
@@ -143,7 +143,7 @@
 		}
 	]
 	// 主表格的ref 名称
-	const table = ref()
+	const tableRef = ref()
 	// 选中表格的ref 名称
 	const selectedTable = ref()
 	const tableRecordNum = ref()

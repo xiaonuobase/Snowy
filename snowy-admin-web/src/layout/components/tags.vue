@@ -58,242 +58,245 @@
 	</div>
 </template>
 
-<script>
-	import tool from '@/utils/tool'
+<script setup>
 	import XnContextMenu from '@/components/XnContextMenu/index.vue'
 	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
-	import { mapState, mapActions } from 'pinia'
 	import routerUtil from '@/utils/routerUtil'
+	import { useRoute, useRouter } from 'vue-router'
+	import { watch } from 'vue'
 
-	export default {
-		name: 'Tags',
-		components: { XnContextMenu },
-		props: {},
-		data() {
-			return {
-				// tagList: [],
-				activeKey: this.$route.fullPath,
-				maxTabs: 20,
-				contextMenuTarget: null,
-				contextMenuVisible: false,
-				currentContextMenuTabIndex: 0
+	const route = useRoute()
+	const router = useRouter()
+	const store = globalStore()
+	const kStore = keepAliveStore()
+	const iStore = iframeStore()
+	const vStore = viewTagsStore()
+
+	const activeKey = ref()
+	const maxTabs = ref(20)
+	const contextMenuTarget = ref(null)
+	const contextMenuVisible = ref(false)
+	const currentContextMenuTabIndex = ref(0)
+
+	const viewTags = computed(() => {
+		return vStore.viewTags
+	})
+
+	const layoutTagsOpen = computed(() => {
+		return store.layoutTagsOpen
+	})
+
+	const tagList = computed(() => {
+		return viewTags.value
+	})
+
+	watch(route, (to) => {
+		addViewTags(to)
+		activeKey.value = to.fullPath
+	})
+	watch(layoutTagsOpen, () => {
+		// closeOtherCacheTabs()
+	})
+
+	onMounted(() => {
+		const tabNavList = document.querySelector('.ant-tabs-nav-list')
+		if (tabNavList) {
+			contextMenuTarget.value = tabNavList
+		}
+	})
+	// 增加tag
+	const addViewTags = (to) => {
+		activeKey.value = to.fullPath
+		if (to.name && !to.meta.fullpage) {
+			vStore.pushViewTags(to)
+			kStore.pushKeepLive(to.name)
+		}
+		if (tagList.value.length - 1 > maxTabs.value) {
+			const firstTag = tagList.value[1]
+			vStore.removeViewTags(firstTag)
+		}
+	}
+
+	// 查找树
+	const treeFind = (tree, func) => {
+		for (const data of tree) {
+			if (func(data)) return data
+			if (data.children) {
+				const res = treeFind(data.children, func)
+				if (res) return res
 			}
-		},
-		computed: {
-			...mapState(viewTagsStore, ['viewTags']),
-			...mapState(globalStore, ['layoutTagsOpen']),
-			tagList() {
-				return this.viewTags
-			}
-		},
-		watch: {
-			$route(to) {
-				this.addViewTags(to)
-			},
-			layoutTagsOpen() {
-				this.closeOtherCacheTabs()
-			}
-		},
-		created() {
-			const module = this.$router.getMenu()
-			const indexMenu = routerUtil.getIndexMenu(module).path
-			// eslint-disable-next-line eqeqeq
-			const dashboardRoute = this.treeFind(module, (node) => node.path === indexMenu)
-			if (dashboardRoute) {
-				dashboardRoute.fullPath = dashboardRoute.path
-				this.addViewTags(dashboardRoute)
-				this.addViewTags(this.$route)
-			}
-		},
-		mounted() {
-			const tabNavList = document.querySelector('.ant-tabs-nav-list')
-			if (tabNavList) {
-				this.contextMenuTarget = tabNavList
-			}
-		},
-		methods: {
-			...mapActions(viewTagsStore, ['addViewTags', 'pushViewTags', 'removeViewTags']),
-			...mapActions(iframeStore, ['addIframe', 'removeIframeList', 'refreshIframe']),
-			...mapActions(keepAliveStore, ['pushKeepLive', 'removeKeepLive', 'setRouteShow']),
-			handleTabContextMenu(evt) {
-				evt.preventDefault()
-				let target = evt.target
-				// 修复关闭时出现"使用了错误的类型或对象"的问题
-				while (!target.classList.contains('ant-tabs-tab')) {
-					if (target.classList.contains('ant-tabs')) {
-						this.currentContextMenuTabIndex = 0
-						return
-					}
-					target = target.parentNode
-				}
-				const tabList = document.querySelectorAll('.ant-tabs-nav-list .ant-tabs-tab')
-				this.currentContextMenuTabIndex = Array.from(tabList).findIndex((tab) => tab === target)
-			},
-			onTabClick(tab) {
-				this.$router.push(tab)
-			},
-			getCurrentTag() {
-				return this.tagList[this.currentContextMenuTabIndex]
-			},
-			onTabRemove(tabKey, action) {
-				if (action === 'remove') {
-					const tag = this.tagList.find((tag) => tag.fullPath === tabKey)
-					this.closeSelectedTag(tag)
-				}
-			},
-			// 处理鼠标放开事件
-			onTabUp(e) {
-				// 鼠标中键
-				if (e.which === 2) {
-					this.handleTabContextMenu(e)
-					this.closeTabs()
-				}
-			},
-			getTabWrapEl() {
-				return document.querySelector('.ant-tabs-nav-wrap')
-			},
-			scrollLeft() {
-				const wrapEl = this.getTabWrapEl()
-				if (wrapEl) {
-					const event = new WheelEvent('wheel', { deltaX: 0, deltaY: -100 })
-					wrapEl.dispatchEvent(event)
-				}
-			},
-			scrollRight() {
-				const wrapEl = this.getTabWrapEl()
-				if (wrapEl) {
-					const event = new WheelEvent('wheel', { deltaX: 0, deltaY: 100 })
-					wrapEl.dispatchEvent(event)
-				}
-			},
-			// 查找树
-			treeFind(tree, func) {
-				for (const data of tree) {
-					if (func(data)) return data
-					if (data.children) {
-						const res = this.treeFind(data.children, func)
-						if (res) return res
-					}
-				}
-				return null
-			},
-			// 增加tag
-			addViewTags(route) {
-				this.activeKey = route.fullPath
-				if (route.name && !route.meta.fullpage) {
-					this.pushViewTags(route)
-					this.pushKeepLive(route.name)
-				}
-				if (this.tagList.length - 1 > this.maxTabs) {
-					const firstTag = this.tagList[1]
-					this.removeViewTags(firstTag)
-				}
-			},
-			// 高亮tag
-			isActive(route) {
-				return route.path === this.$route.path
-			},
-			// 关闭tag
-			closeSelectedTag(tag, autoPushLatestView = true) {
-				this.removeViewTags(tag)
-				this.removeIframeList(tag)
-				this.removeKeepLive(tag.name)
-				if (autoPushLatestView && this.isActive(tag)) {
-					const latestView = this.tagList.slice(-1)[0]
-					if (latestView) {
-						this.$router.push(latestView)
-					} else {
-						this.$router.push('/')
-					}
-				}
-			},
-			// TAB 刷新
-			refreshTab() {
-				this.contextMenuVisible = false
-				const nowTag = this.getCurrentTag()
-				// 判断是否当前路由，否的话跳转
-				// eslint-disable-next-line eqeqeq
-				if (this.$route.fullPath !== nowTag.fullPath) {
-					this.$router.push({
-						path: nowTag.fullPath,
-						query: nowTag.query
-					})
-				}
-				this.refreshIframe(nowTag)
-				setTimeout(() => {
-					this.removeKeepLive(nowTag.name)
-					this.setRouteShow(false)
-					this.$nextTick(() => {
-						this.pushKeepLive(nowTag.name)
-						this.setRouteShow(true)
-					})
-				}, 0)
-			},
-			// TAB 关闭
-			closeTabs() {
-				this.contextMenuVisible = false
-				const nowTag = this.getCurrentTag()
-				if (!nowTag.meta.affix) {
-					this.closeSelectedTag(nowTag)
-				}
-			},
-			// TAB 关闭其他
-			closeOtherTabs() {
-				this.contextMenuVisible = false
-				const nowTag = this.getCurrentTag()
-				// 判断是否当前路由，否的话跳转
-				// eslint-disable-next-line eqeqeq
-				if (this.$route.fullPath !== nowTag.fullPath) {
-					this.$router.push({
-						path: nowTag.fullPath,
-						query: nowTag.query
-					})
-				}
-				const tags = [...this.tagList]
-				tags.forEach((tag) => {
-					// eslint-disable-next-line eqeqeq
-					if ((tag.meta && tag.meta.affix) || nowTag.fullPath === tag.fullPath) {
-						return true
-					} else {
-						this.closeSelectedTag(tag, false)
-					}
-				})
-			},
-			// 多标签功能关闭时关闭被缓存的标签
-			closeOtherCacheTabs() {
-				const tags = [...this.tagList]
-				tags.forEach((tag) => {
-					this.closeSelectedTag(tag, false)
-				})
-			},
-			// TAB 最大化（包括标签栏）
-			maximize() {
-				this.contextMenuVisible = false
-				const nowTag = this.getCurrentTag()
-				// 判断是否当前路由，否的话跳转
-				// eslint-disable-next-line eqeqeq
-				if (this.$route.fullPath !== nowTag.fullPath) {
-					this.$router.push({
-						path: nowTag.fullPath,
-						query: nowTag.query
-					})
-				}
-				document.getElementById('app').classList.add('main-maximize')
-			},
-			// 新窗口打开
-			openWindow() {
-				this.contextMenuVisible = false
-				const nowTag = this.getCurrentTag()
-				const url = nowTag.href || '/'
-				if (!nowTag.meta.affix) {
-					this.closeSelectedTag(nowTag)
-				}
-				window.open(url)
+		}
+		return null
+	}
+
+	const getCurrentTag = () => {
+		return tagList.value[currentContextMenuTabIndex.value]
+	}
+
+	// 高亮tag
+	const isActive = (to) => {
+		return to.path === route.path
+	}
+	// 关闭tag
+	const closeSelectedTag = (tag, autoPushLatestView = true) => {
+		vStore.removeViewTags(tag)
+		iStore.removeIframeList(tag)
+		kStore.removeKeepLive(tag.name)
+		if (autoPushLatestView && isActive(tag)) {
+			const latestView = tagList.value.slice(-1)[0]
+			if (latestView) {
+				router.push(latestView)
+			} else {
+				router.push('/')
 			}
 		}
 	}
-</script>
+	// TAB 刷新
+	const refreshTab = () => {
+		contextMenuVisible.value = false
+		const nowTag = getCurrentTag()
+		// 判断是否当前路由，否的话跳转
+		// eslint-disable-next-line eqeqeq
+		if (route.fullPath !== nowTag.fullPath) {
+			router.push({
+				path: nowTag.fullPath,
+				query: nowTag.query
+			})
+		}
+		iStore.refreshIframe(nowTag)
+		setTimeout(() => {
+			kStore.removeKeepLive(nowTag.name)
+			kStore.setRouteShow(false)
+			nextTick(() => {
+				kStore.pushKeepLive(nowTag.name)
+				kStore.setRouteShow(true)
+			})
+		}, 0)
+	}
 
+	// TAB 关闭
+	const closeTabs = () => {
+		contextMenuVisible.value = false
+		const nowTag = getCurrentTag()
+		if (!nowTag.meta.affix) {
+			closeSelectedTag(nowTag)
+		}
+	}
+	// TAB 关闭其他
+	const closeOtherTabs = () => {
+		contextMenuVisible.value = false
+		const nowTag = getCurrentTag()
+		// 判断是否当前路由，否的话跳转
+		// eslint-disable-next-line eqeqeq
+		if (route.fullPath !== nowTag.fullPath) {
+			router.push({
+				path: nowTag.fullPath,
+				query: nowTag.query
+			})
+		}
+		const tags = [...tagList.value]
+		tags.forEach((tag) => {
+			// eslint-disable-next-line eqeqeq
+			if ((tag.meta && tag.meta.affix) || nowTag.fullPath === tag.fullPath) {
+				return true
+			} else {
+				closeSelectedTag(tag, false)
+			}
+		})
+	}
+
+	// 多标签功能关闭时关闭被缓存的标签
+	const closeOtherCacheTabs = () => {
+		const tags = [...tagList]
+		tags.forEach((tag) => {
+			closeSelectedTag(tag, false)
+		})
+	}
+	// TAB 最大化（包括标签栏）
+	const maximize = () => {
+		contextMenuVisible.value = false
+		const nowTag = getCurrentTag()
+		// 判断是否当前路由，否的话跳转
+		// eslint-disable-next-line eqeqeq
+		if (route.fullPath !== nowTag.fullPath) {
+			router.push({
+				path: nowTag.fullPath,
+				query: nowTag.query
+			})
+		}
+		document.getElementById('app').classList.add('main-maximize')
+	}
+	// 新窗口打开
+	const openWindow = () => {
+		contextMenuVisible.value = false
+		const nowTag = getCurrentTag()
+		const url = nowTag.path || '/'
+		if (!nowTag.meta.affix) {
+			closeSelectedTag(nowTag)
+		}
+		window.open(url)
+	}
+
+	const handleTabContextMenu = (evt) => {
+		evt.preventDefault()
+		let target = evt.target
+		// 修复关闭时出现"使用了错误的类型或对象"的问题
+		while (!target.classList.contains('ant-tabs-tab')) {
+			if (target.classList.contains('ant-tabs')) {
+				currentContextMenuTabIndex.value = 0
+				return
+			}
+			target = target.parentNode
+		}
+		const tabList = document.querySelectorAll('.ant-tabs-nav-list .ant-tabs-tab')
+		currentContextMenuTabIndex.value = Array.from(tabList).findIndex((tab) => tab === target)
+	}
+
+	const module = router.getMenu()
+	const indexMenu = routerUtil.getIndexMenu(module).path
+	// eslint-disable-next-line eqeqeq
+	const dashboardRoute = treeFind(module, (node) => node.path === indexMenu)
+	if (dashboardRoute) {
+		dashboardRoute.fullPath = dashboardRoute.path
+		addViewTags(dashboardRoute)
+		addViewTags(route)
+	}
+
+	const onTabRemove = (tabKey, action) => {
+		if (action === 'remove') {
+			const tag = tagList.value.find((tag) => tag.fullPath === tabKey)
+			closeSelectedTag(tag)
+		}
+	}
+	const onTabClick = (tab) => {
+		router.push(tab)
+	}
+	// 处理鼠标放开事件
+	const onTabUp = (e) => {
+		// 鼠标中键
+		if (e.which === 2) {
+			handleTabContextMenu(e)
+			closeTabs()
+		}
+	}
+	const getTabWrapEl = () => {
+		return document.querySelector('.ant-tabs-nav-wrap')
+	}
+	const scrollLeft = () => {
+		const wrapEl = getTabWrapEl()
+		if (wrapEl) {
+			const event = new WheelEvent('wheel', { deltaX: 0, deltaY: -100 })
+			wrapEl.dispatchEvent(event)
+		}
+	}
+	const scrollRight = () => {
+		const wrapEl = getTabWrapEl()
+		if (wrapEl) {
+			const event = new WheelEvent('wheel', { deltaX: 0, deltaY: 100 })
+			wrapEl.dispatchEvent(event)
+		}
+	}
+</script>
 <style lang="less">
 	.snowy-admin-tabs {
 		&.ant-tabs {
@@ -316,7 +319,9 @@
 						background: none;
 						height: 40px;
 						line-height: 40px;
-						transition: background-color 0.3s, color 0.3s;
+						transition:
+							background-color 0.3s,
+							color 0.3s;
 						padding: 0 16px;
 						border-radius: 0;
 						border: none;

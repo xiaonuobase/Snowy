@@ -13,7 +13,7 @@
 	</a-row>
 
 	<a-card :bordered="false">
-		<s-table ref="table" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
+		<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
 			<template #operator class="table-operator">
 				<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 					<a-space>
@@ -64,12 +64,12 @@
 
 <script setup name="devOplog">
 	import logApi from '@/api/dev/logApi'
-	import columnChart from './columnChart.vue'
-	import pieChart from './pieChart.vue'
-	import detail from './detail.vue'
-	let searchFormState = reactive({})
+	import ColumnChart from './columnChart.vue'
+	import PieChart from './pieChart.vue'
+	import Detail from './detail.vue'
+	const searchFormState = ref({})
 	const formRef = ref()
-	const table = ref()
+	const tableRef = ref()
 	const detailRef = ref()
 	const opLogType = ref('OPERATE')
 	let opLogTypeList = ref([
@@ -128,18 +128,18 @@
 	}
 	// 切换应用标签查询
 	const opLogTypeClock = (value) => {
-		searchFormState.category = value
-		table.value.refresh(true)
+		searchFormState.value.category = value
+		tableRef.value.refresh(true)
 	}
 	// 查询
 	const onSearch = () => {
-		if (searchFormState.searchKey) {
-			table.value.refresh(true)
+		if (searchFormState.value.searchKey) {
+			tableRef.value.refresh(true)
 		}
 	}
 	const loadData = (parameter) => {
-		searchFormState.category = searchFormState.category ? searchFormState.category : opLogType.value
-		return logApi.logPage(Object.assign(parameter, searchFormState)).then((data) => {
+		searchFormState.value.category = searchFormState.value.category ? searchFormState.value.category : opLogType.value
+		return logApi.logPage(Object.assign(parameter, searchFormState.value)).then((data) => {
 			return data
 		})
 	}
@@ -149,7 +149,7 @@
 			category: searchFormState.category ? searchFormState.category : opLogType.value
 		}
 		logApi.logDelete(param).then(() => {
-			table.value.refresh(true)
+			tableRef.value.refresh(true)
 		})
 	}
 </script>

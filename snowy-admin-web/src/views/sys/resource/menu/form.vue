@@ -108,11 +108,7 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="是否可见:" name="visible">
-						<a-radio-group
-							v-model:value="formData.visible"
-							button-style="solid"
-							:options="visibleOptions"
-						/>
+						<a-radio-group v-model:value="formData.visible" button-style="solid" :options="visibleOptions" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="12">

@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/mobile/button/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/mobile/button/` + url, ...arg)
 /**
  * 按钮
  *

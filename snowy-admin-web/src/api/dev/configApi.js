@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/dev/config/${url}`, ...arg)
+const request = (url, ...arg) => baseRequest(`/dev/config/` + url, ...arg)
 /**
  * 配置
  *

@@ -12,7 +12,7 @@
 				:href="navMenu.path"
 				target="_blank"
 				@click.stop="() => {}"
-			>{{ navMenu.meta.title }}</a
+				>{{ navMenu.meta.title }}</a
 			>
 			<a v-else>{{ navMenu.meta.title }}</a>
 		</a-menu-item>
