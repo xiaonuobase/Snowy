@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
 				<a-col :span="8">
 					<a-form-item label="名称关键词" name="searchKey">
@@ -60,6 +60,7 @@
 	import moduleApi from '@/api/sys/resource/moduleApi'
 	const searchFormState = ref({})
 	const formRef = ref()
+	const searchFormRef = ref()
 	const tableRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: false, striped: false }
 	const columns = [
@@ -110,7 +111,7 @@
 	}
 	// 重置
 	const reset = () => {
-		formRef.value.resetFields()
+		searchFormRef.value.resetFields()
 		tableRef.value.refresh(true)
 	}
 	// 删除
