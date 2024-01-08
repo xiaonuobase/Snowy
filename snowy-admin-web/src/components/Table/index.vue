@@ -492,6 +492,7 @@
 			// 此处配置表格大小与要显示的列
 			renderProps = {
 				...renderProps,
+				scroll: props.scroll,
 				bordered: props.bordered,
 				size: data.customSize, // 注意这个size是a-table组件需要的，这里不能跟别的地方成为compSize
 				columns: data.columnsSetting.filter((value) => value.checked === undefined || value.checked)
