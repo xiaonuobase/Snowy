@@ -53,6 +53,7 @@ public class DevLogApiProvider implements DevLogApi {
     @Override
     public List<JSONObject> currentUserVisLogList() {
         return devLogService.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<DevLog>()
+                .select(DevLog::getName, DevLog::getOpUser, DevLog::getOpTime, DevLog::getOpAddress, DevLog::getOpIp)
                 .eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
                 .in(DevLog::getCategory, DevLogCategoryEnum.LOGIN.getValue(), DevLogCategoryEnum.LOGOUT.getValue())
                 .orderByDesc(DevLog::getCreateTime))
@@ -62,6 +63,7 @@ public class DevLogApiProvider implements DevLogApi {
     @Override
     public List<JSONObject> currentUserOpLogList() {
         return devLogService.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<DevLog>()
+                .select(DevLog::getName, DevLog::getOpUser, DevLog::getOpTime, DevLog::getOpAddress, DevLog::getOpIp)
                 .eq(DevLog::getOpUser, StpLoginUserUtil.getLoginUser().getName())
                 .in(DevLog::getCategory, DevLogCategoryEnum.OPERATE.getValue(), DevLogCategoryEnum.EXCEPTION.getValue())
                 .orderByDesc(DevLog::getCreateTime))
