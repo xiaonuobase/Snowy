@@ -77,7 +77,7 @@
         <smcrypto.version>0.3.2</smcrypto.version>
         <snakeyaml.version>2.0</snakeyaml.version>
         <spring.context.version>5.3.19</spring.context.version>
-        <spring.security.crypto.version>6.0.2</spring.security.crypto.version>
+        <spring.security.crypto.version>5.8.9</spring.security.crypto.version>
         <springfox.swagger2.version>2.10.5</springfox.swagger2.version>
         <ten.cos.version>5.6.68</ten.cos.version>
         <ten.sdk.ses.version>3.1.455</ten.sdk.ses.version>
