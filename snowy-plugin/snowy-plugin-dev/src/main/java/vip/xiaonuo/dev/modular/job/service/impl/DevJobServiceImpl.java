@@ -26,6 +26,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -242,7 +243,15 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
         Map<String, CommonTimerTaskRunner> commonTimerTaskRunnerMap = SpringUtil.getBeansOfType(CommonTimerTaskRunner.class);
         if (ObjectUtil.isNotEmpty(commonTimerTaskRunnerMap)) {
             Collection<CommonTimerTaskRunner> values = commonTimerTaskRunnerMap.values();
-            return values.stream().map(commonTimerTaskRunner -> commonTimerTaskRunner.getClass().getName()).collect(Collectors.toList());
+            return values.stream().map(commonTimerTaskRunner -> {
+                Class<?> clazz = null;
+                if(AopUtils.isAopProxy(commonTimerTaskRunner)) {
+                    clazz = AopUtils.getTargetClass(commonTimerTaskRunner);
+                } else {
+                    clazz = commonTimerTaskRunner.getClass();
+                }
+                return clazz.getName();
+            }).collect(Collectors.toList());
         } else {
             return CollectionUtil.newArrayList();
         }
