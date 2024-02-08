@@ -132,7 +132,7 @@
 	// 清空
 	const deleteBatchVisLog = () => {
 		const param = {
-			category: searchFormState.value.category ? searchFormState.category : visLogType.value
+			category: searchFormState.category ? searchFormState.category : visLogType.value
 		}
 		logApi.logDelete(param).then(() => {
 			tableRef.value.refresh(true)
