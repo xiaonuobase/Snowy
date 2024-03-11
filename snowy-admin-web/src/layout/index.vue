@@ -197,7 +197,7 @@
 	const selectedKeys = ref([])
 	const openKeys = ref([])
 	const onSelectTag = ref(false)
-	const moduleMenu = ref([])
+	const moduleMenuData = ref([])
 	const moduleMenuShow = ref(true)
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
@@ -266,8 +266,8 @@
 			}
 			const nextTickMenu = pMenu.value.children
 			if (pidKey) {
-				const modelPidKey = getParentKeys(moduleMenu.value, route.path)
-				moduleMenu.value.forEach((item) => {
+				const modelPidKey = getParentKeys(moduleMenuData.value, route.path)
+				moduleMenuData.value.forEach((item) => {
 					if (modelPidKey.includes(item.path)) {
 						tagSwitchModule(item.id)
 					}
@@ -292,7 +292,7 @@
 	}
 
 	// 执行-start
-	moduleMenu.value = router.getMenu()
+	moduleMenuData.value = router.getMenu()
 	// 获取缓存中的菜单模块是哪个
 	const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
 	if (menuModuleId) {
@@ -466,9 +466,9 @@
 	}
 	// 切换应用
 	const switchModule = (id) => {
-		if (moduleMenu.value.length > 0) {
+		if (moduleMenuData.value.length > 0) {
 			showThis()
-			const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
+			const menus = moduleMenuData.value.filter((item) => item.id === id)[0].children
 			if (menus.length > 0) {
 				// 正儿八百的菜单
 				menu.value = menus
@@ -494,7 +494,7 @@
 		tool.data.set('SNOWY_MENU_MODULE_ID', id)
 		store.setModule(id)
 		// 正儿八百的菜单
-		menu.value = moduleMenu.value.filter((item) => item.id === id)[0].children
+		menu.value = moduleMenuData.value.filter((item) => item.id === id)[0].children
 	}
 	// 遍历获取子集
 	const traverseChild = (menu) => {

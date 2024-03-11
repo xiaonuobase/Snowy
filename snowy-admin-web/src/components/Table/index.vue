@@ -95,6 +95,7 @@
 		<a-table
 			v-bind="{ ...renderTableProps, ...data.localSettings }"
 			@change="loadData"
+			:loading="data.localLoading"
 			:row-key="(record) => record.id"
 			@expand="
 				(expanded, record) => {
@@ -103,7 +104,7 @@
 			"
 		>
 			<template #[item]="scope" v-for="item in renderSlots">
-				<slot :name="item" :scope="scope" v-bind="scope || {}"></slot>
+				<slot v-if="item && renderTableProps.columns.length > 0" :name="item" :scope="scope" v-bind="scope || {}"></slot>
 			</template>
 		</a-table>
 	</div>
@@ -112,8 +113,7 @@
 	import './index.less'
 	import { tableProps } from 'ant-design-vue/es/table/Table.js'
 	import columnSetting from './columnSetting.vue'
-	import './index.less'
-
+	import { get } from 'lodash-es'
 	import { useSlots } from 'vue'
 	import { useRoute } from 'vue-router'
 	const slots = useSlots()
