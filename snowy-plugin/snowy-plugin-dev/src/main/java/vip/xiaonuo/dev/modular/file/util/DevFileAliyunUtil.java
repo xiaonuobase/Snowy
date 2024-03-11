@@ -81,7 +81,7 @@ public class DevFileAliyunUtil {
         /* endpoint */
         String endpoint = devConfigApi.getValueByKey(SNOWY_FILE_ALIYUN_END_POINT_KEY);
 
-        if(ObjectUtil.isEmpty(accessKeySecret)) {
+        if(ObjectUtil.isEmpty(endpoint)) {
             throw new CommonException("阿里云文件操作客户端未正确配置：endpoint为空");
         }
 
