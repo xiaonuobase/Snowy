@@ -47,7 +47,7 @@ public class GenConfigure {
      * @date 2022/7/7 16:18
      **/
     @Bean(value = "genDocApi")
-    public Docket sysDocApi() {
+    public Docket genDocApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
                         .title("代码生成GEN")
