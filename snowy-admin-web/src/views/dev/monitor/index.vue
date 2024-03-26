@@ -91,8 +91,8 @@
 		</a-row>
 		<a-card title="CPU监控" :bordered="false" class="mb-2">
 			<a-descriptions size="middle" :column="2" bordered>
-				<a-descriptions-item label="CPU名称">{{ devMonitorCpuInfo.cupName }}</a-descriptions-item>
-				<a-descriptions-item label="CPU数量">{{ devMonitorCpuInfo.cupNum }}</a-descriptions-item>
+				<a-descriptions-item label="CPU名称">{{ devMonitorCpuInfo.cpuName }}</a-descriptions-item>
+				<a-descriptions-item label="CPU数量">{{ devMonitorCpuInfo.cpuNum }}</a-descriptions-item>
 				<a-descriptions-item label="CPU物理核心数">{{ devMonitorCpuInfo.cpuPhysicalCoreNum }}</a-descriptions-item>
 				<a-descriptions-item label="CPU逻辑核心数">{{ devMonitorCpuInfo.cpuLogicalCoreNum }}</a-descriptions-item>
 			</a-descriptions>

@@ -58,8 +58,8 @@ public class DevMonitorServiceImpl implements DevMonitorService {
 
         // CPU信息
         DevMonitorServerResult.DevMonitorCpuInfo devMonitorCpuInfo = new DevMonitorServerResult.DevMonitorCpuInfo();
-        devMonitorCpuInfo.setCupName(StrUtil.trim(cpu.getProcessorIdentifier().getName()));
-        devMonitorCpuInfo.setCupNum(cpu.getPhysicalPackageCount() + "颗物理CPU");
+        devMonitorCpuInfo.setCpuName(StrUtil.trim(cpu.getProcessorIdentifier().getName()));
+        devMonitorCpuInfo.setCpuNum(cpu.getPhysicalPackageCount() + "颗物理CPU");
         devMonitorCpuInfo.setCpuPhysicalCoreNum(cpu.getPhysicalProcessorCount() + "个物理核心");
         devMonitorCpuInfo.setCpuLogicalCoreNum(cpu.getLogicalProcessorCount() + "个逻辑核心");
         long[] prevTicks = cpu.getSystemCpuLoadTicks();

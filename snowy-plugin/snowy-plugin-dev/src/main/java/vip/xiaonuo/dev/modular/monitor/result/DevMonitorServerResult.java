@@ -65,11 +65,11 @@ public class DevMonitorServerResult {
 
         /** CPU名称 */
         @ApiModelProperty(value = "CPU名称", position = 1)
-        private String cupName;
+        private String cpuName;
 
         /** CPU数量 */
         @ApiModelProperty(value = "CPU数量", position = 2)
-        private String cupNum;
+        private String cpuNum;
 
         /** CPU物理核心数 */
         @ApiModelProperty(value = "CPU物理核心数", position = 3)
