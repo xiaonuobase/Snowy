@@ -507,7 +507,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 执行校验验证码
         validValidCode(sysUserFindPwdByPhoneParam.getPhone(), sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
-                sysUserFindPwdByPhoneParam.getPhone()).set(SysUser::getPassword,
+                CommonCryptogramUtil.doSm4CbcEncrypt(sysUserFindPwdByPhoneParam.getPhone())).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()))));
     }
 
