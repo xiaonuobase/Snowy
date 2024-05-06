@@ -13,7 +13,7 @@
 package vip.xiaonuo.dev.modular.message.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -30,22 +30,22 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class DevMessage extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 2)
+    @Schema(description = "分类")
     private String category;
 
     /** 主题 */
-    @ApiModelProperty(value = "主题", position = 3)
+    @Schema(description = "主题")
     private String subject;
 
     /** 正文 */
-    @ApiModelProperty(value = "正文", position = 4)
+    @Schema(description = "正文")
     private String content;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 5)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

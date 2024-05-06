@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.auth.modular.monitor.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * Session退出参数
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class AuthExitSessionParam {
 
     /** 用户id */
-    @ApiModelProperty(value = "用户id", required = true)
+    @Schema(description = "用户id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "userId不能为空")
     private String userId;
 }

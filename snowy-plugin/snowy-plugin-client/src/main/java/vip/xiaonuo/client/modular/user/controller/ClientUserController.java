@@ -13,10 +13,11 @@
 package vip.xiaonuo.client.modular.user.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +31,8 @@ import vip.xiaonuo.client.modular.user.param.ClientUserPageParam;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * C端用户控制器
@@ -42,8 +40,7 @@ import javax.validation.constraints.NotEmpty;
  * @author xuyuxiang
  * @date 2022/4/22 9:34
  **/
-@Api(tags = "C端用户控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@Tag(name = "C端用户控制器")
 @RestController
 @Validated
 public class ClientUserController {
@@ -57,8 +54,7 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取C端用户分页")
+    @Operation(summary = "获取C端用户分页")
     @GetMapping("/client/user/page")
     public CommonResult<Page<ClientUser>> page(ClientUserPageParam clientUserPageParam) {
         return CommonResult.data(clientUserService.page(clientUserPageParam));
@@ -70,8 +66,7 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("添加C端用户")
+    @Operation(summary = "添加C端用户")
     @CommonLog("添加C端用户")
     @PostMapping("/client/user/add")
     public CommonResult<String> add(@RequestBody @Valid ClientUserAddParam clientUserAddParam) {
@@ -85,8 +80,7 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("编辑C端用户")
+    @Operation(summary = "编辑C端用户")
     @CommonLog("编辑C端用户")
     @PostMapping("/client/user/edit")
     public CommonResult<String> edit(@RequestBody @Valid ClientUserEditParam clientUserEditParam) {
@@ -100,12 +94,11 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("删除C端用户")
+    @Operation(summary = "删除C端用户")
     @CommonLog("删除C端用户")
     @PostMapping("/client/user/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   CommonValidList<ClientUserIdParam> clientUserIdParamList) {
+                                               List<ClientUserIdParam> clientUserIdParamList) {
         clientUserService.delete(clientUserIdParamList);
         return CommonResult.ok();
     }
@@ -116,8 +109,7 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("获取C端用户详情")
+    @Operation(summary = "获取C端用户详情")
     @GetMapping("/client/user/detail")
     public CommonResult<ClientUser> detail(@Valid ClientUserIdParam clientUserIdParam) {
         return CommonResult.data(clientUserService.detail(clientUserIdParam));

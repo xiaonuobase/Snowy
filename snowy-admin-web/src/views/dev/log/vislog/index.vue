@@ -29,7 +29,7 @@
 						</a-radio-group>
 						<a-input-search
 							v-model:value="searchFormState.searchKey"
-							placeholder="请输入名称关键字"
+							placeholder="请输入名称关键词"
 							enter-button
 							allowClear
 							@search="onSearch"
@@ -65,7 +65,7 @@
 	const pieChartRef = ref()
 
 	const visLogType = ref('LOGIN')
-	let visLogTypeList = ref([
+	const visLogTypeList = ref([
 		{
 			label: '登录日志',
 			value: 'LOGIN'
@@ -132,7 +132,7 @@
 	// 清空
 	const deleteBatchVisLog = () => {
 		const param = {
-			category: searchFormState.category ? searchFormState.category : visLogType.value
+			category: searchFormState.value.category ? searchFormState.value.category : visLogType.value
 		}
 		logApi.logDelete(param).then(() => {
 			tableRef.value.refresh(true)

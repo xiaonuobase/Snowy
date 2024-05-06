@@ -14,6 +14,7 @@ package vip.xiaonuo.dev.modular.sse.service;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.common.sse.CommonSseParam;
+
 import java.util.function.Consumer;
 
 /**

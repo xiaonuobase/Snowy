@@ -6,7 +6,7 @@
 					:disabled="true"
 					v-model:value="formData.parentId"
 					v-model:treeExpandedKeys="defaultExpandedKeys"
-					style="width: 100%"
+					class="xn-wd"
 					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 					placeholder="请选择上级字典"
 					allow-clear
@@ -27,11 +27,11 @@
 				<a-input v-model:value="formData.dictValue" placeholder="请输入字典值" allow-clear :disabled="true" />
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="1000" />
+				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="1000" />
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>
@@ -94,12 +94,15 @@
 	})
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			bizDictApi.submitForm(formData.value).then(() => {
-				visible.value = false
-				emit('successful')
+		formRef.value
+			.validate()
+			.then(() => {
+				bizDictApi.submitForm(formData.value).then(() => {
+					visible.value = false
+					emit('successful')
+				})
 			})
-		})
+			.catch(() => {})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

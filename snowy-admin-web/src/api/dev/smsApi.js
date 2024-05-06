@@ -30,6 +30,10 @@ export default {
 	smsSendTencent(data) {
 		return request('sendTencent', data)
 	},
+	// 发送短信——小诺短信
+	smsSendXiaonuo(data) {
+		return request('sendXiaonuo', data)
+	},
 	// 删除短信
 	smsDelete(data) {
 		return request('delete', data)

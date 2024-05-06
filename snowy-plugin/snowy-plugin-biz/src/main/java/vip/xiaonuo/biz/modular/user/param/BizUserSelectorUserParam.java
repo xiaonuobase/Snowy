@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.biz.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,18 +27,18 @@ import lombok.Setter;
 public class BizUserSelectorUserParam {
 
     /** 当前页 */
-    @ApiModelProperty(value = "当前页码")
+    @Schema(description = "当前页码")
     private Integer current;
 
     /** 每页条数 */
-    @ApiModelProperty(value = "每页条数")
+    @Schema(description = "每页条数")
     private Integer size;
 
     /** 组织id */
-    @ApiModelProperty(value = "组织id")
+    @Schema(description = "组织id")
     private String orgId;
 
     /** 姓名关键词 */
-    @ApiModelProperty(value = "姓名关键词")
+    @Schema(description = "姓名关键词")
     private String searchKey;
 }

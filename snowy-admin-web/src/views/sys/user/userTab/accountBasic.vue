@@ -23,7 +23,7 @@
 			<a-radio-group v-model:value="formData.gender" :options="genderOptions" />
 		</a-form-item>
 		<a-form-item label="生日：" name="birthday">
-			<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" style="width: 100%" />
+			<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
 		</a-form-item>
 		<a-form-item label="邮箱：" name="email">
 			<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
@@ -45,7 +45,7 @@
 	const store = globalStore()
 
 	const formRef = ref()
-	let formData = ref({})
+	const formData = ref({})
 	formData.value = cloneDeep(store.userInfo)
 	const submitLoading = ref(false)
 	// 默认要校验的
@@ -60,16 +60,18 @@
 			.validate()
 			.then(() => {
 				submitLoading.value = true
-				userCenterApi.userUpdateUserInfo(formData.value).then(() => {
-					submitLoading.value = false
-					// 更新前端缓存
-					store.setUserInfo(cloneDeep(formData.value))
-					tool.data.set('USER_INFO', formData.value)
-				})
+				userCenterApi
+					.userUpdateUserInfo(formData.value)
+					.then(() => {
+						// 更新前端缓存
+						store.setUserInfo(cloneDeep(formData.value))
+						tool.data.set('USER_INFO', formData.value)
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			})
-			.catch(() => {
-				submitLoading.value = false
-			})
+			.catch(() => {})
 	}
 	const layout = {
 		labelCol: {

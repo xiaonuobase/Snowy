@@ -24,6 +24,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
@@ -46,7 +47,6 @@ import vip.xiaonuo.common.util.CommonEmailUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

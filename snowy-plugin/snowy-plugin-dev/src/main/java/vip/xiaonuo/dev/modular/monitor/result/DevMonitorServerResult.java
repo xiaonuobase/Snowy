@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.monitor.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,29 +28,29 @@ public class DevMonitorServerResult {
 
     /* ==============概览数据============ */
     /** CPU信息 */
-    @ApiModelProperty(value = "CPU信息", position = 1)
+    @Schema(description = "CPU信息")
     private DevMonitorCpuInfo devMonitorCpuInfo;
 
     /** 内存信息 */
-    @ApiModelProperty(value = "内存信息", position = 2)
+    @Schema(description = "内存信息")
     private DevMonitorMemoryInfo devMonitorMemoryInfo;
 
     /** 存储信息 */
-    @ApiModelProperty(value = "存储信息", position = 3)
+    @Schema(description = "存储信息")
     private DevMonitorStorageInfo devMonitorStorageInfo;
 
     /** 网络信息 */
-    @ApiModelProperty(value = "网络信息", position = 4)
+    @Schema(description = "网络信息")
     private DevMonitorNetworkInfo devMonitorNetworkInfo;
 
     /* ==============服务器数据============ */
     /** 服务器信息 */
-    @ApiModelProperty(value = "服务器信息", position = 5)
+    @Schema(description = "服务器信息")
     private DevMonitorServerInfo devMonitorServerInfo;
 
     /* ==============JVM数据============ */
     /** JVM信息 */
-    @ApiModelProperty(value = "JVM信息", position = 6)
+    @Schema(description = "JVM信息")
     private DevMonitorJvmInfo devMonitorJvmInfo;
 
     /**
@@ -64,39 +64,39 @@ public class DevMonitorServerResult {
     public static class DevMonitorCpuInfo {
 
         /** CPU名称 */
-        @ApiModelProperty(value = "CPU名称", position = 1)
+        @Schema(description = "CPU名称")
         private String cpuName;
 
         /** CPU数量 */
-        @ApiModelProperty(value = "CPU数量", position = 2)
+        @Schema(description = "CPU数量")
         private String cpuNum;
 
         /** CPU物理核心数 */
-        @ApiModelProperty(value = "CPU物理核心数", position = 3)
+        @Schema(description = "CPU物理核心数")
         private String cpuPhysicalCoreNum;
 
         /** CPU逻辑核心数 */
-        @ApiModelProperty(value = "CPU逻辑核心数", position = 4)
+        @Schema(description = "CPU逻辑核心数")
         private String cpuLogicalCoreNum;
 
         /** CPU系统使用率 */
-        @ApiModelProperty(value = "CPU系统使用率", position = 5)
+        @Schema(description = "CPU系统使用率")
         private String cpuSysUseRate;
 
         /** CPU用户使用率 */
-        @ApiModelProperty(value = "CPU用户使用率", position = 6)
+        @Schema(description = "CPU用户使用率")
         private String cpuUserUseRate;
 
         /** CPU当前总使用率 */
-        @ApiModelProperty(value = "CPU当前总使用率", position = 7)
+        @Schema(description = "CPU当前总使用率")
         private Double cpuTotalUseRate;
 
         /** CPU当前等待率 */
-        @ApiModelProperty(value = "CPU当前等待率", position = 8)
+        @Schema(description = "CPU当前等待率")
         private String cpuWaitRate;
 
         /** CPU当前空闲率 */
-        @ApiModelProperty(value = "CPU当前空闲率", position = 9)
+        @Schema(description = "CPU当前空闲率")
         private String cpuFreeRate;
     }
 
@@ -111,19 +111,19 @@ public class DevMonitorServerResult {
     public static class DevMonitorMemoryInfo {
 
         /** 内存总量 */
-        @ApiModelProperty(value = "内存总量", position = 1)
+        @Schema(description = "内存总量")
         private String memoryTotal;
 
         /** 内存已用 */
-        @ApiModelProperty(value = "内存已用", position = 2)
+        @Schema(description = "内存已用")
         private String memoryUsed;
 
         /** 内存剩余 */
-        @ApiModelProperty(value = "内存剩余", position = 3)
+        @Schema(description = "内存剩余")
         private String memoryFree;
 
         /** 内存使用率 */
-        @ApiModelProperty(value = "内存使用率", position = 4)
+        @Schema(description = "内存使用率")
         private Double memoryUseRate;
     }
 
@@ -138,19 +138,19 @@ public class DevMonitorServerResult {
     public static class DevMonitorStorageInfo {
 
         /** 存储总量 */
-        @ApiModelProperty(value = "存储总量", position = 1)
+        @Schema(description = "存储总量")
         private String storageTotal;
 
         /** 存储已用 */
-        @ApiModelProperty(value = "存储已用", position = 2)
+        @Schema(description = "存储已用")
         private String storageUsed;
 
         /** 存储剩余 */
-        @ApiModelProperty(value = "存储剩余", position = 3)
+        @Schema(description = "存储剩余")
         private String storageFree;
 
         /** 存储使用率 */
-        @ApiModelProperty(value = "存储使用率", position = 4)
+        @Schema(description = "存储使用率")
         private Double storageUseRate;
     }
 
@@ -165,11 +165,11 @@ public class DevMonitorServerResult {
     public static class DevMonitorNetworkInfo {
 
         /** 上行速率 */
-        @ApiModelProperty(value = "上行速率", position = 1)
+        @Schema(description = "上行速率")
         private String upLinkRate;
 
         /** 下行速率 */
-        @ApiModelProperty(value = "下行速率", position = 2)
+        @Schema(description = "下行速率")
         private String downLinkRate;
 
     }
@@ -185,19 +185,19 @@ public class DevMonitorServerResult {
     public static class DevMonitorServerInfo {
 
         /** 服务器名称 */
-        @ApiModelProperty(value = "服务器名称", position = 1)
+        @Schema(description = "服务器名称")
         private String serverName;
 
         /** 服务器操作系统 */
-        @ApiModelProperty(value = "服务器操作系统", position = 2)
+        @Schema(description = "服务器操作系统")
         private String serverOs;
 
         /** 服务器IP */
-        @ApiModelProperty(value = "服务器IP", position = 3)
+        @Schema(description = "服务器IP")
         private String serverIp;
 
         /** 服务器架构 */
-        @ApiModelProperty(value = "服务器架构", position = 4)
+        @Schema(description = "服务器架构")
         private String serverArchitecture;
     }
 
@@ -212,43 +212,43 @@ public class DevMonitorServerResult {
     public static class DevMonitorJvmInfo {
 
         /** JVM名称 */
-        @ApiModelProperty(value = "JVM名称", position = 1)
+        @Schema(description = "JVM名称")
         private String jvmName;
 
         /** JVM版本 */
-        @ApiModelProperty(value = "JVM版本", position = 2)
+        @Schema(description = "JVM版本")
         private String jvmVersion;
 
         /** JVM总分配内存 */
-        @ApiModelProperty(value = "JVM总分配内存", position = 3)
+        @Schema(description = "JVM总分配内存")
         private String jvmMemoryTotal;
 
         /** JVM已用内存 */
-        @ApiModelProperty(value = "JVM已用内存", position = 4)
+        @Schema(description = "JVM已用内存")
         private String jvmMemoryUsed;
 
         /** JVM剩余内存 */
-        @ApiModelProperty(value = "JVM剩余内存", position = 5)
+        @Schema(description = "JVM剩余内存")
         private String jvmMemoryFree;
 
         /** JVM内存使用率 */
-        @ApiModelProperty(value = "JVM内存使用率", position = 6)
+        @Schema(description = "JVM内存使用率")
         private Double jvmUseRate;
 
         /** JVM启动时间 */
-        @ApiModelProperty(value = "JVM启动时间", position = 7)
+        @Schema(description = "JVM启动时间")
         private String jvmStartTime;
 
         /** JVM运行时长 */
-        @ApiModelProperty(value = "JVM运行时长", position = 8)
+        @Schema(description = "JVM运行时长")
         private String jvmRunTime;
 
         /** Java版本 */
-        @ApiModelProperty(value = "Java版本", position = 9)
+        @Schema(description = "Java版本")
         private String javaVersion;
 
         /** Java安装路径 */
-        @ApiModelProperty(value = "Java安装路径", position = 10)
+        @Schema(description = "Java安装路径")
         private String javaPath;
     }
 }

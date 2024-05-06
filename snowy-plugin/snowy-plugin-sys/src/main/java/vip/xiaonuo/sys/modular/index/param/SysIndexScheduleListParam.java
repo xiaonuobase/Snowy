@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.index.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 日程列表查询参数
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class SysIndexScheduleListParam {
 
     /** 日程日期 */
-    @ApiModelProperty(value = "日程日期", required = true)
+    @Schema(description = "日程日期", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "scheduleDate不能为空")
     private String scheduleDate;
 }

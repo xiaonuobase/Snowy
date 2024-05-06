@@ -12,11 +12,11 @@
  */
 package ${packageName}.${moduleName}.modular.${busName}.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * ${functionName}Id参数
@@ -29,7 +29,7 @@ import javax.validation.constraints.NotBlank;
 public class ${className}IdParam {
 
     /** ${dbTableKeyRemark} */
-    @ApiModelProperty(value = "${dbTableKeyRemark}", required = true)
+    @Schema(description = "${dbTableKeyRemark}", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "${dbTableKeyCamelCase}不能为空")
     private ${dbTableKeyJavaType} ${dbTableKeyCamelCase};
 }

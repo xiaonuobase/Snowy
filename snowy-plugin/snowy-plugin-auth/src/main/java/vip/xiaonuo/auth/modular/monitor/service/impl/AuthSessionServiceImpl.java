@@ -26,6 +26,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
@@ -38,7 +39,6 @@ import vip.xiaonuo.auth.modular.monitor.service.AuthSessionService;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 
-import javax.annotation.Resource;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -139,7 +139,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                                 tokenSignInfo.setTokenValue(tokenSign.getValue());
                                 tokenSignInfo.setTokenDevice(tokenSign.getDevice());
                                 long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
-                                long tokenTimeoutConfig = StpUtil.stpLogic.getConfig().getTimeout();
+                                long tokenTimeoutConfig = StpUtil.stpLogic.getConfigOrGlobal().getTimeout();
                                 if (tokenTimeout == -1) {
                                     tokenSignInfo.setTokenTimeout("永久");
                                     tokenSignInfo.setTokenTimeoutPercent(100d);
@@ -200,7 +200,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                         tokenSignInfo.setTokenValue(tokenSign.getValue());
                         tokenSignInfo.setTokenDevice(tokenSign.getDevice());
                         long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
-                        long tokenTimeoutConfig = StpClientUtil.stpLogic.getConfig().getTimeout();
+                        long tokenTimeoutConfig = StpClientUtil.stpLogic.getConfigOrGlobal().getTimeout();
                         if (tokenTimeout == -1) {
                             tokenSignInfo.setTokenTimeout("永久");
                             tokenSignInfo.setTokenTimeoutPercent(100d);

@@ -33,6 +33,9 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
@@ -42,8 +45,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -51,6 +56,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -70,15 +76,15 @@ import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 import vip.xiaonuo.core.handler.GlobalExceptionUtil;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Snowy配置
@@ -98,7 +104,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
     /**
      * 无需登录的接口地址集合
      */
-    private static final String[] NO_LOGIN_PATH_ARR = {
+    public static final String[] NO_LOGIN_PATH_ARR = {
             /* 主入口 */
             "/",
 
@@ -106,14 +112,10 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/favicon.ico",
             "/doc.html",
             "/webjars/**",
-            "/swagger-resources/**",
-            "/v2/api-docs",
-            "/v2/api-docs-ext",
-            "/configuration/ui",
-            "/configuration/security",
-            "/ureport/**",
+            "/v3/api-docs/**",
             "/druid/**",
-            "/images/**",
+            /* 移动端静态资源 */
+            "/mobile/**",
 
             /* 认证相关 */
             "/auth/c/getPicCaptcha",
@@ -277,8 +279,9 @@ public class GlobalConfigure implements WebMvcConfigurer {
      * @author xuyuxiang
      * @date 2022/6/21 17:01
      **/
+    @Primary
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(@Autowired(required = false) RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
@@ -299,8 +302,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
      **/
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("doc.html").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX + "/META-INF/resources/webjars/");
     }
 
     /**

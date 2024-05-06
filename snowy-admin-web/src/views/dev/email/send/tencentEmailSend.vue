@@ -73,39 +73,42 @@
 
 	// 发送
 	const send = () => {
-		formRef.value.validate().then(() => {
-			emit('loadingStart')
-			if (sendType.value === 'TXT') {
-				emailApi
-					.emailSendTencentTxt(formData.value)
-					.then(() => {
-						message.success('发送成功')
-					})
-					.finally(() => {
-						emit('loadingEnd')
-					})
-			}
-			if (sendType.value === 'HTML') {
-				emailApi
-					.emailSendTencentHtml(formData.value)
-					.then(() => {
-						message.success('发送成功')
-					})
-					.finally(() => {
-						emit('loadingEnd')
-					})
-			}
-			if (sendType.value === 'TMP') {
-				emailApi
-					.emailSendTencentTmp(formData.value)
-					.then(() => {
-						message.success('发送成功')
-					})
-					.finally(() => {
-						emit('loadingEnd')
-					})
-			}
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				emit('loadingStart')
+				if (sendType.value === 'TXT') {
+					emailApi
+						.emailSendTencentTxt(formData.value)
+						.then(() => {
+							message.success('发送成功')
+						})
+						.finally(() => {
+							emit('loadingEnd')
+						})
+				}
+				if (sendType.value === 'HTML') {
+					emailApi
+						.emailSendTencentHtml(formData.value)
+						.then(() => {
+							message.success('发送成功')
+						})
+						.finally(() => {
+							emit('loadingEnd')
+						})
+				}
+				if (sendType.value === 'TMP') {
+					emailApi
+						.emailSendTencentTmp(formData.value)
+						.then(() => {
+							message.success('发送成功')
+						})
+						.finally(() => {
+							emit('loadingEnd')
+						})
+				}
+			})
+			.catch(() => {})
 	}
 	// 传递文件上传需要的API
 	const apiFunction = {

@@ -1,5 +1,5 @@
 <template>
-	<div id="pieChart" style="height: 180px"></div>
+	<div id="pieChart" class="xn-ht200"></div>
 </template>
 
 <script setup>
@@ -15,7 +15,7 @@
 				angleField: 'value',
 				colorField: 'type',
 				radius: 0.9,
-				color: ['#1890ff', 'rgb(188, 189, 190)'],
+				color: ['#1677FF', 'rgb(188, 189, 190)'],
 				label: {
 					type: 'inner',
 					offset: '-30%',
@@ -31,3 +31,8 @@
 		})
 	})
 </script>
+<style scoped>
+	.xn-ht200 {
+		height: 200px;
+	}
+</style>

@@ -14,10 +14,11 @@ package vip.xiaonuo.sys.modular.position.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -41,8 +38,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/4/25 20:40
  */
-@Api(tags = "职位控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
+@Tag(name = "职位控制器")
 @RestController
 @Validated
 public class SysPositionController {
@@ -56,8 +52,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取职位分页")
+    @Operation(summary = "获取职位分页")
     @GetMapping("/sys/position/page")
     public CommonResult<Page<SysPosition>> page(SysPositionPageParam sysPositionPageParam) {
         return CommonResult.data(sysPositionService.page(sysPositionPageParam));
@@ -69,8 +64,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("添加职位")
+    @Operation(summary = "添加职位")
     @CommonLog("添加职位")
     @PostMapping("/sys/position/add")
     public CommonResult<String> add(@RequestBody @Valid SysPositionAddParam sysPositionAddParam) {
@@ -84,8 +78,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("编辑职位")
+    @Operation(summary = "编辑职位")
     @CommonLog("编辑职位")
     @PostMapping("/sys/position/edit")
     public CommonResult<String> edit(@RequestBody @Valid SysPositionEditParam sysPositionEditParam) {
@@ -99,12 +92,11 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("删除职位")
+    @Operation(summary = "删除职位")
     @CommonLog("删除职位")
     @PostMapping("/sys/position/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   CommonValidList<SysPositionIdParam> sysPositionIdParamList) {
+                                                   List<SysPositionIdParam> sysPositionIdParamList) {
         sysPositionService.delete(sysPositionIdParamList);
         return CommonResult.ok();
     }
@@ -115,8 +107,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("获取职位详情")
+    @Operation(summary = "获取职位详情")
     @GetMapping("/sys/position/detail")
     public CommonResult<SysPosition> detail(@Valid SysPositionIdParam sysPositionIdParam) {
         return CommonResult.data(sysPositionService.detail(sysPositionIdParam));
@@ -130,8 +121,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("获取组织树选择器")
+    @Operation(summary = "获取组织树选择器")
     @GetMapping("/sys/position/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
         return CommonResult.data(sysPositionService.orgTreeSelector());
@@ -143,8 +133,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("获取职位选择器")
+    @Operation(summary = "获取职位选择器")
     @GetMapping("/sys/position/positionSelector")
     public CommonResult<Page<SysPosition>> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
         return CommonResult.data(sysPositionService.positionSelector(sysPositionSelectorPositionParam));

@@ -1,6 +1,6 @@
 <template>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		:title="formData.id ? '编辑按钮' : '增加按钮'"
 		:width="550"
 		:mask-closable="false"
@@ -16,7 +16,7 @@
 				<a-input v-model:value="formData.code" placeholder="请输入按钮编码" allow-clear />
 			</a-form-item>
 			<a-form-item label="排序:" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" :min="0" />
+				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" :min="0" />
 			</a-form-item>
 		</a-form>
 	</a-modal>
@@ -55,17 +55,20 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			const defParam = {
-				category: 'BUTTON',
-				parentId: recordData.value.id
-			}
-			const param = Object.assign(defParam, formData.value)
-			buttonApi.mobileButtonSubmitForm(param, formData.value.id).then(() => {
-				onClose()
-				emit('successful')
+		formRef.value
+			.validate()
+			.then(() => {
+				const defParam = {
+					category: 'BUTTON',
+					parentId: recordData.value.id
+				}
+				const param = Object.assign(defParam, formData.value)
+				buttonApi.mobileButtonSubmitForm(param, formData.value.id).then(() => {
+					onClose()
+					emit('successful')
+				})
 			})
-		})
+			.catch(() => {})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

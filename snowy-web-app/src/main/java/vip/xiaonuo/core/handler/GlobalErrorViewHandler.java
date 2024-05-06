@@ -14,6 +14,9 @@ package vip.xiaonuo.core.handler;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.http.HttpStatus;
@@ -23,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ import java.util.Map;
 @RestController
 public class GlobalErrorViewHandler extends BasicErrorController {
 
-    public GlobalErrorViewHandler(ServerProperties serverProperties) {
+    public GlobalErrorViewHandler(@Autowired(required = false) ServerProperties serverProperties) {
         super(new GlobalErrorAttributesHandler(), serverProperties.getError());
     }
 

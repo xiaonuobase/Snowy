@@ -8,7 +8,7 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-/*
+/**
  * @Descripttion: 工具集
  * @version: 1.1
  * @LastEditors: yubaoshan
@@ -20,10 +20,18 @@ const tool = {}
 tool.data = {
 	set(table, settings) {
 		const _set = JSON.stringify(settings)
-		return localStorage.setItem(table, _set)
+		const SNOWYSTRING = table.slice(0, 6) === 'SNOWY_' && table !== 'SNOWY_SYS_BASE_CONFIG'
+		if (SNOWYSTRING) {
+			let localSetting = JSON.parse(localStorage.getItem('SNOWY_SETTING')) || {}
+			let newSetting = {}
+			newSetting[table] = _set
+			return localStorage.setItem('SNOWY_SETTING', JSON.stringify(Object.assign(localSetting, newSetting)))
+		} else return localStorage.setItem(table, _set)
 	},
 	get(table) {
-		let data = localStorage.getItem(table)
+		const SNOWYSTRING = table.slice(0, 6) === 'SNOWY_' && table !== 'SNOWY_SYS_BASE_CONFIG'
+		const SNOWY_SETTING = JSON.parse(localStorage.getItem('SNOWY_SETTING')) || {}
+		let data = SNOWYSTRING ? SNOWY_SETTING[table] : localStorage.getItem(table)
 		try {
 			data = JSON.parse(data)
 		} catch (err) {

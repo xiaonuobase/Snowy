@@ -13,7 +13,7 @@
 			</a-card>
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
-			<a-card :bordered="false" style="margin-bottom: 10px">
+			<a-card :bordered="false" class="xn-mb10">
 				<a-form
 					ref="searchFormRef"
 					name="advanced_search"
@@ -39,7 +39,7 @@
 					</a-row>
 				</a-form>
 			</a-card>
-			<a-card :bordered="false" style="margin-bottom: 10px">
+			<a-card :bordered="false" class="xn-mb10">
 				<s-table
 					ref="tableRef"
 					:columns="columns"

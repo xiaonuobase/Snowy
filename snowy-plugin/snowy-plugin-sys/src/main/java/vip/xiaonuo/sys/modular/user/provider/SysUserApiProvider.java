@@ -20,6 +20,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.sys.api.SysUserApi;
@@ -29,7 +30,6 @@ import vip.xiaonuo.sys.modular.user.param.SysUserIdParam;
 import vip.xiaonuo.sys.modular.user.param.SysUserSelectorUserParam;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;

@@ -97,5 +97,9 @@ export default {
 	// 根据id集合获取角色集合
 	userCenterGetRoleListByIdList(data) {
 		return request('getRoleListByIdList', data)
+	},
+	// 根据id获取头像
+	userCenterGtAvatarById(data) {
+		return request('getAvatarById', data)
 	}
 }

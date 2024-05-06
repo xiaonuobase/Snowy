@@ -16,6 +16,8 @@ import cn.dev33.satoken.exception.SaTokenException;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.mybatis.spring.MyBatisSystemException;
@@ -35,8 +37,6 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 

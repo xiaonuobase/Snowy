@@ -9,10 +9,10 @@
 					</a-steps>
 				</a-col>
 				<a-col :span="6">
-					<div style="float: right">
-						<a-button :disabled="current === 0" style="margin-left: 8px" @click="prev"> 上一步 </a-button>
-						<a-button :disabled="current === 2" type="primary" style="margin-left: 8px" @click="next"> 继续 </a-button>
-						<a-button type="primary" danger ghost style="margin-left: 8px" @click="emit('closed')"> 关闭 </a-button>
+					<div class="xn-fdr">
+						<a-button :disabled="current === 0" class="xn-ml8" @click="prev"> 上一步 </a-button>
+						<a-button :disabled="current === 2" type="primary" class="xn-ml8" @click="next"> 继续 </a-button>
+						<a-button type="primary" danger ghost class="xn-ml8" @click="emit('closed')"> 关闭 </a-button>
 					</div>
 				</a-col>
 			</a-row>
@@ -29,9 +29,7 @@
 				<a-result status="success" title="操作成功" sub-title="此刻可预览代码，同时您可以一键生成代码啦">
 					<template #extra>
 						<a-space size="middle">
-							<a-button v-if="current > 0" style="margin-left: 8px" @click="genPreviewRef.onOpen(recordData)"
-								>预览</a-button
-							>
+							<a-button v-if="current > 0" class="xn-ml8" @click="genPreviewRef.onOpen(recordData)">预览</a-button>
 							<a-button
 								v-if="current === steps.length - 1"
 								type="primary"
@@ -71,13 +69,16 @@
 		current.value++
 		// 判断是哪一步
 		if (current.value === 1) {
-			basicRef.value.onSubmit().then((data) => {
-				recordData.value = data
-				current.value++
-				nextTick(() => {
-					configRef.value.onOpen(data)
+			basicRef.value
+				.onSubmit()
+				.then((data) => {
+					recordData.value = data
+					current.value++
+					nextTick(() => {
+						configRef.value.onOpen(data)
+					})
 				})
-			})
+				.catch(() => {})
 			current.value--
 		}
 		if (current.value === 2) {
@@ -155,5 +156,8 @@
 	.xn-row {
 		margin-bottom: -10px;
 		margin-top: -10px;
+	}
+	.xn-ml8 {
+		margin-left: 8px;
 	}
 </style>

@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.client.modular.relation.service.ClientRelationService;
@@ -41,7 +42,6 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.*;
 import vip.xiaonuo.dev.api.DevConfigApi;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

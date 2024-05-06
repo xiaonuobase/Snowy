@@ -15,8 +15,6 @@ package vip.xiaonuo.sys.api;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.List;
-
 /**
  * 职位API
  *

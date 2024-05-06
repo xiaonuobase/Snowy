@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.resource.param.menu;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +27,6 @@ import lombok.Setter;
 public class SysMenuSelectorMenuParam {
 
     /** 模块 */
-    @ApiModelProperty(value = "模块")
+    @Schema(description = "模块")
     private String module;
 }

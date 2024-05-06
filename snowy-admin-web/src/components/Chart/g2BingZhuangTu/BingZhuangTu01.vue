@@ -20,7 +20,7 @@
 			angleField: 'sold',
 			colorField: 'sex',
 			radius: 0.66,
-			color: ['#1890ff', '#f04864'],
+			color: ['#1677FF', '#f04864'],
 			label: {
 				content: (obj) => {
 					const group = new G.Group({})
@@ -46,7 +46,7 @@
 							text: obj.sex,
 							textAlign: 'center',
 							textBaseline: 'top',
-							fill: obj.sex === '男' ? '#1890ff' : '#f04864'
+							fill: obj.sex === '男' ? '#1677FF' : '#f04864'
 						}
 					})
 					return group

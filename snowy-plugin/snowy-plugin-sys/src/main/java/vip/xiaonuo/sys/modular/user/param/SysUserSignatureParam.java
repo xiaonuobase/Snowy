@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 用户修改签名图片接口
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class SysUserSignatureParam {
 
     /** 签名图片base64编码 */
-    @ApiModelProperty(value = "signature", required = true)
+    @Schema(description = "signature", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "signature签名图片不能为空")
     private String signature;
 }

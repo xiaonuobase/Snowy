@@ -18,7 +18,7 @@
 					<a-tabs v-model:activeKey="typeListActiveKey" tab-position="left" hide-add type="card">
 						<a-tab-pane v-for="pan in codeType.codeTypeList" :key="pan.codeFileName" :tab="pan.codeFileName">
 							<div class="gen-preview-content">
-								<XnHighlightjs :code="pan.codeFileContent" />
+								<XnHighlightjs :code="pan.codeFileContent" copy />
 							</div>
 						</a-tab-pane>
 					</a-tabs>
@@ -86,7 +86,7 @@
 	}
 	// 切换标签
 	const codeTypeChange = (value) => {
-		typeListActiveKey.value = codeTypeArray.value.find((f) => f.codeTypeKey === value).codeTypeList[0].codeFileName
+		typeListActiveKey.value = codeTypeArray.value.find((f) => f.codeTypeKey === value).codeTypeList[0]?.codeFileName
 	}
 	defineExpose({
 		onOpen

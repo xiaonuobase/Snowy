@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.DictionaryTransService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.modular.dict.entity.BizDict;
@@ -36,7 +37,6 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

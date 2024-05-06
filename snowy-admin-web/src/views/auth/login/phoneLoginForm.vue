@@ -21,20 +21,20 @@
 					</a-input>
 				</a-col>
 				<a-col :span="7">
-					<a-button size="large" style="width: 100%" @click="getPhoneValidCode" :disabled="state.smsSendBtn">
+					<a-button size="large" class="xn-wd" @click="getPhoneValidCode" :disabled="state.smsSendBtn">
 						{{ (!state.smsSendBtn && $t('login.getSmsCode')) || state.time + ' s' }}
 					</a-button>
 				</a-col>
 			</a-row>
 		</a-form-item>
 		<a-form-item>
-			<a-button type="primary" style="width: 100%" :loading="loading" round size="large" @click="submitLogin">
+			<a-button type="primary" class="xn-wd" :loading="loading" round size="large" @click="submitLogin">
 				{{ $t('login.signIn') }}
 			</a-button>
 		</a-form-item>
 	</a-form>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		:width="400"
 		:title="$t('login.machineValidation')"
 		@cancel="handleCancel"
@@ -57,7 +57,7 @@
 					<a-col :span="7">
 						<img
 							:src="validCodeBase64"
-							style="border: 1px solid var(--border-color-split); cursor: pointer; width: 100%; height: 40px"
+							class="xn-findform-line"
 							@click="getPhonePicCaptcha"
 						/>
 					</a-col>
@@ -94,6 +94,7 @@
 			getPhonePicCaptcha()
 		})
 	}
+
 	// 点击登录按钮
 	const submitLogin = async () => {
 		formRules.value.phone = [required('请输入11位手机号'), rules.phone]
@@ -105,14 +106,12 @@
 		phoneFormData.value.validCode = phoneFormData.value.phoneValidCode
 		// delete phoneFormData.value.phoneValidCode
 		phoneFormData.value.validCodeReqNo = phoneValidCodeReqNo.value
-
 		loading.value = true
-		try {
-			const token = await loginApi.loginByPhone(phoneFormData.value)
+		loginApi.loginByPhone(phoneFormData.value).then((token) => {
 			afterLogin(token)
-		} catch (err) {
+		}).catch((err) => {
 			loading.value = false
-		}
+		})
 	}
 
 	// 弹框的

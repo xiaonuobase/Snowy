@@ -4,7 +4,7 @@
 			v-model:value="modelValue"
 			:options="options"
 			:field-names="{ label: 'name', value: 'id' }"
-			style="width: 100%"
+			class="xn-wd"
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
 			:disabled="props.disabled"

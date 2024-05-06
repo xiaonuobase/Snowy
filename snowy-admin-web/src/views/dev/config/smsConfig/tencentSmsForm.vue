@@ -25,7 +25,7 @@
 			</a-form-item>
 			<a-form-item>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button style="margin-left: 10px" @click="() => formRef.resetFields()">重置</a-button>
+				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
 			</a-form-item>
 		</a-form>
 	</a-spin>
@@ -67,22 +67,25 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			submitLoading.value = true
-			let submitParam = cloneDeep(formData.value)
-			const param = Object.entries(submitParam).map((item) => {
-				return {
-					configKey: item[0],
-					configValue: item[1]
-				}
-			})
-			configApi
-				.configEditForm(param)
-				.then(() => {})
-				.finally(() => {
-					submitLoading.value = false
+		formRef.value
+			.validate()
+			.then(() => {
+				submitLoading.value = true
+				let submitParam = cloneDeep(formData.value)
+				const param = Object.entries(submitParam).map((item) => {
+					return {
+						configKey: item[0],
+						configValue: item[1]
+					}
 				})
-		})
+				configApi
+					.configEditForm(param)
+					.then(() => {})
+					.finally(() => {
+						submitLoading.value = false
+					})
+			})
+			.catch(() => {})
 	}
 	const layout = {
 		labelCol: {

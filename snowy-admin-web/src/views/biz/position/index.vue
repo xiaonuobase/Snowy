@@ -14,7 +14,7 @@
 			</a-card>
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
-			<a-card :bordered="false" style="margin-bottom: 10px">
+			<a-card :bordered="false" class="xn-mb10">
 				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 					<a-row :gutter="24">
 						<a-col :span="8">
@@ -27,7 +27,7 @@
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="reset">
+							<a-button class="snowy-button-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								重置
 							</a-button>
@@ -210,10 +210,7 @@
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.primaryAdd {
-		margin-right: 10px;
-	}
-	.snowy-buttom-left {
+	.snowy-button-left {
 		margin-left: 8px;
 	}
 </style>

@@ -14,7 +14,7 @@
 			</a-card>
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
-			<a-card :bordered="false" style="margin-bottom: 10px">
+			<a-card :bordered="false" class="xn-mb10">
 				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 					<a-row :gutter="24">
 						<a-col :span="8">
@@ -27,7 +27,7 @@
 								<template #icon><SearchOutlined /></template>
 								查询
 							</a-button>
-							<a-button class="snowy-buttom-left" @click="reset">
+							<a-button class="snowy-button-left" @click="reset">
 								<template #icon><redo-outlined /></template>
 								重置
 							</a-button>
@@ -102,11 +102,13 @@
 	<grantMobileResourceForm ref="grantMobileResourceFormRef" @successful="tableRef.refresh()" />
 	<grantPermissionForm ref="grantPermissionFormRef" @successful="tableRef.refresh()" />
 	<Form ref="formRef" @successful="tableRef.refresh()" />
-	<user-selector-plus
-		ref="userselectorPlusRef"
+	<xn-user-selector
+		ref="userSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:user-page-api="selectorApiFunction.userPageApi"
-		:checked-user-list-api="selectorApiFunction.checkedUserListApi"
+		:user-list-by-id-list-api="selectorApiFunction.checkedUserListApi"
+		data-type="object"
+		:user-show="false"
 		@onBack="userCallBack"
 	/>
 </template>
@@ -120,7 +122,6 @@
 	import GrantResourceForm from './grantResourceForm.vue'
 	import GrantMobileResourceForm from './grantMobileResourceForm.vue'
 	import GrantPermissionForm from './grantPermissionForm.vue'
-	import UserSelectorPlus from '@/components/Selector/userSelectorPlus.vue'
 	import Form from './form.vue'
 
 	const columns = [
@@ -167,7 +168,7 @@
 	const grantResourceFormRef = ref()
 	const grantMobileResourceFormRef = ref()
 	const grantPermissionFormRef = ref()
-	const userselectorPlusRef = ref()
+	const userSelectorPlusRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -267,16 +268,14 @@
 			id: record.id
 		}
 		roleApi.roleOwnUser(param).then((data) => {
-			userselectorPlusRef.value.showUserPlusModal(data)
+			userSelectorPlusRef.value.showUserPlusModal(data)
 		})
 	}
 	// 人员选择器回调
 	const userCallBack = (value) => {
 		const param = {
 			id: recordCacheData.value.id,
-			grantInfoList: value.map((item) => {
-				return item.id
-			})
+			grantInfoList: value
 		}
 		roleApi.roleGrantUser(param).then(() => {})
 	}
@@ -304,10 +303,7 @@
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.primaryAdd {
-		margin-right: 10px;
-	}
-	.snowy-buttom-left {
+	.snowy-button-left {
 		margin-left: 8px;
 	}
 </style>

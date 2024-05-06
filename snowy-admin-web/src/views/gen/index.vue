@@ -50,8 +50,8 @@
 <script setup name="genIndex">
 	import { message } from 'ant-design-vue'
 	import downloadUtil from '@/utils/downloadUtil'
-	import steps from './steps.vue'
-	import genPreview from './preview.vue'
+	import Steps from './steps.vue'
+	import GenPreview from './preview.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
 
 	const tableRef = ref()

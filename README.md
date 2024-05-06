@@ -11,7 +11,7 @@ Snowy（SnowyAdmin）是国内首个国密前后端分离快速开发平台，�
 技术框架与密码结合，让更多的人认识密码，使用密码；更是让前后分离“密”不可分。
 
 
-采用SpringBoot+MybatisPlus+AntDesignVue+Vite 等更多优秀组件及前沿技术开发，注释丰富，代码简洁，开箱即用！
+采用SpringBoot+MybatisPlus+AntDesignVue+Vite 等更多组件及前沿技术开发，注释丰富，代码简洁，开箱即用！
 
 Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯洁的“，寓意框架追求简洁至上，大道至简。
 
@@ -24,19 +24,19 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
             <img src="https://gitee.com/xiaonuobase/snowy/badge/fork.svg?theme=dark" alt="Gitee fork">
         </a>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
-            <img src="https://img.shields.io/badge/vue-3.2-blue.svg" alt="bootstrap">
+            <img src="https://img.shields.io/badge/vue-3-blue.svg" alt="bootstrap">
         </a> 
         <a href="http://spring.io/projects/spring-boot">
-            <img src="https://img.shields.io/badge/vite-2.8-green.svg" alt="spring-boot">
+            <img src="https://img.shields.io/badge/vite-5-green.svg" alt="spring-boot">
         </a>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
-            <img src="https://img.shields.io/badge/vue--ant--design-3.2-blue.svg" alt="bootstrap">
+            <img src="https://img.shields.io/badge/vue--ant--design-4-blue.svg" alt="bootstrap">
         </a> 
         <a href="http://spring.io/projects/spring-boot">
-            <img src="https://img.shields.io/badge/spring--boot-2.5-green.svg" alt="spring-boot">
+            <img src="https://img.shields.io/badge/spring--boot-3-green.svg" alt="spring-boot">
         </a>
         <a href="http://mp.baomidou.com">
-            <img src="https://img.shields.io/badge/mybatis--plus-3.5-blue.svg" alt="mybatis-plus">
+            <img src="https://img.shields.io/badge/mybatis--plus-3-blue.svg" alt="mybatis-plus">
         </a>  
         <a href="./LICENSE">
             <img src="https://img.shields.io/badge/license-Apache%202-red" alt="license Apache 2.0">
@@ -62,9 +62,9 @@ github下载地址（镜像）：[https://github.com/xiaonuobase/Snowy](https://
 全栈工程师推荐idea
 
 ### 前端支撑
-| 插件 | 版本   | 用途 |
-|--- | ----- | ----- |
-| node.js | ≥16 |  JavaScript运行环境 |
+| 插件 | 版本  | 用途 |
+|--- |-----| ----- |
+| node.js | ≥18 |  JavaScript运行环境 |
 
 ### 启动前端
 
@@ -75,12 +75,12 @@ npm install
 npm run dev
 ```
 ### 后端支撑
-| 插件 | 版本 | 用途 |
-| --- | ----- |  ----- |
-| jdk | 11 / 1.8 |java环境 |
-| lombok | idea内 |代码简化插件 |
-| maven | 最新版 |包管理工具 |
-| redis | 最新版 | 缓存库 |
+| 插件 | 版本        | 用途 |
+| --- |-----------|  ----- |
+| jdk | 17        |java环境 |
+| lombok | idea内     |代码简化插件 |
+| maven | 最新版       |包管理工具 |
+| redis | 最新版       | 缓存库 |
 | mysql | 8.0 / 5.7 | 数据库 |
 
 ### 启动后端
@@ -88,7 +88,7 @@ npm run dev
 
 ## 代码结构
 
-Snowy2.0框架对代码以插件化的模式进行分包，使得包层级结构更加清晰合理，同时降低了耦合度，关于插件模块化开发的规范请查阅文档【SNOWY开源文档——前端手册or后端手册——开发规范】板块。
+Snowy3.0框架对代码以插件化的模式进行分包，使得包层级结构更加清晰合理，同时降低了耦合度，关于插件模块化开发的规范请查阅文档【SNOWY开源文档——前端手册or后端手册——开发规范】板块。
 
 ```
 snowy
@@ -140,6 +140,10 @@ snowy
 - snowy1.8 
 
 1.x分支，目前已停止新增功能，只限于bug的维护，推荐使用2x版本
+
+- snowy2.5
+
+2.x分支，目前已停止新增功能，只限于bug的维护，可以平滑过渡至3x版本
 
 ## 视频教程
 

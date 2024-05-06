@@ -48,18 +48,21 @@
 	}
 	// 发送短信
 	const send = () => {
-		formRef.value.validate().then(() => {
-			emit('loadingStart')
-			smsApi
-				.smsSendAliyun(formData.value)
-				.then(() => {
-					message.success('发送成功')
-				})
-				.catch(() => {})
-				.finally(() => {
-					emit('loadingEnd')
-				})
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				emit('loadingStart')
+				smsApi
+					.smsSendAliyun(formData.value)
+					.then(() => {
+						message.success('发送成功')
+					})
+					.catch(() => {})
+					.finally(() => {
+						emit('loadingEnd')
+					})
+			})
+			.catch(() => {})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

@@ -14,6 +14,7 @@ package vip.xiaonuo.sys.modular.user.provider;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
@@ -21,7 +22,6 @@ import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.sys.modular.user.result.SysLoginUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

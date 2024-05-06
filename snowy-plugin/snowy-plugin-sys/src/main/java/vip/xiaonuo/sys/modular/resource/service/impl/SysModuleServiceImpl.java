@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
@@ -46,7 +47,6 @@ import vip.xiaonuo.sys.modular.resource.param.module.SysModulePageParam;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

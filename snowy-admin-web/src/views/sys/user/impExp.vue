@@ -21,7 +21,7 @@
 				<p>导入总数：{{ impResultData.totalCount }} 条</p>
 				<p>导入成功：{{ impResultData.successCount }} 条</p>
 				<div v-if="impResultData.errorCount > 0">
-					<p><span style="color: red">失败条数：</span>{{ impResultData.errorCount }} 条</p>
+					<p><span class="xn-color-red">失败条数：</span>{{ impResultData.errorCount }} 条</p>
 					<a-table :dataSource="impResultErrorDataSource" :columns="impErrorColumns" size="small" />
 				</div>
 			</template>
@@ -124,3 +124,8 @@
 		onOpen
 	})
 </script>
+<style scoped>
+	.xn-color-red {
+		color: #ff0000;
+	}
+</style>

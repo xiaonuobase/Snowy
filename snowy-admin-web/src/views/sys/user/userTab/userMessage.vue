@@ -8,7 +8,7 @@
 			</a-menu>
 		</a-col>
 		<a-col :span="20">
-			<div style="margin-top: -16px">
+			<div class="xn-mt-16">
 				<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'subject'">
@@ -17,8 +17,8 @@
 							</ellipsis>
 						</template>
 						<template v-if="column.dataIndex === 'read'">
-							<span v-if="record.read" style="color: #d9d9d9">已读</span>
-							<span v-else style="color: #ff4d4f">未读</span>
+							<span v-if="record.read" class="xn-color-d9d9d9">已读</span>
+							<span v-else class="xn-color-ff4d4f">未读</span>
 						</template>
 						<template v-if="column.dataIndex === 'action'">
 							<a-space>
@@ -81,3 +81,9 @@
 		})
 	}
 </script>
+
+<style lang="less" scoped>
+	.xn-mt-16 {
+		margin-top: -16px
+	}
+</style>

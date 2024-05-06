@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.dev.modular.dict.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 字典编辑参数
@@ -30,36 +29,36 @@ import javax.validation.constraints.NotNull;
 public class DevDictEditParam {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 父id */
-    @ApiModelProperty(value = "父id", position = 2)
+    @Schema(description = "父id")
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 字典文字 */
-    @ApiModelProperty(value = "字典文字", position = 3)
+    @Schema(description = "字典文字")
     @NotBlank(message = "dictLabel不能为空")
     private String dictLabel;
 
     /** 字典值 */
-    @ApiModelProperty(value = "字典值", position = 4)
+    @Schema(description = "字典值")
     @NotBlank(message = "dictValue不能为空")
     private String dictValue;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 5)
+    @Schema(description = "分类")
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 6)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 7)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

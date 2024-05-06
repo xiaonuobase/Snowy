@@ -84,7 +84,7 @@ public class DevSmsAliyunUtil {
      *
      * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
      *                     上限为1000个手机号码。批量调用相对于单条调用及时性稍有延迟。
-     * @param signName 短信服务控制台配置且审核通过的短信签名
+     * @param signName 短信服务控制台配置且审核通过的短信签名，为空则使用默认签名
      * @param templateCode 短信服务控制台配置且审核通过的模板编码
      * @param templateParam 短信模板变量对应的实际值，JSON格式。支持传入多个参数，示例：{"name":"张三","number":"15038****76"}
      * @return 发送的结果信息集合 com.aliyun.dysmsapi20170525.models.SendSmsResponse
@@ -95,12 +95,7 @@ public class DevSmsAliyunUtil {
         try {
             initClient();
             if(ObjectUtil.isEmpty(signName)) {
-                // 签名为空，则获取默认签名
-                DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
-                signName = devConfigApi.getValueByKey(SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME_KEY);
-                if(ObjectUtil.isEmpty(signName)) {
-                    throw new CommonException("阿里云短信操作客户端未正确配置：signName为空");
-                }
+                signName = getDefaultSignName();
             }
             SendSmsRequest sendSmsRequest = new SendSmsRequest()
                     .setPhoneNumbers(phoneNumbers)
@@ -118,5 +113,21 @@ public class DevSmsAliyunUtil {
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
+    }
+
+    /**
+     * 获取默认签名
+     *
+     * @author xuyuxiang
+     * @date 2024/1/26 16:40
+     **/
+    public static String getDefaultSignName() {
+        // 签名为空，则获取默认签名
+        DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+        String signName = devConfigApi.getValueByKey(SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME_KEY);
+        if(ObjectUtil.isEmpty(signName)) {
+            throw new CommonException("阿里云短信操作客户端未正确配置：signName为空");
+        }
+        return signName;
     }
 }

@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.gen.modular.config.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 代码生成详细配置Id参数
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class GenConfigIdParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 }

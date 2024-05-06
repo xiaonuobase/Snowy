@@ -2,7 +2,7 @@
 	<xn-form-container title="令牌列表" :width="650" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-button
 			danger
-			style="margin-bottom: 10px"
+			class="xn-mb10"
 			:disabled="selectedRowKeys.length === 0"
 			:loading="beatchExitLoading"
 			@click="beachExitTokenValue"
@@ -14,6 +14,7 @@
 			:row-selection="rowSelection"
 			bordered
 			:row-key="(record) => record.tokenValue"
+			size="small"
 		>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'tokenDevice'">

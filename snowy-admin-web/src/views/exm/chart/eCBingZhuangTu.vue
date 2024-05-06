@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="某站点用户Access From" :bordered="false">
-				<RefererOfAWebsite style="height: 400px" />
+				<RefererOfAWebsite class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="圆角环形图" :bordered="false">
-				<DoughnutChartWithRoundedCorner style="height: 400px" />
+				<DoughnutChartWithRoundedCorner class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="饼图自定义样式" :bordered="false">
-				<CustomizedPie style="height: 400px" />
+				<CustomizedPie class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="基础南丁格尔玫瑰图" :bordered="false">
-				<NightingaleChart style="height: 400px" />
+				<NightingaleChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

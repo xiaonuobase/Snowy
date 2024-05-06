@@ -1,5 +1,5 @@
 <template>
-	<div style="padding-bottom: 10px">
+	<div class="xn-pb10">
 		<a-row :gutter="16">
 			<a-col :span="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
@@ -15,7 +15,7 @@
 			<a-col :span="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
-						<verified-outlined style="color: rgb(255, 156, 110)" class="snowy-monitor-card-icon" />
+						<verified-outlined class="snowy-monitor-card-icon xn-color-ff9c6e" />
 						<div class="snowy-monitor-card-div">
 							<span class="snowy-monitor-card-span">最大签发令牌：</span
 							><span class="snowy-monitor-card-span">{{ analysisObj.maxTokenCount }}</span>
@@ -26,7 +26,7 @@
 			<a-col :span="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
-						<rise-outlined style="color: rgb(255, 133, 192)" class="snowy-monitor-card-icon" />
+						<rise-outlined class="snowy-monitor-card-icon xn-color-ff85c0" />
 						<div class="snowy-monitor-card-div">
 							<span class="snowy-monitor-card-span">1小时内新增：</span
 							><span class="snowy-monitor-card-span">{{ analysisObj.oneHourNewlyAdded }}</span>
@@ -37,7 +37,7 @@
 			<a-col :span="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
-						<pie-chart-outlined style="color: rgb(92, 219, 211)" class="snowy-monitor-card-icon" />
+						<pie-chart-outlined class="snowy-monitor-card-icon xn-color-5cdbd3" />
 						<div class="snowy-monitor-card-div">
 							<span class="snowy-monitor-card-span">B/C端占比：</span
 							><span class="snowy-monitor-card-span">{{ analysisObj.proportionOfBAndC }}</span>
@@ -79,5 +79,14 @@
 	}
 	.snowy-monitor-card-span {
 		font-size: 16px;
+	}
+	.xn-color-ff9c6e {
+		color: #ff9c6e;
+	}
+	.xn-color-ff85c0 {
+		color: #ff85c0;
+	}
+	.xn-color-5cdbd3 {
+		color: #5cdbd3;
 	}
 </style>

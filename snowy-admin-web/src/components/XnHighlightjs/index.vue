@@ -1,15 +1,16 @@
 <template>
 	<!-- 本组件这兄弟写的很好 请参照：https://blog.csdn.net/weixin_41897680/article/details/124925222-->
 	<div class="hljs-container" :codetype="props.language">
+		<a-button v-if="props.copy" size="small" type="primary" class="hljs-copy" @click="codeCopy">
+			<CopyOutlined />
+			拷贝
+		</a-button>
 		<highlightjs :language="props.language" :autodetect="!props.language" :code="props.code" />
 	</div>
 </template>
 
 <script setup name="XnHighlightjs">
-	/*import 'highlight.js/styles/atom-one-dark.css'
-	import 'highlight.js/lib/common'
-	import hljsVuePlugin from '@highlightjs/vue-plugin'*/
-
+	import { message } from 'ant-design-vue'
 	const props = defineProps({
 		language: {
 			type: String,
@@ -18,41 +19,27 @@
 		code: {
 			type: String,
 			default: () => '无'
+		},
+		copy: {
+			type: Boolean,
+			default: () => false
 		}
 	})
+	const codeCopy = () => {
+		copyTextToClipboard(props.code).then(() => {
+			message.success('拷贝成功')
+		})
+	}
+	const copyTextToClipboard = async (text) => {
+		try {
+			await navigator.clipboard.writeText(text)
+		} catch (err) {
+			message.warning('拷贝失败')
+		}
+	}
 </script>
 
 <style scoped lang="less">
-	/* 语法高亮 */
-	/*.hljs-container {
-		position: relative;
-		display: block;
-		padding: 30px 5px 2px;
-		overflow-x: hidden;
-		line-height: 20px;
-		text-align: left;
-		background: #21252b;
-		box-shadow: 0 10px 30px 0 rgb(0 0 0 / 40%);
-	}*/
-	/** 3个点 */
-	/*.hljs-container::before {
-		position: absolute;
-		top: 10px;
-		left: 15px;
-		width: 12px;
-		height: 12px;
-		overflow: visible;
-		font-weight: 700;
-		font-size: 16px;
-		line-height: 12px;
-		white-space: nowrap;
-		text-indent: 75px;
-		background-color: #fc625d;
-		border-radius: 16px;
-		box-shadow: 20px 0 #fdbc40, 40px 0 #35cd4b;
-		content: attr(codetype);
-	}*/
-
 	/** 滚动条 */
 	:deep(.hljs, .hljs-container) {
 		max-height: 300px !important;
@@ -87,5 +74,13 @@
 
 	::-webkit-scrollbar-button {
 		display: none;
+	}
+	/** 复制样式 */
+	.hljs-copy {
+		float: right;
+		top: 10px;
+		right: 10px;
+		position: absolute;
+		z-index: 9;
 	}
 </style>

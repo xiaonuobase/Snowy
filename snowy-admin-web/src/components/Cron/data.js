@@ -71,31 +71,31 @@ export const data = {
 	month: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
 	week: [
 		{
-			value: '1',
+			value: '0',
 			label: '周日'
 		},
 		{
-			value: '2',
+			value: '1',
 			label: '周一'
 		},
 		{
-			value: '3',
+			value: '2',
 			label: '周二'
 		},
 		{
-			value: '4',
+			value: '3',
 			label: '周三'
 		},
 		{
-			value: '5',
+			value: '4',
 			label: '周四'
 		},
 		{
-			value: '6',
+			value: '5',
 			label: '周五'
 		},
 		{
-			value: '7',
+			value: '6',
 			label: '周六'
 		}
 	],

@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xkcoding.http.HttpUtil;
 import com.xkcoding.http.support.hutool.HutoolImpl;
+import jakarta.annotation.Resource;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
@@ -48,8 +49,6 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.api.DevConfigApi;
-
-import javax.annotation.Resource;
 
 /**
  * 第三方登录Service接口实现类

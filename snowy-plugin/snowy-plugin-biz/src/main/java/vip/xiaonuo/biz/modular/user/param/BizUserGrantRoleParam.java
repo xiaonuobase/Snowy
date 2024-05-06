@@ -12,12 +12,12 @@
  */
 package vip.xiaonuo.biz.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -31,12 +31,12 @@ import java.util.List;
 public class BizUserGrantRoleParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true, position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 角色id集合 */
-    @ApiModelProperty(value = "角色id集合", required = true, position = 2)
+    @Schema(description = "角色id集合", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "roleIdList不能为空")
     private List<String> roleIdList;
 }

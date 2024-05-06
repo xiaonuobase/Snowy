@@ -37,8 +37,8 @@
 					>
 						<template #bodyCell="{ column, record }">
 							<template v-if="column.dataIndex === 'read'">
-								<span v-if="record.read" style="color: #d9d9d9">已读</span>
-								<span v-else style="color: #ff4d4f">未读</span>
+								<span v-if="record.read" class="xn-color-d9d9d9">已读</span>
+								<span v-else class="xn-color-ff4d4f">未读</span>
 							</template>
 						</template>
 					</s-table>

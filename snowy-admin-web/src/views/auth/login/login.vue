@@ -78,7 +78,7 @@
 								</a-form-item>
 
 								<a-form-item>
-									<a href="/findpwd" style="color: #0d84ff">{{ $t('login.forgetPassword') }}？</a>
+									<a href="/findpwd" class="xn-color-0d84ff">{{ $t('login.forgetPassword') }}？</a>
 								</a-form-item>
 								<a-form-item>
 									<a-button type="primary" class="w-full" :loading="loading" round size="large" @click="login"
@@ -213,24 +213,36 @@
 	//登陆
 	const loginForm = ref()
 	const login = async () => {
-		loginForm.value.validate().then(async () => {
-			loading.value = true
-			const loginData = {
-				account: ruleForm.account,
-				// 密码进行SM2加密，传输过程中看到的只有密文，后端存储使用hash
-				password: smCrypto.doSm2Encrypt(ruleForm.password),
-				validCode: ruleForm.validCode,
-				validCodeReqNo: ruleForm.validCodeReqNo
-			}
-			// 获取token
-			try {
-				const loginToken = await loginApi.login(loginData)
-				afterLogin(loginToken)
-			} catch (err) {
-				loading.value = false
-				loginCaptcha()
-			}
-		})
+		loginForm.value
+			.validate()
+			.then(async () => {
+				loading.value = true
+				const loginData = {
+					account: ruleForm.account,
+					// 密码进行SM2加密，传输过程中看到的只有密文，后端存储使用hash
+					password: smCrypto.doSm2Encrypt(ruleForm.password),
+					validCode: ruleForm.validCode,
+					validCodeReqNo: ruleForm.validCodeReqNo
+				}
+
+				// 获取token
+				// loginApi.login(loginData).then((loginToken) => {
+				// 	afterLogin(loginToken)
+				// }).catch(() => {
+				// 	loading.value = false
+				// 	loginCaptcha()
+				// })
+
+				// 获取token
+				try {
+					const loginToken = await loginApi.login(loginData)
+					const loginAfter = afterLogin(loginToken)
+				} catch (err) {
+					loading.value = false
+					loginCaptcha()
+				}
+			})
+			.catch(() => {})
 	}
 	const configLang = (key) => {
 		config.value.lang = key
@@ -238,4 +250,7 @@
 </script>
 <style lang="less">
 	@import 'login';
+	.xn-color-0d84ff {
+		color: #0d84ff;
+	}
 </style>

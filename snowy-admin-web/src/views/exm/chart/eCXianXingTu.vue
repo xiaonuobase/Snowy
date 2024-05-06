@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="基础折线图" :bordered="false">
-				<BasicLineChart style="height: 400px" />
+				<BasicLineChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="折线图堆叠" :bordered="false">
-				<StackedLineChart style="height: 400px" />
+				<StackedLineChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="堆叠面积图" :bordered="false">
-				<StackedAreaChart style="height: 400px" />
+				<StackedAreaChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="阶梯折线图" :bordered="false">
-				<StepLine style="height: 400px" />
+				<StepLine class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

@@ -1,6 +1,6 @@
 <template>
 	<div v-if="indexShow">
-		<a-card :bordered="false" style="margin-bottom: 10px">
+		<a-card :bordered="false" class="xn-mb10">
 			<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 				<a-row :gutter="24">
 					<a-col :span="8">
@@ -18,7 +18,7 @@
 							<template #icon><SearchOutlined /></template>
 							查询
 						</a-button>
-						<a-button class="snowy-buttom-left" @click="reset">
+						<a-button class="snowy-button-left" @click="reset">
 							<template #icon><redo-outlined /></template>
 							重置
 						</a-button>
@@ -248,7 +248,7 @@
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.snowy-buttom-left {
+	.snowy-button-left {
 		margin-left: 8px;
 	}
 </style>

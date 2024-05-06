@@ -1,5 +1,5 @@
 <template>
-	<a-drawer title="字段权限" :width="650" :visible="visible" :destroy-on-close="true" @close="onClose">
+	<a-drawer title="字段权限" :width="650" :open="visible" :destroy-on-close="true" @close="onClose">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -30,7 +30,7 @@
 	<Form ref="fieldForm" @successful="tableRef.refresh(true)" />
 </template>
 
-<script setup>
+<script setup name="sysResourceField">
 	import fieldApi from '@/api/sys/resource/fieldApi'
 	import Form from './form.vue'
 	const columns = [

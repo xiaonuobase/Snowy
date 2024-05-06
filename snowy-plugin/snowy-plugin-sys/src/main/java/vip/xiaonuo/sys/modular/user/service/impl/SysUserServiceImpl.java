@@ -56,6 +56,8 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fhs.trans.service.impl.TransService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
@@ -102,8 +104,6 @@ import vip.xiaonuo.sys.modular.user.param.*;
 import vip.xiaonuo.sys.modular.user.result.*;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -1540,7 +1540,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<SysUser> getUserListByIdList(SysUserIdListParam sysUserIdListParam) {
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAccount, SysUser::getName, SysUser::getSortCode)
+        lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAvatar, SysUser::getAccount, SysUser::getName,
+                        SysUser::getSortCode)
                 .in(SysUser::getId, sysUserIdListParam.getIdList()).orderByAsc(SysUser::getSortCode);
         return this.list(lambdaQueryWrapper);
     }

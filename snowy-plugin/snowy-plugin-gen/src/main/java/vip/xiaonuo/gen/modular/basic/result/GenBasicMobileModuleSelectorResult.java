@@ -1,6 +1,6 @@
 package vip.xiaonuo.gen.modular.basic.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,10 +14,10 @@ import lombok.Setter;
 @Setter
 public class GenBasicMobileModuleSelectorResult {
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", position = 2)
+    @Schema(description = "名称")
     private String name;
 }

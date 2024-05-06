@@ -15,10 +15,12 @@ package vip.xiaonuo.biz.modular.user.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +35,7 @@ import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,8 +45,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/4/22 9:34
  **/
-@Api(tags = "人员控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 9)
+@Tag(name = "人员控制器")
 @RestController
 @Validated
 public class BizUserController {
@@ -63,8 +59,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取人员分页")
+    @Operation(summary = "获取人员分页")
     @SaCheckPermission("/biz/user/page")
     @GetMapping("/biz/user/page")
     public CommonResult<Page<BizUser>> page(BizUserPageParam bizUserPageParam) {
@@ -77,8 +72,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("添加人员")
+    @Operation(summary = "添加人员")
     @CommonLog("添加人员")
     @SaCheckPermission("/biz/user/add")
     @PostMapping("/biz/user/add")
@@ -93,8 +87,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("编辑人员")
+    @Operation(summary = "编辑人员")
     @CommonLog("编辑人员")
     @SaCheckPermission("/biz/user/edit")
     @PostMapping("/biz/user/edit")
@@ -109,13 +102,12 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("删除人员")
+    @Operation(summary = "删除人员")
     @CommonLog("删除人员")
     @SaCheckPermission("/biz/user/delete")
     @PostMapping("/biz/user/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   CommonValidList<BizUserIdParam> bizUserIdParamList) {
+                                                   List<BizUserIdParam> bizUserIdParamList) {
         bizUserService.delete(bizUserIdParamList);
         return CommonResult.ok();
     }
@@ -126,8 +118,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("获取人员详情")
+    @Operation(summary = "获取人员详情")
     @SaCheckPermission("/biz/user/detail")
     @GetMapping("/biz/user/detail")
     public CommonResult<BizUser> detail(@Valid BizUserIdParam bizUserIdParam) {
@@ -140,8 +131,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("禁用人员")
+    @Operation(summary = "禁用人员")
     @CommonLog("禁用人员")
     @SaCheckPermission("/biz/user/disableUser")
     @PostMapping("/biz/user/disableUser")
@@ -156,8 +146,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("启用人员")
+    @Operation(summary = "启用人员")
     @CommonLog("启用人员")
     @SaCheckPermission("/biz/user/enableUser")
     @PostMapping("/biz/user/enableUser")
@@ -172,8 +161,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
-    @ApiOperation("重置人员密码")
+    @Operation(summary = "重置人员密码")
     @CommonLog("重置人员密码")
     @SaCheckPermission("/biz/user/resetPassword")
     @PostMapping("/biz/user/resetPassword")
@@ -188,8 +176,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
-    @ApiOperation("获取人员拥有角色")
+    @Operation(summary = "获取人员拥有角色")
     @SaCheckPermission("/biz/user/ownRole")
     @GetMapping("/biz/user/ownRole")
     public CommonResult<List<String>> ownRole(@Valid BizUserIdParam bizUserIdParam) {
@@ -202,8 +189,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 10)
-    @ApiOperation("给人员授权角色")
+    @Operation(summary = "给人员授权角色")
     @CommonLog("给人员授权角色")
     @SaCheckPermission("/biz/user/grantRole")
     @PostMapping("/biz/user/grantRole")
@@ -218,8 +204,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
-    @ApiOperation("人员导出")
+    @Operation(summary = "人员导出")
     @CommonLog("人员导出")
     @SaCheckPermission("/biz/user/export")
     @GetMapping(value = "/biz/user/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -233,8 +218,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
-    @ApiOperation("导出人员个人信息")
+    @Operation(summary = "导出人员个人信息")
     @CommonLog("导出人员个人信息")
     @SaCheckPermission("/biz/user/exportUserInfo")
     @GetMapping(value = "/biz/user/exportUserInfo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -250,8 +234,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
-    @ApiOperation("获取机构树选择器")
+    @Operation(summary = "获取机构树选择器")
     @SaCheckPermission("/biz/user/orgTreeSelector")
     @GetMapping("/biz/user/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
@@ -264,8 +247,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
-    @ApiOperation("获取机构列表选择器")
+    @Operation(summary = "获取机构列表选择器")
     @SaCheckPermission("/biz/user/orgListSelector")
     @GetMapping("/biz/user/orgListSelector")
     public CommonResult<Page<BizOrg>> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam) {
@@ -278,8 +260,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
-    @ApiOperation("获取岗位选择器")
+    @Operation(summary = "获取岗位选择器")
     @SaCheckPermission("/biz/user/positionSelector")
     @GetMapping("/biz/user/positionSelector")
     public CommonResult<Page<BizPosition>> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam) {
@@ -292,8 +273,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
-    @ApiOperation("获取角色选择器")
+    @Operation(summary = "获取角色选择器")
     @SaCheckPermission("/biz/user/roleSelector")
     @GetMapping("/biz/user/roleSelector")
     public CommonResult<Page<BizUserRoleResult>> roleSelector(BizUserSelectorRoleParam bizUserSelectorRoleParam) {
@@ -306,8 +286,7 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
-    @ApiOperation("获取人员选择器")
+    @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/user/userSelector")
     @GetMapping("/biz/user/userSelector")
     public CommonResult<Page<BizUser>> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {

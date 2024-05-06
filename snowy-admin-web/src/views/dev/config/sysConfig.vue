@@ -88,7 +88,7 @@
 				<a-col :span="24">
 					<a-form-item>
 						<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-						<a-button style="margin-left: 10px" @click="resetForm">重置</a-button>
+						<a-button class="xn-ml10" @click="resetForm">重置</a-button>
 					</a-form-item>
 				</a-col>
 			</a-row>
@@ -100,6 +100,7 @@
 	import { cloneDeep } from 'lodash-es'
 	import { required } from '@/utils/formRules'
 	import { message } from 'ant-design-vue'
+	import { globalStore } from '@/store'
 	import configApi from '@/api/dev/configApi'
 	import tool from '@/utils/tool'
 	import MenuTreeSelect from '@/components/TreeSelect/menuTreeSelect.vue'
@@ -113,6 +114,7 @@
 	const imageUrl = ref('')
 	const menuTreeSelectRef = ref()
 	const loadSpinning = ref(true)
+	const store = globalStore()
 	// 查询此界面的配置项,并转为表单
 	const param = {
 		category: 'SYS_BASE'
@@ -191,6 +193,11 @@
 			.then(() => {
 				submitLoading.value = true
 				let submitParam = cloneDeep(formData.value)
+				// 创建快捷方式
+				const shortcut = {
+					shortcut: menuTreeSelectRef.value.getSelectData()
+				}
+				submitParam.SNOWY_SYS_DEFAULT_WORKBENCH_DATA = JSON.stringify(shortcut)
 				submitParam.SNOWY_SYS_LOGO = submitParam.SNOWY_SYS_LOGO[0]
 				const param = Object.entries(submitParam).map((item) => {
 					return {
@@ -198,17 +205,13 @@
 						configValue: item[1]
 					}
 				})
-				// 创建快捷方式
-				const shortcut = {
-					shortcut: menuTreeSelectRef.value.getSelectData()
-				}
-				param.push({
-					configKey: 'SNOWY_SYS_DEFAULT_WORKBENCH_DATA',
-					configValue: JSON.stringify(shortcut)
-				})
 				configApi
 					.configEditForm(param)
-					.then(() => {})
+					.then(() => {
+						// 执行成功后改变界面使其生效
+						tool.data.set('SNOWY_SYS_BASE_CONFIG', submitParam)
+						store.setSysBaseConfig(submitParam)
+					})
 					.finally(() => {
 						submitLoading.value = false
 					})

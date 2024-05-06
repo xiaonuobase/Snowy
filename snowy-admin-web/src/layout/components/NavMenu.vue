@@ -1,5 +1,5 @@
 <template>
-	<div v-if="navMenus.length <= 0" style="padding: 20px">
+	<div v-if="navMenus.length <= 0" class="xn-pd20">
 		<a-alert message="无任何菜单" type="info" :closable="false" />
 	</div>
 	<template v-for="navMenu in navMenus" :key="navMenu">
@@ -26,6 +26,8 @@
 </template>
 
 <script setup>
+	import { globalStore } from '@/store'
+	const store = globalStore()
 	const props = defineProps({
 		navMenus: {
 			type: Array,
@@ -44,3 +46,20 @@
 		return false
 	}
 </script>
+<style>
+	.ant-menu-light.ant-menu-horizontal > .ant-menu-submenu-selected {
+		background-color: var(--primary-1);
+	}
+	.ant-menu-dark.ant-menu-horizontal > .ant-menu-submenu-selected {
+		background-color: var(--primary-5);
+	}
+	.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected {
+		background-color: none;
+	}
+	.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected {
+		background-color: var(--primary-5);
+	}
+	.xn-pd20 {
+		padding: 20px;
+	}
+</style>

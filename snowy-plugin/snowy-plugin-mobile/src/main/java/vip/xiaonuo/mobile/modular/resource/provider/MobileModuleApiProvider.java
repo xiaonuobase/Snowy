@@ -1,11 +1,11 @@
 package vip.xiaonuo.mobile.modular.resource.provider;
 
 import cn.hutool.json.JSONObject;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.mobile.api.MobileModuleApi;
 import vip.xiaonuo.mobile.modular.resource.service.MobileModuleService;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.index.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,27 +29,27 @@ import java.util.List;
 public class SysIndexMessageDetailResult {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 2)
+    @Schema(description = "分类")
     private String category;
 
     /** 主题 */
-    @ApiModelProperty(value = "主题", position = 3)
+    @Schema(description = "主题")
     private String subject;
 
     /** 正文 */
-    @ApiModelProperty(value = "正文", position = 4)
+    @Schema(description = "正文")
     private String content;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 5)
+    @Schema(description = "扩展信息")
     private String extJson;
 
     /** 接收信息集合 */
-    @ApiModelProperty(value = "接收信息集合", position = 6)
+    @Schema(description = "接收信息集合")
     private List<DevReceiveInfo> receiveInfoList;
 
     /**
@@ -63,15 +63,15 @@ public class SysIndexMessageDetailResult {
     public static class DevReceiveInfo {
 
         /** 接收人ID */
-        @ApiModelProperty(value = "接收人ID", position = 1)
+        @Schema(description = "接收人ID")
         private String receiveUserId;
 
         /** 接收人姓名 */
-        @ApiModelProperty(value = "接收人姓名", position = 2)
+        @Schema(description = "接收人姓名")
         private String receiveUserName;
 
         /** 是否已读 */
-        @ApiModelProperty(value = "是否已读", position = 3)
+        @Schema(description = "是否已读")
         private Boolean read;
     }
 }

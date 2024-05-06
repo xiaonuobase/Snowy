@@ -1,7 +1,7 @@
 <template>
-	<div style="height: 500px">
+	<div class="xn-ht500">
 		<vue3-tree-org
-			style="background: var(--card-actions-background)"
+			class="xn-tree-line"
 			:data="treeData"
 			:tool-bar="{ scale: true, restore: false, expand: false, zoom: true, fullscreen: true }"
 			:disabled="false"
@@ -33,5 +33,11 @@
 	:deep(.tree-org) {
 		padding-top: 10px;
 		padding-left: 10px;
+	}
+	.xn-tree-line {
+		background: var(--card-actions-background);
+	}
+	.xn-ht500 {
+		height: 500px;
 	}
 </style>

@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fhs.core.trans.anno.Trans;
 import com.fhs.core.trans.constant.TransType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -35,37 +35,37 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 public class SysOrg extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 父id */
-    @ApiModelProperty(value = "父id", position = 2)
+    @Schema(description = "父id")
     private String parentId;
 
     /** 主管id */
-    @ApiModelProperty(value = "主管id", position = 3)
+    @Schema(description = "主管id")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     @Trans(type = TransType.SIMPLE, target = SysUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", position = 4)
+    @Schema(description = "名称")
     private String name;
 
     /** 编码 */
-    @ApiModelProperty(value = "编码", position = 5)
+    @Schema(description = "编码")
     private String code;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 6)
+    @Schema(description = "分类")
     private String category;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 7)
+    @Schema(description = "排序码")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 8)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

@@ -1,5 +1,5 @@
 <template>
-	<a-modal ref="cropmodal" v-model:visible="visible" :width="700" title="头像裁剪" @cancel="handleClear" @ok="cropOk">
+	<a-modal v-model:open="visible" :width="700" title="头像裁剪" @cancel="handleClear" @ok="cropOk">
 		<a-row :gutter="10">
 			<!-- 裁剪区 -->
 			<a-col :span="17">
@@ -26,27 +26,27 @@
 				/>
 			</a-col>
 			<a-col :span="7">
-				<div style="width: 165px; height: 165px; border: 1px solid #e9e9e9; border-radius: 2px">
+				<div class="xn-cj">
 					<a-image :src="previewUrl" />
 				</div>
-				<div style="padding-top: 10px; display: flex">
-					<div style="height: 100px; width: 100px; border: 1px solid #e9e9e9; border-radius: 2px">
+				<div class="xn-cj-two">
+					<div>
 						<a-image :src="previewUrl" />
 					</div>
-					<div style="height: 60px; width: 60px; border: 1px solid #e9e9e9; margin-left: 5px; border-radius: 2px">
+					<div>
 						<a-image :src="previewUrl" />
 					</div>
 				</div>
 			</a-col>
 		</a-row>
-		<div style="text-align: center; padding-top: 10px">
+		<div class="xn-tl">
 			<a-space>
 				<a-button @click="cropper.changeScale(1)">放大</a-button>
 				<a-button @click="cropper.changeScale(-1)">缩小</a-button>
 				<a-button @click="cropper.rotateLeft()">向左旋转</a-button>
 				<a-button @click="cropper.rotateRight()">向右旋转</a-button>
 			</a-space>
-			<div style="padding-top: 10px">
+			<div class="xn-pt">
 				<a-upload
 					name="file"
 					:show-upload-list="false"
@@ -60,7 +60,7 @@
 					</a-button>
 				</a-upload>
 			</div>
-			<div style="padding-top: 10px">请上传图片文件，建议不超过2M</div>
+			<div class="xn-pt">请上传图片文件，建议不超过2M</div>
 		</div>
 	</a-modal>
 </template>
@@ -151,5 +151,36 @@
 	}
 	.cropper {
 		height: 280px;
+	}
+	.xn-cj {
+		width: 165px;
+		height: 165px;
+		border: 1px solid #e9e9e9;
+		border-radius: 2px
+	}
+	.xn-pt {
+		padding-top: 10px;
+	}
+	.xn-tl {
+		text-align: center;
+		padding-top: 10px
+	}
+	.xn-cj-two {
+		padding-top: 10px;
+		display: flex
+
+	}
+	.xn-cj-two > div:first-child {
+		height: 100px;
+		width: 100px;
+		border: 1px solid #e9e9e9;
+		border-radius: 2px
+	}
+	.xn-cj-two > div:nth-child(2)  {
+		height: 60px;
+		width: 60px;
+		border: 1px solid #e9e9e9;
+		margin-left: 5px;
+		border-radius: 2px
 	}
 </style>

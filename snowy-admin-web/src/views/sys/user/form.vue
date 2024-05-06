@@ -49,7 +49,7 @@
 					<a-row :gutter="16">
 						<a-col :span="12">
 							<a-form-item label="出生日期：" name="birthday">
-								<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" style="width: 100%" />
+								<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -58,7 +58,7 @@
 							<a-form-item label="选择组织：" name="orgId">
 								<a-tree-select
 									v-model:value="formData.orgId"
-									style="width: 100%"
+									class="xn-wd"
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 									placeholder="请选择组织"
 									allow-clear
@@ -112,7 +112,7 @@
 						</a-col>
 						<a-col :span="8">
 							<a-form-item label="入职日期：" name="entryDate">
-								<a-date-picker v-model:value="formData.entryDate" value-format="YYYY-MM-DD" style="width: 100%" />
+								<a-date-picker v-model:value="formData.entryDate" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -137,7 +137,7 @@
 									>
 										<a-tree-select
 											v-model:value="positionInfo.orgId"
-											style="width: 100%"
+											class="xn-wd"
 											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 											placeholder="请选择组织"
 											allow-clear
@@ -176,7 +176,7 @@
 										/>
 									</a-form-item>
 								</a-col>
-								<a-col :span="3" style="margin-top: 4px">
+								<a-col :span="3" class="xn-mt4">
 									<a-button size="small" type="primary" danger ghost @click="delDomains(index)">移除</a-button>
 								</a-col>
 							</a-row>
@@ -318,7 +318,7 @@
 			</a-tabs>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="formLoading" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>
@@ -511,25 +511,28 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			// 因为不切断，我下面转换数据格式，影响上面表单会报错
-			let formDatas = JSON.parse(JSON.stringify(formData.value))
-			if (formDatas.positionJson && formDatas.positionJson.length > 0) {
-				formDatas.positionJson = JSON.stringify(formDatas.positionJson)
-			} else {
-				delete formDatas.positionJson
-			}
-			formLoading.value = true
-			userApi
-				.submitForm(formDatas, formDatas.id)
-				.then(() => {
-					onClose()
-					emit('successful')
-				})
-				.finally(() => {
-					formLoading.value = false
-				})
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				// 因为不切断，我下面转换数据格式，影响上面表单会报错
+				let formDatas = JSON.parse(JSON.stringify(formData.value))
+				if (formDatas.positionJson && formDatas.positionJson.length > 0) {
+					formDatas.positionJson = JSON.stringify(formDatas.positionJson)
+				} else {
+					delete formDatas.positionJson
+				}
+				formLoading.value = true
+				userApi
+					.submitForm(formDatas, formDatas.id)
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
+						formLoading.value = false
+					})
+			})
+			.catch(() => {})
 	}
 	// 性别
 	const genderOptions = tool.dictList('GENDER')
@@ -545,7 +548,7 @@
 	})
 </script>
 
-<style scoped type="less">
+<style scoped lang="less">
 	.childAddButton {
 		margin-bottom: 10px;
 	}

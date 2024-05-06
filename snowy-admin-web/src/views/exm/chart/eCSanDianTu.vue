@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="AQI 气泡图" :bordered="false">
-				<ScatterAqiColor style="height: 400px" />
+				<ScatterAqiColor class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="基础散点图" :bordered="false">
-				<BasicScatterChart style="height: 400px" />
+				<BasicScatterChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="数据聚合" :bordered="false">
-				<ClusteringProcess style="height: 400px" />
+				<ClusteringProcess class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="涟漪特效散点图" :bordered="false">
-				<EffectScatterChart style="height: 400px" />
+				<EffectScatterChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

@@ -10,10 +10,10 @@
 						<span class="security-list-value">{{ item.value }}</span>
 					</template>
 					<template #avatar>
-						<qq-outlined v-if="item.type === 'qq'" class="bind-icon" :style="{ color: '#1890FF' }" />
+						<qq-outlined v-if="item.type === 'qq'" class="bind-icon" :style="{ color: '#1677FF' }" />
 						<wechat-outlined v-if="item.type === 'weChat'" class="bind-icon" :style="{ color: '#1AAD19' }" />
 						<alipay-circle-outlined v-if="item.type === 'AliPay'" class="bind-icon" :style="{ color: '#178bf5' }" />
-						<GiteeIcon style="width: 40px" v-if="item.type === 'Gitee'" class="bind-icon" />
+						<GiteeIcon v-if="item.type === 'Gitee'" class="bind-icon xn-wd40" />
 					</template>
 				</a-list-item-meta>
 				<template #actions>
@@ -57,5 +57,8 @@
 	.bind-icon {
 		padding-left: 10px;
 		font-size: 30px;
+	}
+	.xn-wd40 {
+		width: 40px;
 	}
 </style>

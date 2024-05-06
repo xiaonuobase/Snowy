@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,26 +27,26 @@ import lombok.Setter;
 public class SysUserPositionResult {
 
     /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 1)
+    @Schema(description = "组织id")
     private String orgId;
 
     /** 组织名称 */
-    @ApiModelProperty(value = "组织名称", position = 2)
+    @Schema(description = "组织名称")
     private String orgName;
 
     /** 职位id */
-    @ApiModelProperty(value = "职位id", position = 3)
+    @Schema(description = "职位id")
     private String positionId;
 
     /** 职位名称 */
-    @ApiModelProperty(value = "职位名称", position = 4)
+    @Schema(description = "职位名称")
     private String positionName;
 
     /** 组织分类 */
-    @ApiModelProperty(value = "组织分类", position = 5)
+    @Schema(description = "组织分类")
     private String category;
 
     /** 职位类型 */
-    @ApiModelProperty(value = "职位类型", position = 6)
+    @Schema(description = "职位类型")
     private String type;
 }

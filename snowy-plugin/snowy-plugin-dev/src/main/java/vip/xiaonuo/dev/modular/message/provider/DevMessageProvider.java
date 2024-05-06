@@ -18,6 +18,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevMessageApi;
 import vip.xiaonuo.dev.modular.message.param.DevMessageIdParam;
@@ -28,7 +29,6 @@ import vip.xiaonuo.dev.modular.relation.entity.DevRelation;
 import vip.xiaonuo.dev.modular.relation.enums.DevRelationCategoryEnum;
 import vip.xiaonuo.dev.modular.relation.service.DevRelationService;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

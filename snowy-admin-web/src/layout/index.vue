@@ -1,191 +1,86 @@
 <template>
 	<!-- 经典布局 -->
-	<a-layout v-if="layout === 'classical'">
-		<a-layout-sider
-			v-if="!isMobile"
-			v-model:collapsed="menuIsCollapse"
-			:trigger="null"
-			collapsible
-			:theme="sideTheme"
-			width="210"
-		>
-			<header id="snowyHeaderLogo" class="snowy-header-logo">
-				<div class="snowy-header-left">
-					<div class="logo-bar">
-						<img class="logo" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-						<span>{{ sysBaseConfig.SNOWY_SYS_NAME }}</span>
-					</div>
-				</div>
-			</header>
-			<div :class="menuIsCollapse ? 'admin-ui-side isCollapse' : 'admin-ui-side'">
-				<div class="admin-ui-side-scroll">
-					<a-menu
-						v-model:openKeys="openKeys"
-						v-model:selectedKeys="selectedKeys"
-						:theme="sideTheme"
-						mode="inline"
-						@select="onSelect"
-						@openChange="onOpenChange"
-					>
-						<NavMenu :nav-menus="menu" />
-					</a-menu>
-				</div>
-			</div>
-		</a-layout-sider>
-		<!-- 手机端情况下的左侧菜单 -->
-		<Side-m v-if="isMobile" />
-		<!-- 右侧布局 -->
-		<a-layout>
-			<div id="snowyHeader" class="snowy-header">
-				<div class="snowy-header-left" style="padding-left: 0px">
-					<div v-if="!isMobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
-						<MenuUnfoldOutlined v-if="menuIsCollapse" />
-						<MenuFoldOutlined v-else />
-					</div>
-					<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" />
-					<top-bar v-if="!isMobile && breadcrumbOpen" />
-				</div>
-				<div class="snowy-header-right">
-					<user-bar />
-				</div>
-			</div>
-			<!-- 多标签 -->
-			<Tags v-if="!isMobile && layoutTagsOpen" />
-			<a-layout-content class="main-content-wrapper">
-				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }">
-						<keep-alive :include="kStore.keepLiveRoute">
-							<component :is="Component" v-if="kStore.routeShow" :key="route.name" />
-						</keep-alive>
-					</router-view>
-					<iframe-view />
-					<div class="main-bottom-wrapper">
-						<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-							sysBaseConfig.SNOWY_SYS_COPYRIGHT
-						}}</a>
-					</div>
-				</div>
-			</a-layout-content>
-		</a-layout>
-	</a-layout>
+	<ClassicalMenu
+		v-if="layout === layoutEnum.CLASSICAL"
+		:layout="layout"
+		:isMobile="isMobile"
+		:menuIsCollapse="menuIsCollapse"
+		:sideTheme="sideTheme"
+		:sysBaseConfig="sysBaseConfig"
+		:openKeys="openKeys"
+		:selectedKeys="selectedKeys"
+		:menu="menu"
+		:breadcrumbOpen="breadcrumbOpen"
+		:layoutTagsOpen="layoutTagsOpen"
+		:kStore="kStore"
+		:footerCopyrightOpen="footerCopyrightOpen"
+		:moduleMenuShow="moduleMenuShow"
+		@onSelect="onSelect"
+		@onOpenChange="onOpenChange"
+		@switchModule="switchModule"
+		@menuIsCollapseClick="menuIsCollapseClick"
+	/>
 	<!-- 双排菜单布局 -->
-	<a-layout v-else-if="layout === 'doublerow'">
-		<a-layout-sider v-if="!isMobile" width="80" :theme="sideTheme" :trigger="null" collapsible>
-			<header id="snowyHeaderLogo" class="snowy-header-logo">
-				<div class="snowy-header-left">
-					<div class="logo-bar">
-						<router-link to="/">
-							<img class="logo" :title="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-						</router-link>
-					</div>
-				</div>
-			</header>
-			<a-menu
-				v-model:selectedKeys="doublerowSelectedKey"
-				:theme="sideTheme"
-				class="snowy-doublerow-layout-menu"
-				v-for="item in menu"
-				:key="item.path"
-			>
-				<a-menu-item
-					:key="item.path"
-					style="
-						text-align: center;
-						border-radius: 2px;
-						height: auto;
-						line-height: 20px;
-						flex: none;
-						display: block;
-						padding: 12px 0 !important;
-					"
-					@click="showMenu(item)"
-					v-if="!item.meta.hidden"
-				>
-					<a v-if="item.meta && item.meta.type === 'link'" :href="item.path" target="_blank" @click.stop="() => {}" />
-					<template #icon>
-						<component :is="item.meta.icon" style="padding-left: 10px" />
-					</template>
-					<div class="snowy-doublerow-layout-menu-item-fort-div">
-						<span class="snowy-doublerow-layout-menu-item-fort-div-span">
-							{{ item.meta.title }}
-						</span>
-					</div>
-				</a-menu-item>
-			</a-menu>
-		</a-layout-sider>
-		<a-layout-sider
-			v-if="!isMobile"
-			v-show="layoutSiderDowbleMenu"
-			v-model:collapsed="menuIsCollapse"
-			:trigger="null"
-			width="170"
-			collapsible
-			:theme="secondMenuSideTheme"
-		>
-			<div v-if="!menuIsCollapse" id="snowyDoublerowSideTop" class="snowy-doublerow-side-top">
-				<h2 class="snowy-title">{{ pMenu.meta.title }}</h2>
-			</div>
-			<a-menu
-				v-model:collapsed="menuIsCollapse"
-				v-model:openKeys="openKeys"
-				v-model:selectedKeys="selectedKeys"
-				mode="inline"
-				:theme="secondMenuSideTheme"
-				@select="onSelect"
-			>
-				<NavMenu :nav-menus="nextMenu" />
-			</a-menu>
-		</a-layout-sider>
-		<!-- 手机端情况下的左侧菜单 -->
-		<Side-m v-if="isMobile" />
-		<a-layout>
-			<div id="snowyHeader" class="snowy-header">
-				<div class="snowy-header-left" style="padding-left: 0px">
-					<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" />
-					<top-bar v-if="!isMobile && breadcrumbOpen" />
-				</div>
-				<div class="snowy-header-right">
-					<user-bar />
-				</div>
-			</div>
-			<!-- 多标签 -->
-			<Tags v-if="!isMobile && layoutTagsOpen" />
-			<a-layout-content class="main-content-wrapper">
-				<div id="admin-ui-main" class="admin-ui-main">
-					<router-view v-slot="{ Component }">
-						<keep-alive :include="kStore.keepLiveRoute">
-							<component :is="Component" v-if="kStore.routeShow" :key="route.name" />
-						</keep-alive>
-					</router-view>
-					<iframe-view />
-					<div class="main-bottom-wrapper">
-						<a style="color: #a0a0a0" :href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL" target="_blank">{{
-							sysBaseConfig.SNOWY_SYS_COPYRIGHT
-						}}</a>
-					</div>
-				</div>
-			</a-layout-content>
-		</a-layout>
-	</a-layout>
+	<DoubleRowMenu
+		v-else-if="layout === layoutEnum.DOUBLEROW"
+		:layout="layout"
+		:isMobile="isMobile"
+		:sideTheme="sideTheme"
+		:secondMenuSideTheme="secondMenuSideTheme"
+		:sysBaseConfig="sysBaseConfig"
+		:openKeys="openKeys"
+		:selectedKeys="selectedKeys"
+		:menuIsCollapse="menuIsCollapse"
+		:doublerowSelectedKey="doublerowSelectedKey"
+		:menu="menu"
+		:nextMenu="nextMenu"
+		:breadcrumbOpen="breadcrumbOpen"
+		:layoutTagsOpen="layoutTagsOpen"
+		:layoutSiderDowbleMenu="layoutSiderDowbleMenu"
+		:kStore="kStore"
+		:footerCopyrightOpen="footerCopyrightOpen"
+		:moduleMenuShow="moduleMenuShow"
+		@onSelect="onSelect"
+		@switchModule="switchModule"
+		@showMenu="showMenu"
+	/>
+	<!-- 顶部菜单布局 -->
+	<TopMenu
+		v-else-if="layout === layoutEnum.TOP"
+		:layout="layout"
+		:menuList="menuList"
+		:menu="menu"
+		:sysBaseConfig="sysBaseConfig"
+		:moduleMenuShow="moduleMenuShow"
+		:openKeys="openKeys"
+		:selectedKeys="selectedKeys"
+		:breadcrumbOpen="breadcrumbOpen"
+		:footerCopyrightOpen="footerCopyrightOpen"
+		:sideTheme="sideTheme"
+		:isMobile="isMobile"
+		:kStore="kStore"
+		:layoutTagsOpen="layoutTagsOpen"
+		@switchModule="switchModule"
+		@onOpenChange="onOpenChange"
+		@onSelect="onSelect"
+	/>
+
 	<!-- 退出最大化 -->
 	<div class="main-maximize-exit" @click="exitMaximize">
-		<fullscreen-exit-outlined style="color: #fff" />
+		<fullscreen-exit-outlined class="xn-color-fff" />
 	</div>
 </template>
 
 <script setup>
-	import UserBar from '@/layout/components/userbar.vue'
-	import Tags from '@/layout/components/tags.vue'
-	import SideM from '@/layout/components/sideM.vue'
-	import NavMenu from '@/layout/components/NavMenu.vue'
-	import ModuleMenu from '@/layout/components/moduleMenu.vue'
-	import IframeView from '@/layout/components/iframeView.vue'
-	import TopBar from '@/layout/components/topbar.vue'
 	import { globalStore, keepAliveStore } from '@/store'
-	import { ThemeModeEnum } from '@/utils/enum'
+	import { themeEnum } from '@/layout/enum/themeEnum'
+	import { layoutEnum } from '@/layout/enum/layoutEnum'
 	import { useRoute, useRouter } from 'vue-router'
 	import tool from '@/utils/tool'
 	import { message } from 'ant-design-vue'
+	import ClassicalMenu from '@/layout/menu/classicalMenu.vue'
+	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
+	import TopMenu from '@/layout/menu/topMenu.vue'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -197,10 +92,11 @@
 	const selectedKeys = ref([])
 	const openKeys = ref([])
 	const onSelectTag = ref(false)
-	const moduleMenuData = ref([])
+	const moduleMenu = ref([])
 	const moduleMenuShow = ref(true)
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
+	const menuList = ref([])
 	// computed计算方法 - start
 	const layout = computed(() => {
 		return store.layout
@@ -214,6 +110,9 @@
 	const theme = computed(() => {
 		return store.theme
 	})
+	const themeColor = computed(() => {
+		return store.themeColor
+	})
 	const layoutTagsOpen = computed(() => {
 		// 当关闭多标签时，清理keepAlive的缓存
 		if (!store.layoutTagsOpen) {
@@ -224,6 +123,9 @@
 	const breadcrumbOpen = computed(() => {
 		return store.breadcrumbOpen
 	})
+	const fixedWidth = computed(() => {
+		return store.fixedWidth
+	})
 	const topHeaderThemeColorOpen = computed(() => {
 		return store.topHeaderThemeColorOpen
 	})
@@ -233,6 +135,9 @@
 	const sideUniqueOpen = computed(() => {
 		return store.sideUniqueOpen
 	})
+	const footerCopyrightOpen = computed(() => {
+		return store.footerCopyrightOpen
+	})
 	const sysBaseConfig = computed(() => {
 		return store.sysBaseConfig
 	})
@@ -240,10 +145,13 @@
 		return store.module
 	})
 	const sideTheme = computed(() => {
-		return theme.value === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : theme.value
+		return theme.value === themeEnum.REAL_DARK ? themeEnum.DARK : theme.value
 	})
 	const secondMenuSideTheme = computed(() => {
-		return theme.value === ThemeModeEnum.REAL_DARK ? ThemeModeEnum.DARK : ThemeModeEnum.LIGHT
+		return theme.value === themeEnum.REAL_DARK ? themeEnum.DARK : themeEnum.LIGHT
+	})
+	const roundedCornerStyleOpen = computed(() => {
+		return store.roundedCornerStyleOpen
 	})
 	// 路由监听高亮
 	const showThis = () => {
@@ -266,14 +174,14 @@
 			}
 			const nextTickMenu = pMenu.value.children
 			if (pidKey) {
-				const modelPidKey = getParentKeys(moduleMenuData.value, route.path)
-				moduleMenuData.value.forEach((item) => {
+				const modelPidKey = getParentKeys(moduleMenu.value, route.path)
+				moduleMenu.value.forEach((item) => {
 					if (modelPidKey.includes(item.path)) {
 						tagSwitchModule(item.id)
 					}
 				})
 				const parentPath = pidKey[pidKey.length - 1]
-				if (layout.value === 'doublerow') {
+				if (layout.value === layoutEnum.DOUBLEROW) {
 					// 这一串操作下来只为取到最上面的路由的孩子们，最后成为双排菜单的第二排
 					const nextMenuTemp = nextTickMenu.filter((item) => item.path === parentPath)[0].children
 					if (nextMenuTemp) {
@@ -285,14 +193,14 @@
 				openKeys.value = pidKey
 			}
 			// 双排菜单下
-			if (layout.value === 'doublerow') {
+			if (layout.value === layoutEnum.DOUBLEROW) {
 				setDoubleRowSelectedKey()
 			}
 		})
 	}
 
 	// 执行-start
-	moduleMenuData.value = router.getMenu()
+	moduleMenu.value = router.getMenu()
 	// 获取缓存中的菜单模块是哪个
 	const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
 	if (menuModuleId) {
@@ -307,13 +215,86 @@
 		menu.value = router.getMenu()[0].children
 	}
 	showThis()
-
 	onMounted(() => {
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
+		window.addEventListener('resize', getNav)
 		switchoverTopHeaderThemeColor()
+		settingTopHeaderThemeOrColor(theme.value, layout.value)
+		settingFixedWidth()
+		nextTick(() => {
+			getNav(menu.value)
+		})
 	})
-	watch(route, (newValue) => {
+	// 动态获取横向导航栏隐藏数量
+	const getNav = (items) => {
+		const item = menu.value
+		// 判断一下是不是顶部导航栏的模式
+		if (layout.value !== 'top') return
+		const menuNavList = menu.value
+		menuList.value = menuNavList
+		nextTick(() => {
+			// 获取所有的导航菜单
+			let liArr = document.querySelector('#topHeaderMenu').querySelectorAll('li')
+			let allWidth = document.querySelector('#xn-line-nav').offsetWidth // 可以显示区域的宽度
+
+			// 计算显示的宽度
+			let num = 0
+			let startIndex = 0
+			for (const [index, item] of liArr.entries()) {
+				num += item.offsetWidth
+				if (num > allWidth) {
+					startIndex = index - 1
+					break
+				}
+			}
+			// 判断显示出来的导航栏长度是否小于可以显示的区域
+			if (num < allWidth) {
+				menuList.value = menuNavList
+				return
+			}
+			// 如果大于了课显示的区域，就将其隐藏
+			const showNav = menuNavList.slice(0, startIndex)
+			const hiddenNav = menuNavList.slice(startIndex, menuNavList.length)
+			menuList.value = showNav
+			menuList.value.push({
+				meta: {
+					icon: 'rightCircle-outlined',
+					title: '更多',
+					type: 'catalog'
+				},
+				children: hiddenNav
+			})
+		})
+	}
+
+	// 鼠标滚动事件
+	const handleMouseWheel = (event) => {
+		let element = document.querySelector('#xn-line-nav')
+		let element2 = document.querySelector('#topHeaderMenu')
+
+		// 判断鼠标是向上滚动还是向下滚动的
+		let delta = event.deltaY
+		// 滚动菜单时变换的一个大小
+		const num = 20
+
+		// 滚动的距离
+		let leftMove = Number(element2.style.left.slice(0, -2))
+		// 父盒子相对子盒子滚动的一个判断，用来给盒子加一个临界点
+		let remove = element.offsetWidth - element2.scrollWidth
+
+		// 鼠标向下滚动
+		// 满足子元素移动的距离大于两个元素相差的距离时
+		if (delta < 0 && leftMove > remove) {
+			element2.style.left = leftMove - num + 'px'
+		} else if (delta > 0 && leftMove < 0) {
+			// 鼠标向上滚动
+			// 当移动的距离小于0的时候，可以向后滚动
+			element2.style.left = leftMove + num + 'px'
+		}
+	}
+
+	watch(route, () => {
 		// 清理选中的
 		selectedKeys.value = []
 		showThis()
@@ -321,50 +302,128 @@
 	// 监听是否开启了顶栏颜色
 	watch(layout, (newValue) => {
 		document.body.setAttribute('data-layout', newValue)
-		if (newValue.includes('doublerow')) {
+		if (newValue.includes(layoutEnum.DOUBLEROW)) {
 			showThis()
 			setDoubleRowSelectedKey()
 		}
 		nextTick(() => {
 			// 顶栏主题色
 			switchoverTopHeaderThemeColor()
+			// top下的顶栏
+			settingTopHeaderThemeOrColor(theme.value, newValue)
+			getNav(menu.value)
+			settingFixedWidth()
+			let element = document.querySelector('#xn-line-nav')
+			if (element) {
+				element.addEventListener('mousewheel', handleMouseWheel, false)
+			}
 		})
 	})
+	watch(topHeaderThemeColorOpen, () => {
+		switchoverTopHeaderThemeColor()
+	})
+	watch(fixedWidth, () => {
+		settingFixedWidth()
+	})
+	watch(layoutTagsOpen, () => {
+		settingFixedWidth()
+	})
+	watch(breadcrumbOpen, () => {
+		settingFixedWidth()
+	})
+	watch(topHeaderThemeColorSpread, () => {
+		switchoverTopHeaderThemeColor()
+	})
+	watch(theme, (newValue) => {
+		settingTopHeaderThemeOrColor(newValue, layout.value)
+	})
+	watch(themeColor, () => {
+		settingTopHeaderThemeOrColor(theme.value, layout.value)
+	})
 	watch(topHeaderThemeColorOpen, (newValue) => {
-		switchoverTopHeaderThemeColor()
+		const header = document.getElementById('snowyHeader')
+		const topHeaderMenu = document.getElementById('topHeaderMenu')
+		if (layout.value === layoutEnum.TOP) {
+			if (newValue) {
+				header.classList.add('top-snowy-header-layout')
+				topHeaderMenu.classList.add('top-snowy-header-layout')
+			} else {
+				header.classList.remove('top-snowy-header-layout')
+				topHeaderMenu.classList.remove('top-snowy-header-layout')
+			}
+		}
 	})
-	watch(topHeaderThemeColorSpread, (newValue) => {
-		switchoverTopHeaderThemeColor()
+	watch(roundedCornerStyleOpen, () => {
+		settingTopHeaderThemeOrColor(theme.value, layout.value)
 	})
+	// 设置固定宽度
+	const settingFixedWidth = () => {
+		nextTick(() => {
+			const breadcrumbWidth = document.querySelector('.admin-ui-breadcrumb')
+			const showWidth = document.querySelector('.snowy-tags')
+			const mainWidth = document.querySelector('.ant-layout-content')
+			if (fixedWidth.value && layout.value === layoutEnum.TOP) {
+				breadcrumbWidth?.classList.add('xn-mg050')
+				showWidth?.classList.add('xn-mg050')
+				mainWidth?.classList.add('xn-pd1180')
+			} else {
+				breadcrumbWidth?.classList.remove('xn-mg050')
+				showWidth?.classList.remove('xn-mg050')
+				mainWidth?.classList.remove('xn-pd1180')
+			}
+		})
+	}
 
+	// 设置顶栏颜色或者主题
+	const settingTopHeaderThemeOrColor = (theme, layout) => {
+		const header = document.getElementById('snowyHeader')
+		const topHeaderMenu = document.getElementById('topHeaderMenu')
+
+		if (topHeaderThemeColorOpen.value && layout === layoutEnum.TOP) {
+			nextTick(() => {
+				topHeaderMenu.classList.add('top-snowy-header-layout')
+				header.classList.add('top-snowy-header-layout')
+			})
+		} else if (!topHeaderThemeColorOpen.value && layout === layoutEnum.TOP) {
+			nextTick(() => {
+				topHeaderMenu.classList.remove('top-snowy-header-layout')
+				header.classList.remove('top-snowy-header-layout')
+			})
+		}
+		if (theme === themeEnum.LIGHT && layout === layoutEnum.TOP) {
+			header.classList.remove('top-snowy-header')
+			header.classList.add('top-snowy-header-light')
+		} else {
+			header.classList.remove('top-snowy-header-light')
+			if (layout === layoutEnum.TOP) {
+				header.classList.add('top-snowy-header')
+			} else {
+				if (theme === themeEnum.REAL_DARK) {
+					header.classList.add('top-snowy-header')
+				} else {
+					header.classList.remove('top-snowy-header')
+				}
+			}
+		}
+	}
 	const menuIsCollapseClick = () => {
 		store.toggleConfig('menuIsCollapse')
 	}
 	// 切换顶栏颜色
 	const switchoverTopHeaderThemeColor = () => {
-		// 界面顶栏设置颜色
-		const header = document.getElementById('snowyHeader')
-		topHeaderThemeColorOpen.value
-			? header.classList.add('snowy-header-primary-color')
-			: header.classList.remove('snowy-header-primary-color')
-		// 判断是否开启了通栏
-		const headerLogin = document.getElementById('snowyHeaderLogo')
 		try {
+			// 界面顶栏设置颜色
+			const header = document.getElementById('snowyHeader')
+			topHeaderThemeColorOpen.value
+				? header.classList.add('snowy-header-primary-color')
+				: header.classList.remove('snowy-header-primary-color')
+			// 判断是否开启了通栏
+			const headerLogin = document.getElementById('snowyHeaderLogo')
 			topHeaderThemeColorSpread.value
 				? headerLogin.classList.add('snowy-header-logo-primary-color')
 				: headerLogin.classList.remove('snowy-header-logo-primary-color')
 			// eslint-disable-next-line no-empty
 		} catch (e) {}
-		// 如果是双排菜单，吧第二排的也给渲染了
-		if (layout.value === 'doublerow') {
-			const snowyDoublerowSideTop = document.getElementById('snowyDoublerowSideTop')
-			try {
-				topHeaderThemeColorSpread.value
-					? snowyDoublerowSideTop.classList.add('snowy-doublerow-side-top-primary-color')
-					: snowyDoublerowSideTop.classList.remove('snowy-doublerow-side-top-primary-color')
-				// eslint-disable-next-line no-empty
-			} catch (e) {}
-		}
 	}
 
 	// 设置双排菜单下的首列默认选中
@@ -447,7 +506,7 @@
 				layoutSiderDowbleMenu.value = false
 			}
 		}
-		if (layout.value === 'doublerow') {
+		if (layout.value === layoutEnum.DOUBLEROW) {
 			doublerowSelectedKey.value = [route.path]
 		}
 	}
@@ -466,9 +525,9 @@
 	}
 	// 切换应用
 	const switchModule = (id) => {
-		if (moduleMenuData.value.length > 0) {
+		if (moduleMenu.value.length > 0) {
 			showThis()
-			const menus = moduleMenuData.value.filter((item) => item.id === id)[0].children
+			const menus = moduleMenu.value.filter((item) => item.id === id)[0].children
 			if (menus.length > 0) {
 				// 正儿八百的菜单
 				menu.value = menus
@@ -487,6 +546,7 @@
 				message.warning('该模块下无任何菜单')
 			}
 		}
+		getNav(menu.value)
 	}
 	// 通过标签切换应用
 	const tagSwitchModule = (id) => {
@@ -494,7 +554,7 @@
 		tool.data.set('SNOWY_MENU_MODULE_ID', id)
 		store.setModule(id)
 		// 正儿八百的菜单
-		menu.value = moduleMenuData.value.filter((item) => item.id === id)[0].children
+		menu.value = moduleMenu.value.filter((item) => item.id === id)[0].children
 	}
 	// 遍历获取子集
 	const traverseChild = (menu) => {
@@ -519,3 +579,46 @@
 		})
 	}
 </script>
+
+<style lang="less" scoped>
+	.xn-color-fff {
+		color: #fff;
+	}
+	.xn-pdl25 {
+		padding-left: 11px;
+	}
+	.xn-menu-line {
+		text-align: center;
+		height: auto;
+		line-height: 20px;
+		flex: none;
+		display: block;
+		padding: 12px 0 !important;
+	}
+	.xn-navmenu-line {
+		min-width: 0;
+		flex: 1 1 0%;
+		// padding: 0 20px;
+		overflow: hidden;
+	}
+	.xn-bb0 {
+		border-bottom: none;
+		position: relative;
+	}
+	.ant-layout-content {
+		display: flex;
+		flex-direction: column;
+	}
+	.xn-pd1180 {
+		padding: 10px 150px 0 150px;
+	}
+	.xn-pd050 {
+		padding: 0 50px;
+	}
+	.xn-pl10 {
+		padding-left: 10px;
+	}
+	.xn-mg050 {
+		margin: 0px 150px;
+	}
+</style>

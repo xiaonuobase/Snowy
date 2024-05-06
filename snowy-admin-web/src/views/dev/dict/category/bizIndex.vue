@@ -24,7 +24,7 @@
 							<template #icon><SearchOutlined /></template>
 							查询
 						</a-button>
-						<a-button class="snowy-buttom-left" @click="reset">
+						<a-button class="snowy-button-left" @click="reset">
 							<template #icon><redo-outlined /></template>
 							重置
 						</a-button>
@@ -194,7 +194,7 @@
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.snowy-buttom-left {
+	.snowy-button-left {
 		margin-left: 8px;
 	}
 </style>

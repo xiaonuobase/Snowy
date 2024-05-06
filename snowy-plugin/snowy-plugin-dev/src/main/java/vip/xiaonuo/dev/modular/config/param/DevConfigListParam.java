@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.config.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +27,6 @@ import lombok.Setter;
 public class DevConfigListParam {
 
     /** 配置分类 */
-    @ApiModelProperty(value = "配置分类")
+    @Schema(description = "配置分类")
     private String category;
 }

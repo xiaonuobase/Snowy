@@ -15,7 +15,7 @@ package vip.xiaonuo.sys.modular.resource.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -32,35 +32,35 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class SysModule extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 标题 */
-    @ApiModelProperty(value = "标题", position = 2)
+    @Schema(description = "标题")
     private String title;
 
     /** 编码 */
-    @ApiModelProperty(value = "编码", position = 3)
+    @Schema(description = "编码")
     private String code;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 4)
+    @Schema(description = "分类")
     private String category;
 
     /** 图标 */
-    @ApiModelProperty(value = "图标", position = 5)
+    @Schema(description = "图标")
     private String icon;
 
     /** 颜色 */
-    @ApiModelProperty(value = "颜色", position = 6)
+    @Schema(description = "颜色")
     private String color;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 7)
+    @Schema(description = "排序码")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 8)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

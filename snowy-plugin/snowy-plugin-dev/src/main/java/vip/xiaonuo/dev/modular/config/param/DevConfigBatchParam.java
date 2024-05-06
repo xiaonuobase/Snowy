@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.dev.modular.config.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 配置批量更新参数
@@ -29,12 +28,12 @@ import javax.validation.constraints.NotBlank;
 public class DevConfigBatchParam {
 
     /** 配置键 */
-    @ApiModelProperty(value = "配置键", required = true, position = 1)
+    @Schema(description = "配置键", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "configKey不能为空")
     private String configKey;
 
     /** 配置值 */
-    @ApiModelProperty(value = "配置值", required = true, position = 2)
+    @Schema(description = "配置值", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "configValue不能为空")
     private String configValue;
 

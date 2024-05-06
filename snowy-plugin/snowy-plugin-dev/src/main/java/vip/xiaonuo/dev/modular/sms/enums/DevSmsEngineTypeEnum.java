@@ -27,7 +27,10 @@ public enum DevSmsEngineTypeEnum {
     ALIYUN("ALIYUN"),
 
     /** 腾讯云 */
-    TENCENT("TENCENT");
+    TENCENT("TENCENT"),
+
+    /** 小诺短信 */
+    XIAONUO("XIAONUO");
 
     private final String value;
 

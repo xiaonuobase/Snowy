@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.auth.modular.monitor.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,18 +27,18 @@ import lombok.Setter;
 public class AuthSessionAnalysisResult {
 
     /** 当前会话总数量 */
-    @ApiModelProperty(value = "当前会话总数量", position = 1)
+    @Schema(description = "当前会话总数量")
     private String currentSessionTotalCount;
 
     /** 最大签发令牌数 */
-    @ApiModelProperty(value = "最大签发令牌数", position = 2)
+    @Schema(description = "最大签发令牌数")
     private String maxTokenCount;
 
     /** 最近1小时会话数 */
-    @ApiModelProperty(value = "最近1小时会话数", position = 3)
+    @Schema(description = "最近1小时会话数")
     private String oneHourNewlyAdded;
 
     /** BC端会话比例 */
-    @ApiModelProperty(value = "BC端会话比例", position = 4)
+    @Schema(description = "BC端会话比例")
     private String proportionOfBAndC;
 }

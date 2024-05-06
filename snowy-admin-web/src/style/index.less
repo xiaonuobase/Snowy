@@ -1,17 +1,6 @@
-@import 'ant-design-vue/dist/antd';
-
-@import 'ant-design-vue/es/style/themes/default.less';
 @import './realdark';
 @import './default';
 
-/* 全局 */
-/*
-#app, body, html {
-	width: 100%;
-	height: 100%;
-	background-color: #f6f8f9;
-}
-*/
 .body, html {
 	width: 100%;
 	height: 100%;
@@ -56,6 +45,7 @@ a, button, input, textarea {
 	padding: 11px 11px 0px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	flex: auto;
 }
 
 .main-bottom-wrapper {
@@ -71,7 +61,6 @@ a, button, input, textarea {
 
 /* 双排菜单布局 */
 .snowy-doublerow-layout-menu {
-	padding-left: 5px;
 	padding-right: 5px;
 	line-height: 0;
 	align-items: center;
@@ -86,24 +75,8 @@ a, button, input, textarea {
 }
 
 .snowy-doublerow-layout-menu-item-fort-div-span {
-	font-size: 12px;
+	font-size: 13px;
 	text-overflow: ellipsis;
-}
-
-.snowy-doublerow-side-top {
-	border-bottom: 1px solid var(--border-color-split);
-	height: 50px;
-	line-height: 50px;
-	padding-left: 20px;
-	font-size: 12px
-}
-
-// 应用主题色
-.snowy-doublerow-side-top-primary-color {
-	background-color: var(--primary-color);
-	.snowy-title {
-		color: white;
-	}
 }
 
 .snowy-title{
@@ -119,7 +92,6 @@ a, button, input, textarea {
 		color: #fff;
 	}
 }
-
 
 /* 设置抽屉样式 */
 .layout-setting {
@@ -147,14 +119,13 @@ a, button, input, textarea {
 	height: 50px;
 	display: flex;
 	justify-content: space-between;
-	border-bottom: 1px solid var(--border-color-split);
-	box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
-	background-color: var(--body-background);
-
+	border-bottom: 1px solid var(--header-bottom);
+	box-shadow: 0 0.4px 0.5px rgb(0 21 41 / 12%);
 	.ant-menu-item{
 		height: 48px;
 		line-height: 48px;
 	}
+	background: var(--snowy-background-color);
 }
 // 应用主题色
 .snowy-header-primary-color {
@@ -197,7 +168,7 @@ a, button, input, textarea {
 }
 
 .snowy-header-logo {
-	height: 50px;
+	height: 49px;
 	display: flex;
 	justify-content: space-between;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -221,104 +192,28 @@ a, button, input, textarea {
 	height: 35px;
 }
 
-/* 面包屑 */
-.admin-ui-topbar {
-	padding-left: 15px
+.top-snowy-header {
+	background: #001529;
+	color: white;
 }
-
-.admin-ui-topbar .left-panel {
-	display: flex;
-	align-items: center;
+.top-snowy-header-light {
+	background: #ffffff;
+	color: #000000;
 }
-
-.admin-ui-topbar .right-panel {
-	display: flex;
-	align-items: center;
+.top-snowy-header-layout {
+	background: var(--primary-color);
+	color: #ffffff;
 }
-
 .panel-item {
 	padding: 0 10px;
 	cursor: pointer;
 	height: 100%;
 	display: flex;
 	align-items: center;
+	/*color: var(--font-color);*/
 }
 .panel-item:hover {
 	background: var(--header-color-split);
-}
-
-/* 多标签 */
-.snowy-tags {
-	height: 40px;
-	background: var(--component-background);
-}
-
-.snowy-tags ul {
-	display: flex;
-	overflow: hidden;
-	padding-left: 0;
-}
-
-.snowy-tags li {
-	cursor: pointer;
-	display: inline-block;
-	float: left;
-	line-height: 39.5px;
-	position: relative;
-	flex-shrink: 0;
-}
-
-.snowy-tags li::after {
-	content: " ";
-	width: 1px;
-	height: 100%;
-	position: absolute;
-	right: 0px;
-	background-image: linear-gradient(#fff, #e6e6e6);
-}
-
-.snowy-tags li a {
-	padding: 0 10px;
-	width: 100%;
-	height: 100%;
-	text-decoration: none;
-	display: flex;
-	align-items: center;
-}
-
-.snowy-tags li i {
-	margin-left: 10px;
-	border-radius: 3px;
-	width: 18px;
-	height: 18px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.snowy-tags li i:hover {
-	background: rgba(0, 0, 0, .2);
-	color: @body-background;
-}
-
-.snowy-tags li:hover {
-	background: @body-background;
-}
-
-.snowy-tags li.active {
-	background: @primary-color;
-}
-
-.snowy-tags li.active a {
-	color: #fff;
-}
-
-.snowy-tags li.sortable-ghost {
-	opacity: 0;
-}
-
-.snowy-header-tags-right {
-	margin-right: 10px;
 }
 .contextmenu {
 	position: fixed;
@@ -407,6 +302,10 @@ a, button, input, textarea {
 .ant-card-extra {
 	padding: 12px 0!important;
 }
+.ant-card-head {
+	border-bottom: 0px !important;
+	min-height: 50px !important;
+}
 
 /* 重写antdv的表格滚动条 */
 .ant-table-body, .ant-table-content{
@@ -427,9 +326,9 @@ a, button, input, textarea {
 }
 
 .left-span-label {
-	border-left: 4px solid @primary-color;
+	border-left: 4px solid var(--primary-color);
 	font-size: 15px;
-	color: #212121;
+	color: var(--font-color);
 	font-weight: 600;
 	padding-left: 8px;
 }
@@ -464,8 +363,8 @@ body,
 .admin-ui-main{
 	&::-webkit-scrollbar {
 		/*滚动条整体样式*/
-		width : 0px;  /*高宽分别对应横竖滚动条的尺寸*/
-		height: 0px;
+		width : 0;  /*高宽分别对应横竖滚动条的尺寸*/
+		height: 0;
 	}
 	&::-webkit-scrollbar-thumb {
 		/*滚动条里面小方块*/
@@ -497,4 +396,116 @@ body,
 	.CodeMirror-scrollbar-filler{
 		display: none!important;
 	}
+}
+.ant-modal-close-x .anticon {
+	padding: 2px !important;
+}
+.xn-mb10 {
+	margin-bottom: 10px;
+}
+.xn-mt4 {
+	margin-top: 4px;
+}
+.xn-mg08 {
+	margin: 0 8px;
+}
+.xn-fdr {
+	float: right;
+}
+.xn-wd {
+	width: 100%;
+}
+.xn-wd90 {
+	width: 90px;
+}
+.xn-wdcalc-70 {
+	width: calc(100% - 70px);
+}
+.xn-mr8 {
+	margin-right: 8px;
+}
+.xn-ht400 {
+	height: 400px;
+}
+.xn-wh25 {
+	height: 25px;
+	width: 25px;
+}
+.xn-ml10 {
+	margin-left: 10px;
+}
+.xn-pl0 {
+	padding-left: 0px;
+}
+.xn-pd8 {
+	padding: 8px;
+}
+.xn-pb10 {
+	padding-bottom: 10px;
+}
+.xn-color-a0a0a0 {
+	color: #a0a0a0;
+}
+.xn-color-d9d9d9 {
+	color: #d9d9d9;
+}
+.xn-color-ff4d4f {
+	color: #ff4d4f;
+}
+.xn-color-00025 {
+	color:  rgba(0, 0, 0, 0.25);
+}
+.xn-jk-line {
+	width: 188px;
+	margin-bottom: 8px;
+	display: block;
+}
+.xn-findform-line {
+	border: 1px solid var(--border-color-split);
+	cursor: pointer;
+	width: 100%;
+	height: 40px;
+}
+.odd {
+	background-color: var(--table-row-hover-bg);
+}
+.snowy-theme-dark .odd {
+	background-color: #1d1d1d
+}
+// 以下是重写表单设计器的样式
+.list-main {
+	background: var(--auto-judge-before-color) !important;
+}
+.drag-move-box:before {
+	background: var(--primary-color) !important;
+}
+.drag-move-box>.delete {
+	background: var(--primary-color) !important;
+}
+.drag-move-box>.copy {
+	background: var(--primary-color) !important;
+}
+.drag-move-box .show-key-box {
+	color: var(--primary-color) !important;
+}
+.left-ul-item:hover {
+	color: var(--primary-color) !important;
+	border: 1px solid var(--primary-color) !important;
+	-webkit-box-shadow: 0 2px 6px var(--primary-color) !important;
+	box-shadow: 0 2px 6px var(--primary-color) !important;
+}
+.list-main>.moving:before {
+	background: var(--primary-color) !important;
+}
+.operating-area a:hover {
+	color: var(--primary-color) !important;
+}
+.batch-box>.delete {
+	background: var(--primary-color) !important;
+}
+.batch-box>.copy {
+	background: var(--primary-color) !important;
+}
+.batch-box.active:before {
+	background: var(--primary-color) !important;
 }

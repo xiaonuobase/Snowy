@@ -12,12 +12,12 @@
  */
 package vip.xiaonuo.dev.modular.message.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -31,21 +31,21 @@ import java.util.List;
 public class DevMessageSendParam {
 
     /** 主题 */
-    @ApiModelProperty(value = "主题", required = true, position = 1)
+    @Schema(description = "主题", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "subject不能为空")
     private String subject;
 
     /** 接收人id集合 */
-    @ApiModelProperty(value = "接收人id集合", required = true, position = 2)
+    @Schema(description = "接收人id集合", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "receiverIdList不能为空")
     private List<String> receiverIdList;
 
     /** 正文 */
-    @ApiModelProperty(value = "正文", position = 3)
+    @Schema(description = "正文")
     private String content;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 4, hidden = true)
+    @Schema(description = "分类", hidden = true)
     @NotBlank(message = "category不能为空")
     private String category;
 }

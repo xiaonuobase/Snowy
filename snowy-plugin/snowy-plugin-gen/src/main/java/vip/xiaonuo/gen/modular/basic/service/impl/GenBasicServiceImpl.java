@@ -30,6 +30,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
@@ -62,8 +64,6 @@ import vip.xiaonuo.sys.api.SysButtonApi;
 import vip.xiaonuo.sys.api.SysMenuApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -107,7 +107,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             JSONUtil.createObj().set("name", "search.vue.btl").set("path",  "pages"),
             JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "pages"),
             JSONUtil.createObj().set("name", "more.vue.btl").set("path",  "pages"),
-            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "pages"));
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "pages")
+    );
 
 
     private static final List<JSONObject> GEN_BACKEND_FILE_LIST = CollectionUtil.newArrayList(

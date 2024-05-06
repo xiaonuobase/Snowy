@@ -26,7 +26,7 @@
 		}
 	})
 	// 颜色列表
-	const colorList = ['#7265E6', '#FFBF00', '#00A2AE', '#F56A00', '#1890FF', '#606D80']
+	const colorList = ['#7265E6', '#FFBF00', '#00A2AE', '#F56A00', '#1677FF', '#606D80']
 	// 获取随机颜色
 	const randomColor = () => {
 		if (props.color) {

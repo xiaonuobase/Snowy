@@ -3,5 +3,5 @@
 
 直接 var(--primary-color)
 
-例如：新建个变量，黑的白的在不同的less中设定好，这个时候就会跟着颜色的主题变化
+例如：新建个变量，在default.less跟realdark.less中设定好，这个时候就会跟着颜色的主题变化
 

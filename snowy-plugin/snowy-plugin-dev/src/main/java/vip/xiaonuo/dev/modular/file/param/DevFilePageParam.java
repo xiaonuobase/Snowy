@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.file.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +27,10 @@ import lombok.Setter;
 public class DevFilePageParam {
 
     /** 文件引擎 */
-    @ApiModelProperty(value = "文件引擎")
+    @Schema(description = "文件引擎")
     private String engine;
 
     /** 文件名关键词 */
-    @ApiModelProperty(value = "文件名关键词")
+    @Schema(description = "文件名关键词")
     private String searchKey;
 }

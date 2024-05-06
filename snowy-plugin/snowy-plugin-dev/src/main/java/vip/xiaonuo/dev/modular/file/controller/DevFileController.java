@@ -13,17 +13,18 @@
 package vip.xiaonuo.dev.modular.file.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.entity.DevFile;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
@@ -32,10 +33,6 @@ import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,8 +42,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/2/23 18:26
  **/
-@Api(tags = "文件控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 4)
+@Tag(name = "文件控制器")
 @RestController
 @Validated
 public class DevFileController {
@@ -66,8 +62,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("动态上传文件返回id")
+    @Operation(summary = "动态上传文件返回id")
     @CommonLog("动态上传文件返回id")
     @PostMapping("/dev/file/uploadDynamicReturnId")
     public CommonResult<String> uploadDynamicReturnId(@RequestPart("file") MultipartFile file) {
@@ -80,8 +75,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("动态上传文件返回url")
+    @Operation(summary = "动态上传文件返回url")
     @CommonLog("动态上传文件返回url")
     @PostMapping("/dev/file/uploadDynamicReturnUrl")
     public CommonResult<String> uploadDynamicReturnUrl(@RequestPart("file") MultipartFile file) {
@@ -94,8 +88,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("上传本地文件返回id")
+    @Operation(summary = "上传本地文件返回id")
     @CommonLog("上传本地文件返回id")
     @PostMapping("/dev/file/uploadLocalReturnId")
     public CommonResult<String> uploadLocalReturnId(@RequestPart("file") MultipartFile file) {
@@ -108,8 +101,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("上传本地文件返回url")
+    @Operation(summary = "上传本地文件返回url")
     @CommonLog("上传本地文件返回url")
     @PostMapping("/dev/file/uploadLocalReturnUrl")
     public CommonResult<String> uploadLocalReturnUrl(@RequestPart("file") MultipartFile file) {
@@ -122,8 +114,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("上传阿里云文件返回id")
+    @Operation(summary = "上传阿里云文件返回id")
     @CommonLog("上传阿里云文件返回id")
     @PostMapping("/dev/file/uploadAliyunReturnId")
     public CommonResult<String> uploadAliyunReturnId(@RequestPart("file") MultipartFile file) {
@@ -136,8 +127,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("上传阿里云文件返回url")
+    @Operation(summary = "上传阿里云文件返回url")
     @CommonLog("上传阿里云文件返回url")
     @PostMapping("/dev/file/uploadAliyunReturnUrl")
     public CommonResult<String> uploadAliyunReturnUrl(@RequestPart("file") MultipartFile file) {
@@ -150,8 +140,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("上传腾讯云文件返回id")
+    @Operation(summary = "上传腾讯云文件返回id")
     @CommonLog("上传腾讯云文件返回id")
     @PostMapping("/dev/file/uploadTencentReturnId")
     public CommonResult<String> uploadTencentReturnId(@RequestPart("file") MultipartFile file) {
@@ -164,8 +153,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
-    @ApiOperation("上传腾讯云文件返回url")
+    @Operation(summary = "上传腾讯云文件返回url")
     @CommonLog("上传腾讯云文件返回url")
     @PostMapping("/dev/file/uploadTencentReturnUrl")
     public CommonResult<String> uploadTencentReturnUrl(@RequestPart("file") MultipartFile file) {
@@ -178,8 +166,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 9)
-    @ApiOperation("上传MINIO文件返回id")
+    @Operation(summary = "上传MINIO文件返回id")
     @CommonLog("上传MINIO文件返回id")
     @PostMapping("/dev/file/uploadMinioReturnId")
     public CommonResult<String> uploadMinioReturnId(@RequestPart("file") MultipartFile file) {
@@ -192,8 +179,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 10)
-    @ApiOperation("上传MINIO文件返回url")
+    @Operation(summary = "上传MINIO文件返回url")
     @CommonLog("上传MINIO文件返回url")
     @PostMapping("/dev/file/uploadMinioReturnUrl")
     public CommonResult<String> uploadMinioReturnUrl(@RequestPart("file") MultipartFile file) {
@@ -206,8 +192,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
-    @ApiOperation("获取文件分页列表")
+    @Operation(summary = "获取文件分页列表")
     @GetMapping("/dev/file/page")
     public CommonResult<Page<DevFile>> page(DevFilePageParam devFilePageParam) {
         return CommonResult.data(devFileService.page(devFilePageParam));
@@ -219,8 +204,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
-    @ApiOperation("获取文件列表")
+    @Operation(summary = "获取文件列表")
     @GetMapping("/dev/file/list")
     public CommonResult<List<DevFile>> list(DevFileListParam devFileListParam) {
         return CommonResult.data(devFileService.list(devFileListParam));
@@ -232,8 +216,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 13)
-    @ApiOperation("下载文件")
+    @Operation(summary = "下载文件")
     @CommonLog("下载文件")
     @GetMapping(value = "/dev/file/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void download(@Valid DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
@@ -246,12 +229,11 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
-    @ApiOperation("删除文件")
+    @Operation(summary = "删除文件")
     @CommonLog("删除文件")
     @PostMapping(value = "/dev/file/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                               CommonValidList<DevFileIdParam> devFileIdParamList) {
+                                               List<DevFileIdParam> devFileIdParamList) {
         devFileService.delete(devFileIdParamList);
         return CommonResult.ok();
     }
@@ -262,8 +244,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 15)
-    @ApiOperation("获取文件详情")
+    @Operation(summary = "获取文件详情")
     @GetMapping("/dev/file/detail")
     public CommonResult<DevFile> detail(@Valid DevFileIdParam devFileIdParam) {
         return CommonResult.data(devFileService.detail(devFileIdParam));

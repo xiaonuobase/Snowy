@@ -15,10 +15,10 @@ package vip.xiaonuo.common.cache;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;

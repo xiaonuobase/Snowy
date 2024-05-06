@@ -18,13 +18,13 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysRelationApi;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;

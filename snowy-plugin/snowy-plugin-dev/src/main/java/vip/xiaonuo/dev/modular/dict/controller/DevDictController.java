@@ -14,10 +14,11 @@ package vip.xiaonuo.dev.modular.dict.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +26,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.dev.modular.dict.entity.DevDict;
 import vip.xiaonuo.dev.modular.dict.param.*;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -41,8 +38,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/6/21 14:58
  **/
-@Api(tags = "字典控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
+@Tag(name = "字典控制器")
 @RestController
 @Validated
 public class DevDictController {
@@ -56,8 +52,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取字典分页")
+    @Operation(summary = "获取字典分页")
     @GetMapping("/dev/dict/page")
     public CommonResult<Page<DevDict>> page(DevDictPageParam devDictPageParam) {
         return CommonResult.data(devDictService.page(devDictPageParam));
@@ -69,8 +64,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("获取字典列表")
+    @Operation(summary = "获取字典列表")
     @GetMapping("/dev/dict/list")
     public CommonResult<List<DevDict>> list(DevDictListParam devDictListParam) {
         return CommonResult.data(devDictService.list(devDictListParam));
@@ -82,8 +76,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("获取字典树")
+    @Operation(summary = "获取字典树")
     @GetMapping("/dev/dict/tree")
     public CommonResult<List<Tree<String>>> tree(DevDictTreeParam devDictTreeParam) {
         return CommonResult.data(devDictService.tree(devDictTreeParam));
@@ -95,8 +88,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("添加字典")
+    @Operation(summary = "添加字典")
     @CommonLog("添加字典")
     @PostMapping("/dev/dict/add")
     public CommonResult<String> add(@RequestBody @Valid DevDictAddParam devDictAddParam) {
@@ -110,8 +102,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("编辑字典")
+    @Operation(summary = "编辑字典")
     @CommonLog("编辑字典")
     @PostMapping("/dev/dict/edit")
     public CommonResult<String> edit(@RequestBody @Valid DevDictEditParam devDictEditParam) {
@@ -125,12 +116,11 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("删除字典")
+    @Operation(summary = "删除字典")
     @CommonLog("删除字典")
     @PostMapping("/dev/dict/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                           CommonValidList<DevDictIdParam> devDictIdParamList) {
+                                           List<DevDictIdParam> devDictIdParamList) {
         devDictService.delete(devDictIdParamList);
         return CommonResult.ok();
     }
@@ -141,8 +131,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("获取字典详情")
+    @Operation(summary = "获取字典详情")
     @GetMapping("/dev/dict/detail")
     public CommonResult<DevDict> detail(@Valid DevDictIdParam devDictIdParam) {
         return CommonResult.data(devDictService.detail(devDictIdParam));

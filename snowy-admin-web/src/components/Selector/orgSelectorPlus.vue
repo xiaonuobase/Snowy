@@ -1,6 +1,6 @@
 <template>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		title="机构选择"
 		:width="1000"
 		:mask-closable="false"
@@ -22,7 +22,7 @@
 				</a-card>
 			</a-col>
 			<a-col :span="11">
-				<div class="table-operator" style="margin-bottom: 10px">
+				<div class="table-operator xn-mb10">
 					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 						<a-row :gutter="24">
 							<a-col :span="12">
@@ -32,7 +32,7 @@
 							</a-col>
 							<a-col :span="12">
 								<a-button type="primary" class="primarySele" @click="loadData()"> 查询 </a-button>
-								<a-button class="snowy-buttom-left" @click="() => reset()"> 重置 </a-button>
+								<a-button class="snowy-button-left" @click="() => reset()"> 重置 </a-button>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -50,7 +50,7 @@
 					>
 						<template #title>
 							<span>待选择列表 {{ tableRecordNum }} 条</span>
-							<div v-if="!radioModel" style="float: right">
+							<div v-if="!radioModel" class="xn-fd">
 								<a-button type="dashed" size="small" @click="addAllPageRecord">添加当前数据</a-button>
 							</div>
 						</template>
@@ -59,7 +59,7 @@
 								{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
 							</template>
 							<template v-if="column.dataIndex === 'action'">
-								<a-button type="dashed" size="small" @click="addRecord(record)">添加</a-button>
+								<a-button type="dashed" size="small" @click="addRecord(record)"><PlusOutlined /></a-button>
 							</template>
 						</template>
 					</a-table>
@@ -89,13 +89,13 @@
 					>
 						<template #title>
 							<span>已选择: {{ selectedData.length }}</span>
-							<div v-if="!radioModel" style="float: right">
+							<div v-if="!radioModel" class="xn-fd">
 								<a-button type="dashed" danger size="small" @click="delAllRecord">全部移除</a-button>
 							</div>
 						</template>
 						<template #bodyCell="{ column, record }">
 							<template v-if="column.dataIndex === 'action'">
-								<a-button type="dashed" danger size="small" @click="delRecord(record)">移除</a-button>
+								<a-button type="dashed" danger size="small" @click="delRecord(record)"><MinusOutlined /></a-button>
 							</template>
 						</template>
 					</a-table>
@@ -116,7 +116,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: 80
+			width: 50
 		},
 		{
 			title: '机构名',
@@ -134,7 +134,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: 80
+			width: 50
 		},
 		{
 			title: '机构名',
@@ -250,10 +250,7 @@
 		loadData()
 	}
 	const judge = () => {
-		if (radioModel && selectedData.value.length > 0) {
-			return false
-		}
-		return true
+		return !(radioModel && selectedData.value.length > 0)
 	}
 	// 添加记录
 	const addRecord = (record) => {
@@ -377,6 +374,12 @@
 </script>
 
 <style lang="less" scoped>
+	.xn-mb10 {
+		margin-bottom: 10px;
+	}
+	.xn-fd {
+		float: right;
+	}
 	.selectorTreeDiv {
 		max-height: 500px;
 		overflow: auto;

@@ -1,6 +1,6 @@
 <template>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		title="图标选择"
 		:mask-closable="false"
 		:width="800"

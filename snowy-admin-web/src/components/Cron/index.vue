@@ -22,7 +22,7 @@
 	</a-input>
 	<a-modal
 		title="CRON规则生成器"
-		v-model:visible="modalVisible"
+		v-model:open="modalVisible"
 		:width="580"
 		@cancel="modalVisible = false"
 		@ok="submit"
@@ -35,9 +35,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>秒</h2>
-							<a-tag :color="activeKey === '1' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_second
-							}}</a-tag>
+							<a-tag :color="activeKey === '1' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_second }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -56,7 +54,7 @@
 								:max="59"
 								controls-position="right"
 							></a-input-number>
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number
 								v-model:value="dateValue.second.range.end"
 								:min="0"
@@ -79,7 +77,7 @@
 							<a-select
 								v-model:value="dateValue.second.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -92,9 +90,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>分钟</h2>
-							<a-tag :color="activeKey === '2' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_minute
-							}}</a-tag>
+							<a-tag :color="activeKey === '2' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_minute }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -113,7 +109,7 @@
 								:max="59"
 								controls-position="right"
 							/>
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number v-model:value="dateValue.minute.range.end" :min="0" :max="59" controls-position="right" />
 						</a-form-item>
 						<a-form-item label="间隔" v-if="dateValue.minute.type === '2'">
@@ -131,7 +127,7 @@
 							<a-select
 								v-model:value="dateValue.minute.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -144,9 +140,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>小时</h2>
-							<a-tag :color="activeKey === '3' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_hour
-							}}</a-tag>
+							<a-tag :color="activeKey === '3' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_hour }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -160,7 +154,7 @@
 						</a-form-item>
 						<a-form-item label="范围" v-if="dateValue.hour.type === '1'">
 							<a-input-number v-model:value="dateValue.hour.range.start" :min="0" :max="23" controls-position="right" />
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number v-model:value="dateValue.hour.range.end" :min="0" :max="23" controls-position="right" />
 						</a-form-item>
 						<a-form-item label="间隔" v-if="dateValue.hour.type === '2'">
@@ -173,7 +167,7 @@
 							<a-select
 								v-model:value="dateValue.hour.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -186,9 +180,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>日</h2>
-							<a-tag :color="activeKey === '4' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_day
-							}}</a-tag>
+							<a-tag :color="activeKey === '4' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_day }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -204,7 +196,7 @@
 						</a-form-item>
 						<a-form-item label="范围" v-if="dateValue.day.type === '1'">
 							<a-input-number v-model:value="dateValue.day.range.start" :min="1" :max="31" controls-position="right" />
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number v-model:value="dateValue.day.range.end" :min="1" :max="31" controls-position="right" />
 						</a-form-item>
 						<a-form-item label="间隔" v-if="dateValue.day.type === '2'">
@@ -217,7 +209,7 @@
 							<a-select
 								v-model:value="dateValue.day.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -230,9 +222,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>月</h2>
-							<a-tag :color="activeKey === '5' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_month
-							}}</a-tag>
+							<a-tag :color="activeKey === '5' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_month }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -251,7 +241,7 @@
 								:max="12"
 								controls-position="right"
 							/>
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number v-model:value="dateValue.month.range.end" :min="1" :max="12" controls-position="right" />
 						</a-form-item>
 						<a-form-item label="间隔" v-if="dateValue.month.type === '2'">
@@ -264,7 +254,7 @@
 							<a-select
 								v-model:value="dateValue.month.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -277,9 +267,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>周</h2>
-							<a-tag :color="activeKey === '6' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_week
-							}}</a-tag>
+							<a-tag :color="activeKey === '6' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_week }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -303,7 +291,7 @@
 										:value="item.value"
 									/>
 								</a-select>
-								<span style="padding: 0 15px">-</span>
+								<span class="xn-pd">-</span>
 								<a-select v-model:value="dateValue.week.range.end" placeholder="请选择">
 									<a-select-option
 										v-for="(item, index) in data.week"
@@ -331,7 +319,7 @@
 								<a-select
 									v-model:value="dateValue.week.appoint"
 									multiple
-									style="width: 100%"
+									class="xn-wd"
 									mode="multiple"
 									placeholder="请选择"
 								>
@@ -360,9 +348,7 @@
 					<template #tab>
 						<div class="cron-num">
 							<h2>年</h2>
-							<a-tag :color="activeKey === '7' ? `var(--primary-color)` : ''" style="margin-right: 0px">{{
-								value_year
-							}}</a-tag>
+							<a-tag :color="activeKey === '7' ? `var(--primary-color)` : ''" class="xn-mr">{{ value_year }}</a-tag>
 						</div>
 					</template>
 					<a-form>
@@ -377,7 +363,7 @@
 						</a-form-item>
 						<a-form-item label="范围" v-if="dateValue.year.type === '1'">
 							<a-input-number v-model:value="dateValue.year.range.start" controls-position="right" />
-							<span style="padding: 0 15px">-</span>
+							<span class="xn-pd">-</span>
 							<a-input-number v-model:value="dateValue.year.range.end" controls-position="right" />
 						</a-form-item>
 						<a-form-item label="间隔" v-if="dateValue.year.type === '2'">
@@ -390,7 +376,7 @@
 							<a-select
 								v-model:value="dateValue.year.appoint"
 								multiple
-								style="width: 100%"
+								class="xn-wd"
 								mode="multiple"
 								placeholder="请选择"
 							>
@@ -580,6 +566,9 @@
 		}
 	})
 	watch(props, (newValue) => {
+		if (newValue.modelValue === '') {
+			defaultValue.value = ''
+		}
 		if (newValue.modelValue) {
 			defaultValue.value = newValue.modelValue
 		}
@@ -757,5 +746,11 @@
 	.cron-num h2 {
 		font-size: 12px;
 		font-weight: normal;
+	}
+	.xn-mr {
+		margin-right: 0px;
+	}
+	.xn-pd {
+		padding: 0 15px;
 	}
 </style>

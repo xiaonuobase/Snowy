@@ -12,10 +12,11 @@
  */
 package vip.xiaonuo.gen.modular.config.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,16 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.gen.modular.config.entity.GenConfig;
 import vip.xiaonuo.gen.modular.config.param.GenConfigEditParam;
 import vip.xiaonuo.gen.modular.config.param.GenConfigIdParam;
 import vip.xiaonuo.gen.modular.config.param.GenConfigListParam;
 import vip.xiaonuo.gen.modular.config.service.GenConfigService;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -41,8 +38,7 @@ import java.util.List;
  * @author yubaoshan
  * @date 2022/10/25 22:33
  **/
-@Api(tags = "代码生成详细配置控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
+@Tag(name = "代码生成详细配置控制器")
 @RestController
 @Validated
 public class GenConfigController {
@@ -56,8 +52,7 @@ public class GenConfigController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取代码生成详细配置分页")
+    @Operation(summary = "获取代码生成详细配置分页")
     @GetMapping("/gen/config/list")
     public CommonResult<List<GenConfig>> list(GenConfigListParam genConfigListParam) {
         return CommonResult.data(genConfigService.list(genConfigListParam));
@@ -69,8 +64,7 @@ public class GenConfigController {
      * @author yubaoshan
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("编辑代码生成详细配置")
+    @Operation(summary = "编辑代码生成详细配置")
     @CommonLog("编辑代码生成详细配置")
     @PostMapping("/gen/config/edit")
     public CommonResult<String> edit(@RequestBody @Valid GenConfigEditParam genConfigEditParam) {
@@ -84,12 +78,11 @@ public class GenConfigController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("删除代码生成详细配置")
+    @Operation(summary = "删除代码生成详细配置")
     @CommonLog("删除代码生成详细配置")
     @PostMapping("/gen/config/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                               CommonValidList<GenConfigIdParam> genConfigIdParamList) {
+                                               List<GenConfigIdParam> genConfigIdParamList) {
         genConfigService.delete(genConfigIdParamList);
         return CommonResult.ok();
     }
@@ -100,8 +93,7 @@ public class GenConfigController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("获取代码生成详细配置详情")
+    @Operation(summary = "获取代码生成详细配置详情")
     @GetMapping("/gen/config/detail")
     public CommonResult<GenConfig> detail(@Valid GenConfigIdParam genConfigIdParam) {
         return CommonResult.data(genConfigService.detail(genConfigIdParam));
@@ -113,12 +105,11 @@ public class GenConfigController {
      * @author yubaoshan
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("批量编辑代码生成详细配置")
+    @Operation(summary = "批量编辑代码生成详细配置")
     @CommonLog("批量编辑代码生成详细配置")
     @PostMapping("/gen/config/editBatch")
     public CommonResult<String> editBatch(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                      CommonValidList<GenConfigEditParam> genConfigEditParamList) {
+                                                      List<GenConfigEditParam> genConfigEditParamList) {
         genConfigService.editBatch(genConfigEditParamList);
         return CommonResult.ok();
     }

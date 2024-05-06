@@ -1,17 +1,10 @@
 <template>
-	<xn-form-container
-		ref="signModel"
-		v-model:visible="visible"
-		:width="700"
-		title="电子签名"
-		@close="handleClear"
-		@ok="handleOk"
-	>
+	<xn-form-container :visible="visible" :width="700" title="电子签名" @close="handleClear" @ok="handleOk">
 		<a-row :gutter="5">
 			<a-col :span="15">
-				<div style="border: 1px solid rgb(236 236 236)">
+				<div class="xn-bdr236">
 					<vue-esign
-						ref="esign"
+						ref="esignRef"
 						v-model:bgColor="bgColor"
 						:width="800"
 						:height="400"
@@ -23,12 +16,12 @@
 				</div>
 			</a-col>
 			<a-col :span="9">
-				<div style="height: 90px; width: auto">
-					<img :src="resultImg" style="height: 90px; width: 100%; border: 1px solid rgb(236 236 236)" />
+				<div class="xn-h90wat">
+					<img :src="resultImg" class="xn-bdr236 xn-h90w100" />
 				</div>
 			</a-col>
 		</a-row>
-		<div style="margin-top: 10px">
+		<div class="xn-mt10">
 			<a-space>
 				<a-form>
 					<a-row :gutter="16">
@@ -39,7 +32,7 @@
 						</a-col>
 						<a-col :span="12">
 							<a-form-item>
-								<div style="padding-right: 50px">是否裁剪：<a-checkbox v-model:checked="isCrop"></a-checkbox></div>
+								<div class="xn-pr50">是否裁剪：<a-checkbox v-model:checked="isCrop"></a-checkbox></div>
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -49,7 +42,7 @@
 			</a-space>
 		</div>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="handleClear">取消</a-button>
+			<a-button class="xn-mr8" @click="handleClear">取消</a-button>
 			<a-button type="primary" @click="handleOk">确定</a-button>
 		</template>
 	</xn-form-container>
@@ -57,13 +50,12 @@
 
 <script setup>
 	import { message } from 'ant-design-vue'
-	import vueEsign from './vueEsign.vue'
-	const signModel = ref(false)
+	import VueEsign from './vueEsign.vue'
 	const visible = ref(false)
-	const esign = ref(false)
+	const esignRef = ref(false)
 	const resultImg = ref('')
 	const isCrop = ref(false)
-	const lineWidth = ref(6)
+	const lineWidth = ref(10)
 	const lineColor = ref('#000000')
 	const bgColor = ref('')
 	const props = defineProps(['image'])
@@ -74,11 +66,11 @@
 		visible.value = true
 	}
 	const handleReset = () => {
-		esign.value.reset()
+		esignRef.value.reset()
 		resultImg.value = ''
 	}
 	const handleGenerate = () => {
-		esign.value
+		esignRef.value
 			.generate()
 			.then((res) => {
 				resultImg.value = res
@@ -91,7 +83,7 @@
 		visible.value = false
 	}
 	const handleOk = () => {
-		esign.value
+		esignRef.value
 			.generate()
 			.then((res) => {
 				emit('successful', res)
@@ -107,7 +99,24 @@
 </script>
 
 <style scoped>
+	.xn-h90w100 {
+		height: 90px;
+		width: 100%;
+	}
+	.xn-mt10 {
+		margin-top: 10px;
+	}
+	.xn-h90wat {
+		height: 90px;
+		width: auto;
+	}
+	.xn-bdr236 {
+		border: 1px solid rgb(236 236 236);
+	}
 	.ant-form-item {
 		margin-bottom: 0px !important;
+	}
+	.xn-pr50 {
+		padding-right: 50px;
 	}
 </style>

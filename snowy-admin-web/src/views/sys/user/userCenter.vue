@@ -8,7 +8,7 @@
 							<img :src="userInfo.avatar" />
 						</a-spin>
 						<a @click="uploadLogo">
-							<div :class="userInfo.avatar ? 'mask' : 'mask-notImg'"><upload-outlined /></div>
+							<div v-if="userInfo" :class="userInfo.avatar ? 'mask' : 'mask-notImg'"><upload-outlined /></div>
 						</a>
 					</div>
 					<div class="username">{{ userInfo.name }}</div>
@@ -24,18 +24,18 @@
 				</div>
 				<a-divider />
 				<div class="account-center-team">
-					<div class="mb-2" v-if="userInfo.signature" style="width: 100%">
-						<a-image :src="userInfo.signature" width="100%" style="height: 120px; border: 1px solid rgb(236 236 236)" />
+					<div class="mb-2 xn-wd" v-if="userInfo.signature">
+						<a-image :src="userInfo.signature" width="100%" class="xn-bdr236 xn-ht120" />
 					</div>
-					<a-button @click="XnSignNameRef.show()">打开签名板</a-button>
-					<XnSignName ref="XnSignNameRef" :image="userInfo.signature" @successful="signSuccess" />
+					<a-button @click="xnSignNameRef.show()">打开签名板</a-button>
+					<XnSignName ref="xnSignNameRef" :image="userInfo.signature" @successful="signSuccess" />
 				</div>
 			</a-card>
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="17" :lg="17" :xl="17">
 			<a-card
 				:bordered="false"
-				style="width: 100%"
+				class="xn-wd"
 				:tab-list="tabList"
 				:active-tab-key="noTitleKey"
 				@tabChange="(key) => onTabChange(key, 'key')"
@@ -58,7 +58,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<CropUpload ref="cropUpload" :img-src="userInfo.avatar" @successful="cropUploadSuccess" />
+	<CropUpload ref="cropUploadRef" :img-src="userInfo ? userInfo.avatar : undefined" @successful="cropUploadSuccess" />
 </template>
 
 <script setup name="userCenter">
@@ -74,17 +74,27 @@
 	import accountBind from './userTab/accountBind.vue'
 	import userMessage from './userTab/userMessage.vue'
 
-	const global_store = globalStore()
-
+	const store = globalStore()
 	const userInfo = computed(() => {
-		return global_store.userInfo
+		if (store.userInfo) {
+			return store.userInfo
+		} else {
+			return {
+				avatar: '',
+				name: '',
+				nickname: '',
+				signature: '',
+				orgName: '',
+				positionName: ''
+			}
+		}
 	})
-	const cropUpload = ref()
+	const cropUploadRef = ref()
 	const avatarLoading = ref(false)
 	const uploadLogo = () => {
-		cropUpload.value.show()
+		cropUploadRef.value.show()
 	}
-	const XnSignNameRef = ref()
+	const xnSignNameRef = ref()
 	const tabList = [
 		{
 			key: 'accountBasic',
@@ -129,7 +139,7 @@
 			userInfo.value.avatar = data
 			// 更新缓存
 			tool.data.set('USER_INFO', userInfo.value)
-			global_store.setUserInfo(userInfo.value)
+			store.setUserInfo(userInfo.value)
 		})
 	}
 	// 签名板组件回调
@@ -141,12 +151,15 @@
 			userInfo.value.signature = value
 			// 更新缓存
 			tool.data.set('USER_INFO', userInfo.value)
-			global_store.setUserInfo(userInfo.value)
+			store.setUserInfo(userInfo.value)
 		})
 	}
 </script>
 
 <style lang="less" scoped>
+	.xn-ht120 {
+		height: 120px;
+	}
 	.account-center-avatarHolder {
 		text-align: center;
 		margin-bottom: 24px;

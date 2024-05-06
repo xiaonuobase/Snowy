@@ -15,10 +15,10 @@ package vip.xiaonuo.biz.modular.dict.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +31,6 @@ import vip.xiaonuo.biz.modular.dict.service.BizDictService;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,8 +39,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/6/21 14:58
  **/
-@Api(tags = "业务字典控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 4)
+@Tag(name = "业务字典控制器")
 @RestController
 @Validated
 public class BizDictController {
@@ -56,8 +53,7 @@ public class BizDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取业务字典分页")
+    @Operation(summary = "获取业务字典分页")
     @SaCheckPermission("/biz/dict/page")
     @GetMapping("/biz/dict/page")
     public CommonResult<Page<BizDict>> page(BizDictPageParam bizDictPageParam) {
@@ -70,8 +66,7 @@ public class BizDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("获取业务字典树")
+    @Operation(summary = "获取业务字典树")
     @SaCheckPermission("/biz/dict/tree")
     @GetMapping("/biz/dict/tree")
     public CommonResult<List<Tree<String>>> tree() {
@@ -84,8 +79,7 @@ public class BizDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("获取所有字典树")
+    @Operation(summary = "获取所有字典树")
     @GetMapping("/biz/dict/treeAll")
     public CommonResult<List<Tree<String>>> treeAll() {
         return CommonResult.data(bizDictService.treeAll());
@@ -97,8 +91,7 @@ public class BizDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("编辑业务字典")
+    @Operation(summary = "编辑业务字典")
     @CommonLog("编辑业务字典")
     @SaCheckPermission("/biz/dict/edit")
     @PostMapping("/biz/dict/edit")

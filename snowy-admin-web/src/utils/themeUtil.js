@@ -11,7 +11,7 @@
 import { generate } from '@ant-design/colors'
 import tool from '../utils/tool'
 import config from '../config'
-import { ThemeModeEnum } from './enum'
+import { themeEnum } from '@/layout/enum/themeEnum'
 
 const changeColor = (newPrimaryColor, theme, darkClass = 'snowy-theme-dark') => {
 	return new Promise((resolve) => {
@@ -20,7 +20,7 @@ const changeColor = (newPrimaryColor, theme, darkClass = 'snowy-theme-dark') => 
 		if (themeEle && themeEle.parentNode) {
 			themeEle.parentNode.removeChild(themeEle)
 		}
-		const isRealDark = theme === ThemeModeEnum.REAL_DARK
+		const isRealDark = theme === themeEnum.REAL_DARK
 		if (newPrimaryColor) {
 			const colors = generate(newPrimaryColor, isRealDark ? { theme: 'dark' } : {})
 			const rootClass = isRealDark ? `.${darkClass}` : ':root'

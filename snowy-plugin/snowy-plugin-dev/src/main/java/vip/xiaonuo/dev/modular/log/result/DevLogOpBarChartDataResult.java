@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.log.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,14 +27,14 @@ import lombok.Setter;
 public class DevLogOpBarChartDataResult {
 
     /** 日期 */
-    @ApiModelProperty(value = "日期", position = 1)
+    @Schema(description = "日期")
     private String date;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", position = 2)
+    @Schema(description = "名称")
     private String name;
 
     /** 数量 */
-    @ApiModelProperty(value = "数量", position = 3)
+    @Schema(description = "数量")
     private Long count;
 }

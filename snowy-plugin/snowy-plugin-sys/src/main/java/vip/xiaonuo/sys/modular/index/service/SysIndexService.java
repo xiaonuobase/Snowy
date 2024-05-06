@@ -13,7 +13,6 @@
 package vip.xiaonuo.sys.modular.index.service;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 
@@ -41,7 +40,7 @@ public interface SysIndexService {
      * @author xuyuxiang
      * @date 2022/9/2 11:32
      */
-    void deleteSchedule(CommonValidList<SysIndexScheduleIdParam> sysIndexScheduleIdParamList);
+    void deleteSchedule(List<SysIndexScheduleIdParam> sysIndexScheduleIdParamList);
 
     /**
      * 获取当前用户日程列表

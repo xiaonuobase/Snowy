@@ -14,7 +14,7 @@
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>

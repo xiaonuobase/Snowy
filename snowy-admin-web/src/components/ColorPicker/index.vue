@@ -13,7 +13,7 @@
 	const props = defineProps({
 		value: {
 			type: String,
-			default: '#1890ff'
+			default: '#1677FF'
 		}
 	})
 
@@ -22,11 +22,17 @@
 	}
 
 	const update = (val) => {
+		showTxt(val)
+		emit('update:value', val)
+	}
+	onMounted(() => {
+		showTxt(props.value)
+	})
+	const showTxt = (val) => {
 		const currentColor = document.querySelector('.current-color')
 		if (currentColor) {
 			currentColor.textContent = val
 		}
-		emit('update:value', val)
 	}
 </script>
 

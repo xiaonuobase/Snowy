@@ -15,10 +15,7 @@ package vip.xiaonuo.dev.modular.sms.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.dev.modular.sms.entity.DevSms;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsIdParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsPageParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsSendAliyunParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsSendTencentParam;
+import vip.xiaonuo.dev.modular.sms.param.*;
 
 import java.util.List;
 
@@ -45,6 +42,14 @@ public interface DevSmsService extends IService<DevSms> {
      * @date 2022/6/21 18:37
      **/
     void sendTencent(DevSmsSendTencentParam devSmsSendTencentParam);
+
+    /**
+     * 发送短信——小诺短信
+     *
+     * @author xuyuxiang
+     * @date 2024/1/25 14:08
+     **/
+    void sendXiaonuo(DevSmsSendXiaonuoParam devSmsSendXiaonuoParam);
 
     /**
      * 获取短信分页

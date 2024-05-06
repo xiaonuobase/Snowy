@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,196 +29,196 @@ import java.util.Date;
 public class SysUserResult {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 头像 */
-    @ApiModelProperty(value = "头像", position = 3)
+    @Schema(description = "头像")
     private String avatar;
 
     /** 签名 */
-    @ApiModelProperty(value = "签名", position = 4)
+    @Schema(description = "签名")
     private String signature;
 
     /** 账号 */
-    @ApiModelProperty(value = "账号", position = 5)
+    @Schema(description = "账号")
     private String account;
 
     /** 姓名 */
-    @ApiModelProperty(value = "姓名", position = 7)
+    @Schema(description = "姓名")
     private String name;
 
     /** 昵称 */
-    @ApiModelProperty(value = "昵称", position = 8)
+    @Schema(description = "昵称")
     private String nickname;
 
     /** 性别 */
-    @ApiModelProperty(value = "性别", position = 9)
+    @Schema(description = "性别")
     private String gender;
 
     /** 年龄 */
-    @ApiModelProperty(value = "年龄", position = 10)
+    @Schema(description = "年龄")
     private String age;
 
     /** 出生日期 */
-    @ApiModelProperty(value = "出生日期", position = 11)
+    @Schema(description = "出生日期")
     private String birthday;
 
     /** 民族 */
-    @ApiModelProperty(value = "民族", position = 12)
+    @Schema(description = "民族")
     private String nation;
 
     /** 籍贯 */
-    @ApiModelProperty(value = "籍贯", position = 13)
+    @Schema(description = "籍贯")
     private String nativePlace;
 
     /** 家庭住址 */
-    @ApiModelProperty(value = "家庭住址", position = 14)
+    @Schema(description = "家庭住址")
     private String homeAddress;
 
     /** 通信地址 */
-    @ApiModelProperty(value = "通信地址", position = 15)
+    @Schema(description = "通信地址")
     private String mailingAddress;
 
     /** 证件类型 */
-    @ApiModelProperty(value = "证件类型", position = 16)
+    @Schema(description = "证件类型")
     private String idCardType;
 
     /** 证件号码 */
-    @ApiModelProperty(value = "证件号码", position = 17)
+    @Schema(description = "证件号码")
     private String idCardNumber;
 
     /** 文化程度 */
-    @ApiModelProperty(value = "文化程度", position = 18)
+    @Schema(description = "文化程度")
     private String cultureLevel;
 
     /** 政治面貌 */
-    @ApiModelProperty(value = "政治面貌", position = 19)
+    @Schema(description = "政治面貌")
     private String politicalOutlook;
 
     /** 毕业院校 */
-    @ApiModelProperty(value = "毕业院校", position = 20)
+    @Schema(description = "毕业院校")
     private String college;
 
     /** 学历 */
-    @ApiModelProperty(value = "学历", position = 21)
+    @Schema(description = "学历")
     private String education;
 
     /** 学制 */
-    @ApiModelProperty(value = "学制", position = 22)
+    @Schema(description = "学制")
     private String eduLength;
 
     /** 学位 */
-    @ApiModelProperty(value = "学位", position = 23)
+    @Schema(description = "学位")
     private String degree;
 
     /** 手机 */
-    @ApiModelProperty(value = "手机", position = 24)
+    @Schema(description = "手机")
     private String phone;
 
     /** 邮箱 */
-    @ApiModelProperty(value = "邮箱", position = 25)
+    @Schema(description = "邮箱")
     private String email;
 
     /** 家庭电话 */
-    @ApiModelProperty(value = "家庭电话", position = 26)
+    @Schema(description = "家庭电话")
     private String homeTel;
 
     /** 办公电话 */
-    @ApiModelProperty(value = "办公电话", position = 27)
+    @Schema(description = "办公电话")
     private String officeTel;
 
     /** 紧急联系人 */
-    @ApiModelProperty(value = "紧急联系人", position = 28)
+    @Schema(description = "紧急联系人")
     private String emergencyContact;
 
     /** 紧急联系人电话 */
-    @ApiModelProperty(value = "紧急联系人电话", position = 29)
+    @Schema(description = "紧急联系人电话")
     private String emergencyPhone;
 
     /** 紧急联系人地址 */
-    @ApiModelProperty(value = "紧急联系人地址", position = 30)
+    @Schema(description = "紧急联系人地址")
     private String emergencyAddress;
 
     /** 员工编号 */
-    @ApiModelProperty(value = "员工编号", position = 31)
+    @Schema(description = "员工编号")
     private String empNo;
 
     /** 入职日期 */
-    @ApiModelProperty(value = "入职日期", position = 32)
+    @Schema(description = "入职日期")
     private String entryDate;
 
     /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 33)
+    @Schema(description = "组织id")
     private String orgId;
 
     /** 职位id */
-    @ApiModelProperty(value = "职位id", position = 34)
+    @Schema(description = "职位id")
     private String positionId;
 
     /** 职级 */
-    @ApiModelProperty(value = "职级", position = 35)
+    @Schema(description = "职级")
     private String positionLevel;
 
     /** 主管id */
-    @ApiModelProperty(value = "主管id", position = 36)
+    @Schema(description = "主管id")
     private String directorId;
 
     /** 上次登录ip */
-    @ApiModelProperty(value = "上次登录ip", position = 37)
+    @Schema(description = "上次登录ip")
     private String lastLoginIp;
 
     /** 上次登录地点 */
-    @ApiModelProperty(value = "上次登录地点", position = 38)
+    @Schema(description = "上次登录地点")
     private String lastLoginAddress;
 
     /** 上次登录时间 */
-    @ApiModelProperty(value = "上次登录时间", position = 39)
+    @Schema(description = "上次登录时间")
     private Date lastLoginTime;
 
     /** 上次登录设备 */
-    @ApiModelProperty(value = "上次登录设备", position = 40)
+    @Schema(description = "上次登录设备")
     private String lastLoginDevice;
 
     /** 最新登录ip */
-    @ApiModelProperty(value = "最新登录ip", position = 41)
+    @Schema(description = "最新登录ip")
     private String latestLoginIp;
 
     /** 最新登录地点 */
-    @ApiModelProperty(value = "最新登录地点", position = 42)
+    @Schema(description = "最新登录地点")
     private String latestLoginAddress;
 
     /** 最新登录时间 */
-    @ApiModelProperty(value = "最新登录时间", position = 43)
+    @Schema(description = "最新登录时间")
     private Date latestLoginTime;
 
     /** 最新登录设备 */
-    @ApiModelProperty(value = "最新登录设备", position = 44)
+    @Schema(description = "最新登录设备")
     private String latestLoginDevice;
 
     /** 用户状态 */
-    @ApiModelProperty(value = "用户状态", position = 45)
+    @Schema(description = "用户状态")
     private String userStatus;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 46)
+    @Schema(description = "排序码")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 47)
+    @Schema(description = "扩展信息")
     private String extJson;
 
     /* ====额外的字段==== */
 
     /** 组织名称 */
-    @ApiModelProperty(value = "组织名称", position = 48)
+    @Schema(description = "组织名称")
     private String orgName;
 
     /** 职位名称 */
-    @ApiModelProperty(value = "职位名称", position = 49)
+    @Schema(description = "职位名称")
     private String positionName;
 
     /** 主管名称 */
-    @ApiModelProperty(value = "主管名称", position = 50)
+    @Schema(description = "主管名称")
     private String directorName;
 }

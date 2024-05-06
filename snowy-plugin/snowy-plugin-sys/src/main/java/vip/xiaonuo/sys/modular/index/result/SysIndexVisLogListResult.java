@@ -14,7 +14,7 @@ package vip.xiaonuo.sys.modular.index.result;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,70 +31,70 @@ import java.util.Date;
 public class SysIndexVisLogListResult {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 日志分类 */
-    @ApiModelProperty(value = "日志分类", position = 2)
+    @Schema(description = "日志分类")
     private String category;
 
     /** 日志名称 */
-    @ApiModelProperty(value = "日志名称", position = 3)
+    @Schema(description = "日志名称")
     private String name;
 
     /** 执行状态 */
-    @ApiModelProperty(value = "执行状态", position = 4)
+    @Schema(description = "执行状态")
     private String exeStatus;
 
     /** 具体消息 */
-    @ApiModelProperty(value = "具体消息", position = 5)
+    @Schema(description = "具体消息")
     private String exeMessage;
 
     /** 操作ip */
-    @ApiModelProperty(value = "操作ip", position = 6)
+    @Schema(description = "操作ip")
     private String opIp;
 
     /** 操作地址 */
-    @ApiModelProperty(value = "操作地址", position = 7)
+    @Schema(description = "操作地址")
     private String opAddress;
 
     /** 操作浏览器 */
-    @ApiModelProperty(value = "操作浏览器", position = 8)
+    @Schema(description = "操作浏览器")
     private String opBrowser;
 
     /** 操作系统 */
-    @ApiModelProperty(value = "操作系统", position = 9)
+    @Schema(description = "操作系统")
     private String opOs;
 
     /** 操作时间 */
-    @ApiModelProperty(value = "操作时间", position = 10)
+    @Schema(description = "操作时间")
     private Date opTime;
 
     /** 操作人姓名 */
-    @ApiModelProperty(value = "操作人姓名", position = 11)
+    @Schema(description = "操作人姓名")
     private String opUser;
 
     /** 签名数据 */
-    @ApiModelProperty(value = "签名数据", position = 12)
+    @Schema(description = "签名数据")
     private String signData;
 
     /** 创建时间 */
-    @ApiModelProperty(value = "创建时间", position = 13)
+    @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /** 创建人 */
-    @ApiModelProperty(value = "创建人", position = 14)
+    @Schema(description = "创建人")
     @TableField(fill = FieldFill.INSERT)
     private String createUser;
 
     /** 更新时间 */
-    @ApiModelProperty(value = "更新时间", position = 15)
+    @Schema(description = "更新时间")
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /** 更新人 */
-    @ApiModelProperty(value = "更新人", position = 16)
+    @Schema(description = "更新人")
     @TableField(fill = FieldFill.UPDATE)
     private String updateUser;
 }

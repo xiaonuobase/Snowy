@@ -7,7 +7,7 @@
     <parent>
         <groupId>vip.xiaonuo</groupId>
         <artifactId>snowy-plugin-api</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.0</version>
     </parent>
 
     <artifactId>snowy-plugin-dev-api</artifactId>
@@ -21,82 +21,64 @@
             <artifactId>snowy-common</artifactId>
         </dependency>
 
-        <!--腾讯云上传文件客户端-->
+        <!--x-file-storage文件sdk-->
+        <dependency>
+            <groupId>org.dromara.x-file-storage</groupId>
+            <artifactId>x-file-storage-spring</artifactId>
+        </dependency>
+
+        <!--腾讯云文件sdk-->
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>tencentcloud-sdk-java-common</artifactId>
-                    <groupId>com.tencentcloudapi</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!--阿里云上传文件客户端-->
+        <!--阿里云文件sdk-->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.codehaus.jettison</groupId>
-                    <artifactId>jettison</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!-- jettison -->
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-        </dependency>
-
-        <!--minio上传文件客户端-->
+        <!--minio文件sdk-->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
         </dependency>
 
-        <!--java邮件发送-->
+        <!--java邮件sdk-->
         <dependency>
             <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
+            <artifactId>jakarta.mail</artifactId>
         </dependency>
 
-        <!--阿里云邮件发送-->
+        <!--阿里云邮件sdk-->
         <dependency>
             <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dm</artifactId>
+            <artifactId>dm20151123</artifactId>
         </dependency>
 
-        <!-- 腾讯云邮件发送 -->
+        <!-- 腾讯云邮件sdk -->
         <dependency>
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java-ses</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>okio-jvm</artifactId>
-                    <groupId>com.squareup.okio</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!--阿里云短信发送-->
+        <!--阿里云短信sdk-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>dysmsapi20170525</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org.jacoco.agent</artifactId>
-                    <groupId>org.jacoco</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!--腾讯云短信发送-->
+        <!--腾讯云短信sdk-->
         <dependency>
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java-sms</artifactId>
+        </dependency>
+
+        <!-- sms4j短信sdk -->
+        <dependency>
+            <groupId>org.dromara.sms4j</groupId>
+            <artifactId>sms4j-javase-plugin</artifactId>
         </dependency>
 
         <!--系统硬件信息-->

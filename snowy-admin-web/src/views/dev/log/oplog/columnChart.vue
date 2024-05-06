@@ -1,5 +1,5 @@
 <template>
-	<div id="columnChart" style="height: 180px"></div>
+	<div id="columnChart" class="xn-ht200"></div>
 </template>
 
 <script setup>
@@ -16,7 +16,7 @@
 				yField: 'count',
 				seriesField: 'name',
 				/** 设置颜色 */
-				color: ['#1890ff', '#F5222D'],
+				color: ['#1677FF', '#F5222D'],
 				/** 设置间距 */
 				// marginRatio: 0.1,
 				label: {
@@ -37,3 +37,8 @@
 		})
 	})
 </script>
+<style scoped>
+	.xn-ht200 {
+		height: 200px;
+	}
+</style>

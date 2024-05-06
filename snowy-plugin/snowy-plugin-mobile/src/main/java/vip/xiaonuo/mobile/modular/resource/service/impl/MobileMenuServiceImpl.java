@@ -25,6 +25,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.exception.CommonException;
@@ -37,7 +38,6 @@ import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 import vip.xiaonuo.mobile.modular.resource.service.MobileModuleService;
 import vip.xiaonuo.sys.api.SysRelationApi;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

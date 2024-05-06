@@ -16,15 +16,15 @@
 			<a-form-item label="任务类名：" name="actionClass">
 				<a-select v-model:value="formData.actionClass" placeholder="请选择任务类名" :options="actionClassOptions" />
 			</a-form-item>
-			<a-form-item label="表达式：" name="cronExpression">
+			<a-form-item ref="cronExpressionRef" label="表达式：" name="cronExpression">
 				<cron v-model:modelValue="formData.cronExpression" />
 			</a-form-item>
 			<a-form-item label="排序:" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
 		</template>
 	</xn-form-container>
@@ -37,6 +37,8 @@
 	import Cron from '@/components/Cron/index.vue'
 	// 默认是关闭状态
 	const visible = ref(false)
+	const cronExpressionRef = ref(null)
+
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据
@@ -79,20 +81,32 @@
 		sortCode: [required('请滑动排序')]
 	}
 
+	watch(
+		formData,
+		(newValue) => {
+			if (newValue.cronExpression && cronExpressionRef.value) {
+				cronExpressionRef.value.clearValidate()
+			}
+		},
+		{ deep: true }
+	)
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			submitLoading.value = true
-			jobApi
-				.submitForm(formData.value, formData.value.id)
-				.then(() => {
-					onClose()
-					emit('successful')
-				})
-				.finally(() => {
-					submitLoading.value = false
-				})
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				submitLoading.value = true
+				jobApi
+					.submitForm(formData.value, formData.value.id)
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
+			})
+			.catch(() => {})
 	}
 	// 分类
 	const categoryOptions = tool.dictList('JOB_CATEGORY')

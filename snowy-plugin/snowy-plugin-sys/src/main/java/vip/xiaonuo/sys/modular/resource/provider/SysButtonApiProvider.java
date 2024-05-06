@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.resource.provider;
 
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysButtonApi;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
-
-import javax.annotation.Resource;
 
 /**
  * 按钮API接口实现类

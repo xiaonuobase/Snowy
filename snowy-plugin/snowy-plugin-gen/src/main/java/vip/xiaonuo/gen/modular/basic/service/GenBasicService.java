@@ -14,6 +14,7 @@ package vip.xiaonuo.gen.modular.basic.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpServletResponse;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
@@ -21,7 +22,6 @@ import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 

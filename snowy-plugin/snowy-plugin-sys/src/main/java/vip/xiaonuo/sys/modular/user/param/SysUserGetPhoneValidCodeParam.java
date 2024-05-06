@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 获取手机验证码参数
@@ -29,17 +28,17 @@ import javax.validation.constraints.NotBlank;
 public class SysUserGetPhoneValidCodeParam {
 
     /** 手机号 */
-    @ApiModelProperty(value = "手机号", required = true, position = 1)
+    @Schema(description = "手机号", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "手机号不能为空")
     private String phone;
 
     /** 验证码 */
-    @ApiModelProperty(value = "验证码", required = true, position = 2)
+    @Schema(description = "验证码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "验证码不能为空")
     private String validCode;
 
     /** 验证码请求号 */
-    @ApiModelProperty(value = "验证码请求号", required = true, position = 3)
+    @Schema(description = "验证码请求号", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "验证码请求号不能为空")
     private String validCodeReqNo;
 }

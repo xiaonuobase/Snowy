@@ -6,7 +6,7 @@
 		<% } %>
 		<% } %>
 		:width="700"
-		:visible="visible"
+		v-model:open="open"
 		:destroy-on-close="true"
 		@close="onClose"
 	>
@@ -94,7 +94,7 @@
 	import { required } from '@/utils/formRules'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
 	// 抽屉状态
-	const visible = ref(false)
+	const open = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据
@@ -110,7 +110,7 @@
 
 	// 打开抽屉
 	const onOpen = (record) => {
-		visible.value = true
+		open.value = true
 		if (record) {
 			let recordData = cloneDeep(record)
 			<% for(var i = 0; i < configList.~size; i++) { %>
@@ -132,7 +132,7 @@
 	const onClose = () => {
 		formRef.value.resetFields()
 		formData.value = {}
-		visible.value = false
+		open.value = false
 	}
 	// 默认要校验的
 	const formRules = {
@@ -146,28 +146,31 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			submitLoading.value = true
-			const formDataParam = cloneDeep(formData.value)
-			<% for(var i = 0; i < configList.~size; i++) { %>
-			<% if(configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
-			formDataParam.${configList[i].fieldNameCamelCase} = JSON.stringify(formDataParam.${configList[i].fieldNameCamelCase})
-			<% } %>
-			<% } %>
-			${classNameFirstLower}Api
+		formRef.value
+			.validate()
+			.then(() => {
+				submitLoading.value = true
+				const formDataParam = cloneDeep(formData.value)
 				<% for(var i = 0; i < configList.~size; i++) { %>
-				<% if(configList[i].needTableId) { %>
-				.${classNameFirstLower}SubmitForm(formDataParam, formDataParam.${configList[i].fieldNameCamelCase})
+				<% if(configList[i].whetherAddUpdate && configList[i].effectType == 'checkbox') { %>
+				formDataParam.${configList[i].fieldNameCamelCase} = JSON.stringify(formDataParam.${configList[i].fieldNameCamelCase})
 				<% } %>
 				<% } %>
-				.then(() => {
-					onClose()
-					emit('successful')
-				})
-				.finally(() => {
+				${classNameFirstLower}Api
+					<% for(var i = 0; i < configList.~size; i++) { %>
+					<% if(configList[i].needTableId) { %>
+					.${classNameFirstLower}SubmitForm(formDataParam, formDataParam.${configList[i].fieldNameCamelCase})
+					<% } %>
+					<% } %>
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
 					submitLoading.value = false
-				})
-		})
+					})
+			})
+			.catch(() => {})
 	}
 	// 抛出函数
 	defineExpose({

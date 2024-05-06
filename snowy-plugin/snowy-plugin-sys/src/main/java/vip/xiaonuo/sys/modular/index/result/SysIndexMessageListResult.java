@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.index.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,38 +29,38 @@ import java.util.Date;
 public class SysIndexMessageListResult {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 2)
+    @Schema(description = "分类")
     private String category;
 
     /** 主题 */
-    @ApiModelProperty(value = "主题", position = 3)
+    @Schema(description = "主题")
     private String subject;
 
     /** 正文 */
-    @ApiModelProperty(value = "正文", position = 4)
+    @Schema(description = "正文")
     private String content;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 5)
+    @Schema(description = "扩展信息")
     private String extJson;
 
     /** 创建时间 */
-    @ApiModelProperty(value = "创建时间", position = 6)
+    @Schema(description = "创建时间")
     private Date createTime;
 
     /** 创建人 */
-    @ApiModelProperty(value = "创建人", position = 7)
+    @Schema(description = "创建人")
     private String createUser;
 
     /** 更新时间 */
-    @ApiModelProperty(value = "更新时间", position = 8)
+    @Schema(description = "更新时间")
     private Date updateTime;
 
     /** 更新人 */
-    @ApiModelProperty(value = "更新人", position = 9)
+    @Schema(description = "更新人")
     private String updateUser;
 }

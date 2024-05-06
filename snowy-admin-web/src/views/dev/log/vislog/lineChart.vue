@@ -1,5 +1,5 @@
 <template>
-	<div id="visLogChartLine" style="height: 180px"></div>
+	<div id="visLogChartLine" class="xn-ht200"></div>
 </template>
 
 <script setup name="visLogChart">
@@ -39,10 +39,15 @@
 				xField: 'date',
 				yField: valueKey,
 				seriesField: seriesKey,
-				color: ['#1890ff', 'rgb(188, 189, 190)'],
+				color: ['#1677FF', 'rgb(188, 189, 190)'],
 				appendPadding: [0, 8, 0, 0]
 			})
 			line.render()
 		})
 	})
 </script>
+<style scoped>
+	.xn-ht200 {
+		height: 200px;
+	}
+</style>

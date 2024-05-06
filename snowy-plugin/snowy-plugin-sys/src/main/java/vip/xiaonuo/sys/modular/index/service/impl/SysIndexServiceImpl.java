@@ -17,11 +17,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.common.sse.CommonSseParam;
 import vip.xiaonuo.dev.api.DevLogApi;
 import vip.xiaonuo.dev.api.DevMessageApi;
@@ -32,7 +32,7 @@ import vip.xiaonuo.sys.modular.index.service.SysIndexService;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
-import javax.annotation.Resource;
+
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public class SysIndexServiceImpl implements SysIndexService {
     }
 
     @Override
-    public void deleteSchedule(CommonValidList<SysIndexScheduleIdParam> sysIndexScheduleIdParamList) {
+    public void deleteSchedule(List<SysIndexScheduleIdParam> sysIndexScheduleIdParamList) {
         List<String> scheduleIdList = sysIndexScheduleIdParamList.stream().map(SysIndexScheduleIdParam::getId)
                 .collect(Collectors.toList());
         if(ObjectUtil.isNotEmpty(scheduleIdList)) {

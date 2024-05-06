@@ -17,11 +17,11 @@
 			<a-descriptions-item label="操作人">{{ formData.opUser }}</a-descriptions-item>
 		</a-descriptions>
 
-		<a-space direction="vertical" class="mb-2" style="width: 100%">
+		<a-space direction="vertical" class="mb-2 xn-wd" >
 			请求参数：
 			<XnHighlightjs language="JSON" :code="paramJson"></XnHighlightjs>
 		</a-space>
-		<a-space direction="vertical" class="mb-2" style="width: 100%">
+		<a-space direction="vertical" class="mb-2 xn-wd" >
 			返回结果：
 			<XnHighlightjs autodetect :code="resultJson"></XnHighlightjs>
 		</a-space>

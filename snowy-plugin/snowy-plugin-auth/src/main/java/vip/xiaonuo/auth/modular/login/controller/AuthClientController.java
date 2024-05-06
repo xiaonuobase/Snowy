@@ -12,10 +12,10 @@
  */
 package vip.xiaonuo.auth.modular.login.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,17 +32,13 @@ import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.pojo.CommonResult;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-
 /**
  * C端登录控制器
  *
  * @author xuyuxiang
  * @date 2021/12/23 21:50
  */
-@Api(tags = "C端登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@Tag(name = "C端登录控制器")
 @RestController
 @Validated
 public class AuthClientController {
@@ -56,8 +52,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("C端获取图片验证码")
+    @Operation(summary = "C端获取图片验证码")
     @GetMapping("/auth/c/getPicCaptcha")
     public CommonResult<AuthPicValidCodeResult> getPicCaptcha() {
         return CommonResult.data(authService.getPicCaptcha(SaClientTypeEnum.C.getValue()));
@@ -69,8 +64,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("C端获取手机验证码")
+    @Operation(summary = "C端获取手机验证码")
     @GetMapping("/auth/c/getPhoneValidCode")
     public CommonResult<String> getPhoneValidCode(@Valid AuthGetPhoneValidCodeParam authGetPhoneValidCodeParam) {
         return CommonResult.data(authService.getPhoneValidCode(authGetPhoneValidCodeParam, SaClientTypeEnum.C.getValue()));
@@ -82,8 +76,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("C端账号密码登录")
+    @Operation(summary = "C端账号密码登录")
     @PostMapping("/auth/c/doLogin")
     public CommonResult<String> doLogin(@RequestBody @Valid AuthAccountPasswordLoginParam authAccountPasswordLoginParam) {
         return CommonResult.data(authService.doLogin(authAccountPasswordLoginParam, SaClientTypeEnum.C.getValue()));
@@ -95,8 +88,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("C端手机验证码登录")
+    @Operation(summary = "C端手机验证码登录")
     @PostMapping("/auth/c/doLoginByPhone")
     public CommonResult<String> doLoginByPhone(@RequestBody @Valid AuthPhoneValidCodeLoginParam authPhoneValidCodeLoginParam) {
         return CommonResult.data(authService.doLoginByPhone(authPhoneValidCodeLoginParam, SaClientTypeEnum.C.getValue()));
@@ -108,8 +100,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("C端退出")
+    @Operation(summary = "C端退出")
     @SaClientCheckLogin
     @GetMapping("/auth/c/doLogout")
     public CommonResult<String> doLogout() {
@@ -123,8 +114,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("C端获取用户信息")
+    @Operation(summary = "C端获取用户信息")
     @SaClientCheckLogin
     @GetMapping("/auth/c/getLoginUser")
     public CommonResult<SaBaseClientLoginUser> getLoginUser() {

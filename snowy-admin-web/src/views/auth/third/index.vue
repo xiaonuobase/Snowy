@@ -3,7 +3,7 @@
 		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
 				<a-col :span="8">
-					<a-form-item label="关键字" name="searchKey">
+					<a-form-item label="关键词" name="searchKey">
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户名或昵称关键词"></a-input>
 					</a-form-item>
 				</a-col>
@@ -15,7 +15,7 @@
 				</a-col>
 				<a-col :span="6">
 					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+					<a-button class="xn-mg08" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
 		</a-form>

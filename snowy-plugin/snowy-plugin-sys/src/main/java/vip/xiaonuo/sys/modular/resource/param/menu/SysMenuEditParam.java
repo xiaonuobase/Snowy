@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.sys.modular.resource.param.menu;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 菜单编辑参数
@@ -30,57 +29,57 @@ import javax.validation.constraints.NotNull;
 public class SysMenuEditParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true, position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 父id */
-    @ApiModelProperty(value = "父id", required = true, position = 2)
+    @Schema(description = "父id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 标题 */
-    @ApiModelProperty(value = "标题", required = true, position = 3)
+    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 菜单类型 */
-    @ApiModelProperty(value = "菜单类型", required = true, position = 4)
+    @Schema(description = "菜单类型", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "menuType不能为空")
     private String menuType;
 
     /** 模块 */
-    @ApiModelProperty(value = "模块", required = true, position = 5)
+    @Schema(description = "模块", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "module不能为空")
     private String module;
 
     /** 路径 */
-    @ApiModelProperty(value = "路径", required = true, position = 6)
+    @Schema(description = "路径", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "path不能为空")
     private String path;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", required = true, position = 7)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 别名 */
-    @ApiModelProperty(value = "别名", position = 8)
+    @Schema(description = "别名")
     private String name;
 
     /** 组件 */
-    @ApiModelProperty(value = "组件", position = 9)
+    @Schema(description = "组件")
     private String component;
 
     /** 图标 */
-    @ApiModelProperty(value = "图标", position = 10)
+    @Schema(description = "图标")
     private String icon;
 
     /** 是否可见 */
-    @ApiModelProperty(value = "是否可见", position = 11)
+    @Schema(description = "是否可见")
     private String visible;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 12)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

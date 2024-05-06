@@ -27,20 +27,12 @@ const getCacheConfig = (value) => {
 	return data
 }
 
-/**
- * deprecated 请使用 useGlobalStore
- */
+// deprecated 请使用 useGlobalStore
 export const globalStore = defineStore('global', () => {
-	// 利用Vue3组合式API，ref()定义state的属性
-	// function() 定义actions
-	// computed 定义getters
-
-	// 定义state
 	// 移动端布局
 	const isMobile = ref(false)
 	// 布局
 	const layout = ref(getCacheConfig('SNOWY_LAYOUT'))
-
 	// 菜单是否折叠 toggle
 	const menuIsCollapse = ref(getCacheConfig('SNOWY_MENU_COLLAPSE'))
 	// 侧边菜单是否排他展开
@@ -49,17 +41,24 @@ export const globalStore = defineStore('global', () => {
 	const layoutTagsOpen = ref(getCacheConfig('SNOWY_LAYOUT_TAGS_OPEN'))
 	// 是否展示面包屑
 	const breadcrumbOpen = ref(getCacheConfig('SNOWY_BREADCRUMD_OPEN'))
+	// 是否开启固定宽度（顶栏菜单）
+	const fixedWidth = ref(getCacheConfig('SNOWY_FIXEDWIDTH_OPEN'))
 	// 顶栏是否应用主题色
 	const topHeaderThemeColorOpen = ref(getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_OPEN'))
 	// 顶栏主题色通栏
 	const topHeaderThemeColorSpread = ref(getCacheConfig('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD'))
+	// 登录用户水印
+	const loginUserWatermarkOpen = ref(getCacheConfig('SNOWY_LOGIN_USER_WATERMARK_OPEN'))
+	// 页脚版权信息
+	const footerCopyrightOpen = ref(getCacheConfig('SNOWY_FOOTER_COPYRIGHT_OPEN'))
 	// 模块坞
 	const moduleUnfoldOpen = ref(getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'))
-
 	// 主题
 	const theme = ref(getCacheConfig('SNOWY_THEME'))
 	// 主题颜色
 	const themeColor = ref(toolDataGet('SNOWY_THEME_COLOR') || config.COLOR)
+	// 圆角分格
+	const roundedCornerStyleOpen = ref(getCacheConfig('SNOWY_ROUNDED_CORNER_STYLE_OPEN'))
 	// 整体表单风格
 	const formStyle = ref(getCacheConfig('SNOWY_FORM_STYLE'))
 	// 用户信息
@@ -107,11 +106,23 @@ export const globalStore = defineStore('global', () => {
 			case 'breadcrumbOpen':
 				breadcrumbOpen.value = !breadcrumbOpen.value
 				break
+			case 'fixedWidth':
+				fixedWidth.value = !fixedWidth.value
+				break
 			case 'topHeaderThemeColorOpen':
 				topHeaderThemeColorOpen.value = !topHeaderThemeColorOpen.value
 				topHeaderThemeColorSpread.value = topHeaderThemeColorOpen.value
 					? topHeaderThemeColorSpread.value
 					: topHeaderThemeColorOpen.value
+				break
+			case 'loginUserWatermarkOpen':
+				loginUserWatermarkOpen.value = !loginUserWatermarkOpen.value
+				break
+			case 'footerCopyrightOpen':
+				footerCopyrightOpen.value = !footerCopyrightOpen.value
+				break
+			case 'roundedCornerStyleOpen':
+				roundedCornerStyleOpen.value = !roundedCornerStyleOpen.value
 				break
 			case 'moduleUnfoldOpen':
 				moduleUnfoldOpen.value = !moduleUnfoldOpen.value
@@ -137,11 +148,15 @@ export const globalStore = defineStore('global', () => {
 		sideUniqueOpen,
 		layoutTagsOpen,
 		breadcrumbOpen,
+		fixedWidth,
 		topHeaderThemeColorOpen,
 		topHeaderThemeColorSpread,
+		loginUserWatermarkOpen,
+		footerCopyrightOpen,
 		moduleUnfoldOpen,
 		theme,
 		themeColor,
+		roundedCornerStyleOpen,
 		formStyle,
 		userInfo,
 		sysBaseConfig,

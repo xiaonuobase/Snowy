@@ -5,7 +5,7 @@
 			<a-timeline>
 				<a-timeline-item :key="schedule.id" v-for="schedule in scheduleList">
 					{{ schedule.scheduleTime }} {{ schedule.scheduleContent }}
-					<a style="float: right"><delete-outlined @click="deleteSchedules(schedule)" /></a>
+					<a class="xn-fdr"><delete-outlined @click="deleteSchedules(schedule)" /></a>
 				</a-timeline-item>
 			</a-timeline>
 			<div class="add-schedule" @click="addSchedule"><plus-circle-two-tone /> 新增日程</div>
@@ -25,7 +25,7 @@
 				</a-form-item>
 			</a-form>
 			<template #footer>
-				<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+				<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 			</template>
 		</xn-form-container>

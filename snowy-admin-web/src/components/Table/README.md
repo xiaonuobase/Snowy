@@ -112,7 +112,7 @@ export default {
     <!-- #bodyCell 放入column表格列需要显示的数据，可以通过判断进行一个自定义显示 -->
    <template #bodyCell="{ column, record }">
 			<template >
-				<a-avatar style="width: 25px; height: 25px" />
+				<a-avatar class="xn-wh25" />
 			</template>
 			<template v-if="column.dataIndex === 'status'">
 			  <!-- 进行自定义显示内容 -->
@@ -199,7 +199,8 @@ const edit = (row) => {
 | -------------- | ----------------------------------------------- | ----------------- | ------ |
 | alert          | 设置是否显示表格信息栏                          | [object, boolean] | null   |
 | showPagination | 显示分页选择器，可传 'auto' \| boolean          | [string, boolean] | 'auto' |
-| data           | 加载数据方法 必须为 `Promise` 对象 **必须绑定** | Promise           | -      |
+| data           | 加载数据方法 必须为 `Promise` 对象 **必须绑定**  | Promise           | -      |
+| lineSelection  | 是否开启点击行高亮显示并选中                     | Boolean           | 'false'      |
 
 
 `alert` 属性对象：
@@ -245,6 +246,7 @@ result.then((r) => {
 					data.localLoading = false
 					return
 				}
+				// 获取分页数据及分页的显示内容
 				data.localPagination =
 					(props.showPagination &&
 						Object.assign({}, data.localPagination, {
@@ -270,31 +272,35 @@ result.then((r) => {
 					loadData()
 					return
 				}
-				// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
+				
 				try {
-					/*
-					if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.size))) {
-						data.localPagination.hideOnSinglePage = true
-					}
-					*/
+					// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
+					// 没有数据或只有一页数据时隐藏分页栏
+					// if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.pageSize))) {
+					// 	data.localPagination.hideOnSinglePage = true
+					// }
 					if (!props.showPagination) {
 						data.localPagination.hideOnSinglePage = true
 					}
 				} catch (e) {
 					data.localPagination = false
 				}
+
+				// if (props.showPagination === false) {
+				// 	// 既然配置了不分页，那么我们这里接收到肯定是数组
+				// 	console.log(r);
+				// 	data.localDataSource = []
+				// 	if (r instanceof Array) {
+				// 		data.localDataSource = r
+				// 	}
+				// } else {
+				// 	data.localDataSource = r.records
+				// }
+
 				// 返回结果中的数组数据
-				if (props.showPagination === false) {
-					// 既然配置了不分页，那么我们这里接收到肯定是数组
-					data.localDataSource = []
-					if (r instanceof Array) {
-						data.localDataSource = r
-					}
-				} else {
-					data.localDataSource = r.records
-				}
+				data.localDataSource = r.records
 				data.localLoading = false
-				getTableProps() // 获取到后端返回的数据后，需要调用一下获取table的props的方法去刷新table
+				getTableProps()
 			})
 ```
 返回 JSON 例子：

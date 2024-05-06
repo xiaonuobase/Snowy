@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.sys.modular.role.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 角色添加参数
@@ -30,25 +29,25 @@ import javax.validation.constraints.NotNull;
 public class SysRoleAddParam {
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", required = true, position = 1)
+    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", required = true, position = 2)
+    @Schema(description = "分类", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", required = true, position = 3)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 组织id */
-    @ApiModelProperty(value = "组织id", position = 4)
+    @Schema(description = "组织id")
     private String orgId;
 
     /** 扩展JSON */
-    @ApiModelProperty(value = "扩展JSON", position = 5)
+    @Schema(description = "扩展JSON")
     private String extJson;
 }

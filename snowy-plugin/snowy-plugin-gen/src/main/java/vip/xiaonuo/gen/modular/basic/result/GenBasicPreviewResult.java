@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.gen.modular.basic.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,19 +29,19 @@ import java.util.List;
 public class GenBasicPreviewResult {
 
     /** SQL代码结果集 */
-    @ApiModelProperty(value = "SQL代码结果集", position = 1)
+    @Schema(description = "SQL代码结果集")
     private List<GenBasicCodeResult> genBasicCodeSqlResultList;
 
     /** 前端代码结果集 */
-    @ApiModelProperty(value = "前端代码结果集", position = 2)
+    @Schema(description = "前端代码结果集")
     private List<GenBasicCodeResult> genBasicCodeFrontendResultList;
 
     /** 后端代码结果集 */
-    @ApiModelProperty(value = "后端代码结果集", position = 3)
+    @Schema(description = "后端代码结果集")
     private List<GenBasicCodeResult> genBasicCodeBackendResultList;
 
     /** 前端代码结果集 */
-    @ApiModelProperty(value = "移动端代码结果集", position = 4)
+    @Schema(description = "移动端代码结果集")
     private List<GenBasicCodeResult> genBasicCodeMobileResultList;
 
     @Getter
@@ -49,15 +49,15 @@ public class GenBasicPreviewResult {
     public static class GenBasicCodeResult {
 
         /** 代码文件名称 */
-        @ApiModelProperty(value = "代码文件名称", position = 1)
+        @Schema(description = "代码文件名称")
         private String codeFileName;
 
         /** 代码文件带路径名称 */
-        @ApiModelProperty(value = "代码文件带路径名称", position = 2)
+        @Schema(description = "代码文件带路径名称")
         private String codeFileWithPathName;
 
         /** 代码文件内容 */
-        @ApiModelProperty(value = "代码文件内容", position = 2)
+        @Schema(description = "代码文件内容")
         private String codeFileContent;
     }
 }

@@ -12,15 +12,9 @@
  */
 package vip.xiaonuo.common.pojo;
 
-import io.swagger.annotations.ApiModelProperty;
-import springfox.documentation.builders.ResponseMessageBuilder;
-import springfox.documentation.service.ResponseMessage;
-import vip.xiaonuo.common.enums.CommonExceptionEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 对Ajax请求返回Json格式数据的简易封装
@@ -33,13 +27,13 @@ public class CommonResult<T> implements Serializable{
     public static final int CODE_SUCCESS = 200;
     public static final int CODE_ERROR = 500;
 
-    @ApiModelProperty(value = "状态码")
+    @Schema(description = "状态码")
     private int code;
 
-    @ApiModelProperty(value = "提示语")
+    @Schema(description = "提示语")
     private String msg;
 
-    @ApiModelProperty(value = "返回数据")
+    @Schema(description = "返回数据")
     private T data;
 
     public CommonResult() {
@@ -144,17 +138,5 @@ public class CommonResult<T> implements Serializable{
                 + ", \"msg\": \"" + this.getMsg() + "\""
                 + ", \"data\": \"" + this.getData() + "\""
                 + "}";
-    }
-
-    /**
-     * 响应状态码集合
-     *
-     * @author xuyuxiang
-     * @date 2022/7/25 13:36
-     **/
-    public static List<ResponseMessage> responseList() {
-        return Arrays.stream(CommonExceptionEnum.values()).map(commonExceptionEnum -> new ResponseMessageBuilder()
-                .code(commonExceptionEnum.getCode()).message(commonExceptionEnum.getMessage()).build())
-                .collect(Collectors.toList());
     }
 }

@@ -19,7 +19,7 @@
 			</a-tab-pane>
 		</a-tabs>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="sendLoading">发送</a-button>
 		</template>
 	</xn-form-container>

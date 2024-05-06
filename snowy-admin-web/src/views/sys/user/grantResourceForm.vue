@@ -9,7 +9,7 @@
 	>
 		<a-alert message="非超管角色用户不可被授权系统模块菜单资源" banner class="mb-2" />
 		<a-spin :spinning="spinningLoading">
-			<a-radio-group v-model:value="moduleId" button-style="solid" style="padding-bottom: 10px">
+			<a-radio-group v-model:value="moduleId" button-style="solid" class="xn-pb10">
 				<a-radio-button
 					:key="module.id"
 					v-for="module in echoDatalist"
@@ -49,7 +49,7 @@
 			</a-table>
 		</a-spin>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>

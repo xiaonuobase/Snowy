@@ -12,12 +12,12 @@
  */
 package ${packageName}.${moduleName}.modular.${busName}.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -34,7 +34,7 @@ public class ${className}AddParam {
     <% for(var i = 0; i < configList.~size; i++) { %>
     <% if(configList[i].needAdd) { %>
     /** ${configList[i].fieldRemark} */
-    @ApiModelProperty(value = "${configList[i].fieldRemark}",<% if(configList[i].required) { %> required = true,<% } %> position = ${i + 1})
+    @Schema(description = "${configList[i].fieldRemark}"<% if(configList[i].required) { %>, requiredMode = Schema.RequiredMode.REQUIRED<% } %>)
     <% if(configList[i].required) { %>
     <% if(configList[i].fieldJavaType == 'String') { %>@NotBlank<% } else { %>@NotNull<% } %>(message = "${configList[i].fieldNameCamelCase}不能为空")
     <% } else { %><% } %>

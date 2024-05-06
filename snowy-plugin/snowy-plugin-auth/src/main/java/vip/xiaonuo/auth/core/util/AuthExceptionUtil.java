@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.auth.core.util;
 
-import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.exception.*;
 import cn.hutool.http.HttpStatus;
 import lombok.extern.slf4j.Slf4j;

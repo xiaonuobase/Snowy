@@ -8,30 +8,35 @@
 		@close="onClose"
 	>
 		<a-tabs v-model:activeKey="activeKey">
+			<a-tab-pane key="XiaonuoSmsSend" tab="小诺短信">
+				<xiaouo-sms-send ref="xiaonuoSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+			</a-tab-pane>
 			<a-tab-pane key="AliyunSmsSend" tab="阿里云短信">
-				<AliyunSmsSend ref="aliyunSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+				<aliyun-sms-send ref="aliyunSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
 			<a-tab-pane key="TencentSmsSend" tab="腾讯云短信">
-				<TencentSmsSend ref="tencentSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
+				<tencent-sms-send ref="tencentSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
 		</a-tabs>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="sendLoading">发送</a-button>
 		</template>
 	</xn-form-container>
 </template>
 
 <script setup name="smsForm">
-	import AliyunSmsSend from './send/AliyunSmsSend.vue'
-	import TencentSmsSend from './send/TencentSmsSend.vue'
+	import XiaouoSmsSend from './send/xiaonuoSmsSend.vue'
+	import AliyunSmsSend from './send/aliyunSmsSend.vue'
+	import TencentSmsSend from './send/tencentSmsSend.vue'
 
+	const xiaonuoSmsSendRef = ref()
 	const aliyunSmsSendRef = ref()
 	const tencentSmsSendRef = ref()
 
 	// 默认是关闭状态
 	const visible = ref(false)
-	const activeKey = ref('AliyunSmsSend')
+	const activeKey = ref('XiaonuoSmsSend')
 	const sendLoading = ref(false)
 	// 打开抽屉
 	const onOpen = () => {
@@ -48,6 +53,8 @@
 			aliyunSmsSendRef.value.send()
 		} else if (tabActiveKey === 'TencentSmsSend') {
 			tencentSmsSendRef.value.send()
+		} else if (tabActiveKey === 'XiaonuoSmsSend') {
+			xiaonuoSmsSendRef.value.send()
 		}
 	}
 	// 请求loading开始

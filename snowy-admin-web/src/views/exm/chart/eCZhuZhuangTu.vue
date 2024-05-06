@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="基础柱状图" :bordered="false">
-				<BasicBar style="height: 400px" />
+				<BasicBar class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="柱状图标签旋转" :bordered="false">
-				<BarLabelRotation style="height: 400px" />
+				<BarLabelRotation class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="交错正负轴标签" :bordered="false">
-				<BarChartWithNegativeValue style="height: 400px" />
+				<BarChartWithNegativeValue class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="水印 - ECharts 下载统计" :bordered="false">
-				<WatermarkEChartsDownload style="height: 400px" />
+				<WatermarkEChartsDownload class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

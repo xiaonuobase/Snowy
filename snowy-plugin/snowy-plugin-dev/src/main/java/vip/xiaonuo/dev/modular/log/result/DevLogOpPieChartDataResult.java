@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.log.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +27,10 @@ import lombok.Setter;
 public class DevLogOpPieChartDataResult {
 
     /** 类型 */
-    @ApiModelProperty(value = "类型", position = 1)
+    @Schema(description = "类型")
     private String type;
 
     /** 数量 */
-    @ApiModelProperty(value = "数量", position = 2)
+    @Schema(description = "数量")
     private Long value;
 }

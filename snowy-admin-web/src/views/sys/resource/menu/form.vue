@@ -29,7 +29,7 @@
 						<a-tree-select
 							v-model:value="formData.parentId"
 							v-model:treeExpandedKeys="defaultExpandedKeys"
-							style="width: 100%"
+							class="xn-wd"
 							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 							placeholder="请选择上级菜单"
 							allow-clear
@@ -97,12 +97,7 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="图标：" name="icon">
-						<a-input
-							v-model:value="formData.icon"
-							style="width: calc(100% - 70px)"
-							placeholder="请选择图标"
-							allow-clear
-						/>
+						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
 						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
 					</a-form-item>
 				</a-col>
@@ -113,20 +108,20 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="排序:" name="sortCode">
-						<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+						<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />
 	</xn-form-container>
 </template>
 
-<script setup>
+<script setup name="sysResourceMenuForm">
 	import { required } from '@/utils/formRules'
 	import SnowflakeId from 'snowflake-id'
 	import tool from '@/utils/tool'
@@ -199,6 +194,9 @@
 	}
 	// 图标选择器回调
 	const iconCallBack = (value) => {
+		if (value) {
+			formRef.value.clearValidate("icon")
+		}
 		formData.value.icon = value
 	}
 
@@ -223,14 +221,17 @@
 			.then(() => {
 				const param = parameterChanges(formData.value)
 				submitLoading.value = true
-				menuApi.submitForm(param, param.id).then(() => {
-					onClose()
-					emit('successful')
-				})
+				menuApi
+					.submitForm(param, param.id)
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			})
-			.finally(() => {
-				submitLoading.value = false
-			})
+			.catch(() => {})
 	}
 	const parameterChanges = (data) => {
 		// 每个都先增加一个模块ID

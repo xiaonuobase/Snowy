@@ -87,7 +87,12 @@ public enum DevConfigCategoryEnum {
     /**
      * 短信-阿里云
      */
-    SMS_ALIYUN("SMS_ALIYUN");
+    SMS_ALIYUN("SMS_ALIYUN"),
+
+    /**
+     * 短信-小诺短信
+     */
+    SMS_XIAONUO("SMS_XIAONUO");
 
     private final String value;
 
@@ -101,7 +106,8 @@ public enum DevConfigCategoryEnum {
                 FILE_LOCAL.getValue().equals(value) || FILE_TENCENT.getValue().equals(value) ||
                 FILE_ALIYUN.getValue().equals(value) || FILE_MINIO.getValue().equals(value) ||
                 EMAIL_TENCENT.getValue().equals(value) || EMAIL_ALIYUN.getValue().equals(value) ||
-                SMS_TENCENT.getValue().equals(value) || SMS_ALIYUN.getValue().equals(value);
+                SMS_TENCENT.getValue().equals(value) || SMS_ALIYUN.getValue().equals(value) ||
+                SMS_XIAONUO.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持的配置分类：{}", value);
         }

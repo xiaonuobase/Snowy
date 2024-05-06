@@ -1,6 +1,6 @@
 <template>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		title="选择组织"
 		:width="500"
 		:mask-closable="false"

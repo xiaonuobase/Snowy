@@ -14,10 +14,8 @@ package ${packageName}.${moduleName}.modular.${busName}.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ${packageName}.common.annotation.CommonLog;
 import ${packageName}.common.pojo.CommonResult;
-import ${packageName}.common.pojo.CommonValidList;
 import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
 import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
 import ${packageName}.${moduleName}.modular.${busName}.param.${className}EditParam;
@@ -33,9 +30,10 @@ import ${packageName}.${moduleName}.modular.${busName}.param.${className}IdParam
 import ${packageName}.${moduleName}.modular.${busName}.param.${className}PageParam;
 import ${packageName}.${moduleName}.modular.${busName}.service.${className}Service;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * ${functionName}控制器
@@ -43,8 +41,7 @@ import javax.validation.constraints.NotEmpty;
  * @author ${authorName}
  * @date ${genTime}
  */
-@Api(tags = "${functionName}控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@Tag(name = "${functionName}控制器")
 @RestController
 @Validated
 public class ${className}Controller {
@@ -58,8 +55,7 @@ public class ${className}Controller {
      * @author ${authorName}
      * @date ${genTime}
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取${functionName}分页")
+    @Operation(summary = "获取${functionName}分页")
     @SaCheckPermission("/${moduleName}/${busName}/page")
     @GetMapping("/${moduleName}/${busName}/page")
     public CommonResult<Page<${className}>> page(${className}PageParam ${classNameFirstLower}PageParam) {
@@ -72,8 +68,7 @@ public class ${className}Controller {
      * @author ${authorName}
      * @date ${genTime}
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("添加${functionName}")
+    @Operation(summary = "添加${functionName}")
     @CommonLog("添加${functionName}")
     @SaCheckPermission("/${moduleName}/${busName}/add")
     @PostMapping("/${moduleName}/${busName}/add")
@@ -88,8 +83,7 @@ public class ${className}Controller {
      * @author ${authorName}
      * @date ${genTime}
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("编辑${functionName}")
+    @Operation(summary = "编辑${functionName}")
     @CommonLog("编辑${functionName}")
     @SaCheckPermission("/${moduleName}/${busName}/edit")
     @PostMapping("/${moduleName}/${busName}/edit")
@@ -104,13 +98,12 @@ public class ${className}Controller {
      * @author ${authorName}
      * @date ${genTime}
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("删除${functionName}")
+    @Operation(summary = "删除${functionName}")
     @CommonLog("删除${functionName}")
     @SaCheckPermission("/${moduleName}/${busName}/delete")
     @PostMapping("/${moduleName}/${busName}/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   CommonValidList<${className}IdParam> ${classNameFirstLower}IdParamList) {
+                                                   List<${className}IdParam> ${classNameFirstLower}IdParamList) {
         ${classNameFirstLower}Service.delete(${classNameFirstLower}IdParamList);
         return CommonResult.ok();
     }
@@ -121,8 +114,7 @@ public class ${className}Controller {
      * @author ${authorName}
      * @date ${genTime}
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("获取${functionName}详情")
+    @Operation(summary = "获取${functionName}详情")
     @SaCheckPermission("/${moduleName}/${busName}/detail")
     @GetMapping("/${moduleName}/${busName}/detail")
     public CommonResult<${className}> detail(@Valid ${className}IdParam ${classNameFirstLower}IdParam) {

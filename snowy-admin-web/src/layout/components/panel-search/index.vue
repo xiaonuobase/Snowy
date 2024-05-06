@@ -22,8 +22,7 @@
 			<a-input
 				ref="inputRef"
 				v-model="searchText"
-				class="search-box"
-				style="width: 100%"
+				class="search-box xn-wd"
 				allowClear
 				placeholder="搜索页面（支持拼音检索）"
 				@change="querySearch"
@@ -39,7 +38,8 @@
 				@mouseleave="onCardOut"
 				@keypress.up="handleKeyUp"
 				@keypress.down="handleKeyDown"
-				style="margin: 10px 0"
+				class="xn-mn10p0"
+
 			>
 				<div ref="cardListRef" class="search-card beauty-scroll">
 					<a-list size="small" :data-source="resultsList">
@@ -47,8 +47,7 @@
 							<a-list-item
 								@click="handleSelect(item.fullPath)"
 								@mouseover="onCardItemHover(index)"
-								:class="{ active: index === cardIndex }"
-								style="padding-right: 10px"
+								:class="{ active: index === cardIndex },'xn-pr10'"
 							>
 								<template #actions>
 									<a>
@@ -279,6 +278,12 @@
 	:deep(.ant-list-item.active) {
 		background-color: var(--primary-1);
 	}
+	.xn-mn10p0 {
+		margin: 10px 0;
+	}
+	.xn-pr10 {
+		padding-right: 10px;
+	}
 	.search-box {
 		width: 100%;
 	}
@@ -321,7 +326,10 @@
 			padding-bottom: 2px;
 			margin: 0px 4px;
 			border-radius: 2px;
-			box-shadow: inset 0 -2px #cdcde6, inset 0 0 1px 1px #fff, 0 1px 2px 1px #1e235a66;
+			box-shadow:
+				inset 0 -2px #cdcde6,
+				inset 0 0 1px 1px #fff,
+				0 1px 2px 1px #1e235a66;
 			font-weight: bold;
 		}
 	}

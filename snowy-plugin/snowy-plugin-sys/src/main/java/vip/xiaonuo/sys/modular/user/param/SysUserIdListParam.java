@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.sys.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ import java.util.List;
 public class SysUserIdListParam {
 
     /** id集合 */
-    @ApiModelProperty(value = "id集合", required = true)
+    @Schema(description = "id集合", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "idList不能为空")
     private List<String> idList;
 }

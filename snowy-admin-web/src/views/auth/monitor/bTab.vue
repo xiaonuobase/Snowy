@@ -2,7 +2,7 @@
 	<s-table ref="tableRef" :columns="columns" :data="loadDataB" :alert="false" bordered :row-key="(record) => record.id">
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.dataIndex === 'avatar'">
-				<a-avatar :src="record.avatar" style="width: 25px; height: 25px" />
+				<a-avatar :src="record.avatar" class="xn-wh25" />
 			</template>
 			<template v-if="column.dataIndex === 'tokenNumber'">
 				{{ record.tokenSignList.length }}

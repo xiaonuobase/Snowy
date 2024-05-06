@@ -1,10 +1,5 @@
 <template>
-	<a-popconfirm
-		title="批量处理此信息？"
-		:visible="batchVisible"
-		@visibleChange="batchVisibleChange"
-		@confirm="deleteBatch"
-	>
+	<a-popconfirm title="批量处理此信息？" :open="batchVisible" @openChange="batchVisibleChange" @confirm="deleteBatch">
 		<a-button :type="props.buttonType" :danger="props.buttonDanger" :size="props.size" :loading="buttonLoading">
 			<template #icon v-if="props.icon">
 				<component :is="props.icon" :style="{ color: props.color }" />
@@ -30,11 +25,11 @@
 		},
 		buttonType: {
 			type: String,
-			default: () => ''
+			default: () => undefined
 		},
 		icon: {
 			type: String,
-			default: () => ''
+			default: () => undefined
 		},
 		size: {
 			type: String,
@@ -74,7 +69,7 @@
 		emit('batchCallBack', params)
 	}
 	// 打开loading
-	const loading = () => {
+	const openLoading = () => {
 		buttonLoading.value = true
 	}
 	// 关闭loading

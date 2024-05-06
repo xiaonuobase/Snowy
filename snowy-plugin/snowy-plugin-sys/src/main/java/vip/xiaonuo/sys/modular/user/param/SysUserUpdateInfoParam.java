@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 编辑个人信息参数
@@ -29,36 +28,36 @@ import javax.validation.constraints.NotBlank;
 public class SysUserUpdateInfoParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true, position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 姓名 */
-    @ApiModelProperty(value = "姓名", required = true, position = 2)
+    @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 手机 */
-    @ApiModelProperty(value = "手机", position = 3)
+    @Schema(description = "手机")
     private String phone;
 
     /** 昵称 */
-    @ApiModelProperty(value = "昵称", position = 4)
+    @Schema(description = "昵称")
     private String nickname;
 
     /** 性别 */
-    @ApiModelProperty(value = "性别", position = 5)
+    @Schema(description = "性别")
     private String gender;
 
     /** 出生日期 */
-    @ApiModelProperty(value = "出生日期", position = 6)
+    @Schema(description = "出生日期")
     private String birthday;
 
     /** 邮箱 */
-    @ApiModelProperty(value = "邮箱", position = 7)
+    @Schema(description = "邮箱")
     private String email;
 
     /** 签名 */
-    @ApiModelProperty(value = "签名，图片base64", position = 8)
+    @Schema(description = "签名，图片base64")
     private String signature;
 }

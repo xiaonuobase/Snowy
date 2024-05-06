@@ -19,6 +19,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.sys.api.SysRoleApi;
@@ -32,12 +33,10 @@ import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
-import vip.xiaonuo.sys.modular.role.enums.SysRoleCategoryEnum;
 import vip.xiaonuo.sys.modular.role.param.SysRoleGrantResourceParam;
 import vip.xiaonuo.sys.modular.role.param.SysRoleSelectorRoleParam;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

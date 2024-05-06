@@ -2,7 +2,7 @@
 	<a-tree-select
 		v-model:value="defaultSelectKeys"
 		show-search
-		style="width: 100%"
+		class="xn-wd"
 		:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 		placeholder="请选择菜单"
 		:field-names="treeFieldNames"

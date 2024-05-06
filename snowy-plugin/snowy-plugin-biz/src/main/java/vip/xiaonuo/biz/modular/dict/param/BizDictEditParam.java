@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.biz.modular.dict.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 业务字典编辑参数
@@ -30,21 +29,21 @@ import javax.validation.constraints.NotNull;
 public class BizDictEditParam {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 字典文字 */
-    @ApiModelProperty(value = "字典文字", position = 2)
+    @Schema(description = "字典文字", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "dictLabel不能为空")
     private String dictLabel;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 3)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 4)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

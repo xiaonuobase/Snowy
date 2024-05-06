@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.index.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,26 +27,26 @@ import lombok.Setter;
 public class SysIndexScheduleListResult {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 用户id */
-    @ApiModelProperty(value = "用户id", position = 2)
+    @Schema(description = "用户id")
     private String scheduleUserId;
 
     /** 用户姓名 */
-    @ApiModelProperty(value = "用户姓名", position = 3)
+    @Schema(description = "用户姓名")
     private String scheduleUserName;
 
     /** 日程日期 */
-    @ApiModelProperty(value = "日程日期", position = 4)
+    @Schema(description = "日程日期")
     private String scheduleDate;
 
     /** 日程时间 */
-    @ApiModelProperty(value = "日程时间", position = 5)
+    @Schema(description = "日程时间")
     private String scheduleTime;
 
     /** 日程内容 */
-    @ApiModelProperty(value = "日程内容", position = 6)
+    @Schema(description = "日程内容")
     private String scheduleContent;
 }

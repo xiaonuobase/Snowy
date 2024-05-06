@@ -12,13 +12,12 @@
  */
 package vip.xiaonuo.dev.modular.file.provider;
 
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.dev.api.DevFileApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
-
-import javax.annotation.Resource;
 
 /**
  * 文件API接口提供者

@@ -7,7 +7,7 @@
     <parent>
         <groupId>vip.xiaonuo</groupId>
         <artifactId>snowy-plugin</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.0</version>
     </parent>
 
     <artifactId>snowy-plugin-auth</artifactId>
@@ -31,13 +31,13 @@
         <!-- sa-token -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot-starter</artifactId>
+            <artifactId>sa-token-spring-boot3-starter</artifactId>
         </dependency>
 
         <!-- sa-token 整合 redis （使用jackson序列化方式） -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-dao-redis-jackson</artifactId>
+            <artifactId>sa-token-redis-jackson</artifactId>
         </dependency>
 
         <!-- Sa-Token插件：权限缓存与业务缓存分离 -->

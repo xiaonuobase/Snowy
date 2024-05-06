@@ -10,7 +10,7 @@
 				<div className="layout-items-center ml-4" v-show="props.toolConfig.striped">
 					<a-checkbox :checked="data.localSettings.rowClassNameSwitch" @change="changeRowClass"> 斑马纹 </a-checkbox>
 				</div>
-				<span v-for="item in tool">
+				<span v-for="item in tool" :key="item.name">
 					<!-- 刷新 -->
 					<a-tooltip
 						v-if="item.name === 'refresh' && props.toolConfig.refresh"
@@ -37,7 +37,7 @@
 						</a-tooltip>
 					</a-popover>
 					<!-- 密度 -->
-					<a-dropdown trigger="click" v-if="item.isDropdown && item.name == 'height' && props.toolConfig.height">
+					<a-dropdown trigger="click" v-if="item.isDropdown && item.name === 'height' && props.toolConfig.height">
 						<template #overlay>
 							<a-menu selectable :selectedKeys="[data.customSize]" @click="changeHeight">
 								<a-menu-item key="default">默认</a-menu-item>
@@ -93,29 +93,35 @@
 
 		<!-- 表格 -->
 		<a-table
-			v-bind="{ ...renderTableProps, ...data.localSettings }"
-			@change="loadData"
+			v-bind="{ ...renderTableProps }"
 			:loading="data.localLoading"
-			:row-key="(record) => record.id"
+			@change="loadData"
 			@expand="
 				(expanded, record) => {
 					emit('expand', expanded, record)
 				}
 			"
+			:rowClassName="
+				(record, index) => (data.localSettings.rowClassNameSwitch ? ((index + 1) % 2 == 0 ? 'odd' : '') : null)
+			"
 		>
 			<template #[item]="scope" v-for="item in renderSlots">
-				<slot v-if="item && renderTableProps.columns.length > 0" :name="item" :scope="scope" v-bind="scope || {}"></slot>
+				<slot
+					v-if="item && renderTableProps.columns && renderTableProps.columns.length > 0"
+					:name="item"
+					:scope="scope"
+					v-bind="scope || {}"
+				/>
 			</template>
 		</a-table>
 	</div>
 </template>
 <script setup>
-	import './index.less'
 	import { tableProps } from 'ant-design-vue/es/table/Table.js'
 	import columnSetting from './columnSetting.vue'
-	import { get } from 'lodash-es'
 	import { useSlots } from 'vue'
 	import { useRoute } from 'vue-router'
+	import { get } from 'lodash-es'
 	const slots = useSlots()
 	const route = useRoute()
 	const emit = defineEmits(['expand'])
@@ -191,10 +197,8 @@
 			}
 		})
 	)
-
 	const data = reactive({
 		needTotalList: [],
-		localLoading: false,
 		localDataSource: [],
 		localPagination: Object.assign({}, props.pagination),
 		isFullscreen: false,
@@ -275,11 +279,9 @@
 		getTableProps()
 	}
 	// 斑马纹勾选
-	const changeRowClass = (value) => {
-		const val = value.target.checked
-		data.localSettings.rowClassNameSwitch = val
-		const evenClass = val ? (_record, index) => (index % 2 === 1 ? 'table-striped' : null) : props.rowClassName
-		data.localSettings.rowClassName = evenClass
+	const changeRowClass = (v) => {
+		data.localSettings.rowClassNameSwitch = v.target.checked
+		getTableProps()
 	}
 	// 密度切换
 	const changeHeight = (v) => {
@@ -287,13 +289,12 @@
 		getTableProps()
 	}
 	// 列设置
-	const columnChange = (val) => {
-		data.columnsSetting = val
+	const columnChange = (v) => {
+		data.columnsSetting = v
 		getTableProps()
 	}
 	// 列清空
 	const rowClear = (callback) => {
-		callback
 		clearSelected()
 	}
 	// 初始化
@@ -317,6 +318,7 @@
 		data.columnsSetting = props.columns
 		loadData()
 	}
+
 	const initTotalList = (columns) => {
 		const totalList = []
 		columns &&
@@ -331,9 +333,12 @@
 			})
 		return totalList
 	}
+
 	// 加载数据方法 分页选项器 过滤条件 排序条件
 	const loadData = (pagination, filters, sorter) => {
+		// 设置loading
 		data.localLoading = true
+		// 获取请求数据
 		const parameter = Object.assign(
 			{
 				current:
@@ -359,6 +364,7 @@
 				...filters
 			}
 		)
+		// 用请求数据请求该列表的返回数据
 		const result = props.data(parameter)
 		if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
 			result.then((r) => {
@@ -366,6 +372,7 @@
 					data.localLoading = false
 					return
 				}
+				// 获取分页数据及分页的显示内容
 				data.localPagination =
 					(props.showPagination &&
 						Object.assign({}, data.localPagination, {
@@ -379,38 +386,32 @@
 							pageSize: (pagination && pagination.pageSize) || data.localPagination.pageSize
 						})) ||
 					false
-
 				// 后端数据records为null保存修复
 				if (r.records == null) {
 					r.records = []
 				}
-
 				// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
 				if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
 					data.localPagination.current--
 					loadData()
 					return
 				}
-				// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
 				try {
-					/*
-					if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.size))) {
-						data.localPagination.hideOnSinglePage = true
-					}
-					*/
+					// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
+					// 没有数据或只有一页数据时隐藏分页栏
+					// if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.pageSize))) {
+					// 	data.localPagination.hideOnSinglePage = true
+					// }
 					if (!props.showPagination) {
 						data.localPagination.hideOnSinglePage = true
 					}
 				} catch (e) {
 					data.localPagination = false
 				}
+
 				// 返回结果中的数组数据
 				if (props.showPagination === false) {
-					// 既然配置了不分页，那么我们这里接收到肯定是数组
-					data.localDataSource = []
-					if (r instanceof Array) {
-						data.localDataSource = r
-					}
+					data.localDataSource = r instanceof Array ? r : r.records
 				} else {
 					data.localDataSource = r.records
 				}
@@ -419,33 +420,37 @@
 			})
 		}
 	}
-	// 加载props
+
+	// 加载table的props
 	const getTableProps = () => {
 		let renderProps = {}
 		const localKeys = Object.keys(data)
-		Object.keys(tableProps()).forEach((k) => {
+		// 这里拿到antd表格的可用API进行过滤
+		Object.keys(Object.assign(tableProps(), props)).forEach((k) => {
+			// 将本地的localdata等默认字段转换为API所提供字段
 			const localKey = `local${k.substring(0, 1).toUpperCase()}${k.substring(1)}`
+			// 这里去判断是否获取相同的值并且给 table 的 props 赋值
 			if (localKeys.includes(localKey)) {
 				renderProps[k] = data[localKey]
-				return renderProps[k]
+				return
 			}
+
+			// 如果开启了alert，需要将 rowSelection 的事件重新绑定，在切换页面的时候选择栏不会被清空
+			// 如果没打算开启 rowSelection 则清空默认的选择项
 			if (k === 'rowSelection') {
-				if (props.rowSelection) {
-					// 如果需要使用alert，则重新绑定 rowSelection 事件
-					renderProps[k] = {
-						...props.rowSelection,
-						onChange: (selectedRowKeys, selectedRows) => {
-							updateSelect(selectedRowKeys, selectedRows)
-							typeof props[k].onChange !== 'undefined' && props[k].onChange(selectedRowKeys, selectedRows)
-						}
-					}
-					return renderProps[k]
-				} else if (!props.rowSelection) {
-					// 如果没打算开启 rowSelection 则清空默认的选择项
-					renderProps[k] = null
-					return renderProps[k]
-				}
+				renderProps[k] = props.rowSelection
+					? {
+							...props.rowSelection,
+							onChange: (selectedRowKeys, selectedRows) => {
+								updateSelect(selectedRowKeys, selectedRows)
+								typeof props[k].onChange !== 'undefined' && props[k].onChange(selectedRowKeys, selectedRows)
+							}
+					  }
+					: null
+				return
 			}
+
+			// 设置行属性, 点击行时高亮
 			if (k === 'customRow') {
 				if (props.lineSelection && props.rowSelection) {
 					// 如果需要 整行选择，则重新绑定 customRow 事件
@@ -488,19 +493,18 @@
 					return renderProps[k]
 				}
 			}
-			data[k] && (renderProps[k] = data[k])
-			// 此处配置表格大小与要显示的列
-			renderProps = {
-				...renderProps,
-				scroll: props.scroll,
-				bordered: props.bordered,
-				size: data.customSize, // 注意这个size是a-table组件需要的，这里不能跟别的地方成为compSize
-				columns: data.columnsSetting.filter((value) => value.checked === undefined || value.checked)
-			}
-			return renderProps[k]
+			renderProps[k] = props[k]
 		})
-		renderTableProps.value = renderProps
+		renderProps = {
+			...renderProps,
+			size: data.customSize, // 注意这个size是a-table组件需要的，这里不能跟别的地方成为compSize
+			columns: data.columnsSetting.filter((value) => value.checked === undefined || value.checked),
+			...data.localSettings
+		}
+		// 将值为 undefined 或者 null 的 table里props属性进行一个过滤
+		renderTableProps.value = Object.entries(renderProps).reduce((x, [y, z]) => (z == null ? x : ((x[y] = z), x)), {})
 	}
+
 	// 用于更新已选中的列表数据 total 统计
 	const updateSelect = (selectedRowKeys, selectedRows) => {
 		if (props.rowSelection) {
@@ -544,3 +548,19 @@
 		init()
 	})
 </script>
+<style lang="less" scoped>
+	.s-table-tool {
+		display: flex;
+		margin-bottom: 16px;
+		.s-table-tool-left {
+			flex: 1;
+		}
+		.s-table-tool-right {
+			.s-tool-item {
+				font-size: 16px;
+				@apply ml-4;
+				cursor: pointer;
+			}
+		}
+	}
+</style>

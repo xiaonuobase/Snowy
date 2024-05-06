@@ -21,7 +21,7 @@
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>
@@ -57,18 +57,22 @@
 
 	// 提交数据
 	const onSubmit = async () => {
-		const values = await formRef.value.validateFields()
-		submitLoading.value = true
-		userCenterApi
-			.userUpdatePassword(values)
-			.then(() => {
-				formRef.value.resetFields()
-				visible.value = false
-				emit('successful')
+		formRef.value
+			.validate()
+			.then((values) => {
+				submitLoading.value = true
+				userCenterApi
+					.userUpdatePassword(values)
+					.then(() => {
+						formRef.value.resetFields()
+						visible.value = false
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
 			})
-			.finally(() => {
-				submitLoading.value = false
-			})
+			.catch(() => {})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

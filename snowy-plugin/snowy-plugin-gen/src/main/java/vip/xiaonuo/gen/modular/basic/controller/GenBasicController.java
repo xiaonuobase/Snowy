@@ -13,10 +13,12 @@
 package vip.xiaonuo.gen.modular.basic.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
@@ -34,10 +35,6 @@ import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
 import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
 import vip.xiaonuo.gen.modular.basic.service.GenBasicService;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 import java.util.List;
 
@@ -47,8 +44,7 @@ import java.util.List;
  * @author yubaoshan
  * @date 2022/10/25 22:33
  **/
-@Api(tags = "代码生成基础控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@Tag(name = "代码生成基础控制器")
 @RestController
 @Validated
 public class GenBasicController {
@@ -62,8 +58,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取代码生成基础分页")
+    @Operation(summary = "获取代码生成基础分页")
     @GetMapping("/gen/basic/page")
     public CommonResult<Page<GenBasic>> page(GenBasicPageParam genBasicPageParam) {
         return CommonResult.data(genBasicService.page(genBasicPageParam));
@@ -75,8 +70,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("添加代码生成基础")
+    @Operation(summary = "添加代码生成基础")
     @CommonLog("添加代码生成基础")
     @PostMapping("/gen/basic/add")
     public CommonResult<GenBasic> add(@RequestBody @Valid GenBasicAddParam genBasicAddParam) {
@@ -89,8 +83,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("编辑代码生成基础")
+    @Operation(summary = "编辑代码生成基础")
     @CommonLog("编辑代码生成基础")
     @PostMapping("/gen/basic/edit")
     public CommonResult<GenBasic> edit(@RequestBody @Valid GenBasicEditParam genBasicEditParam) {
@@ -103,12 +96,11 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("删除代码生成基础")
+    @Operation(summary = "删除代码生成基础")
     @CommonLog("删除代码生成基础")
     @PostMapping("/gen/basic/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                               CommonValidList<GenBasicIdParam> genBasicIdParamList) {
+                                               List<GenBasicIdParam> genBasicIdParamList) {
         genBasicService.delete(genBasicIdParamList);
         return CommonResult.ok();
     }
@@ -119,8 +111,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("获取代码生成基础详情")
+    @Operation(summary = "获取代码生成基础详情")
     @GetMapping("/gen/basic/detail")
     public CommonResult<GenBasic> detail(@Valid GenBasicIdParam genBasicIdParam) {
         return CommonResult.data(genBasicService.detail(genBasicIdParam));
@@ -132,8 +123,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("获取所有表信息")
+    @Operation(summary = "获取所有表信息")
     @GetMapping("/gen/basic/tables")
     public CommonResult<List<GenBasicTableResult>> dbsTable() {
         return CommonResult.data(genBasicService.tables());
@@ -145,8 +135,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("获取表内所有字段信息")
+    @Operation(summary = "获取表内所有字段信息")
     @GetMapping("/gen/basic/tableColumns")
     public CommonResult<List<GenBasicTableColumnResult>> tableColumns(GenBasicTableColumnParam genBasicTableColumnParam) {
         return CommonResult.data(genBasicService.tableColumns(genBasicTableColumnParam));
@@ -158,8 +147,7 @@ public class GenBasicController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 8)
-    @ApiOperation("执行代码生成（压缩包）")
+    @Operation(summary = "执行代码生成（压缩包）")
     @CommonLog("执行代码生成（压缩包）")
     @GetMapping(value = "/gen/basic/execGenZip", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void execGenZip(@Valid GenBasicIdParam genBasicIdParam, HttpServletResponse response) throws IOException {
@@ -172,8 +160,7 @@ public class GenBasicController {
      * @author yubaoshan
      * @date 2022/10/31 02:17
      **/
-    @ApiOperationSupport(order = 9)
-    @ApiOperation("执行代码生成（项目内）")
+    @Operation(summary = "执行代码生成（项目内）")
     @CommonLog("执行代码生成（项目内）")
     @PostMapping(value = "/gen/basic/execGenPro")
     public CommonResult<String> execGenPro(@RequestBody @Valid GenBasicIdParam genBasicIdParam, HttpServletResponse response) throws IOException {
@@ -187,8 +174,7 @@ public class GenBasicController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 10)
-    @ApiOperation("预览代码生成")
+    @Operation(summary = "预览代码生成")
     @CommonLog("预览代码生成")
     @GetMapping(value = "/gen/basic/previewGen")
     public CommonResult<GenBasicPreviewResult> previewGen(@Valid GenBasicIdParam genBasicIdParam) {
@@ -201,8 +187,7 @@ public class GenBasicController {
      * @author 每天一点
      * @date 2023/7/15 22:36
      */
-    @ApiOperationSupport(order = 11)
-    @ApiOperation("获取所有移动端模块")
+    @Operation(summary = "获取所有移动端模块")
     @GetMapping("/gen/basic/mobileModuleSelector")
     public CommonResult<List<GenBasicMobileModuleSelectorResult>> mobileModuleSelector() {
         return CommonResult.data(genBasicService.mobileModuleSelector());

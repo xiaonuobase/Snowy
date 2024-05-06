@@ -14,7 +14,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'fieldJavaType'">
 					<a-select
-						style="width: 100%"
+						class="xn-wd"
 						v-model:value="record.fieldJavaType"
 						:options="fieldJavaTypeOptions"
 						placeholder="请选择"
@@ -24,7 +24,7 @@
 				</template>
 				<template v-if="column.dataIndex === 'effectType'">
 					<a-select
-						style="width: 100%"
+						class="xn-wd"
 						v-model:value="record.effectType"
 						:options="effectTypeOptions"
 						placeholder="请选择"
@@ -34,7 +34,7 @@
 				<template v-if="column.dataIndex === 'dictTypeCode'">
 					<a-select
 						v-if="record.effectType === 'radio' || record.effectType === 'select' || record.effectType === 'checkbox'"
-						style="width: 100%"
+						class="xn-wd"
 						v-model:value="record.dictTypeCode"
 						:options="dictTypeCodeOptions"
 						placeholder="请选择字典"
@@ -62,7 +62,7 @@
 				<template v-if="column.dataIndex === 'queryType'">
 					<a-select
 						v-if="record.queryWhether === true && record.effectType !== 'datepicker'"
-						style="width: 100%"
+						class="xn-wd"
 						v-model:value="record.queryType"
 						:options="queryTypeOptions"
 						placeholder="请选择"

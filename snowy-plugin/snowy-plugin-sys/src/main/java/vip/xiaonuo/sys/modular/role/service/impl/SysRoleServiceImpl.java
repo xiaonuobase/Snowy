@@ -30,10 +30,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
@@ -62,7 +63,6 @@ import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -416,18 +416,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                         .forEach((key, value) -> {
                             SaCheckPermission saCheckPermission = value.getMethod().getAnnotation(SaCheckPermission.class);
                             if(ObjectUtil.isNotEmpty(saCheckPermission)) {
-                                PatternsRequestCondition patternsCondition = key.getPatternsCondition();
-                                if (patternsCondition != null) {
+                                PathPatternsRequestCondition pathPatternsCondition = key.getPathPatternsCondition();
+                                if (pathPatternsCondition != null) {
                                     String apiName = "未定义接口名称";
-                                    ApiOperation apiOperation = value.getMethod().getAnnotation(ApiOperation.class);
+                                    Operation apiOperation = value.getMethod().getAnnotation(Operation.class);
                                     if(ObjectUtil.isNotEmpty(apiOperation)) {
-                                        String annotationValue = apiOperation.value();
+                                        String annotationValue = apiOperation.summary();
                                         if(ObjectUtil.isNotEmpty(annotationValue)) {
                                             apiName = annotationValue;
                                         }
                                     }
                                     String nm = StrUtil.BRACKET_START + apiName + StrUtil.BRACKET_END;
-                                    patternsCondition.getPatterns().forEach(pt -> permissionResult.add(pt + nm));
+                                    pathPatternsCondition.getPatterns().forEach(pt -> permissionResult.add(pt + nm));
                                 }
                             }
                         }));

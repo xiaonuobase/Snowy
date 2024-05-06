@@ -16,13 +16,12 @@ import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.dev.api.DevLogApi;
-
-import javax.annotation.Resource;
 
 /**
  * 自定义登录监听器
@@ -95,6 +94,18 @@ public class AuthListener implements SaTokenListener {
     /** 每次被解封时触发 */
     @Override
     public void doUntieDisable(String loginType, Object loginId, String service) {
+        // ...
+    }
+
+    /** 每次打开二级认证时触发 */
+    @Override
+    public void doOpenSafe(String loginType, String tokenValue, String service, long safeTime) {
+        // ...
+    }
+
+    /** 每次关闭二级认证时触发 */
+    @Override
+    public void doCloseSafe(String loginType, String tokenValue, String service) {
         // ...
     }
 

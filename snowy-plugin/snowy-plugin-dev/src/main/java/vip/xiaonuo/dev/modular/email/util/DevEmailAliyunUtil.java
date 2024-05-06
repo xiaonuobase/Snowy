@@ -14,13 +14,10 @@ package vip.xiaonuo.dev.modular.email.util;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.IAcsClient;
-import com.aliyuncs.dm.model.v20151123.BatchSendMailRequest;
-import com.aliyuncs.dm.model.v20151123.SingleSendMailRequest;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.http.MethodType;
-import com.aliyuncs.profile.DefaultProfile;
+import com.aliyun.dm20151123.Client;
+import com.aliyun.dm20151123.models.BatchSendMailRequest;
+import com.aliyun.dm20151123.models.SingleSendMailRequest;
+import com.aliyun.teaopenapi.models.Config;
 import lombok.extern.slf4j.Slf4j;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -35,7 +32,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 @Slf4j
 public class DevEmailAliyunUtil {
 
-    private static IAcsClient client;
+    private static Client client;
 
     private static final String SNOWY_EMAIL_ALIYUN_ACCESS_KEY_ID_KEY = "SNOWY_EMAIL_ALIYUN_ACCESS_KEY_ID";
     private static final String SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET_KEY = "SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET";
@@ -72,7 +69,11 @@ public class DevEmailAliyunUtil {
             throw new CommonException("阿里云邮件操作客户端未正确配置：regionId为空");
         }
 
-        client = new DefaultAcsClient(DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret));
+        try {
+            client = new Client(new Config().setRegionId(regionId).setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret));
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
     }
 
     /**
@@ -91,8 +92,8 @@ public class DevEmailAliyunUtil {
         try {
             initClient();
             SingleSendMailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, false);
-            return client.getAcsResponse(singleSendMailRequest).getEnvId();
-        } catch (ClientException e) {
+            return client.singleSendMail(singleSendMailRequest).getBody().getEnvId();
+        } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
     }
@@ -113,8 +114,8 @@ public class DevEmailAliyunUtil {
         try {
             initClient();
             SingleSendMailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, true);
-            return client.getAcsResponse(singleSendMailRequest).getEnvId();
-        } catch (ClientException e) {
+            return client.singleSendMail(singleSendMailRequest).getBody().getEnvId();
+        } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
     }
@@ -134,8 +135,8 @@ public class DevEmailAliyunUtil {
         try {
             initClient();
             BatchSendMailRequest batchSendMailRequest = createBatchSendRequest(from, tagName, toName, templateName);
-            return client.getAcsResponse(batchSendMailRequest).getEnvId();
-        } catch (ClientException e) {
+            return client.batchSendMail(batchSendMailRequest).getBody().getEnvId();
+        } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
     }
@@ -175,10 +176,6 @@ public class DevEmailAliyunUtil {
             request.setTextBody(content);
         }
 
-        //SDK 采用的是http协议的发信方式, 默认是GET方法，有一定的长度限制。
-        //若textBody、htmlBody或content的大小不确定，建议采用POST方式提交，避免出现uri is not valid异常
-        request.setSysMethod(MethodType.POST);
-
         //是否开启追踪功能，开启需要备案，0关闭，1开启
         request.setClickTrace("0");
 
@@ -208,10 +205,6 @@ public class DevEmailAliyunUtil {
 
         // 控制台创建的标签
         request.setTagName(tagName);
-
-        //SDK 采用的是http协议的发信方式, 默认是GET方法，有一定的长度限制。
-        //若textBody、htmlBody或content的大小不确定，建议采用POST方式提交，避免出现uri is not valid异常
-        request.setSysMethod(MethodType.POST);
 
         //是否开启追踪功能，开启需要备案，0关闭，1开启
         request.setClickTrace("0");

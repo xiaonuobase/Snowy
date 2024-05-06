@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="基础仪表盘" :bordered="false">
-				<GaugeBasicChart style="height: 400px" />
+				<GaugeBasicChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="阶段速度仪表盘" :bordered="false">
-				<StageSpeedGauge style="height: 400px" />
+				<StageSpeedGauge class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="气温仪表盘" :bordered="false">
-				<TemperatureGaugeChart style="height: 400px" />
+				<TemperatureGaugeChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="进度仪表盘" :bordered="false">
-				<GrogressGauge style="height: 400px" />
+				<GrogressGauge class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

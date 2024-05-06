@@ -15,7 +15,7 @@ package vip.xiaonuo.sys.modular.relation.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,23 +31,23 @@ import lombok.Setter;
 public class SysRelation{
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 对象id */
-    @ApiModelProperty(value = "对象id", position = 2)
+    @Schema(description = "对象id")
     private String objectId;
 
     /** 目标id */
-    @ApiModelProperty(value = "目标id", position = 3)
+    @Schema(description = "目标id")
     private String targetId;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 4)
+    @Schema(description = "分类")
     private String category;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 5)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

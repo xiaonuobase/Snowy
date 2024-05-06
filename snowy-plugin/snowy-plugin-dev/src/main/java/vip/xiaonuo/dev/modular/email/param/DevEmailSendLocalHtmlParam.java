@@ -14,11 +14,11 @@ package vip.xiaonuo.dev.modular.email.param;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
@@ -35,25 +35,25 @@ import java.util.Map;
 public class DevEmailSendLocalHtmlParam {
 
     /** 接收人 */
-    @ApiModelProperty(value = "接收人邮箱地址，多个逗号拼接", required = true, position = 1)
+    @Schema(description = "接收人邮箱地址，多个逗号拼接", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "receiveAccounts不能为空")
     private String receiveAccounts;
 
     /** 邮件主题 */
-    @ApiModelProperty(value = "邮件主题", required = true, position = 2)
+    @Schema(description = "邮件主题", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "subject不能为空")
     private String subject;
 
     /** 邮件正文 */
-    @ApiModelProperty(value = "邮件正文", required = true, position = 3)
+    @Schema(description = "邮件正文", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "content不能为空")
     private String content;
 
     /** 图片展位符 */
-    @ApiModelProperty(value = "图片展位符", position = 4, hidden = true)
+    @Schema(description = "图片展位符", hidden = true)
     private Map<String, InputStream> imageMap = MapUtil.newHashMap();
 
     /** 附件列表 */
-    @ApiModelProperty(value = "附件列表", position = 5, hidden = true)
+    @Schema(description = "附件列表", hidden = true)
     private List<File> files = CollectionUtil.newArrayList();
 }

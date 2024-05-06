@@ -28,13 +28,11 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.modular.sms.entity.DevSms;
 import vip.xiaonuo.dev.modular.sms.enums.DevSmsEngineTypeEnum;
 import vip.xiaonuo.dev.modular.sms.mapper.DevSmsMapper;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsIdParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsPageParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsSendAliyunParam;
-import vip.xiaonuo.dev.modular.sms.param.DevSmsSendTencentParam;
+import vip.xiaonuo.dev.modular.sms.param.*;
 import vip.xiaonuo.dev.modular.sms.service.DevSmsService;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsAliyunUtil;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsTencentUtil;
+import vip.xiaonuo.dev.modular.sms.util.DevSmsXiaonuoUtil;
 
 import java.util.List;
 
@@ -55,6 +53,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
                 devSmsSendAliyunParam.getTemplateCode(), devSmsSendAliyunParam.getTemplateParam());
         DevSms devSms = new DevSms();
         BeanUtil.copyProperties(devSmsSendAliyunParam, devSms);
+        devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsAliyunUtil.getDefaultSignName());
         devSms.setEngine(DevSmsEngineTypeEnum.ALIYUN.getValue());
         devSms.setReceiptInfo(receiptInfo);
         this.save(devSms);
@@ -64,11 +63,25 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
     @Override
     public void sendTencent(DevSmsSendTencentParam smsSendTencentParam) {
         validPhone(smsSendTencentParam.getPhoneNumbers());
-        String receiptInfo =DevSmsTencentUtil.sendSms(smsSendTencentParam.getSdkAppId(), smsSendTencentParam.getPhoneNumbers(),
+        String receiptInfo = DevSmsTencentUtil.sendSms(smsSendTencentParam.getSdkAppId(), smsSendTencentParam.getPhoneNumbers(),
                 smsSendTencentParam.getSignName(), smsSendTencentParam.getTemplateCode(), smsSendTencentParam.getTemplateParam());
         DevSms devSms = new DevSms();
         BeanUtil.copyProperties(smsSendTencentParam, devSms);
+        devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsTencentUtil.getDefaultSignName());
         devSms.setEngine(DevSmsEngineTypeEnum.TENCENT.getValue());
+        devSms.setReceiptInfo(receiptInfo);
+        this.save(devSms);
+    }
+
+    @Override
+    public void sendXiaonuo(DevSmsSendXiaonuoParam devSmsSendXiaonuoParam) {
+        validPhone(devSmsSendXiaonuoParam.getPhoneNumbers());
+        String receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
+                devSmsSendXiaonuoParam.getMessage());
+        DevSms devSms = new DevSms();
+        BeanUtil.copyProperties(devSmsSendXiaonuoParam, devSms);
+        devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsXiaonuoUtil.getDefaultSignName());
+        devSms.setEngine(DevSmsEngineTypeEnum.XIAONUO.getValue());
         devSms.setReceiptInfo(receiptInfo);
         this.save(devSms);
     }

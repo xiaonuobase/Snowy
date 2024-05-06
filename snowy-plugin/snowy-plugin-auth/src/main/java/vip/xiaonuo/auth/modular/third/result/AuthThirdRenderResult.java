@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.auth.modular.third.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +27,10 @@ import lombok.Setter;
 public class AuthThirdRenderResult {
 
     /** 授权地址 */
-    @ApiModelProperty(value = "授权地址")
+    @Schema(description = "授权地址")
     private String authorizeUrl;
 
     /** 状态码 */
-    @ApiModelProperty(value = "状态码")
+    @Schema(description = "状态码")
     private String state;
 }

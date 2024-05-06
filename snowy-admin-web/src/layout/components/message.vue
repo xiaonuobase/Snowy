@@ -3,7 +3,7 @@
 		<a-badge :count="unreadMessageNum" class="badge">
 			<comment-outlined />
 		</a-badge>
-		<a-drawer v-model:visible="msgVisible" title="新消息" placement="right" :width="500">
+		<a-drawer v-model:open="msgVisible" title="新消息" placement="right" :width="500">
 			<a-list :data-source="messageList" size="small" class="mb-3" :loading="miniMessageLoading">
 				<template #renderItem="{ item }">
 					<a-list-item>
@@ -15,12 +15,12 @@
 					</a-list-item>
 				</template>
 			</a-list>
-			<a-space style="float: right">
+			<a-space class="xn-fdr">
 				<a-button v-if="unreadMessageNum > 0" @click="markRead">全部设为已读</a-button>
 				<a-button type="primary" @click="leaveFor('/usercenter')">消息中心</a-button>
 			</a-space>
 		</a-drawer>
-		<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
+		<xn-form-container title="详情" :width="700" :open="visible" :destroy-on-close="true" @close="onClose">
 			<a-form ref="formRef" :model="formData" layout="vertical">
 				<a-form-item label="主题：" name="subject">
 					<span>{{ formData.subject }}</span>
@@ -43,8 +43,8 @@
 					>
 						<template #bodyCell="{ column, record }">
 							<template v-if="column.dataIndex === 'read'">
-								<span v-if="record.read" style="color: #d9d9d9">已读</span>
-								<span v-else style="color: #ff4d4f">未读</span>
+								<span v-if="record.read" class="xn-color-d9d9d9">已读</span>
+								<span v-else class="xn-color-ff4d4f">未读</span>
 							</template>
 						</template>
 					</s-table>

@@ -3,7 +3,7 @@
 		<a-form-item name="email">
 			<a-input v-model:value="emailFormData.email" :placeholder="$t('login.emailPlaceholder')" size="large">
 				<template #prefix>
-					<mail-outlined style="color: rgba(0, 0, 0, 0.25)" />
+					<mail-outlined class="xn-color-00025" />
 				</template>
 			</a-input>
 		</a-form-item>
@@ -16,12 +16,12 @@
 						size="large"
 					>
 						<template #prefix>
-							<mail-outlined style="color: rgba(0, 0, 0, 0.25)" />
+							<mail-outlined class="xn-color-00025" />
 						</template>
 					</a-input>
 				</a-col>
 				<a-col :span="7">
-					<a-button size="large" style="width: 100%" @click="getEmailValidCode" :disabled="state.smsSendBtn">{{
+					<a-button size="large" class="xn-wd" @click="getEmailValidCode" :disabled="state.smsSendBtn">{{
 						(!state.smsSendBtn && $t('login.getSmsCode')) || state.time + ' s'
 					}}</a-button>
 				</a-col>
@@ -35,7 +35,7 @@
 				size="large"
 			>
 				<template #prefix>
-					<LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+					<LockOutlined class="xn-color-00025" />
 				</template>
 			</a-input-password>
 		</a-form-item>
@@ -43,10 +43,10 @@
 		<a-form-item>
 			<a-row :gutter="8">
 				<a-col :span="7">
-					<a-button style="width: 100%" round size="large" href="/login">{{ $t('login.backLogin') }}</a-button>
+					<a-button class="xn-wd" round size="large" href="/login">{{ $t('login.backLogin') }}</a-button>
 				</a-col>
 				<a-col :span="17">
-					<a-button type="primary" style="width: 100%" :loading="islogin" round size="large" @click="submitReset">{{
+					<a-button type="primary" class="xn-wd" :loading="islogin" round size="large" @click="submitReset">{{
 						$t('login.restPassword')
 					}}</a-button>
 				</a-col>
@@ -54,7 +54,7 @@
 		</a-form-item>
 	</a-form>
 	<a-modal
-		v-model:visible="visible"
+		v-model:open="visible"
 		:width="400"
 		:title="$t('login.machineValidation')"
 		@cancel="handleCancel"
@@ -70,16 +70,12 @@
 							size="large"
 						>
 							<template #prefix>
-								<verified-outlined style="color: rgba(0, 0, 0, 0.25)" />
+								<verified-outlined class="xn-color-00025" />
 							</template>
 						</a-input>
 					</a-col>
 					<a-col :span="7">
-						<img
-							:src="validCodeBase64"
-							style="border: 1px solid var(--border-color-split); cursor: pointer; width: 100%; height: 40px"
-							@click="getPhonePicCaptcha"
-						/>
+						<img :src="validCodeBase64" class="xn-findform-line" @click="getPhonePicCaptcha" />
 					</a-col>
 				</a-row>
 			</a-form-item>
@@ -121,23 +117,26 @@
 		formRules.value.emailValidCode = [required(), rules.number]
 		formRules.value.newPassword = [required()]
 
-		emailResetFormRef.value.validate().then(() => {
-			emailFormData.value.validCode = emailFormData.value.emailValidCode
-			emailFormData.value.validCodeReqNo = emailValidCodeReqNo.value
-			emailFormData.value.newPassword = smCrypto.doSm2Encrypt(emailFormData.value.newPassword)
-			islogin.value = true
-			userCenterApi
-				.userFindPasswordByEmail(emailFormData.value)
-				.then(() => {
-					router.replace({
-						path: '/'
+		emailResetFormRef.value
+			.validate()
+			.then(() => {
+				emailFormData.value.validCode = emailFormData.value.emailValidCode
+				emailFormData.value.validCodeReqNo = emailValidCodeReqNo.value
+				emailFormData.value.newPassword = smCrypto.doSm2Encrypt(emailFormData.value.newPassword)
+				islogin.value = true
+				userCenterApi
+					.userFindPasswordByEmail(emailFormData.value)
+					.then(() => {
+						router.replace({
+							path: '/'
+						})
+						message.success('找回成功')
 					})
-					message.success('找回成功')
-				})
-				.finally(() => {
-					islogin.value = false
-				})
-		})
+					.finally(() => {
+						islogin.value = false
+					})
+			})
+			.catch(() => {})
 	}
 
 	// 弹框的

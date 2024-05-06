@@ -14,12 +14,11 @@ package vip.xiaonuo.common.util;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import cn.hutool.http.useragent.Browser;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
-
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 用户代理工具类
@@ -74,7 +73,7 @@ public class CommonUaUtil {
      * @date 2022/9/2 15:36
      */
     private static UserAgent getUserAgent(HttpServletRequest request) {
-        String userAgentStr = ServletUtil.getHeaderIgnoreCase(request, "User-Agent");
+        String userAgentStr = JakartaServletUtil.getHeaderIgnoreCase(request, "User-Agent");
         UserAgent userAgent = UserAgentUtil.parse(userAgentStr);
         if (ObjectUtil.isNotEmpty(userAgentStr)) {
             if ("Unknown".equals(userAgent.getBrowser().getName())) {

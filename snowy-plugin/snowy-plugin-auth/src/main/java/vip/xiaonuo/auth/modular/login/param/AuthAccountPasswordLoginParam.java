@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.auth.modular.login.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 账号密码登录参数
@@ -29,24 +28,24 @@ import javax.validation.constraints.NotBlank;
 public class AuthAccountPasswordLoginParam {
 
     /** 账号 */
-    @ApiModelProperty(value = "账号", required = true, position = 1)
+    @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "账号不能为空")
     private String account;
 
     /** 密码 */
-    @ApiModelProperty(value = "密码", required = true, position = 2)
+    @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "密码不能为空")
     private String password;
 
     /** 设备 */
-    @ApiModelProperty(value = "设备", position = 3)
+    @Schema(description = "设备")
     private String device;
 
     /** 验证码 */
-    @ApiModelProperty(value = "验证码", position = 4)
+    @Schema(description = "验证码")
     private String validCode;
 
     /** 验证码请求号 */
-    @ApiModelProperty(value = "验证码请求号", position = 5)
+    @Schema(description = "验证码请求号")
     private String validCodeReqNo;
 }

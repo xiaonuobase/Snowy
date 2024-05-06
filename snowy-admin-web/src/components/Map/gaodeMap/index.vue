@@ -1,6 +1,6 @@
 <template>
 	<div class="gaodeMap" :style="{ height: `${height}px` }">
-		<div :id="`container-${mid}`" style="width: 100%; height: 100%">地图资源加载中...</div>
+		<div :id="`container-${mid}`" class="xn-wh">地图资源加载中...</div>
 	</div>
 </template>
 <!--AMap官网：https://lbs.amap.com/api/javascript-api-v2/summary-->
@@ -353,6 +353,10 @@
 </script>
 
 <style lang="less">
+	.xn-wh {
+		width: 100%;
+		height: 100%;
+	}
 	.gaodeMap {
 		padding: 0;
 		margin: 0;

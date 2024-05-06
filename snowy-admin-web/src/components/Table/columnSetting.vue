@@ -89,3 +89,36 @@
 		emit('columnChange', columnsSetting.value)
 	}
 </script>
+<style lang="less" scoped>
+	.s-tool-column-item {
+		display: flex;
+		align-items: center;
+		padding: 4px 16px 4px 4px;
+		.ant-checkbox-wrapper {
+			flex: 1;
+		}
+		.s-tool-column-handle {
+			opacity: 0.8;
+			cursor: move;
+			.anticon-more {
+				font-size: 12px;
+				& + .anticon-more {
+					margin: 0px 4px 0 -8px;
+				}
+			}
+		}
+	}
+	.s-tool-column-header {
+		padding: 5px 16px 10px 24px;
+		min-width: 180px;
+	}
+	.s-tool-column {
+		.ant-divider {
+			margin: 0;
+		}
+		.ant-checkbox-group {
+			padding: 4px 0;
+			display: block;
+		}
+	}
+</style>

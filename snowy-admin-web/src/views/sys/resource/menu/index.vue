@@ -32,6 +32,7 @@
 			:show-pagination="false"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -76,9 +77,7 @@
 						<span v-if="record.visible === 'TRUE'">
 							{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
 						</span>
-						<span v-else>
-							显示
-						</span>
+						<span v-else> 显示 </span>
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'action'">

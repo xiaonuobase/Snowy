@@ -15,7 +15,7 @@ package vip.xiaonuo.auth.modular.third.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -32,42 +32,42 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class AuthThirdUser extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 三方用户id */
-    @ApiModelProperty(value = "三方用户id", position = 2)
+    @Schema(description = "三方用户id")
     private String thirdId;
 
     /** 系统用户id */
-    @ApiModelProperty(value = "系统用户id", position = 3)
+    @Schema(description = "系统用户id")
     private String userId;
 
     /** 头像 */
-    @ApiModelProperty(value = "头像", position = 4)
+    @Schema(description = "头像")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String avatar;
 
     /** 姓名 */
-    @ApiModelProperty(value = "姓名", position = 5)
+    @Schema(description = "姓名")
     private String name;
 
     /** 昵称 */
-    @ApiModelProperty(value = "昵称", position = 6)
+    @Schema(description = "昵称")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String nickname;
 
     /** 性别 */
-    @ApiModelProperty(value = "性别", position = 7)
+    @Schema(description = "性别")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String gender;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 8)
+    @Schema(description = "分类")
     private String category;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 9)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

@@ -14,17 +14,15 @@
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 	</xn-form-container>
 </template>
 
-<script setup>
+<script setup name="sysResourceMenuChangeModuleForm">
 	import { required } from '@/utils/formRules'
-	import tool from '@/utils/tool'
 	import menuApi from '@/api/sys/resource/menuApi'
-	import { getCurrentInstance } from 'vue'
 	// 默认是关闭状态
 	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
@@ -57,22 +55,25 @@
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			const param = {
-				id: formData.value.id,
-				module: formData.value.module
-			}
-			submitLoading.value = true
-			menuApi
-				.menuChangeModule(param)
-				.then(() => {
-					submitLoading.value = false
-					emit('successful')
-				})
-				.finally(() => {
-					visible.value = false
-				})
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				const param = {
+					id: formData.value.id,
+					module: formData.value.module
+				}
+				submitLoading.value = true
+				menuApi
+					.menuChangeModule(param)
+					.then(() => {
+						submitLoading.value = false
+						emit('successful')
+					})
+					.finally(() => {
+						visible.value = false
+					})
+			})
+			.catch(() => {})
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({

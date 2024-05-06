@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.resource.param.menu;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +27,6 @@ import lombok.Setter;
 public class SysMenuSelectorModuleParam {
 
     /** 名称关键词 */
-    @ApiModelProperty(value = "名称关键词")
+    @Schema(description = "名称关键词")
     private String searchKey;
 }

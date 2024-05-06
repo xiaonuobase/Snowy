@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.sys.modular.user.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 用户找回密码参数
@@ -29,22 +28,22 @@ import javax.validation.constraints.NotBlank;
 public class SysUserFindPwdByEmailParam {
 
     /** 邮箱 */
-    @ApiModelProperty(value = "邮箱", required = true, position = 1)
+    @Schema(description = "邮箱", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "email不能为空")
     private String email;
 
     /** 验证码 */
-    @ApiModelProperty(value = "验证码", required = true, position = 2)
+    @Schema(description = "验证码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "validCode不能为空")
     private String validCode;
 
     /** 验证码请求号 */
-    @ApiModelProperty(value = "验证码请求号", required = true, position = 3)
+    @Schema(description = "验证码请求号", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "validCodeReqNo不能为空")
     private String validCodeReqNo;
 
     /** 新密码 */
-    @ApiModelProperty(value = "新密码", required = true, position = 4)
+    @Schema(description = "新密码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "newPassword不能为空")
     private String newPassword;
 }

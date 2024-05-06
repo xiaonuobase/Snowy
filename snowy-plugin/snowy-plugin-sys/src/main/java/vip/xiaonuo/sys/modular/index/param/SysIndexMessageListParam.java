@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.index.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +27,6 @@ import lombok.Setter;
 public class SysIndexMessageListParam {
 
     /** 条数" */
-    @ApiModelProperty(value = "条数")
+    @Schema(description = "条数")
     private Integer limit;
 }

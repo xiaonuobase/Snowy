@@ -2,12 +2,12 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="基础K线图" :bordered="false">
-				<basic-candlestick style="height: 400px" />
+				<basic-candlestick class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="上证指数" :bordered="false">
-				<shang-hai-index style="height: 400px" />
+				<shang-hai-index class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

@@ -7,7 +7,7 @@
 						<a-select
 							v-model:value="formData.dbTable"
 							:options="tableList"
-							style="width: 100%"
+							class="xn-wd"
 							placeholder="请选择主表"
 							@select="selectTableColumnsData(formData.dbTable, false)"
 						>
@@ -19,7 +19,7 @@
 						<a-select
 							v-model:value="formData.dbTableKey"
 							:options="tableColumns"
-							style="width: 100%"
+							class="xn-wd"
 							placeholder="选择主键"
 						>
 						</a-select>
@@ -52,7 +52,7 @@
 						<a-select
 							v-model:value="formData.module"
 							:options="moduleOptions"
-							style="width: 100%"
+							class="xn-wd"
 							placeholder="请选择所属模块"
 							@change="moduleChange(formData.module, false)"
 						>
@@ -63,7 +63,7 @@
 					<a-form-item label="上级目录：" name="menuPid">
 						<a-tree-select
 							v-model:value="formData.menuPid"
-							style="width: 100%"
+							class="xn-wd"
 							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 							placeholder="请选择上级目录"
 							allow-clear
@@ -84,7 +84,7 @@
 						<a-select
 							v-model:value="formData.mobileModule"
 							:options="mobileModuleList"
-							style="width: 100%"
+							class="xn-wd"
 							placeholder="请选择移动端所属模块"
 							allow-clear
 						>
@@ -175,7 +175,7 @@
 				</a-col>
 				<a-col :span="8">
 					<a-form-item label="排序：" name="sortCode">
-						<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+						<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>
 				</a-col>
 			</a-row>

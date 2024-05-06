@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.mobile.modular.resource.param.button;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 移动端按钮添加参数
@@ -30,26 +29,26 @@ import javax.validation.constraints.NotNull;
 public class MobileButtonAddParam {
 
     /** 父id */
-    @ApiModelProperty(value = "父id", required = true, position = 1)
+    @Schema(description = "父id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 标题 */
-    @ApiModelProperty(value = "标题", required = true, position = 2)
+    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 编码 */
-    @ApiModelProperty(value = "编码", required = true, position = 3)
+    @Schema(description = "编码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "code不能为空")
     private String code;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", required = true, position = 4)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 扩展JSON */
-    @ApiModelProperty(value = "扩展JSON", position = 5)
+    @Schema(description = "扩展JSON")
     private String extJson;
 }

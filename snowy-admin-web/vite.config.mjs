@@ -19,35 +19,21 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import Less2CssVariablePlugin from 'antd-less-to-css-variable'
 import viteCompression from 'vite-plugin-compression'
 
-export const r = (...args) => resolve(__dirname, '.', ...args)
+//  ant-design-vue 的 less 变量，通过兼容包将 v4 变量转译成 v3 版本，并通过 less-loader 注入
+import { theme } from 'ant-design-vue/lib';
+import convertLegacyToken from 'ant-design-vue/lib/theme/convertLegacyToken';
+const { defaultAlgorithm, defaultSeed } = theme;
+const mapToken = defaultAlgorithm(defaultSeed);
+const v3Token = convertLegacyToken.default(mapToken);
 
-const removeModulePreloadPlugin = (keys) => {
-	if (!keys || !keys.length) {
-		return
-	}
-	return {
-		name: 'remove-module-preload',
-		transformIndexHtml: {
-			enforce: 'after',
-			transform(html, ctx) {
-				let result = html
-				keys.forEach((key) => {
-					result = result.replace(new RegExp(`<link rel="modulepreload"?.*${key}?.*`), '')
-				})
-				return result
-			}
-		}
-	}
-}
+export const r = (...args) => resolve(__dirname, '.', ...args)
 
 export default defineConfig(({ command, mode }) => {
 	const envConfig = loadEnv(mode, './')
-
 	const alias = {
 		'~': `${resolve(__dirname, './')}`,
 		'@/': `${resolve(__dirname, 'src')}/`
 	}
-
 	return {
 		server: {
 			port: envConfig.VITE_PORT,
@@ -67,7 +53,8 @@ export default defineConfig(({ command, mode }) => {
 		define: {
 			__VUE_I18N_FULL_INSTALL__: true,
 			__VUE_I18N_LEGACY_API__: true,
-			__VUE_I18N_PROD_DEVTOOLS__: true
+			__VUE_I18N_PROD_DEVTOOLS__: true,
+			__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true
 		},
 		build: {
 			// sourcemap: true,
@@ -110,7 +97,11 @@ export default defineConfig(({ command, mode }) => {
 			preprocessorOptions: {
 				less: {
 					javascriptEnabled: true,
-					plugins: [new Less2CssVariablePlugin()]
+					plugins: [new Less2CssVariablePlugin({
+						// TODO：有必要用的情况下，是否需要传入 variables，可能会造成重复引用
+						variables: { ...v3Token }
+					})],
+					modifyVars: v3Token
 				}
 			}
 		},

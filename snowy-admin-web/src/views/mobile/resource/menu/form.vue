@@ -13,7 +13,7 @@
 						<a-tree-select
 							v-model:value="formData.parentId"
 							v-model:treeExpandedKeys="defaultExpandedKeys"
-							style="width: 100%"
+							class="xn-wd"
 							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 							placeholder="请选择上级菜单"
 							allow-clear
@@ -60,12 +60,7 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="图标：" name="icon">
-						<a-input
-							v-model:value="formData.icon"
-							style="width: calc(100% - 70px)"
-							placeholder="请选择图标"
-							allow-clear
-						/>
+						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
 						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
 					</a-form-item>
 				</a-col>
@@ -86,18 +81,13 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="排序码：" name="sortCode">
-						<a-input-number
-							style="width: 100%"
-							v-model:value="formData.sortCode"
-							placeholder="请输入排序码"
-							:max="1000"
-						/>
+						<a-input-number class="xn-wd" v-model:value="formData.sortCode" placeholder="请输入排序码" :max="1000" />
 					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
 		</template>
 		<icon-mobile-selector ref="iconSelector" @iconCallBack="iconCallBack" />
@@ -160,6 +150,7 @@
 			status: 'ENABLE',
 			category: 'MENU',
 			menuType: 'MENU',
+			color: '#1677FF',
 			sortCode: 99
 		}
 		if (record) {
@@ -205,6 +196,9 @@
 	}
 	// 图标选择器回调
 	const iconCallBack = (value) => {
+		if (value) {
+			formRef.value.clearValidate('icon')
+		}
 		formData.value.icon = value
 	}
 	// 默认要校验的
@@ -219,19 +213,22 @@
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			submitLoading.value = true
-			const formDataParam = parameterChanges(cloneDeep(formData.value))
-			mobileMenuApi
-				.mobileMenuSubmitForm(formDataParam, formDataParam.id)
-				.then(() => {
-					onClose()
-					emit('successful')
-				})
-				.finally(() => {
-					submitLoading.value = false
-				})
-		})
+		formRef.value
+			.validate()
+			.then(() => {
+				submitLoading.value = true
+				const formDataParam = parameterChanges(cloneDeep(formData.value))
+				mobileMenuApi
+					.mobileMenuSubmitForm(formDataParam, formDataParam.id)
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
+			})
+			.catch(() => {})
 	}
 	// 提交之前转换数据
 	const parameterChanges = (data) => {

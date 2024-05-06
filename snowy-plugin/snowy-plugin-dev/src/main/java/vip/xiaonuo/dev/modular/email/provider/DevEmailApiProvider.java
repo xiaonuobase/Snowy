@@ -13,12 +13,12 @@
 package vip.xiaonuo.dev.modular.email.provider;
 
 import cn.hutool.json.JSONObject;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.modular.email.param.*;
 import vip.xiaonuo.dev.modular.email.service.DevEmailService;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;

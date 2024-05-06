@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.auth.modular.monitor.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +27,6 @@ import lombok.Setter;
 public class AuthSessionPageParam {
 
     /** 用户id */
-    @ApiModelProperty(value = "用户id")
+    @Schema(description = "用户id")
     private String userId;
 }

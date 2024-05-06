@@ -17,7 +17,7 @@
 					<a-space>
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
 						<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-						<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+						<a-button class="xn-mg08" @click="reset">重置</a-button>
 					</a-space>
 				</a-form-item>
 			</a-space>
@@ -97,9 +97,8 @@
 </template>
 
 <script setup name="mobileMenuIndex">
-	import { message } from 'ant-design-vue'
 	import Form from './form.vue'
-	import changeModuleForm from './changeModuleForm.vue'
+	import ChangeModuleForm from './changeModuleForm.vue'
 	import Button from '../button/index.vue'
 	import mobileMenuApi from '@/api/mobile/resource/menuApi'
 	const searchFormState = ref({})

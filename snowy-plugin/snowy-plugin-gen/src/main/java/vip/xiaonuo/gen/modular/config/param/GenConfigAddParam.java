@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.gen.modular.config.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 代码生成详细配置添加参数
@@ -29,67 +28,67 @@ import javax.validation.constraints.NotBlank;
 public class GenConfigAddParam {
 
     /** 基础ID */
-    @ApiModelProperty(value = "基础ID", required = true, position = 1)
+    @Schema(description = "基础ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "basicId不能为空")
     private String basicId;
 
     /** 是否是主键 */
-    @ApiModelProperty(value = "是否是主键", required = true, position = 2)
+    @Schema(description = "是否是主键", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "isTableKey不能为空")
     private String isTableKey;
 
     /** 字段 */
-    @ApiModelProperty(value = "字段", required = true, position = 3)
+    @Schema(description = "字段", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "fieldName不能为空")
     private String fieldName;
 
     /** 注释 */
-    @ApiModelProperty(value = "注释", required = true, position = 4)
+    @Schema(description = "注释", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "fieldRemark不能为空")
     private String fieldRemark;
 
     /** 类型 */
-    @ApiModelProperty(value = "类型", required = true, position = 5)
+    @Schema(description = "类型", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "fieldType不能为空")
     private String fieldType;
 
     /** 实体类型 */
-    @ApiModelProperty(value = "实体类型", position = 6)
+    @Schema(description = "实体类型")
     private String fieldJavaType;
 
     /** 作用类型 */
-    @ApiModelProperty(value = "作用类型", position = 7)
+    @Schema(description = "作用类型")
     private String effectType;
 
     /** 字典 */
-    @ApiModelProperty(value = "字典", position = 8)
+    @Schema(description = "字典")
     private String dictTypeCode;
 
     /** 列表显示 */
-    @ApiModelProperty(value = "列表显示", position = 9)
+    @Schema(description = "列表显示")
     private String whetherTable;
 
     /** 列省略 */
-    @ApiModelProperty(value = "列省略", position = 10)
+    @Schema(description = "列省略")
     private String whetherRetract;
 
     /** 增改 */
-    @ApiModelProperty(value = "增改", position = 11)
+    @Schema(description = "增改")
     private String whetherAddUpdate;
 
     /** 必填 */
-    @ApiModelProperty(value = "必填", position = 12)
+    @Schema(description = "必填")
     private String whetherRequired;
 
     /** 查询 */
-    @ApiModelProperty(value = "查询", position = 13)
+    @Schema(description = "查询")
     private String queryWhether;
 
     /** 查询方式 */
-    @ApiModelProperty(value = "查询方式", position = 14)
+    @Schema(description = "查询方式")
     private String queryType;
 
     /** 排序 */
-    @ApiModelProperty(value = "排序", position = 15)
+    @Schema(description = "排序")
     private Integer sortCode;
 }

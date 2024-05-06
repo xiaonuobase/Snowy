@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.role.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,19 +29,19 @@ import java.util.List;
 public class SysRoleGrantMobileMenuTreeResult {
 
     /** 模块id */
-    @ApiModelProperty(value = "模块id", position = 1)
+    @Schema(description = "模块id")
     private String id;
 
     /** 模块名称*/
-    @ApiModelProperty(value = "模块名称", position = 2)
+    @Schema(description = "模块名称")
     private String title;
 
     /** 模块图标 */
-    @ApiModelProperty(value = "模块图标", position = 3)
+    @Schema(description = "模块图标")
     private String icon;
 
     /** 模块下移动端菜单集合*/
-    @ApiModelProperty(value = "模块下移动端菜单集合", position = 4)
+    @Schema(description = "模块下移动端菜单集合")
     private List<SysRoleGrantMobileMenuResult> menu;
 
     /**
@@ -55,27 +55,27 @@ public class SysRoleGrantMobileMenuTreeResult {
     public static class SysRoleGrantMobileMenuResult {
 
         /** 菜单id */
-        @ApiModelProperty(value = "菜单id", position = 1)
+        @Schema(description = "菜单id")
         private String id;
 
         /** 父id */
-        @ApiModelProperty(value = "父id", position = 2)
+        @Schema(description = "父id")
         private String parentId;
 
         /** 父名称 */
-        @ApiModelProperty(value = "菜单名称", position = 3)
+        @Schema(description = "菜单名称")
         private String parentName;
 
         /** 标题 */
-        @ApiModelProperty(value = "菜单标题", position = 4)
+        @Schema(description = "菜单标题")
         private String title;
 
         /** 模块 */
-        @ApiModelProperty(value = "菜单模块", position = 5)
+        @Schema(description = "菜单模块")
         private String module;
 
         /** 菜单下按钮集合 */
-        @ApiModelProperty(value = "菜单下按钮集合", position = 6)
+        @Schema(description = "菜单下按钮集合")
         private List<SysRoleGrantMobileButtonResult> button;
 
         /**
@@ -89,11 +89,11 @@ public class SysRoleGrantMobileMenuTreeResult {
         public static class SysRoleGrantMobileButtonResult {
 
             /** 按钮id */
-            @ApiModelProperty(value = "按钮id", position = 1)
+            @Schema(description = "按钮id")
             private String id;
 
             /** 标题 */
-            @ApiModelProperty(value = "按钮标题", position = 2)
+            @Schema(description = "按钮标题")
             private String title;
         }
     }

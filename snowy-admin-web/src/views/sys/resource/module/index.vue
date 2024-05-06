@@ -9,7 +9,7 @@
 				</a-col>
 				<a-col :span="8">
 					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+					<a-button class="xn-mg08" @click="reset">重置</a-button>
 				</a-col>
 			</a-row>
 		</a-form>

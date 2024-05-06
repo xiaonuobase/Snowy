@@ -12,8 +12,8 @@
  */
 package vip.xiaonuo.common.util;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 /**
  * 过滤器异常工具类，用于处理过滤器中的异常

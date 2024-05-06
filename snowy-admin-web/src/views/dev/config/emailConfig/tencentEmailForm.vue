@@ -19,7 +19,7 @@
 			</a-form-item>
 			<a-form-item>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button style="margin-left: 10px" @click="() => formRef.resetFields()">重置</a-button>
+				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
 			</a-form-item>
 		</a-form>
 	</a-spin>

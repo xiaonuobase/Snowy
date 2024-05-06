@@ -1,6 +1,6 @@
 <template>
 	<div class="baiduMap" :style="{ height: `${height}px` }">
-		<div :id="`container-${mid}`" style="width: 100%; height: 100%">地图资源加载中...</div>
+		<div :id="`container-${mid}`" class="xn-wh">地图资源加载中...</div>
 	</div>
 </template>
 <!--BMapGL官网：https://lbsyun.baidu.com/index.php?title=jspopularGL-->
@@ -332,6 +332,10 @@
 </script>
 
 <style lang="less">
+	.xn-wh {
+		width: 100%;
+		height: 100%
+	}
 	.baiduMap {
 		padding: 0;
 		margin: 0;

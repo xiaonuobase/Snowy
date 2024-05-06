@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.dev.modular.job.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 定时任务编辑参数
@@ -30,36 +29,36 @@ import javax.validation.constraints.NotNull;
 public class DevJobEditParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true, position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", required = true, position = 2)
+    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", required = true, position = 3)
+    @Schema(description = "分类", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 任务类名 */
-    @ApiModelProperty(value = "任务类名", required = true, position = 4)
+    @Schema(description = "任务类名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "actionClass不能为空")
     private String actionClass;
 
     /** cron表达式 */
-    @ApiModelProperty(value = "cron表达式", required = true, position = 5)
+    @Schema(description = "cron表达式", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "cronExpression不能为空")
     private String cronExpression;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", required = true, position = 6)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 7)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

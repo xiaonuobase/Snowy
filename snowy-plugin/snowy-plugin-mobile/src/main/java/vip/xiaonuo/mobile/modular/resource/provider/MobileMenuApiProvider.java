@@ -14,11 +14,11 @@ package vip.xiaonuo.mobile.modular.resource.provider;
 
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**

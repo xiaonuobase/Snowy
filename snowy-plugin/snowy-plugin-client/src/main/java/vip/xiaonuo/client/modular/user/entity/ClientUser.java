@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fhs.core.trans.anno.Trans;
 import com.fhs.core.trans.constant.TransType;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.handler.CommonSm4CbcTypeHandler;
@@ -38,190 +38,190 @@ import java.util.Date;
 public class ClientUser extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 头像 */
-    @ApiModelProperty(value = "头像，图片base64", position = 2)
+    @Schema(description = "头像，图片base64")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String avatar;
 
     /** 签名 */
-    @ApiModelProperty(value = "签名，图片base64", position = 3)
+    @Schema(description = "签名，图片base64")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String signature;
 
     /** 账号 */
-    @ApiModelProperty(value = "账号", position = 4)
+    @Schema(description = "账号")
     private String account;
 
     /** 密码 */
     @JsonIgnore
-    @ApiModelProperty(value = "密码", position = 5)
+    @Schema(description = "密码")
     private String password;
 
     /** 姓名 */
-    @ApiModelProperty(value = "姓名", position = 6)
+    @Schema(description = "姓名")
     private String name;
 
     /** 昵称 */
-    @ApiModelProperty(value = "昵称", position = 7)
+    @Schema(description = "昵称")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String nickname;
 
     /** 性别 */
-    @ApiModelProperty(value = "性别", position = 8)
+    @Schema(description = "性别")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     @Trans(type = TransType.DICTIONARY, key = "GENDER")
     private String gender;
 
     /** 年龄 */
-    @ApiModelProperty(value = "年龄", position = 9)
+    @Schema(description = "年龄")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String age;
 
     /** 出生日期 */
-    @ApiModelProperty(value = "出生日期", position = 10)
+    @Schema(description = "出生日期")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String birthday;
 
     /** 民族 */
-    @ApiModelProperty(value = "民族", position = 11)
+    @Schema(description = "民族")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String nation;
 
     /** 籍贯 */
-    @ApiModelProperty(value = "籍贯", position = 12)
+    @Schema(description = "籍贯")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String nativePlace;
 
     /** 家庭住址 */
-    @ApiModelProperty(value = "家庭住址", position = 13)
+    @Schema(description = "家庭住址")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String homeAddress;
 
     /** 通信地址 */
-    @ApiModelProperty(value = "通信地址", position = 14)
+    @Schema(description = "通信地址")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String mailingAddress;
 
     /** 证件类型 */
-    @ApiModelProperty(value = "证件类型", position = 15)
+    @Schema(description = "证件类型")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String idCardType;
 
     /** 证件号码 */
-    @ApiModelProperty(value = "证件号码", position = 16)
+    @Schema(description = "证件号码")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String idCardNumber;
 
     /** 文化程度 */
-    @ApiModelProperty(value = "文化程度", position = 17)
+    @Schema(description = "文化程度")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String cultureLevel;
 
     /** 政治面貌 */
-    @ApiModelProperty(value = "政治面貌", position = 18)
+    @Schema(description = "政治面貌")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String politicalOutlook;
 
     /** 毕业院校 */
-    @ApiModelProperty(value = "毕业院校", position = 19)
+    @Schema(description = "毕业院校")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String college;
 
     /** 学历 */
-    @ApiModelProperty(value = "学历", position = 20)
+    @Schema(description = "学历")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String education;
 
     /** 学制 */
-    @ApiModelProperty(value = "学制", position = 21)
+    @Schema(description = "学制")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String eduLength;
 
     /** 学位 */
-    @ApiModelProperty(value = "学位", position = 22)
+    @Schema(description = "学位")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String degree;
 
     /** 手机 */
-    @ApiModelProperty(value = "手机", position = 23)
+    @Schema(description = "手机")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String phone;
 
     /** 邮箱 */
-    @ApiModelProperty(value = "邮箱", position = 24)
+    @Schema(description = "邮箱")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String email;
 
     /** 家庭电话 */
-    @ApiModelProperty(value = "家庭电话", position = 25)
+    @Schema(description = "家庭电话")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String homeTel;
 
     /** 办公电话 */
-    @ApiModelProperty(value = "办公电话", position = 26)
+    @Schema(description = "办公电话")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String officeTel;
 
     /** 紧急联系人 */
-    @ApiModelProperty(value = "紧急联系人", position = 27)
+    @Schema(description = "紧急联系人")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String emergencyContact;
 
     /** 紧急联系人电话 */
-    @ApiModelProperty(value = "紧急联系人电话", position = 28)
+    @Schema(description = "紧急联系人电话")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED, typeHandler = CommonSm4CbcTypeHandler.class)
     private String emergencyPhone;
 
     /** 紧急联系人地址 */
-    @ApiModelProperty(value = "紧急联系人地址", position = 29)
+    @Schema(description = "紧急联系人地址")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String emergencyAddress;
 
     /** 上次登录ip */
-    @ApiModelProperty(value = "上次登录ip", position = 30)
+    @Schema(description = "上次登录ip")
     private String lastLoginIp;
 
     /** 上次登录地点 */
-    @ApiModelProperty(value = "上次登录地点", position = 31)
+    @Schema(description = "上次登录地点")
     private String lastLoginAddress;
 
     /** 上次登录时间 */
-    @ApiModelProperty(value = "上次登录时间", position = 32)
+    @Schema(description = "上次登录时间")
     private Date lastLoginTime;
 
     /** 上次登录设备 */
-    @ApiModelProperty(value = "上次登录设备", position = 33)
+    @Schema(description = "上次登录设备")
     private String lastLoginDevice;
 
     /** 最新登录ip */
-    @ApiModelProperty(value = "最新登录ip", position = 34)
+    @Schema(description = "最新登录ip")
     private String latestLoginIp;
 
     /** 最新登录地点 */
-    @ApiModelProperty(value = "最新登录地点", position = 35)
+    @Schema(description = "最新登录地点")
     private String latestLoginAddress;
 
     /** 最新登录时间 */
-    @ApiModelProperty(value = "最新登录时间", position = 36)
+    @Schema(description = "最新登录时间")
     private Date latestLoginTime;
 
     /** 最新登录设备 */
-    @ApiModelProperty(value = "最新登录设备", position = 37)
+    @Schema(description = "最新登录设备")
     private String latestLoginDevice;
 
     /** 用户状态 */
-    @ApiModelProperty(value = "用户状态", position = 38)
+    @Schema(description = "用户状态")
     private String userStatus;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 39)
+    @Schema(description = "排序码")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 40)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 }

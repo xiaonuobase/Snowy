@@ -29,7 +29,7 @@
 						</a-radio-group>
 						<a-input-search
 							v-model:value="searchFormState.searchKey"
-							placeholder="请输入名称关键字"
+							placeholder="请输入名称关键词"
 							enter-button
 							allowClear
 							@search="onSearch"

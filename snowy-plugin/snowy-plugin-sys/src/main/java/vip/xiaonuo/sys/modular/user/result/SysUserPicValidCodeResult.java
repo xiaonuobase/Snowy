@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +27,10 @@ import lombok.Setter;
 public class SysUserPicValidCodeResult {
 
     /** 验证码图片，Base64 */
-    @ApiModelProperty(value = "验证码图片，Base64", position = 1)
+    @Schema(description = "验证码图片，Base64")
     private String validCodeBase64;
 
     /** 验证码请求号 */
-    @ApiModelProperty(value = "验证码请求号", position = 2)
+    @Schema(description = "验证码请求号")
     private String validCodeReqNo;
 }

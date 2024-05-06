@@ -9,32 +9,33 @@
 		>
 			<div class="right-menu-item" @click="refreshTab">
 				<reload-outlined class="snowy-header-tags-right" />
-				<div class="pl-3">刷新</div>
+				<div class="pl-3 snowy-header-tags-right-font">刷新</div>
 			</div>
 
 			<div class="right-menu-item" @click="closeTabs">
 				<close-outlined class="snowy-header-tags-right" />
-				<div class="pl-3">关闭</div>
+				<div class="pl-3 snowy-header-tags-right-font">关闭</div>
 			</div>
 
 			<div class="right-menu-item" @click="closeOtherTabs">
 				<close-outlined class="snowy-header-tags-right" />
-				<div class="pl-3">关闭其他标签</div>
+				<div class="pl-3 snowy-header-tags-right-font">关闭其他标签</div>
 			</div>
 
 			<div class="right-menu-item" @click="maximize">
 				<expand-outlined class="snowy-header-tags-right" />
-				<div class="pl-3">最大化</div>
+				<div class="pl-3 snowy-header-tags-right-font">最大化</div>
 			</div>
 			<div class="right-menu-item" @click="openWindow">
 				<select-outlined class="snowy-header-tags-right" />
-				<div class="pl-3">新窗口打开</div>
+				<div class="pl-3 snowy-header-tags-right-font">新窗口打开</div>
 			</div>
 		</xn-context-menu>
 		<a-tabs
 			v-model:activeKey="activeKey"
 			type="editable-card"
-			class="snowy-admin-tabs"
+			:class="[{ 'snowy-radius': roundedCornerStyleOpen }, 'snowy-admin-tabs']"
+			:animated="!roundedCornerStyleOpen"
 			hide-add
 			ref="tabs"
 			@edit="onTabRemove"
@@ -85,11 +86,13 @@
 	const layoutTagsOpen = computed(() => {
 		return store.layoutTagsOpen
 	})
+	const roundedCornerStyleOpen = computed(() => {
+		return store.roundedCornerStyleOpen
+	})
 
 	const tagList = computed(() => {
 		return viewTags.value
 	})
-
 	watch(route, (to) => {
 		addViewTags(to)
 		activeKey.value = to.fullPath
@@ -97,7 +100,6 @@
 	watch(layoutTagsOpen, () => {
 		// closeOtherCacheTabs()
 	})
-
 	onMounted(() => {
 		const tabNavList = document.querySelector('.ant-tabs-nav-list')
 		if (tabNavList) {
@@ -299,9 +301,8 @@
 </script>
 <style lang="less">
 	.snowy-admin-tabs {
+		overflow: hidden; // 新增
 		&.ant-tabs {
-			background: var(--component-background);
-			box-shadow: var(--header-light-shadow);
 			z-index: 99;
 			.ant-tabs-nav {
 				margin-bottom: 0;
@@ -336,7 +337,6 @@
 					}
 				}
 			}
-
 			.snowy-admin-tabs-drop,
 			.snowy-admin-tabs-arrow,
 			.ant-tabs-nav-operations .ant-tabs-nav-more {
@@ -355,7 +355,7 @@
 	}
 	.right-menu {
 		position: fixed;
-		background: #fff;
+		background: var(--tag-background);
 		z-index: 999;
 		border: 1px solid #eee;
 		box-shadow: 0 0.5em 1em 0 rgb(0 0 0 / 10%);
@@ -373,5 +373,102 @@
 				background: var(--primary-1);
 			}
 		}
+	}
+	.snowy-tags {
+		height: 40px;
+		background: var(--snowy-background-color);
+	}
+	.snowy-tags ul {
+		display: flex;
+		overflow: hidden;
+		padding-left: 0;
+	}
+	.snowy-tags li {
+		cursor: pointer;
+		display: inline-block;
+		float: left;
+		line-height: 39.5px;
+		position: relative;
+		flex-shrink: 0;
+	}
+	.snowy-tags li::after {
+		content: ' ';
+		width: 1px;
+		height: 100%;
+		position: absolute;
+		right: 0px;
+		background-image: linear-gradient(#fff, #e6e6e6);
+	}
+	.snowy-tags li a {
+		padding: 0 10px;
+		width: 100%;
+		height: 100%;
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+	}
+	.snowy-tags li i {
+		margin-left: 10px;
+		border-radius: 3px;
+		width: 18px;
+		height: 18px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.snowy-tags li i:hover {
+		background: rgba(0, 0, 0, 0.2);
+		color: @body-background;
+	}
+	.snowy-tags li:hover {
+		background: @body-background;
+	}
+	.snowy-tags li.active {
+		background: @primary-color;
+	}
+	.snowy-tags li.active a {
+		color: var(--font-color);
+	}
+	.snowy-tags li.sortable-ghost {
+		opacity: 0;
+	}
+	.snowy-header-tags-right {
+		margin-right: 10px;
+		color: var(--font-color);
+	}
+	.snowy-header-tags-right-font {
+		color: var(--font-color);
+	}
+	.snowy-radius .ant-tabs-tab-active {
+		position: relative;
+		z-index: 1;
+		border-radius: 10px 10px 0 0 !important;
+		box-shadow:
+			12px 15px 0 0 var(--primary-1),
+			-12px 15px 0 0 var(--primary-1);
+	}
+	.snowy-radius .ant-tabs-tab-active::before {
+		content: '';
+		position: absolute;
+		left: -13px;
+		bottom: 1px;
+		width: 13px;
+		height: 40px;
+		background: var(--primary-radius);
+		border-radius: 0 0 20px 0;
+	}
+	.snowy-radius .ant-tabs-tab-active::after {
+		content: '';
+		position: absolute;
+		right: -13px;
+		bottom: 1px;
+		width: 13px;
+		height: 40px;
+		background: var(--primary-radius);
+		border-radius: 0 0 0 20px;
+	}
+
+	.snowy-radius .ant-tabs-ink-bar {
+		visibility: hidden !important;
 	}
 </style>

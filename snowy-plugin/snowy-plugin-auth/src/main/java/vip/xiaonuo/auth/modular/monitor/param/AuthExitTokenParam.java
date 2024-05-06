@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.auth.modular.monitor.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * Token退出参数
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class AuthExitTokenParam {
 
     /** token值 */
-    @ApiModelProperty(value = "token值", required = true)
+    @Schema(description = "token值", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "tokenValue不能为空")
     private String tokenValue;
 }

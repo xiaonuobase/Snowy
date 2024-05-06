@@ -1,7 +1,7 @@
 <template>
 	<a-modal
 		:class="['my-modal', modalClass, simpleClass]"
-		:visible="visible"
+		:open="visible"
 		v-bind="props"
 		:width="modalWidth"
 		:wrap-class-name="wrapClassName + fullscreenClass"

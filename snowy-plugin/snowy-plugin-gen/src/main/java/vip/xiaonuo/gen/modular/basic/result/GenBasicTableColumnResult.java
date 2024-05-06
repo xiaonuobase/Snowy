@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.gen.modular.basic.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,14 +27,14 @@ import lombok.Setter;
 public class GenBasicTableColumnResult {
 
     /** 字段名称 */
-    @ApiModelProperty(value = "字段名称", position = 1)
+    @Schema(description = "字段名称")
     private String columnName;
 
     /** 字段类型 */
-    @ApiModelProperty(value = "字段类型", position = 2)
+    @Schema(description = "字段类型")
     private String typeName;
 
     /** 字段注释 */
-    @ApiModelProperty(value = "字段注释", position = 3)
+    @Schema(description = "字段注释")
     private String columnRemark;
 }

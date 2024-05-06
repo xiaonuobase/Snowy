@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="详情"
-		:width="700"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
 			<a-descriptions-item label="短信引擎">{{
 				$TOOL.dictTypeData('SMS_ENGINE', formData.engine)
@@ -18,7 +12,7 @@
 			<a-descriptions-item label="发送时间">{{ formData.createTime }}</a-descriptions-item>
 			<a-descriptions-item label="模板编码">{{ formData.templateCode }}</a-descriptions-item>
 		</a-descriptions>
-		<a-space direction="vertical" class="mb-2" style="width: 100%">
+		<a-space direction="vertical" class="mb-2 xn-wd">
 			回执信息：
 			<XnHighlightjs language="JSON" :code="receiptInfo"></XnHighlightjs>
 		</a-space>

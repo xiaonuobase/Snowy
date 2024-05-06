@@ -12,12 +12,11 @@
  */
 package vip.xiaonuo.mobile.modular.resource.param.module;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 移动端模块编辑参数
@@ -30,31 +29,31 @@ import javax.validation.constraints.NotNull;
 public class MobileModuleEditParam {
 
     /** id */
-    @ApiModelProperty(value = "id", required = true, position = 1)
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 标题 */
-    @ApiModelProperty(value = "标题", required = true, position = 2)
+    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 图标 */
-    @ApiModelProperty(value = "图标", required = true, position = 3)
+    @Schema(description = "图标", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "icon不能为空")
     private String icon;
 
     /** 颜色 */
-    @ApiModelProperty(value = "颜色", required = true, position = 4)
+    @Schema(description = "颜色", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "color不能为空")
     private String color;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", required = true, position = 5)
+    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 6)
+    @Schema(description = "扩展信息")
     private String extJson;
 }

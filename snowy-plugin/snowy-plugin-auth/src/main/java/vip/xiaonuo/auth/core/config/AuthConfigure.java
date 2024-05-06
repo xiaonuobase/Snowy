@@ -12,31 +12,23 @@
  */
 package vip.xiaonuo.auth.core.config;
 
+import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.strategy.SaStrategy;
-import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
-import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
-import vip.xiaonuo.common.pojo.CommonResult;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -47,9 +39,6 @@ import java.util.List;
  **/
 @Configuration
 public class AuthConfigure implements WebMvcConfigurer {
-
-    @Resource
-    private OpenApiExtensionResolver openApiExtensionResolver;
 
     /**
      * 注册Sa-Token的注解拦截器，打开注解式鉴权功能
@@ -69,19 +58,20 @@ public class AuthConfigure implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
     }
 
+    @Primary
     @Bean("stpLogic")
-    public StpLogic getStpLogic() {
+    public StpLogic getStpLogic(SaTokenConfig saTokenConfig) {
         // 重写Sa-Token的StpLogic，默认客户端类型为B
-        return new StpLogic(SaClientTypeEnum.B.getValue());
+        return new StpLogic(SaClientTypeEnum.B.getValue()).setConfig(saTokenConfig);
     }
 
     @Bean("stpClientLogic")
-    public StpLogic getStpClientLogic() {
+    public StpLogic getStpClientLogic(SaTokenConfig saTokenConfig) {
         // 重写Sa-Token的StpLogic，默认客户端类型为C
-        return new StpLogic(SaClientTypeEnum.C.getValue());
+        return new StpLogic(SaClientTypeEnum.C.getValue()).setConfig(saTokenConfig);
     }
 
-    @Bean
+    @Autowired
     public void rewriteSaStrategy() {
         // 重写Sa-Token的注解处理器，增加注解合并功能
         SaStrategy.me.getAnnotation = AnnotatedElementUtils::getMergedAnnotation;
@@ -119,31 +109,5 @@ public class AuthConfigure implements WebMvcConfigurer {
                 return StpClientLoginUserUtil.getClientLoginUser().getRoleCodeList();
             }
         }
-    }
-
-    /**
-     * API文档分组配置
-     *
-     * @author xuyuxiang
-     * @date 2022/7/7 16:18
-     **/
-    @Bean(value = "authDocApi")
-    public Docket authDocApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(new ApiInfoBuilder()
-                        .title("登录鉴权AUTH")
-                        .description("登录鉴权AUTH")
-                        .termsOfServiceUrl("https://www.xiaonuo.vip")
-                        .contact(new Contact("SNOWY_TEAM","https://www.xiaonuo.vip", "xuyuxiang29@foxmail.com"))
-                        .version("2.0.0")
-                        .build())
-                .globalResponseMessage(RequestMethod.GET, CommonResult.responseList())
-                .globalResponseMessage(RequestMethod.POST, CommonResult.responseList())
-                .groupName("登录鉴权AUTH")
-                .select()
-                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
-                .apis(RequestHandlerSelectors.basePackage("vip.xiaonuo.auth"))
-                .paths(PathSelectors.any())
-                .build().extensions(openApiExtensionResolver.buildExtensions("登录鉴权AUTH"));
     }
 }

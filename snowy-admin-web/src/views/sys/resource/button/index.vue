@@ -30,7 +30,7 @@
 	<Form ref="buttonForm" @successful="tableRef.refresh(true)" />
 </template>
 
-<script setup>
+<script setup name="sysResourceButton">
 	import buttonApi from '@/api/sys/resource/buttonApi'
 	import Form from './form.vue'
 	const columns = [

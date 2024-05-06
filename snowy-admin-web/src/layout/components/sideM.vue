@@ -1,8 +1,8 @@
 <template>
 	<div v-drag class="mobile-nav-button" draggable="false" @click="showMobileNav($event)">
-		<appstore-outlined style="font-size: 20px; color: white" />
+		<appstore-outlined class="xn-appout-line" />
 	</div>
-	<a-drawer v-model:visible="visible" :width="210" :closable="false" placement="left">
+	<a-drawer v-model:open="visible" :width="210" :closable="false" placement="left">
 		<header class="snowy-header-logo mobile-nav">
 			<div class="snowy-header-left">
 				<div class="logo-bar">
@@ -11,7 +11,7 @@
 				</div>
 			</div>
 		</header>
-		<a-menu style="width: 208px; margin-left: -24px" mode="inline" @select="onSelect">
+		<a-menu class="xn-inline-line" mode="inline" @select="onSelect">
 			<NavMenu :nav-menus="menu"></NavMenu>
 		</a-menu>
 	</a-drawer>
@@ -113,6 +113,14 @@
 </script>
 
 <style lang="less" scoped>
+	.xn-appout-line {
+		font-size: 20px;
+		color: white;
+	}
+	.xn-inline-line {
+		width: 208px;
+		margin-left: -24px;
+	}
 	.mobile-nav {
 		margin-top: -24px;
 		margin-left: -24px;

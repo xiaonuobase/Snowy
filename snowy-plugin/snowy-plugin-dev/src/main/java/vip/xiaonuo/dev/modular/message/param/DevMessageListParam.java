@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.message.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,10 +29,10 @@ import java.util.List;
 public class DevMessageListParam {
 
     /** 接收人id集合 */
-    @ApiModelProperty(value = "接收人id集合")
+    @Schema(description = "接收人id集合")
     private List<String> receiverIdList;
 
     /** 条数" */
-    @ApiModelProperty(value = "条数")
+    @Schema(description = "条数")
     private Integer limit;
 }

@@ -15,6 +15,7 @@ package vip.xiaonuo.dev.modular.log.provider;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -24,7 +25,6 @@ import vip.xiaonuo.dev.modular.log.enums.DevLogCategoryEnum;
 import vip.xiaonuo.dev.modular.log.service.DevLogService;
 import vip.xiaonuo.dev.modular.log.util.DevLogUtil;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

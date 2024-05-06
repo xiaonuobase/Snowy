@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.role.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,11 +29,11 @@ import java.util.List;
 public class SysRoleOwnPermissionResult {
 
     /** 角色id */
-    @ApiModelProperty(value = "角色id", position = 1)
+    @Schema(description = "角色id")
     private String id;
 
     /** 已授权权限信息 */
-    @ApiModelProperty(value = "已授权权限信息", position = 2)
+    @Schema(description = "已授权权限信息")
     private List<SysRoleOwnPermission> grantInfoList;
 
     /**
@@ -47,15 +47,15 @@ public class SysRoleOwnPermissionResult {
     public static class SysRoleOwnPermission {
 
         /** 菜单id */
-        @ApiModelProperty(value = "接口地址", position = 1)
+        @Schema(description = "接口地址")
         private String apiUrl;
 
         /** 数据范围分类 */
-        @ApiModelProperty(value = "数据范围分类", position = 1)
+        @Schema(description = "数据范围分类")
         private String scopeCategory;
 
         /** 自定义范围组织id集合 */
-        @ApiModelProperty(value = "自定义范围组织id集合", position = 2)
+        @Schema(description = "自定义范围组织id集合")
         private List<String> scopeDefineOrgIdList;
 
     }

@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.result;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,11 +29,11 @@ import java.util.List;
 public class SysUserOwnResourceResult {
 
     /** 用户id */
-    @ApiModelProperty(value = "用户id", position = 1)
+    @Schema(description = "用户id")
     private String id;
 
     /** 已授权资源信息 */
-    @ApiModelProperty(value = "已授权资源信息", position = 2)
+    @Schema(description = "已授权资源信息")
     private List<SysUserOwnResource> grantInfoList;
 
     /**
@@ -47,11 +47,11 @@ public class SysUserOwnResourceResult {
     public static class SysUserOwnResource {
 
         /** 菜单id */
-        @ApiModelProperty(value = "菜单id", position = 1)
+        @Schema(description = "菜单id")
         private String menuId;
 
         /** 按钮id集合 */
-        @ApiModelProperty(value = "按钮id集合", position = 2)
+        @Schema(description = "按钮id集合")
         private List<String> buttonInfo;
     }
 }

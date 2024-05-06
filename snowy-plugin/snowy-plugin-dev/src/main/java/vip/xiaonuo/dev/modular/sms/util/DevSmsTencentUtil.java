@@ -84,7 +84,7 @@ public class DevSmsTencentUtil {
      *                 可前往 [短信控制台](https://console.cloud.tencent.com/smsv2/app-manage) 查看
      * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
      *                     上限为1000个手机号码。批量调用相对于单条调用及时性稍有延迟。
-     * @param signName 短信服务控制台配置且审核通过的短信签名
+     * @param signName 短信服务控制台配置且审核通过的短信签名，为空则使用默认签名
      * @param templateCode 短信服务控制台配置且审核通过的模板编码
      * @param templateParam 短信模板变量对应的顺序。支持传入多个参数，逗号拼接，示例："张三,15038****76,进行中"
      * @return 发送的结果信息集合 com.tencentcloudapi.sms.v20210111.models.SendStatus
@@ -95,20 +95,10 @@ public class DevSmsTencentUtil {
         try {
             initClient();
             if(ObjectUtil.isEmpty(sdkAppId)) {
-                // sdkAppId为空，则获取默认sdkAppId
-                DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
-                sdkAppId = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID_KEY);
-                if(ObjectUtil.isEmpty(sdkAppId)) {
-                    throw new CommonException("腾讯云短信操作客户端未正确配置：sdkAppId为空");
-                }
+                sdkAppId = getDefaultSdkAppId();
             }
             if(ObjectUtil.isEmpty(signName)) {
-                // 签名为空，则获取默认签名
-                DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
-                signName = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SIGN_NAME_KEY);
-                if(ObjectUtil.isEmpty(signName)) {
-                    throw new CommonException("腾讯云短信操作客户端未正确配置：signName为空");
-                }
+                signName = getDefaultSignName();
             }
             SendSmsRequest sendSmsRequest = new SendSmsRequest();
             sendSmsRequest.setSmsSdkAppId(sdkAppId);
@@ -127,5 +117,37 @@ public class DevSmsTencentUtil {
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
+    }
+
+    /**
+     * 获取默认签名
+     *
+     * @author xuyuxiang
+     * @date 2024/1/26 16:40
+     **/
+    public static String getDefaultSignName() {
+        // 签名为空，则获取默认签名
+        DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+        String signName = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SIGN_NAME_KEY);
+        if(ObjectUtil.isEmpty(signName)) {
+            throw new CommonException("腾讯云短信操作客户端未正确配置：signName为空");
+        }
+        return signName;
+    }
+
+    /**
+     * 获取默认sdkAppId
+     *
+     * @author xuyuxiang
+     * @date 2024/1/26 16:40
+     **/
+    public static String getDefaultSdkAppId() {
+        // sdkAppId为空，则获取默认sdkAppId
+        DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+        String sdkAppId = devConfigApi.getValueByKey(SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID_KEY);
+        if(ObjectUtil.isEmpty(sdkAppId)) {
+            throw new CommonException("腾讯云短信操作客户端未正确配置：sdkAppId为空");
+        }
+        return sdkAppId;
     }
 }

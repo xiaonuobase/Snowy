@@ -12,11 +12,10 @@
  */
 package vip.xiaonuo.dev.modular.log.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * 日志清空参数
@@ -29,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 public class DevLogDeleteParam {
 
     /** 日志分类 */
-    @ApiModelProperty(value = "日志分类", required = true)
+    @Schema(description = "日志分类", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "category不能为空")
     private String category;
 }

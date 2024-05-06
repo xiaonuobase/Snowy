@@ -2,22 +2,22 @@
 	<a-row :gutter="[10, 10]">
 		<a-col :span="12">
 			<a-card title="漏斗图" :bordered="false">
-				<FunnelChart style="height: 400px" />
+				<FunnelChart class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="漏斗图(对比)" :bordered="false">
-				<FunnelCompare style="height: 400px" />
+				<FunnelCompare class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="漏斗图" :bordered="false">
-				<CustomizedFunnel style="height: 400px" />
+				<CustomizedFunnel class="xn-ht400" />
 			</a-card>
 		</a-col>
 		<a-col :span="12">
 			<a-card title="Funnel" :bordered="false">
-				<MultipleFunnels style="height: 400px" />
+				<MultipleFunnels class="xn-ht400" />
 			</a-card>
 		</a-col>
 	</a-row>

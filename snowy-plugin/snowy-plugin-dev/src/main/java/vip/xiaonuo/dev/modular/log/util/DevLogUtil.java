@@ -18,6 +18,7 @@ import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.util.*;
@@ -25,8 +26,6 @@ import vip.xiaonuo.dev.modular.log.entity.DevLog;
 import vip.xiaonuo.dev.modular.log.enums.DevLogCategoryEnum;
 import vip.xiaonuo.dev.modular.log.enums.DevLogExeStatusEnum;
 import vip.xiaonuo.dev.modular.log.service.DevLogService;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 日志工具类

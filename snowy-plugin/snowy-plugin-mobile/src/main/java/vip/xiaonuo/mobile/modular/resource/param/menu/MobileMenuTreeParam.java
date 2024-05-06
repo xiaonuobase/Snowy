@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.mobile.modular.resource.param.menu;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,11 +27,11 @@ import lombok.Setter;
 public class MobileMenuTreeParam {
 
     /** 关键词 */
-    @ApiModelProperty(value = "关键词")
+    @Schema(description = "关键词")
     private String searchKey;
 
     /** 模块 */
-    @ApiModelProperty(value = "模块")
+    @Schema(description = "模块")
     private String module;
 
 }

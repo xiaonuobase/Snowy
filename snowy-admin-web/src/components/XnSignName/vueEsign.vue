@@ -87,7 +87,9 @@
 		canvas.value.height = props.height
 		canvas.value.width = props.width
 		canvas.value.style.background = myBg.value
-		$_resizeHandler()
+		setTimeout(() => {
+			$_resizeHandler()
+		})
 		// 在画板以外松开鼠标后冻结画笔
 		document.onmouseup = () => {
 			isDrawing.value = false

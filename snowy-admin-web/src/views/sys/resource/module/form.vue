@@ -11,18 +11,18 @@
 				<a-input v-model:value="formData.title" placeholder="请输入模块名称" allow-clear />
 			</a-form-item>
 			<a-form-item label="图标：" name="icon">
-				<a-input v-model:value="formData.icon" style="width: calc(100% - 70px)" placeholder="请选择图标" allow-clear />
+				<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
 				<a-button type="primary" @click="iconSelectorRef.showIconModal(formData.icon)">选择</a-button>
 			</a-form-item>
 			<a-form-item label="颜色：" name="color">
 				<color-picker v-model:value="formData.color" />
 			</a-form-item>
 			<a-form-item label="排序:" name="sortCode">
-				<a-input-number style="width: 100%" v-model:value="formData.sortCode" :max="100" />
+				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 			</a-form-item>
 		</a-form>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit">保存</a-button>
 		</template>
 		<Icon-selector ref="iconSelectorRef" @iconCallBack="iconCallBack" />
@@ -51,6 +51,11 @@
 		}
 		if (record) {
 			formData.value = Object.assign({}, record)
+		} else {
+			formData.value = {
+				sortCode: 99,
+				color: '#1677FF'
+			}
 		}
 	}
 	// 关闭抽屉
@@ -60,6 +65,9 @@
 	}
 	// 图标选择器回调
 	const iconCallBack = (value) => {
+		if (value) {
+			formRef.value.clearValidate('icon')
+		}
 		formData.value.icon = value
 	}
 
@@ -72,12 +80,15 @@
 
 	// 验证并提交数据
 	const onSubmit = () => {
-		formRef.value.validate().then(() => {
-			moduleApi.submitForm(formData.value, formData.value.id).then(() => {
-				onClose()
-				emit('successful')
+		formRef.value
+			.validate()
+			.then(() => {
+				moduleApi.submitForm(formData.value, formData.value.id).then(() => {
+					onClose()
+					emit('successful')
+				})
 			})
-		})
+			.catch(() => {})
 	}
 
 	// 调用这个函数将子组件的一些数据和方法暴露出去

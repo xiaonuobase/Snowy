@@ -15,12 +15,12 @@ package vip.xiaonuo.common.util;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.net.Ipv4Util;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
 import vip.xiaonuo.common.exception.CommonException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.InputStream;
 
@@ -80,7 +80,7 @@ public class CommonIpAddressUtil {
             return Ipv4Util.LOCAL_IP;
         } else {
             try {
-                String remoteHost = ServletUtil.getClientIP(request);
+                String remoteHost = JakartaServletUtil.getClientIP(request);
                 return LOCAL_REMOTE_HOST.equals(remoteHost) ? Ipv4Util.LOCAL_IP : remoteHost;
             } catch (Exception e) {
                 log.error(">>> 获取客户端ip异常：", e);
@@ -99,7 +99,7 @@ public class CommonIpAddressUtil {
         try {
             ip = ip.trim();
             // 3、执行查询
-            String region = searcher.searchByStr(ip);
+            String region = searcher.search(ip);
             return region.replace("0|", "").replace("|0", "");
         } catch (Exception e) {
             return "未知";

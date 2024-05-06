@@ -15,10 +15,11 @@ package vip.xiaonuo.biz.modular.org.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +31,7 @@ import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.common.pojo.CommonValidList;
 
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -43,8 +40,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/4/24 19:55
  */
-@Api(tags = "机构控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
+@Tag(name = "机构控制器")
 @RestController
 @Validated
 public class BizOrgController {
@@ -58,8 +54,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
-    @ApiOperation("获取机构分页")
+    @Operation(summary = "获取机构分页")
     @SaCheckPermission("/biz/org/page")
     @GetMapping("/biz/org/page")
     public CommonResult<Page<BizOrg>> page(BizOrgPageParam bizOrgPageParam) {
@@ -72,8 +67,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
-    @ApiOperation("获取机构树")
+    @Operation(summary = "获取机构树")
     @SaCheckPermission("/biz/org/tree")
     @GetMapping("/biz/org/tree")
     public CommonResult<List<Tree<String>>> tree() {
@@ -86,8 +80,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
-    @ApiOperation("添加机构")
+    @Operation(summary = "添加机构")
     @CommonLog("添加机构")
     @SaCheckPermission("/biz/org/add")
     @PostMapping("/biz/org/add")
@@ -102,8 +95,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
-    @ApiOperation("编辑机构")
+    @Operation(summary = "编辑机构")
     @CommonLog("编辑机构")
     @SaCheckPermission("/biz/org/edit")
     @PostMapping("/biz/org/edit")
@@ -118,13 +110,12 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
-    @ApiOperation("删除机构")
+    @Operation(summary = "删除机构")
     @CommonLog("删除机构")
     @SaCheckPermission("/biz/org/delete")
     @PostMapping("/biz/org/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   CommonValidList<BizOrgIdParam> bizOrgIdParamList) {
+                                                   List<BizOrgIdParam> bizOrgIdParamList) {
         bizOrgService.delete(bizOrgIdParamList);
         return CommonResult.ok();
     }
@@ -135,8 +126,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
-    @ApiOperation("获取机构详情")
+    @Operation(summary = "获取机构详情")
     @SaCheckPermission("/biz/org/detail")
     @GetMapping("/biz/org/detail")
     public CommonResult<BizOrg> detail(@Valid BizOrgIdParam bizOrgIdParam) {
@@ -151,8 +141,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
-    @ApiOperation("获取机构树选择器")
+    @Operation(summary = "获取机构树选择器")
     @SaCheckPermission("/biz/org/orgTreeSelector")
     @GetMapping("/biz/org/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
@@ -165,8 +154,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
-    @ApiOperation("获取人员选择器")
+    @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/org/userSelector")
     @GetMapping("/biz/org/userSelector")
     public CommonResult<Page<BizUser>> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {

@@ -15,7 +15,7 @@ package vip.xiaonuo.dev.modular.log.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,94 +33,94 @@ import java.util.Date;
 public class DevLog {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 日志分类 */
-    @ApiModelProperty(value = "日志分类", position = 2)
+    @Schema(description = "日志分类")
     private String category;
 
     /** 日志名称 */
-    @ApiModelProperty(value = "日志名称", position = 3)
+    @Schema(description = "日志名称")
     private String name;
 
     /** 执行状态 */
-    @ApiModelProperty(value = "执行状态", position = 4)
+    @Schema(description = "执行状态")
     private String exeStatus;
 
     /** 具体消息 */
-    @ApiModelProperty(value = "具体消息", position = 5)
+    @Schema(description = "具体消息")
     private String exeMessage;
 
     /** 操作ip */
-    @ApiModelProperty(value = "操作ip", position = 6)
+    @Schema(description = "操作ip")
     private String opIp;
 
     /** 操作地址 */
-    @ApiModelProperty(value = "操作地址", position = 7)
+    @Schema(description = "操作地址")
     private String opAddress;
 
     /** 操作浏览器 */
-    @ApiModelProperty(value = "操作浏览器", position = 8)
+    @Schema(description = "操作浏览器")
     private String opBrowser;
 
     /** 操作系统 */
-    @ApiModelProperty(value = "操作系统", position = 9)
+    @Schema(description = "操作系统")
     private String opOs;
 
     /** 类名称 */
-    @ApiModelProperty(value = "类名称", position = 10)
+    @Schema(description = "类名称")
     private String className;
 
     /** 方法名称 */
-    @ApiModelProperty(value = "方法名称", position = 11)
+    @Schema(description = "方法名称")
     private String methodName;
 
     /** 请求方式 */
-    @ApiModelProperty(value = "请求方式", position = 12)
+    @Schema(description = "请求方式")
     private String reqMethod;
 
     /** 请求地址 */
-    @ApiModelProperty(value = "请求地址", position = 13)
+    @Schema(description = "请求地址")
     private String reqUrl;
 
     /** 请求参数 */
-    @ApiModelProperty(value = "请求参数", position = 14)
+    @Schema(description = "请求参数")
     private String paramJson;
 
     /** 返回结果 */
-    @ApiModelProperty(value = "返回结果", position = 15)
+    @Schema(description = "返回结果")
     private String resultJson;
 
     /** 操作时间 */
-    @ApiModelProperty(value = "操作时间", position = 16)
+    @Schema(description = "操作时间")
     private Date opTime;
 
     /** 操作人姓名 */
-    @ApiModelProperty(value = "操作人姓名", position = 17)
+    @Schema(description = "操作人姓名")
     private String opUser;
 
     /** 签名数据 */
-    @ApiModelProperty(value = "签名数据", position = 18)
+    @Schema(description = "签名数据")
     private String signData;
 
     /** 创建时间 */
-    @ApiModelProperty(value = "创建时间", position = 19)
+    @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /** 创建人 */
-    @ApiModelProperty(value = "创建人", position = 20)
+    @Schema(description = "创建人")
     @TableField(fill = FieldFill.INSERT)
     private String createUser;
 
     /** 更新时间 */
-    @ApiModelProperty(value = "更新时间", position = 21)
+    @Schema(description = "更新时间")
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /** 更新人 */
-    @ApiModelProperty(value = "更新人", position = 22)
+    @Schema(description = "更新人")
     @TableField(fill = FieldFill.UPDATE)
     private String updateUser;
 }

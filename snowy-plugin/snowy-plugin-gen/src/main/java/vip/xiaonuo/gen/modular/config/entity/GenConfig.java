@@ -13,7 +13,7 @@
 package vip.xiaonuo.gen.modular.config.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -30,66 +30,66 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class GenConfig extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 基础ID */
-    @ApiModelProperty(value = "基础ID", position = 2)
+    @Schema(description = "基础ID")
     private String basicId;
 
     /** 是否主键 */
-    @ApiModelProperty(value = "是否主键", position = 3)
+    @Schema(description = "是否主键")
     private String isTableKey;
 
     /** 字段 */
-    @ApiModelProperty(value = "字段", position = 4)
+    @Schema(description = "字段")
     private String fieldName;
 
     /** 注释 */
-    @ApiModelProperty(value = "注释", position = 5)
+    @Schema(description = "注释")
     private String fieldRemark;
 
     /** 类型 */
-    @ApiModelProperty(value = "类型", position = 6)
+    @Schema(description = "类型")
     private String fieldType;
 
     /** 实体类型 */
-    @ApiModelProperty(value = "实体类型", position = 7)
+    @Schema(description = "实体类型")
     private String fieldJavaType;
 
     /** 作用类型 */
-    @ApiModelProperty(value = "作用类型", position = 8)
+    @Schema(description = "作用类型")
     private String effectType;
 
     /** 字典 */
-    @ApiModelProperty(value = "字典", position = 9)
+    @Schema(description = "字典")
     private String dictTypeCode;
 
     /** 列表显示 */
-    @ApiModelProperty(value = "列表显示", position = 10)
+    @Schema(description = "列表显示")
     private String whetherTable;
 
     /** 列省略 */
-    @ApiModelProperty(value = "列省略", position = 11)
+    @Schema(description = "列省略")
     private String whetherRetract;
 
     /** 增改 */
-    @ApiModelProperty(value = "增改", position = 12)
+    @Schema(description = "增改")
     private String whetherAddUpdate;
 
     /** 必填 */
-    @ApiModelProperty(value = "必填", position = 13)
+    @Schema(description = "必填")
     private String whetherRequired;
 
     /** 查询 */
-    @ApiModelProperty(value = "查询", position = 14)
+    @Schema(description = "查询")
     private String queryWhether;
 
     /** 查询方式 */
-    @ApiModelProperty(value = "查询方式", position = 15)
+    @Schema(description = "查询方式")
     private String queryType;
 
     /** 排序 */
-    @ApiModelProperty(value = "排序", position = 16)
+    @Schema(description = "排序")
     private Integer sortCode;
 }

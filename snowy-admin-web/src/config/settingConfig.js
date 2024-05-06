@@ -39,7 +39,7 @@ const colorList = [
 	},
 	{
 		key: '拂晓蓝（默认）',
-		color: '#1890FF'
+		color: '#1677FF'
 	},
 	{
 		key: '极客蓝',

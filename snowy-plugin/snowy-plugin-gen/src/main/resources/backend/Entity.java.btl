@@ -13,7 +13,7 @@
 package ${packageName}.${moduleName}.modular.${busName}.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class ${className} {
     <% if(configList[i].needTableId) { %>
     @TableId
     <% } else { %><% } %>
-    @ApiModelProperty(value = "${configList[i].fieldRemark}", position = ${i + 1})
+    @Schema(description = "${configList[i].fieldRemark}")
     <% if(configList[i].needAutoInsert) { %>
     @TableField(fill = FieldFill.INSERT)
     <% } else { %><% } %>

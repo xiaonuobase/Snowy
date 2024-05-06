@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.config.param;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,22 +27,22 @@ import lombok.Setter;
 public class DevConfigPageParam {
 
     /** 当前页 */
-    @ApiModelProperty(value = "当前页码")
+    @Schema(description = "当前页码")
     private Integer current;
 
     /** 每页条数 */
-    @ApiModelProperty(value = "每页条数")
+    @Schema(description = "每页条数")
     private Integer size;
 
     /** 排序字段 */
-    @ApiModelProperty(value = "排序字段，字段驼峰名称，如：userName")
+    @Schema(description = "排序字段，字段驼峰名称，如：userName")
     private String sortField;
 
     /** 排序方式 */
-    @ApiModelProperty(value = "排序方式，升序：ASCEND；降序：DESCEND")
+    @Schema(description = "排序方式，升序：ASCEND；降序：DESCEND")
     private String sortOrder;
 
     /** 配置键关键词 */
-    @ApiModelProperty(value = "配置键关键词")
+    @Schema(description = "配置键关键词")
     private String searchKey;
 }

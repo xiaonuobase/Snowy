@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fhs.core.trans.anno.Trans;
 import com.fhs.core.trans.constant.TransType;
 import com.fhs.core.trans.vo.TransPojo;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,39 +42,39 @@ public class CommonEntity implements Serializable, TransPojo {
     /** 删除标志 */
     @JsonIgnore
     @TableLogic
-    @ApiModelProperty(value = "删除标志", position = 999)
+    @Schema(description = "删除标志")
     @TableField(fill = FieldFill.INSERT)
     private String deleteFlag;
 
     /** 创建时间 */
-    @ApiModelProperty(value = "创建时间", position = 1000)
+    @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /** 创建人 */
-    @ApiModelProperty(value = "创建人", position = 1001)
+    @Schema(description = "创建人")
     @TableField(fill = FieldFill.INSERT)
     @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "createUser", ref = "createUserName")
     private String createUser;
 
     /** 创建人名称 */
-    @ApiModelProperty(value = "创建人名称", position = 1002)
+    @Schema(description = "创建人名称")
     @TableField(exist = false)
     private String createUserName;
 
     /** 更新时间 */
-    @ApiModelProperty(value = "更新时间", position = 1003)
+    @Schema(description = "更新时间")
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /** 更新人 */
-    @ApiModelProperty(value = "更新人", position = 1004)
+    @Schema(description = "更新人")
     @TableField(fill = FieldFill.UPDATE)
     @Trans(type = TransType.RPC, targetClassName = "vip.xiaonuo.sys.modular.user.entity.SysUser", fields = "name", alias = "updateUser", ref = "updateUserName")
     private String updateUser;
 
     /** 更新人名称 */
-    @ApiModelProperty(value = "更新人名称", position = 1005)
+    @Schema(description = "更新人名称")
     @TableField(exist = false)
     private String updateUserName;
 }

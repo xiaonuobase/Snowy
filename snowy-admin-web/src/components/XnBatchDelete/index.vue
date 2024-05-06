@@ -1,8 +1,8 @@
 <template>
 	<a-popconfirm
 		title="删除此信息？"
-		:visible="deleteVisible"
-		@visibleChange="deleteVisibleChange"
+		:open="deleteVisible"
+		@openChange="deleteVisibleChange"
 		@confirm="deleteBatch"
 	>
 		<a-button danger>

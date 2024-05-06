@@ -36,25 +36,25 @@
 					</template>
 				</template>
 				<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
-					<div style="padding: 8px">
+					<div class="xn-pd8">
 						<a-input
 							ref="searchInput"
 							placeholder="请输入接口或接口名称"
 							:value="selectedKeys[0]"
-							style="width: 188px; margin-bottom: 8px; display: block"
+							class="xn-jk-line"
 							@change="(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])"
 							@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
 						/>
 						<a-button
 							type="primary"
 							size="small"
-							style="width: 90px; margin-right: 8px"
+							class="xn-wd90 xn-mr8"
 							@click="handleSearch(selectedKeys, confirm, column.dataIndex)"
 						>
 							<template #icon><SearchOutlined /></template>
 							搜索
 						</a-button>
-						<a-button size="small" style="width: 90px" @click="handleReset(clearFilters)"> 重置 </a-button>
+						<a-button size="small" class="xn-wd90" @click="handleReset(clearFilters)"> 重置 </a-button>
 					</div>
 				</template>
 				<template #customFilterIcon="{ filtered }">
@@ -97,7 +97,7 @@
 			</a-table>
 		</a-spin>
 		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
 		<ScopeDefineOrg ref="scopeDefineOrgModal" @click="scopeDefineOrgClick" />
@@ -136,7 +136,7 @@
 			width: 380,
 			customFilterDropdown: true,
 			onFilter: (value, record) => record.api.includes(value),
-			onFilterDropdownVisibleChange: (visible) => {
+			onFilterDropdownOpenChange: (visible) => {
 				if (visible) {
 					setTimeout(() => {
 						searchInput.value.focus()

@@ -15,7 +15,7 @@ package vip.xiaonuo.dev.modular.job.entity;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import vip.xiaonuo.common.pojo.CommonEntity;
@@ -32,39 +32,39 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class DevJob extends CommonEntity {
 
     /** id */
-    @ApiModelProperty(value = "id", position = 1)
+    @Schema(description = "id")
     private String id;
 
     /** 名称 */
-    @ApiModelProperty(value = "名称", position = 2)
+    @Schema(description = "名称")
     private String name;
 
     /** 编码 */
-    @ApiModelProperty(value = "编码", position = 3)
+    @Schema(description = "编码")
     private String code;
 
     /** 分类 */
-    @ApiModelProperty(value = "分类", position = 4)
+    @Schema(description = "分类")
     private String category;
 
     /** 任务类名 */
-    @ApiModelProperty(value = "任务类名", position = 5)
+    @Schema(description = "任务类名")
     private String actionClass;
 
     /** cron表达式 */
-    @ApiModelProperty(value = "cron表达式", position = 6)
+    @Schema(description = "cron表达式")
     private String cronExpression;
 
     /** 任务状态 */
-    @ApiModelProperty(value = "任务状态", position = 7)
+    @Schema(description = "任务状态")
     private String jobStatus;
 
     /** 排序码 */
-    @ApiModelProperty(value = "排序码", position = 8)
+    @Schema(description = "排序码")
     private Integer sortCode;
 
     /** 扩展信息 */
-    @ApiModelProperty(value = "扩展信息", position = 9)
+    @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
     private String extJson;
 

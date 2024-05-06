@@ -1,6 +1,6 @@
 <template>
 	<a-card
-		style="width: 100%"
+		class="xn-wd"
 		:bordered="false"
 		:tab-list="tabListNoTitle"
 		:active-tab-key="noTitleKey"

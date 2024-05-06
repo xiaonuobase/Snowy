@@ -1,11 +1,5 @@
 <template>
-	<xn-form-container
-		title="详情"
-		:width="700"
-		:visible="visible"
-		:destroy-on-close="true"
-		@close="onClose"
-	>
+	<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
 			<a-descriptions-item label="主题">{{ formData.subject }}</a-descriptions-item>
 			<a-descriptions-item label="发送时间">{{ formData.createTime }}</a-descriptions-item>
@@ -26,8 +20,8 @@
 				>
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'read'">
-							<span v-if="record.read" style="color: #d9d9d9">已读</span>
-							<span v-else style="color: #ff4d4f">未读</span>
+							<span v-if="record.read" class="xn-color-d9d9d9">已读</span>
+							<span v-else class="xn-color-ff4d4f">未读</span>
 						</template>
 					</template>
 				</s-table>

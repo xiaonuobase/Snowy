@@ -25,6 +25,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
@@ -44,11 +46,10 @@ import vip.xiaonuo.dev.modular.file.util.DevFileLocalUtil;
 import vip.xiaonuo.dev.modular.file.util.DevFileMinIoUtil;
 import vip.xiaonuo.dev.modular.file.util.DevFileTencentUtil;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -184,7 +185,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 StrUtil.DOT, true):null;
         devFile.setSuffix(suffix);
         devFile.setSizeKb(Convert.toStr(NumberUtil.div(new BigDecimal(file.getSize()), BigDecimal.valueOf(1024))
-                .setScale(0, BigDecimal.ROUND_HALF_UP)));
+                .setScale(0, RoundingMode.HALF_UP)));
         devFile.setSizeInfo(FileUtil.readableFileSize(file.getSize()));
         devFile.setObjName(ObjectUtil.isNotEmpty(devFile.getSuffix())?fileId + StrUtil.DOT + devFile.getSuffix():null);
         // 如果是图片，则压缩生成缩略图

@@ -8,22 +8,22 @@
 		<!--		<dev-user-message />-->
 		<a-dropdown class="user panel-item">
 			<div class="user-avatar">
-				<a-avatar :src="userInfo.avatar" />
+				<a-avatar :src="userInfo ? userInfo.avatar : undefined" />
 				<label>{{ userName }}</label>
 			</div>
 			<template #overlay>
 				<a-menu>
 					<a-menu-item key="uc" @click="handleUser('uc')">
-						<UserOutlined style="margin-right: 8px" />
+						<UserOutlined class="xn-mr8" />
 						<span>个人中心</span>
 					</a-menu-item>
 					<a-menu-item key="clearCache" @click="handleUser('clearCache')">
-						<loading3-quarters-outlined style="margin-right: 8px" />
+						<loading3-quarters-outlined class="xn-mr8" />
 						<span>清理缓存</span>
 					</a-menu-item>
 					<a-menu-divider />
 					<a-menu-item key="outLogin" @click="handleUser('outLogin')">
-						<export-outlined style="margin-right: 8px" />
+						<export-outlined class="xn-mr8" />
 						<span>退出登录</span>
 					</a-menu-item>
 				</a-menu>
@@ -48,7 +48,7 @@
 	</div>
 
 	<!-- 整体风格设置抽屉 -->
-	<a-drawer v-model:visible="settingDialog" :closable="false" width="300">
+	<a-drawer v-model:open="settingDialog" :closable="false" width="300">
 		<setting />
 	</a-drawer>
 </template>
@@ -128,6 +128,10 @@
 							tool.data.remove('MENU')
 							tool.data.remove('PERMISSIONS')
 							router.replace({ path: '/login' })
+							nextTick(() => {
+								// 清理缓存内的个人信息
+								store.userInfo = undefined
+							})
 						})
 						.catch(() => {
 							tool.data.clear()
