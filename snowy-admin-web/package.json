@@ -50,7 +50,6 @@
 		"tinymce": "6.8.1",
 		"vue": "3.4.21",
 		"vue-cropper": "1.1.1",
-		"vue-demi": "0.14.7",
 		"vue-i18n": "9.8.0",
 		"vue-router": "4.3.0",
 		"vue3-colorpicker": "2.3.0",
@@ -58,7 +57,6 @@
 		"vuedraggable-es": "4.1.1"
 	},
 	"devDependencies": {
-		"@antfu/eslint-config": "0.29.4",
 		"@babel/eslint-parser": "7.19.1",
 		"@vitejs/plugin-legacy": "5.2.0",
 		"@vitejs/plugin-vue": "4.5.2",
