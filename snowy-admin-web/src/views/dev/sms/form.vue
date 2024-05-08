@@ -27,8 +27,8 @@
 
 <script setup name="smsForm">
 	import XiaouoSmsSend from './send/xiaonuoSmsSend.vue'
-	import AliyunSmsSend from './send/aliyunSmsSend.vue'
-	import TencentSmsSend from './send/tencentSmsSend.vue'
+	import AliyunSmsSend from './send/AliyunSmsSend.vue'
+	import TencentSmsSend from './send/TencentSmsSend.vue'
 
 	const xiaonuoSmsSendRef = ref()
 	const aliyunSmsSendRef = ref()
