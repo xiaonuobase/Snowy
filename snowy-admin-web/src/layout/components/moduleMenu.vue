@@ -57,7 +57,6 @@
 	const store = globalStore()
 	const { moduleUnfoldOpen, topHeaderThemeColorOpen } = storeToRefs(store)
 	const moduleBackColor = ref(topHeaderThemeColorOpen)
-	const layout = ref()
 	const module = computed(() => {
 		return store.module
 	})
@@ -126,9 +125,11 @@
 			setSelectedKeys()
 		})
 	}
+	const layout = computed(() => {
+		return store.layout
+	})
 	onMounted(() => {
 		setModuleBackColor()
-		layout.value = tool.data.get('SNOWY_LAYOUT')
 	})
 	// 设置背景色
 	const setModuleBackColor = () => {
