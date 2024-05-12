@@ -520,11 +520,32 @@
 			return {
 				...item,
 				total: selectedRows.reduce((sum, val) => {
-					const total = sum + parseInt(get(val, item.dataIndex))
-					return isNaN(total) ? 0 : total
+					return addNumbers(sum, get(val, item.dataIndex))
 				}, 0)
 			}
 		})
+	}
+	// 如果开启了needTotal计算总和，支持小数点
+	const addNumbers = (num1, num2) => {
+		// 将参数转换为数字
+		let num1Value = Number(num1)
+		let num2Value = Number(num2)
+		// 检查转换后的值是否为有效的数字，如果不是，搞成0，别影响其他数据的正确性
+		if (isNaN(num1Value)) {
+			num1Value = 0
+		}
+		if (isNaN(num2Value)) {
+			num2Value = 0
+		}
+		// 计算小数点后的总位数
+		const num1DecimalPlaces = ('' + num1Value).split('.')[1] ? ('' + num1Value).split('.')[1].length : 0
+		const num2DecimalPlaces = ('' + num2Value).split('.')[1] ? ('' + num2Value).split('.')[1].length : 0
+		const decimalPlaces = Math.max(num1DecimalPlaces, num2DecimalPlaces)
+		// 将数字乘以10的幂，使其变为整数，进行相加，然后除以相同的10的幂，还原为原始的小数形式
+		return (
+			(Math.round(num1Value * Math.pow(10, decimalPlaces)) + Math.round(num2Value * Math.pow(10, decimalPlaces))) /
+			Math.pow(10, decimalPlaces)
+		)
 	}
 	// 清空 table 已选中项
 	const clearSelected = () => {
