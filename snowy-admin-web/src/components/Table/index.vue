@@ -512,6 +512,7 @@
 			props.rowSelection.selectedRows = selectedRows
 			// eslint-disable-next-line vue/no-mutating-props
 			props.rowSelection.selectedRowKeys = selectedRowKeys
+			props.rowSelection.onChange(selectedRowKeys, selectedRows)
 			getTableProps()
 		}
 		const list = data.needTotalList
