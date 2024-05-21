@@ -35,5 +35,8 @@
 
         <!-- 系统功能插件 -->
         <module>snowy-plugin-sys</module>
+
+        <!-- IM功能插件 -->
+        <module>snowy-plugin-im</module>
     </modules>
 </project>

@@ -35,5 +35,8 @@
 
         <!-- 系统功能插件api接口 -->
         <module>snowy-plugin-sys-api</module>
+
+        <!-- IM功能插件api接口 -->
+        <module>snowy-plugin-im-api</module>
     </modules>
 </project>
