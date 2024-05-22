@@ -90,10 +90,12 @@ public class DevLogAop {
         CommonLog commonLog = method.getAnnotation(CommonLog.class);
         String userName = "未知";
         try {
-            SaBaseLoginUser loginUser = StpLoginUserUtil.getLoginUser();
-            if(ObjectUtil.isNotNull(loginUser)) {
-                userName = loginUser.getName();
-            } else {
+            try {
+                SaBaseLoginUser loginUser = StpLoginUserUtil.getLoginUser();
+                if(ObjectUtil.isNotNull(loginUser)) {
+                    userName = loginUser.getName();
+                }
+            } catch (Exception e) {
                 SaBaseClientLoginUser clientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
                 if(ObjectUtil.isNotNull(clientLoginUser)) {
                     userName = clientLoginUser.getName();
