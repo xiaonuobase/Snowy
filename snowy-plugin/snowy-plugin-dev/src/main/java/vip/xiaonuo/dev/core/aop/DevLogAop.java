@@ -46,7 +46,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
+import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.dev.modular.log.util.DevLogUtil;
@@ -90,6 +93,11 @@ public class DevLogAop {
             SaBaseLoginUser loginUser = StpLoginUserUtil.getLoginUser();
             if(ObjectUtil.isNotNull(loginUser)) {
                 userName = loginUser.getName();
+            } else {
+                SaBaseClientLoginUser clientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
+                if(ObjectUtil.isNotNull(clientLoginUser)) {
+                    userName = clientLoginUser.getName();
+                }
             }
         } catch (Exception ignored) {
         }
@@ -113,6 +121,11 @@ public class DevLogAop {
             SaBaseLoginUser loginUser = StpLoginUserUtil.getLoginUser();
             if(ObjectUtil.isNotNull(loginUser)) {
                 userName = loginUser.getName();
+            } else {
+                SaBaseClientLoginUser clientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
+                if(ObjectUtil.isNotNull(clientLoginUser)) {
+                    userName = clientLoginUser.getName();
+                }
             }
         } catch (Exception ignored) {
         }
