@@ -63,5 +63,5 @@ public interface DevSmsApi {
      * @author xuyuxiang
      * @date 2022/2/24 13:42
      **/
-    void sendSmsXiaonuo(String phoneNumbers, String signName, String templateCode, String message);
+    void sendSmsXiaonuo(String phoneNumbers, String signName, String message);
 }
