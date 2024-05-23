@@ -15,9 +15,7 @@
 							iconItem.name
 						}}</a-radio-button>
 					</a-radio-group>
-					<span style="margin-left: 10px">{{ iconInfo }}</span>
 				</div>
-
 				<div :key="iconItemIns" v-for="iconItemIns in item.iconItem">
 					<div v-if="iconItemIns.key === iconItemDefault" class="xn-icon-select-list">
 						<ul>
