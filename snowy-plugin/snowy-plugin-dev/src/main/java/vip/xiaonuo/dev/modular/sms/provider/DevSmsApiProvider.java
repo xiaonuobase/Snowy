@@ -61,4 +61,13 @@ public class DevSmsApiProvider implements DevSmsApi {
         devSmsSendXiaonuoParam.setMessage(message);
         devSmsService.sendXiaonuo(devSmsSendXiaonuoParam);
     }
+
+    @Override
+    public void sendSmsXiaonuo(String phoneNumbers, String signName, String message) {
+        DevSmsSendXiaonuoParam devSmsSendXiaonuoParam = new DevSmsSendXiaonuoParam();
+        devSmsSendXiaonuoParam.setPhoneNumbers(phoneNumbers);
+        devSmsSendXiaonuoParam.setSignName(signName);
+        devSmsSendXiaonuoParam.setMessage(message);
+        devSmsService.sendXiaonuo(devSmsSendXiaonuoParam);
+    }
 }
