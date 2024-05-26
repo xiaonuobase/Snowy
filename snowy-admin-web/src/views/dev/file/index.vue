@@ -10,7 +10,7 @@
 					</a-col>
 					<a-col :span="8">
 						<a-form-item name="engine" label="存储位置">
-							<a-select v-model:value="searchFormState.engine" placeholder="请选择存储位置" :options="engineOptions" />
+							<a-select v-model:value="searchFormState.engine" placeholder="请选择存储位置" :options="engineOptions" :getPopupContainer="(trigger) => trigger.parentNode"/>
 						</a-form-item>
 					</a-col>
 					<a-col :span="8">
