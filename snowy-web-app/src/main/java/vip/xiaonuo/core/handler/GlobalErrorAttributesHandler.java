@@ -41,10 +41,10 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
 
         // 获取其状态码
         Object status = defaultErrorAttributes.get("status");
+        Object path = defaultErrorAttributes.get("path");
         if (ObjectUtil.isNotEmpty(status)) {
             // 如果其为404，则处理
             if (HttpStatus.HTTP_NOT_FOUND == Convert.toInt(status)) {
-                Object path = defaultErrorAttributes.get("path");
                 if(ObjectUtil.isNotEmpty(path)) {
                     return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_NOT_FOUND, "路径不存在，请求地址：" +
                             Convert.toStr(path), null));
@@ -53,7 +53,7 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
                 }
             } else {
                 return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常，请求地址：" +
-                        CommonServletUtil.getRequest().getRequestURL(), null));
+                        Convert.toStr(path), null));
             }
         }
 
