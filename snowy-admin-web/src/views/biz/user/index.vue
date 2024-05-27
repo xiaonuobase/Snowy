@@ -27,7 +27,11 @@
 						</a-col>
 						<a-col :span="8">
 							<a-form-item name="userStatus" :label="$t('user.userStatus')">
-								<a-select v-model:value="searchFormState.userStatus" :placeholder="$t('user.placeholderUserStatus')">
+								<a-select
+									v-model:value="searchFormState.userStatus"
+									:placeholder="$t('user.placeholderUserStatus')"
+									:getPopupContainer="(trigger) => trigger.parentNode"
+								>
 									<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
 										item.label
 									}}</a-select-option>

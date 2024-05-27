@@ -8,6 +8,7 @@
 							v-model:value="searchFormState.engine"
 							:options="engineOptions"
 							placeholder="请选择邮件引擎"
+							:getPopupContainer="(trigger) => trigger.parentNode"
 							allow-clear
 						></a-select>
 					</a-form-item>
