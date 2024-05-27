@@ -8,6 +8,7 @@
 							v-model:value="searchFormState.engine"
 							:options="engineOptions"
 							placeholder="请选择短信引擎"
+							:getPopupContainer="(trigger) => trigger.parentNode"
 							allow-clear
 						></a-select>
 					</a-form-item>

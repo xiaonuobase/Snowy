@@ -9,7 +9,12 @@
 				</a-col>
 				<a-col :span="8">
 					<a-form-item label="分类" name="category">
-						<a-select v-model:value="searchFormState.category" placeholder="请选择分类" :options="categoryOptions">
+						<a-select
+							v-model:value="searchFormState.category"
+							placeholder="请选择分类"
+							:options="categoryOptions"
+							:getPopupContainer="(trigger) => trigger.parentNode"
+						>
 						</a-select>
 					</a-form-item>
 				</a-col>
@@ -89,7 +94,7 @@
 	}
 	// 重置
 	const reset = () => {
-		searchFormRef.value.resetFields();
+		searchFormRef.value.resetFields()
 		tableRef.value.refresh(true)
 	}
 	// 分类

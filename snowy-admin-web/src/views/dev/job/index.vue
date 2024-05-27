@@ -9,12 +9,22 @@
 				</a-col>
 				<a-col :span="6">
 					<a-form-item label="分类" name="category">
-						<a-select v-model:value="searchFormState.category" placeholder="请选择分类" :options="categoryOptions" />
+						<a-select
+							v-model:value="searchFormState.category"
+							placeholder="请选择分类"
+							:options="categoryOptions"
+							:getPopupContainer="(trigger) => trigger.parentNode"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
 					<a-form-item label="状态" name="jobStatus">
-						<a-select v-model:value="searchFormState.jobStatus" placeholder="请选择状态" :options="jobStatusOptions" />
+						<a-select
+							v-model:value="searchFormState.jobStatus"
+							placeholder="请选择状态"
+							:options="jobStatusOptions"
+							:getPopupContainer="(trigger) => trigger.parentNode"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
