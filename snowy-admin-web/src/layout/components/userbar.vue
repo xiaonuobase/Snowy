@@ -2,6 +2,7 @@
 	<div class="user-bar">
 		<!-- 搜索面板 -->
 		<panel-search v-if="!isMobile" />
+		<im />
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
@@ -66,6 +67,7 @@
 	import loginApi from '@/api/auth/loginApi'
 	import DevUserMessage from './message.vue'
 	import PanelSearch from './panel-search/index.vue'
+	import Im from './im/index.vue'
 	import { globalStore } from '@/store'
 	import { useI18n } from 'vue-i18n'
 	const { locale } = useI18n()
