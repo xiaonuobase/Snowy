@@ -35,6 +35,12 @@
 						<a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" :min="1" :max="10000" style="width: 100%" />
 						<% } else if (configList[i].effectType == 'slider') {%>
 						<a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" :max="1000" style="width: 100%" />
+						<% } else if (configList[i].effectType == 'fileUpload') {%>
+						<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" />
+						<% } else if (configList[i].effectType == 'imageUpload') {%>
+						<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" uploadMode="image" />
+						<% } else if (configList[i].effectType == 'editor') {%>
+						<xn-editor v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
 						<% } %>
 					</a-form-item>
 				</a-col>
@@ -63,6 +69,12 @@
 				<a-input-number v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" :min="1" :max="10000" style="width: 100%" />
 				<% } else if (configList[i].effectType == 'slider') {%>
 				<a-slider v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请滑动${configList[i].fieldRemark}" :max="1000" style="width: 100%" />
+				<% } else if (configList[i].effectType == 'fileUpload') {%>
+				<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" />
+				<% } else if (configList[i].effectType == 'imageUpload') {%>
+				<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" uploadMode="image" />
+				<% } else if (configList[i].effectType == 'editor') {%>
+				<xn-editor v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
 				<% } %>
 			</a-form-item>
 		<% } %>
@@ -167,7 +179,7 @@
 						emit('successful')
 					})
 					.finally(() => {
-					submitLoading.value = false
+						submitLoading.value = false
 					})
 			})
 			.catch(() => {})
