@@ -67,7 +67,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
 
     @Override
     public Page<SysModule> page(SysModulePageParam sysModulePageParam) {
-        QueryWrapper<SysModule> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysModule> queryWrapper = new QueryWrapper<SysModule>().checkSqlInjection();
         queryWrapper.lambda().eq(SysModule::getCategory, SysResourceCategoryEnum.MODULE.getValue());
         if(ObjectUtil.isNotEmpty(sysModulePageParam.getSearchKey())) {
             queryWrapper.lambda().like(SysModule::getTitle, sysModulePageParam.getSearchKey());

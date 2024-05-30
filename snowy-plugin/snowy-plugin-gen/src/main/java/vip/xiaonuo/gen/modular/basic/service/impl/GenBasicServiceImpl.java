@@ -159,7 +159,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     @Override
     public Page<GenBasic> page(GenBasicPageParam genBasicPageParam) {
-        QueryWrapper<GenBasic> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<GenBasic> queryWrapper = new QueryWrapper<GenBasic>().checkSqlInjection();
 
         if(ObjectUtil.isAllNotEmpty(genBasicPageParam.getSortField(), genBasicPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(genBasicPageParam.getSortOrder());
@@ -186,7 +186,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         GenBasic genBasic = this.queryEntity(genBasicEditParam.getId());
         if (!genBasic.getDbTable().equals(genBasicEditParam.getDbTable())) {
             // 删除配置表内该表的字段
-            QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<GenConfig>().checkSqlInjection();
             queryWrapper.lambda().eq(GenConfig::getBasicId, genBasic.getId());
             genConfigService.remove(queryWrapper);
             // 新增新表的数据字段

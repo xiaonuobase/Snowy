@@ -98,7 +98,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Override
     public Page<SysRole> page(SysRolePageParam sysRolePageParam) {
-        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(SysRole::getId, SysRole::getOrgId, SysRole::getName,
                 SysRole::getCategory, SysRole::getSortCode);

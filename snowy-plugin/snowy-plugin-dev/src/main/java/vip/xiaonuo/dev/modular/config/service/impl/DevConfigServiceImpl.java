@@ -73,7 +73,7 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
 
     @Override
     public Page<DevConfig> page(DevConfigPageParam devConfigPageParam) {
-        QueryWrapper<DevConfig> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevConfig> queryWrapper = new QueryWrapper<DevConfig>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(DevConfig::getId, DevConfig::getConfigKey, DevConfig::getConfigValue,
                 DevConfig::getCategory, DevConfig::getRemark, DevConfig::getSortCode);

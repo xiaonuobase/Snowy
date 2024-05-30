@@ -68,7 +68,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
 
     @Override
     public Page<BizPosition> page(BizPositionPageParam bizPositionPageParam) {
-        QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
                 BizPosition::getCategory, BizPosition::getSortCode);

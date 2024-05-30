@@ -216,7 +216,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public Page<SysUser> page(SysUserPageParam sysUserPageParam) {
-        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().checkSqlInjection();
         if (ObjectUtil.isNotEmpty(sysUserPageParam.getSearchKey())) {
             queryWrapper.lambda().and(q -> q.like(SysUser::getAccount, sysUserPageParam.getSearchKey()).or()
                     .like(SysUser::getName, sysUserPageParam.getSearchKey()));
@@ -1168,7 +1168,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void exportUser(SysUserExportParam sysUserExportParam, HttpServletResponse response) throws IOException {
         File tempFile = null;
         try {
-            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().checkSqlInjection();
             if(ObjectUtil.isNotEmpty(sysUserExportParam.getUserIds())) {
                 queryWrapper.lambda().in(SysUser::getId, StrUtil.split(sysUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {

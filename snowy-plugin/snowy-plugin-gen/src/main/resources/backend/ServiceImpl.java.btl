@@ -45,7 +45,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
 
     @Override
     public Page<${className}> page(${className}PageParam ${classNameFirstLower}PageParam) {
-        QueryWrapper<${className}> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<${className}> queryWrapper = new QueryWrapper<${className}>().checkSqlInjection();
         <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(configList[i].needPage) { %>
         <% if(configList[i].effectType == 'datepicker') { %>

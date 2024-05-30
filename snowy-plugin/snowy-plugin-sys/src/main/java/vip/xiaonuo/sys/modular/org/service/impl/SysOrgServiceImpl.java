@@ -77,7 +77,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public Page<SysOrg> page(SysOrgPageParam sysOrgPageParam) {
-        QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<SysOrg>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
                 SysOrg::getCategory, SysOrg::getSortCode);

@@ -78,7 +78,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public Page<DevFile> page(DevFilePageParam devFilePageParam) {
-        QueryWrapper<DevFile> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevFile> queryWrapper = new QueryWrapper<DevFile>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(devFilePageParam.getEngine())) {
             queryWrapper.lambda().eq(DevFile::getEngine, devFilePageParam.getEngine());
         }
@@ -90,7 +90,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public List<DevFile> list(DevFileListParam devFileListParam) {
-        QueryWrapper<DevFile> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevFile> queryWrapper = new QueryWrapper<DevFile>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(devFileListParam.getEngine())) {
             queryWrapper.lambda().eq(DevFile::getEngine, devFileListParam.getEngine());
         }

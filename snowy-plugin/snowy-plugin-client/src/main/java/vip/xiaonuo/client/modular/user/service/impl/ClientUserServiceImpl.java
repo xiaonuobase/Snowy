@@ -106,7 +106,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Override
     public Page<ClientUser> page(ClientUserPageParam clientUserPageParam) {
-        QueryWrapper<ClientUser> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<ClientUser> queryWrapper = new QueryWrapper<ClientUser>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(clientUserPageParam.getSearchKey())) {
             queryWrapper.lambda().and(q -> q.like(ClientUser::getName, clientUserPageParam.getSearchKey())
                     .or().like(ClientUser::getAccount, clientUserPageParam.getSearchKey()));

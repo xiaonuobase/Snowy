@@ -72,7 +72,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public Page<SysMenu> page(SysMenuPageParam sysMenuPageParam) {
-        QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<SysMenu>().checkSqlInjection();
         queryWrapper.lambda().eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue());
         if(ObjectUtil.isNotEmpty(sysMenuPageParam.getSearchKey())) {
             queryWrapper.lambda().like(SysMenu::getTitle, sysMenuPageParam.getSearchKey());

@@ -146,7 +146,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
 
     @Override
     public Page<AuthThirdUser> page(AuthThirdUserPageParam authThirdUserPageParam) {
-        QueryWrapper<AuthThirdUser> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<AuthThirdUser> queryWrapper = new QueryWrapper<AuthThirdUser>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(authThirdUserPageParam.getCategory())) {
             queryWrapper.lambda().eq(AuthThirdUser::getCategory, authThirdUserPageParam.getCategory());
         }
