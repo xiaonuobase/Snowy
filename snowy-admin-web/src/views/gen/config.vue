@@ -29,6 +29,7 @@
 						:options="effectTypeOptions"
 						placeholder="请选择"
 						:disabled="toCommonFieldEstimate(record) || toFieldSelectEstimate(record)"
+						@change="effectTypeChange(record)"
 					/>
 				</template>
 				<template v-if="column.dataIndex === 'dictTypeCode'">
@@ -42,7 +43,7 @@
 					<span v-else>无</span>
 				</template>
 				<template v-if="column.dataIndex === 'whetherTable'">
-					<a-checkbox v-model:checked="record.whetherTable" />
+					<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)"/>
 				</template>
 				<template v-if="column.dataIndex === 'whetherRetract'">
 					<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable" />
@@ -57,7 +58,7 @@
 					/>
 				</template>
 				<template v-if="column.dataIndex === 'queryWhether'">
-					<a-switch v-model:checked="record.queryWhether" :disabled="!record.whetherTable" />
+					<a-switch v-model:checked="record.queryWhether" :disabled="toQueryWhetherDisabled(record)" />
 				</template>
 				<template v-if="column.dataIndex === 'queryType'">
 					<a-select
@@ -278,6 +279,18 @@
 		{
 			label: '滑动数字条',
 			value: 'slider'
+		},
+		{
+			label: '图片上传',
+			value: 'imageUpload'
+		},
+		{
+			label: '文件上传',
+			value: 'fileUpload'
+		},
+		{
+			label: '富文本',
+			value: 'editor'
 		}
 	])
 	// 字典数据
@@ -352,6 +365,34 @@
 			return true
 		}
 		return false
+	}
+	// 选择作用类型触发-这里只负责字段类型的赋值，至于禁用是每一个字段自己的
+	const effectTypeChange = (record) => {
+		// 图片跟文件不可设置查询跟查询方式
+		if (record.effectType === 'imageUpload' || record.effectType === 'fileUpload') {
+			record.queryWhether = 'N'
+			record.queryType = null
+		}
+		// 富文本只能模糊包含跟模糊不包含
+		if (record.effectType === 'editor') {
+			record.whetherTable = false
+			record.whetherRetract = false
+			record.queryWhether = 'N'
+			record.queryType = null
+		}
+	}
+	// 点击列表显示，处理
+	const whetherTableChange = (record) => {
+		// 如果去除了勾选，清理部分数据
+		if (!record.whetherTable) {
+			record.queryWhether = 'N'
+			record.queryType = null
+		}
+	}
+	// 查询条件是否可用
+	const toQueryWhetherDisabled = (record) => {
+		// 去掉了列表显示、图片上传、文件上传是不让生成搜索的
+		return !record.whetherTable || record.effectType === 'imageUpload' || record.effectType === 'fileUpload'
 	}
 	// 实体类型选择触发
 	const fieldJavaTypeChange = (record) => {

@@ -10,8 +10,7 @@
 							class="xn-wd"
 							placeholder="请选择主表"
 							@select="selectTableColumnsData(formData.dbTable, false)"
-						>
-						</a-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -21,8 +20,7 @@
 							:options="tableColumns"
 							class="xn-wd"
 							placeholder="选择主键"
-						>
-						</a-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -31,8 +29,7 @@
 							v-model:value="formData.tablePrefix"
 							:options="tablePrefixOptions"
 							@change="tablePrefixChange"
-						>
-						</a-radio-group>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -44,7 +41,7 @@
 								生成方式：
 							</a-tooltip>
 						</template>
-						<a-radio-group v-model:value="formData.generateType" :options="generateTypeOptions"> </a-radio-group>
+						<a-radio-group v-model:value="formData.generateType" :options="generateTypeOptions" />
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -55,8 +52,7 @@
 							class="xn-wd"
 							placeholder="请选择所属模块"
 							@change="moduleChange(formData.module, false)"
-						>
-						</a-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -76,7 +72,7 @@
 							}"
 							selectable="false"
 							tree-line
-						></a-tree-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
@@ -87,8 +83,7 @@
 							class="xn-wd"
 							placeholder="请选择移动端所属模块"
 							allow-clear
-						>
-						</a-select>
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">

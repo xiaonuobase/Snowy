@@ -114,6 +114,14 @@
 				<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
 					<a-tag v-for="textValue in JSON.parse(record.${configList[i].fieldNameCamelCase})" :key="textValue" color="green">{{ $TOOL.dictTypeData('${configList[i].dictTypeCode}', textValue) }}</a-tag>
 				</template>
+				<% } else if (configList[i].effectType == 'imageUpload') { %>
+				<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+					<a-image :src="record.${configList[i].fieldNameCamelCase}" style="width: 30px; height: 30px;" />
+				</template>
+				<% } else if (configList[i].effectType == 'fileUpload') { %>
+				<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+					<a :href="record.${configList[i].fieldNameCamelCase}" :target="record.${configList[i].fieldNameCamelCase}">{{ record.${configList[i].fieldNameCamelCase} }}</a>
+				</template>
 				<% } %>
 				<% } %>
 				<% } %>
