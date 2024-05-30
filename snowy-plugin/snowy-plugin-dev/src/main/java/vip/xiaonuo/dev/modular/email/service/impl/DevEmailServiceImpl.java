@@ -165,7 +165,7 @@ public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> i
 
     @Override
     public Page<DevEmail> page(DevEmailPageParam devEmailPageParam) {
-        QueryWrapper<DevEmail> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevEmail> queryWrapper = new QueryWrapper<DevEmail>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(devEmailPageParam.getEngine())) {
             queryWrapper.lambda().eq(DevEmail::getEngine, devEmailPageParam.getEngine());
         }

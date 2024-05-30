@@ -61,7 +61,7 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
 
     @Override
     public Page<MobileModule> page(MobileModulePageParam mobileModulePageParam) {
-        QueryWrapper<MobileModule> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<MobileModule> queryWrapper = new QueryWrapper<MobileModule>().checkSqlInjection();
         queryWrapper.lambda().eq(MobileModule::getCategory, MobileResourceCategoryEnum.MODULE.getValue());
         if(ObjectUtil.isNotEmpty(mobileModulePageParam.getSearchKey())) {
             queryWrapper.lambda().like(MobileModule::getTitle, mobileModulePageParam.getSearchKey());

@@ -78,7 +78,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public Page<BizOrg> page(BizOrgPageParam bizOrgPageParam) {
-        QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
                 BizOrg::getCategory, BizOrg::getSortCode);

@@ -86,7 +86,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
 
     @Override
     public Page<DevMessage> page(DevMessagePageParam devMessagePageParam) {
-        QueryWrapper<DevMessage> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevMessage> queryWrapper = new QueryWrapper<DevMessage>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(devMessagePageParam.getSearchKey())) {
             queryWrapper.lambda().like(DevMessage::getSubject, devMessagePageParam.getSearchKey());
         }

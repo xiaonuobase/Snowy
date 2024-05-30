@@ -57,7 +57,7 @@ public class MobileButtonServiceImpl extends ServiceImpl<MobileButtonMapper, Mob
 
     @Override
     public Page<MobileButton> page(MobileButtonPageParam mobileButtonPageParam) {
-        QueryWrapper<MobileButton> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<MobileButton> queryWrapper = new QueryWrapper<MobileButton>().checkSqlInjection();
         queryWrapper.lambda().eq(MobileButton::getCategory, MobileResourceCategoryEnum.BUTTON.getValue());
         if(ObjectUtil.isNotEmpty(mobileButtonPageParam.getParentId())) {
             queryWrapper.lambda().eq(MobileButton::getParentId, mobileButtonPageParam.getParentId());

@@ -65,7 +65,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
 
     @Override
     public Page<SysPosition> page(SysPositionPageParam sysPositionPageParam) {
-        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
                 SysPosition::getCategory, SysPosition::getSortCode);

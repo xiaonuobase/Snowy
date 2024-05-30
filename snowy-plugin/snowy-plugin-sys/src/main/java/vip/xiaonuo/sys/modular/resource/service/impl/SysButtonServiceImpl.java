@@ -68,7 +68,7 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
 
     @Override
     public Page<SysButton> page(SysButtonPageParam sysButtonPageParam) {
-        QueryWrapper<SysButton> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<SysButton> queryWrapper = new QueryWrapper<SysButton>().checkSqlInjection();
         queryWrapper.lambda().eq(SysButton::getCategory, SysResourceCategoryEnum.BUTTON.getValue());
         if(ObjectUtil.isNotEmpty(sysButtonPageParam.getParentId())) {
             queryWrapper.lambda().eq(SysButton::getParentId, sysButtonPageParam.getParentId());

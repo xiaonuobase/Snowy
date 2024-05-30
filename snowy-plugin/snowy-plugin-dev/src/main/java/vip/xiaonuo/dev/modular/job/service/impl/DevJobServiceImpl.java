@@ -57,7 +57,7 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
 
     @Override
     public Page<DevJob> page(DevJobPageParam devJobPageParam) {
-        QueryWrapper<DevJob> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevJob> queryWrapper = new QueryWrapper<DevJob>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(DevJob::getId, DevJob::getName, DevJob::getCategory,
                 DevJob::getActionClass, DevJob::getCronExpression, DevJob::getJobStatus, DevJob::getSortCode);

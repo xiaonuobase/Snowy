@@ -58,7 +58,7 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
 
     @Override
     public Page<BizDict> page(BizDictPageParam bizDictPageParam) {
-        QueryWrapper<BizDict> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BizDict> queryWrapper = new QueryWrapper<BizDict>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(BizDict::getId, BizDict::getParentId, BizDict::getCategory, BizDict::getDictLabel,
                 BizDict::getDictValue, BizDict::getSortCode).eq(BizDict::getCategory, BizDictCategoryEnum.BIZ.getValue());

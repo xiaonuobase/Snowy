@@ -119,7 +119,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
     @Override
     public Page<BizUser> page(BizUserPageParam bizUserPageParam) {
-        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
         if (ObjectUtil.isNotEmpty(bizUserPageParam.getSearchKey())) {
             queryWrapper.lambda().and(q -> q.like(BizUser::getAccount, bizUserPageParam.getSearchKey())
                     .or().like(BizUser::getName, bizUserPageParam.getSearchKey()));
@@ -399,7 +399,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     public void exportUser(BizUserExportParam bizUserExportParam, HttpServletResponse response) throws IOException {
         File tempFile = null;
         try {
-            QueryWrapper<BizUser> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
             // 排除超管
             queryWrapper.lambda().ne(BizUser::getAccount, BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
             // 校验数据范围

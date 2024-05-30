@@ -58,7 +58,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
 
     @Override
     public Page<DevDict> page(DevDictPageParam devDictPageParam) {
-        QueryWrapper<DevDict> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevDict> queryWrapper = new QueryWrapper<DevDict>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
                 DevDict::getDictValue, DevDict::getSortCode);

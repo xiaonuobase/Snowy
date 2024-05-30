@@ -88,7 +88,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
 
     @Override
     public Page<DevSms> page(DevSmsPageParam devSmsPageParam) {
-        QueryWrapper<DevSms> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<DevSms> queryWrapper = new QueryWrapper<DevSms>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(devSmsPageParam.getEngine())) {
             queryWrapper.lambda().eq(DevSms::getEngine, devSmsPageParam.getEngine());
         }

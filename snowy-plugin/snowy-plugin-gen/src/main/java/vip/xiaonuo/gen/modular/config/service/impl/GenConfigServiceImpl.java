@@ -42,7 +42,7 @@ public class GenConfigServiceImpl extends ServiceImpl<GenConfigMapper, GenConfig
 
     @Override
     public List<GenConfig> list(GenConfigListParam genConfigListParam) {
-        QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<GenConfig>().checkSqlInjection();
 
         queryWrapper.lambda().eq(GenConfig::getBasicId, genConfigListParam.getBasicId());
         if(ObjectUtil.isAllNotEmpty(genConfigListParam.getSortField(), genConfigListParam.getSortOrder())) {
