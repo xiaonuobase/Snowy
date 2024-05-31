@@ -1,22 +1,29 @@
 <template>
 	<a-list :grid="grid" :data-source="props.dataSource" :pagination="pagination" :loading="loading">
 		<template #renderItem="{ item, index }">
-			<a-list-item :key="index">
+			<a-list-item :key="index" class="xn-card-list-item">
 				<a-badge-ribbon :text="item.badge.text" :color="item.badge.color ? item.badge.color : ''">
 					<a-card class="xn-card">
 						<template #title>
 							<a-tag color="orange">{{ item.title }}</a-tag>
 						</template>
 						<template #actions>
-							<template v-for="{ key, label, icon, color } in props.actions" :key="key">
-								<a-tooltip :title="label">
-									<component :is="icon" @click="doAction(key, item)" :style="{ color: color }" />
+							<template v-for="{ key, label, button, icon, color } in props.actions" :key="key">
+								<a-button v-if="button" type="link" size="small" @click.stop="doAction(key, item)">
+									<template #icon>
+										<component :is="icon" :style="{ color: color }" />
+									</template>
+									<span :style="{ color: color }">{{ label }}</span>
+								</a-button>
+								<a-tooltip v-else :title="label">
+									<component :is="icon" @click.stop="doAction(key, item)" :style="{ color: color }" />
 								</a-tooltip>
 							</template>
+							<slot name="custom-action-component" :record="item.record" />
 						</template>
 						<a-card-meta class="xn-card-meta">
 							<template #avatar>
-								<a-avatar shape="square" :size="64" :src="item.img" />
+								<a-avatar shape="square" :size="60" :src="item.img" />
 							</template>
 							<template #title>
 								<span class="xn-card-meta-title">{{ item.subTitle }}</span>
@@ -44,7 +51,7 @@
 		grid: {
 			type: Object,
 			default: () => {
-				return { gutter: 20, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3, xxxl: 4 }
+				return { gutter: 20, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 4, xxxl: 4 }
 			}
 		},
 		// 数据源
@@ -94,6 +101,7 @@
 	.xn-card {
 		background: linear-gradient(141.6deg, var(--primary-1) 0%, rgba(255, 255, 255, 0) 70%);
 		box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+		border-radius: 10px;
 
 		.xn-card-meta {
 			display: flex;
@@ -103,5 +111,10 @@
 				font-size: 14px;
 			}
 		}
+	}
+</style>
+<style lang="less">
+	.xn-card-list-item {
+		padding: initial !important;
 	}
 </style>
