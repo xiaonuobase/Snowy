@@ -893,7 +893,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public String loginWorkbench(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
-        SysRelation sysRelation = sysRelationService.getOne(new LambdaUpdateWrapper<SysRelation>().eq(SysRelation::getObjectId, sysUser.getId())
+        SysRelation sysRelation = sysRelationService.getOne(new LambdaQueryWrapper<SysRelation>().eq(SysRelation::getObjectId, sysUser.getId())
                 .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_WORKBENCH_DATA.getValue()));
         if (ObjectUtil.isNotEmpty(sysRelation)) {
             return sysRelation.getExtJson();
