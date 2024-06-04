@@ -15,6 +15,8 @@ package vip.xiaonuo.common.util;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,7 +51,16 @@ public class CommonJoinPointUtil {
         for (int i = 0; i < args.length; i++) {
             if(ObjectUtil.isNotEmpty(args[i]) && isUsefulParam(args[i])) {
                 if(JSONUtil.isTypeJSON(StrUtil.toString(args[i]))) {
-                    map.put(parameterNames[i], JSONUtil.parseObj(args[i]));
+                    try {
+                        JSONObject jsonObject = JSONUtil.parseObj(args[i]);
+                        if(ObjectUtil.isNotEmpty(jsonObject)) {
+                            map.put(parameterNames[i], jsonObject);
+                        } else {
+                            map.put(parameterNames[i], JSONUtil.parseArray(args[i]));
+                        }
+                    } catch (Exception e) {
+                        map.put(parameterNames[i], null);
+                    }
                 } else {
                     map.put(parameterNames[i], JSONUtil.toJsonStr(args[i]));
                 }
