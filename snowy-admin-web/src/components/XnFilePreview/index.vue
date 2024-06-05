@@ -78,23 +78,29 @@
 	const fileType = ref()
 	watch(
 		() => props.src,
-		() => {
-			fileType.value = props.fileType.toLowerCase()
-		}
+		(newVal) => {
+			if (newVal) {
+				fileType.value = props.fileType.toLowerCase()
+			}
+		},
+		{ immediate: true, deep: true }
 	)
 	watch(
 		() => props.src,
-		() => {
-			if (
-				fileType.value === 'doc' ||
-				fileType.value === 'docx' ||
-				fileType.value === 'xls' ||
-				fileType.value === 'xlsx' ||
-				fileType.value === 'pdf'
-			) {
-				loading.value = true
+		(newVal) => {
+			if (newVal) {
+				if (
+					fileType.value === 'doc' ||
+					fileType.value === 'docx' ||
+					fileType.value === 'xls' ||
+					fileType.value === 'xlsx' ||
+					fileType.value === 'pdf'
+				) {
+					loading.value = true
+				}
 			}
-		}
+		},
+		{ immediate: true, deep: true }
 	)
 	// 渲染完成
 	const renderedHandler = () => {
