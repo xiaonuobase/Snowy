@@ -333,4 +333,27 @@
 		emit('update:value', undefined)
 		emit('onChange', undefined)
 	}
+	// 通过DOM获取上传的文件
+	const uploadFileList = () => {
+		if (fileList.value) {
+			const result = []
+			// 只返回这些就够用了，其他基本用不到
+			fileList.value.forEach((item) => {
+				const obj = {
+					name: item.name,
+					type: item.type,
+					size: item.size,
+					url: item.response.data
+				}
+				result.push(obj)
+			})
+			return result
+		} else {
+			return []
+		}
+	}
+	// 抛出这个获取文件列表的方法
+	defineExpose({
+		uploadFileList
+	})
 </script>
