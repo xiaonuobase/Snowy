@@ -51,6 +51,8 @@
 		}
 	})
 
+	const id = tool.snowyUuid()
+
 	const forceResize = () => {
 		window.dispatchEvent(new Event('resize'))
 	}
@@ -88,16 +90,65 @@
 				currentColor.textContent = val
 			}
 		}
+
+		// 改变文字颜色
+		currentColor.style.color = changeTextColor(currentColor.style.backgroundColor)
+	}
+
+	/**
+	 * 改变文字颜色
+	 * @param backgroundColor 背景色
+	 */
+	const changeTextColor = (backgroundColor) => {
+		const backgroundHexColor = backgroundColor.length > 7 ? convertRGBToHex(backgroundColor) : backgroundColor
+
+		let hex = backgroundHexColor
+		// 如果当前传入的参数以 # 开头,去除当前的
+		if (hex.startsWith('#')) {
+			hex = hex.substring(1)
+		}
+		// 如果当前传入的是 3 位小数值，直接转换为 6 位进行处理
+		if (hex.length === 3) {
+			hex = [hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]].join('')
+		}
+		if (hex.length !== 6) {
+			throw new Error('Invalid background color.' + backgroundHexColor)
+		}
+
+		const r = parseInt(hex.slice(0, 2), 16)
+		const g = parseInt(hex.slice(2, 4), 16)
+		const b = parseInt(hex.slice(4, 6), 16)
+
+		if ([r, g, b].some((x) => Number.isNaN(x))) {
+			throw new Error('Invalid background color.' + backgroundHexColor)
+		}
+
+		return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? '#000' : '#fff'
+	}
+	const toHex = (x) => ('0' + parseInt(x).toString(16)).slice(-2)
+	/**
+	 * RGB 转换为 HEX
+	 * @param rgb RGB 颜色
+	 */
+	const convertRGBToHex = (rgb) => {
+		const bg = rgb.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/)
+		// 返回空字符串，在后面判断长度为 6 时候会报错。不在此处进行操作
+		if (!bg) {
+			return ''
+		}
+		return '#' + toHex(bg[1]) + toHex(bg[2]) + toHex(bg[3])
 	}
 </script>
 
 <style lang="less">
 	.snowy-color-picker {
+		width: 100%;
+
 		.vc-color-wrap {
-			width: auto;
+			width: 100%;
 		}
+
 		.current-color {
-			color: #fff;
 			padding: 0 10px;
 		}
 		.remark {
