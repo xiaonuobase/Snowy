@@ -29,31 +29,26 @@ public class AuthExceptionUtil {
      **/
     public static CommonResult<String> getCommonResult(Exception e) {
         CommonResult<String> commonResult;
-        if (e instanceof NotLoginException) {
+        if (e instanceof NotLoginException notLoginException) {
 
             // 如果是未登录异常 401
-            NotLoginException notLoginException = (NotLoginException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_UNAUTHORIZED, notLoginException.getMessage(), null);
-        } else if (e instanceof NotRoleException) {
+        } else if (e instanceof NotRoleException notRoleException) {
 
             // 如果是角色异常 403
-            NotRoleException notRoleException = (NotRoleException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "无此角色：" + notRoleException.getRole() +
                     "，接口地址：" + CommonServletUtil.getRequest().getServletPath(), null);
-        } else if (e instanceof NotPermissionException) {
+        } else if (e instanceof NotPermissionException notPermissionException) {
 
             // 如果是权限异常 403
-            NotPermissionException notPermissionException = (NotPermissionException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "无此权限：" + notPermissionException.getPermission(), null);
-        } else if (e instanceof DisableServiceException) {
+        } else if (e instanceof DisableServiceException disableServiceException) {
 
             // 如果是被封禁异常 403
-            DisableServiceException disableServiceException = (DisableServiceException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "账号被封禁：" + disableServiceException.getDisableTime() + "秒后解封", null);
-        } else if (e instanceof SaTokenException) {
+        } else if (e instanceof SaTokenException saTokenException) {
 
             // 如果是SaToken异常 直接返回
-            SaTokenException saTokenException = (SaTokenException) e;
             commonResult = CommonResult.error(saTokenException.getMessage());
         } else {
             // 未知异常才打印
