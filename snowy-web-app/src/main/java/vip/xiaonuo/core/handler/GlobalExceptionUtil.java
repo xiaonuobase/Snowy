@@ -81,25 +81,21 @@ public class GlobalExceptionUtil {
             log.error(">>> 参数传递格式异常：", e);
             // 如果是JSON参数格式错误异常 415
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, "参数格式错误", null);
-        } else if (e instanceof MethodArgumentNotValidException) {
+        } else if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
 
             // 如果是参数校验异常（MethodArgumentNotValidException） 415
-            MethodArgumentNotValidException methodArgumentNotValidException = (MethodArgumentNotValidException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, getArgNotValidMessage(methodArgumentNotValidException.getBindingResult()), null);
-        } else if (e instanceof BindException) {
+        } else if (e instanceof BindException bindException) {
 
             // 如果是参数校验异常（BindException） 415
-            BindException bindException = (BindException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, getArgNotValidMessage(bindException.getBindingResult()), null);
-        } else if (e instanceof ConstraintViolationException) {
+        } else if (e instanceof ConstraintViolationException constraintViolationException) {
 
             // 如果是参数校验异常（ConstraintViolationException） 415
-            ConstraintViolationException constraintViolationException = (ConstraintViolationException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, getArgNotValidMessage(constraintViolationException.getConstraintViolations()), null);
-        } else if (e instanceof MissingServletRequestParameterException) {
+        } else if (e instanceof MissingServletRequestParameterException missingServletRequestParameterException) {
 
             // 如果是参数校验异常（MissingServletRequestParameterException） 415
-            MissingServletRequestParameterException missingServletRequestParameterException = (MissingServletRequestParameterException) e;
             commonResult = CommonResult.get(HttpStatus.HTTP_UNSUPPORTED_TYPE, missingServletRequestParameterException.getMessage(), null);
         }
         else if (e instanceof MultipartException) {
@@ -120,8 +116,7 @@ public class GlobalExceptionUtil {
             Throwable cause = e.getCause();
             if (cause instanceof PersistenceException) {
                 Throwable secondCause = cause.getCause();
-                if (secondCause instanceof CommonException) {
-                    CommonException commonException = (CommonException) secondCause;
+                if (secondCause instanceof CommonException commonException) {
                     commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
                 } else {
                     log.error(">>> 数据操作异常：", e);
@@ -131,10 +126,9 @@ public class GlobalExceptionUtil {
                 log.error(">>> 数据操作异常：", e);
                 commonResult = CommonResult.error("数据操作异常");
             }
-        } else if (e instanceof CommonException) {
+        } else if (e instanceof CommonException commonException) {
 
             // 通用业务异常，直接返回给前端
-            CommonException commonException = (CommonException) e;
             commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
         }  else {
             // 未知异常打印详情
