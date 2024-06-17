@@ -14,11 +14,10 @@ package vip.xiaonuo.common.util;
 
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -30,6 +29,29 @@ import java.util.regex.Pattern;
 public class CommonAvatarUtil {
 
     /**
+     * 中文正则
+     */
+    public static final Pattern CHINESE_PATTERN = Pattern.compile("[\\u4e00-\\u9fa5]+");
+
+    /**
+     * 预置颜色
+     */
+    private static final int[] BEAUTIFUL_COLORS = {
+            0x7265E6,
+            0xFCBF00,
+            0x00A2AE,
+            0xF56A00,
+            0x1890FF,
+            0x606D80
+    };
+
+    /**
+     * 此工具类不可被实例化
+     */
+    private CommonAvatarUtil() {
+    }
+
+    /**
      * 绘制字体头像，如果是英文名，只显示首字母大写，
      * 如果是中文名，只显示最后两个字
      * 返回图片base64
@@ -37,23 +59,20 @@ public class CommonAvatarUtil {
      * @author xuyuxiang
      * @date 2022/7/5 17:36
      **/
-    public static String generateImg(String name) {
-        int width = 100;
-        int height = 100;
-        int nameLength = name.length();
-        String nameWritten;
+    public static String generateImg(final String name) {
+        final int width = 100;
+        final int height = 100;
+        final int nameLength = name.length();
         // 如果用户输入的姓名少于等于2个字符，不用截取
-        if (nameLength <= 2) {
-            nameWritten = name;
-        } else {
+        String nameWritten = name;
+        if (nameLength > 2) {
             // 如果用户输入的姓名大于等于3个字符，截取后面两位
-            String first = StrUtil.sub(name, 0, 1);
-            if (isChinese(first)) {
+            if (isChinese(StringUtils.substring(name, 0, 1))) {
                 // 截取倒数两位汉字
                 nameWritten = name.substring(nameLength - 2);
             } else {
                 // 截取前面的两个英文字母
-                nameWritten = StrUtil.sub(name, 0, 1).toUpperCase();
+                nameWritten = StringUtils.substring(name, 0, 1).toUpperCase();
             }
         }
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -62,13 +81,11 @@ public class CommonAvatarUtil {
         g2.setBackground(getRandomColor());
         g2.clearRect(0, 0, width, height);
         g2.setPaint(Color.WHITE);
-        Font font;
         // 两个字及以上
         if(nameWritten.length() >= 2) {
-            font = new Font("微软雅黑", Font.BOLD, 30);
-            g2.setFont(font);
-            String firstWritten = StrUtil.sub(nameWritten, 0, 1);
-            String secondWritten = StrUtil.sub(nameWritten, 0, 2);
+            g2.setFont(new Font("微软雅黑", Font.BOLD, 30));
+            String firstWritten = StringUtils.substring(nameWritten, 0, 1);
+            String secondWritten = StringUtils.substring(nameWritten, 0, 2);
             // 两个中文 如 言曌
             if (isChinese(firstWritten) && isChinese(secondWritten)) {
                 g2.drawString(nameWritten, 20, 60);
@@ -85,12 +102,10 @@ public class CommonAvatarUtil {
         if(nameWritten.length() == 1) {
             // 中文
             if(isChinese(nameWritten)) {
-                font = new Font("微软雅黑", Font.PLAIN, 50);
-                g2.setFont(font);
+                g2.setFont(new Font("微软雅黑", Font.PLAIN, 50));
                 g2.drawString(nameWritten, 25, 70);
             } else {
-                font = new Font("微软雅黑", Font.PLAIN, 55);
-                g2.setFont(font);
+                g2.setFont(new Font("微软雅黑", Font.PLAIN, 55));
                 g2.drawString(nameWritten.toUpperCase(), 33, 67);
             }
         }
@@ -104,11 +119,7 @@ public class CommonAvatarUtil {
      * @date 2022/7/5 17:41
      **/
     private static Color getRandomColor() {
-        String[] beautifulColors =
-                new String[]{"114,101,230", "255,191,0", "0,162,174", "245,106,0", "24,144,255", "96,109,128"};
-        String[] color = beautifulColors[RandomUtil.randomInt(beautifulColors.length)].split(StrUtil.COMMA);
-        return new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]),
-                Integer.parseInt(color[2]));
+        return new Color(BEAUTIFUL_COLORS[RandomUtil.randomInt(BEAUTIFUL_COLORS.length)]);
     }
 
     /**
@@ -118,9 +129,6 @@ public class CommonAvatarUtil {
      * @date 2022/7/5 17:41
      **/
     private static boolean isChinese(String str) {
-        String regEx = "[\\u4e00-\\u9fa5]+";
-        Pattern p = Pattern.compile(regEx);
-        Matcher m = p.matcher(str);
-        return m.find();
+        return CHINESE_PATTERN.matcher(str).find();
     }
 }
