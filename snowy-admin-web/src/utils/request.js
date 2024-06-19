@@ -129,7 +129,7 @@ service.interceptors.response.use(
 				'saveDraft'
 			]
 			apiNameArray.forEach((apiName) => {
-				if (responseUrls[responseUrls.length - 1].includes(apiName)) {
+				if (responseUrls[responseUrls.length - 1] === apiName) {
 					message.success(data.msg)
 				}
 			})
