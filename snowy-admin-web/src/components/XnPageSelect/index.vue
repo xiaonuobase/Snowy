@@ -8,7 +8,10 @@
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
 			:disabled="props.disabled"
+			:showSearch="props.showSearch"
+			:filterOption="!props.showSearch"
 			@change="handleChange"
+			@search="handleSearch"
 			@popupScroll="handlePopupScroll"
 		/>
 	</a-spin>
@@ -21,7 +24,7 @@
 	const initParams = ref({})
 	const options = ref([])
 	const spinning = ref(false)
-	const emit = defineEmits({ change: null, 'update:value': null })
+	const emit = defineEmits({ change: null, 'update:value': null, search:null })
 	const props = defineProps({
 		value: {
 			type: String,
@@ -44,6 +47,14 @@
 		allowClear: {
 			type: Boolean,
 			default: () => false
+		},
+		showSearch: {
+			type: Boolean,
+			default: () => false
+		},
+		searchKeyName: {
+			type: String,
+			default: () => ''
 		},
 		disabled: {
 			type: Boolean,
@@ -99,10 +110,24 @@
 	// change
 	const handleChange = (value, array) => {
 		modelValue.value = value
-		// 触发change事件
-		emit('change', value, array)
+		if (value == null && props.showSearch){
+			//被清空，重置查询条件
+			initParams.value[props.searchKeyName] = value;
+		}
 		// 更新数据
 		emit('update:value', value)
+		// 触发change事件
+		emit('change', value, array)
+	}
+	// search
+	const handleSearch = (searchValue) => {
+		let _params = {current: 1};
+		if (props.searchKeyName && props.searchKeyName !== ''){
+			_params[props.searchKeyName] = searchValue;
+			onPage({ ...initParams.value, ..._params});
+		}
+		// 触发search事件
+		emit('search', searchValue)
 	}
 	// 滚动触发
 	const handlePopupScroll = (e) => {
