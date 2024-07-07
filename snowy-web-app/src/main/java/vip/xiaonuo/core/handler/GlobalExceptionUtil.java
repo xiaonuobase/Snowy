@@ -13,19 +13,21 @@
 package vip.xiaonuo.core.handler;
 
 import cn.dev33.satoken.exception.SaTokenException;
+import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.mybatis.spring.MyBatisSystemException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,8 +39,8 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理工具类，将异常转为通用结果
@@ -48,6 +50,9 @@ import java.util.Set;
  */
 @Slf4j
 public class GlobalExceptionUtil {
+
+    private GlobalExceptionUtil() {
+    }
 
     /**
      * 根据错误类型获取对应的CommonResult
@@ -146,18 +151,13 @@ public class GlobalExceptionUtil {
      * @date 2021/10/12 11:14
      **/
     public static String getArgNotValidMessage(Set<ConstraintViolation<?>> constraintViolationSet) {
-        if (ObjectUtil.isEmpty(constraintViolationSet)) {
-            return "";
+        if (CollectionUtils.isEmpty(constraintViolationSet)) {
+            return StringUtils.EMPTY;
         }
-        StringBuilder stringBuilder = StrUtil.builder();
-
         // 多个错误用逗号分隔
-        for (ConstraintViolation<?> constraintViolation : constraintViolationSet) {
-            stringBuilder.append(StrUtil.COMMA).append(constraintViolation.getMessage());
-        }
-
-        // 最终把首部的逗号去掉
-        return StrUtil.removePrefix(stringBuilder.toString(), StrUtil.COMMA);
+        return constraintViolationSet.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(StrPool.COMMA));
     }
 
     /**
@@ -168,17 +168,12 @@ public class GlobalExceptionUtil {
      **/
     public static String getArgNotValidMessage(BindingResult bindingResult) {
         if (ObjectUtil.isNull(bindingResult)) {
-            return "";
+            return StringUtils.EMPTY;
         }
-        StringBuilder stringBuilder = StrUtil.builder();
-
         // 多个错误用逗号分隔
-        List<ObjectError> allErrorInfos = bindingResult.getAllErrors();
-        for (ObjectError error : allErrorInfos) {
-            stringBuilder.append(StrUtil.COMMA).append(error.getDefaultMessage());
-        }
-
-        // 最终把首部的逗号去掉
-        return StrUtil.removePrefix(stringBuilder.toString(), StrUtil.COMMA);
+        return bindingResult.getAllErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(StrPool.COMMA));
     }
 }
