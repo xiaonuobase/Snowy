@@ -387,10 +387,10 @@ public class AuthServiceImpl implements AuthService {
         // 获取权限码
         List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
                 .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
-        // 设置权限码
         saBaseLoginUser.setPermissionCodeList(permissionCodeList);
         // 权限码列表存入缓存
         commonCacheOperator.put(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + saBaseLoginUser.getId(),permissionCodeList);
+
         // 获取角色码
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
@@ -441,7 +441,6 @@ public class AuthServiceImpl implements AuthService {
         // 获取权限码
         List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
-        // 设置权限码
         saBaseClientLoginUser.setPermissionCodeList(permissionCodeList);
         // 权限码列表存入缓存
         commonCacheOperator.put(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + saBaseClientLoginUser.getId(),permissionCodeList);
