@@ -17,6 +17,8 @@ import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.strategy.SaStrategy;
+import cn.hutool.json.JSONUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.consts.CacheConstant;
 
 import java.util.List;
 
@@ -86,15 +90,24 @@ public class AuthConfigure implements WebMvcConfigurer {
     @Component
     public static class StpInterfaceImpl implements StpInterface {
 
+        @Resource
+        private CommonCacheOperator commonCacheOperator;
+
         /**
          * 返回一个账号所拥有的权限码集合
          */
         @Override
         public List<String> getPermissionList(Object loginId, String loginType) {
             if (SaClientTypeEnum.B.getValue().equals(loginType)) {
-                return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
+//                return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
+                Object permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY+loginId);
+                List<String> permissionList = JSONUtil.parseArray(permissionListObject).toList(String.class);
+                return permissionList;
             } else {
-                return StpClientLoginUserUtil.getClientLoginUser().getPermissionCodeList();
+//                return StpClientLoginUserUtil.getClientLoginUser().getPermissionCodeList();
+                Object permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY+loginId);
+                List<String> permissionList = JSONUtil.parseArray(permissionListObject).toList(String.class);
+                return permissionList;
             }
         }
 
