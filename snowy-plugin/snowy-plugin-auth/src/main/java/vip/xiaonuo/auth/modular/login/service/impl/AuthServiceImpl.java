@@ -41,6 +41,7 @@ import vip.xiaonuo.auth.modular.login.param.AuthPhoneValidCodeLoginParam;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.consts.CacheConstant;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
 import vip.xiaonuo.common.util.CommonEmailUtil;
@@ -371,8 +372,12 @@ public class AuthServiceImpl implements AuthService {
         saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class,
                 loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId())));
         // 获取权限码
-        saBaseLoginUser.setPermissionCodeList(saBaseLoginUser.getDataScopeList().stream()
-                .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList()));
+        List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
+                .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
+        saBaseLoginUser.setPermissionCodeList(permissionCodeList);
+        // 权限码列表存入缓存
+        commonCacheOperator.put(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + saBaseLoginUser.getId(),permissionCodeList);
+
         // 获取角色码
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
@@ -410,8 +415,11 @@ public class AuthServiceImpl implements AuthService {
         saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class,
                 clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null)));
         // 获取权限码
-        saBaseClientLoginUser.setPermissionCodeList(saBaseClientLoginUser.getDataScopeList().stream()
-                .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList()));
+        List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
+                .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
+        saBaseClientLoginUser.setPermissionCodeList(permissionCodeList);
+        // 权限码列表存入缓存
+        commonCacheOperator.put(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + saBaseClientLoginUser.getId(),permissionCodeList);
         // 获取角色码
         saBaseClientLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
