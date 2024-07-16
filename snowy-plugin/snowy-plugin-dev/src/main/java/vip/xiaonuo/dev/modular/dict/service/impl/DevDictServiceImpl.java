@@ -97,6 +97,9 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     @Override
     public List<Tree<String>> tree(DevDictTreeParam devDictTreeParam) {
         LambdaQueryWrapper<DevDict> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
+                DevDict::getDictValue, DevDict::getSortCode);
         lambdaQueryWrapper.orderByAsc(DevDict::getSortCode);
         if (ObjectUtil.isNotEmpty(devDictTreeParam.getCategory())) {
             lambdaQueryWrapper.eq(DevDict::getCategory, devDictTreeParam.getCategory());
