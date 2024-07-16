@@ -16,7 +16,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -109,7 +111,10 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
                         new TreeNode<>(devDict.getId(), devDict.getParentId(),
                                 devDict.getDictLabel(), devDict.getSortCode()).setExtra(JSONUtil.parseObj(devDict)))
                 .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+        // 精简冗余字段(sortCode、weight字段合并)
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setWeightKey("sortCode");
+        return TreeUtil.build(treeNodeList, "0", treeNodeConfig, new DefaultNodeParser<>());
     }
 
     @Override
