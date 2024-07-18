@@ -82,8 +82,6 @@
 	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
 	import TopMenu from '@/layout/menu/topMenu.vue'
 	import { NextLoading } from '@/utils/loading'
-	import { useMenuStore } from '@/store/menu'
-	import { userStore } from '@/store/user'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -239,7 +237,6 @@
 	onMounted(() => {
 		// 取消loading
 		NextLoading.done()
-		showThis()
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)
