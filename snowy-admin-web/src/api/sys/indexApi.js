@@ -49,5 +49,17 @@ export default {
 	// 获取当前用户操作日志列表
 	indexOpLogList(data) {
 		return request('opLog/list', data, 'get')
+	},
+	// 获取基础系统业务数据
+	indexBizDataCount(data) {
+		return request('bizDataCount', data, 'get')
+	},
+	// 获取运维一览数据
+	indexOpDataCount(data) {
+		return request('opDataCount', data, 'get')
+	},
+	// 获取基础工具数据
+	indexToolDataCount(data) {
+		return request('toolDataCount', data, 'get')
 	}
 }

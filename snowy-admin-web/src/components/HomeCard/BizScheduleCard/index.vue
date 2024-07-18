@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<a-card :title="title" :bordered="false" class="mt-2">
 		<a-calendar v-model:value="calendarValue" :fullscreen="false" @select="onPanelSelect" />
 		<a-card :bordered="false">
 			<a-timeline>
@@ -29,7 +29,7 @@
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 			</template>
 		</xn-form-container>
-	</div>
+	</a-card>
 </template>
 
 <script setup name="schedule">
@@ -42,6 +42,7 @@
 	import { required } from '@/utils/formRules'
 	import { onMounted } from 'vue'
 	import indexApi from '@/api/sys/indexApi'
+	const title = ref('我的日程')
 	const scheduleList = ref([])
 	const calendarValue = ref(dayjs())
 
@@ -120,6 +121,12 @@
 <style scoped>
 	.add-schedule {
 		cursor: pointer;
-		margin-top: -10px;
+		/*margin-top: -10px;*/
+	}
+	:deep(.ant-card-body) {
+		padding-top: 0 !important;
+	}
+	:deep(.ant-timeline-item-content) {
+		min-height: 10px !important;
 	}
 </style>

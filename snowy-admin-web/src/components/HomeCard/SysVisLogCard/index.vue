@@ -1,37 +1,39 @@
 <template>
-	<a-card title="操作记录" :bordered="false">
-		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/oplog')">更多</a></template>
+	<a-card title="访问记录" :bordered="false">
+		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/vislog')">更多</a></template>
 		<div class="timeline-div">
 			<a-timeline>
-				<a-timeline-item :key="opLog.id" v-for="opLog in opLogList" :color="getTimelineColor(opLog.exeStatus)"
-					>{{ opLog.opTime }} {{ opLog.name }}
+				<a-timeline-item :key="visLog.id" v-for="visLog in visLogList" :color="getTimelineColor(visLog.category)"
+					>{{ visLog.opTime }} {{ visLog.name }}
+					<p class="timeline-item-p">{{ visLog.opIp }} {{ visLog.opAddress }}</p>
 				</a-timeline-item>
 			</a-timeline>
 		</div>
 	</a-card>
 </template>
 
-<script setup name="indexOpLog">
+<script setup name="indexVisLog">
 	import router from '@/router'
 	import indexApi from '@/api/sys/indexApi'
 	import { onMounted } from 'vue'
 	import tool from '@/utils/tool'
 	const userInfo = tool.data.get('USER_INFO')
-	const opLogList = ref([])
+	const visLogList = ref([])
 	onMounted(() => {
 		// 进来后执行查询
-		seleOpLogList()
+		getVisLogList()
 	})
-
 	// 是否展示更多按钮
 	const displayMore = () => {
 		return userInfo.roleCodeList && userInfo.roleCodeList.toString().indexOf('superAdmin') !== -1
 	}
-	const seleOpLogList = () => {
-		indexApi.indexOpLogList().then((data) => {
-			opLogList.value = data
+	// 查询数据
+	const getVisLogList = () => {
+		indexApi.indexVisLogList().then((data) => {
+			visLogList.value = data
 		})
 	}
+	// 跳转
 	const leaveFor = (url = '/') => {
 		router.replace({
 			path: url
@@ -39,10 +41,11 @@
 	}
 	// 获取颜色
 	const getTimelineColor = (value) => {
-		if (value === 'SUCCESS') {
+		if (value === 'LOGIN') {
 			return 'blue'
-		} else {
-			return 'red'
+		}
+		if (value === 'LOGOUT') {
+			return 'gray'
 		}
 	}
 </script>
@@ -50,6 +53,10 @@
 	.ant-timeline-item {
 		padding-top: 5px;
 		padding-bottom: 10px !important;
+	}
+	.timeline-item-p {
+		margin-bottom: 0px;
+		color: rgb(188, 189, 190);
 	}
 	.timeline-div {
 		height: 300px;
