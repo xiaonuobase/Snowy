@@ -20,6 +20,7 @@ import vip.xiaonuo.dev.modular.file.entity.DevFile;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
+import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 
 import java.io.IOException;
 import java.util.List;
@@ -87,6 +88,14 @@ public interface DevFileService extends IService<DevFile> {
      * @date 2022/4/24 21:18
      */
     DevFile detail(DevFileIdParam devFileIdParam);
+
+    /**
+     * 根据文件url集合获取文件集合
+     *
+     * @author yubaoshan
+     * @date 2024/6/9 23:52
+     **/
+    List<DevFile> getFileListByUrlList(DevFileUrlListParam devFileUrlListParam);
 
     /**
      * 获取文件详情

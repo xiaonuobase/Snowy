@@ -76,6 +76,10 @@ export default {
 	fileDetail(data) {
 		return request('detail', data, 'get')
 	},
+	// 根据文件url集合获取文件集合
+	fileGetFileListByUrlList(data) {
+		return request('getFileListByUrlList', data)
+	},
 	// 删除文件
 	fileDelete(data) {
 		return request('delete', data)
