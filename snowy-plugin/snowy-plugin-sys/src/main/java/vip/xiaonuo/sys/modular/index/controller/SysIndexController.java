@@ -160,4 +160,40 @@ public class SysIndexController {
     public SseEmitter createSseConnect(String clientId){
         return sysIndexService.createSseConnect(clientId);
     }
+
+    /**
+     * 获取基础系统业务数据
+     *
+     * @author xuyuxiang、yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    @Operation(summary = "获取基础系统业务数据")
+    @GetMapping("/sys/index/bizDataCount")
+    public CommonResult<SysBizDataCountResult> getBizDataCount() {
+        return CommonResult.data(sysIndexService.getBizDataCount());
+    }
+
+    /**
+     * 获取运维一览数据
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    @Operation(summary = "获取运维一览数据")
+    @GetMapping("/sys/index/opDataCount")
+    public CommonResult<SysOpDataCountResult> getOpDataCount() {
+        return CommonResult.data(sysIndexService.getOpDataCount());
+    }
+
+    /**
+     * 获取基础工具数据
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    @Operation(summary = "获取基础工具数据")
+    @GetMapping("/sys/index/toolDataCount")
+    public CommonResult<SysToolDataCountResult> getToolDataCount() {
+        return CommonResult.data(sysIndexService.getToolDataCount());
+    }
 }

@@ -96,5 +96,29 @@ public interface SysIndexService {
      * @author diantu
      * @date 2023/7/10
      **/
-    public SseEmitter createSseConnect(String clientId);
+    SseEmitter createSseConnect(String clientId);
+
+    /**
+     * 获取基础系统业务数据
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    SysBizDataCountResult getBizDataCount();
+
+    /**
+     * 获取基础系统业务数据
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    SysOpDataCountResult getOpDataCount();
+
+    /**
+     * 获取基础系统业务数据
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    SysToolDataCountResult getToolDataCount();
 }
