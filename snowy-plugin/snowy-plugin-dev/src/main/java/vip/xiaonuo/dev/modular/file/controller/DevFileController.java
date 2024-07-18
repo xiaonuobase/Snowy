@@ -31,6 +31,7 @@ import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
+import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
 import java.io.IOException;
@@ -248,5 +249,17 @@ public class DevFileController {
     @GetMapping("/dev/file/detail")
     public CommonResult<DevFile> detail(@Valid DevFileIdParam devFileIdParam) {
         return CommonResult.data(devFileService.detail(devFileIdParam));
+    }
+
+    /**
+     * 根据文件url集合获取文件集合
+     *
+     * @author yubaoshan
+     * @date 2024/6/9 23:52
+     **/
+    @Operation(summary = "根据文件url集合获取文件集合")
+    @PostMapping("/dev/file/getFileListByUrlList")
+    public CommonResult<List<DevFile>> getFileListByUrlList(@RequestBody @Valid DevFileUrlListParam devFileUrlListParam) {
+        return CommonResult.data(devFileService.getFileListByUrlList(devFileUrlListParam));
     }
 }
