@@ -81,6 +81,7 @@
 	import ClassicalMenu from '@/layout/menu/classicalMenu.vue'
 	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
 	import TopMenu from '@/layout/menu/topMenu.vue'
+	import { NextLoading } from '@/utils/loading'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -216,6 +217,8 @@
 	}
 	showThis()
 	onMounted(() => {
+		// 取消loading
+		NextLoading.done()
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)

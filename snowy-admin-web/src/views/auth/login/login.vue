@@ -99,7 +99,7 @@
 </template>
 <script setup>
 	import loginApi from '@/api/auth/loginApi'
-	import PhoneLoginForm from './phoneLoginForm.vue'
+	const PhoneLoginForm = defineAsyncComponent(() => import('./phoneLoginForm.vue'))
 	import ThreeLogin from './threeLogin.vue'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
@@ -239,7 +239,9 @@
 					const loginAfter = afterLogin(loginToken)
 				} catch (err) {
 					loading.value = false
-					loginCaptcha()
+					if (captchaOpen.value === 'true') {
+						loginCaptcha()
+					}
 				}
 			})
 			.catch(() => {})

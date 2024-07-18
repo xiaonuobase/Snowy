@@ -77,17 +77,14 @@ export const globalStore = defineStore('global', () => {
 	}
 	const setTheme = (key) => {
 		theme.value = key
-		const closeMessage = message.loading(`加载中...`)
-		changeColor(themeColor.value, key).then(closeMessage)
+		changeColor(themeColor.value, key).then()
 	}
 	const setThemeColor = (key) => {
 		themeColor.value = key
-		const closeMessage = message.loading(`加载中...`)
-		changeColor(key, theme.value).then(closeMessage)
+		changeColor(key, theme.value).then()
 	}
 	const initTheme = () => {
-		const closeMessage = message.loading(`加载中...`)
-		changeColor(themeColor.value, theme.value).then(closeMessage)
+		changeColor(themeColor.value, theme.value).then()
 	}
 	const toggleConfig = (key) => {
 		switch (key) {
