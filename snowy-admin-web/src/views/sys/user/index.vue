@@ -136,11 +136,12 @@
 		</a-col>
 	</a-row>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
-	<role-selector-plus
+	<xn-role-selector
 		ref="RoleSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
-		:checked-role-list-api="selectorApiFunction.checkedRoleListApi"
+		:add-show="false"
+		:role-global="true"
 		@onBack="roleBack"
 	/>
 	<ImpExp ref="ImpExpRef" />
@@ -155,8 +156,6 @@
 	import downloadUtil from '@/utils/downloadUtil'
 	import userApi from '@/api/sys/userApi'
 	import orgApi from '@/api/sys/orgApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
-	import RoleSelectorPlus from '@/components/Selector/roleSelectorPlus.vue'
 	import Form from './form.vue'
 	import ImpExp from './impExp.vue'
 	import GrantResourceForm from './grantResourceForm.vue'
@@ -361,7 +360,7 @@
 			id: record.id
 		}
 		userApi.userOwnRole(param).then((data) => {
-			RoleSelectorPlusRef.value.showRolePlusModal(data)
+			RoleSelectorPlusRef.value.showModel(data)
 		})
 	}
 	// 角色选择回调
@@ -372,7 +371,7 @@
 		}
 		if (value.length > 0) {
 			value.forEach((item) => {
-				params.roleIdList.push(item.id)
+				params.roleIdList.push(item)
 			})
 		}
 		userApi.grantRole(params).then(() => {})
@@ -399,11 +398,6 @@
 		},
 		rolePageApi: (param) => {
 			return userApi.userRoleSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		checkedRoleListApi: (param) => {
-			return userCenterApi.userCenterGetRoleListByIdList(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}
