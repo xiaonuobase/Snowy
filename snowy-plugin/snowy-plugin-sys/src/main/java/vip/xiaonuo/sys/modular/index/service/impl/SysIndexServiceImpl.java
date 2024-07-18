@@ -13,25 +13,33 @@
 package vip.xiaonuo.sys.modular.index.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.sse.CommonSseParam;
+import vip.xiaonuo.dev.api.DevApi;
 import vip.xiaonuo.dev.api.DevLogApi;
 import vip.xiaonuo.dev.api.DevMessageApi;
 import vip.xiaonuo.dev.api.DevSseApi;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 import vip.xiaonuo.sys.modular.index.service.SysIndexService;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
+import vip.xiaonuo.sys.modular.position.service.SysPositionService;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
+import vip.xiaonuo.sys.modular.role.service.SysRoleService;
+import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -57,6 +65,24 @@ public class SysIndexServiceImpl implements SysIndexService {
 
     @Resource
     private DevSseApi devSseApi;
+
+    @Resource
+    private SysUserService sysUserService;
+
+    @Resource
+    private SysRoleService sysRoleService;
+
+    @Resource
+    private SysOrgService sysOrgService;
+
+    @Resource
+    private SysPositionService sysPositionService;
+
+    @Resource
+    private DevApi devApi;
+
+    @Resource
+    private AuthApi authApi;
 
     @Override
     public void addSchedule(SysIndexScheduleAddParam sysIndexScheduleAddParam) {
@@ -126,5 +152,31 @@ public class SysIndexServiceImpl implements SysIndexService {
             devSseApi.sendMessageToOneClient(m.getClientId(), String.valueOf(unreadMessageNum));
         };
         return devSseApi.createSseConnect(clientId,true,false,consumer);
+    }
+
+    @Override
+    public SysBizDataCountResult getBizDataCount() {
+        SysBizDataCountResult result = new SysBizDataCountResult();
+        result.setUserCount(sysUserService.count());
+        result.setRoleCount(sysRoleService.count());
+        result.setOrgCount(sysOrgService.count());
+        result.setPositionCount(sysPositionService.count());
+        return result;
+    }
+
+    @Override
+    public SysOpDataCountResult getOpDataCount() {
+        JSONObject devObj = devApi.getDevOpCount();
+        SysOpDataCountResult result = BeanUtil.toBean(devObj, SysOpDataCountResult.class);
+        JSONObject authObj = authApi.getUserSessionCount();
+        result.setBackUserSessionCount(authObj.getLong("backUserSessionCount"));
+        result.setClientUserSessionCount(authObj.getLong("clientUserSessionCount"));
+        result.setThirdUserCount(authApi.getThirdUserCount());
+        return result;
+    }
+
+    @Override
+    public SysToolDataCountResult getToolDataCount() {
+        return BeanUtil.toBean(devApi.getToolDataCount(), SysToolDataCountResult.class);
     }
 }
