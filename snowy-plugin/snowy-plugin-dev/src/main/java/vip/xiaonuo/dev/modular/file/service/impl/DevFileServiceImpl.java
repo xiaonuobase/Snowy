@@ -21,6 +21,7 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,6 +41,7 @@ import vip.xiaonuo.dev.modular.file.mapper.DevFileMapper;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
+import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 import vip.xiaonuo.dev.modular.file.util.DevFileAliyunUtil;
 import vip.xiaonuo.dev.modular.file.util.DevFileLocalUtil;
@@ -258,6 +260,16 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     @Override
     public DevFile detail(DevFileIdParam devFileIdParam) {
         return this.queryEntity(devFileIdParam.getId());
+    }
+
+    @Override
+    public List<DevFile> getFileListByUrlList(DevFileUrlListParam devFileUrlListParam) {
+        LambdaQueryWrapper<DevFile> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 只查询部分字段
+        lambdaQueryWrapper.select(DevFile::getId, DevFile::getSuffix, DevFile::getDownloadPath, DevFile::getName, DevFile::getThumbnail,
+                        DevFile::getSizeKb, DevFile::getSizeInfo, DevFile::getObjName)
+                .in(DevFile::getDownloadPath, devFileUrlListParam.getUrlList());
+        return this.list(lambdaQueryWrapper);
     }
 
     @Override
