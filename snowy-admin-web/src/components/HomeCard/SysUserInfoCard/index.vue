@@ -1,12 +1,8 @@
 <template>
 	<a-card :bordered="false">
-		<div class="xn-acrd-line">
+		<div class="xn-card-line">
 			<div class="xn-flex">
-				<a-avatar
-					class="xn-wh60"
-					:src="userInfo.avatar"
-					:size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }"
-				/>
+				<a-avatar class="xn-wh60" :src="userInfo.avatar" :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }" />
 				<div class="snowy-index-card-left-one-username">
 					<span>{{ userInfo.name }}</span>
 					<span>{{ userInfo.orgName }} | {{ userInfo.positionName }}</span>
@@ -42,13 +38,13 @@
 </script>
 
 <style scoped>
-	.xn-acrd-line {
+	.xn-card-line {
 		display: flex;
-		justify-content: space-between
+		justify-content: space-between;
 	}
 	.xn-wh60 {
 		width: 60px;
-		height: 60px
+		height: 60px;
 	}
 	.snowy-index-card-left-one-username {
 		margin-left: 8px;
@@ -59,11 +55,11 @@
 	.snowy-index-card-left-one-username > span:nth-child(1) {
 		font-weight: 600;
 		margin: 2px;
-		font-size: 18px
+		font-size: 18px;
 	}
 	.snowy-index-card-left-one-username > span:nth-child(2) {
 		color: #6d737b;
-		margin: 2px
+		margin: 2px;
 	}
 	.snowy-index-userinfo-time {
 		margin: 2px;

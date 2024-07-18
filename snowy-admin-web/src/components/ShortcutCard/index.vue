@@ -72,6 +72,7 @@
 		display: flex;
 		align-items: center;
 		margin-left: 10px;
+		justify-content: center;
 	}
 	.container-tag-icon {
 		font-size: 25px;

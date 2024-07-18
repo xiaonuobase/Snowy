@@ -1,5 +1,5 @@
 <template>
-	<a-card title="站内信" :bordered="false" :bodyStyle="miniMessageBodyStyle">
+	<a-card title="站内信" :bordered="false">
 		<template #extra><a @click="leaveFor('/usercenter')">更多</a></template>
 		<div class="index-message-list">
 			<a-list :data-source="messageList" size="small" :loading="miniMessageLoading">
@@ -124,5 +124,8 @@
 <style scoped>
 	.index-message-list {
 		overflow: auto;
+	}
+	:deep(.ant-card-body) {
+		padding-top: 0 !important;
 	}
 </style>

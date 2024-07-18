@@ -20,11 +20,11 @@ import Less2CssVariablePlugin from 'antd-less-to-css-variable'
 import viteCompression from 'vite-plugin-compression'
 
 //  ant-design-vue 的 less 变量，通过兼容包将 v4 变量转译成 v3 版本，并通过 less-loader 注入
-import { theme } from 'ant-design-vue/lib';
-import convertLegacyToken from 'ant-design-vue/lib/theme/convertLegacyToken';
-const { defaultAlgorithm, defaultSeed } = theme;
-const mapToken = defaultAlgorithm(defaultSeed);
-const v3Token = convertLegacyToken.default(mapToken);
+import { theme } from 'ant-design-vue/lib'
+import convertLegacyToken from 'ant-design-vue/lib/theme/convertLegacyToken'
+const { defaultAlgorithm, defaultSeed } = theme
+const mapToken = defaultAlgorithm(defaultSeed)
+const v3Token = convertLegacyToken.default(mapToken)
 
 export const r = (...args) => resolve(__dirname, '.', ...args)
 
@@ -86,21 +86,30 @@ export default defineConfig(({ command, mode }) => {
 				dts: r('src/auto-imports.d.ts')
 			}),
 			// 组件按需引入
-			Components({
-				dirs: [r('src/components')],
-				dts: false,
-				resolvers: []
-			}),
+			Components(
+				{
+					dirs: [r('src/components')],
+					dts: false,
+					resolvers: []
+				},
+				{
+					dirs: [r('src/components/HomeCard')],
+					dts: false,
+					resolvers: []
+				}
+			),
 			visualizer()
 		],
 		css: {
 			preprocessorOptions: {
 				less: {
 					javascriptEnabled: true,
-					plugins: [new Less2CssVariablePlugin({
-						// TODO：有必要用的情况下，是否需要传入 variables，可能会造成重复引用
-						variables: { ...v3Token }
-					})],
+					plugins: [
+						new Less2CssVariablePlugin({
+							// TODO：有必要用的情况下，是否需要传入 variables，可能会造成重复引用
+							variables: { ...v3Token }
+						})
+					],
 					modifyVars: v3Token
 				}
 			}
