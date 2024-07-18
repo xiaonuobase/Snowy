@@ -12,25 +12,29 @@ import config from '@/config'
 import tool from '@/utils/tool'
 import routerUtil from '@/utils/routerUtil'
 
+import Layout from '@/layout/index.vue'
+import Login from '@/views/auth/login/login.vue'
+import Findpwd from '@/views/auth/findPwd/index.vue'
+
 // 系统路由
 const routes = [
 	{
 		name: 'layout',
 		path: '/',
-		component: () => import('@/layout/index.vue'),
+		component: Layout,
 		redirect: tool.data.get('MENU') ? routerUtil.getIndexMenu(tool.data.get('MENU')).path : config.DASHBOARD_URL,
 		children: []
 	},
 	{
 		path: '/login',
-		component: () => import('@/views/auth/login/login.vue'),
+		component: Login,
 		meta: {
 			title: '登录'
 		}
 	},
 	{
 		path: '/findpwd',
-		component: () => import('@/views/auth/findPwd/index.vue'),
+		component: Findpwd,
 		meta: {
 			title: '找回密码'
 		}
