@@ -26,17 +26,13 @@ import vip.xiaonuo.common.pojo.CommonEntity;
  **/
 @Getter
 @Setter
-@TableName("biz_notice")
+@TableName("BIZ_NOTICE")
 public class BizNotice extends CommonEntity {
 
     /** 主键 */
     @TableId
     @Schema(description = "主键")
     private String id;
-
-    /** 租户id */
-    @Schema(description = "租户id")
-    private String tenantId;
 
     /** 标题 */
     @Schema(description = "标题")
