@@ -106,7 +106,6 @@
 		ref="userSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:user-page-api="selectorApiFunction.userPageApi"
-		:user-list-by-id-list-api="selectorApiFunction.checkedUserListApi"
 		data-type="object"
 		:user-show="false"
 		@onBack="userCallBack"
@@ -118,7 +117,6 @@
 	import { isEmpty } from 'lodash-es'
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
 	import GrantResourceForm from './grantResourceForm.vue'
 	import GrantMobileResourceForm from './grantMobileResourceForm.vue'
 	import GrantPermissionForm from './grantPermissionForm.vue'
@@ -288,11 +286,6 @@
 		},
 		userPageApi: (param) => {
 			return roleApi.roleUserSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		checkedUserListApi: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}

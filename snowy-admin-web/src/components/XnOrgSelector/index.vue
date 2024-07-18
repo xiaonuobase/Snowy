@@ -1,33 +1,26 @@
 <template>
 	<!-- 这是引入后展示的样式 -->
-	<a-flex wrap="wrap" gap="small" v-if="props.userShow">
-		<div
-			class="user-container"
-			v-for="(user, index) in userObj"
-			:key="user.id"
-			@mouseover="onMouseEnter(index)"
-			@mouseleave="onMouseLeave(index)"
+	<div v-if="props.show">
+		<a-tag v-for="data in dataArray" closable @close="deleteObj(data)" :key="data.id" class="mb-1">{{
+			data.name
+		}}</a-tag>
+		<a-button
+			type="primary"
+			size="small"
+			@click="openModal"
+			v-if="(props.radioModel ? dataArray.length !== 1 : true) && addShow"
 		>
-			<span class="user-delete">
-				<CloseCircleFilled
-					:class="index === deleteShow ? 'show-delete-icon' : ''"
-					class="delete-icon"
-					@click="deleteUser(user)"
-				/>
-				<a-avatar :src="user.avatar" />
+			<slot name="button"></slot>
+			<span v-if="!hasContent('button')">
+				<plus-outlined />
+				选择
 			</span>
-			<span class="user-name">{{ user.name }}</span>
-		</div>
-		<a-button shape="circle" @click="openModal" v-if="(props.radioModel ? userObj.length !== 1 : true) && addShow">
-			<PlusOutlined />
 		</a-button>
-		<slot name="button"></slot>
-	</a-flex>
-
+	</div>
 	<!-- 以下是弹窗内容 -->
 	<a-modal
 		v-model:open="visible"
-		title="用户选择"
+		title="机构选择"
 		:width="1000"
 		:mask-closable="false"
 		:destroy-on-close="true"
@@ -53,7 +46,7 @@
 						<a-row :gutter="24">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
-									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户名" />
+									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入机构名" />
 								</a-form-item>
 							</a-col>
 							<a-col :span="12">
@@ -63,7 +56,7 @@
 						</a-row>
 					</a-form>
 				</div>
-				<div class="user-table">
+				<div class="selector-table">
 					<a-table
 						ref="tableRef"
 						size="small"
@@ -81,14 +74,11 @@
 							</div>
 						</template>
 						<template #bodyCell="{ column, record }">
-							<template v-if="column.dataIndex === 'avatar'">
-								<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
-							</template>
 							<template v-if="column.dataIndex === 'action'">
 								<a-button type="dashed" size="small" @click="addRecord(record)"><PlusOutlined /></a-button>
 							</template>
 							<template v-if="column.dataIndex === 'category'">
-								{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
+								{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
 							</template>
 						</template>
 					</a-table>
@@ -106,7 +96,7 @@
 				</div>
 			</a-col>
 			<a-col :span="6">
-				<div class="user-table">
+				<div class="selector-table">
 					<a-table
 						ref="selectedTable"
 						size="small"
@@ -134,13 +124,13 @@
 	</a-modal>
 </template>
 
-<script setup name="userSelector">
+<script setup name="orgSelector">
 	import { message } from 'ant-design-vue'
 	import { remove, isEmpty, cloneDeep } from 'lodash-es'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import { useSlots } from 'vue'
 	// 弹窗是否打开
 	const visible = ref(false)
-	const deleteShow = ref('')
 	// 主表格common
 	const commons = [
 		{
@@ -150,18 +140,13 @@
 			width: 50
 		},
 		{
-			title: '头像',
-			dataIndex: 'avatar',
-			width: 50
-		},
-		{
-			title: '用户名',
+			title: '名称',
 			dataIndex: 'name',
 			ellipsis: true
 		},
 		{
-			title: '账号',
-			dataIndex: 'account'
+			title: '分类',
+			dataIndex: 'category'
 		}
 	]
 	// 选中表格的表格common
@@ -173,7 +158,7 @@
 			width: 50
 		},
 		{
-			title: '用户名',
+			title: '名称',
 			dataIndex: 'name',
 			ellipsis: true
 		}
@@ -190,10 +175,10 @@
 		orgTreeApi: {
 			type: Function
 		},
-		userPageApi: {
+		orgPageApi: {
 			type: Function
 		},
-		userListByIdListApi: {
+		orgListByIdListApi: {
 			type: Function
 		},
 		value: {
@@ -201,9 +186,9 @@
 		},
 		dataType: {
 			type: String,
-			default: () => 'string'
+			default: () => 'array'
 		},
-		userShow: {
+		show: {
 			type: Boolean,
 			default: () => true
 		},
@@ -222,6 +207,7 @@
 	const cardLoading = ref(true)
 	const pageLoading = ref(false)
 	const selectedTableListLoading = ref(false)
+	const slots = useSlots()
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	// 获取机构树数据
@@ -234,46 +220,56 @@
 	const recordIds = ref([])
 	// 分页相关
 	const current = ref(0) // 当前页数
-	const pageSize = ref(20) // 每页条数
+	const pageSize = ref(10) // 每页条数
 	const total = ref(0) // 数据总数
-	// 获取选中列表的api
-	const userListByIdList = (param) => {
-		if (typeof props.userListByIdListApi === 'function') {
-			return props.userListByIdListApi(param)
+	const hasContent = (slotName) => {
+		return !!(slots[slotName] && slots[slotName]().length > 0)
+	}
+	// 打开弹框
+	const showModel = (ids = []) => {
+		const data = goDataConverter(ids)
+		recordIds.value = data
+		getDataNameById(data)
+		openModal()
+	}
+	// 获取机构树的api
+	const orgTree = (param) => {
+		if (typeof props.orgTreeApi === 'function') {
+			return props.orgTreeApi(param)
 		} else {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+			message.warning('未配置机构树API')
+			return Promise.resolve([])
+		}
+	}
+	// 获取列表的api
+	const orgPage = (param) => {
+		if (typeof props.orgPageApi === 'function') {
+			return props.orgPageApi(param)
+		} else {
+			message.warning('未配置机构选择器API')
+			return Promise.resolve([])
+		}
+	}
+	// 获取选中列表的api
+	const orgListByIdList = (param) => {
+		if (typeof props.orgListByIdListApi === 'function') {
+			return props.orgListByIdListApi(param)
+		} else {
+			return userCenterApi.userCenterGetOrgListByIdList(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}
 	}
-	// 打开弹框
-	const showUserPlusModal = (ids = []) => {
-		const data = goDataConverter(ids)
-		recordIds.value = data
-		getUserAvatarById(data)
-		openModal()
-	}
-	const onMouseEnter = (index) => {
-		deleteShow.value = index
-	}
-	const onMouseLeave = (index) => {
-		deleteShow.value = ''
-	}
 	const openModal = () => {
-		if (typeof props.orgTreeApi !== 'function') {
-			message.warning('未配置选择器需要的orgTreeApi接口')
-			return
-		}
-		if (typeof props.userPageApi !== 'function') {
-			message.warning('未配置选择器需要的userPageApi接口')
+		if (typeof props.orgTreeApi !== 'function' || typeof props.orgPageApi !== 'function') {
+			message.warning('未配置机构选择器API')
 			return
 		}
 		visible.value = true
 		// 获取机构树
-		props
-			.orgTreeApi()
+		orgTree()
 			.then((data) => {
-				if (data !== null) {
+				if (!isEmpty(data)) {
 					treeData.value = data
 					// 默认展开2级
 					treeData.value.forEach((item) => {
@@ -302,7 +298,7 @@
 			idList: recordIds.value
 		}
 		selectedTableListLoading.value = true
-		userListByIdList(param)
+		orgListByIdList(param)
 			.then((data) => {
 				selectedData.value = data
 			})
@@ -310,15 +306,15 @@
 				selectedTableListLoading.value = false
 			})
 	}
-	// 点击头像删除用户
-	const deleteUser = (user) => {
+	// 点击删除
+	const deleteObj = (obj) => {
 		// 删除显示的
-		remove(userObj.value, (item) => item.id === user.id)
+		remove(dataArray.value, (item) => item.id === obj.id)
 		// 删除缓存的
-		remove(recordIds.value, (item) => item === user.id)
+		remove(recordIds.value, (item) => item === obj.id)
 		const value = []
-		const showUser = []
-		userObj.value.forEach((item) => {
+		const showData = []
+		dataArray.value.forEach((item) => {
 			const obj = {
 				id: item.id,
 				name: item.name
@@ -326,10 +322,9 @@
 			value.push(item.id)
 			// 拷贝一份obj数据
 			const objClone = cloneDeep(obj)
-			objClone.avatar = item.avatar
-			showUser.push(objClone)
+			showData.push(objClone)
 		})
-		userObj.value = showUser
+		dataArray.value = showData
 		// 判断是否做数据的转换为工作流需要的
 		const resultData = outDataConverter(value)
 		emit('update:value', resultData)
@@ -338,11 +333,9 @@
 	// 查询主表格数据
 	const loadData = () => {
 		pageLoading.value = true
-		props
-			.userPageApi(searchFormState.value)
+		orgPage(searchFormState.value)
 			.then((data) => {
 				current.value = data.current
-				// pageSize.value = data.size
 				total.value = data.total
 				// 重置、赋值
 				tableData.value = []
@@ -409,18 +402,18 @@
 	const treeSelect = (selectedKeys) => {
 		searchFormState.value.current = 0
 		if (selectedKeys.length > 0) {
-			searchFormState.value.orgId = selectedKeys.toString()
+			searchFormState.value.parentId = selectedKeys.toString()
 		} else {
-			delete searchFormState.value.orgId
+			delete searchFormState.value.parentId
 		}
 		loadData()
 	}
-	const userObj = ref([])
+	const dataArray = ref([])
 	// 确定
 	const handleOk = () => {
-		userObj.value = []
+		dataArray.value = []
 		const value = []
-		const showUser = []
+		const showData = []
 		selectedData.value.forEach((item) => {
 			const obj = {
 				id: item.id,
@@ -429,10 +422,9 @@
 			value.push(item.id)
 			// 拷贝一份obj数据
 			const objClone = cloneDeep(obj)
-			objClone.avatar = item.avatar
-			showUser.push(objClone)
+			showData.push(objClone)
 		})
-		userObj.value = showUser
+		dataArray.value = showData
 		// 判断是否做数据的转换为工作流需要的
 		const resultData = outDataConverter(value)
 		emit('update:value', resultData)
@@ -452,7 +444,7 @@
 		pageSize.value = 20
 		total.value = 0
 		selectedData.value = []
-		// userObj.value = []
+		// dataArray.value = []
 		visible.value = false
 	}
 	// 数据进入后转换
@@ -497,7 +489,7 @@
 	// 数据出口转换器
 	const outDataConverter = (data) => {
 		if (props.dataIsConverterFlw) {
-			data = userObj.value
+			data = dataArray.value
 			const obj = {}
 			let label = ''
 			let value = ''
@@ -510,7 +502,7 @@
 					value = value + data[i].id + ','
 				}
 			}
-			obj.key = 'USER'
+			obj.key = 'ORG'
 			obj.label = label
 			obj.value = value
 			obj.extJson = ''
@@ -538,14 +530,14 @@
 			return typeof typeof props.value
 		}
 	}
-	const getUserAvatarById = (ids) => {
-		if (isEmpty(userObj.value) && !isEmpty(ids)) {
+	const getDataNameById = (ids) => {
+		if (isEmpty(dataArray.value) && !isEmpty(ids)) {
 			const param = {
 				idList: recordIds.value
 			}
 			// 这里必须转为数组类型的
-			userListByIdList(param).then((data) => {
-				userObj.value = data
+			orgListByIdList(param).then((data) => {
+				dataArray.value = data
 			})
 		}
 	}
@@ -555,7 +547,7 @@
 			if (!isEmpty(props.value)) {
 				const ids = goDataConverter(newValue)
 				recordIds.value = ids
-				getUserAvatarById(ids)
+				getDataNameById(ids)
 			}
 		},
 		{
@@ -563,7 +555,7 @@
 		}
 	)
 	defineExpose({
-		showUserPlusModal
+		showModel
 	})
 </script>
 <style lang="less" scoped>
@@ -580,44 +572,8 @@
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
-	.user-table {
+	.selector-table {
 		overflow: auto;
 		max-height: 450px;
-	}
-
-	.user-container {
-		display: flex;
-		align-items: center; /* 垂直居中 */
-		flex-direction: column;
-		margin-right: 10px;
-		text-align: center;
-	}
-	.user-avatar {
-		width: 30px;
-		border-radius: 50%; /* 设置为50%以创建圆形头像 */
-	}
-	.user-name {
-		font-size: 12px;
-		max-width: 50px;
-		white-space: nowrap;
-		overflow: hidden;
-	}
-	.user-delete {
-		z-index: 99;
-		color: rgba(0, 0, 0, 0.25);
-		position: relative;
-		display: flex;
-		flex-direction: column;
-	}
-	.delete-icon {
-		position: absolute;
-		right: -2px;
-		z-index: 5;
-		top: -3px;
-		cursor: pointer;
-		visibility: hidden;
-	}
-	.show-delete-icon {
-		visibility: visible;
 	}
 </style>

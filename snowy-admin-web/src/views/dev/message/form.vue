@@ -19,7 +19,6 @@
 				<xn-user-selector
 					:org-tree-api="selectorApiFunction.orgTreeApi"
 					:user-page-api="selectorApiFunction.userPageApi"
-					:user-list-by-id-list-api="selectorApiFunction.checkedUserListApi"
 					data-type="object"
 					v-model:value="formData.receiverIdList"
 				/>
@@ -37,7 +36,6 @@
 	import { message } from 'ant-design-vue'
 	import messageApi from '@/api/dev/messageApi'
 	import userApi from '@/api/sys/userApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 
 	const sendLoading = ref(false)
@@ -92,11 +90,6 @@
 		},
 		userPageApi: (param) => {
 			return userApi.userSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		checkedUserListApi: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}

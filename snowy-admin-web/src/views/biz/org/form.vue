@@ -43,7 +43,6 @@
 				<xn-user-selector
 					:org-tree-api="selectorApiFunction.orgTreeApi"
 					:user-page-api="selectorApiFunction.userPageApi"
-					:user-list-by-id-list-api="selectorApiFunction.checkedUserListApi"
 					:radio-model="true"
 					v-model:value="formData.directorId"
 				/>
@@ -59,7 +58,6 @@
 <script setup name="bizOrgForm">
 	import { required } from '@/utils/formRules'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
@@ -142,11 +140,6 @@
 		},
 		userPageApi: (param) => {
 			return bizOrgApi.orgUserSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		checkedUserListApi: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}
