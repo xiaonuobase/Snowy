@@ -6,48 +6,56 @@
     <% for(var i = 0; i < configList.~size; i++) { %>
        <% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
     <% } %>
-    <uv-popup ref="popRef" mode="bottom" bg-color="null" z-index="99">
-        <view class="container">
-            <view class="close">
-                <icon type="clear" :size="20" color="#5677fc" @click="close"></icon>
+    <uni-popup ref="popRef" type="bottom" background-color="transparent" maskBackgroundColor="rgba(0, 0, 0, 0.6)">
+        <view class="snowy-shadow snowy-padding">
+            <view class="snowy-flex-end">
+            	<icon type="clear" :size="20" color="#5677fc" @click="close"></icon>
             </view>
             <% if (searchCount > 0) { %>
-            <uv-form ref="formRef" :model="searchFormState" label-position="top" labelWidth="auto" :labelStyle="{marginBottom: '25rpx', fontSize: '27rpx', color: '#606266'}">
+            <uni-forms ref="formRef" :model="searchFormData" label-position="top" labelWidth="auto">
                 <% for(var i = 0; i < configList.~size; i++) { %>
                 <% if(!configList[i].needTableId && configList[i].needPage) { %>
                 <% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
-                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
-                    <uv-input v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-input>
-                </uv-form-item>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-easyinput v-model="searchFormData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+                </uni-forms-item>
                 <% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
-                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
-                    <snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
-                </uv-form-item>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                	<snowy-sel-picker :map="{key: 'value', label: 'text'}" v-model="searchFormData.${configList[i].fieldNameCamelCase}" :rangeData="${configList[i].fieldNameCamelCase}Options" placeholder="请选择${configList[i].fieldRemark}"></snowy-sel-picker>
+                </uni-forms-item>
+                <% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-number-box v-model="searchFormData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"/>
+                </uni-forms-item>
+                <% } else if (configList[i].effectType == 'datepicker') {%>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-datetime-picker v-model="searchFormData.${configList[i].fieldNameCamelCase}" type="datetimerange"/>
+                </uni-forms-item>
                 <% } else {%>
-                <uv-form-item label="${configList[i].fieldRemark}" prop="${configList[i].fieldNameCamelCase}">
-                    <uv-input v-model="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uv-input>
-                </uv-form-item>
+                <uni-forms-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+                    <uni-easyinput v-model="searchFormData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}"></uni-easyinput>
+                </uni-forms-item>
                 <% } %>
                 <% } %>
                 <% } %>
-            </uv-form>
+            </uni-forms>
             <% } %>
-            <uv-row :gutter="10">
-                <uv-col :span="6">
+            <uni-row :gutter="10">
+                <uni-col :span="12">
                     <tui-button height="90rpx" type="gray" @click="reset">重置</tui-button>
-                </uv-col>
-                <uv-col :span="6">
+            	</uni-col>
+            	<uni-col :span="12">
                     <tui-button height="90rpx" type="primary" @click="confirm">确认</tui-button>
-                </uv-col>
-            </uv-row>
+            	</uni-col>
+            </uni-row>
         </view>
-    </uv-popup>
+    </uni-popup>
 </template>
 <script setup name="${classNameFirstLower}Search">
     import { ref } from "vue"
     const emits = defineEmits(['reset', 'confirm'])
     const props = defineProps({
-    	searchFormState: {
+    	searchFormData: {
             type: Object,
             required: true
     	},
@@ -61,7 +69,10 @@
     <% } %>
     <% } %>
     <% } %>
+
+    // 弹出ref
     const popRef = ref()
+    // 打开
     const open = () => {
     	popRef.value.open()
     }
@@ -69,31 +80,21 @@
         // 重置数据
         <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(!configList[i].needTableId && configList[i].needPage) { %>
-        props.searchFormState.${configList[i].fieldNameCamelCase} = ''
+        props.searchFormData.${configList[i].fieldNameCamelCase} = ''
         <% } %>
         <% } %>
-    	emits('reset', props.searchFormState)
+    	emits('reset', props.searchFormData)
     }
     const confirm = () => {
     	popRef.value.close()
-    	emits('confirm', props.searchFormState)
+    	emits('confirm', props.searchFormData)
     }
     const close = () => {
-        popRef.value.close()
+    	popRef.value.close()
     }
     defineExpose({
     	open
     })
 </script>
 <style lang="scss" scoped>
-    .container {
-        margin: 5rpx;
-        border-radius: 10rpx;
-        padding: 20rpx;
-        background-color: white;
-        .close {
-            display: flex;
-            justify-content: flex-end;
-        }
-    }
 </style>

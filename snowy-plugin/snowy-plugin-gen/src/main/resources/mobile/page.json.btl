@@ -5,7 +5,7 @@
     "path": "pages/${moduleName}/${busName}/index",
     "style": {
         "navigationBarTitleText": "${functionName}管理",
-        "enablePullDownRefresh": true,
+        "enablePullDownRefresh": false,
         //#ifdef H5
         "navigationStyle": "custom"
         //#endif
@@ -29,7 +29,7 @@
         "path": "index",
         "style": {
             "navigationBarTitleText": "${functionName}管理",
-            "enablePullDownRefresh": true,
+            "enablePullDownRefresh": false,
             //#ifdef H5
             "navigationStyle": "custom"
             //#endif

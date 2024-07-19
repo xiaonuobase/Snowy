@@ -6,98 +6,82 @@
     <% for(var i = 0; i < configList.~size; i++) { %>
         <% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
     <% } %>
-    <% if (searchCount > 0) { %>
-    <% for(var i = 0; i < configList.~size; i++) { %>
-    <% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
-    <% if(row <= 1) { %>
-    <snowy-search placeholder="请输入${configList[i].fieldRemark}" v-model="searchFormState.${configList[i].fieldNameCamelCase}" @confirm="loadData(true)" @clear="loadData(true)" :enableSenior="true" @seniorSearch="$refs.searchRef.open()"></snowy-search>
-    <% } %>
-    <% } %>
-    <% } %>
-    <search ref="searchRef" :searchFormState="searchFormState" @confirm="loadData(true)"></search>
-    <% } %>
-    <view class="${busName}-list">
-        <view class="item" v-for="(item, index) in ${classNameFirstLower}Data" :key="index" :index="index" @tap="moreTapItem(item, index)">
-            <% for(var i = 0; i < configList.~size; i++) { %>
-            <% if(!configList[i].needTableId && configList[i].whetherTable && configList[i].fieldNameCamelCase != 'tenantId') { %>
-            <uv-row customStyle="margin-bottom: 15rpx">
-                <uv-col :span="1">
-                    <uv-icon size="18" name="tags-fill" color="#5677fc"></uv-icon>
-                </uv-col>
-                <uv-col :span="5">
-                    <view class="item-left">${configList[i].fieldRemark}</view>
-                </uv-col>
-                <uv-col :span="6" textAlign="right">
-                    <view class="item-right snowy-bold snowy-ellipsis"> {{ item.${configList[i].fieldNameCamelCase} }} </view>
-                </uv-col>
-            </uv-row>
-            <% } %>
-            <% } %>
-        </view>
+    <view>
+        <z-paging ref="dataPagingRef" :fixed="true" use-virtual-list :force-close-inner-list="true" cell-height-mode="dynamic" @virtualListChange="virtualListChange" @query="loadData" :auto="true">
+            <template #top>
+                <% if (searchCount > 0) { %>
+                <% for(var i = 0; i < configList.~size; i++) { %>
+                <% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
+                <% if(row <= 1) { %>
+                <view class="snowy-z-paging-item">
+                    <snowy-search placeholder="请输入${configList[i].fieldRemark}" v-model="searchFormData.${configList[i].fieldNameCamelCase}" @confirm="$refs.dataPagingRef.reload()" @clear="$refs.dataPagingRef.reload()" :seniorEnable="true" @seniorSearch="$refs.searchRef.open()"></snowy-search>
+                </view>
+                <% } %>
+                <% } %>
+                <% } %>
+                <search ref="searchRef" :searchFormData="searchFormData" @confirm="$refs.dataPagingRef.reload()"></search>
+                <% } %>
+            </template>
+            <view class="snowy-shadow snowy-z-paging-item snowy-padding snowy-hover" v-for="(item, index) in ${classNameFirstLower}Data" :key="index" @tap="moreTapItem(item, index)">
+                <% for(var i = 0; i < configList.~size; i++) { %>
+                <% if(!configList[i].needTableId && configList[i].whetherTable && configList[i].fieldNameCamelCase != 'tenantId') { %>
+                <uni-row class="item-uni-row">
+                    <uni-col :span="2">
+                        <uni-icons size="18" type="paperclip" color="#5677fc"></uni-icons>
+                    </uni-col>
+                    <uni-col :span="10">
+                        <view class="snowy-sub-title">${configList[i].fieldRemark}</view>
+                    </uni-col>
+                    <uni-col :span="12">
+                        <view class="snowy-text-right snowy-text-bold snowy-text-ellipsis"> {{ item.${configList[i].fieldNameCamelCase} }} </view>
+                    </uni-col>
+                </uni-row>
+                <% } %>
+                <% } %>
+            </view>
+        </z-paging>
+        <snowy-float-btn v-if="$snowy.hasPerm('mobile${className}Add')" @click="add"></snowy-float-btn>
+        <more ref="moreRef" @handleOk="loadData(true)"></more>
     </view>
-    <snowy-empty :fixed="true" v-show="$xeu.isEmpty(${classNameFirstLower}Data)" />
-    <snowy-float-btn v-if="$snowy.hasPerm('mobile${className}Add')" @click="add"></snowy-float-btn>
-    <more ref="moreRef" @handleOk="loadData(true)"></more>
 </template>
 
 <script setup name="${busName}">
     <% if (searchCount > 0) { %>
     import search from './search.vue'
     <% } %>
-    import { ${classNameFirstLower}Page } from '@/api/${moduleName}/${classNameFirstLower}Api'
+    import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameLowerKebab}-api'
     import more from './more.vue'
     import { onLoad, onShow, onReady, onPullDownRefresh, onReachBottom } from "@dcloudio/uni-app"
-    import { reactive, ref, getCurrentInstance } from "vue"
+    import { reactive, ref, getCurrentInstance, nextTick } from "vue"
+
     const { proxy } = getCurrentInstance()
-    const searchFormState = reactive({
-        <% if (searchCount > 0) { %>
-        <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(!configList[i].needTableId && configList[i].needPage) { %>
-        ${configList[i].fieldNameCamelCase}: '',
-        <% } %>
-        <% } %>
-        <% } %>
-    })
-    const parameter = reactive({
-    	current: 1,
-    	size: 10
-    })
+    const dataPagingRef = ref()
+    const searchFormData = ref({})
     const ${classNameFirstLower}Data = ref([])
-    const loadData = (isReset) => {
-        if (isReset) {
-        	parameter.current = 1
-        	${classNameFirstLower}Data.value = []
-        }
-        Object.assign(parameter, searchFormState)
-        ${classNameFirstLower}Page(parameter).then(res => {
-            if (uni.$xeu.isEmpty(res?.data?.records)){
-            	return
-            }
-            ${classNameFirstLower}Data.value = ${classNameFirstLower}Data.value.concat(res.data.records)
-            parameter.current++
-        }).finally(()=>{
-          	uni.stopPullDownRefresh()
-        })
+    const virtualListChange = (vList) => {
+        ${classNameFirstLower}Data.value = vList
     }
-    loadData(true)
+    const loadData = async (pageNo, pageSize) => {
+        const parameter = {
+            current: pageNo,
+            size: pageSize
+        }
+        Object.assign(parameter, searchFormData.value)
+        const data = await ${classNameFirstLower}Api.${classNameFirstLower}Page(parameter)
+        dataPagingRef.value.complete(data?.records)
+    }
     onShow(() => {
-    	uni.$once('formBack', (data) => {
-            loadData(true)
-    	})
-    })
-    // 下拉刷新
-    onPullDownRefresh(() => {
-    	loadData(true)
-    })
-    // 上拉加载
-    onReachBottom(() => {
-    	loadData()
+        uni.$once('formBack', (data) => {
+            nextTick(() => {
+            	dataPagingRef.value.reload()
+            })
+        })
     })
     // 新增
     const add = () => {
-    	uni.navigateTo({
+        uni.navigateTo({
             url: '/pages/${moduleName}/${busName}/form'
-    	})
+        })
     }
     // 更多操作
     const moreRef = ref()
@@ -107,22 +91,9 @@
 </script>
 
 <style lang="scss" scoped>
-    .${busName}-list {}
-    .item {
-        background: #ffffff;
-        margin: 20rpx 0;
-        padding: 25rpx;
-        box-shadow: 0 1px 2px #ccc;
-        border-radius: 15rpx;
-        .item-left {
-            color: #999;
-            font-size: 26rpx;
-        }
-        .item-right {
-            font-size: 26rpx;
-        }
-    }
-    .item:hover {
-        box-shadow: 1upx 5upx 5upx #5677fc;
+    @import '@/static/scss/index.scss';
+    ::v-deep .uni-row {
+        @extend .snowy-flex-v-center;
+        padding: 5rpx;
     }
 </style>
