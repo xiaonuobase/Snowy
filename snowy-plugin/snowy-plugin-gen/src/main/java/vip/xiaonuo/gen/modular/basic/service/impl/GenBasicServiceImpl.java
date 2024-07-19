@@ -557,24 +557,26 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeMobileResultList = CollectionUtil.newArrayList();
             GEN_MOBILE_FILE_LIST.forEach(fileJsonObject -> {
                 String fileTemplateName = fileJsonObject.getStr("name");
-                String fileTemplatePath = "";
-                if (!"page.json.btl".equals(fileTemplateName)){
-                    fileTemplatePath = fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName();
-                }
+
                 GenBasicPreviewResult.GenBasicCodeResult genBasicCodeMobileResult = new GenBasicPreviewResult.GenBasicCodeResult();
                 Template templateMobile = groupTemplateMobile.getTemplate(fileTemplateName);
                 templateMobile.binding(bindingJsonObject);
+
                 String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
                 if("Api.js.btl".equalsIgnoreCase(fileTemplateName)) {
-                    resultName = StrUtil.lowerFirst(genBasic.getClassName()) + resultName;
+                    resultName = StrUtil.toSymbolCase(genBasic.getClassName() + resultName, '-');
                     genBasicCodeMobileResult.setCodeFileName(resultName);
-                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName() + File.separator + resultName);
                 } else if("page.json.btl".equals(fileTemplateName)) {
                     genBasicCodeMobileResult.setCodeFileName(resultName);
-                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + File.separator + resultName);
+                } else if ("route.js.btl".equals(fileTemplateName)) {
+                    resultName =  StrUtil.toSymbolCase(genBasic.getClassName(), '-') + ".js";
+                    genBasicCodeMobileResult.setCodeFileName(resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileJsonObject.getStr("path") + File.separator + resultName);
                 } else {
                     genBasicCodeMobileResult.setCodeFileName(resultName);
-                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileTemplatePath + File.separator + genBasic.getBusName() + File.separator + resultName);
+                    genBasicCodeMobileResult.setCodeFileWithPathName(genMobileBasicPath + fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName() + File.separator + genBasic.getBusName() + File.separator + resultName);
                 }
                 genBasicCodeMobileResult.setCodeFileContent(templateMobile.render());
                 genBasicCodeMobileResultList.add(genBasicCodeMobileResult);
@@ -620,6 +622,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("className", genBasic.getClassName());
         // 类首字母小写名
         bindingJsonObject.set("classNameFirstLower", StrUtil.lowerFirst(genBasic.getClassName()));
+        // 类小写且以横线分割
+        bindingJsonObject.set("classNameLowerKebab", StrUtil.toSymbolCase(genBasic.getClassName(), '-'));
         // 主键名
         bindingJsonObject.set("dbTableKey", genBasic.getDbTableKey());
         // 主键Java类型
