@@ -193,7 +193,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                         authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(saSession.getTimeout()));
                     }
                     List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream().filter(tokenSign -> {
-                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
                         return tokenTimeout != -2;  // 过滤掉tokenTimeout为-2的元素
                     }).map(tokenSign -> {
                         AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
