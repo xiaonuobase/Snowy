@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.provider;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
@@ -23,6 +24,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysUserApi;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.SysUserGrantRoleParam;
@@ -222,5 +224,14 @@ public class SysUserApiProvider implements SysUserApi {
         sysUserSelectorUserParam.setOrgId(orgId);
         sysUserSelectorUserParam.setSearchKey(searchKey);
         return BeanUtil.toBean(sysUserService.userSelector(sysUserSelectorUserParam), Page.class);
+    }
+
+    @Override
+    public Page<JSONObject> listUserWithoutCurrent() {
+        LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<>();
+        lqw.notIn(SysUser::getId, StpUtil.getLoginId());
+        lqw.select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar);
+        Page<SysUser> page = sysUserService.page(CommonPageRequest.defaultPage(), lqw);
+        return BeanUtil.toBean(page, Page.class);
     }
 }

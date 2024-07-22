@@ -2,4 +2,58 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="vip.xiaonuo.im.modular.message.mapper.ImMessageMapper">
 
+    <select id="queryChatRecord"
+            resultType="vip.xiaonuo.im.modular.message.entity.ImMessageUserVo">
+        WITH user_interactions AS (
+            SELECT DISTINCT
+                CASE
+                    WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID
+                    ELSE FROM_USER_ID
+                    END AS user_id,
+                MAX(CREATE_TIME) AS last_message_time
+            FROM im_message
+            WHERE (FROM_USER_ID = #{userId} OR TO_USER_ID = #{userId})
+              AND CHAT_TYPE = 1
+              AND DELETE_FLAG = 'NOT_DELETE'
+            GROUP BY
+                CASE
+                    WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID
+                    ELSE FROM_USER_ID
+                    END
+        ),
+             unread_messages AS (
+                 SELECT
+                     CASE
+                         WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID
+                         ELSE FROM_USER_ID
+                         END AS user_id,
+                     COUNT(*) AS unread_count
+                 FROM im_message
+                 WHERE (FROM_USER_ID = #{userId} OR TO_USER_ID = #{userId})
+                   AND CHAT_TYPE = 1
+                   AND DELETE_FLAG = 'NOT_DELETE'
+                   AND IS_READ = 2
+                 GROUP BY
+                     CASE
+                         WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID
+                         ELSE FROM_USER_ID
+                         END
+             )
+        SELECT
+            ui.user_id,
+            m.CONTENT,
+            m.TYPE,
+            m.CREATE_TIME,
+            COALESCE(um.unread_count, 0) AS unread_messages
+        FROM user_interactions ui
+                 JOIN im_message m ON (
+            (m.FROM_USER_ID = ui.user_id AND m.TO_USER_ID = #{userId})
+                OR (m.FROM_USER_ID = #{userId} AND m.TO_USER_ID = ui.user_id)
+            )
+                 LEFT JOIN unread_messages um ON ui.user_id = um.user_id
+        WHERE m.CREATE_TIME = ui.last_message_time
+          AND m.CHAT_TYPE = '1'
+          AND m.DELETE_FLAG = 'NOT_DELETE'
+        ORDER BY m.CREATE_TIME DESC
+    </select>
 </mapper>

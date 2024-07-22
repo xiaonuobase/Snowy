@@ -10,25 +10,23 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.im.modular.message.mapper;
+package vip.xiaonuo.im.core.utils;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
-import vip.xiaonuo.im.modular.message.entity.ImMessage;
+import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
 
 /**
- * IM-消息Mapper接口
+ * websocket工具类
  *
- * @author liuchunming
- * @date 2024/05/27 16:52
- **/
-public interface ImMessageMapper extends BaseMapper<ImMessage> {
+ * @author chengchuanyao
+ * @date 2024/7/22 18:23
+ */
+public class WebSocketUtil {
 
+    private static ImWebSocketHandler imWebSocketHandler = null;
 
-    /**
-     * 通过当前用户查询跟所有用户的聊天记录
-     */
-    Page<ImMessageUserVo> queryChatRecord(Page<ImMessageUserVo> page, String userId);
+    public static String sendMessage(String message){
 
+        return message;
+
+    }
 }

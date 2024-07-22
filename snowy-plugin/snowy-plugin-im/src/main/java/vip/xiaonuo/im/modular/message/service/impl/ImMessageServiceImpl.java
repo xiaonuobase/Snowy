@@ -12,11 +12,14 @@
  */
 package vip.xiaonuo.im.modular.message.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.mapper.ImMessageMapper;
 import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
@@ -32,13 +36,15 @@ import vip.xiaonuo.im.modular.message.param.ImMessageIdParam;
 import vip.xiaonuo.im.modular.message.param.ImMessagePageParam;
 import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * IM-消息Service接口实现类
  *
  * @author liuchunming
- * @date  2024/05/27 16:52
+ * @date 2024/05/27 16:52
  **/
 @Service
 public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage> implements ImMessageService {
@@ -46,7 +52,7 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     @Override
     public Page<ImMessage> page(ImMessagePageParam imMessagePageParam) {
         QueryWrapper<ImMessage> queryWrapper = new QueryWrapper<>();
-        if(ObjectUtil.isAllNotEmpty(imMessagePageParam.getSortField(), imMessagePageParam.getSortOrder())) {
+        if (ObjectUtil.isAllNotEmpty(imMessagePageParam.getSortField(), imMessagePageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(imMessagePageParam.getSortOrder());
             queryWrapper.orderBy(true, imMessagePageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
                     StrUtil.toUnderlineCase(imMessagePageParam.getSortField()));
@@ -86,9 +92,39 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     @Override
     public ImMessage queryEntity(String id) {
         ImMessage imMessage = this.getById(id);
-        if(ObjectUtil.isEmpty(imMessage)) {
+        if (ObjectUtil.isEmpty(imMessage)) {
             throw new CommonException("IM-消息不存在，id值为：{}", id);
         }
         return imMessage;
+    }
+
+
+    @Override
+    public Page<ImMessageUserVo> queryChatRecord() {
+        Page<ImMessageUserVo> imMessageUserVoPage = baseMapper.queryChatRecord(CommonPageRequest.defaultPage(), StpUtil.getLoginId().toString());
+        return imMessageUserVoPage;
+    }
+
+    @Override
+    public Page<ImMessage> queryChatRecordWithUser(String userId) {
+        LambdaQueryWrapper<ImMessage> lqw = Wrappers.lambdaQuery();
+        lqw.eq(ImMessage::getFromUserId, StpUtil.getLoginId().toString());
+        lqw.eq(ImMessage::getToUserId, userId);
+        lqw.or();
+        lqw.eq(ImMessage::getFromUserId, userId);
+        lqw.eq(ImMessage::getToUserId, StpUtil.getLoginId().toString());
+        lqw.orderByDesc(ImMessage::getCreateTime);
+        Page<ImMessage> imMessagePage = this.page(CommonPageRequest.defaultPage(), lqw);
+        List<ImMessage> records = imMessagePage.getRecords();
+        // 查询消息里边是否有未读数据 如果有修改为已读
+        records.forEach(imMessage -> {
+            if (imMessage.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessage.getIsRead().equals("2")) {
+                imMessage.setIsRead("1");
+                this.updateById(imMessage);
+            }
+        });
+        List<ImMessage> collect = records.stream().sorted(Comparator.comparing(ImMessage::getCreateTime)).collect(Collectors.toList());
+        imMessagePage.setRecords(collect);
+        return imMessagePage;
     }
 }

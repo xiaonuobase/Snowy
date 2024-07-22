@@ -112,4 +112,13 @@ public interface SysUserApi {
      * @date 2022/4/24 20:08
      */
     Page<JSONObject> userSelector(String orgId, String searchKey);
+
+
+    /**
+     * 获取用户列表（排除当前用户）
+     *
+     * @author chengchuanyao
+     * @date 2024/7/19 9:54
+     */
+    Page<JSONObject> listUserWithoutCurrent();
 }

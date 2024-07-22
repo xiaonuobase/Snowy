@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
+import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
 import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageEditParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageIdParam;
@@ -120,4 +121,32 @@ public class ImMessageController {
     public CommonResult<ImMessage> detail(@Valid ImMessageIdParam imMessageIdParam) {
         return CommonResult.data(imMessageService.detail(imMessageIdParam));
     }
+
+
+    /**
+     * 查询跟当前用户聊天的所有用户-分页
+     *
+     * @author chengchuanyao
+     * @date 2024/7/19 18:43
+     */
+    @Operation(summary = "查询跟当前用户聊天的所有用户")
+    @SaCheckPermission("/im/message/queryChatRecord")
+    @GetMapping("/im/message/queryChatRecord")
+    public CommonResult<Page<ImMessageUserVo>> queryChatRecord() {
+        return CommonResult.data(imMessageService.queryChatRecord());
+    }
+
+    /**
+     * 查询当前用户和指定用户的聊天记录-分页
+     *
+     * @author chengchuanyao
+     * @date 2024/7/20 11:51
+     */
+    @Operation(summary = "查询当前用户和指定用户的聊天记录")
+    @SaCheckPermission("/im/message/queryChatRecordWithUser")
+    @GetMapping("/im/message/queryChatRecordWithUser")
+    public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId) {
+        return CommonResult.data(imMessageService.queryChatRecordWithUser(userId));
+    }
+
 }

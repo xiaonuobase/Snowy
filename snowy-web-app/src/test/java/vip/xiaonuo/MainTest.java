@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo;
 
+import com.baomidou.dynamic.datasource.toolkit.CryptoUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class MainTest {
 
     @Test
-    public void test() {
-
+    public void test() throws Exception {
+        String root = CryptoUtils.encrypt("root");
+        System.out.println(root);
     }
 }

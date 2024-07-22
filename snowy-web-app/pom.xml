@@ -88,6 +88,13 @@
             <artifactId>snowy-plugin-biz</artifactId>
         </dependency>
 
+        <!-- IM功能插件 -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-im</artifactId>
+        </dependency>
+
+
         <!-- C端功能插件 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>

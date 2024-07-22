@@ -10,25 +10,35 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.im.modular.message.mapper;
+package vip.xiaonuo.im.modular.user.service.Impl;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
-import vip.xiaonuo.im.modular.message.entity.ImMessage;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import vip.xiaonuo.im.modular.user.service.ImSysUserService;
+import vip.xiaonuo.sys.api.SysUserApi;
 
 /**
- * IM-消息Mapper接口
+ * IM-系统用户service实现类
  *
- * @author liuchunming
- * @date 2024/05/27 16:52
- **/
-public interface ImMessageMapper extends BaseMapper<ImMessage> {
+ * @author chengchuanyao
+ * @date 2024/7/19 10:24
+ */
+@RequiredArgsConstructor
+@Service
+public class ImSysUserServiceImpl implements ImSysUserService {
 
+    private final SysUserApi sysUserApi;
 
     /**
-     * 通过当前用户查询跟所有用户的聊天记录
+     * 分页获取用户列表
+     *
+     * @return 分页用户列表
      */
-    Page<ImMessageUserVo> queryChatRecord(Page<ImMessageUserVo> page, String userId);
+    @Override
+    public Page<JSONObject> list() {
+        return sysUserApi.listUserWithoutCurrent();
+    }
 
 }
