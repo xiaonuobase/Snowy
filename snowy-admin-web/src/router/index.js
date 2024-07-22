@@ -18,9 +18,9 @@ import whiteListRouters from './whiteList'
 import userRoutes from '@/config/route'
 import tool from '@/utils/tool'
 import { cloneDeep } from 'lodash-es'
-const modules = import.meta.glob('/src/views/**/**.vue')
-import { globalStore, searchStore } from '@/store'
+import { globalStore } from '@/store'
 import { NextLoading } from '@/utils/loading'
+import { useMenuStore } from '@/store/menu'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })

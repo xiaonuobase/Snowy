@@ -101,15 +101,9 @@ public class AuthConfigure implements WebMvcConfigurer {
         public List<String> getPermissionList(Object loginId, String loginType) {
             Object permissionListObject;
             if (SaClientTypeEnum.B.getValue().equals(loginType)) {
-//                return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
-                Object permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY+loginId);
-                List<String> permissionList = JSONUtil.parseArray(permissionListObject).toList(String.class);
-                return permissionList;
+                permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + loginId);
             } else {
-//                return StpClientLoginUserUtil.getClientLoginUser().getPermissionCodeList();
-                Object permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY+loginId);
-                List<String> permissionList = JSONUtil.parseArray(permissionListObject).toList(String.class);
-                return permissionList;
+                permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + loginId);
             }
             return JSONUtil.parseArray(permissionListObject).toList(String.class);
         }

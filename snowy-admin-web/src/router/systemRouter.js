@@ -15,6 +15,7 @@ import routerUtil from '@/utils/routerUtil'
 import Layout from '@/layout/index.vue'
 import Login from '@/views/auth/login/login.vue'
 import Findpwd from '@/views/auth/findPwd/index.vue'
+import Callback from '@/views/auth/login/callback.vue'
 
 // 系统路由
 const routes = [
