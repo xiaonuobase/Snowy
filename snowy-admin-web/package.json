@@ -54,7 +54,8 @@
 		"vue-router": "4.3.0",
 		"vue3-colorpicker": "2.3.0",
 		"vue3-tree-org": "4.2.2",
-		"vuedraggable-es": "4.1.1"
+		"vuedraggable-es": "4.1.1",
+		"ws": "^8.18.0"
 	},
 	"devDependencies": {
 		"@babel/eslint-parser": "7.19.1",

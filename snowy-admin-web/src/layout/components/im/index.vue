@@ -1,36 +1,32 @@
 <template>
 	<div class="im panel-item" @click="handleOpen">
-		<MessageOutlined/>
-		<a-modal
-			v-model:open="open"
-			title="聊天"
+		<MessageOutlined />
+		<a-modal v-model:open="open" title="聊天"
 			:style="{ width: 'auto', height: 'auto', maxWidth: '60vw', maxHeight: '90vh' }"
-			:body-style="{ padding: 0, height: 'calc(100vh - 300px)', overflow: 'hidden' }"
-		>
+			:body-style="{ padding: 0, height: 'calc(100vh - 300px)', overflow: 'hidden' }">
 			<div class="chat-container">
 				<div class="user-list">
 					<a-input placeholder="搜索">
 						<template #prefix>
-							<SearchOutlined/>
+							<SearchOutlined />
 						</template>
 					</a-input>
-					<a-tabs v-model:activeKey="activeKey" centered>
+					<a-tabs v-model:activeKey="activeKey" centered @change="changeTabs">
 						<a-tab-pane key="1" tab="聊天">
-							<a-list
-								:data-source="users"
-								:item-layout="'horizontal'"
-							>
-								<template #renderItem="{ item }">
-									<a-list-item @click="selectUser(item)" class="listItem">
+							<a-list class="webkit-scrollbar" :data-source="ImMessageUserVoList" :item-layout="'horizontal'" @scroll="scrolling">
+								<template #renderItem="{ item }" >
+									<a-list-item @click="selectMessageUser(usersMap.value[item.userId])" class="listItem">
 										<a-list-item-meta>
 											<template #title>
-												<span>{{ item.name }}</span> <a-tag color="blue">B</a-tag>
+												<span>{{ usersMap.value[item.userId].name }}</span> <a-tag color="blue">{{ (userClient === '1')?'B':'C' }}</a-tag>
 											</template>
 											<template #description>
-												<span>We supply a series of ...</span>
+												<div class="text-long">
+													<span>{{ item.content }}</span>
+												</div>
 											</template>
 											<template #avatar>
-												<img :src="item.avatar" class="avatar"/>
+												<img :src="usersMap.value[item.userId].avatar" class="avatar" />
 											</template>
 										</a-list-item-meta>
 									</a-list-item>
@@ -38,106 +34,200 @@
 							</a-list>
 						</a-tab-pane>
 						<a-tab-pane key="2" tab="用户">
-
+							<div v-if="true" class="space-around" style="padding-bottom: 10px;">
+								<a-button :type="userClient == '1' ? 'primary' : 'dashed'" @click="switchClient('1')">B 端用户</a-button>
+								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C 端用户</a-button>
+							</div>
+							<a-list :data-source="users[userClient]" :item-layout="'horizontal'" class="webkit-scrollbar-2" @scroll="scrolling">
+								<template #renderItem="{ item }">
+									<a-list-item @click="selectMessageUser(item)" class="listItem">
+										<a-list-item-meta>
+											<template #title>
+												<span>{{ item.name }}</span> <a-tag color="blue">{{ (userClient === '1')?'B':'C' }}</a-tag>
+											</template>
+											<template #description>
+											<span>{{ item.account }}</span>
+											</template>
+											<template #avatar>
+												<img :src="item.avatar" class="avatar" />
+											</template>
+										</a-list-item-meta>
+									</a-list-item>
+								</template>
+							</a-list>
 						</a-tab-pane>
-						<a-tab-pane key="3" tab="群组">
+						<a-tab-pane key="3" tab="群组" class="webkit-scrollbar">
 
 						</a-tab-pane>
 					</a-tabs>
 				</div>
 				<div class="chat-content">
 					<div class="current-user">
-						<div v-if="currentUser.id" class="current-user-info">
-							<img :src="currentUser.avatar" class="avatar" />
-							<span class="user-name">{{ currentUser.name }}</span>
+						<div v-if="chatUser.id" class="current-user-info">
+							<img :src="chatUser.avatar" class="avatar" />
+							<span class="user-name">{{ chatUser.name }}</span>
 						</div>
 					</div>
 					<div class="messages">
-						<div
-							v-for="message in messages"
-							:key="message.id"
-							:class="{'my-message': message.sender === currentUser.id, 'other-message': message.sender !== currentUser.id}"
-							class="message-item"
-						>
-							<img :src="message.avatar" class="avatar message"/>
-							<div class="message-content">
-								<span class="message-sender">{{ message.name }}</span>
-								<p class="message-text">{{ message.text }}</p>
+						<div v-if="messageListMap[chatUser.id]" v-for="message in messageListMap[chatUser.id]" :key="message.id"
+							:class="{ 'my-message': message.fromUserId === chatUser.id, 'other-message': message.fromUserId !== chatUser.id }"
+							class="message-item">
+							<img :src="usersMap.value?.[message.toUserId]?.avatar ||  currentUser.avatar" class="avatar message" />
+							<div class="message-box-column">
+								<div class="message-sender" :class="message.fromUserId === chatUser.id ? 'text-r' : 'text-l'">{{ usersMap.value?.[message.toUserId]?.name ||  currentUser.name}}<span style="font-weight: 100;"> &nbsp;{{ message.createTime }}</span></div>
+								<div class="message-content">
+									<p class="message-text">{{ message.content}}</p>
+								</div>
 							</div>
+						</div>
+						<div v-else class="text-align-center">
+								{{ '暂无消息' }}
 						</div>
 					</div>
 					<div class="message-input">
-						<a-textarea
-							v-model="newMessage"
-							@keypress.enter="sendMessage"
-							placeholder="输入消息..."
-							:auto-size="{ minRows: 3, maxRows: 6 }"
-						/>
+						<a-textarea v-model="newMessage" @keypress.enter="sendMessage" placeholder="输入消息..." :auto-size="{ minRows: 3, maxRows: 6 }" />
+						<p style="float: right;">by:lkx</p>
 					</div>
 				</div>
 			</div>
-			<template #footer/>
+			<template #footer />
 		</a-modal>
 	</div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive} from 'vue';
-import {MessageOutlined, SearchOutlined} from '@ant-design/icons-vue';
+import { ref, reactive } from 'vue';
+import { MessageOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import { InitWebSocket, websocket } from '@/utils/websocketTool';
+import tool from '@/utils/tool'
+import imSysUserApi from '@/api/im/imSysUserApi'
+import imMessageApi from '@/api/im/imMessageApi'
+import {User,Message,ImMessageUserVo } from './type.js'
 
-interface User {
-	id: number;
-	name: string;
-	avatar: string;
-}
+const queryChatRecordWithUserParams = reactive({
+	current: 1,
+	size: 4,
+	userId: ''
+});
 
-interface Message {
-	id: number;
-	text: string;
-	sender: number;
-	name: string;
-	avatar: string;
-}
+const queryChatRecordParams = reactive({
+	current: 1,
+	size: 4,
+});
 
-const open = ref(false);
+// B端用户1 C端用户2
+const userClient = ref('1');
+const open = ref(true);
 const activeKey = ref('1')
-const currentUser = reactive({});
-const users = reactive<User[]>([
-	{id: 1, name: 'User 1', avatar: 'https://xiaoming728.com/upload/logo.jpg'},
-	{id: 2, name: 'User 2', avatar: 'https://xiaoming728.com/upload/logo.jpg'},
-	{id: 3, name: 'User 3', avatar: 'https://xiaoming728.com/upload/logo.jpg'}
-]);
-const messages = reactive<Message[]>([
-	{id: 1, text: 'Hello!', sender: 1, name: 'User 1', avatar: 'https://xiaoming728.com/upload/logo.jpg' },
-	{id: 2, text: 'Hi!', sender: 2, name: 'User 2', avatar: 'https://xiaoming728.com/upload/logo.jpg'}
-]);
+const chatUser = reactive<User>({ id: '', name: '', avatar: '' });
+const currentUser = reactive<User>({ id: '', name: '', avatar: '' });
+
+const ImMessageUserVoList = reactive<ImMessageUserVo[]>([]);
+// 通过客户端类型区分用户列表
+const users = reactive<Record<string,User[]>>({
+	'1': [],
+	'2': []
+});
+// 全量用户列表
+const usersMap = reactive<Record<string, User>>({});
+
+const messageListMap = reactive<Record<string, Message[]>>({});
+
 const newMessage = ref('');
+
+onMounted(() => {
+	initUserInfo();
+	getUserList({});
+	initMessageList();
+	InitWebSocket('ws://127.0.0.1:82/ws/im?token=' + tool.data.get('TOKEN'), onMessage);
+});
+
+
+// 监听ref 滚动到底部
+const scrolling = (e) => {
+    const clientHeight = e.target.clientHeight
+    const scrollHeight = e.target.scrollHeight
+    const scrollTop = e.target.scrollTop
+     
+    if (scrollTop + clientHeight >= scrollHeight) {
+      console.log(`到底了!${activeKey.value=='1'?'聊天':activeKey.value=='2'?'用户':'群组'}`);
+    }
+  }
+function onMessage(data) {
+	console.log('onMessage', data.data);
+}
+
+function switchClient(client: string) {
+	userClient.value = client;
+}
+
+function changeTabs(value ){
+	console.log('changeTabs',value);
+}
 
 function handleOpen() {
 	open.value = true;
 }
 
-function selectUser(user: User) {
+// 初始化聊天列表
+function initMessageList() {
+	// 查询当前用户的所有聊天人员列表和最后一条消息
+	imMessageApi.queryChatRecord(queryChatRecordParams.value).then(res => {
+		ImMessageUserVoList.push(...res.records);
+	});
+}
+
+// 通过用户id查询和当前用户的聊天记录
+function selectMessageUser(user: User) {
+	chatUser.id = user.id;
+	chatUser.name = user.name;
+	chatUser.avatar = user.avatar;
+	queryChatRecordWithUserParams.userId = user.id;
+	imMessageApi.queryChatRecordWithUser(queryChatRecordWithUserParams).then(res => {
+		messageListMap[user.id] = res.records;
+	});
+}
+
+function sendMessage() {
+	if (newMessage.value.trim()) {
+		// messages.push({
+		// 	id: Date.now(),
+		// 	text: newMessage.value,
+		// 	sender: chatUser.id,
+		// 	name: chatUser.name,
+		// 	avatar: chatUser.avatar
+		// });
+		newMessage.value = '';
+	}
+}
+// 初始化当前用户的好友列表
+function getUserList(userParams) {
+	imSysUserApi.imUserPage({ current: '1', size: '4' }).then(res => {
+		users[userClient.value].push(...res.records);
+		// 缓存头像 节省前端内存
+		usersMap.value = res.records.reduce((acc, cur) => {
+			acc[cur.id] = cur;
+			return acc;
+		}, {});
+	})
+}
+
+// 获取当前帐号信息
+function initUserInfo() {
+	let user = tool.data.get('USER_INFO');
+	console.log(user.id);
 	currentUser.id = user.id;
 	currentUser.name = user.name;
 	currentUser.avatar = user.avatar;
 }
 
-function sendMessage() {
-	if (newMessage.value.trim()) {
-		messages.push({
-			id: Date.now(),
-			text: newMessage.value,
-			sender: currentUser.id,
-			name: currentUser.name,
-			avatar: currentUser.avatar
-		});
-		newMessage.value = '';
-	}
-}
 </script>
 
 <style scoped>
+.text-align-center {
+	text-align: center;
+}
+
 .chat-container {
 	display: flex;
 	height: 100%;
@@ -148,25 +238,26 @@ function sendMessage() {
 	width: 30%;
 	border-right: 1px solid #f0f0f0;
 	overflow-y: auto;
+	min-width: 200px;
 }
 
 .avatar {
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
-
-	&.message {
-		margin-right: 10px;
-		margin-left: 10px;
-	}
 }
 
+.message {
+	margin-right: 10px;
+	margin-left: 10px;
+}
 
 .chat-content {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+	width: 80%;
 }
 
 .current-user {
@@ -182,6 +273,8 @@ function sendMessage() {
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
+	width: 100%;
+	overflow-x: auto;
 }
 
 .message-item {
@@ -192,7 +285,6 @@ function sendMessage() {
 
 .my-message {
 	flex-direction: row-reverse;
-	text-align: right;
 }
 
 .my-message .message-content {
@@ -208,7 +300,6 @@ function sendMessage() {
 }
 
 .message-content {
-	max-width: 70%;
 	padding: 10px;
 	border-radius: 8px;
 }
@@ -216,11 +307,18 @@ function sendMessage() {
 .message-sender {
 	font-weight: bold;
 	margin-bottom: 4px;
-	display: block;
 }
 
 .message-text {
 	margin: 0;
+	word-wrap: break-word;
+}
+
+.message-box-column {
+	display: flex;
+	flex-direction: column;
+	width: auto;
+	max-width: 80%;
 }
 
 .message-input {
@@ -236,19 +334,56 @@ function sendMessage() {
 	flex: 0 0 auto;
 	padding: 16px;
 	display: flex;
-	align-items: center; /* 垂直居中 */
+	align-items: center;
+	/* 垂直居中 */
 	border-bottom: 1px solid #f0f0f0;
 	background-color: #fafafa;
 }
 
 .current-user-info {
 	display: flex;
-	align-items: center; /* 垂直居中 */
+	align-items: center;
+	/* 垂直居中 */
 }
 
 .user-name {
-	margin-left: 10px; /* 为用户名称添加左边距 */
+	margin-left: 10px;
+	/* 为用户名称添加左边距 */
+}
+
+.space-around {
+	display: flex;
+	justify-content: space-around;
+}
+
+.text-r {
+	text-align: right !important;
 }
 
 
+.text-l {
+	text-align: left !important;
+}
+
+.text-long{
+	overflow:hidden;
+   text-overflow:ellipsis;
+   white-space:nowrap;
+	 width: 100%;
+}
+.webkit-scrollbar{
+	overflow-y: auto;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	height: calc(100vh - 400px);
+}
+
+.webkit-scrollbar-2{
+	overflow-y: auto;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	height: calc(100vh - 445px);
+}
 </style>
