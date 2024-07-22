@@ -19,7 +19,7 @@
 
 			<div class="right-menu-item" @click="closeOtherTabs">
 				<close-outlined class="snowy-header-tags-right" />
-				<div class="pl-3 snowy-header-tags-right-font">关闭其他标签</div>
+				<div class="pl-3 snowy-header-tags-right-font">关闭其他</div>
 			</div>
 
 			<div class="right-menu-item" @click="maximize">
@@ -28,7 +28,7 @@
 			</div>
 			<div class="right-menu-item" @click="openWindow">
 				<select-outlined class="snowy-header-tags-right" />
-				<div class="pl-3 snowy-header-tags-right-font">新窗口打开</div>
+				<div class="pl-3 snowy-header-tags-right-font">新窗口</div>
 			</div>
 		</xn-context-menu>
 		<a-tabs
@@ -366,7 +366,7 @@
 			display: flex;
 			align-items: center;
 			text-align: center;
-			padding: 10px 20px;
+			padding: 10px 10px;
 			color: #333;
 			cursor: pointer;
 			&:hover {
@@ -433,7 +433,7 @@
 		opacity: 0;
 	}
 	.snowy-header-tags-right {
-		margin-right: 10px;
+		margin-right: 5px;
 		color: var(--font-color);
 	}
 	.snowy-header-tags-right-font {

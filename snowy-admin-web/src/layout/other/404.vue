@@ -8,11 +8,13 @@
 </template>
 <script setup>
 	import { useRouter } from 'vue-router'
+	import { useMenuStore } from '@/store/menu'
 	const router = useRouter()
 	const gohome = () => {
 		location.href = '/'
 	}
 	const goback = () => {
 		router.go(-1)
+		useMenuStore().changeRefreshFlag(true)
 	}
 </script>

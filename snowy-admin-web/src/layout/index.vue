@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-	import { globalStore, keepAliveStore } from '@/store'
+	import { globalStore, keepAliveStore, viewTagsStore } from '@/store'
 	import { themeEnum } from '@/layout/enum/themeEnum'
 	import { layoutEnum } from '@/layout/enum/layoutEnum'
 	import { useRoute, useRouter } from 'vue-router'
@@ -82,6 +82,8 @@
 	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
 	import TopMenu from '@/layout/menu/topMenu.vue'
 	import { NextLoading } from '@/utils/loading'
+	import { useMenuStore } from '@/store/menu'
+	import { userStore } from '@/store/user'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -156,7 +158,13 @@
 	})
 	// 路由监听高亮
 	const showThis = () => {
-		pMenu.value = route.meta.breadcrumb ? route.meta.breadcrumb[0] : {}
+		// route是一个只读路由对象。需要使用 useRouter 函数来获取路由实例
+		router.getRoutes().filter((item) => {
+			if (item.path === route.path) {
+				pMenu.value = item.meta.breadcrumb ? item.meta.breadcrumb[0] : {}
+			}
+		})
+		// pMenu.value = route.meta.breadcrumb ? route.meta.breadcrumb[0] : {}
 		// 展开的
 		nextTick(() => {
 			// 取得默认路由地址并设置展开
@@ -199,26 +207,39 @@
 			}
 		})
 	}
-
-	// 执行-start
-	moduleMenu.value = router.getMenu()
-	// 获取缓存中的菜单模块是哪个
-	const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
-	if (menuModuleId) {
-		// 防止切换一个无此应用的人
-		const module = router.getMenu().filter((item) => item.id === menuModuleId)
-		if (module.length > 0) {
-			menu.value = module[0].children
+	const init = () => {
+		// 执行-start
+		moduleMenu.value = router.getMenu()
+		// 获取缓存中的菜单模块是哪个
+		const menuModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
+		if (menuModuleId) {
+			// 防止切换一个无此应用的人
+			const module = router.getMenu().filter((item) => item.id === menuModuleId)
+			if (module.length > 0) {
+				menu.value = module[0].children
+			} else {
+				menu.value = router.getMenu()[0].children
+			}
 		} else {
 			menu.value = router.getMenu()[0].children
 		}
-	} else {
-		menu.value = router.getMenu()[0].children
+		showThis()
 	}
-	showThis()
+
+	watchEffect(() => {
+		const menuStore = useMenuStore()
+		if (menuStore.refreshFlag) {
+			init()
+			// 更新标签
+			viewTagsStore().updateOrRemoveViewTags(router.getRoutes())
+			menuStore.changeRefreshFlag(false)
+		}
+	})
+
 	onMounted(() => {
 		// 取消loading
 		NextLoading.done()
+		showThis()
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)
@@ -227,6 +248,8 @@
 		settingFixedWidth()
 		nextTick(() => {
 			getNav(menu.value)
+			// 刷新登录信息，不影响其他
+			userStore().refreshUserLoginUserInfo()
 		})
 	})
 	// 动态获取横向导航栏隐藏数量

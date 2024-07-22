@@ -111,8 +111,8 @@
 			</template>
 		</s-table>
 	</a-card>
-	<Form ref="formRef" @successful="tableRef.refresh(true)" />
-	<changeModuleForm ref="changeModuleFormRef" @successful="tableRef.refresh(true)" />
+	<Form ref="formRef" @successful="handleSuccess" />
+	<changeModuleForm ref="changeModuleFormRef" @successful="handleSuccess" />
 	<Button ref="buttonRef" />
 </template>
 
@@ -121,6 +121,7 @@
 	import Form from './form.vue'
 	import ChangeModuleForm from './changeModuleForm.vue'
 	import Button from '../button/index.vue'
+	import { useMenuStore } from '@/store/menu'
 	const searchFormState = ref({})
 	const tableRef = ref(null)
 	const formRef = ref()
@@ -242,12 +243,24 @@
 		]
 		menuApi.menuDelete(params).then(() => {
 			tableRef.value.refresh(true)
+			refreshCacheMenu()
 		})
 	}
 	// 批量删除
 	const deleteBatchMenu = (params) => {
 		menuApi.menuDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
+			refreshCacheMenu()
 		})
+	}
+	// 成功回调
+	const handleSuccess = () => {
+		tableRef.value.refresh(true)
+		refreshCacheMenu()
+	}
+	// 刷新缓存的菜单
+	const refreshCacheMenu = () => {
+		const menuStore = useMenuStore()
+		menuStore.fetchMenu()
 	}
 </script>

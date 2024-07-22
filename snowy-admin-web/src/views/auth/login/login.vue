@@ -1,6 +1,22 @@
 <template>
-	<div class="login_background">
-		<div class="login_background_front"></div>
+	<div class="login-wrapper">
+		<div class="login_background">
+			<div class="logo_background">
+				<a
+					:class="{ 'no-link': !sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL }"
+					:href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL"
+					target="_blank"
+					@click="handleLink"
+				>
+					<img :alt="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+					<label>{{ sysBaseConfig.SNOWY_SYS_NAME }}</label>
+				</a>
+			</div>
+			<div class="version">
+				<p>{{ sysBaseConfig.SNOWY_SYS_DEFAULT_DESCRRIPTION }}</p>
+				<p>{{ sysBaseConfig.SNOWY_SYS_COPYRIGHT }} {{ sysBaseConfig.SNOWY_SYS_VERSION }}</p>
+			</div>
+		</div>
 		<div class="login_main">
 			<div class="login_config">
 				<a-dropdown>
@@ -23,11 +39,7 @@
 			<div class="login-form">
 				<a-card>
 					<div class="login-header">
-						<div class="logo">
-							<img :alt="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-							<label>{{ sysBaseConfig.SNOWY_SYS_NAME }}</label>
-						</div>
-						<!--<h2>{{ $t('login.signInTitle') }}</h2>-->
+						<h2>{{ $t('login.signInTitle') }}</h2>
 					</div>
 					<a-tabs v-model:activeKey="activeKey">
 						<a-tab-pane key="userAccount" :tab="$t('login.accountPassword')">
@@ -202,7 +214,6 @@
 			rules.validCode = [required(proxy.$t('login.validError'), 'blur')]
 		}
 	}
-
 	// 获取验证码
 	const loginCaptcha = () => {
 		loginApi.getPicCaptcha().then((data) => {
@@ -224,15 +235,6 @@
 					validCode: ruleForm.validCode,
 					validCodeReqNo: ruleForm.validCodeReqNo
 				}
-
-				// 获取token
-				// loginApi.login(loginData).then((loginToken) => {
-				// 	afterLogin(loginToken)
-				// }).catch(() => {
-				// 	loading.value = false
-				// 	loginCaptcha()
-				// })
-
 				// 获取token
 				try {
 					const loginToken = await loginApi.login(loginData)
@@ -248,6 +250,13 @@
 	}
 	const configLang = (key) => {
 		config.value.lang = key
+	}
+	// logo链接
+	const handleLink = (e) => {
+		if (!sysBaseConfig.value.SNOWY_SYS_COPYRIGHT_URL) {
+			e?.stopPropagation()
+			e?.preventDefault()
+		}
 	}
 </script>
 <style lang="less">

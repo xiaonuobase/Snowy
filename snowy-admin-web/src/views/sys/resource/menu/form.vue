@@ -123,6 +123,7 @@
 
 <script setup name="sysResourceMenuForm">
 	import { required } from '@/utils/formRules'
+	import { cloneDeep } from 'lodash-es'
 	import SnowflakeId from 'snowflake-id'
 	import tool from '@/utils/tool'
 	import menuApi from '@/api/sys/resource/menuApi'
@@ -141,7 +142,8 @@
 	// 模块ID
 	const moduleId = ref('')
 	// 打开抽屉
-	const onOpen = (record, module) => {
+	const onOpen = (data, module) => {
+		const record = cloneDeep(data)
 		moduleId.value = module
 		visible.value = true
 		if (record) {

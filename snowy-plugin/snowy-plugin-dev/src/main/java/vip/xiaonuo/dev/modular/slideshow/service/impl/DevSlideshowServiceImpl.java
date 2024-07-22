@@ -127,16 +127,6 @@ public class DevSlideshowServiceImpl extends ServiceImpl<DevSlideshowMapper, Dev
         List<JSONObject> resultList = CollectionUtil.newArrayList();
         List<DevSlideshow> slideshowList = this.list(new LambdaQueryWrapper<DevSlideshow>().eq(DevSlideshow::getStatus,
                 DevSlideshowStatusEnum.ENABLE.getValue()).orderByDesc(DevSlideshow::getSortCode));
-        if (slideshowList.size() == 0) {
-            // 如果库里未配置，则补充一条静态的，避免图片为空
-            JSONObject staticObj = new JSONObject();
-            staticObj.set("id", IdWorker.getIdStr());
-            staticObj.set("title", "静态文件");
-            staticObj.set("image", DevConstants.STATIC_SLIDESHOW_IMAGE);
-            staticObj.set("pathDetails", null);
-            resultList.add(staticObj);
-            return resultList;
-        }
         slideshowList.forEach((item) -> {
             JSONArray slideshowPlaceArray = JSONUtil.parseArray(item.getPlace());
             slideshowPlaceArray.forEach((placeArray) -> {
@@ -157,6 +147,16 @@ public class DevSlideshowServiceImpl extends ServiceImpl<DevSlideshowMapper, Dev
                 }
             });
         });
+        if (resultList.size() == 0) {
+            // 如果库里未配置，则补充一条静态的，避免图片为空
+            JSONObject staticObj = new JSONObject();
+            staticObj.set("id", IdWorker.getIdStr());
+            staticObj.set("title", "静态文件");
+            staticObj.set("image", DevConstants.STATIC_SLIDESHOW_IMAGE);
+            staticObj.set("pathDetails", null);
+            resultList.add(staticObj);
+            return resultList;
+        }
         return resultList;
     }
 }

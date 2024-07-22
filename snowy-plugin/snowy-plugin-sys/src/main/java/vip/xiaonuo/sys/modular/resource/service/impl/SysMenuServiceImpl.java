@@ -212,6 +212,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private void checkParam(SysMenuAddParam sysMenuAddParam) {
         SysResourceMenuTypeEnum.validate(sysMenuAddParam.getMenuType());
+        if(sysMenuAddParam.getTitle().contains(StrUtil.DASHED)) {
+            throw new CommonException("title不可包含特殊字符【-】");
+        }
         if(SysResourceMenuTypeEnum.MENU.getValue().equals(sysMenuAddParam.getMenuType())) {
             if(ObjectUtil.isEmpty(sysMenuAddParam.getName())) {
                 throw new CommonException("name不能为空");
@@ -227,7 +230,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             sysMenuAddParam.setName(null);
             sysMenuAddParam.setComponent(null);
         }
-
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -284,6 +286,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private void checkParam(SysMenuEditParam sysMenuEditParam) {
         SysResourceMenuTypeEnum.validate(sysMenuEditParam.getMenuType());
+        if(sysMenuEditParam.getTitle().contains(StrUtil.DASHED)) {
+            throw new CommonException("title不可包含特殊字符【-】");
+        }
         if(SysResourceMenuTypeEnum.MENU.getValue().equals(sysMenuEditParam.getMenuType())) {
             if(ObjectUtil.isEmpty(sysMenuEditParam.getName())) {
                 throw new CommonException("name不能为空");

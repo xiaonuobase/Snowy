@@ -1,24 +1,22 @@
-import loginApi from '@/api/auth/loginApi'
 import userCenterApi from '@/api/sys/userCenterApi'
 import dictApi from '@/api/dev/dictApi'
 import router from '@/router'
 import tool from '@/utils/tool'
 import { message } from 'ant-design-vue'
-import { useGlobalStore } from '@/store'
 import routerUtil from '@/utils/routerUtil'
+import { useMenuStore } from '@/store/menu'
+import { userStore } from '@/store/user'
 
 export const afterLogin = async (loginToken) => {
+	const menuStore = useMenuStore()
 	tool.data.set('TOKEN', loginToken)
-	// 获取登录的用户信息
-	const loginUser = await loginApi.getLoginUser()
-	const globalStore = useGlobalStore()
-	globalStore.setUserInfo(loginUser)
-	tool.data.set('USER_INFO', loginUser)
+	// 初始化用户信息
+	await userStore().initUserInfo()
 
 	// 获取用户的菜单
 	const menu = await userCenterApi.userLoginMenu()
 	let indexMenu = routerUtil.getIndexMenu(menu).path
-	tool.data.set('MENU', menu)
+	await menuStore.fetchMenu()
 	// 重置系统默认应用
 	tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
 	message.success('登录成功')

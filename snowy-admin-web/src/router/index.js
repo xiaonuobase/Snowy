@@ -18,9 +18,9 @@ import whiteListRouters from './whiteList'
 import userRoutes from '@/config/route'
 import tool from '@/utils/tool'
 import { cloneDeep } from 'lodash-es'
-const modules = import.meta.glob('/src/views/**/**.vue')
-import { globalStore, searchStore } from '@/store'
+import { globalStore } from '@/store'
 import { NextLoading } from '@/utils/loading'
+import { useMenuStore } from '@/store/menu'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
@@ -72,13 +72,21 @@ router.beforeEach(async (to, from, next) => {
 		return false
 	}
 
+	if (!isGetRouter.value) {
+		// 初始化菜单加载，代码位置不能变动
+		const menuStore = useMenuStore()
+		menuStore.refreshMenu()
+		isGetRouter.value = true
+		next({ ...to, replace: true })
+		return false
+	}
+
 	const token = tool.data.get('TOKEN')
 
 	// 页面刷新，加载loading
 	if (from.path === '/' && to.path !== '/login' && !window.nextLoading && token) {
 		NextLoading.start()
 	}
-
 	if (to.path === '/login') {
 		// 当用户输入了login路由，将其跳转首页即可
 		if (token) {
@@ -89,7 +97,6 @@ router.beforeEach(async (to, from, next) => {
 		}
 		// 删除路由(替换当前layout路由)
 		router.addRoute(routes[0])
-		isGetRouter.value = false
 		next()
 		return false
 	} else {
@@ -107,27 +114,6 @@ router.beforeEach(async (to, from, next) => {
 	// 整页路由处理
 	if (to.meta.fullpage) {
 		to.matched = [to.matched[to.matched.length - 1]]
-	}
-	// 加载动态/静态路由
-	if (!isGetRouter.value) {
-		const apiMenu = tool.data.get('MENU') || []
-		if (apiMenu.length === 0) {
-			// 创建默认模块，显示默认菜单
-			apiMenu[0] = cloneDeep(userRoutes.module[0])
-		}
-		const childrenApiMenu = apiMenu[0].children
-		apiMenu[0].children = [...(childrenApiMenu ? childrenApiMenu : []), ...userRoutes.menu]
-		let menuRouter = filterAsyncRouter(apiMenu)
-		menuRouter = flatAsyncRoutes(menuRouter)
-		menuRouter.forEach((item) => {
-			router.addRoute('layout', item)
-		})
-
-		const search_store = searchStore()
-		search_store.init(menuRouter)
-		isGetRouter.value = true
-		next({ ...to, replace: true })
-		return false
 	}
 	beforeEach(to, from)
 	next()
@@ -150,7 +136,8 @@ router.onError((error) => {
 
 // 入侵追加自定义方法、对象
 router.getMenu = () => {
-	let apiMenu = tool.data.get('MENU') || []
+	const menuStore = useMenuStore()
+	let apiMenu = menuStore.menuData.value || tool.data.get('MENU') || []
 	// 增加固定路由
 	if (apiMenu.length === 0) {
 		// 创建默认模块，显示默认菜单
@@ -180,66 +167,6 @@ const filterUrl = (map) => {
 	}
 	traverse(map)
 	return newMap
-}
-
-// 转换
-const filterAsyncRouter = (routerMap) => {
-	const accessedRouters = []
-	routerMap.forEach((item) => {
-		item.meta = item.meta ? item.meta : {}
-		// 处理外部链接特殊路由
-		if (item.meta.type === 'iframe') {
-			item.meta.url = item.path
-			item.path = `/${item.name}`
-		}
-		// MAP转路由对象
-		const route = {
-			path: item.path,
-			name: item.name,
-			meta: item.meta,
-			redirect: item.redirect,
-			children: item.children ? filterAsyncRouter(item.children) : null,
-			component: loadComponent(item.component)
-		}
-		accessedRouters.push(route)
-	})
-	return accessedRouters
-}
-const loadComponent = (component) => {
-	if (component) {
-		if (component.includes('/')) {
-			return modules[`/src/views/${component}.vue`]
-		}
-		return modules[`/src/views/${component}/index.vue`]
-	} else {
-		return () => import(/* @vite-ignore */ `/src/layout/other/empty.vue`)
-	}
-}
-
-// 路由扁平化
-const flatAsyncRoutes = (routes, breadcrumb = []) => {
-	const res = []
-	routes.forEach((route) => {
-		const tmp = { ...route }
-		if (tmp.children) {
-			const childrenBreadcrumb = [...breadcrumb]
-			childrenBreadcrumb.push(route)
-			const tmpRoute = { ...route }
-			tmpRoute.meta.breadcrumb = childrenBreadcrumb
-			delete tmpRoute.children
-			res.push(tmpRoute)
-			const childrenRoutes = flatAsyncRoutes(tmp.children, childrenBreadcrumb)
-			childrenRoutes.map((item) => {
-				res.push(item)
-			})
-		} else {
-			const tmpBreadcrumb = [...breadcrumb]
-			tmpBreadcrumb.push(tmp)
-			tmp.meta.breadcrumb = tmpBreadcrumb
-			res.push(tmp)
-		}
-	})
-	return res
 }
 
 export default router

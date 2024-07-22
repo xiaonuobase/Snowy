@@ -1,6 +1,22 @@
 <template>
-	<div class="login_background">
-		<div class="login_background_front"></div>
+	<div class="login-wrapper">
+		<div class="login_background">
+			<div class="logo_background">
+				<a
+					:class="{ 'no-link': !sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL }"
+					:href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL"
+					target="_blank"
+					@click="handleLink"
+				>
+					<img :alt="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+					<label>{{ sysBaseConfig.SNOWY_SYS_NAME }}</label>
+				</a>
+			</div>
+			<div class="version">
+				<p>{{ sysBaseConfig.SNOWY_SYS_DEFAULT_DESCRRIPTION }}</p>
+				<p>{{ sysBaseConfig.SNOWY_SYS_COPYRIGHT }} {{ sysBaseConfig.SNOWY_SYS_VERSION }}</p>
+			</div>
+		</div>
 		<div class="login_main">
 			<div class="login-form">
 				<a-card>
@@ -22,46 +38,40 @@
 </template>
 
 <script setup>
-	import phoneFindForm from './phoneFindForm.vue'
-	import emailFindForm from './emailFindForm.vue'
+	import PhoneFindForm from './phoneFindForm.vue'
+	import EmailFindForm from './emailFindForm.vue'
+	import { globalStore } from '@/store'
 
+	const store = globalStore()
 	const activeKey = ref('userPhone')
+	const sysBaseConfig = computed(() => {
+		return store.sysBaseConfig
+	})
+	// logo链接
+	const handleLink = (e) => {
+		if (!sysBaseConfig.value.SNOWY_SYS_COPYRIGHT_URL) {
+			e?.stopPropagation()
+			e?.preventDefault()
+		}
+	}
 </script>
 
 <style lang="less" scoped>
+	.login-wrapper {
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
+		background-color: #fff;
+		display: flex;
+	}
 	.login_background {
-		width: 100%;
-		min-height: 100vh;
+		width: 50%;
+		height: 100%;
 		overflow: hidden;
 		background-size: cover;
 		background-position: center;
 		background-image: url(/img/login_background.png);
-	}
-	.login_background_front {
-		width: 450px;
-		height: 450px;
-		margin-left: 100px;
-		margin-top: 15%;
-		overflow: hidden;
-		/*position: relative;*/
-		background-size: cover;
-		background-position: center;
-		background-image: url(/img/login_background_front.png);
-		animation-name: myfirst;
-		animation-duration: 5s;
-		animation-timing-function: linear;
-		animation-delay: 1s;
-		animation-iteration-count: infinite;
-		animation-direction: alternate;
-		animation-play-state: running;
-		/* Safari and Chrome: */
-		-webkit-animation-name: myfirst;
-		-webkit-animation-duration: 5s;
-		-webkit-animation-timing-function: linear;
-		-webkit-animation-delay: 1s;
-		-webkit-animation-iteration-count: infinite;
-		-webkit-animation-direction: alternate;
-		-webkit-animation-play-state: running;
+		position: relative;
 	}
 	@keyframes myfirst {
 		0% {
@@ -122,18 +132,15 @@
 	}
 	/*background-image:linear-gradient(transparent, #000);*/
 	.login_main {
-		flex: 1;
-		overflow: auto;
+		width: 50%;
+		height: 100%;
 		display: flex;
+		justify-content: center;
 	}
 	.login-form {
-		top: 15%;
-		right: 15%;
-		position: absolute;
 		width: 450px;
-		margin-left: 10%;
-		margin-top: 20px;
-		padding: 10px 0;
+		position: absolute;
+		top: 21.8%;
 	}
 	.login-header {
 		margin-bottom: 20px;
@@ -154,7 +161,7 @@
 	.login-header h2 {
 		font-size: 24px;
 		font-weight: bold;
-		margin-top: 40px;
+		margin-top: 10px;
 	}
 	.login-oauth {
 		display: flex;
@@ -165,6 +172,62 @@
 		top: 20px;
 		right: 20px;
 	}
+	.logo_background {
+		position: absolute;
+		left: 0;
+		top: 56px;
+		height: 60px;
+		padding-left: 56px;
+		width: 100%;
+		background: -webkit-gradient(
+			linear,
+			right top,
+			left top,
+			from(rgba(67, 147, 250, 0.5)),
+			to(rgba(133, 182, 252, 0.5))
+		);
+		background: linear-gradient(120deg, rgb(255 255 255 / 90%), rgba(255, 255, 255, 0));
+		display: flex;
+		align-items: center;
+	}
+	.logo_background img {
+		height: 40px;
+		margin-right: 10px;
+	}
+	.logo_background label {
+		font-size: 24px;
+		color: #fff;
+	}
+	.logo_background a {
+		text-decoration: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+	}
+	.logo_background a.no-link,
+	.logo_background a.no-link label {
+		cursor: default;
+	}
+	.logo_background a label {
+		font-size: 24px;
+		color: #fff;
+		cursor: pointer;
+	}
+	.login_background .version {
+		width: 100%;
+		font-size: 14px;
+		color: #fff;
+		font-weight: 300;
+		padding: 0 56px;
+		box-sizing: border-box;
+		position: absolute;
+		bottom: 12px;
+	}
+	.login_background .version p {
+		line-height: 22px;
+		text-align: center;
+		margin-bottom: 6px;
+	}
 	@media (max-width: 1200px) {
 		.login-form {
 			width: 340px;
@@ -172,16 +235,27 @@
 	}
 	@media (max-width: 1000px) {
 		.login_main {
-			display: block;
+			width: 100%;
+			position: absolute;
+			left: 0;
+			right: 0;
 		}
 		.login_background_front {
 			display: none;
 		}
+		.logo_background{
+			padding-left:40px;
+		}
 		.login-form {
 			width: 100%;
 			padding: 20px 40px;
-			right: 0 !important;
-			top: 0 !important;
+			top: 15%;
+		}
+		.login_background .version {
+			padding: 0 20px;
+		}
+		.login_background .version p:first-child {
+			display: none;
 		}
 	}
 </style>
