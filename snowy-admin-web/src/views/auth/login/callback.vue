@@ -1,6 +1,22 @@
 <template>
-	<div class="login_background">
-		<div class="login_background_front"></div>
+	<div class="login-wrapper">
+		<div class="login_background">
+			<div class="logo_background">
+				<a
+					:class="{ 'no-link': !sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL }"
+					:href="sysBaseConfig.SNOWY_SYS_COPYRIGHT_URL"
+					target="_blank"
+					@click="handleLink"
+				>
+					<img :alt="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+					<label>{{ sysBaseConfig.SNOWY_SYS_NAME }}</label>
+				</a>
+			</div>
+			<div class="version">
+				<p>{{ sysBaseConfig.SNOWY_SYS_DEFAULT_DESCRRIPTION }}</p>
+				<p>{{ sysBaseConfig.SNOWY_SYS_COPYRIGHT }} {{ sysBaseConfig.SNOWY_SYS_VERSION }}</p>
+			</div>
+		</div>
 		<div class="login_main">
 			<div class="login-form">
 				<a-card>
@@ -26,6 +42,12 @@
 	import loginApi from '@/api/auth/loginApi'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import dictApi from '@/api/dev/dictApi'
+	import { globalStore } from '@/store'
+
+	const store = globalStore()
+	const sysBaseConfig = computed(() => {
+		return store.sysBaseConfig
+	})
 
 	onMounted(() => {
 		// 获取当前url
@@ -69,6 +91,13 @@
 				window.location.href = '/login'
 			})
 	})
+	// logo链接
+	const handleLink = (e) => {
+		if (!sysBaseConfig.value.SNOWY_SYS_COPYRIGHT_URL) {
+			e?.stopPropagation()
+			e?.preventDefault()
+		}
+	}
 </script>
 
 <style lang="less" scoped>

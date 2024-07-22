@@ -356,6 +356,19 @@ public class AuthServiceImpl implements AuthService {
         }
         // 执行登录
         StpUtil.login(saBaseLoginUser.getId(), new SaLoginModel().setDevice(device).setExtra("name", saBaseLoginUser.getName()));
+        // 填充B端用户信息并更新缓存
+        fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        // 返回token
+        return StpUtil.getTokenInfo().tokenValue;
+    }
+
+    /**
+     * 填充B端用户信息并更新缓存
+     *
+     * @author xuyuxiang
+     * @date 2024/7/22 22:00
+     */
+    private void fillSaBaseLoginUserAndUpdateCache(SaBaseLoginUser saBaseLoginUser) {
         // 角色集合
         List<JSONObject> roleList = loginUserApi.getRoleListByUserId(saBaseLoginUser.getId());
         // 角色id集合
@@ -374,16 +387,14 @@ public class AuthServiceImpl implements AuthService {
         // 获取权限码
         List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
                 .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
+        // 设置权限码
         saBaseLoginUser.setPermissionCodeList(permissionCodeList);
         // 权限码列表存入缓存
         commonCacheOperator.put(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + saBaseLoginUser.getId(),permissionCodeList);
-
         // 获取角色码
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
         StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
-        // 返回token
-        return StpUtil.getTokenInfo().tokenValue;
     }
 
     /**
@@ -399,6 +410,19 @@ public class AuthServiceImpl implements AuthService {
         }
         // 执行登录
         StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginModel().setDevice(device).setExtra("name", saBaseClientLoginUser.getName()));
+        // 填充C端用户信息并更新缓存
+        fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        // 返回token
+        return StpClientUtil.getTokenInfo().tokenValue;
+    }
+
+    /**
+     * 填充C端用户信息
+     *
+     * @author xuyuxiang
+     * @date 2024/7/22 22:00
+     */
+    private void fillSaBaseClientLoginUserAndUpdateCache(SaBaseClientLoginUser saBaseClientLoginUser) {
         // 角色集合
         List<JSONObject> roleList = loginUserApi.getRoleListByUserId(saBaseClientLoginUser.getId());
         // 角色id集合
@@ -417,6 +441,7 @@ public class AuthServiceImpl implements AuthService {
         // 获取权限码
         List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
+        // 设置权限码
         saBaseClientLoginUser.setPermissionCodeList(permissionCodeList);
         // 权限码列表存入缓存
         commonCacheOperator.put(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + saBaseClientLoginUser.getId(),permissionCodeList);
@@ -424,8 +449,6 @@ public class AuthServiceImpl implements AuthService {
         saBaseClientLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
         StpClientUtil.getTokenSession().set("loginUser", saBaseClientLoginUser);
-        // 返回token
-        return StpClientUtil.getTokenInfo().tokenValue;
     }
 
     /**
@@ -436,10 +459,19 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseLoginUser getLoginUser() {
+        // 获取当前缓存的用户信息
         SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
+        // 获取B端用户信息
+        saBaseLoginUser = loginUserApi.getUserById(saBaseLoginUser.getId());
+        // 填充B端用户信息并更新缓存
+        fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        // 去掉密码
         saBaseLoginUser.setPassword(null);
+        // 去掉权限码
         saBaseLoginUser.setPermissionCodeList(null);
+        // 去掉数据范围
         saBaseLoginUser.setDataScopeList(null);
+        // 返回
         return saBaseLoginUser;
     }
 
@@ -451,10 +483,19 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseClientLoginUser getClientLoginUser() {
+        // 获取当前缓存的用户信息
         SaBaseClientLoginUser saBaseClientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
+        // 获取C端用户信息
+        saBaseClientLoginUser = clientLoginUserApi.getClientUserById(saBaseClientLoginUser.getId());
+        // 填充C端用户信息并更新缓存
+        fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        // 去掉密码
         saBaseClientLoginUser.setPassword(null);
+        // 去掉权限码
         saBaseClientLoginUser.setPermissionCodeList(null);
+        // 去掉数据范围
         saBaseClientLoginUser.setDataScopeList(null);
+        // 返回
         return saBaseClientLoginUser;
     }
 

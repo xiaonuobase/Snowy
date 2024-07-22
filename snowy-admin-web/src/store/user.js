@@ -8,22 +8,25 @@
  *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-export default (error) => {
-	// 过滤HTTP请求错误
-	if (error.code) {
-		return false
+import { defineStore } from 'pinia'
+import loginApi from '@/api/auth/loginApi'
+import { useGlobalStore } from '@/store'
+import tool from '@/utils/tool'
+export const userStore = defineStore('userStore', () => {
+	// 初始化用户信息
+	const initUserInfo = async () => {
+		const data = await loginApi.getLoginUser()
+		const globalStore = useGlobalStore()
+		globalStore.setUserInfo(data)
+		tool.data.set('USER_INFO', data)
 	}
-	const errorMap = {
-		InternalError: 'Javascript引擎内部错误',
-		ReferenceError: '未找到对象',
-		TypeError: '使用了错误的类型或对象',
-		RangeError: '使用内置对象时，参数超范围',
-		SyntaxError: '语法错误',
-		EvalError: '错误的使用了Eval',
-		URIError: 'URI错误'
+	// 刷新登录用户信息
+	const refreshUserLoginUserInfo = () => {
+		loginApi.getLoginUser().then((data) => {
+			const globalStore = useGlobalStore()
+			globalStore.setUserInfo(data)
+			tool.data.set('USER_INFO', data)
+		})
 	}
-	const errorName = errorMap[error.name] || '未知错误'
-	nextTick(() => {
-		console.error(errorName)
-	})
-}
+	return { initUserInfo, refreshUserLoginUserInfo }
+})

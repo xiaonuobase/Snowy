@@ -56,11 +56,10 @@
 </template>
 
 <script setup name="grantResourceForm">
-	import { nextTick } from 'vue'
-	import tool from '@/utils/tool'
 	import userApi from '@/api/sys/userApi'
 	import roleApi from '@/api/sys/roleApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
+	import { useMenuStore } from '@/store/menu'
+	import { userStore } from '@/store/user'
 	const spinningLoading = ref(false)
 	const firstShowMap = ref({})
 	const emit = defineEmits({ successful: null })
@@ -284,20 +283,19 @@
 			.then(() => {
 				onClose()
 				emit('successful')
-				refreshCacheMenu()
+				refreshCache()
 			})
 			.finally(() => {
 				submitLoading.value = false
 			})
 	}
-	// 刷新缓存的菜单
-	const refreshCacheMenu = () => {
-		nextTick(() => {
-			userCenterApi.userLoginMenu().then((res) => {
-				tool.data.set('MENU', res)
-			})
-		})
+	// 刷新缓存
+	const refreshCache = () => {
+		const menuStore = useMenuStore()
+		menuStore.fetchMenu()
+		userStore().refreshUserLoginUserInfo()
 	}
+
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
 		onOpen

@@ -108,6 +108,7 @@
 	import { SearchOutlined } from '@ant-design/icons-vue'
 	import roleApi from '@/api/sys/roleApi'
 	import ScopeDefineOrg from './scopeDefineOrg.vue'
+	import { userStore } from '@/store/user'
 
 	const visible = ref(false)
 	const spinningLoading = ref(false)
@@ -248,7 +249,7 @@
 			scopeDefineOrgModal.value.onOpen(data.id, checkKeysStr)
 		} else {
 			// 清理缓存中的结构,去掉就行
-			handleDatascope(false, record.id, null)
+			handleDatascope(false, data.id, null)
 		}
 	}
 	// 自定义数据弹窗回调
@@ -365,6 +366,10 @@
 			.then(() => {
 				onClose()
 				emit('successful')
+				// 刷新权限
+				nextTick(() => {
+					userStore().refreshUserLoginUserInfo()
+				})
 			})
 			.finally(() => {
 				submitLoading.value = false

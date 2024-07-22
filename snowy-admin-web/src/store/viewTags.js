@@ -45,6 +45,26 @@ export const viewTagsStore = defineStore('viewTags', () => {
 			}
 		})
 	}
+	// 更新或删除视图标签
+	const updateOrRemoveViewTags = (routes) => {
+		if (routes && routes.length > 0) {
+			viewTags.value.forEach((item, index) => {
+				const target = routes.find((route) => route.path === item.fullPath)
+				if (!target) {
+					// 路由不存在，删除
+					viewTags.value.splice(index, 1)
+				} else {
+					// 路由存在，更新
+					viewTags.value = viewTags.value.map((item) => {
+						if (item.fullPath === target.path) {
+							return { ...item, meta: target.meta }
+						}
+						return item
+					})
+				}
+			})
+		}
+	}
 	const updateViewTagsTitle = (title = '') => {
 		const nowFullPath = location.hash.substring(1)
 		viewTags.value.forEach((item) => {
@@ -63,6 +83,7 @@ export const viewTagsStore = defineStore('viewTags', () => {
 		removeViewTags,
 		updateViewTags,
 		updateViewTagsTitle,
-		clearViewTags
+		clearViewTags,
+		updateOrRemoveViewTags
 	}
 })

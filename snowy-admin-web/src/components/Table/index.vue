@@ -415,9 +415,12 @@
 				} else {
 					data.localDataSource = r.records
 				}
-				data.localLoading = false
 				getTableProps()
 			})
+				.catch(() => {})
+				.finally(() => {
+					data.localLoading = false
+				})
 		}
 	}
 
