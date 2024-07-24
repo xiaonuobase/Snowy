@@ -536,7 +536,8 @@ getUserList();
 
 .other-message .message-content {
 	background-color: #f6f6f6;
-	}
+	margin-right: auto;
+}
 
 .message-content {
 	padding: 10px;
