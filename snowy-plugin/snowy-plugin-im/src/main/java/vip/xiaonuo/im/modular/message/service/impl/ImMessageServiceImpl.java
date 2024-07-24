@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
+import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.mapper.ImMessageMapper;
 import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
@@ -100,8 +100,8 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
 
 
     @Override
-    public Page<ImMessageUserVo> queryChatRecord() {
-        Page<ImMessageUserVo> imMessageUserVoPage = baseMapper.queryChatRecord(CommonPageRequest.defaultPage(), StpUtil.getLoginId().toString());
+    public Page<ImMessageUserParam> queryChatRecord() {
+        Page<ImMessageUserParam> imMessageUserVoPage = baseMapper.queryChatRecord(CommonPageRequest.defaultPage(), StpUtil.getLoginId().toString());
         return imMessageUserVoPage;
     }
 
@@ -126,5 +126,16 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
         List<ImMessage> collect = records.stream().sorted(Comparator.comparing(ImMessage::getCreateTime)).collect(Collectors.toList());
         imMessagePage.setRecords(collect);
         return imMessagePage;
+    }
+
+
+    @Override
+    public void setRead(List<ImMessageIdParam> imMessageIdParamList) {
+        this.updateBatchById(CollStreamUtil.toList(imMessageIdParamList, ImMessageIdParam::getId).stream().map(id -> {
+            ImMessage imMessage = new ImMessage();
+            imMessage.setId(id);
+            imMessage.setIsRead("1");
+            return imMessage;
+        }).collect(Collectors.toList()));
     }
 }

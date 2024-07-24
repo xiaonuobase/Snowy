@@ -1,4 +1,4 @@
-package vip.xiaonuo.im.modular.message.entity;
+package vip.xiaonuo.im.modular.message.param;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.Date;
  * @date 2024/7/19 18:25
  */
 @Data
-public class ImMessageUserVo {
+public class ImMessageUserParam {
 
     /**
      * 用户id

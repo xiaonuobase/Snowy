@@ -3,7 +3,7 @@
 <mapper namespace="vip.xiaonuo.im.modular.message.mapper.ImMessageMapper">
 
     <select id="queryChatRecord"
-            resultType="vip.xiaonuo.im.modular.message.entity.ImMessageUserVo">
+            resultType="vip.xiaonuo.im.modular.message.param.ImMessageUserParam">
         WITH user_interactions AS (
             SELECT DISTINCT
                 CASE
@@ -29,7 +29,7 @@
                          END AS user_id,
                      COUNT(*) AS unread_count
                  FROM im_message
-                 WHERE (FROM_USER_ID = #{userId} OR TO_USER_ID = #{userId})
+                 WHERE (TO_USER_ID = #{userId})
                    AND CHAT_TYPE = 1
                    AND DELETE_FLAG = 'NOT_DELETE'
                    AND IS_READ = 2
@@ -44,7 +44,7 @@
             m.CONTENT,
             m.TYPE,
             m.CREATE_TIME,
-            COALESCE(um.unread_count, 0) AS unread_messages
+            COALESCE(um.unread_count, 0) AS unread_count
         FROM user_interactions ui
                  JOIN im_message m ON (
             (m.FROM_USER_ID = ui.user_id AND m.TO_USER_ID = #{userId})

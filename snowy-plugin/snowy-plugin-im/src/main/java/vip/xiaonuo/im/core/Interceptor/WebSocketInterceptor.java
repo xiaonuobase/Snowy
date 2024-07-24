@@ -18,9 +18,8 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
+import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
 
-import java.net.URI;
 import java.util.Map;
 
 /**
@@ -34,22 +33,13 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        URI uri = request.getURI();
-        String path = uri.getPath();
-        String rawQuery = uri.getRawQuery();
-        log.info("请求参数:{}", rawQuery);
-        String query = uri.getQuery();
-        String value = SaClientTypeEnum.B.getValue();
-
-        log.info("请求参数:{}", query);
-        log.info("请求路径:{}", path);
-        log.info("WebSocket 握手之前拦截");
         String tokenValue = StpUtil.getTokenValue();
         if (tokenValue == null) {
             log.error("未登录用户禁止连接WebSocket");
             return false;
         }
-        attributes.put("userId", StpUtil.getLoginId());
+        attributes.put(WebSocketSessionManager.USER_ID, StpUtil.getLoginId());
+        attributes.put(WebSocketSessionManager.FROM_USER_TYPE, StpUtil.getLoginType());
         return true;
     }
 

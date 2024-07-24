@@ -1,46 +1,101 @@
-//需求：在JavaScript中实现WebSocket连接失败后3分钟内尝试重连3次的功能，你可以设置一个重连策略，
-//		 包括重连的间隔时间、尝试次数以及总时间限制。
+import { notification } from 'ant-design-vue'
+import tool from '@/utils/tool'
+
+let url = import.meta.env.VITE_API_BASEURL + ''.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
+// WebSocket实例
+let websocketInstance = null
+
+// 重连定时器实例
+let reconnectTimer = null
+
+// WebSocket重连开关
+let isReconnecting = false
 
 /**
- * @param {string} url	Url to connect
- * @param {number} maxReconnectAttempts Maximum number of times
- * @param {number} reconnect Timeout
- * @param {number} reconnectTimeout Timeout
- *
+ * WebSocket对象
  */
-var websocket = null
-var reconnectCount = null
-var reconnectTimeout = null
+const websocket = {
+	// 初始化ws连接
+	InitWebSocket() {
+		// 判断浏览器是否支持WebSocket
+		if (!('WebSocket' in window)) {
+			notification.error({
+				message: '错误',
+				description: errorName
+			})
+			return
+		}
 
-var maxReconnectAttempts = 3
-var reconnectInterval = 3000
+		// 创建WebSocket实例
+		websocketInstance = new WebSocket(url)
 
-const InitWebSocket = (url, messageCallBack) => {
-	console.log('connecting...')
-	websocket = new WebSocket(url)
+		// 监听WebSocket连接
+		websocketInstance.onopen = () => {
+			notification.success({
+				message: '初始化im成功'
+			})
+		}
 
-	//连接成功建立的回调方法
-	websocket.onopen = () => {
-		console.log('WebSocket Connection Opened!')
-		reconnectCount = 0
+		// 监听WebSocket连接错误信息
+		websocketInstance.onerror = (e) => {
+			notification.error({
+				message: '错误',
+				description: 'WebSocket连接错误信息'
+			})
+			// 打开重连
+			reconnect()
+		}
+
+		// 监听WebSocket接收消息
+		websocketInstance.onmessage = (e) => {
+			// 心跳消息不做处理
+			if (e.data === 'ok') {
+				return
+			}
+			// 调用回调函数处理接收到的消息
+			if (websocket.onMessageCallback) {
+				websocket.onMessageCallback(e.data)
+			}
+		}
+	},
+
+	// WebSocket连接关闭方法
+	Close() {
+		// 关闭断开重连机制
+		isReconnecting = true
+		websocketInstance.close()
+	},
+
+	// WebSocket发送信息方法
+	Send(data) {
+		// 处理发送数据JSON字符串
+		const msg = JSON.stringify(data)
+		// 发送消息给后端
+		websocketInstance.send(msg)
+	},
+
+	// 暴露WebSocket实例，其他地方调用就调用这个
+	getWebSocket() {
+		return websocketInstance
+	},
+
+	// 新增回调函数用于处理收到的消息
+	onMessageCallback: null,
+
+	// 设置消息处理回调函数
+	setMessageCallback(callback) {
+		this.onMessageCallback = callback
 	}
-	//连接关闭的回调方法
-	websocket.onclose = (event) => {
-		console.log('WebSocket Connection Closed:', event)
-		reconnect()
-	}
-	//连接发生错误的回调方法
-	websocket.onerror = (error) => {
-		console.error('WebSocket Connection Error:', error)
-		reconnect() //重连
-	}
-	//接收到消息的回调方法
-	websocket.onmessage = messageCallBack
+}
+
+// 监听窗口关闭事件，当窗口关闭时-每一个页面关闭都会触发-扩张需求业务
+window.onbeforeunload = function () {
+	// 在窗口关闭时关闭 WebSocket 连接
+	websocket.Close()
 }
 
 // 重连方法
 function reconnect() {
-	console.log('WebSocket重连开关', isReconnecting)
 	// 判断是否主动关闭连接
 	if (isReconnecting) {
 		return
@@ -48,39 +103,10 @@ function reconnect() {
 	// 重连定时器-每次WebSocket错误方法onerror触发它都会触发
 	reconnectTimer && clearTimeout(reconnectTimer)
 	reconnectTimer = setTimeout(function () {
-		console.log('WebSocket执行断线重连...')
-		// 获取username（假设为测试username写死，现在是动态获取）
-		const username = useUserStore().user.username
-		websocket.Init(username)
+		websocket.InitWebSocket()
 		isReconnecting = false
 	}, 4000)
 }
 
-//关闭连接
-// WebSocket连接关闭方法
-function Close() {
-	// 关闭断开重连机制
-	isReconnecting = true
-	websocket.close()
-	// ElMessage.error('WebSocket断开连接')
-}
-
-//发送消息
-function send(data) {
-	if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-		this.websocket.send(data)
-	} else {
-		console.error('WebSocket Connection is not open. Cannot send message.')
-	}
-}
-
-//监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-window.onbeforeunload = function () {
-	Close()
-}
-//关闭连接
-function closeWebSocket() {
-	Close()
-}
-
-export { InitWebSocket, websocket, closeWebSocket, send }
+// 暴露对象
+export default websocket

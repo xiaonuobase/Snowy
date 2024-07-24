@@ -12,12 +12,12 @@
  */
 package vip.xiaonuo.im.modular.message.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.util.Date;
+import vip.xiaonuo.common.pojo.CommonEntity;
 
 /**
  * IM-消息实体
@@ -28,7 +28,7 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("IM_MESSAGE")
-public class ImMessage {
+public class ImMessage extends CommonEntity {
 
     /** ID */
     @TableId
@@ -74,30 +74,4 @@ public class ImMessage {
     /** 是否撤回：1-已撤回，2-未撤回 */
     @Schema(description = "是否撤回：1-已撤回，2-未撤回")
     private String isRecall;
-
-    /** 删除标志 */
-    @Schema(description = "删除标志")
-    @TableLogic
-    @TableField(fill = FieldFill.INSERT)
-    private String deleteFlag;
-
-    /** 创建时间 */
-    @Schema(description = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /** 创建用户 */
-    @Schema(description = "创建用户")
-    @TableField(fill = FieldFill.INSERT)
-    private String createUser;
-
-    /** 修改时间 */
-    @Schema(description = "修改时间")
-    @TableField(fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /** 修改用户 */
-    @Schema(description = "修改用户")
-    @TableField(fill = FieldFill.UPDATE)
-    private String updateUser;
 }

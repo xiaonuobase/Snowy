@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
+import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageEditParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageIdParam;
@@ -132,7 +132,7 @@ public class ImMessageController {
     @Operation(summary = "查询跟当前用户聊天的所有用户")
     @SaCheckPermission("/im/message/queryChatRecord")
     @GetMapping("/im/message/queryChatRecord")
-    public CommonResult<Page<ImMessageUserVo>> queryChatRecord() {
+    public CommonResult<Page<ImMessageUserParam>> queryChatRecord() {
         return CommonResult.data(imMessageService.queryChatRecord());
     }
 
@@ -147,6 +147,22 @@ public class ImMessageController {
     @GetMapping("/im/message/queryChatRecordWithUser")
     public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId) {
         return CommonResult.data(imMessageService.queryChatRecordWithUser(userId));
+    }
+
+
+    /**
+     * 将消息设为已读
+     *
+     * @author chengchuanyao
+     * @date 2024/7/24 14:44
+     */
+    @Operation(summary = "将消息设为已读")
+    @SaCheckPermission("/im/message/setRead")
+    @PostMapping("/im/message/setRead")
+    public CommonResult<String> setRead(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
+                                            List<ImMessageIdParam> imMessageIdParamList) {
+        imMessageService.setRead(imMessageIdParamList);
+        return CommonResult.ok();
     }
 
 }

@@ -14,7 +14,7 @@ package vip.xiaonuo.im.modular.message.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
+import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 
 /**
@@ -29,6 +29,6 @@ public interface ImMessageMapper extends BaseMapper<ImMessage> {
     /**
      * 通过当前用户查询跟所有用户的聊天记录
      */
-    Page<ImMessageUserVo> queryChatRecord(Page<ImMessageUserVo> page, String userId);
+    Page<ImMessageUserParam> queryChatRecord(Page<ImMessageUserParam> page, String userId);
 
 }

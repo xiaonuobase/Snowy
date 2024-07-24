@@ -24,6 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebSocketSessionManager {
 
+    public final static String USER_ID = "userId";
+
+    public final static String FROM_USER_TYPE = "fromUserType";
+
     /**
      * session集合
      */
@@ -32,16 +36,16 @@ public class WebSocketSessionManager {
     /**
      * 添加session
      */
-    public static void add(String sessionId, WebSocketSession session) {
-        SESSIONS.put(sessionId, session);
+    public static void add(WebSocketSession session) {
+        SESSIONS.put(session.getAttributes().get(USER_ID).toString(), session);
     }
 
     /**
      * 移除session
      */
-    public static WebSocketSession remove(String sessionId) {
-        if (SESSIONS.containsKey(sessionId)) {
-            return SESSIONS.remove(sessionId);
+    public static WebSocketSession remove(String userId) {
+        if (SESSIONS.containsKey(userId)) {
+            return SESSIONS.remove(userId);
         } else {
             return null;
         }
@@ -50,8 +54,8 @@ public class WebSocketSessionManager {
     /**
      * 移除session 并关闭连接
      */
-    public static void removeAndClose(String sessionId) {
-        WebSocketSession remove = remove(sessionId);
+    public static void removeAndClose(String userId) {
+        WebSocketSession remove = remove(userId);
         if (remove != null) {
             try {
                 remove.close();
@@ -64,8 +68,8 @@ public class WebSocketSessionManager {
     /**
      * 获取session
      */
-    public static WebSocketSession get(String sessionId) {
-        return SESSIONS.get(sessionId);
+    public static WebSocketSession get(String userId) {
+        return SESSIONS.get(userId);
     }
 
 }

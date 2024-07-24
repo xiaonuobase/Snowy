@@ -14,7 +14,7 @@ package vip.xiaonuo.im.modular.message.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import vip.xiaonuo.im.modular.message.entity.ImMessageUserVo;
+import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
 import vip.xiaonuo.im.modular.message.param.ImMessageEditParam;
@@ -85,7 +85,7 @@ public interface ImMessageService extends IService<ImMessage> {
      * @author chengchuanyao
      * @date 2024/7/19 18:40
      */
-    Page<ImMessageUserVo> queryChatRecord();
+    Page<ImMessageUserParam> queryChatRecord();
 
     /**
      * 查询当前用户和指定用户的聊天记录
@@ -94,4 +94,12 @@ public interface ImMessageService extends IService<ImMessage> {
      * @date 2024/7/20 11:51
      */
     Page<ImMessage> queryChatRecordWithUser(String userId);
+
+    /**
+     * 将消息设为已读
+     *
+     * @author chengchuanyao
+     * @date 2024/7/24 14:44
+     */
+    void setRead(List<ImMessageIdParam> imMessageIdParamList);
 }

@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.im.core.handler;
 
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -20,10 +21,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
+import vip.xiaonuo.im.core.utils.WebSocketUtil;
 
 import java.io.IOException;
-import java.net.URI;
-import java.time.LocalDateTime;
 
 /**
  * websocket处理器
@@ -37,24 +37,14 @@ public class ImWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-        log.info("建立ws连接");
-        WebSocketSessionManager.add(session.getId(), session);
-        session.sendMessage(new TextMessage("欢迎使用IM-Plugin！"));
+        WebSocketSessionManager.add(session);
+        session.sendMessage(new TextMessage(JSONUtil.createObj().set("msg", "连接成功").toString()));
         log.info("当前连接数：" + WebSocketSessionManager.SESSIONS.size());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        URI uri = session.getUri();
-
-        log.info("发送文本消息");
-        // 获得客户端传来的消息
-        String payload = message.getPayload();
-        log.info("server 接收到消息 " + payload);
-        synchronized (session){
-            session.sendMessage(new TextMessage("server 发送给的消息 " + payload + "，发送时间:" + LocalDateTime.now().toString()));
-        }
-        session.sendMessage(new TextMessage("server 发送给的消息 " + payload + "，发送时间:" + LocalDateTime.now().toString()));
+        WebSocketUtil.handleMessage(session, message);
     }
 
     @Override
@@ -65,13 +55,16 @@ public class ImWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
         log.error("异常处理");
-        WebSocketSessionManager.removeAndClose(session.getId());
+        WebSocketSessionManager.removeAndClose(session.getAttributes().get(WebSocketSessionManager.USER_ID).toString());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("关闭ws连接");
-        WebSocketSessionManager.removeAndClose(session.getId());
+        WebSocketSessionManager.removeAndClose(session.getAttributes().get(WebSocketSessionManager.USER_ID).toString());
     }
+
+
+
 
 }

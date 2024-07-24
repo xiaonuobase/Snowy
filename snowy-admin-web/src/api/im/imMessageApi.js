@@ -32,5 +32,9 @@ export default {
 	// 查询当前用户和指定用户的聊天记录-分页
 	queryChatRecordWithUser(data) {
 		return request('queryChatRecordWithUser', data, 'get')
+	},
+	// 将消息设置为已读
+	setMessageRead(data) {
+		return request('setRead', data)
 	}
 }

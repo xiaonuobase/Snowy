@@ -12,7 +12,20 @@
  */
 package vip.xiaonuo.im.core.utils;
 
-import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.ExecutorBuilder;
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
+import vip.xiaonuo.im.modular.message.entity.ImMessage;
+import vip.xiaonuo.im.modular.message.service.ImMessageService;
+
+import java.io.IOException;
+import java.util.concurrent.*;
 
 /**
  * websocket工具类
@@ -20,13 +33,52 @@ import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
  * @author chengchuanyao
  * @date 2024/7/22 18:23
  */
+@Slf4j
 public class WebSocketUtil {
 
-    private static ImWebSocketHandler imWebSocketHandler = null;
+    private static ImMessageService imMessageService = SpringUtil.getBean(ImMessageService.class);
 
-    public static String sendMessage(String message){
+    // 线程池 根据自己机器的实际情况调整
+    static ExecutorService executor = ExecutorBuilder.create()
+            .setCorePoolSize(5)
+            .setMaxPoolSize(10)
+            .setWorkQueue(new LinkedBlockingQueue<>(100))
+            .build();
 
-        return message;
-
+    /**
+     * 接收到消息并处理
+     */
+    public static String handleMessage(WebSocketSession session, TextMessage message) {
+        executor.submit(() -> {
+            // 获取消息
+            String payload = message.getPayload();
+            // 解析消息
+            ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
+            try {
+                imMessage.setIsRead("2");
+                imMessage.setStatus("1");
+                imMessage.setIsRecall("2");
+                imMessage.setId(String.valueOf(IdWorker.getId()));
+                imMessage.setCreateTime(DateUtil.date());
+                // 获取接收人id
+                String toUserId = imMessage.getToUserId();
+                // 获取接收人session
+                WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(toUserId);
+                // 让发送人回调消息数据
+                session.sendMessage(new TextMessage(JSONUtil.toJsonStr(imMessage)));
+                if(null!= toSession){
+                    // 发送消息
+                    toSession.sendMessage(new TextMessage(JSONUtil.toJsonStr(imMessage)));
+                }
+                // 存储消息
+                boolean save = imMessageService.save(imMessage);
+                if (!save) {
+                    throw new RuntimeException("消息存储失败");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return null;
     }
 }

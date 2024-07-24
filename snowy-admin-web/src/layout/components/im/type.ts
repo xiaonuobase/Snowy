@@ -2,6 +2,9 @@ export interface User {
 	id: string;
 	name: string;
 	avatar: string;
+	current?: -1;
+	total?:-1;
+	
 }
 
 export interface ImMessageUserVo {
@@ -9,7 +12,7 @@ export interface ImMessageUserVo {
 	content: string;
 	type: string; // b端用户 1 c端用户 2
 	createTime: string;
-	unreadCount: string; // 未读信息条数
+	unreadCount: number; // 未读信息条数
 }
 
 export interface Message {
@@ -20,5 +23,16 @@ export interface Message {
 	name: string;
 	avatar: string;
 	createTime: string;
+	isRead:string;
 }
 
+
+export interface ImMessageBo {
+	fromUserId: string;
+	toUserId: string;
+	content: string;
+	type: string; //消息类型：1-文本，2-图片，3-视频，4-文件
+	chatType: string; //聊天类型：1-单聊，2-群聊 
+	toUserType: string;
+	fromUserType: string;
+}
