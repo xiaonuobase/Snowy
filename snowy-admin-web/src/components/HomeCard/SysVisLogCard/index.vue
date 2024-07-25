@@ -3,8 +3,8 @@
 		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/vislog')">更多</a></template>
 		<div class="timeline-div">
 			<a-timeline>
-				<a-timeline-item :key="visLog.id" v-for="visLog in visLogList" :color="getTimelineColor(visLog.category)"
-					>{{ visLog.opTime }} {{ visLog.name }}
+				<a-timeline-item :key="visLog.id" v-for="visLog in visLogList" :color="getTimelineColor(visLog.category)">
+					{{ $TOOL.parseTime(visLog.opTime, '{y}-{m}-{d} {h}:{i}:{s}')  }} {{ visLog.name }}
 					<p class="timeline-item-p">{{ visLog.opIp }} {{ visLog.opAddress }}</p>
 				</a-timeline-item>
 			</a-timeline>
