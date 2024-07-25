@@ -1,7 +1,7 @@
 import { notification } from 'ant-design-vue'
 import tool from '@/utils/tool'
 
-let url = import.meta.env.VITE_API_BASEURL + ''.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
+let url = import.meta.env.VITE_API_BASEURL.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
 // WebSocket实例
 let websocketInstance = null
 
@@ -95,7 +95,7 @@ window.onbeforeunload = function () {
 }
 
 // 重连方法
-function reconnect() {
+const reconnect = () => {
 	// 判断是否主动关闭连接
 	if (isReconnecting) {
 		return
