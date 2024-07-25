@@ -76,18 +76,20 @@
 						</div>
 					</div>
 					<div class="messages" ref="messageContainer" @scroll="messagesScrolling">
-						<div v-if="messageListMap[chatUser.id]&&messageListMap[chatUser.id].length!=0" v-for="message in messageListMap[chatUser.id]" :key="message.id"
-							:class="{ 'my-message': message.fromUserId === currentUser.id, 'other-message': message.fromUserId !== currentUser.id }"
-							class="message-item">
-							<img :src="usersMap[message.fromUserId]?.avatar || currentUser.avatar" class="avatar message" />
-							<div class="message-box-column">
-								<div class="message-sender" :class="message.fromUserId === currentUser.id ? 'text-r' : 'text-l'">
-									{{ usersMap[message.fromUserId]?.name || currentUser.name }}
-									<span style="font-weight: 100;">
-										&nbsp;{{ message.createTime }}</span>
-								</div>
-								<div class="message-content">
-									<p class="message-text">{{ message.content }}</p>
+						<div v-if="messageListMap[chatUser.id]&&messageListMap[chatUser.id].length!=0">
+							<div  v-for="message in messageListMap[chatUser.id]" :key="message.id"
+								:class="{ 'my-message': message.fromUserId === currentUser.id, 'other-message': message.fromUserId !== currentUser.id }"
+								class="message-item">
+								<img :src="usersMap[message.fromUserId]?.avatar || currentUser.avatar" class="avatar message" />
+								<div class="message-box-column">
+									<div class="message-sender" :class="message.fromUserId === currentUser.id ? 'text-r' : 'text-l'">
+										{{ usersMap[message.fromUserId]?.name || currentUser.name }}
+										<span style="font-weight: 100;">
+											&nbsp;{{ message.createTime }}</span>
+									</div>
+									<div class="message-content">
+										<p class="message-text">{{ message.content }}</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -136,7 +138,7 @@ const messageContainer = ref(null)
 
 // B端用户1 C端用户2
 const userClient = ref('1');
-const open = ref(true);
+const open = ref(false);
 const activeKey = ref('2')
 // 当前聊天用户
 const chatUser = reactive<User>({ id: '', name: '', avatar: '' });
@@ -200,17 +202,20 @@ const messagesScrolling = (e) => {
 			return;
 		}
 		queryChatRecordWithUserParams.current += 1;
-		usersMap[chatUser.id].current = queryChatRecordWithUserParams.current;
+		usersMap[chatUser.id].current?queryChatRecordWithUserParams.current:-1;
 		selectMessageList();
+		console.log(usersMap[chatUser.id].current);
+		
 	}
 }
 
-function onMessage(data) {
+
+const onMessage = (data)=> {
   let json = JSON.parse(data);
   if (!json.fromUserId) return;
 
   // 格式化时间
-  if (['string', 'number'].includes(typeof json.createTime)) {
+  if (typeof json.createTime === 'string'||typeof json.createTime === 'number') {
     json.createTime = new Date(json.createTime).toLocaleString();
   }
 
@@ -230,29 +235,32 @@ function onMessage(data) {
   }
 }
 
-function updateOrCreateUserVoList(json) {
+const  updateOrCreateUserVoList = (json)=> {
   const userId = json.toUserId == currentUser.id ? json.fromUserId : json.fromUserId == currentUser.id ? json.toUserId : null;
   if (!userId) return;
 
   const index = ImMessageUserVoList.findIndex(item => item.userId == userId);
   if (index === -1) {
-    ImMessageUserVoList.push({
-      userId: userId,
-      content: json.content,
-      createTime: json.createTime,
-      unreadCount: 0 // 初始化未读计数
-    });
+	const message = {
+		userId,
+		content: json.content,
+		createTime: json.createTime,
+		unreadCount: 0
+	}
+	ImMessageUserVoList.push(message);
   } else {
-    ImMessageUserVoList[index].content = json.content;
-    ImMessageUserVoList[index].createTime = json.createTime;
+	ImMessageUserVoList[index].content = json.content;
+	ImMessageUserVoList[index].createTime = json.createTime;
   }
+	
+
 	//排序
 	ImMessageUserVoList.sort((a, b) => {
 		return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
 	});
 }
 
-function updateMessageListMap(json) {
+const updateMessageListMap = (json) => {
   const targetUserId = json.fromUserId == currentUser.id ? json.toUserId : json.fromUserId;
   if (!targetUserId) return;
 
@@ -264,7 +272,7 @@ function updateMessageListMap(json) {
   scrollToBottomOnNextTick();
 }
 
-function setMessagesAsRead(json) {
+const setMessagesAsRead = (json) => {
   setRead([{ id: json.id }]);
   messageListMap[json.fromUserId].forEach(item => {
     if (item.toUserId == currentUser.id && item.isRead == '2') {
@@ -273,7 +281,7 @@ function setMessagesAsRead(json) {
   });
 }
 
-function incrementUnreadCount(json) {
+const incrementUnreadCount = (json) => {
   ImMessageUserVoList.forEach(item => {
     if (item.userId == json.fromUserId && json.isRead == 2) {
       item.unreadCount += 1;
@@ -281,7 +289,7 @@ function incrementUnreadCount(json) {
   });
 }
 // 滚动到底部
-function scrollToBottomOnNextTick() {
+const scrollToBottomOnNextTick = () => {
   nextTick(() => {
 		let scrollElem = messageContainer.value;
 		scrollElem.scrollTo({ top: scrollElem.scrollHeight, behavior: 'smooth' });
@@ -289,19 +297,19 @@ function scrollToBottomOnNextTick() {
 }
 
 
-function switchClient(client: string) {
+const switchClient = (client: string) => {
 	userClient.value = client;
 }
 
-function changeTabs(value) {
+const changeTabs = (value)=> {
 }
 
-function handleOpen() {
+const handleOpen = () =>{
 	open.value = true;
 }
 
 // 初始化聊天列表
-function initMessageList() {
+const initMessageList=() => {
 	// 查询当前用户的所有聊天人员列表和最后一条消息
 	imMessageApi.queryChatRecord(queryChatRecordParams.value).then(res => {
 		ImMessageUserVoList.push(...res.records);
@@ -310,7 +318,7 @@ function initMessageList() {
 }
 
 // 通过用户id查询和当前用户的聊天记录
-function selectMessageUser(user: User) {
+const selectMessageUser = (user: User) => {
   // 将未读消息数置零
   resetUnreadCount(user.id);
 
@@ -329,7 +337,7 @@ function selectMessageUser(user: User) {
   markMessagesAsRead(user.id);
 }
 
-function resetUnreadCount(userId) {
+const resetUnreadCount = (userId) => {
   ImMessageUserVoList.forEach(item => {
     if (item.userId === userId) {
       item.unreadCount = 0;
@@ -337,14 +345,14 @@ function resetUnreadCount(userId) {
   });
 }
 
-function initChatUserAndQueryRecords(user) {
+const initChatUserAndQueryRecords = (user)=> {
   initChatUser(user);
   queryChatRecordWithUserParams.current = 1;
   adjustQuerySizeBasedOnUnread(user.id);
   selectMessageList();
 }
 
-function adjustQuerySizeBasedOnUnread(userId) {
+const adjustQuerySizeBasedOnUnread = (userId)=> {
   const user = ImMessageUserVoList.find(item => item.userId === userId);
   if (user && user.unreadCount > 0) {
     const paramSize = queryChatRecordParams.size;
@@ -353,7 +361,7 @@ function adjustQuerySizeBasedOnUnread(userId) {
   }
 }
 
-function scrollToBottomAndInitChatUser(user) {
+const scrollToBottomAndInitChatUser = (user)=> {
   nextTick(() => {
     setTimeout(() => {
       messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
@@ -363,7 +371,7 @@ function scrollToBottomAndInitChatUser(user) {
   queryChatRecordWithUserParams.current = usersMap[user.id].current;
 }
 
-function markMessagesAsRead(userId) {
+const markMessagesAsRead = (userId) =>{
   if (messageListMap[userId] && messageListMap[userId].length > 0) {
     messageListMap[userId].forEach(item => {
       if (item.toUserId === currentUser.id && item.isRead === '2') {
@@ -374,7 +382,7 @@ function markMessagesAsRead(userId) {
   }
 }
 // 给当前聊天用户赋值
-function initChatUser(user: User) {
+const initChatUser = (user: User) => {
 	chatUser.id = user.id;
 	chatUser.name = user.name;
 	chatUser.avatar = user.avatar;
@@ -382,7 +390,7 @@ function initChatUser(user: User) {
 }
 
 // 查询消息记录
-function selectMessageList() {
+const selectMessageList = () => {
 	if (!chatUser.id || queryChatRecordWithUserParams.userId == '') {
 		notification.warning({
 			message: '请选择聊天对象'
@@ -390,7 +398,7 @@ function selectMessageList() {
 	}
 	messgaeScrollHeight.value = messageContainer.value.scrollHeight;
 	imMessageApi.queryChatRecordWithUser(queryChatRecordWithUserParams).then(res => {
-		if (!messageListMap[chatUser.id]) {
+		if (!messageListMap[chatUser.id]||usersMap[chatUser.id].current == -1) {
 			messageListMap[chatUser.id] = [];
 		}
 		messageListMap[chatUser.id].unshift(...res.records);
@@ -403,11 +411,11 @@ function selectMessageList() {
 				messageContainer.value.scrollTo({ top: scrollHeight - messgaeScrollHeight.value, behavior: 'auto' });
 			});
 		}
-		usersMap[chatUser.id].current = queryChatRecordWithUserParams.current;
+		usersMap[chatUser.id].current?queryChatRecordWithUserParams.current:-1;
 	});
 }
 
-function sendMessage() {
+const sendMessage = () => {
 	if (chatUser.id == '') {
 		notification.warning({
 			message: '请选择聊天对象'
@@ -430,7 +438,7 @@ function sendMessage() {
 	}
 }
 // 初始化当前用户的好友列表
-function getUserList() {
+const getUserList =() => {
 	imSysUserApi.imUserPage().then(res => {
 		users[userClient.value].push(...res.records);
 		// 缓存头像 节省前端内存
@@ -443,7 +451,7 @@ function getUserList() {
 }
 
 // 获取当前帐号信息
-function initUserInfo() {
+const initUserInfo = () => {
 	let user = tool.data.get('USER_INFO');
 	currentUser.id = user.id;
 	currentUser.name = user.name;
@@ -452,7 +460,7 @@ function initUserInfo() {
 }
 
 // 将消息设置为已读
-function setRead(ids: []) {
+const setRead = (ids: []) => {
 	imMessageApi.setMessageRead(ids);
 }
 
@@ -522,7 +530,6 @@ getUserList();
 
 .my-message {
 	flex-direction: row-reverse;
-	display: flex;
 }
 
 .my-message .message-content {
