@@ -17,10 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
@@ -145,8 +142,8 @@ public class ImMessageController {
     @Operation(summary = "查询当前用户和指定用户的聊天记录")
     @SaCheckPermission("/im/message/queryChatRecordWithUser")
     @GetMapping("/im/message/queryChatRecordWithUser")
-    public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId) {
-        return CommonResult.data(imMessageService.queryChatRecordWithUser(userId));
+    public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId,@RequestParam(defaultValue = "1",required = false) String chatType) {
+        return CommonResult.data(imMessageService.queryChatRecordWithUser(userId,chatType));
     }
 
 
@@ -162,6 +159,20 @@ public class ImMessageController {
     public CommonResult<String> setRead(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
                                             List<ImMessageIdParam> imMessageIdParamList) {
         imMessageService.setRead(imMessageIdParamList);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 撤回消息
+     *
+     * @author chengchuanyao
+     * @date 2024/7/25 18:12
+     */
+    @Operation(summary = "撤回消息")
+    @SaCheckPermission("/im/message/recall")
+    @PostMapping("/im/message/recall")
+    public CommonResult<String> recall(@RequestBody @Valid ImMessageIdParam imMessageIdParam) {
+        imMessageService.recall(imMessageIdParam);
         return CommonResult.ok();
     }
 

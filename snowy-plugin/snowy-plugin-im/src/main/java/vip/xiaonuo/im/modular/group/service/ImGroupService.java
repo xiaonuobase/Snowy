@@ -77,4 +77,13 @@ public interface ImGroupService extends IService<ImGroup> {
      * @date  2024/05/27 16:40
      **/
     ImGroup queryEntity(String id);
+
+    /**
+     * 查询当前用户的群组列表
+     *
+     * @author chengchuanyao
+     * @date 2024/7/27 14:28
+     */
+    List<ImGroup> listByUser();
+
 }

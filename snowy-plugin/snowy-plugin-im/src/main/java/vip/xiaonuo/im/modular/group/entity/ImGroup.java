@@ -16,8 +16,10 @@ import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
+import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * IM-群组实体
@@ -76,4 +78,8 @@ public class ImGroup {
     @Schema(description = "修改用户")
     @TableField(fill = FieldFill.UPDATE)
     private String updateUser;
+
+    /** 查询回调群组用户 **/
+    @TableField(exist = false)
+    private List<ImGroupMember> imGroupMembers;
 }

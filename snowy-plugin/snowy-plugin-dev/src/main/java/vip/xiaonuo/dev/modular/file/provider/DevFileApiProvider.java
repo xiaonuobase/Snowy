@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.dev.modular.file.provider;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +41,11 @@ public class DevFileApiProvider implements DevFileApi {
     @Override
     public String storageFileWithReturnIdLocal(MultipartFile file) {
         return devFileService.uploadReturnId(DevFileEngineTypeEnum.LOCAL.getValue(), file);
+    }
+
+    @Override
+    public JSONObject getFileInfoById(String id) {
+        return JSONUtil.parseObj(devFileService.getById(id));
     }
 
     @Override

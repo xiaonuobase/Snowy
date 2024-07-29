@@ -93,7 +93,7 @@ public interface ImMessageService extends IService<ImMessage> {
      * @author chengchuanyao
      * @date 2024/7/20 11:51
      */
-    Page<ImMessage> queryChatRecordWithUser(String userId);
+    Page<ImMessage> queryChatRecordWithUser(String userId,String chatType);
 
     /**
      * 将消息设为已读
@@ -102,4 +102,12 @@ public interface ImMessageService extends IService<ImMessage> {
      * @date 2024/7/24 14:44
      */
     void setRead(List<ImMessageIdParam> imMessageIdParamList);
+
+    /**
+     *  撤回消息
+     *
+     * @author chengchuanyao
+     * @date 2024/7/25 18:12
+     */
+    void recall(ImMessageIdParam imMessageIdParam);
 }

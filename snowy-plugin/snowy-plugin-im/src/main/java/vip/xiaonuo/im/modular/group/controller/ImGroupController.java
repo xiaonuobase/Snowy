@@ -63,6 +63,20 @@ public class ImGroupController {
     }
 
     /**
+     * 查询当前用户的群组列表
+     *
+     * @author chengchuanyao
+     * @date 2024/7/27 14:28
+     */
+    @Operation(summary = "查询当前用户的群组列表")
+    @SaCheckPermission("/im/group/listByUser")
+    @GetMapping("/im/group/listByUser")
+    public CommonResult<List<ImGroup>> listByUser() {
+        return CommonResult.data(imGroupService.listByUser());
+    }
+
+
+    /**
      * 添加IM-群组
      *
      * @author liuchunming

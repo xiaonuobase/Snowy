@@ -1,5 +1,6 @@
 package vip.xiaonuo.im.modular.message.param;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.Date;
@@ -37,4 +38,21 @@ public class ImMessageUserParam {
      * 未读条数
      */
     private Integer unreadCount;
+
+    /**
+     * 是否撤回
+     */
+    private String isRecall;
+
+    /**
+     * 接收人
+     */
+    @JsonIgnore
+    private String toUserId;
+
+    /**
+     * 发送人
+     */
+    @JsonIgnore
+    private String fromUserId;
 }

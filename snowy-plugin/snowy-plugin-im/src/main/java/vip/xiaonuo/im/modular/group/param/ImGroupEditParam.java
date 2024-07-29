@@ -13,13 +13,11 @@
 package vip.xiaonuo.im.modular.group.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.util.List;
 
 /**
  * IM-群组编辑参数
@@ -51,5 +49,9 @@ public class ImGroupEditParam {
     /** 排序码 */
     @Schema(description = "排序码")
     private Integer sortCode;
+
+    /** 用户列表 */
+    @Schema(description = "用户列表")
+    private List<String> receiverIdList;
 
 }

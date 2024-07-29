@@ -33,5 +33,11 @@
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-sys-api</artifactId>
         </dependency>
+
+        <!-- 引入dev -->
+        <dependency>
+            <groupId>vip.xiaonuo</groupId>
+            <artifactId>snowy-plugin-dev-api</artifactId>
+        </dependency>
     </dependencies>
 </project>

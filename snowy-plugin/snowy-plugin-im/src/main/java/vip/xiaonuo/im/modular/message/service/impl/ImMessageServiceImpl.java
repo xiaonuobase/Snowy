@@ -17,27 +17,30 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
-import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
+import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
+import vip.xiaonuo.im.core.utils.WebSocketUtil;
+import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
+import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.mapper.ImMessageMapper;
-import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
-import vip.xiaonuo.im.modular.message.param.ImMessageEditParam;
-import vip.xiaonuo.im.modular.message.param.ImMessageIdParam;
-import vip.xiaonuo.im.modular.message.param.ImMessagePageParam;
+import vip.xiaonuo.im.modular.message.param.*;
 import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +50,12 @@ import java.util.stream.Collectors;
  * @date 2024/05/27 16:52
  **/
 @Service
+@RequiredArgsConstructor
 public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage> implements ImMessageService {
+
+    private final static List<String> imageSuffix = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "icon");
+
+    private final ImGroupMemberService imGroupMemberService;
 
     @Override
     public Page<ImMessage> page(ImMessagePageParam imMessagePageParam) {
@@ -102,17 +110,43 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     @Override
     public Page<ImMessageUserParam> queryChatRecord() {
         Page<ImMessageUserParam> imMessageUserVoPage = baseMapper.queryChatRecord(CommonPageRequest.defaultPage(), StpUtil.getLoginId().toString());
+        // 如果有撤回消息进行替换
+        imMessageUserVoPage.getRecords().forEach(imMessageUserVo -> {
+            if (!imMessageUserVo.getType().equals("1")) {
+                String content = imMessageUserVo.getContent();
+                JSONObject jsonObject = JSONUtil.parseObj(content);
+                boolean suffix = imageSuffix.contains(jsonObject.getStr("suffix"));
+                if (suffix) {
+                    imMessageUserVo.setContent("【图片】");
+                } else {
+                    imMessageUserVo.setContent("【文件】" + jsonObject.getStr("name"));
+                }
+            }
+            if (imMessageUserVo.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessageUserVo.getIsRecall().equals("1")) {
+                imMessageUserVo.setContent("对方撤回了一条消息");
+            }
+            if (imMessageUserVo.getFromUserId().equals(StpUtil.getLoginId().toString()) && imMessageUserVo.getIsRecall().equals("1")) {
+                imMessageUserVo.setContent("你撤回了一条消息");
+            }
+            // fromUserId不是自己发的 toUserId也不是自己发的 呢就是群发 需要将撤回消息改为xxx撤回了一条消息
+            if (!imMessageUserVo.getFromUserId().equals(StpUtil.getLoginId().toString()) && !imMessageUserVo.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessageUserVo.getIsRecall().equals("1")) {
+                String fromUserId = imMessageUserVo.getFromUserId();
+                imMessageUserVo.setContent("%s撤回了一条消息," + fromUserId);
+            }
+        });
         return imMessageUserVoPage;
     }
 
     @Override
-    public Page<ImMessage> queryChatRecordWithUser(String userId) {
+    public Page<ImMessage> queryChatRecordWithUser(String userId, String chatType) {
         LambdaQueryWrapper<ImMessage> lqw = Wrappers.lambdaQuery();
-        lqw.eq(ImMessage::getFromUserId, StpUtil.getLoginId().toString());
-        lqw.eq(ImMessage::getToUserId, userId);
-        lqw.or();
-        lqw.eq(ImMessage::getFromUserId, userId);
-        lqw.eq(ImMessage::getToUserId, StpUtil.getLoginId().toString());
+        lqw.eq(ImMessage::getChatType, chatType);
+        if (chatType.equals("2")) {
+            lqw.eq(ImMessage::getToUserId, userId);
+        } else {
+            lqw.and(iqw -> iqw.eq(ImMessage::getFromUserId, StpUtil.getLoginId().toString()).eq(ImMessage::getToUserId, userId));
+            lqw.or(iqw -> iqw.eq(ImMessage::getFromUserId, userId).eq(ImMessage::getToUserId, StpUtil.getLoginId().toString()));
+        }
         lqw.orderByDesc(ImMessage::getCreateTime);
         Page<ImMessage> imMessagePage = this.page(CommonPageRequest.defaultPage(), lqw);
         List<ImMessage> records = imMessagePage.getRecords();
@@ -122,6 +156,18 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
                 imMessage.setIsRead("1");
                 this.updateById(imMessage);
             }
+            if (imMessage.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessage.getIsRecall().equals("1")) {
+                imMessage.setContent("对方撤回了一条消息");
+            }
+            if (imMessage.getFromUserId().equals(StpUtil.getLoginId().toString()) && imMessage.getIsRecall().equals("1")) {
+                imMessage.setContent("你撤回了一条消息");
+            }
+            // fromUserId不是自己发的 toUserId也不是自己发的 呢就是群发 需要将撤回消息改为xxx撤回了一条消息
+            if (!imMessage.getFromUserId().equals(StpUtil.getLoginId().toString()) && !imMessage.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessage.getIsRecall().equals("1")) {
+                String fromUserId = imMessage.getFromUserId();
+                imMessage.setContent("%s撤回了一条消息," + fromUserId);
+            }
+
         });
         List<ImMessage> collect = records.stream().sorted(Comparator.comparing(ImMessage::getCreateTime)).collect(Collectors.toList());
         imMessagePage.setRecords(collect);
@@ -129,6 +175,7 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void setRead(List<ImMessageIdParam> imMessageIdParamList) {
         this.updateBatchById(CollStreamUtil.toList(imMessageIdParamList, ImMessageIdParam::getId).stream().map(id -> {
@@ -137,5 +184,50 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
             imMessage.setIsRead("1");
             return imMessage;
         }).collect(Collectors.toList()));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void recall(ImMessageIdParam imMessageIdParam) {
+        // 判断此消息是否可以撤回
+        ImMessage imMessage = this.queryEntity(imMessageIdParam.getId());
+        Date createTime = imMessage.getCreateTime();
+        long time = new Date().getTime() - createTime.getTime();
+        if (time > 2 * 60 * 1000) {
+            throw new CommonException("消息已超过2分钟，无法撤回");
+        }
+        if (imMessage.getIsRecall().equals("1")) {
+            throw new CommonException("消息已撤回，无法重复撤回");
+        }
+        if (!imMessage.getFromUserId().equals(StpUtil.getLoginId().toString())) {
+            throw new CommonException("只能撤回自己发送的消息");
+        }
+        imMessage.setIsRecall("1");
+        this.updateById(imMessage);
+        List<String> userIds = new ArrayList<>(2);
+        if (imMessage.getChatType().equals("2")) {
+            imGroupMemberService.list(Wrappers.<ImGroupMember>lambdaQuery().eq(ImGroupMember::getGroupId, imMessage.getToUserId()).select(ImGroupMember::getUserId)).forEach(imGroupMember -> {
+                userIds.add(imGroupMember.getUserId());
+            });
+        } else {
+            userIds.add(imMessage.getFromUserId());
+            userIds.add(imMessage.getToUserId());
+        }
+
+        // 同时通过websocket发送撤回消息指令
+        userIds.forEach(s -> {
+            if (WebSocketSessionManager.SESSIONS.containsKey(s)) {
+                WebSocketSession session = WebSocketSessionManager.SESSIONS.get(s);
+                if (Objects.equals(s, StpUtil.getLoginId().toString())) {
+                    imMessage.setContent("你撤回了一条消息");
+                } else {
+                    imMessage.setContent("对方撤回了一条消息");
+                }
+                if (imMessage.getChatType().equals("2") && !Objects.equals(s, StpUtil.getLoginId().toString())) {
+                    imMessage.setContent("%s撤回了一条消息," + imMessage.getFromUserId());
+                }
+                WebSocketUtil.sendMessage(session, JSONUtil.toJsonStr(imMessage));
+            }
+        });
     }
 }
