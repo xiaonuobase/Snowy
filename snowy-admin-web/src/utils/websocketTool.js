@@ -57,6 +57,14 @@ const websocket = {
 				websocket.onMessageCallback(e.data)
 			}
 		}
+		websocketInstance.onclose = (e) => {
+			notification.error({
+				message: '错误',
+				description: 'WebSocket连接关闭'
+			})
+			// 打开重连
+			reconnect()
+		}
 	},
 
 	// WebSocket连接关闭方法

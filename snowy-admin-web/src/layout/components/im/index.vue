@@ -162,7 +162,7 @@
 						<FileImageOutlined class="large" @click="uploadImage('图片')" />
 						<FolderOutlined class="large" @click="uploadImage('文件')" />
 						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage" placeholder="输入消息..."
-							:auto-size="{ minRows: 3, maxRows: 6 }" disabled="true"/>
+							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="false"/>
 						<a-button style="float: right;margin-top: 5px;" @click="sendMessage" type="primary"
 							:disabled="!chatUser.id">发送</a-button>
 					</div>
