@@ -24,5 +24,9 @@ export default {
 	// 获取IM-群组详情
 	imGroupDetail(data) {
 		return request('detail', data, 'get')
+	},
+	// 获取当前用户的群组
+	imGroupListByUser(data) {
+		return request('listByUser', data, 'get')
 	}
 }

@@ -36,5 +36,9 @@ export default {
 	// 将消息设置为已读
 	setMessageRead(data) {
 		return request('setRead', data)
+	},
+	// 撤回消息
+	recallMessage(data) {
+		return request('recall', data)
 	}
 }
