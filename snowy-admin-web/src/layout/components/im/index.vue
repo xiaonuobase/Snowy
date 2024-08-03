@@ -70,7 +70,7 @@
 							<a-list :data-source="groupList" :item-layout="'horizontal'" class="webkit-scrollbar-2"
 								@scroll="scrolling">
 								<template #renderItem="{ item }">
-									<a-list-item @click="selectMessageUser(item)" class="listItem">
+									<a-list-item @click="selectMessageUser(item, true)" class="listItem">
 										<a-list-item-meta>
 											<template #title>
 												<span>{{ item.name }}</span> <a-tag color="blue">群组</a-tag>
@@ -94,7 +94,7 @@
 							<img :src="chatUser.avatar" class="avatar" />
 							<span class="user-name">{{ chatUser.name }}</span>
 						</div>
-						<div v-if="chatUser.chatType=='2'">
+						<div v-if="chatUser.chatType == '2'">
 							<a-button @click="updateGroup(chatUser.id)">编辑</a-button>
 						</div>
 					</div>
@@ -150,7 +150,7 @@
 									</div>
 								</div>
 								<div v-else style="color:gray;font-size:x-small; display: flex; justify-content: center;">
-									<p>{{groupRecall(message.content)}}</p>
+									<p>{{ groupRecall(message.content) }}</p>
 								</div>
 							</div>
 						</div>
@@ -161,25 +161,29 @@
 					<div class="message-input">
 						<FileImageOutlined class="large" @click="uploadImage('图片')" />
 						<FolderOutlined class="large" @click="uploadImage('文件')" />
-						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage" placeholder="输入消息..."
-							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="false"/>
+						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage"
+							:placeholder="cancelSilenceTime(groupMutedList[chatUser.id]) ? '输入消息...' : '您已被禁言，剩余时间' + cancelSilenceDateTime + '分钟解除禁言'"
+							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="!cancelSilenceTime(groupMutedList[chatUser.id])" />
 						<a-button style="float: right;margin-top: 5px;" @click="sendMessage" type="primary"
-							:disabled="!chatUser.id">发送</a-button>
+							:disabled="!chatUser.id||!cancelSilenceTime(groupMutedList[chatUser.id])">发送</a-button>
 					</div>
 				</div>
 			</div>
 			<template #footer />
 		</a-modal>
 	</div>
-	<a-modal v-model:open="uploadShow" :title="'发送'+uploadTitle" @ok="handleOk">
+	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
 		<xn-upload v-if="uploadShow" uploadMode="drag" ref="uploadImageRef"></xn-upload>
 	</a-modal>
 	<a-modal v-model:open="previewShow" title="预览文件" :width="1000">
 		<xn-file-preview v-show="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
 		<template #footer />
 	</a-modal>
-	<a-modal v-model:open="createGroupShow" title="创建群组" @ok="createGroupOk">
-		<CreateGroup @updateGroupInfo="updateGroupInfoData" :createGroupType="createGroupType" :id= "updateGroupId" v-if="createGroupShow" ref="createGroupRef" />
+	<a-modal v-model:open="createGroupShow" style="top: 50px" :title="createGroupType == 'add' ? '创建群组' : '操作群组'"
+		:width="600">
+		<CreateGroup @updateGroupInfo='updateGroupInfoData' :createGroupType="createGroupType" :id="updateGroupId"
+			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" />
+		<template #footer />
 	</a-modal>
 </template>
 
@@ -191,8 +195,9 @@ import websocket from '@/utils/websocketTool';
 import tool from '@/utils/tool'
 import imSysUserApi from '@/api/im/imSysUserApi'
 import imMessageApi from '@/api/im/imMessageApi'
-import imGroupApi from '@/api/im/imGroupApi.js'
-import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type.js'
+import imGroupMemberApi from '@/api/im/imGroupMemberApi';
+import imGroupApi from '@/api/im/imGroupApi'
+import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type'
 import { notification } from 'ant-design-vue'
 import ContextMenu from "@imengyu/vue3-context-menu";
 import XnUpload from '@/components/XnUpload/index.vue'
@@ -212,14 +217,15 @@ const queryChatRecordWithUserParams = reactive({
 //聊天界面用户列表参数
 const queryChatRecordParams = reactive({
 	current: 1,
-	size: 4,
+	size: 10,
 	total: -1,
 });
+
 const messageContainer = ref(null)
 // B端用户1 C端用户2
 const userClient = ref('1');
 const open = ref(false);
-const activeKey = ref('2')
+const activeKey = ref('1')
 // 当前聊天用户
 const chatUser = reactive<User>({ id: '', name: '', avatar: '' });
 // 当前用户
@@ -260,36 +266,94 @@ const createGroupRef = ref(null)
 const createGroupType = ref('add')
 const updateGroupId = ref(null)
 
+const groupMutedList = reactive<Record<string, Date>>({})
+const cancelSilenceDateTime = ref(0)
+//存储定时器
+const timer = reactive<Record<string, any>>({})
 
 onMounted(() => {
 	initMessageList();
+	initGroupMemberMuted();
 	websocket.InitWebSocket();
 	if (!websocket.onMessageCallback) {
 		websocket.setMessageCallback(onMessage);
 	}
 });
+
+watch(
+	() => [newMessage.value, chatUser.id], ([nNewMessage, chatUserId], [oldNewMessage, oldChatUserId]) => {
+		if (nNewMessage == '\n') {
+			newMessage.value = '';
+		}
+		if (chatUserId) {
+			if (chatUser.chatType == '2') {
+				timer[chatUserId] = setInterval(() => {
+					if (groupMutedList[chatUserId]) {
+						cancelSilenceDateTime.value = parseInt((new Date(groupMutedList[chatUserId]).getTime() - new Date().getTime()) / 60000)
+					}
+				}, 1000);
+			}
+		}
+		if (oldChatUserId) {
+			clearInterval(timer[oldChatUserId]);
+		}
+	}
+)
+
+// 判断是否可以发送消息
+const cancelSilenceTime = (time) => {
+	return !time || new Date().getTime() > new Date(time).getTime()
+}
+
+//初始化当前用户所在的群聊是否被禁言列表
+const initGroupMemberMuted = () => {
+	imGroupMemberApi.imGroupMemberMuteList({}).then(res => {
+		res.forEach(item => {
+			groupMutedList[item.groupId] = item.silenceTime;
+		})
+	})
+}
+
+const restChatUser = () => {
+	// 删除列表中的群组 并且删除用户列表中的群组
+	delete usersMap[updateGroupId.value];
+	groupList.forEach((item, index) => {
+		if (item.id == updateGroupId.value) {
+			groupList.splice(index, 1);
+		}
+	})
+	delete messageListMap[updateGroupId.value];
+	chatUser.id = '';
+	chatUser.name = '';
+	chatUser.avatar = '';
+	chatUser.chatType = '';
+}
+
 // 更新群组信息 如果修改的话
 const updateGroupInfoData = (e) => {
-	nextTick(()=>{
+	closeGroupShow();
+	nextTick(() => {
 		usersMap[e.id].name = e.name;
 		usersMap[e.id].avatar = e.avatar;
 		groupList.forEach(element => {
-		if (element.id == e.id) {
-			element.name = e.name;
-			element.avatar = e.avatar;
-		}
+			if (element.id == e.id) {
+				element.name = e.name;
+				element.avatar = e.avatar;
+			}
 		});
+		chatUser.name = e.name;
+		chatUser.avatar = e.avatar;
 	})
 }
 
 // 群组撤回翻译
 const groupRecall = (msg: string) => {
-	if(msg.indexOf('%s')!=-1){
+	if (msg.indexOf('%s') != -1) {
 		let msgValue = msg.split(',')
 		let user = usersMap[msgValue[1]];
-		user = user?user:{name:'未知'}
-		return msgValue[0].replace('%s',user.name)
-	}else{
+		user = user ? user : { name: '未知' }
+		return msgValue[0].replace('%s', user.name)
+	} else {
 		return msg
 	}
 }
@@ -316,9 +380,8 @@ const createGroup = () => {
 	createGroupType.value = 'add';
 	createGroupShow.value = true;
 }
-const createGroupOk = () => {
-	// 调用子组件方法
-	createGroupRef.value.add();
+
+const closeGroupShow = () => {
 	createGroupShow.value = false;
 }
 
@@ -418,6 +481,7 @@ const reCallMeun = (msg: Message) => {
 		menuData.items.push(call);
 	}
 }
+
 // 监听ref 滚动到底部
 const scrolling = (e) => {
 	const clientHeight = e.target.clientHeight
@@ -430,13 +494,9 @@ const scrolling = (e) => {
 			if (queryChatRecordParams.total != -1 && queryChatRecordParams.current * queryChatRecordParams.size >= queryChatRecordParams.total) {
 				return;
 			}
-			queryChatRecordWithUserParams.current += 1;
+			queryChatRecordParams.current += 1;
 			initMessageList()
 		}
-	} else if (activeKey.value == '2') {
-
-	} else {
-
 	}
 	// console.log(`到底了!${activeKey.value == '1' ? '聊天' : activeKey.value == '2' ? '用户' : '群组'}`);
 }
@@ -455,9 +515,18 @@ const messagesScrolling = (e) => {
 	}
 }
 
-
 const onMessage = (data) => {
 	let json = JSON.parse(data);
+	// messageType 0 message消息  1 群组禁言(因为不在messgae中所以单独处理) 2解除禁言
+	if (json.messageType && json.messageType == '1') {
+		// 群组禁言 当前人的那个群 被禁言了多长时间
+		groupMutedList[json.groupId] = new Date(json.silenceTime);
+		return;
+	} else if (json.messageType && json.messageType == '2') {
+		// 解除禁言
+		delete groupMutedList[json.groupId];
+		return;
+	}
 	if (!json.fromUserId) return;
 	// 格式化时间
 	if (typeof json.createTime === 'string' || typeof json.createTime === 'number') {
@@ -476,10 +545,10 @@ const onMessage = (data) => {
 	} else if (json.toUserId == currentUser.id) {
 		// 不是当前聊天对象，增加未读计数
 		incrementUnreadCount(json);
-	}else if(json.toUserId === chatUser.id&&json.chatType==='2'){
+	} else if (json.toUserId === chatUser.id && json.chatType === '2') {
 		// 如果是群聊且是当前聊天对象 则设置消息为已读并滚动到底部
 		setMessagesAsRead(json);
-	}else if(json.chatType=='2' && json.fromUserId !== currentUser.id && json.toUserId !== currentUser.id && json.toUserId !== chatUser.id){
+	} else if (json.chatType == '2' && json.fromUserId !== currentUser.id && json.toUserId !== currentUser.id && json.toUserId !== chatUser.id) {
 		// 如果是群聊且不是当前聊天对象 则增加未读计数
 		incrementUnreadCount(json);
 	}
@@ -487,7 +556,7 @@ const onMessage = (data) => {
 // 修改或创建用户消息列表
 const updateOrCreateUserVoList = (json) => {
 	var userId = json.toUserId == currentUser.id ? json.fromUserId : json.fromUserId == currentUser.id ? json.toUserId : null;
-	if(json.chatType==='2'){
+	if (json.chatType === '2') {
 		// 群聊
 		userId = json.toUserId;
 	}
@@ -535,7 +604,7 @@ const updateOrCreateUserVoList = (json) => {
 
 const updateMessageListMap = (json) => {
 	var targetUserId = json.fromUserId == currentUser.id ? json.toUserId : json.fromUserId;
-	if(json.chatType==='2'){
+	if (json.chatType === '2') {
 		targetUserId = json.toUserId;
 	}
 	if (!targetUserId) return;
@@ -562,13 +631,13 @@ const setMessagesAsRead = (json) => {
 		return;
 	}
 	setRead([{ id: json.id }]);
-	if(messageListMap[json.fromUserId]){
+	if (messageListMap[json.fromUserId]) {
 		messageListMap[json.fromUserId].forEach(item => {
-		if (item.toUserId == currentUser.id && item.isRead == '2') {
-			item.isRead = '1';
-		}
-	});
-	scrollToBottomOnNextTick();
+			if (item.toUserId == currentUser.id && item.isRead == '2') {
+				item.isRead = '1';
+			}
+		});
+		scrollToBottomOnNextTick();
 	}
 }
 
@@ -577,9 +646,9 @@ const incrementUnreadCount = (json) => {
 		return;
 	}
 	ImMessageUserVoList.forEach(item => {
-		if (item.userId == json.fromUserId && json.isRead == 2&&json.chatType=='1') {
+		if (item.userId == json.fromUserId && json.isRead == 2 && json.chatType == '1') {
 			item.unreadCount += 1;
-		}else if(item.userId == json.toUserId && json.isRead == 2&&json.chatType=='2'){
+		} else if (item.userId == json.toUserId && json.isRead == 2 && json.chatType == '2') {
 			item.unreadCount += 1;
 		}
 	});
@@ -605,14 +674,34 @@ const handleOpen = () => {
 // 初始化聊天列表
 const initMessageList = () => {
 	// 查询当前用户的所有聊天人员列表和最后一条消息
-	imMessageApi.queryChatRecord(queryChatRecordParams.value).then(res => {
+	imMessageApi.queryChatRecord(queryChatRecordParams).then(res => {
 		ImMessageUserVoList.push(...res.records);
 		queryChatRecordParams.total = res.total;
 	});
 }
 
+const checkGroupRole = (user: User) => {
+	imGroupMemberApi.imGroupMemberPage({ groupId: user.id, userId: currentUser.id }).then(res => {
+		if (res.records.length == 0) {
+			notification.warning({
+				message: '您不是该群组成员'
+			})
+			return;
+		} else {
+			if (res.records[0].role == '1') {
+				createGroupType.value = 'update'
+			} else {
+				createGroupType.value = 'details'
+			}
+		}
+	})
+}
 // 通过用户id查询和当前用户的聊天记录
-const selectMessageUser = (user: User) => {
+const selectMessageUser = (user: User, isGroup = false) => {
+	// 判断当前是否是群聊
+	if (isGroup) {
+		checkGroupRole(user);
+	}
 	if (user.useType) {
 		queryChatRecordWithUserParams.chatType = user.useType
 	} else {
@@ -631,8 +720,8 @@ const selectMessageUser = (user: User) => {
 		// 用户已有聊天记录，但不是当前聊天对象
 		scrollToBottomAndInitChatUser(user);
 	}
-		// 置零前端的未读消息
-		// markMessagesAsRead(user.id);
+	// 置零前端的未读消息
+	// markMessagesAsRead(user.id);
 }
 
 const resetUnreadCount = (userId) => {
@@ -646,7 +735,7 @@ const resetUnreadCount = (userId) => {
 const initChatUserAndQueryRecords = (user) => {
 	queryChatRecordWithUserParams.current = 1;
 	adjustQuerySizeBasedOnUnread(user.id);
-	selectMessageList().then(res=>{
+	selectMessageList().then(res => {
 		markMessagesAsRead(user.id);
 	})
 }
@@ -662,9 +751,7 @@ const adjustQuerySizeBasedOnUnread = (userId) => {
 
 const scrollToBottomAndInitChatUser = (user) => {
 	nextTick(() => {
-		setTimeout(() => {
 			messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-		}, 100);
 	});
 	queryChatRecordWithUserParams.current = usersMap[user.id].current;
 	markMessagesAsRead(user.id);
@@ -748,13 +835,13 @@ const sendMessageByFile = (obj: Object) => {
 		fromUserId: currentUser.id,
 		toUserId: chatUser.id,
 		content,
-		chatType: '1',
+		chatType: chatUser.chatType ? chatUser.chatType : '1',
 		type,
 		toUserType: userClient.value,
 		fromUserType: '1'
 	};
 	// 发送消息
-	websocket.Send(msg);
+	sendMessageToWebSocket(msg);
 }
 
 const sendMessage = () => {
@@ -774,20 +861,16 @@ const sendMessage = () => {
 			toUserType: userClient.value,
 			fromUserType: '1'
 		};
-		// 发送消息
-		websocket.Send(msg);
+		sendMessageToWebSocket(msg)
 		newMessage.value = ''.trim();
 	}
 }
-watch (
-	() => newMessage.value,
-	() => {
-		if (newMessage.value=='\n') {
-				newMessage.value = '';
-		}
-	}
 
-)
+const sendMessageToWebSocket = (msg) => {
+	// 发送消息
+	websocket.Send(msg);
+}
+
 // 初始化当前用户的好友列表
 const getUserList = () => {
 	imSysUserApi.imUserPage().then(res => {

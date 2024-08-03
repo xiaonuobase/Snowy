@@ -77,4 +77,29 @@ public interface ImGroupMemberService extends IService<ImGroupMember> {
      * @date  2024/05/27 16:48
      **/
     ImGroupMember queryEntity(String id);
+
+    /**
+     * 在群组中禁言某个用户
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:36
+     */
+    void silence(ImGroupMemberEditParam imGroupMemberEditParam);
+
+    /**
+     *  获取当前用户被禁言的群组
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:20
+     */
+    List<ImGroupMember> getSilenceGroup();
+
+
+    /**
+     * 在群组中解除禁言某个用户
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:56
+     */
+    void cancelSilence(ImGroupMemberEditParam imGroupMemberEditParam);
 }

@@ -1,6 +1,6 @@
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/im/groupmember/` + url, ...arg)
+const request = (url, ...arg) => baseRequest(`/im/member/` + url, ...arg)
 
 /**
  * IM-群组成员Api接口管理器
@@ -24,5 +24,17 @@ export default {
 	// 获取IM-群组成员详情
 	imGroupMemberDetail(data) {
 		return request('detail', data, 'get')
+	},
+	// 在群组中禁言某个用户
+	imGroupMemberMute(data) {
+		return request('silence', data)
+	},
+	// 在群组中解除禁言某个用户
+	imGroupMemberUnMute(data) {
+		return request('cancelSilence', data)
+	},
+	//获取当前用户被禁言的群组
+	imGroupMemberMuteList(data) {
+		return request('getSilenceGroup', data, 'get')
 	}
 }

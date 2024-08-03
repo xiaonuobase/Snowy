@@ -38,6 +38,8 @@ import vip.xiaonuo.im.modular.group.param.ImGroupPageParam;
 import vip.xiaonuo.im.modular.group.service.ImGroupService;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
+import vip.xiaonuo.im.modular.message.entity.ImMessage;
+import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,8 @@ import java.util.stream.Collectors;
 public class ImGroupServiceImpl extends ServiceImpl<ImGroupMapper, ImGroup> implements ImGroupService {
 
     private final ImGroupMemberService imGroupMemberService;
+
+    private final ImMessageService imMessageService;
 
     @Override
     public Page<ImGroup> page(ImGroupPageParam imGroupPageParam) {
@@ -147,6 +151,12 @@ public class ImGroupServiceImpl extends ServiceImpl<ImGroupMapper, ImGroup> impl
     public void delete(List<ImGroupIdParam> imGroupIdParamList) {
         // 执行删除
         this.removeByIds(CollStreamUtil.toList(imGroupIdParamList, ImGroupIdParam::getId));
+        imGroupIdParamList.forEach(imGroupIdParam -> {
+            // 删除完成之后需要删除群组中人员的数据
+            imGroupMemberService.remove(new QueryWrapper<ImGroupMember>().lambda().eq(ImGroupMember::getGroupId, imGroupIdParam.getId()));
+            // 删除当前群聊的聊天记录
+            imMessageService.remove(new QueryWrapper<ImMessage>().lambda().eq(ImMessage::getToUserId, imGroupIdParam.getId()));
+        });
     }
 
     @Override

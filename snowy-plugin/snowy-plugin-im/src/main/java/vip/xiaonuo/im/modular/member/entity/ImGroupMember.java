@@ -13,10 +13,11 @@
 package vip.xiaonuo.im.modular.member.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
+
 import java.util.Date;
 
 /**
@@ -28,6 +29,7 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("IM_GROUP_MEMBER")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ImGroupMember {
 
     /** ID */

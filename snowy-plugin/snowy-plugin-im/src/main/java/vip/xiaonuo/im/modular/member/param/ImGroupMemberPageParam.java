@@ -15,8 +15,6 @@ package vip.xiaonuo.im.modular.member.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * IM-群组成员查询参数
@@ -47,5 +45,13 @@ public class ImGroupMemberPageParam {
     /** 关键词 */
     @Schema(description = "关键词")
     private String searchKey;
+
+    /** 群id */
+    @Schema(description = "群id")
+    private String groupId;
+
+    /** 用户id */
+    @Schema(description = "用户id")
+    private String userId;
 
 }

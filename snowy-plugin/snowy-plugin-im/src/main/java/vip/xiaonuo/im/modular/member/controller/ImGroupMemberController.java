@@ -120,4 +120,48 @@ public class ImGroupMemberController {
     public CommonResult<ImGroupMember> detail(@Valid ImGroupMemberIdParam imGroupMemberIdParam) {
         return CommonResult.data(imGroupMemberService.detail(imGroupMemberIdParam));
     }
+
+    /**
+     * 在群组中禁言某个用户
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:36
+     */
+    @Operation(summary = "在群组中禁言某个用户")
+    @CommonLog("在群组中禁言某个用户")
+    @SaCheckPermission("/im/member/silence")
+    @PostMapping("/im/member/silence")
+    public CommonResult<String> silence(@RequestBody @Valid ImGroupMemberEditParam imGroupMemberEditParam) {
+        imGroupMemberService.silence(imGroupMemberEditParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 在群组中解除禁言某个用户
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:56
+     */
+    @Operation(summary = "在群组中解除禁言某个用户")
+    @CommonLog("在群组中解除禁言某个用户")
+    @SaCheckPermission("/im/member/cancelSilence")
+    @PostMapping("/im/member/cancelSilence")
+    public CommonResult<String> cancelSilence(@RequestBody @Valid ImGroupMemberEditParam imGroupMemberEditParam) {
+        imGroupMemberService.cancelSilence(imGroupMemberEditParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     *  获取当前用户被禁言的群组
+     *
+     * @author chengchuanyao
+     * @date 2024/8/3 13:20
+     */
+    @Operation(summary = "获取当前用户被禁言的群组")
+    @SaCheckPermission("/im/member/getSilenceGroup")
+    @GetMapping("/im/member/getSilenceGroup")
+    public CommonResult<List<ImGroupMember>> getSilenceGroup() {
+        return CommonResult.data(imGroupMemberService.getSilenceGroup());
+    }
+
 }

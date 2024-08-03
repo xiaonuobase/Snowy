@@ -12,18 +12,28 @@
  */
 package vip.xiaonuo.im.modular.member.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.mapper.ImGroupMemberMapper;
 import vip.xiaonuo.im.modular.member.param.ImGroupMemberAddParam;
@@ -32,13 +42,15 @@ import vip.xiaonuo.im.modular.member.param.ImGroupMemberIdParam;
 import vip.xiaonuo.im.modular.member.param.ImGroupMemberPageParam;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
  * IM-群组成员Service接口实现类
  *
  * @author liuchunming
- * @date  2024/05/27 16:48
+ * @date 2024/05/27 16:48
  **/
 @Service
 public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, ImGroupMember> implements ImGroupMemberService {
@@ -46,13 +58,15 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     @Override
     public Page<ImGroupMember> page(ImGroupMemberPageParam imGroupMemberPageParam) {
         QueryWrapper<ImGroupMember> queryWrapper = new QueryWrapper<>();
-        if(ObjectUtil.isAllNotEmpty(imGroupMemberPageParam.getSortField(), imGroupMemberPageParam.getSortOrder())) {
+        if (ObjectUtil.isAllNotEmpty(imGroupMemberPageParam.getSortField(), imGroupMemberPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(imGroupMemberPageParam.getSortOrder());
             queryWrapper.orderBy(true, imGroupMemberPageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
                     StrUtil.toUnderlineCase(imGroupMemberPageParam.getSortField()));
         } else {
             queryWrapper.lambda().orderByAsc(ImGroupMember::getId);
         }
+        queryWrapper.lambda().eq(StringUtils.isNotBlank(imGroupMemberPageParam.getGroupId()), ImGroupMember::getGroupId, imGroupMemberPageParam.getGroupId());
+        queryWrapper.lambda().eq(StringUtils.isNotBlank(imGroupMemberPageParam.getUserId()), ImGroupMember::getUserId, imGroupMemberPageParam.getUserId());
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
@@ -86,9 +100,70 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
     @Override
     public ImGroupMember queryEntity(String id) {
         ImGroupMember imGroupMember = this.getById(id);
-        if(ObjectUtil.isEmpty(imGroupMember)) {
+        if (ObjectUtil.isEmpty(imGroupMember)) {
             throw new CommonException("IM-群组成员不存在，id值为：{}", id);
         }
         return imGroupMember;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void silence(ImGroupMemberEditParam imGroupMemberEditParam) {
+        ImGroupMember imGroupMember = this.queryEntity(imGroupMemberEditParam.getId());
+        imGroupMember.setSilenceTime(imGroupMemberEditParam.getSilenceTime());
+        // 推送到websocket中
+        boolean b = WebSocketSessionManager.SESSIONS.containsKey(imGroupMemberEditParam.getUserId());
+        if (b) {
+            WebSocketSession webSocketSession = WebSocketSessionManager.SESSIONS.get(imGroupMemberEditParam.getUserId());
+            // 手动拼接json数据节省性能
+            JSONObject obj = JSONUtil.createObj();
+            obj.set("messageType", "1");
+            obj.set("groupId", imGroupMember.getGroupId());
+            obj.set("silenceTime", imGroupMemberEditParam.getSilenceTime());
+            try {
+                synchronized (webSocketSession) {
+                    webSocketSession.sendMessage(new TextMessage(obj.toString()));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        this.updateById(imGroupMember);
+
+    }
+
+    @Override
+    public List<ImGroupMember> getSilenceGroup() {
+        LambdaQueryWrapper<ImGroupMember> imGroupMemberLambdaQueryWrapper = Wrappers.lambdaQuery();
+        imGroupMemberLambdaQueryWrapper.select(ImGroupMember::getGroupId, ImGroupMember::getSilenceTime, ImGroupMember::getUserId, ImGroupMember::getId);
+        imGroupMemberLambdaQueryWrapper.eq(ImGroupMember::getUserId, StpUtil.getLoginId());
+        imGroupMemberLambdaQueryWrapper.gt(ImGroupMember::getSilenceTime, new Date());
+        return this.list(imGroupMemberLambdaQueryWrapper);
+    }
+
+    @Override
+    public void cancelSilence(ImGroupMemberEditParam imGroupMemberEditParam) {
+        ImGroupMember imGroupMember = this.queryEntity(imGroupMemberEditParam.getId());
+        LambdaUpdateWrapper<ImGroupMember> imGroupMemberLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        imGroupMemberLambdaUpdateWrapper.set(ImGroupMember::getSilenceTime, null);
+        imGroupMemberLambdaUpdateWrapper.eq(ImGroupMember::getId, imGroupMemberEditParam.getId());
+
+        // 推送到websocket中
+        boolean b = WebSocketSessionManager.SESSIONS.containsKey(imGroupMemberEditParam.getUserId());
+        if (b) {
+            WebSocketSession webSocketSession = WebSocketSessionManager.SESSIONS.get(imGroupMemberEditParam.getUserId());
+            // 手动拼接json数据节省性能
+            JSONObject obj = JSONUtil.createObj();
+            obj.set("messageType", "2");
+            obj.set("groupId", imGroupMember.getGroupId());
+            try {
+                synchronized (webSocketSession) {
+                    webSocketSession.sendMessage(new TextMessage(obj.toString()));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        this.update(imGroupMemberLambdaUpdateWrapper);
     }
 }

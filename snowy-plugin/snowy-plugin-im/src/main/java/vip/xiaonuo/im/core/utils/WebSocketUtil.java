@@ -79,7 +79,7 @@ public class WebSocketUtil {
                 // 获取接收人id
                 String toUserId = imMessage.getToUserId();
                 // 判断是群聊还是单聊
-                List<String> toUserIds = List.of();
+                List<String> toUserIds;
                 if (imMessage.getChatType().equals("2")) {
                     String toGroupId = imMessage.getToUserId();
                     // 获取群组成员
