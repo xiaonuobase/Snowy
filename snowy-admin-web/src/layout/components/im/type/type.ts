@@ -4,7 +4,7 @@ export interface User {
 	avatar: string;
 	current?: -1;
 	total?:-1;
-	useType?:1; // 用户类型； 1-用户 2-群组
+	userType?:1; // 用户类型； 1-用户 2-群组
 }
 
 export interface ImGroupVo {

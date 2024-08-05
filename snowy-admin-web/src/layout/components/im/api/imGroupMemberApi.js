@@ -5,7 +5,7 @@ const request = (url, ...arg) => baseRequest(`/im/member/` + url, ...arg)
 /**
  * IM-群组成员Api接口管理器
  *
- * @author ChuZhong
+ * @author chengchuanyao
  * @date  2024/07/19 10:42
  **/
 export default {
@@ -20,10 +20,6 @@ export default {
 	// 删除IM-群组成员
 	imGroupMemberDelete(data) {
 		return request('delete', data)
-	},
-	// 获取IM-群组成员详情
-	imGroupMemberDetail(data) {
-		return request('detail', data, 'get')
 	},
 	// 在群组中禁言某个用户
 	imGroupMemberMute(data) {

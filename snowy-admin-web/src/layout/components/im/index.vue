@@ -6,19 +6,11 @@
 			:body-style="{ padding: 0, height: 'calc(100vh - 300px)', overflow: 'hidden' }">
 			<div class="chat-container">
 				<div class="user-list">
-					<a-alert message="连接异常" v-if="websocket==null" type="error" style="margin-bottom: 10px;"/>
+					<a-alert message="连接异常" v-if="websocket == null" type="error" style="margin-bottom: 10px;" />
 					<div class="flex">
-						<a-input-search
-							v-model:value="searchValue"
-							placeholder="搜索"
-							style="width: 200px"
-							@search="onSearch"
-						/>
-						<!-- <a-input placeholder="搜索">
-							<template #prefix>
-								<SearchOutlined />
-							</template>
-						</a-input> -->
+						<a-select v-model:value="searchValue" show-search placeholder="搜索" style="width: 200px"
+							:default-active-first-option="false" :show-arrow="false" :filter-option="false" :not-found-content="null"
+							:options="searchData" @search="onSearch" @change="onHandleChangeSearch"></a-select>
 					</div>
 					<a-tabs v-model:activeKey="activeKey" centered>
 						<a-tab-pane key="1" tab="聊天">
@@ -38,7 +30,6 @@
 											</template>
 											<template #avatar>
 												<a-badge :count="item.unreadCount">
-													<!-- <img :src="usersMap[item.userId + ''].avatar" class="avatar" /> -->
 													<a-avatar :src="usersMap[item.userId + ''].avatar" shape="shape" />
 												</a-badge>
 											</template>
@@ -50,8 +41,7 @@
 						<a-tab-pane key="2" tab="用户">
 							<div v-if="true" class="space-around" style="padding-bottom: 10px;">
 								<a-button :type="userClient == '1' ? 'primary' : 'dashed'" @click="switchClient('1')">B 端用户</a-button>
-								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C
-									端用户</a-button>
+								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C 端用户</a-button>
 							</div>
 							<a-list :data-source="users[userClient]" :item-layout="'horizontal'" class="webkit-scrollbar-2"
 								@scroll="scrolling">
@@ -77,7 +67,6 @@
 								<span>创建群组：</span>
 								<PlusOutlined class="create-group" @click="createGroup" />
 							</div>
-
 							<a-list :data-source="groupList" :item-layout="'horizontal'" class="webkit-scrollbar-2"
 								@scroll="scrolling">
 								<template #renderItem="{ item }">
@@ -170,13 +159,13 @@
 						</div>
 					</div>
 					<div class="message-input">
-						<FileImageOutlined class="large" @click="uploadImage('图片','image')" />
-						<FolderOutlined class="large" @click="uploadImage('文件','drag')" />
+						<FileImageOutlined class="large" @click="uploadImage('图片', 'image')" />
+						<FolderOutlined class="large" @click="uploadImage('文件', 'drag')" />
 						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage"
 							:placeholder="cancelSilenceTime(groupMutedList[chatUser.id]) ? '输入消息...' : '您已被禁言，剩余时间' + cancelSilenceDateTime + '分钟解除禁言'"
 							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="!cancelSilenceTime(groupMutedList[chatUser.id])" />
 						<a-button style="float: right;margin-top: 5px;" @click="sendMessage" type="primary"
-							:disabled="!chatUser.id||!cancelSilenceTime(groupMutedList[chatUser.id])">发送</a-button>
+							:disabled="!chatUser.id || !cancelSilenceTime(groupMutedList[chatUser.id])">发送</a-button>
 					</div>
 				</div>
 			</div>
@@ -196,34 +185,28 @@
 			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" />
 		<template #footer />
 	</a-modal>
-	<WebSocketComponent @setWebSocket="setWebSocket"/>
+	<WebSocketComponent @setWebSocket="setWebSocket" />
 </template>
 
 <script setup lang="ts">
+
 import { ref, reactive } from 'vue';
 import dayjs from 'dayjs'
-import { MessageOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import { MessageOutlined } from '@ant-design/icons-vue';
 import tool from '@/utils/tool'
-import imSysUserApi from '@/api/im/imSysUserApi'
-import imMessageApi from '@/api/im/imMessageApi'
-import imGroupMemberApi from '@/api/im/imGroupMemberApi';
-import imGroupApi from '@/api/im/imGroupApi'
-import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type'
+import imSysUserApi from '@/layout/components/im/api/imSysUserApi'
+import imMessageApi from '@/layout/components/im/api/imMessageApi'
+import imGroupMemberApi from '@/layout/components/im/api/imGroupMemberApi';
+import imGroupApi from '@/layout/components/im/api/imGroupApi'
+import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type/type'
 import { notification } from 'ant-design-vue'
 import ContextMenu from "@imengyu/vue3-context-menu";
 import XnUpload from '@/components/XnUpload/index.vue'
 import WebSocketComponent from '@/layout/components/im/WebSocketComponent.vue'
 import XnEditGroupComponent from '@/layout/components/im/XnEditGroupComponent.vue'
 
-
-const uploadMode = ref('image')
-const uploadTitle = ref('')
-const previewSrc = ref()
-const previewFileType = ref()
-
 const websocket = ref(null);
 
-const imageSuffix = ['png', 'jpg', 'jpeg', 'ico', 'bmp', 'gif'];
 // 聊天记录参数
 const queryChatRecordWithUserParams = reactive({
 	current: 1,
@@ -263,6 +246,8 @@ const messageListMap = reactive<Record<string, Message[]>>({
 // 发送的消息
 const newMessage = ref<string>('');
 const messgaeScrollHeight = ref(0);
+
+// 右键菜单
 const menuData = reactive({
 	theme: 'mac',
 	items: [
@@ -274,19 +259,33 @@ const menuData = reactive({
 	x: null,
 	y: null
 })
+
+// 发送文件预览文件变量
+const uploadMode = ref('image')
+const uploadTitle = ref('')
+const imageSuffix = ['png', 'jpg', 'jpeg', 'ico', 'bmp', 'gif'];
+
+const previewSrc = ref()
+const previewShow = ref(false)
+const previewFileType = ref()
+
 const uploadShow = ref(false)
 const uploadImageRef = ref(null)
-const previewShow = ref(false)
+
+// 处理群组弹窗
 const createGroupShow = ref(false)
 const createGroupRef = ref(null)
 const createGroupType = ref('add')
 const updateGroupId = ref(null)
 
+// 禁言列表
 const groupMutedList = reactive<Record<string, Date>>({})
 const cancelSilenceDateTime = ref(0)
-//存储定时器
+// 禁言定时器
 const timer = reactive<Record<string, any>>({})
-const searchValue = ref<string>('');
+// 搜索
+const searchValue = ref()
+const searchData = ref<any[]>([]);
 
 onMounted(() => {
 	initMessageList();
@@ -313,11 +312,29 @@ watch(
 	}
 )
 
-
-const onSearch = (value: string) => {
-  console.log('use value', value);
-  console.log('or use this.value', searchValue.value);
+const onSearch = (val: string, callback: any) => {
+	let data = [];
+	Object.keys(usersMap).forEach((item, index) => {
+		if (usersMap[item].name.indexOf(val) != -1) {
+			data.push({ value: item, label: usersMap[item].name });
+		}
+	})
+	setSearchData(data)
 };
+
+const setSearchData = (val: any[]) => {
+	searchData.value = val;
+	if (val.length == 0) {
+		searchValue.value = null;
+	}
+}
+
+const onHandleChangeSearch = (val: string) => {
+	searchValue.value = val;
+	// 点击调用selectMessageUsers方法
+	selectMessageUser(usersMap[val], usersMap[val].userType != 1);
+	setSearchData([]);
+}
 const setWebSocket = (ws) => {
 	websocket.value = ws;
 	ws.setMessageCallback(onMessage);
@@ -358,7 +375,7 @@ const restChatUser = () => {
 const updateGroupInfoData = (e) => {
 	closeGroupShow();
 	nextTick(() => {
-		if(e.type=='add'){
+		if (e.type == 'add') {
 			initGroupList();
 			return
 		}
@@ -389,10 +406,10 @@ const groupRecall = (msg: string) => {
 
 // 初始化群组
 const initGroupList = () => {
-	groupList.splice(0,groupList.length)
+	groupList.splice(0, groupList.length)
 	imGroupApi.imGroupListByUser({}).then(res => {
 		res.forEach(element => {
-			element.useType = '2';
+			element.userType = 2;
 			groupList.push(element);
 			element.current = -1;
 			usersMap[element.id] = element;
@@ -454,7 +471,7 @@ const previewDisplay = (fileSuffix: string) => {
 	}
 }
 
-const uploadImage = (title: string,mode: string) => {
+const uploadImage = (title: string, mode: string) => {
 	uploadMode.value = mode;
 	uploadShow.value = true;
 	uploadTitle.value = title
@@ -733,8 +750,8 @@ const selectMessageUser = (user: User, isGroup = false) => {
 	if (isGroup) {
 		checkGroupRole(user);
 	}
-	if (user.useType) {
-		queryChatRecordWithUserParams.chatType = user.useType
+	if (user.userType) {
+		queryChatRecordWithUserParams.chatType = user.userType + ''
 	} else {
 		queryChatRecordWithUserParams.chatType = '1'
 	}
@@ -782,7 +799,7 @@ const adjustQuerySizeBasedOnUnread = (userId) => {
 
 const scrollToBottomAndInitChatUser = (user) => {
 	nextTick(() => {
-			messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+		messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
 	});
 	queryChatRecordWithUserParams.current = usersMap[user.id].current;
 	markMessagesAsRead(user.id);
@@ -803,7 +820,7 @@ const initChatUser = (user: User) => {
 	chatUser.id = user.id;
 	chatUser.name = user.name;
 	chatUser.avatar = user.avatar;
-	chatUser.chatType = user.useType;
+	chatUser.chatType = user.userType;
 	queryChatRecordWithUserParams.userId = user.id;
 }
 

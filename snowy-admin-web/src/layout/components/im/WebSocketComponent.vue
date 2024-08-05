@@ -23,7 +23,6 @@ const emit = defineEmits(['setWebSocket'])
 //监听websocket状态
 // 重连方法
 const reconnect = () => {
-	console.log('重连', isReconnecting.value);
 	// 判断是否主动关闭连接
 	if (isReconnecting.value) {
 		return
@@ -51,7 +50,6 @@ const initWebSocket = () => {
 	}
 
 	if (websocketInstance.value) {
-		console.log('websocket已经存在');
 		return;
 	}
 
@@ -76,7 +74,6 @@ const initWebSocket = () => {
 				description: `IM连接异常,${isReconnectingNum.value > 0 ? '连接失败重连中...' : '准备重新连接'}`
 			});
 		}
-		console.log('重连次数超过5次', isReconnectingNum.value);
 		emit('setWebSocket', null);
 		isReconnectingRun.value && reconnect();
 	};
@@ -89,7 +86,6 @@ const initWebSocket = () => {
 	};
 
 	websocketInstance.value.onclose = (e) => {
-		console.log('websocket关闭', e.code);
 		if (e.code === 1000) {
 			notification.success({
 				message: 'IM连接关闭'
@@ -112,14 +108,12 @@ const initWebSocket = () => {
 				message: 'IM发送消息失败'
 			});
 			reconnect();
-			console.log('重连中...');
 		}
 	};
 };
 
 const closeWebSocket = () => {
 	//主动关闭连接
-	console.log('主动关闭连接');
 	isReconnecting.value = true;
 	websocketInstance.value.close();
 };

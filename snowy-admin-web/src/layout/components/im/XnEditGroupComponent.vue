@@ -51,7 +51,6 @@
 										<a-avatar :src="item.avatar || avatar" />
 									</template>
 								</a-list-item-meta>
-								<!-- <div>{{ item.orgName }}</div> -->
 							</a-skeleton>
 						</a-list-item>
 					</template>
@@ -83,8 +82,8 @@
 <script setup lang="ts">
 import userApi from '@/api/sys/userApi'
 import CropUpload from '@/components/CropUpload/index.vue'
-import imGroupApi from '@/api/im/imGroupApi'
-import imGroupMemberApi from '@/api/im/imGroupMemberApi'
+import imGroupApi from '@/layout/components/im/api/imGroupApi'
+import imGroupMemberApi from '@/layout/components/im/api/imGroupMemberApi'
 import userCenterApi from '@/api/sys/userCenterApi'
 import tool from '@/utils/tool'
 import { notification, Modal } from 'ant-design-vue'
