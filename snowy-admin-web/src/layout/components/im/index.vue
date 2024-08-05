@@ -6,13 +6,19 @@
 			:body-style="{ padding: 0, height: 'calc(100vh - 300px)', overflow: 'hidden' }">
 			<div class="chat-container">
 				<div class="user-list">
+					<a-alert message="连接异常" v-if="websocket==null" type="error" style="margin-bottom: 10px;"/>
 					<div class="flex">
-						<a-input placeholder="搜索">
+						<a-input-search
+							v-model:value="searchValue"
+							placeholder="搜索"
+							style="width: 200px"
+							@search="onSearch"
+						/>
+						<!-- <a-input placeholder="搜索">
 							<template #prefix>
 								<SearchOutlined />
 							</template>
-						</a-input>
-						<PlusOutlined class="create-group" @click="createGroup" />
+						</a-input> -->
 					</div>
 					<a-tabs v-model:activeKey="activeKey" centered>
 						<a-tab-pane key="1" tab="聊天">
@@ -67,6 +73,11 @@
 							</a-list>
 						</a-tab-pane>
 						<a-tab-pane key="3" tab="群组" class="webkit-scrollbar">
+							<div style="display: flex; justify-content: center">
+								<span>创建群组：</span>
+								<PlusOutlined class="create-group" @click="createGroup" />
+							</div>
+
 							<a-list :data-source="groupList" :item-layout="'horizontal'" class="webkit-scrollbar-2"
 								@scroll="scrolling">
 								<template #renderItem="{ item }">
@@ -159,8 +170,8 @@
 						</div>
 					</div>
 					<div class="message-input">
-						<FileImageOutlined class="large" @click="uploadImage('图片')" />
-						<FolderOutlined class="large" @click="uploadImage('文件')" />
+						<FileImageOutlined class="large" @click="uploadImage('图片','image')" />
+						<FolderOutlined class="large" @click="uploadImage('文件','drag')" />
 						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage"
 							:placeholder="cancelSilenceTime(groupMutedList[chatUser.id]) ? '输入消息...' : '您已被禁言，剩余时间' + cancelSilenceDateTime + '分钟解除禁言'"
 							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="!cancelSilenceTime(groupMutedList[chatUser.id])" />
@@ -173,7 +184,7 @@
 		</a-modal>
 	</div>
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
-		<xn-upload v-if="uploadShow" uploadMode="drag" ref="uploadImageRef"></xn-upload>
+		<xn-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef"></xn-upload>
 	</a-modal>
 	<a-modal v-model:open="previewShow" title="预览文件" :width="1000">
 		<xn-file-preview v-show="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
@@ -181,17 +192,17 @@
 	</a-modal>
 	<a-modal v-model:open="createGroupShow" style="top: 50px" :title="createGroupType == 'add' ? '创建群组' : '操作群组'"
 		:width="600">
-		<CreateGroup @updateGroupInfo='updateGroupInfoData' :createGroupType="createGroupType" :id="updateGroupId"
+		<XnEditGroupComponent @updateGroupInfo='updateGroupInfoData' :createGroupType="createGroupType" :id="updateGroupId"
 			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" />
 		<template #footer />
 	</a-modal>
+	<WebSocketComponent @setWebSocket="setWebSocket"/>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import dayjs from 'dayjs'
 import { MessageOutlined, SearchOutlined } from '@ant-design/icons-vue';
-import websocket from '@/utils/websocketTool';
 import tool from '@/utils/tool'
 import imSysUserApi from '@/api/im/imSysUserApi'
 import imMessageApi from '@/api/im/imMessageApi'
@@ -201,11 +212,16 @@ import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type'
 import { notification } from 'ant-design-vue'
 import ContextMenu from "@imengyu/vue3-context-menu";
 import XnUpload from '@/components/XnUpload/index.vue'
-import CreateGroup from './createGroup.vue'
+import WebSocketComponent from '@/layout/components/im/WebSocketComponent.vue'
+import XnEditGroupComponent from '@/layout/components/im/XnEditGroupComponent.vue'
 
+
+const uploadMode = ref('image')
 const uploadTitle = ref('')
 const previewSrc = ref()
 const previewFileType = ref()
+
+const websocket = ref(null);
 
 const imageSuffix = ['png', 'jpg', 'jpeg', 'ico', 'bmp', 'gif'];
 // 聊天记录参数
@@ -270,14 +286,11 @@ const groupMutedList = reactive<Record<string, Date>>({})
 const cancelSilenceDateTime = ref(0)
 //存储定时器
 const timer = reactive<Record<string, any>>({})
+const searchValue = ref<string>('');
 
 onMounted(() => {
 	initMessageList();
 	initGroupMemberMuted();
-	websocket.InitWebSocket();
-	if (!websocket.onMessageCallback) {
-		websocket.setMessageCallback(onMessage);
-	}
 });
 
 watch(
@@ -299,6 +312,16 @@ watch(
 		}
 	}
 )
+
+
+const onSearch = (value: string) => {
+  console.log('use value', value);
+  console.log('or use this.value', searchValue.value);
+};
+const setWebSocket = (ws) => {
+	websocket.value = ws;
+	ws.setMessageCallback(onMessage);
+}
 
 // 判断是否可以发送消息
 const cancelSilenceTime = (time) => {
@@ -327,12 +350,18 @@ const restChatUser = () => {
 	chatUser.name = '';
 	chatUser.avatar = '';
 	chatUser.chatType = '';
+	// 关闭弹窗
+	closeGroupShow();
 }
 
 // 更新群组信息 如果修改的话
 const updateGroupInfoData = (e) => {
 	closeGroupShow();
 	nextTick(() => {
+		if(e.type=='add'){
+			initGroupList();
+			return
+		}
 		usersMap[e.id].name = e.name;
 		usersMap[e.id].avatar = e.avatar;
 		groupList.forEach(element => {
@@ -360,6 +389,7 @@ const groupRecall = (msg: string) => {
 
 // 初始化群组
 const initGroupList = () => {
+	groupList.splice(0,groupList.length)
 	imGroupApi.imGroupListByUser({}).then(res => {
 		res.forEach(element => {
 			element.useType = '2';
@@ -424,7 +454,8 @@ const previewDisplay = (fileSuffix: string) => {
 	}
 }
 
-const uploadImage = (title: string) => {
+const uploadImage = (title: string,mode: string) => {
+	uploadMode.value = mode;
 	uploadShow.value = true;
 	uploadTitle.value = title
 }
@@ -868,7 +899,7 @@ const sendMessage = () => {
 
 const sendMessageToWebSocket = (msg) => {
 	// 发送消息
-	websocket.Send(msg);
+	websocket.value.sendWebSocketMessage(msg);
 }
 
 // 初始化当前用户的好友列表

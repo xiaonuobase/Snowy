@@ -388,13 +388,14 @@ const add = () => {
 		notification.success({
 			message: `${props.createGroupType == 'update' ? '修改群组' : props.createGroupType == 'details' ? '邀请人员' : '创建群组'}成功`
 		})
-	})
-	let aa = {
+		let aa = {
 		avatar: formData.avatar,
 		name: formData.name,
-		id: props.id
+		id: props.id,
+		type: props.createGroupType
 	}
 	emit('updateGroupInfo', aa)
+	})
 }
 
 const update = (id) => {
