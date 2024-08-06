@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
+		<a-form ref="formRef" :model="formData" layout="vertical">
 			<a-form-item label="名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入名称" allow-clear
 					:disabled="props.createGroupType == 'details' || (currentUser.role && currentUser.role != '1')" />

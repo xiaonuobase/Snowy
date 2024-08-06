@@ -24,7 +24,7 @@
                       AND DELETE_FLAG = 'NOT_DELETE'
                     GROUP BY CASE WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID ELSE FROM_USER_ID END) AS ui
                        JOIN im_message m ON ((m.FROM_USER_ID = ui.user_id AND m.TO_USER_ID = #{userId}) OR
-                                             (m.FROM_USER_ID = #{userId} AND m.TO_USER_ID = ui.user_id))
+                                             (m.FROM_USER_ID = #{userId} AND m.TO_USER_ID = ui.user_id)) JOIN sys_user su ON ui.user_id = su.id
                        LEFT JOIN (SELECT CASE WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID ELSE FROM_USER_ID END AS user_id,
                                          COUNT(*)                                                                 AS unread_count
                                   FROM im_message
@@ -36,6 +36,7 @@
               WHERE m.CREATE_TIME = ui.last_message_time
                 AND m.CHAT_TYPE = '1'
                 AND m.DELETE_FLAG = 'NOT_DELETE'
+                AND su.DELETE_FLAG = 'NOT_DELETE'
               UNION ALL
               (SELECT m.TO_USER_ID                                                 AS user_id,
                       m.CONTENT,
@@ -50,10 +51,10 @@
                         JOIN (SELECT im.TO_USER_ID,
                                      MAX(im.CREATE_TIME) AS latest_time
                               FROM im_message im
-                                       JOIN (SELECT DISTINCT group_id
+                                       JOIN (SELECT DISTINCT group_id,DELETE_FLAG
                                              FROM im_group_member
                                              WHERE user_id = #{userId}) gm ON im.TO_USER_ID = gm.group_id
-                              WHERE im.DELETE_FLAG = 'NOT_DELETE'
+                              WHERE im.DELETE_FLAG = 'NOT_DELETE' and gm.DELETE_FLAG = 'NOT_DELETE'
                               GROUP BY im.TO_USER_ID) lgm ON m.TO_USER_ID = lgm.TO_USER_ID
                    AND m.CREATE_TIME = lgm.latest_time
                         LEFT JOIN im_message m2 ON m.TO_USER_ID = m2.TO_USER_ID
