@@ -46,7 +46,6 @@ public class ImSysUserController {
      * @date 2024/7/19 10:26
      */
     @Operation(summary = "获取IM-分页获取用户列表")
-    @SaCheckPermission("/im/user/page")
     @GetMapping("/im/user/page")
     public CommonResult<Page<JSONObject>> page() {
         return CommonResult.data(imSysUserService.list());

@@ -56,7 +56,6 @@ public class ImGroupMemberController {
      * @date  2024/05/27 16:48
      */
     @Operation(summary = "获取IM-群组成员分页")
-    @SaCheckPermission("/im/member/page")
     @GetMapping("/im/member/page")
     public CommonResult<Page<ImGroupMember>> page(ImGroupMemberPageParam imGroupMemberPageParam) {
         return CommonResult.data(imGroupMemberService.page(imGroupMemberPageParam));
@@ -158,7 +157,6 @@ public class ImGroupMemberController {
      * @date 2024/8/3 13:20
      */
     @Operation(summary = "获取当前用户被禁言的群组")
-    @SaCheckPermission("/im/member/getSilenceGroup")
     @GetMapping("/im/member/getSilenceGroup")
     public CommonResult<List<ImGroupMember>> getSilenceGroup() {
         return CommonResult.data(imGroupMemberService.getSilenceGroup());

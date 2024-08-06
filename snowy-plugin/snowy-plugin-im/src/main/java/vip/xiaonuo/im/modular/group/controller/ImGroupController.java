@@ -69,7 +69,6 @@ public class ImGroupController {
      * @date 2024/7/27 14:28
      */
     @Operation(summary = "查询当前用户的群组列表")
-    @SaCheckPermission("/im/group/listByUser")
     @GetMapping("/im/group/listByUser")
     public CommonResult<List<ImGroup>> listByUser() {
         return CommonResult.data(imGroupService.listByUser());
@@ -129,7 +128,6 @@ public class ImGroupController {
      * @date  2024/05/27 16:40
      */
     @Operation(summary = "获取IM-群组详情")
-    @SaCheckPermission("/im/group/detail")
     @GetMapping("/im/group/detail")
     public CommonResult<ImGroup> detail(@Valid ImGroupIdParam imGroupIdParam) {
         return CommonResult.data(imGroupService.detail(imGroupIdParam));

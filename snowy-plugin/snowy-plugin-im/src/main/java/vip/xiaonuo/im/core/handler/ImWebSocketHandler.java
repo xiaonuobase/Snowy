@@ -38,8 +38,10 @@ public class ImWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         WebSocketSessionManager.add(session);
-        session.sendMessage(new TextMessage(JSONUtil.createObj().set("msg", "连接成功").toString()));
+        WebSocketUtil.sendMessage(session, JSONUtil.createObj().set("msg", "连接成功").toString());
         log.info("当前连接数：" + WebSocketSessionManager.SESSIONS.size());
+        // 给当前用户发送在线用户列表
+        WebSocketUtil.sendOnlineUserList(session);
     }
 
     @Override
@@ -62,6 +64,7 @@ public class ImWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("关闭ws连接");
         WebSocketSessionManager.removeAndClose(session.getAttributes().get(WebSocketSessionManager.USER_ID).toString());
+        WebSocketUtil.sendUnOnlineUserList(session);
     }
 
 

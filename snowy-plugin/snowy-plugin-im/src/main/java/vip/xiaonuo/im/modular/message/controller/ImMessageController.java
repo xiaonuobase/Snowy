@@ -127,7 +127,6 @@ public class ImMessageController {
      * @date 2024/7/19 18:43
      */
     @Operation(summary = "查询跟当前用户聊天的所有用户")
-    @SaCheckPermission("/im/message/queryChatRecord")
     @GetMapping("/im/message/queryChatRecord")
     public CommonResult<Page<ImMessageUserParam>> queryChatRecord() {
         return CommonResult.data(imMessageService.queryChatRecord());
@@ -140,7 +139,6 @@ public class ImMessageController {
      * @date 2024/7/20 11:51
      */
     @Operation(summary = "查询当前用户和指定用户的聊天记录")
-    @SaCheckPermission("/im/message/queryChatRecordWithUser")
     @GetMapping("/im/message/queryChatRecordWithUser")
     public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId,@RequestParam(defaultValue = "1",required = false) String chatType) {
         return CommonResult.data(imMessageService.queryChatRecordWithUser(userId,chatType));
@@ -154,7 +152,6 @@ public class ImMessageController {
      * @date 2024/7/24 14:44
      */
     @Operation(summary = "将消息设为已读")
-    @SaCheckPermission("/im/message/setRead")
     @PostMapping("/im/message/setRead")
     public CommonResult<String> setRead(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
                                             List<ImMessageIdParam> imMessageIdParamList) {
@@ -169,7 +166,6 @@ public class ImMessageController {
      * @date 2024/7/25 18:12
      */
     @Operation(summary = "撤回消息")
-    @SaCheckPermission("/im/message/recall")
     @PostMapping("/im/message/recall")
     public CommonResult<String> recall(@RequestBody @Valid ImMessageIdParam imMessageIdParam) {
         imMessageService.recall(imMessageIdParam);

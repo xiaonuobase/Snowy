@@ -49,6 +49,10 @@
 									</template>
 									<template #avatar>
 										<a-avatar :src="item.avatar || avatar" />
+										<div class="online">
+											<a-badge status="success" v-if="onlineFunc(key.userId)"/>
+											<a-badge status="default" v-else/>
+										</div>
 									</template>
 								</a-list-item-meta>
 							</a-skeleton>
@@ -126,6 +130,10 @@ const props = defineProps({
 	id: {
 		type: String,
 		default: ''
+	},
+	onlineUserList: {
+		type: Array,
+		default: () => []
 	}
 })
 
@@ -138,6 +146,10 @@ onMounted(() => {
 		rest()
 	}
 })
+
+const onlineFunc = (data) =>{
+	return props.onlineUserList.includes(data)>0
+}
 
 // 判断是否可以取消禁言
 const cancelSilenceTime = (time) => {
@@ -545,5 +557,11 @@ defineExpose({ add, update })
 	height: calc(32vh);
 	border: 1px solid #d9d9d9;
 	margin-bottom: 10px;
+}
+.online{
+	position: relative;
+	left: 30px;
+	bottom: 10px;
+	
 }
 </style>

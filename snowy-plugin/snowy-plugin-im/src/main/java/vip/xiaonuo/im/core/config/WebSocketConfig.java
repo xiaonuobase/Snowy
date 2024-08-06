@@ -18,6 +18,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 /**
+ * #########################################
+ * # snowy websocket configuration
+ * #########################################
+ *
+ * # snowy websocket configuration
+ * snowy.websocket.enabled = true
+ * snowy.websocket.path[0] = /ws/im/**
+ * snowy.websocket.allowed-origins = *
+ *
+ * websocket可配置的参数
+ *
  * @author ChengChuanYao
  * @date 2024/7/18 16:50
  */

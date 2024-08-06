@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.dev.api.DevFileApi;
+import vip.xiaonuo.im.core.auth.AuthorizationManager;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
 import vip.xiaonuo.im.modular.group.service.ImGroupService;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
@@ -32,7 +33,9 @@ import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -70,62 +73,50 @@ public class WebSocketUtil {
             String payload = message.getPayload();
             // 解析消息
             ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
-            try {
-                imMessage.setIsRead("2");
-                imMessage.setStatus("1");
-                imMessage.setIsRecall("2");
-                imMessage.setId(String.valueOf(IdWorker.getId()));
-                imMessage.setCreateTime(DateUtil.date());
-                // 获取接收人id
-                String toUserId = imMessage.getToUserId();
-                // 判断是群聊还是单聊
-                List<String> toUserIds;
-                if (imMessage.getChatType().equals("2")) {
-                    String toGroupId = imMessage.getToUserId();
-                    // 获取群组成员
-                    toUserIds = imGroupMemberService.list(Wrappers.<ImGroupMember>lambdaQuery().eq(ImGroupMember::getGroupId, toGroupId).select(ImGroupMember::getUserId)).stream().map(ImGroupMember::getUserId).collect(Collectors.toList());
-                } else {
-                    toUserIds = List.of(toUserId);
-                }
-                // 如果是type不为1 的消息类型 需要进行翻译
-                if (!imMessage.getType().equals("1")) {
-                    JSONObject fileInfoById = devFileApi.getFileInfoById(imMessage.getContent());
-                    JSONObject entries = new JSONObject();
-                    entries.set("fileId", fileInfoById.getStr("id"));
-                    entries.set("suffix", fileInfoById.getStr("suffix"));
-                    entries.set("downloadPath", fileInfoById.getStr("downloadPath"));
-                    entries.set("sizeInfo", fileInfoById.getStr("sizeInfo"));
-                    entries.set("name", fileInfoById.getStr("name"));
-                    imMessage.setContent(entries.toString());
-                }
-                // 让发送人回调消息数据
-                session.sendMessage(new TextMessage(JSONUtil.toJsonStr(imMessage)));
-                // 剔除发送人
-                if (CollectionUtil.isNotEmpty(toUserIds)) {
-                    toUserIds.forEach(s -> {
-                        if (s.equals(imMessage.getFromUserId())) {
-                            return;
-                        }
-                        // 获取接收人session
-                        WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(s);
-                        // 发送消息
-                        try {
-                            if (null != toSession) {
-                                toSession.sendMessage(new TextMessage(JSONUtil.toJsonStr(imMessage)));
-                                }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                }
-                // 存储消息
-                boolean save = imMessageService.save(imMessage);
-                if (!save) {
-                    throw new RuntimeException("消息存储失败");
-                }
-            } catch (IOException e) {
-                log.error(e.getMessage());
-                throw new RuntimeException(e);
+            imMessage.setIsRead("2");
+            imMessage.setStatus("1");
+            imMessage.setIsRecall("2");
+            imMessage.setId(String.valueOf(IdWorker.getId()));
+            imMessage.setCreateTime(DateUtil.date());
+            // 获取接收人id
+            String toUserId = imMessage.getToUserId();
+            // 判断是群聊还是单聊
+            List<String> toUserIds;
+            if (imMessage.getChatType().equals("2")) {
+                String toGroupId = imMessage.getToUserId();
+                // 获取群组成员
+                toUserIds = imGroupMemberService.list(Wrappers.<ImGroupMember>lambdaQuery().eq(ImGroupMember::getGroupId, toGroupId).select(ImGroupMember::getUserId)).stream().map(ImGroupMember::getUserId).collect(Collectors.toList());
+            } else {
+                toUserIds = List.of(toUserId);
+            }
+            // 如果是type不为1 的消息类型 需要进行翻译
+            if (!imMessage.getType().equals("1")) {
+                JSONObject fileInfoById = devFileApi.getFileInfoById(imMessage.getContent());
+                JSONObject entries = new JSONObject();
+                entries.set("fileId", fileInfoById.getStr("id"));
+                entries.set("suffix", fileInfoById.getStr("suffix"));
+                entries.set("downloadPath", fileInfoById.getStr("downloadPath"));
+                entries.set("sizeInfo", fileInfoById.getStr("sizeInfo"));
+                entries.set("name", fileInfoById.getStr("name"));
+                imMessage.setContent(entries.toString());
+            }
+            // 让发送人回调消息数据
+            sendMessage(session, JSONUtil.toJsonStr(imMessage));
+            // 剔除发送人
+            if (CollectionUtil.isNotEmpty(toUserIds)) {
+                toUserIds.forEach(s -> {
+                    if (s.equals(imMessage.getFromUserId())) {
+                        return;
+                    }
+                    // 获取接收人session
+                    WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(s);
+                    sendMessage(toSession, JSONUtil.toJsonStr(imMessage));
+                });
+            }
+            // 存储消息
+            boolean save = imMessageService.save(imMessage);
+            if (!save) {
+                throw new RuntimeException("消息存储失败");
             }
         });
         return null;
@@ -135,10 +126,63 @@ public class WebSocketUtil {
      * 发送消息
      */
     public static void sendMessage(WebSocketSession session, String message) {
+        if (null == session) {
+            return;
+        }
         try {
+            boolean b = AuthorizationManager.verifySign();
+            if (!b) {
+                JSONObject entries = JSONUtil.parseObj(message);
+                entries.set("authStatus", -1);
+                message = entries.toString();
+            }
             session.sendMessage(new TextMessage(message));
         } catch (IOException e) {
             log.error("发送消息失败", e);
         }
+    }
+
+    /**
+     * 给当前用户发送在线用户列表
+     */
+    public static void sendOnlineUserList(WebSocketSession session) {
+        String userId = session.getAttributes().get(WebSocketSessionManager.USER_ID).toString();
+        ConcurrentHashMap.KeySetView<String, WebSocketSession> strings = WebSocketSessionManager.SESSIONS.keySet();
+        List<String> collect = strings.stream().collect(Collectors.toList());
+        JSONObject entries = JSONUtil.createObj().set("onlineUserList", collect);
+        entries.set("messageType", "3");
+        sendMessage(session, entries.toString());
+        //给其他用户发送上线通知
+        collect.forEach(s -> {
+            if (s.equals(userId)) {
+                return;
+            }
+            WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(s);
+            if (null != toSession) {
+                JSONObject entries1 = JSONUtil.createObj().set("messageType", "4");
+                entries1.set("onlineUserList", Arrays.asList(userId));
+                sendMessage(toSession, entries1.toString());
+            }
+        });
+    }
+
+    /**
+     * 给其他用户发送下线通知
+     */
+    public static void sendUnOnlineUserList(WebSocketSession session) {
+        String userId = session.getAttributes().get(WebSocketSessionManager.USER_ID).toString();
+        ConcurrentHashMap.KeySetView<String, WebSocketSession> strings = WebSocketSessionManager.SESSIONS.keySet();
+        List<String> collect = strings.stream().collect(Collectors.toList());
+        collect.forEach(s -> {
+            if (s.equals(userId)) {
+                return;
+            }
+            WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(s);
+            if (null != toSession) {
+                JSONObject entries1 = JSONUtil.createObj().set("messageType", "5");
+                entries1.set("unOnlineUser", userId);
+                sendMessage(toSession, entries1.toString());
+            }
+        });
     }
 }

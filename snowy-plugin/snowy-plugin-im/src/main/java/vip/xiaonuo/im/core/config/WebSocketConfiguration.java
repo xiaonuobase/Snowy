@@ -12,15 +12,16 @@
  */
 package vip.xiaonuo.im.core.config;
 
+import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import vip.xiaonuo.im.core.Interceptor.WebSocketInterceptor;
+import vip.xiaonuo.im.core.auth.AuthorizationManager;
 import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
 
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.Optional;
 @Configuration
 @Slf4j
 @EnableConfigurationProperties(WebSocketConfig.class)
-@ConditionalOnProperty(prefix = "snowy.websocket", name = "enabled", havingValue = "true")
+//@ConditionalOnProperty(prefix = "snowy.websocket", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
@@ -45,10 +46,13 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
-        if (webSocketConfig.getPath().isEmpty()) {
+        if (ObjectUtil.isEmpty(webSocketConfig) || ObjectUtil.isEmpty(webSocketConfig.getPath())) {
             webSocketConfig.setPath(List.of("/ws/im"));
         }
 
+        if (!AuthorizationManager.verifySign()){
+            log.error("im模块websocket配置签名校验失败！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+        }
         log.info("注册WebSocket处理器");
         registry.addHandler(new ImWebSocketHandler(), webSocketConfig.getPath().toArray(String[]::new))
                 .addInterceptors(new WebSocketInterceptor())

@@ -28,12 +28,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
+import vip.xiaonuo.im.core.utils.WebSocketUtil;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.mapper.ImGroupMemberMapper;
 import vip.xiaonuo.im.modular.member.param.ImGroupMemberAddParam;
@@ -42,7 +42,6 @@ import vip.xiaonuo.im.modular.member.param.ImGroupMemberIdParam;
 import vip.xiaonuo.im.modular.member.param.ImGroupMemberPageParam;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -120,12 +119,8 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
             obj.set("messageType", "1");
             obj.set("groupId", imGroupMember.getGroupId());
             obj.set("silenceTime", imGroupMemberEditParam.getSilenceTime());
-            try {
-                synchronized (webSocketSession) {
-                    webSocketSession.sendMessage(new TextMessage(obj.toString()));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            synchronized (webSocketSession) {
+                WebSocketUtil.sendMessage(webSocketSession, obj.toString());
             }
         }
         this.updateById(imGroupMember);
@@ -156,14 +151,10 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
             JSONObject obj = JSONUtil.createObj();
             obj.set("messageType", "2");
             obj.set("groupId", imGroupMember.getGroupId());
-            try {
-                synchronized (webSocketSession) {
-                    webSocketSession.sendMessage(new TextMessage(obj.toString()));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            synchronized (webSocketSession) {
+                WebSocketUtil.sendMessage(webSocketSession, obj.toString());
             }
+            this.update(imGroupMemberLambdaUpdateWrapper);
         }
-        this.update(imGroupMemberLambdaUpdateWrapper);
     }
 }

@@ -21,7 +21,7 @@
 										<a-list-item-meta>
 											<template #title>
 												<span>{{ usersMap[item.userId + ''].name }}</span> <a-tag color="blue">{{ (userClient ===
-													'1') ? 'B' : 'C' }}</a-tag>
+										'1') ? 'B' : 'C' }}</a-tag>
 											</template>
 											<template #description>
 												<div class="text-long">
@@ -32,6 +32,10 @@
 												<a-badge :count="item.unreadCount">
 													<a-avatar :src="usersMap[item.userId + ''].avatar" shape="shape" />
 												</a-badge>
+												<div class="online">
+													<a-badge status="success" v-if="onlineFunc(item.userId)"/>
+													<a-badge status="default" v-else/>
+												</div>
 											</template>
 										</a-list-item-meta>
 									</a-list-item>
@@ -41,7 +45,8 @@
 						<a-tab-pane key="2" tab="用户">
 							<div v-if="true" class="space-around" style="padding-bottom: 10px;">
 								<a-button :type="userClient == '1' ? 'primary' : 'dashed'" @click="switchClient('1')">B 端用户</a-button>
-								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C 端用户</a-button>
+								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C
+									端用户</a-button>
 							</div>
 							<a-list :data-source="users[userClient]" :item-layout="'horizontal'" class="webkit-scrollbar-2"
 								@scroll="scrolling">
@@ -49,13 +54,17 @@
 									<a-list-item @click="selectMessageUser(item)" class="listItem">
 										<a-list-item-meta>
 											<template #title>
-												<span>{{ item.name }}</span> <a-tag color="blue">{{ (userClient === '1') ? 'B' : 'C' }}</a-tag>
+												<span>{{ item.name }}</span> &nbsp;&nbsp;&nbsp;<a-tag color="blue">{{ (userClient === '1') ? 'B' : 'C' }}</a-tag>
 											</template>
 											<template #description>
 												<span>{{ item.account }}</span>
 											</template>
 											<template #avatar>
 												<img :src="item.avatar" class="avatar" />
+												<div class="online">
+													<a-badge status="success" v-if="onlineFunc(item.id)"/>
+													<a-badge status="default" v-else/>
+												</div>
 											</template>
 										</a-list-item-meta>
 									</a-list-item>
@@ -92,6 +101,10 @@
 					<div class="current-user">
 						<div v-if="chatUser.id" class="current-user-info">
 							<img :src="chatUser.avatar" class="avatar" />
+							<div class="online-chat-content">
+								<a-badge status="success" v-if="onlineFunc(chatUser.id)"/>
+								<a-badge status="default" v-else/>
+							</div>
 							<span class="user-name">{{ chatUser.name }}</span>
 						</div>
 						<div v-if="chatUser.chatType == '2'">
@@ -182,7 +195,7 @@
 	<a-modal v-model:open="createGroupShow" style="top: 50px" :title="createGroupType == 'add' ? '创建群组' : '操作群组'"
 		:width="600">
 		<XnEditGroupComponent @updateGroupInfo='updateGroupInfoData' :createGroupType="createGroupType" :id="updateGroupId"
-			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" />
+			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" :onlineUserList="onlineUserList"/>
 		<template #footer />
 	</a-modal>
 	<WebSocketComponent @setWebSocket="setWebSocket" />
@@ -243,6 +256,8 @@ const groupList = reactive<ImGroupVo[]>([]);
 // 消息列表
 const messageListMap = reactive<Record<string, Message[]>>({
 });
+// 在线用户列表
+const onlineUserList = reactive<string[]>([]);
 // 发送的消息
 const newMessage = ref<string>('');
 const messgaeScrollHeight = ref(0);
@@ -312,6 +327,10 @@ watch(
 	}
 )
 
+const onlineFunc = (data) => {
+	return onlineUserList.includes(data)>0
+}
+
 const onSearch = (val: string, callback: any) => {
 	let data = [];
 	Object.keys(usersMap).forEach((item, index) => {
@@ -332,7 +351,7 @@ const setSearchData = (val: any[]) => {
 const onHandleChangeSearch = (val: string) => {
 	searchValue.value = val;
 	// 点击调用selectMessageUsers方法
-	selectMessageUser(usersMap[val], usersMap[val].userType != 1);
+	selectMessageUser(usersMap[val], usersMap[val].userType&&usersMap[val].userType != 1);
 	setSearchData([]);
 }
 const setWebSocket = (ws) => {
@@ -564,7 +583,22 @@ const messagesScrolling = (e) => {
 }
 
 const onMessage = (data) => {
+
 	let json = JSON.parse(data);
+	//messageType 3 在线用户列表  4用户上线通知 5用户离线通知
+	if (json.messageType && (json.messageType == '3' || json.messageType == '4' || json.messageType == '5')) {
+		if (json.messageType == '3') {
+			onlineUserList.splice(0, onlineUserList.length);
+		}
+		if (json.messageType == '5') {
+			onlineUserList.splice(onlineUserList.findIndex(item => item == json.unOnlineUser), 1);
+		}
+		if (json.onlineUserList && json.onlineUserList.length > 0) {
+			onlineUserList.push(...json.onlineUserList);
+		}
+		return;
+	}
+
 	// messageType 0 message消息  1 群组禁言(因为不在messgae中所以单独处理) 2解除禁言
 	if (json.messageType && json.messageType == '1') {
 		// 群组禁言 当前人的那个群 被禁言了多长时间
@@ -579,6 +613,12 @@ const onMessage = (data) => {
 	// 格式化时间
 	if (typeof json.createTime === 'string' || typeof json.createTime === 'number') {
 		json.createTime = dayjs(json.createTime).format('YYYY-MM-DD HH:mm:ss');
+	}
+
+	if(json.authStatus&&json.authStatus==-1){
+		notification.error({
+			message: 'IM模块未授权！！！'
+		})
 	}
 
 	// 更新或添加消息到ImMessageUserVoList
@@ -973,7 +1013,7 @@ initGroupList();
 
 .user-list {
 	padding-right: 20px;
-	width: 30%;
+	width: 26%;
 	border-right: 1px solid #f0f0f0;
 	overflow-y: auto;
 	min-width: 200px;
@@ -1086,7 +1126,7 @@ initGroupList();
 }
 
 .current-user-info {
-	/* 垂直居中 */
+	display: flex;
 }
 
 .user-name {
@@ -1137,5 +1177,12 @@ initGroupList();
 
 .create-group {
 	margin-left: 10px;
+}
+
+.online {
+	position: relative;bottom: 15px;left: 32px;
+}
+.online-chat-content{
+	position: relative;bottom: -20px;
 }
 </style>
