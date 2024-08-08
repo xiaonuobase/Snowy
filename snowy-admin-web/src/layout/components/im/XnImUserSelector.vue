@@ -79,7 +79,9 @@
 						<template #title>
 							<span>待选择列表 {{ tableRecordNum }} 条</span>
 							<div v-if="!radioModel" class="xn-fdr">
-								<a-button :disabled="updateShow" type="dashed" size="small" @click="addAllPageRecord">添加当前数据</a-button>
+								<a-button :disabled="updateShow" type="dashed" size="small" @click="addAllPageRecord"
+									>添加当前数据</a-button
+								>
 							</div>
 						</template>
 						<template #bodyCell="{ column, record }">
@@ -121,12 +123,16 @@
 						<template #title>
 							<span>已选择: {{ selectedData.length }}</span>
 							<div v-if="!radioModel" class="xn-fdr">
-								<a-button type="dashed" danger size="small" @click="delAllRecord" :disabled="updateShow">全部移除</a-button>
+								<a-button type="dashed" danger size="small" @click="delAllRecord" :disabled="updateShow"
+									>全部移除</a-button
+								>
 							</div>
 						</template>
 						<template #bodyCell="{ column, record }">
 							<template v-if="column.dataIndex === 'action'">
-								<a-button :disabled="updateShow" type="dashed" danger size="small" @click="delRecord(record)"><MinusOutlined /></a-button>
+								<a-button :disabled="updateShow" type="dashed" danger size="small" @click="delRecord(record)"
+									><MinusOutlined
+								/></a-button>
 							</template>
 						</template>
 					</a-table>
@@ -218,7 +224,7 @@
 		updateShow: {
 			type: Boolean,
 			default: () => true
-		},
+		}
 	})
 	// 主表格的ref 名称
 	const tableRef = ref()
@@ -625,5 +631,4 @@
 	.show-delete-icon {
 		visibility: visible;
 	}
-	
 </style>

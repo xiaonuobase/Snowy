@@ -3,7 +3,6 @@
 		<!-- 搜索面板 -->
 		<panel-search v-if="!isMobile" />
 		<im />
-		<im-demo />
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
@@ -69,7 +68,6 @@
 	import DevUserMessage from './message.vue'
 	import PanelSearch from './panel-search/index.vue'
 	import Im from './im/index.vue'
-	import ImDemo from './im/demo.vue'
 	import { globalStore } from '@/store'
 	import { useI18n } from 'vue-i18n'
 	const { locale } = useI18n()
