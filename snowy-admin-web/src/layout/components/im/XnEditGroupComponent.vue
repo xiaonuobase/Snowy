@@ -2,7 +2,7 @@
 	<div>
 		<a-form ref="formRef" :model="formData" layout="vertical">
 			<a-form-item label="名称：" name="name">
-				<a-input v-model:value="formData.name" placeholder="请输入名称" allow-clear
+				<a-input v-model:value="formData.name" placeholder="请输入名称" allow-clear show-count :maxlength="10"
 					:disabled="props.createGroupType == 'details' || (currentUser.role && currentUser.role != '1')" />
 			</a-form-item>
 			<div class="account-center-avatarHolder">
@@ -48,7 +48,7 @@
 										<span style="font-size: smaller">{{ item.name || '-' }}</span>
 									</template>
 									<template #avatar>
-										<a-avatar :src="item.avatar || avatar" />
+										<a-avatar shape="square" :src="item.avatar || avatar" size="large" />
 										<div class="online">
 											<a-badge status="success" v-if="onlineFunc(key.userId)"/>
 											<a-badge status="default" v-else/>
@@ -554,14 +554,14 @@ defineExpose({ add, update })
 	overflow-x: hidden;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
-	height: calc(32vh);
+	height: calc(30vh);
 	border: 1px solid #d9d9d9;
 	margin-bottom: 10px;
 }
 .online{
 	position: relative;
-	left: 30px;
-	bottom: 10px;
+	left: 32px;
+	bottom: 17px;
 	
 }
 </style>

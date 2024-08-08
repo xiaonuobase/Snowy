@@ -1,118 +1,116 @@
 <template>
 	<div class="im panel-item" @click="handleOpen">
 		<MessageOutlined />
-	</div>
-	<a-modal v-model:open="open" :closable="false" :mask-closable="false"
-		:style="{ width: 'auto', height: 'auto', maxWidth: '60vw', maxHeight: '90vh' }" :footer="null">
-		<template #title></template>
-		<div class="xn-im-total-container" :style="{ padding: 0, height: 'calc(100vh - 200px)', overflow: 'hidden' }">
-			<!-- 左侧 -->
-			<div class="container-side">
-				<a-popover trigger="click">
-					<template #content>
-						<a-avatar shape="square" :src="currentUser.avatar" :size="64" />
-						<span>姓名：</span> {{ currentUser.name }}
-						<br />
-						<span>机构：</span> {{ currentUser.orgName }}-{{ currentUser.positionName }}
-					</template>
-					<a-avatar shape="square" size="large" :src="currentUser.avatar" class="container-side-avatar" />
-				</a-popover>
-				<a-menu style="width: 65px" v-model:selectedKeys="leftSelectedKeys" mode="inline" theme="dark"
-					:inline-collapsed="true" :items="leftMenuItems" @click="handleMenuClick" />
-			</div>
-			<!-- 目录区 -->
-			<div class="container-catalog">
-				<div class="catalog-search">
-					<a-select v-model:value="searchValue" show-search placeholder="搜索" :default-active-first-option="false"
-						:show-arrow="false" :filter-option="false" :not-found-content="null" :options="searchData"
-						@search="onSearch" @change="onHandleChangeSearch"></a-select>
-				</div>
-				<div class="catalog-content webkit-scrollbar" v-if="leftSelectedKeys == '1'" @scroll="scrolling">
-					<div :class="['catalog-content-li', chatUser.id === item.id ? 'li-checked' : '']" :key="item.id"
-						v-for="item in ImMessageUserVoList" @click="selectMessageUser(usersMap[item.userId + ''])">
-						<a-badge :count="item.unreadCount">
-							<a-avatar shape="square" size="large" :src="usersMap[item.userId + ''].avatar"
-								class="catalog-content-li-avatar" />
-						</a-badge>
-						<a-badge status="success" v-if="onlineFunc(item.userId)" style="padding-top: 32px; margin-left: -8px" />
-						<a-badge status="default" v-else style="padding-top: 32px; margin-left: -8px" />
-						<div class="catalog-content-li-user">
-							<div>
-								<span>{{ usersMap[item.userId + ''].name }}</span>
-								<span class="catalog-content-li-user-time">{{ lastMessageDate(item.createTime) }}</span>
-							</div>
-							<span class="catalog-content-li-user-last-msg">{{ groupRecall(item.content) }}</span>
-						</div>
+		<a-modal v-model:open="open" title="聊天"
+			:style="{ width: 'auto', height: 'auto', maxWidth: '60vw', maxHeight: '90vh' }"
+			:body-style="{ padding: 0, height: 'calc(100vh - 300px)', overflow: 'hidden' }">
+			<div class="chat-container">
+				<div class="user-list">
+					<a-alert message="连接异常" v-if="websocket == null" type="error" style="margin-bottom: 10px;" />
+					<div class="flex">
+						<a-select v-model:value="searchValue" show-search placeholder="搜索" style="width: 200px"
+							:default-active-first-option="false" :show-arrow="false" :filter-option="false" :not-found-content="null"
+							:options="searchData" @search="onSearch" @change="onHandleChangeSearch"></a-select>
 					</div>
-				</div>
-				<div v-else>
-					<a-tabs v-model:activeKey="activeKey" centered style="position: relative; ">
-						<a-tab-pane key="1" tab="好友"></a-tab-pane>
-						<a-tab-pane key="2" tab="群组"></a-tab-pane>
+					<a-tabs v-model:activeKey="activeKey" centered>
+						<a-tab-pane key="1" tab="聊天">
+							<a-list class="webkit-scrollbar" :data-source="ImMessageUserVoList" :item-layout="'horizontal'"
+								@scroll="scrolling">
+								<template #renderItem="{ item }">
+									<a-list-item @click="selectMessageUser(usersMap[item.userId + ''])" class="listItem">
+										<a-list-item-meta>
+											<template #title>
+												<span>{{ usersMap[item.userId + ''].name }}</span> <a-tag color="blue">{{ (userClient ===
+										'1') ? 'B' : 'C' }}</a-tag>
+											</template>
+											<template #description>
+												<div class="text-long">
+													<span>{{ groupRecall(item.content) }}</span>
+												</div>
+											</template>
+											<template #avatar>
+												<a-badge :count="item.unreadCount">
+													<a-avatar :src="usersMap[item.userId + ''].avatar" shape="shape" />
+												</a-badge>
+												<div class="online">
+													<a-badge status="success" v-if="onlineFunc(item.userId)"/>
+													<a-badge status="default" v-else/>
+												</div>
+											</template>
+										</a-list-item-meta>
+									</a-list-item>
+								</template>
+							</a-list>
+						</a-tab-pane>
+						<a-tab-pane key="2" tab="用户">
+							<div v-if="true" class="space-around" style="padding-bottom: 10px;">
+								<a-button :type="userClient == '1' ? 'primary' : 'dashed'" @click="switchClient('1')">B 端用户</a-button>
+								<a-button :type="userClient == '2' ? 'primary' : 'dashed'" @click="switchClient('2')" disabled>C
+									端用户</a-button>
+							</div>
+							<a-list :data-source="users[userClient]" :item-layout="'horizontal'" class="webkit-scrollbar-2"
+								@scroll="scrolling">
+								<template #renderItem="{ item }">
+									<a-list-item @click="selectMessageUser(item)" class="listItem">
+										<a-list-item-meta>
+											<template #title>
+												<span>{{ item.name }}</span> &nbsp;&nbsp;&nbsp;<a-tag color="blue">{{ (userClient === '1') ? 'B' : 'C' }}</a-tag>
+											</template>
+											<template #description>
+												<span>{{ item.account }}</span>
+											</template>
+											<template #avatar>
+												<img :src="item.avatar" class="avatar" />
+												<div class="online">
+													<a-badge status="success" v-if="onlineFunc(item.id)"/>
+													<a-badge status="default" v-else/>
+												</div>
+											</template>
+										</a-list-item-meta>
+									</a-list-item>
+								</template>
+							</a-list>
+						</a-tab-pane>
+						<a-tab-pane key="3" tab="群组" class="webkit-scrollbar">
+							<div style="display: flex; justify-content: center">
+								<span>创建群组：</span>
+								<PlusOutlined class="create-group" @click="createGroup" />
+							</div>
+							<a-list :data-source="groupList" :item-layout="'horizontal'" class="webkit-scrollbar-2"
+								@scroll="scrolling">
+								<template #renderItem="{ item }">
+									<a-list-item @click="selectMessageUser(item, true)" class="listItem">
+										<a-list-item-meta>
+											<template #title>
+												<span>{{ item.name }}</span> <a-tag color="blue">群组</a-tag>
+											</template>
+											<template #description>
+												<span>{{ item.account }}</span>
+											</template>
+											<template #avatar>
+												<img :src="item.avatar" class="avatar" />
+											</template>
+										</a-list-item-meta>
+									</a-list-item>
+								</template>
+							</a-list>
+						</a-tab-pane>
 					</a-tabs>
-					<div class="tab-person webkit-scrollbar" v-if="activeKey == '1'">
-						<div :class="['catalog-content-li', chatUser.id === item.id ? 'li-checked' : '']" :key="item.id"
-							v-for="item in users[userClient]" @click="selectMessageUser(item)">
-							<a-avatar shape="square" size="large" :src="item.avatar" class="catalog-content-li-avatar" />
-							<a-badge status="success" v-if="onlineFunc(item.id)" style="padding-top: 32px; margin-left: -8px" />
-							<a-badge status="default" v-else style="padding-top: 32px; margin-left: -8px" />
-							<div class="catalog-content-li-user">
-								<div>
-									<span>{{ item.name }}</span>
-								</div>
-								<span class="catalog-content-li-user-last-msg">{{ item.account }}</span>
+				</div>
+				<div class="chat-content">
+					<div class="current-user">
+						<div v-if="chatUser.id" class="current-user-info">
+							<img :src="chatUser.avatar" class="avatar" />
+							<div class="online-chat-content">
+								<a-badge status="success" v-if="onlineFunc(chatUser.id)"/>
+								<a-badge status="default" v-else/>
 							</div>
+							<span class="user-name">{{ chatUser.name }}</span>
+						</div>
+						<div v-if="chatUser.chatType == '2'">
+							<a-button @click="updateGroup(chatUser.id)">编辑</a-button>
 						</div>
 					</div>
-					<div v-if="activeKey == '2'">
-						<div style="position: fixed;top: calc(100vh - 160px); left: 590px">
-							<a-tooltip title="创建群组">
-								<a-button type="primary" shape="circle" size="large" @click="createGroup">
-									<template #icon>
-										<PlusOutlined />
-									</template>
-								</a-button>
-							</a-tooltip>
-						</div>
-						<div class="tab-person webkit-scrollbar-2">
-							<div :class="['catalog-content-li', chatUser.id === item.id ? 'li-checked' : '']" :key="item.id"
-								v-for="item in groupList" @click="selectMessageUser(item)">
-								<a-avatar shape="square" size="large" :src="item.avatar" class="catalog-content-li-avatar" />
-								<div class="catalog-content-li-user">
-									<div>
-										<span>{{ item.name }}</span>
-									</div>
-									<span class="catalog-content-li-user-last-msg">{{ item.account }}</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
-			<!-- 聊天区 -->
-			<div class="container-content">
-				<div class="content-header">
-					<a-flex>
-						<div class="header-title">
-							<span class="header-title-font" v-if="chatUser.id">{{ chatUser.name }}</span>
-						</div>
-						<div class="header-close">
-							<div v-if="chatUser.chatType === 2 || chatUser.chatType === '2'">
-								<a-button type="text" shape="circle" size="large" @click="updateGroup(chatUser.id)">
-									<template #icon>
-										<SettingOutlined />
-									</template>
-								</a-button>
-							</div>
-							<div class="header-close-icon">
-								<CloseOutlined @click="handleClose" />
-							</div>
-						</div>
-					</a-flex>
-				</div>
-				<!-- 聊天内容区域 -->
-				<div class="content-center" v-if="chatUser.id" style="display: flex; flex-direction: column">
 					<div class="messages" ref="messageContainer" @scroll="messagesScrolling">
 						<div v-if="messageListMap[chatUser.id] && messageListMap[chatUser.id].length != 0">
 							<div v-for="message in messageListMap[chatUser.id]" :key="message.id">
@@ -163,36 +161,30 @@
 											<p v-if="imageSuffix.indexOf(key.suffix) == -1">{{ key.name }}</p>
 										</div>
 									</div>
-
 								</div>
 								<div v-else style="color:gray;font-size:x-small; display: flex; justify-content: center;">
 									<p>{{ groupRecall(message.content) }}</p>
 								</div>
 							</div>
 						</div>
+						<div v-else class="text-align-center">
+							{{ '暂无消息' }}
+						</div>
 					</div>
 					<div class="message-input">
 						<FileImageOutlined class="large" @click="uploadImage('图片', 'image')" />
 						<FolderOutlined class="large" @click="uploadImage('文件', 'drag')" />
-						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage" :bordered="false"
+						<a-textarea v-model:value="newMessage" @keypress.enter="sendMessage"
 							:placeholder="cancelSilenceTime(groupMutedList[chatUser.id]) ? '输入消息...' : '您已被禁言，剩余时间' + cancelSilenceDateTime + '分钟解除禁言'"
-							:auto-size="{ minRows: 4, maxRows: 8 }" :disabled="!cancelSilenceTime(groupMutedList[chatUser.id])" />
-						<div class="send-msg-bto">
-							<a-button @click="sendMessage" type="primary"
-								:disabled="!chatUser.id || !cancelSilenceTime(groupMutedList[chatUser.id])">发送</a-button>
-						</div>
+							:auto-size="{ minRows: 3, maxRows: 6 }" :disabled="!cancelSilenceTime(groupMutedList[chatUser.id])" />
+						<a-button style="float: right;margin-top: 5px;" @click="sendMessage" type="primary"
+							:disabled="!chatUser.id || !cancelSilenceTime(groupMutedList[chatUser.id])">发送</a-button>
 					</div>
 				</div>
-				<!-- 未命中任何聊天 -->
-				<div class="content-center-miss" v-else>
-					<img src="./image/content.png" class="content-center-miss-image" />
-					<span style="font-weight: 600">打开系统的另一扇窗</span>
-					<span style="color: #bbbbbb">主动一点，工作会更轻松！</span>
-				</div>
 			</div>
-		</div>
-	</a-modal>
-
+			<template #footer />
+		</a-modal>
+	</div>
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
 		<xn-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef"></xn-upload>
 	</a-modal>
@@ -203,18 +195,17 @@
 	<a-modal v-model:open="createGroupShow" style="top: 50px" :title="createGroupType == 'add' ? '创建群组' : '操作群组'"
 		:width="600">
 		<XnEditGroupComponent @updateGroupInfo='updateGroupInfoData' :createGroupType="createGroupType" :id="updateGroupId"
-			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef"
-			:onlineUserList="onlineUserList" />
+			@closeGroupShow="closeGroupShow" @restChatUser="restChatUser" v-if="createGroupShow" ref="createGroupRef" :onlineUserList="onlineUserList"/>
 		<template #footer />
 	</a-modal>
 	<WebSocketComponent @setWebSocket="setWebSocket" />
-
 </template>
 
 <script setup lang="ts">
+
 import { ref, reactive } from 'vue';
 import dayjs from 'dayjs'
-import { MessageOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { MessageOutlined } from '@ant-design/icons-vue';
 import tool from '@/utils/tool'
 import imSysUserApi from '@/layout/components/im/api/imSysUserApi'
 import imMessageApi from '@/layout/components/im/api/imMessageApi'
@@ -228,21 +219,7 @@ import WebSocketComponent from '@/layout/components/im/WebSocketComponent.vue'
 import XnEditGroupComponent from '@/layout/components/im/XnEditGroupComponent.vue'
 
 const websocket = ref(null);
-const leftSelectedKeys = ref(['1'])
-const leftMenuItems = ref([
-	{
-		key: '1',
-		icon: () => h(MessageOutlined),
-		label: '聊天',
-		title: '聊天'
-	},
-	{
-		key: '2',
-		icon: () => h(TeamOutlined),
-		label: '通讯录',
-		title: '通讯录'
-	}
-])
+
 // 聊天记录参数
 const queryChatRecordWithUserParams = reactive({
 	current: 1,
@@ -350,27 +327,8 @@ watch(
 	}
 )
 
-
-const lastMessageDate = (date) => {
-	// 格式化时间 如果是今天的只显示时间 如果是昨天的显示昨天 如果是昨天之前的显示日期
-	if (dayjs().format('YYYY-MM-DD') == dayjs(date).format('YYYY-MM-DD')) {
-		return dayjs(date).format('HH:mm')
-	} else if (dayjs().subtract(1, 'day').format('YYYY-MM-DD') == dayjs(date).format('YYYY-MM-DD')) {
-		return '昨天'
-	} else {
-		return dayjs(date).format('YYYY-MM-DD')
-	}
-
-}
-const handleMenuClick = (e) => {
-	leftSelectedKeys.value = e.key
-}
-const handleClose = () => {
-	open.value = false
-}
-
 const onlineFunc = (data) => {
-	return onlineUserList.includes(data) > 0
+	return onlineUserList.includes(data)>0
 }
 
 const onSearch = (val: string, callback: any) => {
@@ -393,7 +351,7 @@ const setSearchData = (val: any[]) => {
 const onHandleChangeSearch = (val: string) => {
 	searchValue.value = val;
 	// 点击调用selectMessageUsers方法
-	selectMessageUser(usersMap[val], usersMap[val].userType && usersMap[val].userType != 1);
+	selectMessageUser(usersMap[val], usersMap[val].userType&&usersMap[val].userType != 1);
 	setSearchData([]);
 }
 const setWebSocket = (ws) => {
@@ -596,17 +554,17 @@ const scrolling = (e) => {
 	const clientHeight = e.target.clientHeight
 	const scrollHeight = e.target.scrollHeight
 	const scrollTop = e.target.scrollTop
-	if (Math.ceil(scrollTop) + clientHeight >= scrollHeight) {
+	if (scrollTop + clientHeight >= scrollHeight) {
 		// 判断是哪个tab
-		// if (activeKey.value == '1') {
-		// 判断是否还有数据 -1时候为初始化
-		if (queryChatRecordParams.total != -1 && queryChatRecordParams.current * queryChatRecordParams.size >= queryChatRecordParams.total) {
-			return;
+		if (activeKey.value == '1') {
+			// 判断是否还有数据 -1时候为初始化
+			if (queryChatRecordParams.total != -1 && queryChatRecordParams.current * queryChatRecordParams.size >= queryChatRecordParams.total) {
+				return;
+			}
+			queryChatRecordParams.current += 1;
+			initMessageList()
 		}
-		queryChatRecordParams.current += 1;
-		initMessageList()
 	}
-	// }
 	// console.log(`到底了!${activeKey.value == '1' ? '聊天' : activeKey.value == '2' ? '用户' : '群组'}`);
 }
 
@@ -657,7 +615,7 @@ const onMessage = (data) => {
 		json.createTime = dayjs(json.createTime).format('YYYY-MM-DD HH:mm:ss');
 	}
 
-	if (json.authStatus && json.authStatus == -1) {
+	if(json.authStatus&&json.authStatus==-1){
 		notification.error({
 			message: 'IM模块未授权！！！'
 		})
@@ -914,11 +872,7 @@ const selectMessageList = async () => {
 				message: '请选择聊天对象'
 			})
 		}
-		if (messageContainer.value) {
-			messgaeScrollHeight.value = messageContainer.value.scrollHeight;
-		} else {
-			messgaeScrollHeight.value = 0;
-		}
+		messgaeScrollHeight.value = messageContainer.value.scrollHeight;
 		imMessageApi.queryChatRecordWithUser(queryChatRecordWithUserParams).then(res => {
 			if (!messageListMap[chatUser.id] || usersMap[chatUser.id].current == -1) {
 				messageListMap[chatUser.id] = [];
@@ -1024,8 +978,6 @@ const initUserInfo = () => {
 	currentUser.id = user.id;
 	currentUser.name = user.name;
 	currentUser.avatar = user.avatar;
-	currentUser.orgName = user.orgName;
-	currentUser.positionName = user.positionName;
 	usersMap[user.id] = currentUser;
 }
 
@@ -1037,7 +989,8 @@ const setRead = (ids: []) => {
 getUserList();
 initGroupList();
 </script>
-<style lang="less" scoped>
+
+<style scoped>
 .record-img {
 	width: 40px;
 	height: 40px;
@@ -1131,8 +1084,6 @@ initGroupList();
 .message-content {
 	padding: 10px;
 	border-radius: 8px;
-	border-bottom: 1px solid rgb(0 0 0 / 10%);
-	flex: 1;
 }
 
 .message-sender {
@@ -1155,9 +1106,7 @@ initGroupList();
 }
 
 .message-input {
-	padding: 5px 10px 10px;
-	display: flex;
-	flex-wrap: wrap;
+	padding: 16px;
 	border-top: 1px solid #f0f0f0;
 }
 
@@ -1194,6 +1143,7 @@ initGroupList();
 	text-align: right !important;
 }
 
+
 .text-l {
 	text-align: left !important;
 }
@@ -1210,7 +1160,7 @@ initGroupList();
 	overflow-x: hidden;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
-	height: calc(100vh - 323px);
+	height: calc(100vh - 400px);
 }
 
 .webkit-scrollbar-2 {
@@ -1218,7 +1168,7 @@ initGroupList();
 	overflow-x: hidden;
 	-ms-overflow-style: none;
 	scrollbar-width: none;
-	height: calc(100vh - 343px);
+	height: calc(100vh - 445px);
 }
 
 .flex {
@@ -1230,173 +1180,9 @@ initGroupList();
 }
 
 .online {
-	position: relative;
-	bottom: 15px;
-	left: 32px;
+	position: relative;bottom: 15px;left: 32px;
 }
-
-.online-chat-content {
-	position: relative;
-	bottom: -20px;
-}
-
-.xn-im-total-container {
-	margin: -28px -24px -20px;
-
-	display: flex;
-	display: flex;
-	height: 100%;
-}
-
-.container-side {
-	width: 65px;
-	background-color: #001529;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	flex-grow: 0;
-}
-
-.container-side-avatar {
-	margin-top: 20px;
-	margin-bottom: 20px;
-	cursor: pointer;
-}
-
-.container-catalog {
-	flex-grow: 0;
-	width: 230px;
-	border-right: 1px solid rgb(0 0 0 / 10%);
-	height: 100%;
-}
-
-.container-content {
-	flex-grow: 1;
-}
-
-/*  目录区 -start */
-.catalog-search {
-	width: 100%;
-	height: 60px;
-	padding-left: 10px;
-	padding-right: 10px;
-	text-align: center;
-	display: flex;
-	justify-content: center;
-	flex-direction: column-reverse;
-	border-bottom: 1px solid rgb(0 0 0 / 10%);
-}
-
-.catalog-content {
-	height: calc(100vh - 263px);
-	overflow-y: auto;
-	overflow-x: hidden;
-	-ms-overflow-style: none;
-	scrollbar-width: none;
-}
-
-.catalog-content-else {
-	overflow-x: hidden;
-	-ms-overflow-style: none;
-	scrollbar-width: none;
-}
-
-.catalog-content-li {
-	background-color: #ffffff;
-	border-bottom: 1px solid rgb(0 0 0 / 0.06);
-	display: flex;
-	cursor: pointer;
-	height: 60px;
-}
-
-.li-checked {
-	background-color: #e7e7e7;
-}
-
-.catalog-content-li-avatar {
-	margin-left: 10px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	flex-grow: 0;
-}
-
-.catalog-content-li-user {
-	margin-left: 5px;
-	margin-top: 10px;
-	margin-right: 10px;
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-}
-
-.catalog-content-li-user-time {
-	float: right;
-	color: #b3b3b3;
-}
-
-.catalog-content-li-user-last-msg {
-	font-size: 12px;
-	color: #b3b3b3;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	width: 120px;
-}
-
-/* 目录区 -end */
-.content-header {
-	width: auto;
-	height: 60px;
-	border-bottom: 1px solid rgb(0 0 0 / 10%);
-}
-
-.header-title {
-	min-width: 260px;
-	margin-left: 20px;
-	height: 60px;
-	display: flex;
-	align-items: center;
-}
-
-.header-title-font {
-	font-weight: 600;
-}
-
-.header-close {
-	width: 100%;
-	display: flex;
-	justify-content: flex-end
-}
-
-.header-close-icon {
-	padding: 5px 10px 5px 5px;
-}
-
-.content-center-miss {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding-top: 100px;
-	flex: 1;
-	height: 100%;
-	width: 80%;
-}
-
-.content-center-miss-image {
-	width: 180px;
-}
-
-.content-center {
-	height: 90%;
-}
-
-.tab-person {
-	overflow-y: auto;
-}
-
-.send-msg-bto {
-	justify-content: flex-end;
-	display: flex;
-	flex: 1
+.online-chat-content{
+	position: relative;bottom: -20px;
 }
 </style>
