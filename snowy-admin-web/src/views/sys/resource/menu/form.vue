@@ -51,7 +51,7 @@
 						<template #label>
 							<a-tooltip>
 								<template #title>
-									类型为内外链条时，输入https开头的链接即可（例：https://xiaonuo.vip）,正常路由前面必须有反斜杠！
+									类型为内外链时，输入https开头的链接即可（例：https://xiaonuo.vip）,正常路由前面必须有反斜杠！
 								</template>
 								<question-circle-outlined />
 							</a-tooltip>
@@ -122,7 +122,7 @@
 </template>
 
 <script setup name="sysResourceMenuForm">
-	import { required } from '@/utils/formRules'
+	import { required, rules } from '@/utils/formRules'
 	import { cloneDeep } from 'lodash-es'
 	import SnowflakeId from 'snowflake-id'
 	import tool from '@/utils/tool'
@@ -197,20 +197,20 @@
 	// 图标选择器回调
 	const iconCallBack = (value) => {
 		if (value) {
-			formRef.value.clearValidate("icon")
+			formRef.value.clearValidate('icon')
 		}
 		formData.value.icon = value
 	}
 
 	// 默认要校验的
 	const formRules = {
-		title: [required('请输入菜单名称')],
+		title: [required('请输入菜单名称'), rules.horizontalChart],
 		parentId: [required('请选择上级菜单')],
 		menuType: [required('请选择菜单类型')],
 		path: [required('请输入路由地址')],
 		name: [required('请输入组件中name属性')],
 		module: [required('请选择模块')],
-		component: [required('请输入组件地址')],
+		component: [required('请输入组件地址'), rules.initialNotBackslashChart],
 		visible: [required('请选择是否可见')]
 	}
 

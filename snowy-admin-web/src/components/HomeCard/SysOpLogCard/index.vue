@@ -1,5 +1,5 @@
 <template>
-	<a-card title="操作记录" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/oplog')">更多</a></template>
 		<div class="timeline-div">
 			<a-timeline>
@@ -18,6 +18,8 @@
 	import tool from '@/utils/tool'
 	const userInfo = tool.data.get('USER_INFO')
 	const opLogList = ref([])
+	const title = ref('操作记录')
+	const apiLoading = ref(false)
 	onMounted(() => {
 		// 进来后执行查询
 		getOpLogList()
@@ -28,9 +30,16 @@
 		return userInfo.roleCodeList && userInfo.roleCodeList.toString().indexOf('superAdmin') !== -1
 	}
 	const getOpLogList = () => {
-		indexApi.indexOpLogList().then((data) => {
-			opLogList.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexOpLogList()
+			.then((data) => {
+				opLogList.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	}
 	const leaveFor = (url = '/') => {
 		router.replace({

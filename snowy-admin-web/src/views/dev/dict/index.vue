@@ -1,32 +1,23 @@
 <template>
-	<a-card
-		:bordered="false"
-		:active-tab-key="activeKey"
-		:tab-list="tabListNoTitle"
-		@tabChange="(key) => onTabChange(key, 'frmIndex')"
-	>
-		<p v-if="activeKey === 'frmIndex'">
-			<frm-index />
-		</p>
-		<p v-if="activeKey === 'bizIndex'">
-			<biz-index />
-		</p>
+	<a-card>
+		<a-tabs size="large" v-model:activeKey="activeKey">
+			<a-tab-pane v-for="item in tabListNoTitle" :key="item.key" :tab="item.tab">
+				<category :type="item.key" />
+			</a-tab-pane>
+		</a-tabs>
 	</a-card>
 </template>
 
 <script setup name="devDict">
-	import frmIndex from './category/frmIndex.vue'
-	import bizIndex from './category/bizIndex.vue'
-	const activeKey = ref('frmIndex')
+	import Category from './category/index.vue'
+	const activeKey = ref('FRM')
 	const tabListNoTitle = ref([
-		{ key: 'frmIndex', tab: '系统字典' },
-		{ key: 'bizIndex', tab: '业务字典' }
+		{ key: 'FRM', tab: '系统字典' },
+		{ key: 'BIZ', tab: '业务字典' }
 	])
-	const onTabChange = (value, type) => {
-		if (type === 'key') {
-			key.value = value
-		} else if (type === 'frmIndex') {
-			activeKey.value = value
-		}
-	}
 </script>
+<style lang="less" scoped>
+	:deep(.ant-card-body) {
+		padding-top: 0 !important;
+	}
+</style>

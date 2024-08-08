@@ -1,11 +1,5 @@
 <template>
-    <xn-form-container
-        title="详情"
-        :width="1000"
-        v-model:open="open"
-        :destroy-on-close="true"
-        @close="onClose"
-    >
+	<xn-form-container title="详情" :width="1000" v-model:open="open" :destroy-on-close="true" @close="onClose">
 		<a-descriptions bordered>
 			<a-descriptions-item label="标题">{{formData.title}}</a-descriptions-item>
 			<a-descriptions-item label="类型">

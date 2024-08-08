@@ -9,7 +9,6 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 import { createRouter, createWebHistory } from 'vue-router'
-import { notification } from 'ant-design-vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import systemRouter from './systemRouter'
@@ -128,7 +127,7 @@ router.afterEach((to, from) => {
 router.onError((error) => {
 	NProgress.done()
 	window.nextLoading && NextLoading.done()
-	notification.error({
+	console.error({
 		message: '路由错误',
 		description: error.message
 	})

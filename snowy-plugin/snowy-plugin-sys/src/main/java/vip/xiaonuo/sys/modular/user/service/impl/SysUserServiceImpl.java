@@ -996,7 +996,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         try {
             InputStream inputStream = POICacheManager.getFile("userImportTemplate.xlsx");
             byte[] bytes = IoUtil.readBytes(inputStream);
-            CommonDownloadUtil.download("SNOWY2.0系统B端用户导入模板.xlsx", bytes, response);
+            CommonDownloadUtil.download("SNOWY系统B端用户导入模板.xlsx", bytes, response);
         } catch (Exception e) {
             log.error(">>> 下载用户导入模板失败：", e);
             CommonResponseUtil.renderError(response, "下载用户导入模板失败");
@@ -1181,7 +1181,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());
                 }
             }
-            String fileName = "SNOWY2.0系统B端用户信息清单.xlsx";
+            String fileName = "SNOWY系统B端用户信息清单.xlsx";
             List<SysUser> sysUserList = this.list(queryWrapper);
             if(ObjectUtil.isEmpty(sysUserList)) {
                 throw new CommonException("无数据可导出");
@@ -1335,7 +1335,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 生成doc
             XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
             // 生成临时导出文件
-            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY2.0系统B端用户信息_" + sysUser.getName() + ".docx");
+            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY系统B端用户信息_" + sysUser.getName() + ".docx");
             // 写入
             BufferedOutputStream outputStream = FileUtil.getOutputStream(resultFile);
             doc.write(outputStream);

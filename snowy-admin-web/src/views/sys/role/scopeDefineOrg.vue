@@ -15,6 +15,7 @@
 				:tree-data="treeData"
 				:field-names="treeFieldNames"
 				checkable
+				check-strictly
 				:selectable="false"
 				@check="treeCheck"
 			>
@@ -25,6 +26,7 @@
 
 <script setup="props, context" name="scopeDefineOrg">
 	import roleApi from '@/api/sys/roleApi'
+	import { checkOrUnCheckChildren } from '@/utils/treeHandler'
 	const visible = ref(false)
 	let defaultExpandedKeys = ref([])
 	let checkedKeys = ref([])
@@ -83,8 +85,8 @@
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 
 	// 选中触发
-	const treeCheck = (checkedKeys) => {
-		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = checkedKeys
+	const treeCheck = (checkedKeys, { checked, node }) => {
+		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = checkOrUnCheckChildren(checked, node, checkedKeys)
 	}
 	// 定义emit事件
 	const emit = defineEmits({

@@ -19,12 +19,11 @@ import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.EnumUtil;
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.*;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
 import cn.hutool.json.JSONObject;
@@ -35,13 +34,14 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.mybatis.spring.annotation.MapperScan;
@@ -54,12 +54,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
@@ -72,6 +68,9 @@ import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonWrapperInterface;
+import vip.xiaonuo.common.util.CommonIpAddressUtil;
+import vip.xiaonuo.common.util.CommonJoinPointUtil;
+import vip.xiaonuo.common.util.CommonServletUtil;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 import vip.xiaonuo.core.handler.GlobalExceptionUtil;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
@@ -97,9 +96,6 @@ import java.util.Map;
 public class GlobalConfigure implements WebMvcConfigurer {
 
     private static final String COMMON_REPEAT_SUBMIT_CACHE_KEY = "common-repeatSubmit:";
-
-    @Resource
-    private CommonCacheOperator commonCacheOperator;
 
     /**
      * 无需登录的接口地址集合
@@ -283,6 +279,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
      * @author xuyuxiang
      * @date 2022/6/21 17:01
      **/
+    @SuppressWarnings("ALL")
     @Primary
     @Bean
     public RedisTemplate<String, Object> redisTemplate(@Autowired(required = false) RedisConnectionFactory redisConnectionFactory) {
@@ -311,64 +308,71 @@ public class GlobalConfigure implements WebMvcConfigurer {
     }
 
     /**
-     * 添加节流防抖拦截器
+     * 节流防抖的AOP
      *
      * @author xuyuxiang
-     * @date 2022/6/20 15:18
-     **/
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new HandlerInterceptor() {
-            @Override
-            public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                     @NonNull Object handler) throws Exception {
-                if (handler instanceof HandlerMethod) {
-                    HandlerMethod handlerMethod = (HandlerMethod) handler;
-                    Method method = handlerMethod.getMethod();
-                    CommonNoRepeat annotation = method.getAnnotation(CommonNoRepeat.class);
-                    if (ObjectUtil.isNotEmpty(annotation)) {
-                        JSONObject repeatSubmitJsonObject = this.isRepeatSubmit(request, annotation);
-                        if (repeatSubmitJsonObject.getBool("repeat")) {
-                            response.setCharacterEncoding(CharsetUtil.UTF_8);
-                            response.setContentType(ContentType.JSON.toString());
-                            response.getWriter().write(JSONUtil.toJsonStr(CommonResult.error("请求过于频繁，请" + repeatSubmitJsonObject.getStr("time") + "后再试")));
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
+     * @date 2022/9/15 21:24
+     */
+    @Component
+    @Aspect
+    public static class CommonNoRepeatAop {
 
-            public JSONObject isRepeatSubmit(HttpServletRequest request, CommonNoRepeat annotation) {
-                JSONObject jsonObject = JSONUtil.createObj();
-                jsonObject.set("repeatParam", JSONUtil.toJsonStr(request.getParameterMap()));
-                jsonObject.set("repeatTime", DateUtil.current());
-                String url = request.getRequestURI();
-                // 获取该接口缓存的限流数据
-                Object cacheObj = commonCacheOperator.get(COMMON_REPEAT_SUBMIT_CACHE_KEY + url);
-                if (ObjectUtil.isNotEmpty(cacheObj)) {
-                    JSONObject cacheJsonObject = JSONUtil.parseObj(cacheObj);
-                    if(cacheJsonObject.containsKey(url)) {
-                        JSONObject existRepeatJsonObject = cacheJsonObject.getJSONObject(url);
-                        // 如果与上次参数一致，且时间间隔小于要求的限流时长，则判定为重复提交
-                        if (jsonObject.getStr("repeatParam").equals(existRepeatJsonObject.getStr("repeatParam"))) {
-                            long interval = jsonObject.getLong("repeatTime") - existRepeatJsonObject.getLong("repeatTime");
-                            if(interval < annotation.interval()) {
-                                long secondsParam = (annotation.interval() - interval) / 1000;
-                                if(secondsParam == 0) {
-                                    return JSONUtil.createObj().set("repeat", false);
-                                } else {
-                                    return JSONUtil.createObj().set("repeat", true).set("time", CommonTimeFormatUtil.formatSeconds(secondsParam));
-                                }
+        /**
+         * 切入点
+         *
+         * @author xuyuxiang
+         * @date 2022/9/15 21:27
+         */
+        @Pointcut("@annotation(vip.xiaonuo.common.annotation.CommonNoRepeat)")
+        private void noRepeatPointcut() {
+
+        }
+
+        /**
+         * 执行校验
+         *
+         * @author xuyuxiang
+         * @date 2022/9/15 21:27
+         */
+        @Before("noRepeatPointcut()")
+        public void doBefore(JoinPoint joinPoint) {
+            MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+            Method method = methodSignature.getMethod();
+            CommonNoRepeat commonNoRepeat = method.getAnnotation(CommonNoRepeat.class);
+            HttpServletRequest request = CommonServletUtil.getRequest();
+            String url = request.getRequestURI();
+            CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
+            JSONObject jsonObject = JSONUtil.createObj();
+            jsonObject.set("repeatParam", CommonJoinPointUtil.getArgsJsonString(joinPoint));
+            jsonObject.set("repeatTime", DateUtil.current());
+            // 获取该接口缓存的限流数据，跟当前ip以及登录用户有关
+            String cacheKey = COMMON_REPEAT_SUBMIT_CACHE_KEY + CommonIpAddressUtil.getIp(request) + StrUtil.COLON;
+            Object loginId = StpUtil.getLoginIdDefaultNull();
+            if(ObjectUtil.isNotEmpty(loginId)) {
+                cacheKey = cacheKey + Convert.toStr(loginId) + StrUtil.COLON + url;
+            } else {
+                cacheKey = cacheKey + url;
+            }
+            Object cacheObj = commonCacheOperator.get(cacheKey);
+            if (ObjectUtil.isNotEmpty(cacheObj)) {
+                JSONObject cacheJsonObject = JSONUtil.parseObj(cacheObj);
+                if(cacheJsonObject.containsKey(url)) {
+                    JSONObject existRepeatJsonObject = cacheJsonObject.getJSONObject(url);
+                    // 如果与上次参数一致，且时间间隔小于要求的限流时长，则判定为重复提交
+                    if (jsonObject.getStr("repeatParam").equals(existRepeatJsonObject.getStr("repeatParam"))) {
+                        long interval = jsonObject.getLong("repeatTime") - existRepeatJsonObject.getLong("repeatTime");
+                        if(interval < commonNoRepeat.interval()) {
+                            long secondsParam = (commonNoRepeat.interval() - interval) / 1000;
+                            if(secondsParam > 0) {
+                                throw new CommonException("请求过于频繁，请" + CommonTimeFormatUtil.formatSeconds(secondsParam) + "后再试");
                             }
                         }
                     }
                 }
-                // 缓存最新的该接口的限流数据，为防止缓存的数据过多，缓存时效为1小时
-                commonCacheOperator.put(COMMON_REPEAT_SUBMIT_CACHE_KEY + url, JSONUtil.createObj().set(url, jsonObject), 60 * 60);
-                return JSONUtil.createObj().set("repeat", false);
             }
-        }).addPathPatterns("/**");
+            // 缓存最新的该接口的限流数据，跟当前ip以及登录用户有关，为防止缓存的数据过多，缓存时效为1小时
+            commonCacheOperator.put(cacheKey, JSONUtil.createObj().set(url, jsonObject), 60 * 60);
+        }
     }
 
     /**
@@ -411,7 +415,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
          * @author xuyuxiang
          * @date 2022/9/15 21:27
          */
-        @SuppressWarnings("all")
+        @SuppressWarnings("ALL")
         private Object processWrapping(ProceedingJoinPoint proceedingJoinPoint, Object originResult) throws IllegalAccessException, InstantiationException {
             MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
             Method method = methodSignature.getMethod();
@@ -462,7 +466,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
          * @author xuyuxiang
          * @date 2022/9/15 21:36
          */
-        @SuppressWarnings("all")
+        @SuppressWarnings("ALL")
         private JSONObject wrapPureObject(Object originModel, Class<? extends CommonWrapperInterface<?>>[] baseWrapperClasses) {
             JSONObject jsonObject = JSONUtil.parseObj(originModel);
             try {

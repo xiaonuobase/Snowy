@@ -1,5 +1,5 @@
 <template>
-	<a-card title="访问记录" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/vislog')">更多</a></template>
 		<div class="timeline-div">
 			<a-timeline>
@@ -19,6 +19,8 @@
 	import tool from '@/utils/tool'
 	const userInfo = tool.data.get('USER_INFO')
 	const visLogList = ref([])
+	const title = ref('访问记录')
+	const apiLoading = ref(false)
 	onMounted(() => {
 		// 进来后执行查询
 		getVisLogList()
@@ -29,9 +31,16 @@
 	}
 	// 查询数据
 	const getVisLogList = () => {
-		indexApi.indexVisLogList().then((data) => {
-			visLogList.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexVisLogList()
+			.then((data) => {
+				visLogList.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	}
 	// 跳转
 	const leaveFor = (url = '/') => {
@@ -55,7 +64,7 @@
 		padding-bottom: 10px !important;
 	}
 	.timeline-item-p {
-		margin-bottom: 0px;
+		margin-bottom: 0;
 		color: rgb(188, 189, 190);
 	}
 	.timeline-div {

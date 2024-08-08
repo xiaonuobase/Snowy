@@ -53,6 +53,8 @@ gitee下载地址：[https://gitee.com/xiaonuobase/snowy](https://gitee.com/xiao
 
 github下载地址（镜像）：[https://github.com/xiaonuobase/Snowy](https://github.com/xiaonuobase/Snowy)
 
+gitcode下载地址：[https://gitcode.com/xiaonuobase/Snowy](https://gitcode.com/xiaonuobase/Snowy)
+
 演示地址：[https://snowy.xiaonuo.vip](https://snowy.xiaonuo.vip)
 
 文档地址：[https://xiaonuo.vip/doc](https://xiaonuo.vip/doc)

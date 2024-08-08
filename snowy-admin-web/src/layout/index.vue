@@ -77,14 +77,18 @@
 	import { layoutEnum } from '@/layout/enum/layoutEnum'
 	import { useRoute, useRouter } from 'vue-router'
 	import tool from '@/utils/tool'
-	import { message } from 'ant-design-vue'
+	import { notification, Button } from 'ant-design-vue'
 	import ClassicalMenu from '@/layout/menu/classicalMenu.vue'
 	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
 	import TopMenu from '@/layout/menu/topMenu.vue'
 	import { NextLoading } from '@/utils/loading'
 	import { useMenuStore } from '@/store/menu'
 	import { userStore } from '@/store/user'
+	import { getLocalHash, checkHash } from '@/utils/version'
+	import sysConfig from '@/config/index'
+	import dictApi from '@/api/dev/dictApi'
 
+	let timer = null
 	const store = globalStore()
 	const kStore = keepAliveStore()
 	const route = useRoute()
@@ -246,15 +250,71 @@
 		switchoverTopHeaderThemeColor()
 		settingTopHeaderThemeOrColor(theme.value, layout.value)
 		settingFixedWidth()
+		updateVersion()
 		nextTick(() => {
-			getNav(menu.value)
+			getNav()
 			// 刷新登录信息，不影响其他
 			userStore().refreshUserLoginUserInfo()
+			// 刷新菜单信息，不影响其他
+			useMenuStore().refreshApiMenu()
+			// 刷新字典信息，不影响其他
+			dictApi.dictTree().then((data) => {
+				// 设置字典到store中
+				tool.data.set('DICT_TYPE_TREE_DATA', data)
+			})
 		})
 	})
+	onBeforeUnmount(() => {
+		clearUpdateVersion()
+		window.removeEventListener('resize', onLayoutResize)
+		window.removeEventListener('resize', getNav)
+	})
+	// 新版检测
+	const updateVersion = () => {
+		timer = setInterval(async () => {
+			// 本地
+			let localVersion = getLocalHash()
+			// 线上
+			let onlineVersion = await checkHash()
+			// 如果不一样，提示更新
+			if (localVersion !== onlineVersion) {
+				if (document.querySelector('.notification-update-version')) {
+					return
+				}
+				const key = `open${Date.now()}`
+				notification.open({
+					type: 'info',
+					message: '发现新版本',
+					description: '检测到新版本，请刷新后使用',
+					duration: 0,
+					class: 'notification-update-version',
+					btn: () =>
+						h(
+							Button,
+							{
+								type: 'primary',
+								size: 'small',
+								onClick: () => {
+									notification.close(key)
+									window.location.reload()
+								}
+							},
+							{ default: () => '立即更新' }
+						),
+					key
+				})
+			}
+		}, sysConfig.UPDATE_VERSION_TIME)
+	}
+	// 销毁定时器
+	const clearUpdateVersion = () => {
+		if (timer) {
+			clearInterval(timer)
+			timer = null
+		}
+	}
 	// 动态获取横向导航栏隐藏数量
-	const getNav = (items) => {
-		const item = menu.value
+	const getNav = () => {
 		// 判断一下是不是顶部导航栏的模式
 		if (layout.value !== 'top') return
 		const menuNavList = menu.value
@@ -337,7 +397,7 @@
 			switchoverTopHeaderThemeColor()
 			// top下的顶栏
 			settingTopHeaderThemeOrColor(theme.value, newValue)
-			getNav(menu.value)
+			getNav()
 			settingFixedWidth()
 			let element = document.querySelector('#xn-line-nav')
 			if (element) {
@@ -572,7 +632,7 @@
 				message.warning('该模块下无任何菜单')
 			}
 		}
-		getNav(menu.value)
+		getNav()
 	}
 	// 通过标签切换应用
 	const tagSwitchModule = (id) => {

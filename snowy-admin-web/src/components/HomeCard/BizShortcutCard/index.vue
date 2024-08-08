@@ -1,5 +1,5 @@
 <template>
-	<a-card :title="title" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<div class="card-div">
 			<a-row :gutter="10">
 				<a-col :span="6" :key="shortcut.id" v-for="shortcut in shortcutList" :xs="12" :sm="8" :md="6" :lg="8" :xl="6">
@@ -21,16 +21,24 @@
 	import { onMounted } from 'vue'
 	const shortcutList = ref([])
 	const title = ref('快捷方式')
+	const apiLoading = ref(false)
 	onMounted(() => {
 		// 进来后执行查询
 		getUserLoginWorkbench()
 	})
 	const getUserLoginWorkbench = () => {
-		userCenterApi.userLoginWorkbench().then((data) => {
-			if (data) {
-				shortcutList.value = JSON.parse(data).shortcut
-			}
-		})
+		apiLoading.value = true
+		userCenterApi
+			.userLoginWorkbench()
+			.then((data) => {
+				if (data) {
+					shortcutList.value = JSON.parse(data).shortcut
+				}
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	}
 	const leaveFor = (url = '/') => {
 		router.replace({

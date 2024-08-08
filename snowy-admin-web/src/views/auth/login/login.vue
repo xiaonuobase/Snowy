@@ -170,17 +170,20 @@
 
 	onMounted(() => {
 		let formData = ref(configData.SYS_BASE_CONFIG)
-		configApi.configSysBaseList().then((data) => {
-			if (data) {
-				data.forEach((item) => {
-					formData.value[item.configKey] = item.configValue
-				})
-				captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
-				tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
-				setSysBaseConfig(formData.value)
-				refreshSwitch()
-			}
-		})
+		configApi
+			.configSysBaseList()
+			.then((data) => {
+				if (data) {
+					data.forEach((item) => {
+						formData.value[item.configKey] = item.configValue
+					})
+					captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
+					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
+					setSysBaseConfig(formData.value)
+					refreshSwitch()
+				}
+			})
+			.catch(() => {})
 	})
 
 	onBeforeMount(() => {
@@ -238,7 +241,7 @@
 				// 获取token
 				try {
 					const loginToken = await loginApi.login(loginData)
-					const loginAfter = afterLogin(loginToken)
+					await afterLogin(loginToken)
 				} catch (err) {
 					loading.value = false
 					if (captchaOpen.value === 'true') {

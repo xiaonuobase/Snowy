@@ -1,5 +1,5 @@
 <template>
-	<a-card :title="title" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<a-row>
 			<a-col :span="4">
 				<a-statistic :value="dataSource.jobCount">
@@ -56,6 +56,7 @@
 <script setup name="sysBizDataCard">
 	import indexApi from '@/api/sys/indexApi'
 	const title = ref('运维一览')
+	const apiLoading = ref(false)
 	const dataSource = ref({
 		jobCount: 0,
 		sysDictCount: 0,
@@ -65,9 +66,16 @@
 		thirdUserCount: 0
 	})
 	onMounted(() => {
-		indexApi.indexOpDataCount().then((data) => {
-			dataSource.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexOpDataCount()
+			.then((data) => {
+				dataSource.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	})
 </script>
 

@@ -11,7 +11,7 @@
 // 统一的请求发送
 import axios from 'axios'
 import qs from 'qs'
-import { Modal, message, notification } from 'ant-design-vue'
+import { Modal, message } from 'ant-design-vue'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
 
@@ -140,7 +140,7 @@ service.interceptors.response.use(
 		if (error) {
 			const status = 503
 			const description = errorCodeMap[status]
-			notification.error({
+			console.error({
 				message: '请求错误',
 				description
 			})

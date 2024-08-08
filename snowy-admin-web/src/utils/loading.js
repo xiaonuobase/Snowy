@@ -1,5 +1,3 @@
-import { nextTick } from 'vue'
-
 /**
  * 页面全局 Loading
  * @method start 创建 loading
@@ -10,19 +8,18 @@ export const NextLoading = {
 	start: () => {
 		const el = document.querySelector('.admin-ui')
 		if (el) return
-		const bodys = document.body
+		const body = document.body
 		const div = document.createElement('div')
 		div.setAttribute('class', 'admin-ui')
-		const htmls = `
+		div.innerHTML = `
 			  <div class="app-loading">
-				<div class="app-loading__logo">
+				<div class="app-loading-logo">
 				  <img src="/img/logo.png"/>
 				</div>
 				<div><span class="dot dot-spin"><i></i><i></i><i></i><i></i></span></div>
-				<div class="app-loading__title">Snowy</div>
+				<div class="app-loading-title">Snowy</div>
 			</div>`
-		div.innerHTML = htmls
-		bodys.insertBefore(div, bodys.childNodes[0])
+		body.insertBefore(div, body.childNodes[0])
 		window.nextLoading = true
 	},
 	// 移除 loading

@@ -1,5 +1,5 @@
 <template>
-	<a-card :title="title" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<a-row>
 			<a-col :span="12">
 				<a-statistic :value="dataSource.fileCount">
@@ -40,6 +40,7 @@
 <script setup name="sysToolDataCard">
 	import indexApi from '@/api/sys/indexApi'
 	const title = ref('基础工具')
+	const apiLoading = ref(false)
 	const dataSource = ref({
 		fileCount: 0,
 		smsCount: 0,
@@ -47,9 +48,16 @@
 		messageCount: 0
 	})
 	onMounted(() => {
-		indexApi.indexToolDataCount().then((data) => {
-			dataSource.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexToolDataCount()
+			.then((data) => {
+				dataSource.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	})
 </script>
 
