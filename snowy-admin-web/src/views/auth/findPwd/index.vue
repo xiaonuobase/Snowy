@@ -139,8 +139,7 @@
 	}
 	.login-form {
 		width: 450px;
-		position: absolute;
-		top: 21.8%;
+		margin-top: 110px;
 	}
 	.login-header {
 		margin-bottom: 20px;
@@ -175,7 +174,7 @@
 	.logo_background {
 		position: absolute;
 		left: 0;
-		top: 56px;
+		top: 50px;
 		height: 60px;
 		padding-left: 56px;
 		width: 100%;
@@ -240,11 +239,8 @@
 			left: 0;
 			right: 0;
 		}
-		.login_background_front {
-			display: none;
-		}
-		.logo_background{
-			padding-left:40px;
+		.logo_background {
+			padding-left: 40px;
 		}
 		.login-form {
 			width: 100%;

@@ -18,6 +18,9 @@ const DEFAULT_CONFIG = {
 	// 请求超时
 	TIMEOUT: 60000,
 
+	// 版本更新时间 默认10s
+	UPDATE_VERSION_TIME: 10000,
+
 	// TokenName // Authorization
 	TOKEN_NAME: 'token',
 

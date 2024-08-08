@@ -1,15 +1,17 @@
 <template>
 	<a-row :gutter="10">
 		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<a-tree
-				v-if="treeData.length > 0"
-				v-model:expandedKeys="defaultExpandedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				@select="treeSelect"
-			>
-			</a-tree>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<div class="dict-tree-div">
+				<a-tree
+					v-if="treeData.length > 0"
+					v-model:expandedKeys="defaultExpandedKeys"
+					:tree-data="treeData"
+					:field-names="treeFieldNames"
+					@select="treeSelect"
+				>
+				</a-tree>
+				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			</div>
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
 			<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form mb-3" :model="searchFormState">
@@ -42,7 +44,7 @@
 				:row-key="(record) => record.id"
 			>
 				<template #operator class="table-operator">
-					<a-button type="primary" @click="formRef.onOpen(undefined, 'BIZ', searchFormState.parentId)">
+					<a-button type="primary" @click="formRef.onOpen(undefined, categoryType, searchFormState.parentId)">
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
@@ -53,7 +55,7 @@
 						<a-tag color="green" v-else>子级</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
-						<a @click="formRef.onOpen(record, 'BIZ')">编辑</a>
+						<a @click="formRef.onOpen(record, categoryType)">编辑</a>
 						<a-divider type="vertical" />
 						<a-popconfirm title="删除此字典与下级字典吗？" @confirm="remove(record)">
 							<a-button type="link" danger size="small">删除</a-button>
@@ -66,11 +68,17 @@
 	<Form ref="formRef" @successful="formSuccessful()" />
 </template>
 
-<script setup>
+<script setup name="dictCategoryIndex">
 	import { Empty } from 'ant-design-vue'
 	import dictApi from '@/api/dev/dictApi'
 	import Form from './form.vue'
 	import tool from '@/utils/tool'
+	const props = defineProps({
+		type: {
+			type: String,
+			default: 'FRM'
+		}
+	})
 	const columns = [
 		{
 			title: '字典名称',
@@ -93,6 +101,9 @@
 			width: '150px'
 		}
 	]
+	const categoryType = computed(() => {
+		return props.type
+	})
 	// 定义tableDOM
 	const tableRef = ref(null)
 	const formRef = ref()
@@ -108,7 +119,7 @@
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		loadTreeData()
-		parameter.category = 'BIZ'
+		parameter.category = categoryType.value
 		return dictApi.dictPage(Object.assign(parameter, searchFormState.value)).then((data) => {
 			if (data.records) {
 				if (searchFormState.value.parentId) {
@@ -140,7 +151,7 @@
 	// 加载左侧的树
 	const loadTreeData = () => {
 		const param = {
-			category: 'BIZ'
+			category: categoryType.value
 		}
 		dictApi.dictTree(param).then((res) => {
 			if (res) {
@@ -172,8 +183,12 @@
 				id: record.id
 			}
 		]
-		dictApi.dictDelete(params).then(() => {
-			tableRef.value.refresh(true)
+		dictApi.dictDelete(params).then((res) => {
+			if (res.code === 200) {
+				tableRef.value.refresh(true)
+			} else {
+				res.message && tool.error(res.message)
+			}
 		})
 		refreshStoreDict()
 	}
@@ -190,11 +205,15 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="less">
 	.ant-form-item {
 		margin-bottom: 0 !important;
 	}
 	.snowy-button-left {
 		margin-left: 8px;
+	}
+	.dict-tree-div {
+		height: 700px;
+		overflow: auto;
 	}
 </style>

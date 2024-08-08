@@ -9,19 +9,23 @@
 			<template #nextArrow>
 				<div class="custom-slick-arrow" style="right: 10px"><RightOutlined /></div>
 			</template>
-			<img
-				v-for="item in slideshowList"
-				:key="item.id"
-				:src="item.image"
-				class="carousel-images"
-				@click="leaveForOpen(item.pathDetails)"
-			/>
+			<div v-if="!isEmpty(slideshowList)">
+				<img
+					v-for="item in slideshowList"
+					:key="item.id"
+					:src="item.image"
+					class="carousel-images"
+					@click="leaveForOpen(item.pathDetails)"
+				/>
+			</div>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 		</a-carousel>
 	</a-card>
 </template>
 
 <script setup name="carousel">
 	import bizIndexApi from '@/api/biz/bizIndexApi'
+	import { Empty } from 'ant-design-vue'
 	import { isEmpty, cloneDeep } from 'lodash-es'
 	import router from '@/router'
 	const slideshowList = ref([])
@@ -40,9 +44,12 @@
 			// 这是字典内维护的该位置
 			place: props.config.options.place ? props.config.options.place : 'BACK_SYS_INDEX'
 		}
-		bizIndexApi.bizIndexSlideshowList(param).then((data) => {
-			slideshowList.value = data
-		})
+		bizIndexApi
+			.bizIndexSlideshowList(param)
+			.then((data) => {
+				slideshowList.value = data
+			})
+			.catch(() => {})
 	})
 	// URL跟路由的跳转
 	const leaveForOpen = (value) => {
@@ -81,7 +88,7 @@
 		text-align: center;
 		height: 180px;
 		line-height: 150px;
-		background: #364d79;
+		background: #1890ff;
 		overflow: hidden;
 	}
 	.ant-carousel :deep(.slick-arrow.custom-slick-arrow) {

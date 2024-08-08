@@ -105,8 +105,7 @@
 		// firstShowMap = {} // 重置单元格合并映射
 		// 如果有数据，我们再不去反复的查询
 		if (echoDatalist.value.length > 0) {
-			let data = echoDatalist.value.find((f) => f.id === moduleId.value).menu
-			loadDatas.value = data
+			loadDatas.value = echoDatalist.value.find((f) => f.id === moduleId.value).menu
 		} else {
 			// 获取表格数据
 			spinningLoading.value = true
@@ -143,11 +142,11 @@
 			if (module.menu) {
 				// 加入回显内容
 				module.menu.forEach((item) => {
-					const menueCheck = ref(0)
+					const menusCheck = ref(0)
 					if (resEcho.grantInfoList.length > 0) {
 						resEcho.grantInfoList.forEach((grant) => {
 							if (item.id === grant.menuId) {
-								menueCheck.value++
+								menusCheck.value++
 								// 处理按钮
 								if (grant.buttonInfo.length > 0) {
 									grant.buttonInfo.forEach((button) => {
@@ -162,15 +161,23 @@
 						})
 					}
 					// 回显前面的2个
-					if (menueCheck.value > 0) {
+					if (menusCheck.value > 0) {
 						item.parentCheck = true
 						item.nameCheck = true
 					}
 				})
 
 				// 排序
-				module.menu = module.menu.sort((a, b) => {
-					return a.parentId - b.parentId
+				module.menu.sort((a, b) => {
+					// 首先比较parentName属性
+					let nameComparison = b.parentName.localeCompare(a.parentName)
+					if (nameComparison !== 0) {
+						// 如果parentName不同，直接返回parentName的比较结果
+						return nameComparison
+					} else {
+						// 如果name相同，则比较parentId属性，直接返回parentId的差值
+						return Number(a.parentId) - Number(b.parentId)
+					}
 				})
 				// 缓存加入索引
 				module.menu.forEach((item, index) => {
@@ -199,12 +206,11 @@
 		})
 	}
 	const checkAllChildNotChecked = (record) => {
-		const allChecked = checkFieldKeys.every((key) => {
+		return checkFieldKeys.every((key) => {
 			// 遍历所有的字段
 			const child = record[key]
 			return child.every((field) => !field.check)
 		})
-		return allChecked
 	}
 	const changeChildCheckBox = (record, evt) => {
 		let checked = evt.target.checked
@@ -305,7 +311,7 @@
 <style scoped>
 	/* 重写复选框的样式 */
 	.ant-checkbox-wrapper {
-		margin-left: 0px !important;
+		margin-left: 0 !important;
 		padding-top: 2px !important;
 		padding-bottom: 2px !important;
 	}

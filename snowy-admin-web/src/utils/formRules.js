@@ -15,7 +15,7 @@ export const required = (message, trigger = ['blur', 'change']) => ({
 })
 
 // 常用正则规则大全：https://any86.github.io/any-rule/
-
+// 表单上面使用参照菜单管理的 title 字段，例如：-> title: [required('请输入菜单名称'), rules.horizontalChart]
 export const rules = {
 	phone: {
 		pattern: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/,
@@ -47,5 +47,17 @@ export const rules = {
 		pattern: /(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/,
 		message: '只支持正数金额',
 		trigger: 'blur'
+	},
+	horizontalChart: {
+		pattern: /^[^-]*$/,
+		message: '不可包含横杠 “-”'
+	},
+	initialNotBackslashChart: {
+		pattern: /^(?!\/)[\s\S]*$/,
+		message: '首字母不可出现反斜杠 “/”'
+	},
+	initialYesBackslashChart: {
+		pattern: /^\/[^/].*$/,
+		message: '首字母必须是反斜杠 “/”'
 	}
 }

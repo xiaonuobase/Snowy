@@ -54,7 +54,7 @@
 		</div>
 
 		<!-- 统计列数据 -->
-		<a-alert showIcon class="mb-4" v-if="props.alert">
+		<a-alert showIcon class="s-table-alert mb-4" v-if="props.alert">
 			<template #message>
 				<div>
 					<span className="mr-3">
@@ -98,7 +98,7 @@
 			@change="loadData"
 			@expand="
 				(expanded, record) => {
-					emit('expand', expanded, record)
+					emit('onExpand', expanded, record)
 				}
 			"
 			:rowClassName="
@@ -124,7 +124,7 @@
 	import { get } from 'lodash-es'
 	const slots = useSlots()
 	const route = useRoute()
-	const emit = defineEmits(['expand'])
+	const emit = defineEmits(['onExpand'])
 	const renderSlots = Object.keys(slots)
 
 	const props = defineProps(
@@ -367,56 +367,57 @@
 		// 用请求数据请求该列表的返回数据
 		const result = props.data(parameter)
 		if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
-			result.then((r) => {
-				if (r == null) {
-					data.localLoading = false
-					return
-				}
-				// 获取分页数据及分页的显示内容
-				data.localPagination =
-					(props.showPagination &&
-						Object.assign({}, data.localPagination, {
-							current: r.current, // pageNo, // 返回结果中的当前分页数
-							total: r.total, // totalRows, // 返回结果中的总记录数
-							showSizeChanger: props.showSizeChanger,
-							pageSizeOptions: props.pageSizeOptions,
-							showTotal: (total, range) => {
-								return `${range[0]}-${range[1]} 共 ${total} 条 `
-							},
-							pageSize: (pagination && pagination.pageSize) || data.localPagination.pageSize
-						})) ||
-					false
-				// 后端数据records为null保存修复
-				if (r.records == null) {
-					r.records = []
-				}
-				// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
-				if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
-					data.localPagination.current--
-					loadData()
-					return
-				}
-				try {
-					// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
-					// 没有数据或只有一页数据时隐藏分页栏
-					// if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.pageSize))) {
-					// 	data.localPagination.hideOnSinglePage = true
-					// }
-					if (!props.showPagination) {
-						data.localPagination.hideOnSinglePage = true
+			result
+				.then((r) => {
+					if (r == null) {
+						data.localLoading = false
+						return
 					}
-				} catch (e) {
-					data.localPagination = false
-				}
+					// 获取分页数据及分页的显示内容
+					data.localPagination =
+						(props.showPagination &&
+							Object.assign({}, data.localPagination, {
+								current: r.current, // pageNo, // 返回结果中的当前分页数
+								total: r.total, // totalRows, // 返回结果中的总记录数
+								showSizeChanger: props.showSizeChanger,
+								pageSizeOptions: props.pageSizeOptions,
+								showTotal: (total, range) => {
+									return `${range[0]}-${range[1]} 共 ${total} 条 `
+								},
+								pageSize: (pagination && pagination.pageSize) || data.localPagination.pageSize
+							})) ||
+						false
+					// 后端数据records为null保存修复
+					if (r.records == null) {
+						r.records = []
+					}
+					// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
+					if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
+						data.localPagination.current--
+						loadData()
+						return
+					}
+					try {
+						// 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
+						// 没有数据或只有一页数据时隐藏分页栏
+						// if ((['auto', true].includes(props.showPagination) && r.total <= (r.pages * data.localPagination.pageSize))) {
+						// 	data.localPagination.hideOnSinglePage = true
+						// }
+						if (!props.showPagination) {
+							data.localPagination.hideOnSinglePage = true
+						}
+					} catch (e) {
+						data.localPagination = false
+					}
 
-				// 返回结果中的数组数据
-				if (props.showPagination === false) {
-					data.localDataSource = r instanceof Array ? r : r.records
-				} else {
-					data.localDataSource = r.records
-				}
-				getTableProps()
-			})
+					// 返回结果中的数组数据
+					if (props.showPagination === false) {
+						data.localDataSource = r instanceof Array ? r : r.records
+					} else {
+						data.localDataSource = r.records
+					}
+					getTableProps()
+				})
 				.catch(() => {})
 				.finally(() => {
 					data.localLoading = false
@@ -586,6 +587,14 @@
 				@apply ml-4;
 				cursor: pointer;
 			}
+		}
+	}
+	.s-table-alert {
+		background-color: var(--primary-1) !important;
+		border-color: var(--primary-color) !important;
+		:deep(.ant-alert-icon),
+		a {
+			color: var(--primary-color) !important;
 		}
 	}
 </style>

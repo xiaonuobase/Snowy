@@ -421,7 +421,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                     queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());
                 }
             }
-            String fileName = "SNOWY2.0系统B端人员信息清单.xlsx";
+            String fileName = "SNOWY系统B端人员信息清单.xlsx";
             List<BizUser> bizUserList = this.list(queryWrapper);
             if(ObjectUtil.isEmpty(bizUserList)) {
                 throw new CommonException("无数据可导出");
@@ -575,7 +575,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             // 生成doc
             XWPFDocument doc = WordExportUtil.exportWord07(destTemplateFile.getAbsolutePath(), map);
             // 生成临时导出文件
-            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY2.0系统B端人员信息_" + bizUser.getName() + ".docx");
+            resultFile = FileUtil.file(FileUtil.getTmpDir() + File.separator + "SNOWY系统B端人员信息_" + bizUser.getName() + ".docx");
             // 写入
             BufferedOutputStream outputStream = FileUtil.getOutputStream(resultFile);
             doc.write(outputStream);

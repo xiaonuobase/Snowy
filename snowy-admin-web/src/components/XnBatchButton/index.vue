@@ -15,6 +15,10 @@
 	const emit = defineEmits({ batchCallBack: null })
 	const buttonLoading = ref(false)
 	const props = defineProps({
+		idKey: {
+			type: String,
+			default: () => 'id'
+		},
 		buttonName: {
 			type: String,
 			default: () => '批量操作'
@@ -62,7 +66,7 @@
 	const deleteBatch = () => {
 		const params = props.selectedRowKeys.map((m) => {
 			return {
-				id: m
+				[props.idKey]: m
 			}
 		})
 		// 发起方法调用，谁的谁来实现

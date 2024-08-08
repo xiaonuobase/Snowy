@@ -118,17 +118,18 @@
 					</a-row>
 
 					<a-form-item label="任职信息" name="positionJson">
-						<a-button type="primary" class="childAddButton" @click="addDomains()">
-							<PlusOutlined />
-							增加任职
-						</a-button>
 						<a-row :gutter="10" class="form-row">
 							<a-col :span="7" class="form-row-con"> 机构 </a-col>
 							<a-col :span="7" class="form-row-con"> 职位 </a-col>
 							<a-col :span="7" class="form-row-con"> 主管 </a-col>
-							<a-col :span="3" class="form-row-con"> 操作 </a-col>
+							<a-col :span="3" class="form-row-con">
+								<a-button type="primary" @click="addDomains()" size="small">
+									<PlusOutlined />
+									增加
+								</a-button>
+							</a-col>
 						</a-row>
-						<div v-for="(positionInfo, index) in formData.positionJson" class="form-div">
+						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
 							<a-row :gutter="10">
 								<a-col :span="7">
 									<a-form-item
@@ -549,19 +550,14 @@
 </script>
 
 <style scoped lang="less">
-	.childAddButton {
-		margin-bottom: 10px;
-	}
 	.form-row {
 		background-color: var(--item-hover-bg);
-		margin-left: 0px !important;
+		margin-left: 0 !important;
+		margin-bottom: 10px;
 	}
 	.form-row-con {
 		padding-bottom: 5px;
 		padding-top: 5px;
 		padding-left: 15px;
-	}
-	.form-div {
-		padding-top: 10px;
 	}
 </style>

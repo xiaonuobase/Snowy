@@ -1,5 +1,5 @@
 <template>
-	<a-card title="站内信" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="miniMessageLoading">
 		<template #extra><a @click="leaveFor('/usercenter')">更多</a></template>
 		<div class="index-message-list">
 			<a-list :data-source="messageList" size="small" :loading="miniMessageLoading">
@@ -54,9 +54,7 @@
 	import router from '@/router'
 	const miniMessageLoading = ref(false)
 	const messageList = ref([])
-	const miniMessageBodyStyle = ref({
-		'padding-top': '10px'
-	})
+	const title = ref('站内信')
 	onMounted(() => {
 		// 进来后执行查询
 		getMessageList()
@@ -69,6 +67,7 @@
 			.then((data) => {
 				messageList.value = data
 			})
+			.catch(() => {})
 			.finally(() => {
 				miniMessageLoading.value = false
 			})

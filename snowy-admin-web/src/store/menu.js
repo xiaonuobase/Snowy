@@ -18,7 +18,12 @@ import userCenterApi from '@/api/sys/userCenterApi'
 import whiteList from '@/router/whiteList'
 import routesData from '@/router/systemRouter'
 
-const modules = import.meta.glob('/src/views/**/**.vue')
+// findPwd和login路由组件已静态加载，此处不在进行异步加载
+const modules = import.meta.glob([
+	'/src/views/**/**.vue',
+	'!/src/views/auth/findPwd/**.vue',
+	'!/src/views/auth/login/**.vue'
+])
 export const useMenuStore = defineStore('menuStore', () => {
 	const menuData = ref([])
 	const refreshFlag = ref(false)
@@ -119,18 +124,27 @@ export const useMenuStore = defineStore('menuStore', () => {
 			}
 		})
 	}
-	// 获取用户菜单
+	// 获取用户菜单（通过API重新初始化菜单，用于界面实时响应）
 	const fetchMenu = async () => {
 		const menu = await userCenterApi.userLoginMenu()
 		tool.data.set('MENU', menu)
 		refreshMenu()
 	}
-	// 刷新菜单
+	// 刷新菜单（非API刷新，用于路由守卫内使用）
 	const refreshMenu = () => {
 		loadMenu()
 		removeFromRouter()
 		addToRouter()
 		changeRefreshFlag(true)
+	}
+	// 通过API刷新菜单（仅在layout的onMounted内使用，浏览器刷新只刷新一次）
+	const refreshApiMenu = () => {
+		userCenterApi.userLoginMenu().then((data) => {
+			tool.data.set('MENU', data)
+			nextTick(() => {
+				refreshMenu()
+			})
+		})
 	}
 	// 将菜单添加到路由
 	const addToRouter = () => {
@@ -138,5 +152,5 @@ export const useMenuStore = defineStore('menuStore', () => {
 			router.addRoute('layout', item)
 		})
 	}
-	return { menuData, loadMenu, addToRouter, refreshMenu, changeRefreshFlag, refreshFlag, fetchMenu }
+	return { menuData, loadMenu, addToRouter, refreshMenu, changeRefreshFlag, refreshFlag, fetchMenu, refreshApiMenu }
 })

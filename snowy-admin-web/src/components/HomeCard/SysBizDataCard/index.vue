@@ -1,5 +1,5 @@
 <template>
-	<a-card :title="title" :bordered="false">
+	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<a-row>
 			<a-col :span="6">
 				<a-statistic :value="dataSource.userCount">
@@ -40,6 +40,7 @@
 <script setup name="sysBizDataCard">
 	import indexApi from '@/api/sys/indexApi'
 	const title = ref('业务数据')
+	const apiLoading = ref(false)
 	const dataSource = ref({
 		userCount: 0,
 		roleCount: 0,
@@ -47,9 +48,16 @@
 		positionCount: 0
 	})
 	onMounted(() => {
-		indexApi.indexBizDataCount().then((data) => {
-			dataSource.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexBizDataCount()
+			.then((data) => {
+				dataSource.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	})
 </script>
 

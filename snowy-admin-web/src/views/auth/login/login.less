@@ -1,132 +1,113 @@
 .login-icon-gray {
-  color: rgba(0, 0, 0, 0.25);
+	color: rgba(0, 0, 0, 0.25);
 }
 .login-validCode-img {
-  border: 1px solid var(--border-color-split);
-  cursor: pointer;
-  width: 100%;
-  height: 40px;
+	border: 1px solid var(--border-color-split);
+	cursor: pointer;
+	width: 100%;
+	height: 40px;
 }
 .login-wrapper{
-  width: 100vw;
-  height:100vh;
-  overflow: hidden;
-  background-color: #fff;
-  display: flex;
+	width: 100vw;
+	height:100vh;
+	overflow: hidden;
+	background-color: #fff;
+	display: flex;
 }
 .login_background {
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  background-image: url(/img/login_background.png);
-  position: relative;
-}
-.login_background_front {
-  width: 450px;
-  height: 450px;
-  margin-left: 100px;
-  margin-top: 15%;
-  overflow: hidden;
-  /*position: relative;*/
-  background-size: cover;
-  background-position: center;
-  background-image: url(/img/login_background_front.png);
-  animation-name: myfirst;
-  animation-duration: 5s;
-  animation-timing-function: linear;
-  animation-delay: 1s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-play-state: running;
+	width: 50%;
+	height: 100%;
+	overflow: hidden;
+	background-size: cover;
+	background-position: center;
+	background-image: url(/img/login_background.png);
+	position: relative;
 }
 @keyframes myfirst {
-  0% {
-    left: 0px;
-    top: 0px;
-  }
-  50% {
-    left: 50px;
-    top: 0px;
-  }
-  100% {
-    left: 0px;
-    top: 0px;
-  }
+	0% {
+		left: 0;
+		top: 0;
+	}
+	50% {
+		left: 50px;
+		top: 0;
+	}
+	100% {
+		left: 0;
+		top: 0;
+	}
 }
-@-webkit-keyframes myfirst /* Safari and Chrome */ {
-  0% {
-    left: 0px;
-    top: 0px;
-  }
-  50% {
-    left: 50px;
-    top: 0px;
-  }
-  100% {
-    left: 0px;
-    top: 0px;
-  }
+@-webkit-keyframes myfirst {
+	0% {
+		left: 0;
+		top: 0;
+	}
+	50% {
+		left: 50px;
+		top: 0;
+	}
+	100% {
+		left: 0;
+		top: 0;
+	}
 }
 .login_adv__title h2 {
-  font-size: 40px;
+	font-size: 40px;
 }
 .login_adv__title h4 {
-  font-size: 18px;
-  margin-top: 10px;
-  font-weight: normal;
+	font-size: 18px;
+	margin-top: 10px;
+	font-weight: normal;
 }
 .login_adv__title p {
-  font-size: 14px;
-  margin-top: 10px;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.6);
+	font-size: 14px;
+	margin-top: 10px;
+	line-height: 1.8;
+	color: rgba(255, 255, 255, 0.6);
 }
 .login_adv__title div {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
 }
 .login_adv__title div span {
-  margin-right: 15px;
+	margin-right: 15px;
 }
 .login_adv__title div i {
-  font-size: 40px;
+	font-size: 40px;
 }
 .login_adv__title div i.add {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.6);
+	font-size: 20px;
+	color: rgba(255, 255, 255, 0.6);
 }
 /*background-image:linear-gradient(transparent, #000);*/
 .login_main {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
+	width: 50%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
 }
 .login-form {
-  width: 450px;
-  position: absolute;
-  top:21.8%
+	width: 450px;
+	margin-top: 110px;
 }
 .login-header {
-  margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 .login-header h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 10px;
+	font-size: 24px;
+	font-weight: bold;
+	margin-top: 10px;
 }
 .login_config {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+	position: absolute;
+	top: 20px;
+	right: 20px;
 }
 .logo_background{
 	position: absolute;
 	left: 0;
-	top: 56px;
+	top: 50px;
 	height: 60px;
 	padding-left: 56px;
 	width: 100%;
@@ -149,7 +130,7 @@
 	margin-right: 10px;
 }
 .logo_background a label{
-   font-size:24px;
+	font-size:24px;
 	color:#fff;
 	cursor: pointer;
 }
@@ -169,32 +150,29 @@
 	margin-bottom:6px;
 }
 @media (max-width: 1200px) {
-  .login-form {
-    width: 340px;
-  }
+	.login-form {
+		width: 340px;
+	}
 }
 @media (max-width: 1000px) {
-  .login_main {
-	width: 100%;
-    position: absolute;
-	left:0;
-	right:0;
-  }
-  .login_background_front {
-    display: none;
-  }
-  .login-form {
-    width: 100%;
-    padding: 20px 40px;
-    top:15%
-  }
-  .logo_background{
-    padding-left:40px;
-  }
-  .login_background .version{
-    padding:0 20px;
-  }
-  .login_background .version p:first-child{
-    display: none;
-  }
+	.login_main {
+		width: 100%;
+		position: absolute;
+		left:0;
+		right:0;
+	}
+	.login-form {
+		width: 100%;
+		padding: 20px 40px;
+		top:15%
+	}
+	.logo_background{
+		padding-left:40px;
+	}
+	.login_background .version{
+		padding:0 20px;
+	}
+	.login_background .version p:first-child{
+		display: none;
+	}
 }

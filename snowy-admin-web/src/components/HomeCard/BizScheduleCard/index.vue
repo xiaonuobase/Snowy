@@ -1,5 +1,5 @@
 <template>
-	<a-card :title="title" :bordered="false" class="mt-2">
+	<a-card :title="title" :bordered="false" class="mt-2" :loading="apiLoading">
 		<a-calendar v-model:value="calendarValue" :fullscreen="false" @select="onPanelSelect" />
 		<a-card :bordered="false">
 			<a-timeline>
@@ -45,7 +45,7 @@
 	const title = ref('我的日程')
 	const scheduleList = ref([])
 	const calendarValue = ref(dayjs())
-
+	const apiLoading = ref(false)
 	onMounted(() => {
 		// 进来后执行查询
 		seleScheduleList()
@@ -55,9 +55,16 @@
 		const param = {
 			scheduleDate: calendarValue.value.format('YYYY-MM-DD')
 		}
-		indexApi.indexScheduleList(param).then((data) => {
-			scheduleList.value = data
-		})
+		apiLoading.value = true
+		indexApi
+			.indexScheduleList(param)
+			.then((data) => {
+				scheduleList.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	}
 
 	// 点击某一天

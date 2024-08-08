@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false" title="周访问量">
+	<a-card :bordered="false" :title="title">
 		<div id="visLogChartLine" class="xn-ht200"></div>
 	</a-card>
 </template>
@@ -11,6 +11,7 @@
 
 	const seriesKey = 'series'
 	const valueKey = 'value'
+	const title = ref('周访问量')
 	const processData = (data, yFields, meta) => {
 		const result = []
 		data.forEach((d) => {
@@ -34,18 +35,21 @@
 				alias: '登出'
 			}
 		}
-		logApi.logVisLineChartData().then((data) => {
-			const line = new Line('visLogChartLine', {
-				data: processData(data, ['loginCount', 'logoutCount'], lineMeta),
-				padding: 'auto',
-				xField: 'date',
-				yField: valueKey,
-				seriesField: seriesKey,
-				color: ['#1677FF', 'rgb(188, 189, 190)'],
-				appendPadding: [0, 8, 0, 0]
+		logApi
+			.logVisLineChartData()
+			.then((data) => {
+				const line = new Line('visLogChartLine', {
+					data: processData(data, ['loginCount', 'logoutCount'], lineMeta),
+					padding: 'auto',
+					xField: 'date',
+					yField: valueKey,
+					seriesField: seriesKey,
+					color: ['#1677FF', 'rgb(188, 189, 190)'],
+					appendPadding: [0, 8, 0, 0]
+				})
+				line.render()
 			})
-			line.render()
-		})
+			.catch(() => {})
 	})
 </script>
 <style scoped>

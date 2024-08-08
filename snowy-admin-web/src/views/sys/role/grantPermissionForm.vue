@@ -17,13 +17,20 @@
 				class="mt-4"
 				size="middle"
 				:columns="columns"
-				:data-source="loadDatas"
+				:data-source="tableLoadData"
 				:row-key="(record) => record.api"
+				:pagination="pagination"
+				@change="handleTableChange"
 				bordered
 			>
 				<template #headerCell="{ column }">
-					<template v-if="column.key === 'api'">
-						<a-checkbox @update:checked="(val) => onCheckAllChange(val)"> 接口 </a-checkbox>
+					<template v-if="column.key === 'prefix'">
+						<a-checkbox :checked="allChecked" @update:checked="(val) => onCheckAllChange(val)">
+							{{ column.title }}
+						</a-checkbox>
+					</template>
+					<template v-if="column.key === 'suffix'">
+						<a-checkbox :checked="allChecked" @update:checked="(val) => onCheckAllChange(val)"> 接口 </a-checkbox>
 					</template>
 					<template v-if="column.key === 'dataScope'">
 						<span>{{ column.title }}</span>
@@ -54,16 +61,21 @@
 							<template #icon><SearchOutlined /></template>
 							搜索
 						</a-button>
-						<a-button size="small" class="xn-wd90" @click="handleReset(clearFilters)"> 重置 </a-button>
+						<a-button size="small" class="xn-wd90" @click="handleReset(clearFilters, confirm)"> 重置 </a-button>
 					</div>
 				</template>
 				<template #customFilterIcon="{ filtered }">
 					<search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
 				</template>
 				<template #bodyCell="{ column, record }">
-					<template v-if="column.dataIndex === 'api'">
+					<template v-if="column.dataIndex === 'prefix'">
+						<a-checkbox :checked="record.parentCheck" @update:checked="(val) => changeParentApi(record, val)">
+							{{ record.prefix }}
+						</a-checkbox>
+					</template>
+					<template v-if="column.dataIndex === 'suffix'">
 						<a-checkbox :checked="record.check" @update:checked="(val) => changeApi(record, val)">
-							{{ record.api }}
+							{{ record.suffix }}
 						</a-checkbox>
 					</template>
 					<template v-if="column.dataIndex === 'dataScope'">
@@ -109,6 +121,7 @@
 	import roleApi from '@/api/sys/roleApi'
 	import ScopeDefineOrg from './scopeDefineOrg.vue'
 	import { userStore } from '@/store/user'
+	import { cloneDeep } from 'lodash-es'
 
 	const visible = ref(false)
 	const spinningLoading = ref(false)
@@ -117,7 +130,7 @@
 	const submitLoading = ref(false)
 	const CustomValue = 'SCOPE_ORG_DEFINE'
 	// 抽屉的宽度
-	const drawerWidth = 1000
+	const drawerWidth = 1050
 	// 自动获取宽度，默认获取浏览器的宽度的90%
 	//(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) * 0.9
 	let loadDatas = ref([])
@@ -128,13 +141,39 @@
 		searchedColumn: ''
 	})
 	const searchInput = ref()
+	// 分页
+	const pagination = ref({
+		current: 1,
+		pageSize: 10,
+		total: 0,
+		showSizeChanger: true,
+		defaultPageSize: 10,
+		pageSizeOptions: ['10', '20', '50', '100']
+	})
+	const firstShowMap = ref({})
+	// 全选
+	const allChecked = ref(false)
+	const tableLoadData = ref([])
 
 	const columns = [
 		{
-			key: 'api',
+			key: 'prefix',
+			title: '接口前缀',
+			dataIndex: 'prefix',
+			width: 140,
+			customCell: (row, index) => {
+				const indexArr = firstShowMap.value[row.prefix]
+				if (index === indexArr[0]) {
+					return { rowSpan: indexArr.length }
+				}
+				return { rowSpan: 0 }
+			}
+		},
+		{
+			key: 'suffix',
 			title: '接口',
-			dataIndex: 'api',
-			width: 380,
+			dataIndex: 'suffix',
+			width: 290,
 			customFilterDropdown: true,
 			onFilter: (value, record) => record.api.includes(value),
 			onFilterDropdownOpenChange: (visible) => {
@@ -161,16 +200,27 @@
 		}
 		const resOwn = await roleApi.roleOwnPermission(param)
 		// 数据转换
-		echoModuleData(res, resOwn)
+		loadDatas.value = echoModuleData(res, resOwn)
+		pagination.value.total = loadDatas.value.length
+		allChecked.value = loadDatas.value.every((item) => item.parentCheck)
 		spinningLoading.value = false
+	}
+	// table事件触发
+	const handleTableChange = (pageInfo) => {
+		Object.assign(pagination.value, pageInfo)
 	}
 	// 数据转换
 	const echoModuleData = (res, resOwn) => {
+		let list = []
 		res.forEach((api) => {
+			const apiArr = splitByThirdSlash(api)
 			const obj = {
 				api: api,
+				prefix: apiArr[0],
+				suffix: apiArr[1],
 				dataScope: datascope(api),
-				check: false
+				check: false,
+				parentCheck: false
 			}
 			if (resOwn.grantInfoList.length > 0) {
 				resOwn.grantInfoList.forEach((item) => {
@@ -189,8 +239,10 @@
 					}
 				})
 			}
-			loadDatas.value.push(obj)
+			list.push(obj)
 		})
+		// 设置父节点check状态
+		return setParentDataCheckedStatus(list)
 	}
 	const datascope = (id) => {
 		return [
@@ -277,6 +329,11 @@
 	const onOpen = (record) => {
 		grantPermissionParam.id = record.id
 		visible.value = true
+		firstShowMap.value = {}
+		pagination.value.current = 1
+		pagination.value.pageSize = 10
+		pagination.value.total = 0
+		allChecked.value = false
 		loadData()
 	}
 	// 关闭抽屉
@@ -288,15 +345,41 @@
 	}
 	// 全选
 	const onCheckAllChange = (value) => {
+		allChecked.value = value
 		spinningLoading.value = true
 		loadDatas.value.forEach((data) => {
-			changeApi(data, value)
+			changeApi(data, value, false)
+			data.parentCheck = value
 			spinningLoading.value = false
 		})
 	}
-
+	// 选中接口前缀
+	const changeParentApi = (record, val) => {
+		loadDatas.value.forEach((data) => {
+			if (data.prefix === record.prefix) {
+				data.check = val
+				data.parentCheck = val
+				if (val) {
+					let isChecked = data.dataScope.some((item) => item.check)
+					if (!isChecked) {
+						data.dataScope[0].check = true
+					}
+				} else {
+					data.dataScope.forEach((item) => {
+						item.check = false
+					})
+				}
+				data.dataScope.forEach((item) => {
+					if (item.value === 'SCOPE_ORG_DEFINE') {
+						item.scopeDefineOrgIdList = []
+					}
+				})
+			}
+		})
+		allChecked.value = loadDatas.value.every((item) => item.parentCheck)
+	}
 	// 选中接口
-	const changeApi = (record, val) => {
+	const changeApi = (record, val, isLoadData = true) => {
 		record.check = val
 		if (val) {
 			let checkStatus = 0
@@ -317,6 +400,7 @@
 				}
 			})
 		}
+		isLoadData && (loadDatas.value = setParentDataCheckedStatus(loadDatas.value))
 	}
 	// 设置选中状态
 	const changeChildCheckBox = (record, evt) => {
@@ -382,8 +466,9 @@
 		state.searchedColumn = dataIndex
 	}
 	// 标题接口列搜索重置
-	const handleReset = (clearFilters) => {
+	const handleReset = (clearFilters, confirm) => {
 		clearFilters()
+		confirm()
 		state.searchText = ''
 	}
 	// 标题数据范围列radio-group事件
@@ -398,6 +483,42 @@
 			})
 		})
 	}
+	// 设置父节点check状态
+	const setParentDataCheckedStatus = (records) => {
+		const cloneRecords = cloneDeep(records)
+		cloneRecords.forEach((item) => {
+			let childrenList = records.filter((f) => f.prefix === item.prefix)
+			item.parentCheck = childrenList.every((e) => e.check)
+		})
+		return cloneRecords
+	}
+	// 字符串分割
+	function splitByThirdSlash(str) {
+		const arr = str.split('/').filter(Boolean)
+		const leftPart = '/' + arr.slice(0, 2).join('/')
+		const rightPart = '/' + arr.slice(2).join('/')
+		return [leftPart, rightPart]
+	}
+	// 监听分页及数据变化
+	watch(
+		() => [pagination.value, loadDatas.value],
+		(val) => {
+			const start = (pagination.value.current - 1) * pagination.value.pageSize
+			const end = start + pagination.value.pageSize
+			const tableData = loadDatas.value.slice(start, end)
+			firstShowMap.value = {}
+			// 生成map
+			tableData?.forEach((item, index) => {
+				if (firstShowMap.value[item.prefix]) {
+					firstShowMap.value[item.prefix].push(index)
+				} else {
+					firstShowMap.value[item.prefix] = [index]
+				}
+			})
+			tableLoadData.value = tableData
+		},
+		{ deep: true }
+	)
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
 		onOpen

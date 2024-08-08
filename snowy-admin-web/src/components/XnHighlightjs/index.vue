@@ -40,6 +40,9 @@
 </script>
 
 <style scoped lang="less">
+	.hljs-container {
+		position: relative;
+	}
 	/** 滚动条 */
 	:deep(.hljs, .hljs-container) {
 		max-height: 300px !important;
@@ -78,8 +81,8 @@
 	/** 复制样式 */
 	.hljs-copy {
 		float: right;
-		top: 10px;
-		right: 10px;
+		top: 6px;
+		right: 6px;
 		position: absolute;
 		z-index: 9;
 	}

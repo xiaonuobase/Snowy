@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false" :title="title">
+	<a-card :bordered="false" :title="title" :loading="apiLoading">
 		<template #extra><a @click="leaveFor('/biz/notice')">更多</a></template>
 		<a-table
 			:columns="columns"
@@ -63,8 +63,18 @@
 	]
 	const title = ref('通知公告')
 	const dataSource = ref([])
-	bizIndexApi.bizIndexNoticeList().then((data) => {
-		dataSource.value = data
+	const apiLoading = ref(false)
+	onMounted(() => {
+		apiLoading.value = true
+		bizIndexApi
+			.bizIndexNoticeList()
+			.then((data) => {
+				dataSource.value = data
+			})
+			.catch(() => {})
+			.finally(() => {
+				apiLoading.value = false
+			})
 	})
 	const leaveFor = (url = '/') => {
 		router.replace({
