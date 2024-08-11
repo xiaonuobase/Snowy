@@ -145,6 +145,7 @@
 		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
 		:add-show="false"
+		:show="false"
 		:role-global="true"
 		@onBack="roleBack"
 	/>
