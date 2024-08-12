@@ -102,7 +102,7 @@
 						</div>
 					</div>
 					<div v-if="activeKey == '2'">
-						<div style="position: fixed; top: calc(100vh - 160px); left: 560px">
+						<div style="position: fixed; top: calc(100vh - 160px); left: calc(100vh)">
 							<a-tooltip title="创建群组">
 								<a-button type="primary" shape="circle" size="large" @click="createGroup">
 									<template #icon>
@@ -162,8 +162,11 @@
 									class="message-item"
 									v-if="message.isRecall == '2'"
 								>
-									<a-avatar :src="usersMap[message.fromUserId]?.avatar || currentUser.avatar" shape="square"
-											  class="message" />
+									<a-avatar
+										:src="usersMap[message.fromUserId]?.avatar || currentUser.avatar"
+										shape="square"
+										class="message"
+									/>
 									<div class="message-box-column">
 										<div class="message-sender" :class="message.fromUserId === currentUser.id ? 'text-r' : 'text-l'">
 											{{ usersMap[message.fromUserId]?.name || currentUser.name }}
@@ -294,7 +297,7 @@
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
 		<xn-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef"></xn-upload>
 	</a-modal>
-	<a-modal v-model:open="previewShow" title="预览文件" :width="1200" style="top: 10px;">
+	<a-modal v-model:open="previewShow" title="预览文件" :width="1200" style="top: 10px">
 		<xn-file-preview v-show="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
 		<template #footer />
 	</a-modal>
@@ -329,7 +332,7 @@
 	import imMessageApi from '@/layout/components/im/api/imMessageApi'
 	import imGroupMemberApi from '@/layout/components/im/api/imGroupMemberApi'
 	import imGroupApi from '@/layout/components/im/api/imGroupApi'
-	import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type/type'
+	import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from '@/layout/components/im/type/type'
 	import { notification } from 'ant-design-vue'
 	import ContextMenu from '@imengyu/vue3-context-menu'
 	import XnUpload from '@/components/XnUpload/index.vue'
@@ -729,8 +732,8 @@
 	//监听消息列表
 	const messagesScrolling = (e) => {
 		const scrollTop = e.target.scrollTop
-		// 加载以前的消息
-		if (scrollTop == 0) {
+		// 加载以前的消息 处理数据错乱问题
+		if (scrollTop == 0 && usersMap[chatUser.id].total > 0) {
 			if (
 				queryChatRecordWithUserParams.current * queryChatRecordWithUserParams.size >= usersMap[chatUser.id].total ||
 				usersMap[chatUser.id].total == 0
@@ -921,10 +924,6 @@
 				scrollElem.scrollTo({ top: scrollElem.scrollHeight, behavior: 'smooth' })
 			}
 		})
-	}
-
-	const switchClient = (client: string) => {
-		userClient.value = client
 	}
 
 	const handleOpen = () => {

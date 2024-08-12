@@ -141,7 +141,7 @@
 	import tool from '@/utils/tool'
 	import { notification, Modal } from 'ant-design-vue'
 	import { defineEmits, ref, createVNode } from 'vue'
-	import XnImUserSelector from './XnImUserSelector.vue'
+	import XnImUserSelector from '@/layout/components/im/XnImUserSelector.vue'
 	import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 	const mutedShow = ref(false)
 	const mutedValue = ref(0)
