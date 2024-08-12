@@ -74,7 +74,7 @@ public interface SysUserApi {
     void grantRole(String userId, List<String> roleIdList);
 
     /**
-     * 根据组织id集合获取组织下用户id集合
+     * 根据组织id集合获取组织下用户id集合（含兼职该机构的人）
      *
      * @author xuyuxiang
      * @date 2022/6/6 11:40
@@ -82,7 +82,7 @@ public interface SysUserApi {
     List<String> getUserIdListByOrgIdList(List<String> orgIdList);
 
     /**
-     * 根据职位id集合获取职位下用户id集合
+     * 根据职位id集合获取职位下用户id集合（含兼职该职位的人）
      *
      * @author xuyuxiang
      * @date 2022/6/6 11:44
@@ -90,7 +90,7 @@ public interface SysUserApi {
     List<String> getUserIdListByPositionIdList(List<String> positionIdList);
 
     /**
-     * 根据用户id和组织id和职位id和主管层级获取上级主管id
+     * 根据用户id和组织id和主管层级获取上级主管id
      *
      * @author xuyuxiang
      * @date 2022/6/6 14:50
@@ -98,7 +98,7 @@ public interface SysUserApi {
     JSONObject getSupervisorIdBySupervisorLevel(List<String> userIdList, String userId, String orgId, String supervisorLevel);
 
     /**
-     * 根据用户id和组织id和职位id和终点主管层级获取上级主管id集合
+     * 根据用户id和组织id和终点主管层级获取上级主管id集合
      *
      * @author xuyuxiang
      * @date 2022/6/6 14:50
