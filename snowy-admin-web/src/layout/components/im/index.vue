@@ -59,12 +59,11 @@
 						v-for="item in ImMessageUserVoList"
 						@click="selectMessageUser(usersMap[item.userId + ''])"
 					>
-						<a-badge :count="item.unreadCount">
+						<a-badge :count="item.unreadCount" class="catalog-content-li-avatar">
 							<a-avatar
 								shape="square"
 								size="large"
 								:src="usersMap[item.userId + ''].avatar"
-								class="catalog-content-li-avatar"
 							/>
 						</a-badge>
 						<a-badge status="success" v-if="onlineFunc(item.userId)" style="padding-top: 32px; margin-left: -8px" />
