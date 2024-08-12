@@ -94,8 +94,11 @@ public class SysUserApiProvider implements SysUserApi {
     @Override
     public List<String> getUserIdListByOrgIdList(List<String> orgIdList) {
         if(ObjectUtil.isNotEmpty(orgIdList)) {
-            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getOrgId, orgIdList)).stream()
-                    .map(SysUser::getId).collect(Collectors.toList());
+            String orConditionSql = orgIdList.stream().map(orgId -> "POSITION_JSON LIKE '%" + orgId + "%'")
+                    .collect(Collectors.joining(" OR "));
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getOrgId, orgIdList)
+                    .or(q-> q.apply(orConditionSql))).stream().map(SysUser::getId).collect(Collectors.toList());
+
         }
         return CollectionUtil.newArrayList();
     }
@@ -103,8 +106,10 @@ public class SysUserApiProvider implements SysUserApi {
     @Override
     public List<String> getUserIdListByPositionIdList(List<String> positionIdList) {
         if(ObjectUtil.isNotEmpty(positionIdList)) {
-            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getPositionId, positionIdList)).stream()
-                    .map(SysUser::getId).collect(Collectors.toList());
+            String orConditionSql = positionIdList.stream().map(positionId -> "POSITION_JSON LIKE '%" + positionId + "%'")
+                    .collect(Collectors.joining(" OR "));
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getPositionId, positionIdList)
+                    .or(q-> q.apply(orConditionSql))).stream().map(SysUser::getId).collect(Collectors.toList());
         }
         return CollectionUtil.newArrayList();
     }
@@ -124,13 +129,13 @@ public class SysUserApiProvider implements SysUserApi {
                 }
             }
         }
-        // 再查兼职职位主管
+        // 再查兼职职位主管，需排除userOrgId的兼职主管
         if(ObjectUtil.isEmpty(result.get())) {
             if(ObjectUtil.isNotEmpty(positionJson)) {
                 JSONUtil.parseArray(positionJson).forEach(object -> {
                     JSONObject jsonObject = JSONUtil.parseObj(object);
                     String partTimeOrgId = jsonObject.getStr("orgId");
-                    if(ObjectUtil.isNotEmpty(partTimeOrgId) && orgId.equals(partTimeOrgId)) {
+                    if(ObjectUtil.isNotEmpty(partTimeOrgId) && !partTimeOrgId.equals(userOrgId) && orgId.equals(partTimeOrgId)) {
                         String partTimDirectorId = jsonObject.getStr("directorId");
                         if(ObjectUtil.isNotEmpty(partTimDirectorId)) {
                             // 存在多个相同兼职职位，后者覆盖前者

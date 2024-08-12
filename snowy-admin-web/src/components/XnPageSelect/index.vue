@@ -72,6 +72,8 @@
 			initParams.value = { ...initParams.value, ...param, size: props.pageSize }
 			// 加载API
 			spinning.value = true
+			// 重置当前页
+			initParams.value.current = 1
 			props
 				.pageFunction(initParams.value)
 				.then((data) => {
