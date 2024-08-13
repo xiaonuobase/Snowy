@@ -13,7 +13,8 @@
 package vip.xiaonuo.im.modular.user.service;
 
 import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import java.util.List;
 
 /**
  * IM-系统用户service接口
@@ -28,5 +29,5 @@ public interface ImSysUserService {
      * @author chengchuanyao
      * @date 2024/7/19 10:23
      */
-    Page<JSONObject> list();
+    List<JSONObject> list();
 }

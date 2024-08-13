@@ -24,7 +24,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.common.exception.CommonException;
-import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysUserApi;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.SysUserGrantRoleParam;
@@ -227,11 +226,10 @@ public class SysUserApiProvider implements SysUserApi {
     }
 
     @Override
-    public Page<JSONObject> listUserWithoutCurrent() {
+    public List<JSONObject> listUserWithoutCurrent() {
         LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<>();
         lqw.notIn(SysUser::getId, StpUtil.getLoginId());
         lqw.select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar);
-        Page<SysUser> page = sysUserService.page(CommonPageRequest.defaultPage(), lqw);
-        return BeanUtil.toBean(page, Page.class);
+        return BeanUtil.copyToList(sysUserService.list(lqw), JSONObject.class);
     }
 }

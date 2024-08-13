@@ -10,7 +10,7 @@ const request = (url, ...arg) => baseRequest(`/im/user/` + url, ...arg)
  **/
 export default {
 	// 获取用户分页列表
-	imUserPage(data) {
-		return request('page', data, 'get')
+	imUserList(data) {
+		return request('list', data, 'get')
 	}
 }

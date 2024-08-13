@@ -13,11 +13,12 @@
 package vip.xiaonuo.im.modular.user.service.Impl;
 
 import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.im.modular.user.service.ImSysUserService;
 import vip.xiaonuo.sys.api.SysUserApi;
+
+import java.util.List;
 
 /**
  * IM-系统用户service实现类
@@ -37,7 +38,7 @@ public class ImSysUserServiceImpl implements ImSysUserService {
      * @return 分页用户列表
      */
     @Override
-    public Page<JSONObject> list() {
+    public List<JSONObject> list() {
         return sysUserApi.listUserWithoutCurrent();
     }
 

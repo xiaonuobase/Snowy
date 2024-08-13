@@ -120,5 +120,5 @@ public interface SysUserApi {
      * @author chengchuanyao
      * @date 2024/7/19 9:54
      */
-    Page<JSONObject> listUserWithoutCurrent();
+    List<JSONObject> listUserWithoutCurrent();
 }

@@ -1142,10 +1142,10 @@
 
 	// 初始化当前用户的好友列表
 	const getUserList = () => {
-		imSysUserApi.imUserPage().then((res) => {
-			users[userClient.value].push(...res.records)
+		imSysUserApi.imUserList().then((res) => {
+			users[userClient.value].push(...res)
 			// 缓存头像 节省前端内存
-			res.records.forEach((item) => {
+			res.forEach((item) => {
 				item.current = -1
 				usersMap[item.id] = item
 			})
