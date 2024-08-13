@@ -101,15 +101,13 @@
 						</div>
 					</div>
 					<div v-if="activeKey == '2'">
-						<div style="position: fixed; top: calc(100vh - 160px); left: calc(100vh)">
-							<a-tooltip title="创建群组">
-								<a-button type="primary" shape="circle" size="large" @click="createGroup">
-									<template #icon>
-										<PlusOutlined />
-									</template>
-								</a-button>
-							</a-tooltip>
-						</div>
+						<a-tooltip title="创建群组">
+							<a-button type="primary" shape="circle" size="large" @click="createGroup" style="position: absolute; bottom: 20px; left: 230px;">
+								<template #icon>
+									<PlusOutlined />
+								</template>
+							</a-button>
+						</a-tooltip>
 						<div class="tab-person webkit-scrollbar-2">
 							<div
 								:class="['catalog-content-li', chatUser.id === item.id ? 'li-checked' : '']"
