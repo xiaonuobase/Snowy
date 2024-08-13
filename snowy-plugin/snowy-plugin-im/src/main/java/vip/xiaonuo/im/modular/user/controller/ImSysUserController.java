@@ -47,7 +47,7 @@ public class ImSysUserController {
      */
     @Operation(summary = "获取IM-获取用户列表")
     @GetMapping("/im/user/list")
-    public CommonResult<List<JSONObject>> page() {
+    public CommonResult<List<JSONObject>> list() {
         return CommonResult.data(imSysUserService.list());
     }
 }

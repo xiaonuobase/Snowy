@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo;
 
+import com.antherd.smcrypto.sm2.Sm2;
 import com.baomidou.dynamic.datasource.toolkit.CryptoUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +29,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = Application.class)
 public class MainTest {
 
+    private final static String publicKey = "04a98f1ad69a020b15f0a8402316a1da3dad134f55919028dd2e7cafa18bcabea309c575c8687cb70dee5b3bd6aabbcc31b8810c2c108a898f88631b96a88c315c";
+    
+    private final static String privateKey = "00a78b54cb312fadef390328bad46fb6502b9a86e8156f3d96c7a248612c7b918b";
+
     @Test
     public void test() throws Exception {
         String root = CryptoUtils.encrypt("root");
         System.out.println(root);
     }
+
+    public static void main(String[] args) {
+        String s = Sm2.doEncrypt("IM-202408061024", publicKey);
+        System.out.println(s);
+        String s1 = Sm2.doSignature(s, privateKey);
+        System.out.println(s1);
+    }
+
 }

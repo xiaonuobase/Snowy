@@ -33,9 +33,9 @@ public class ImSysUserServiceImpl implements ImSysUserService {
     private final SysUserApi sysUserApi;
 
     /**
-     * 分页获取用户列表
+     * 获取用户列表
      *
-     * @return 分页用户列表
+     * @return 用户列表
      */
     @Override
     public List<JSONObject> list() {
