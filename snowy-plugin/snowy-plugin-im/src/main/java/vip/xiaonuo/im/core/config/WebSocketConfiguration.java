@@ -14,7 +14,6 @@ package vip.xiaonuo.im.core.config;
 
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -35,7 +34,6 @@ import java.util.Optional;
  */
 @EnableWebSocket
 @Configuration
-@Slf4j
 @EnableConfigurationProperties(WebSocketConfig.class)
 //@ConditionalOnProperty(prefix = "snowy.websocket", name = "enabled", havingValue = "true")
 @RequiredArgsConstructor
@@ -51,9 +49,10 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         }
 
         if (!AuthorizationManager.verifySign()){
-            log.error("im模块websocket配置签名校验失败！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+            System.err.println("im模块websocket配置签名校验失败");
+        }else{
+            System.out.println("im模块websocket配置签名校验成功");
         }
-        log.info("注册WebSocket处理器");
         registry.addHandler(new ImWebSocketHandler(), webSocketConfig.getPath().toArray(String[]::new))
                 .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins(Optional.ofNullable(webSocketConfig.getAllowedOrigins()).orElse("*"));

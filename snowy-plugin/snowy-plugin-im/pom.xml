@@ -40,4 +40,43 @@
             <artifactId>snowy-plugin-dev-api</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.6.1</version>
+                <executions>
+                    <!-- 以下配置说明执行mvn的package命令时候，会执行proguard-->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- 就是输入Jar的名称，我们要知道，代码混淆其实是将一个原始的jar，生成一个混淆后的jar，那么就会有输入输出。 -->
+                    <injar>${project.build.finalName}.jar</injar>
+                    <!-- 输出jar名称，输入输出jar同名的时候就是覆盖，也是比较常用的配置。 -->
+                    <outjar>${project.build.finalName}.jar</outjar>
+                    <!-- 是否混淆 默认是true -->
+                    <obfuscate>true</obfuscate>
+                    <!-- 配置一个文件，通常叫做proguard.conf,该文件主要是配置options选项，也就是说使用proguard.cfg那么options下的所有内容都可以移到proguard.cfg中 -->
+                    <proguardInclude>D:\work\chuzhong\snowy\snowy-plugin\snowy-plugin-im\proguard.conf</proguardInclude>
+                    <!-- 额外的jar包，通常是项目编译所需要的jar -->
+                    <libs>
+                        <lib>${java.home}/</lib>
+                    </libs>
+                    <!-- 对输入jar进行过滤比如，如下配置就是对META-INFO文件不处理。 -->
+                    <inLibsFilter>!META-INF/**</inLibsFilter>
+                    <!-- 这是输出路径配置，但是要注意这个路径必须要包括injar标签填写的jar -->
+                    <outputDirectory>${project.basedir}/target</outputDirectory>
+                    <putLibraryJarsInTempDir>true</putLibraryJarsInTempDir>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
