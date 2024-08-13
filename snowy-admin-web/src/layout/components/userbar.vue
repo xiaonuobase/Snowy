@@ -2,7 +2,7 @@
 	<div class="user-bar">
 		<!-- 搜索面板 -->
 		<panel-search v-if="!isMobile" />
-		<im />
+		<SnowyIm :baseRequest="baseRequest" :wsUrl="config.API_URL" />
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
@@ -66,8 +66,9 @@
 	import config from '@/config/index'
 	import loginApi from '@/api/auth/loginApi'
 	import DevUserMessage from './message.vue'
+	import { baseRequest } from '@/utils/request'
+	import SnowyIm from './im/index.vue'
 	import PanelSearch from './panel-search/index.vue'
-	import Im from './im/index.vue'
 	import { globalStore } from '@/store'
 	import { useI18n } from 'vue-i18n'
 	const { locale } = useI18n()

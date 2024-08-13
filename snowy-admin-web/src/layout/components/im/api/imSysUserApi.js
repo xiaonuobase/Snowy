@@ -1,7 +1,6 @@
-import { baseRequest } from '@/utils/request'
-
-const request = (url, ...arg) => baseRequest(`/im/user/` + url, ...arg)
-
+const request = (prop,url, ...arg) => {
+	return prop(`/im/user/` + url, ...arg)
+}
 /**
  * IM-用户Api接口管理器
  *
@@ -10,7 +9,7 @@ const request = (url, ...arg) => baseRequest(`/im/user/` + url, ...arg)
  **/
 export default {
 	// 获取用户分页列表
-	imUserList(data) {
-		return request('list', data, 'get')
+	imUserList(prop,data) {
+		return request(prop,'list', data, 'get')
 	}
 }

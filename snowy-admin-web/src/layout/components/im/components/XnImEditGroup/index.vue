@@ -129,20 +129,22 @@
 			</a-input-number>
 		</a-form-item>
 	</a-modal>
-	<CropUpload ref="cropUploadRef" :img-src="formData ? formData.avatar : undefined" @successful="cropUploadSuccess" />
+	<xn-im-crop-upload ref="cropUploadRef" :img-src="formData ? formData.avatar : undefined" @successful="cropUploadSuccess" />
 </template>
 
 <script setup lang="ts">
-	import userApi from '@/api/sys/userApi'
-	import CropUpload from '@/components/CropUpload/index.vue'
-	import imGroupApi from '@/layout/components/im/api/imGroupApi'
-	import imGroupMemberApi from '@/layout/components/im/api/imGroupMemberApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
-	import tool from '@/utils/tool'
+	import { defineEmits, ref, createVNode, onMounted, nextTick, reactive, defineProps, defineExpose } from 'vue'
 	import { notification, Modal } from 'ant-design-vue'
-	import { defineEmits, ref, createVNode } from 'vue'
-	import XnImUserSelector from '@/layout/components/im/XnImUserSelector.vue'
 	import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
+	import tool from '@/utils/tool'
+	import userApi from '../../api/userApi'
+	import imGroupApi from '../../api/imGroupApi'
+	import imGroupMemberApi from '../../api/imGroupMemberApi'
+	import userCenterApi from '../../api/userCenterApi'
+	
+	import XnImCropUpload from '../XnImCropUpload/index.vue'
+	import XnImUserSelector from '../XnImUserSelector/index.vue'
+
 	const mutedShow = ref(false)
 	const mutedValue = ref(0)
 	const formData = reactive({
@@ -183,7 +185,11 @@
 		onlineUserList: {
 			type: Array,
 			default: () => []
-		}
+		},
+		baseRequest: {
+			type: Function,
+			default: () => undefined
+		},
 	})
 
 	onMounted(() => {
@@ -222,7 +228,7 @@
 			onOk() {
 				let id = imGroupMembers.value.find((item) => item.userId == userId).id
 				imGroupMemberApi
-					.imGroupMemberUnMute({
+					.imGroupMemberUnMute(props.baseRequest,{
 						id,
 						userId
 					})
@@ -254,7 +260,7 @@
 			// 当前时间加上参数muteTime的时间(单位分钟)
 			let time = new Date().getTime() + 60000 * mutedValue.value
 			imGroupMemberApi
-				.imGroupMemberMute({
+				.imGroupMemberMute(props.baseRequest,{
 					id,
 					silenceTime: time,
 					userId: mutedShowUserId.value
@@ -304,7 +310,7 @@
 				content: createVNode('div', { style: 'color:red;' }, '如果确认解散群组，将无法恢复，请谨慎操作'),
 				onOk() {
 					imGroupApi
-						.imGroupDelete([{ id: props.id }])
+						.imGroupDelete(props.baseRequest,[{ id: props.id }])
 						.then(() => {
 							notification.success({
 								message: '解散成功'
@@ -344,7 +350,7 @@
 		//设为管理员
 		if (type == 1) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(
+				.imGroupMemberSubmitForm(props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -370,7 +376,7 @@
 			//移除管理员
 		} else if (type == 2) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(
+				.imGroupMemberSubmitForm(props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -396,7 +402,7 @@
 			//转让群主
 		} else if (type == 3) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(
+				.imGroupMemberSubmitForm(props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -407,7 +413,7 @@
 				.then(() => {
 					let id = imGroupMembers.value.find((item) => item.userId == userId.value).id
 					imGroupMemberApi
-						.imGroupMemberSubmitForm(
+						.imGroupMemberSubmitForm(props.baseRequest,
 							{
 								id,
 								userId: userId.value,
@@ -447,7 +453,7 @@
 				content: createVNode('div', { style: 'color:red;' }, '如果确认移除此用户，将无法恢复，请谨慎操作'),
 				onOk() {
 					imGroupMemberApi
-						.imGroupMemberDelete([{ id }])
+						.imGroupMemberDelete(props.baseRequest,[{ id }])
 						.then(() => {
 							notification.success({
 								message: '移除成功'
@@ -503,7 +509,7 @@
 
 	const update = (id) => {
 		// 查询原有的数据进行回滚
-		imGroupApi.imGroupDetail({ id: id }).then((data) => {
+		imGroupApi.imGroupDetail(props.baseRequest,{ id: id }).then((data) => {
 			formData.name = data.name
 			formData.remark = data.remark
 			formData.avatar = data.avatar
@@ -518,17 +524,17 @@
 	//	传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return userApi.userOrgTreeSelector(param).then((data) => {
+			return userApi.userOrgTreeSelector(props.baseRequest,param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		userPageApi: (param) => {
-			return userApi.userSelector(param).then((data) => {
+			return userApi.userSelector(props.baseRequest,param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		checkedUserListApi: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
+			return userCenterApi.userCenterGetUserListByIdList(props.baseRequest,param).then((data) => {
 				userList.value = data
 				return Promise.resolve(data)
 			})

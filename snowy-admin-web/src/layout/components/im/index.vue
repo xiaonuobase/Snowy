@@ -192,55 +192,55 @@
 													v-if="imageSuffix.indexOf(key.suffix) > -1"
 												/>
 												<img
-													src="/src/assets/images/fileImg/docx.png"
+													src="@/assets/images/fileImg/docx.png"
 													class="record-img"
 													:title="previewDisplay(key.suffix)"
 													v-else-if="key.suffix === 'doc' || key.suffix === 'docx'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/xlsx.png"
+													src="@/assets/images/fileImg/xlsx.png"
 													class="record-img"
 													:title="previewDisplay(key.suffix)"
 													v-else-if="key.suffix === 'xls' || key.suffix === 'xlsx'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/zip.png"
+													src="@/assets/images/fileImg/zip.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else-if="key.suffix === 'zip'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/rar.png"
+													src="@/assets/images/fileImg/rar.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else-if="key.suffix === 'rar'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/ppt.png"
+													src="@/assets/images/fileImg/ppt.png"
 													class="record-img"
 													:title="previewDisplay(key.suffix)"
 													v-else-if="key.suffix === 'ppt' || key.suffix === 'pptx'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/pdf.png"
+													src="@/assets/images/fileImg/pdf.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else-if="key.suffix === 'pdf'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/txt.png"
+													src="@/assets/images/fileImg/txt.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else-if="key.suffix === 'txt'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/html.png"
+													src="@/assets/images/fileImg/html.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else-if="key.suffix === 'html'"
 												/>
 												<img
-													src="/src/assets/images/fileImg/file.png"
+													src="@/assets/images/fileImg/file.png"
 													:title="previewDisplay(key.suffix)"
 													class="record-img"
 													v-else
@@ -281,6 +281,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<!-- 未命中任何聊天 -->
 				<div class="content-center-miss" v-else>
 					<img src="./image/content.png" class="content-center-miss-image" />
@@ -292,10 +293,10 @@
 	</a-modal>
 
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
-		<xn-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef"></xn-upload>
+		<xn-im-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef" :baseUrl="wsUrl" />
 	</a-modal>
 	<a-modal v-model:open="previewShow" title="预览文件" :width="1200" style="top: 10px">
-		<xn-file-preview v-show="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
+		<xn-im-file-preview v-if="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
 		<template #footer />
 	</a-modal>
 	<a-modal
@@ -305,7 +306,7 @@
 		:width="600"
 		:mask="false"
 	>
-		<XnEditGroupComponent
+		<xn-im-edit-group
 			@updateGroupInfo="updateGroupInfoData"
 			:createGroupType="createGroupType"
 			:id="updateGroupId"
@@ -314,27 +315,42 @@
 			v-if="createGroupShow"
 			ref="createGroupRef"
 			:onlineUserList="onlineUserList"
+			:baseRequest = "props.baseRequest"
 		/>
 		<template #footer />
 	</a-modal>
-	<WebSocketComponent @setWebSocket="setWebSocket" />
+	<xn-im-web-socket @setWebSocket="setWebSocket" :wsUrl="wsUrl"/>
+	
 </template>
 
 <script setup lang="ts">
-	import { ref, reactive } from 'vue'
-	import dayjs from 'dayjs'
-	import { MessageOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons-vue'
-	import tool from '@/utils/tool'
-	import imSysUserApi from '@/layout/components/im/api/imSysUserApi'
-	import imMessageApi from '@/layout/components/im/api/imMessageApi'
-	import imGroupMemberApi from '@/layout/components/im/api/imGroupMemberApi'
-	import imGroupApi from '@/layout/components/im/api/imGroupApi'
-	import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from '@/layout/components/im/type/type'
+	import { ref, reactive, onMounted, watch, nextTick, defineProps,h } from 'vue'
 	import { notification } from 'ant-design-vue'
+	import { MessageOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons-vue'
+	import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 	import ContextMenu from '@imengyu/vue3-context-menu'
-	import XnUpload from '@/components/XnUpload/index.vue'
-	import WebSocketComponent from '@/layout/components/im/WebSocketComponent.vue'
-	import XnEditGroupComponent from '@/layout/components/im/XnEditGroupComponent.vue'
+	import dayjs from 'dayjs'
+	import tool from '@/utils/tool'
+	import imSysUserApi from './api/imSysUserApi'
+	import imMessageApi from './api/imMessageApi'
+	import imGroupMemberApi from './api/imGroupMemberApi'
+	import imGroupApi from './api/imGroupApi'
+	import { User, Message, ImMessageUserVo, ImMessageBo, ImGroupVo } from './type/type'
+	import XnImUpload from './components/XnImUpload/index.vue'
+	import XnImWebSocket from './components/XnImWebSocket/index.vue'
+	import XnImFilePreview from './components/XnImFilePreview/index.vue'
+	import XnImEditGroup from './components/XnImEditGroup/index.vue'
+
+	const props = defineProps({
+		baseRequest: {
+			type: Function,
+			default: () => undefined
+		},
+		wsUrl: {
+			type: String,
+			default: ''
+		}
+	})
 
 	const websocket = ref(null)
 	const leftSelectedKeys = ref(['1'])
@@ -396,13 +412,13 @@
 	// 右键菜单
 	const menuData = reactive({
 		theme: 'mac',
-		items: [],
+		items: [{}],
 		iconFontClass: 'iconfont',
 		customClass: 'class-a',
 		zIndex: 9999,
 		minWidth: 100,
-		x: null,
-		y: null
+		x: 0,
+		y: 0
 	})
 
 	// 发送文件预览文件变量
@@ -516,7 +532,7 @@
 
 	//初始化当前用户所在的群聊是否被禁言列表
 	const initGroupMemberMuted = () => {
-		imGroupMemberApi.imGroupMemberMuteList({}).then((res) => {
+		imGroupMemberApi.imGroupMemberMuteList(props.baseRequest,{}).then((res) => {
 			res.forEach((item) => {
 				groupMutedList[item.groupId] = item.silenceTime
 			})
@@ -576,7 +592,7 @@
 	// 初始化群组
 	const initGroupList = () => {
 		groupList.splice(0, groupList.length)
-		imGroupApi.imGroupListByUser({}).then((res) => {
+		imGroupApi.imGroupListByUser(props.baseRequest,{}).then((res) => {
 			res.forEach((element) => {
 				element.userType = 2
 				groupList.push(element)
@@ -615,6 +631,34 @@
 			previewFileType.value = obj['suffix']
 		})
 	}
+
+	// 复制文本
+	const copyToClipboard = (textToCopy) => {
+	if (navigator.clipboard && window.isSecureContext) {
+		return navigator.clipboard.writeText(textToCopy);
+	} else {
+		let input = document.createElement('input')
+		input.style.position = 'fixed'
+		input.style.top = '-10000px'
+		input.style.zIndex = '-999'
+		document.body.appendChild(input)
+		input.value = textToCopy
+		input.focus()
+		input.select()
+		let result = document.execCommand('copy')
+		document.body.removeChild(input)
+		console.log(123);
+		if (!result || result === 'unsuccessful') {
+			notification.error({
+				message: '复制失败'
+			})
+		} else {
+			notification.success({
+				message: '复制成功'
+			})
+		}
+	}
+}
 
 	// 判断是否显示预览
 	const previewDisplay = (fileSuffix: string) => {
@@ -660,8 +704,8 @@
 		menuData.x = e.x
 		menuData.y = e.y
 		ContextMenu.showContextMenu(menuData)
-		menuData.items = [
-			{
+		menuData.items = []
+		let copy = {			
 				label: '复制',
 				onClick: () => {
 					if (msg.type != '1') {
@@ -670,14 +714,11 @@
 						})
 						return
 					} else {
-						tool.copyToClipboard(msg.content)
-						notification.success({
-							message: '复制成功'
-						})
+						copyToClipboard(msg.content)
 					}
 				}
 			}
-		]
+		menuData.items.push(copy)
 		reCallMeun(msg)
 	}
 
@@ -693,7 +734,7 @@
 				label: '撤回',
 				onClick: () => {
 					//调用撤回接口
-					imMessageApi.recallMessage({ id: msg.id }).then((res) => {
+					imMessageApi.recallMessage(props.baseRequest,{ id: msg.id }).then((res) => {
 						notification.success({
 							message: '撤回成功'
 						})
@@ -930,14 +971,14 @@
 	// 初始化聊天列表
 	const initMessageList = () => {
 		// 查询当前用户的所有聊天人员列表和最后一条消息
-		imMessageApi.queryChatRecord(queryChatRecordParams).then((res) => {
+		imMessageApi.queryChatRecord(props.baseRequest,queryChatRecordParams).then((res) => {
 			ImMessageUserVoList.push(...res.records)
 			queryChatRecordParams.total = res.total
 		})
 	}
 
 	const checkGroupRole = (user: User) => {
-		imGroupMemberApi.imGroupMemberPage({ groupId: user.id, userId: currentUser.id }).then((res) => {
+		imGroupMemberApi.imGroupMemberPage(props.baseRequest,{ groupId: user.id, userId: currentUser.id }).then((res) => {
 			if (res.records.length == 0) {
 				notification.warning({
 					message: '您不是该群组成员'
@@ -1048,7 +1089,7 @@
 			} else {
 				messgaeScrollHeight.value = 0
 			}
-			imMessageApi.queryChatRecordWithUser(queryChatRecordWithUserParams).then((res) => {
+			imMessageApi.queryChatRecordWithUser(props.baseRequest,queryChatRecordWithUserParams).then((res) => {
 				if (!messageListMap[chatUser.id] || usersMap[chatUser.id].current == -1) {
 					messageListMap[chatUser.id] = []
 				}
@@ -1142,7 +1183,7 @@
 
 	// 初始化当前用户的好友列表
 	const getUserList = () => {
-		imSysUserApi.imUserList().then((res) => {
+		imSysUserApi.imUserList(props.baseRequest).then((res) => {
 			users[userClient.value].push(...res)
 			// 缓存头像 节省前端内存
 			res.forEach((item) => {
@@ -1166,7 +1207,7 @@
 
 	// 将消息设置为已读
 	const setRead = (ids: []) => {
-		imMessageApi.setMessageRead(ids)
+		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
 
 	getUserList()

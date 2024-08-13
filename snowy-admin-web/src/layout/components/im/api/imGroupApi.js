@@ -1,7 +1,6 @@
-import { baseRequest } from '@/utils/request'
-
-const request = (url, ...arg) => baseRequest(`/im/group/` + url, ...arg)
-
+const request = (prop,url, ...arg) => {
+	return prop(`/im/group/` + url, ...arg)
+}
 /**
  * IM-群组Api接口管理器
  *
@@ -10,19 +9,19 @@ const request = (url, ...arg) => baseRequest(`/im/group/` + url, ...arg)
  **/
 export default {
 	// 提交IM-群组表单 edit为true时为编辑，默认为新增
-	imGroupSubmitForm(data, edit = false) {
-		return request(edit ? 'edit' : 'add', data)
+	imGroupSubmitForm(prop,data, edit = false) {
+		return request(prop,edit ? 'edit' : 'add', data)
 	},
 	// 删除IM-群组
-	imGroupDelete(data) {
-		return request('delete', data)
+	imGroupDelete(prop,data) {
+		return request(prop,'delete', data)
 	},
 	// 获取IM-群组详情
-	imGroupDetail(data) {
-		return request('detail', data, 'get')
+	imGroupDetail(prop,data) {
+		return request(prop,'detail', data, 'get')
 	},
 	// 获取当前用户的群组
-	imGroupListByUser(data) {
-		return request('listByUser', data, 'get')
+	imGroupListByUser(prop,data) {
+		return request(prop,'listByUser', data, 'get')
 	}
 }

@@ -166,34 +166,4 @@ tool.snowyUuid = () => {
 	return 'xn' + uuid.slice(2)
 }
 
-// 复制文本
-tool.copyToClipboard = (textToCopy) => {
-	if (navigator.clipboard && window.isSecureContext) {
-		return navigator.clipboard.writeText(textToCopy);
-	} else {
-		let input = document.createElement('input')
-		input.style.position = 'fixed'
-		input.style.top = '-10000px'
-		input.style.zIndex = '-999'
-		document.body.appendChild(input)
-		input.value = textToCopy
-		input.focus()
-		input.select()
-		try {
-			let result = document.execCommand('copy')
-			document.body.removeChild(input)
-			if (!result || result === 'unsuccessful') {
-				notification.error({
-					message: '复制失败'
-				})
-			} else {
-				notification.success({
-					message: '复制成功'
-				})
-			}
-		} catch (e) {
-			document.body.removeChild(input)
-		}
-	}
-}
 export default tool

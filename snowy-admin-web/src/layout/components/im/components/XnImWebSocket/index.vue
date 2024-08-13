@@ -5,11 +5,18 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount } from 'vue'
+	import { ref, onMounted, onBeforeUnmount, defineProps, defineEmits, defineExpose } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
-	import sysConfig from '@/config/index'
-	const url = sysConfig.API_URL.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
+
+	const props = defineProps({
+		wsUrl: {
+			type: String,
+			default: ''
+		}
+	})
+
+	const url = props.wsUrl.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
 	const websocketInstance = ref(null)
 	const isReconnecting = ref(false)
 	const reconnectTimer = ref(null)
