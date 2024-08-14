@@ -42,6 +42,7 @@
 				:src="props.src"
 				class="xn-mwh"
 			/>
+			<video v-else-if="fileType === 'mp4'" class="xn-mwh" autoplay controls :src="props.src" />
 			<a-result v-else status="warning" title="不支持预览的文件类型" />
 		</a-spin>
 	</a-card>
