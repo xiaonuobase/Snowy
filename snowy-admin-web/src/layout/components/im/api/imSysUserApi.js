@@ -1,4 +1,4 @@
-const request = (prop,url, ...arg) => {
+const request = (prop, url, ...arg) => {
 	return prop(`/im/user/` + url, ...arg)
 }
 /**
@@ -9,7 +9,7 @@ const request = (prop,url, ...arg) => {
  **/
 export default {
 	// 获取用户分页列表
-	imUserList(prop,data) {
-		return request(prop,'list', data, 'get')
+	imUserList(prop, data) {
+		return request(prop, 'list', data, 'get')
 	}
 }

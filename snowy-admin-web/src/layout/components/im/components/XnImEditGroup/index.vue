@@ -141,7 +141,7 @@
 	import imGroupApi from '../../api/imGroupApi'
 	import imGroupMemberApi from '../../api/imGroupMemberApi'
 	import userCenterApi from '../../api/userCenterApi'
-	
+
 	import XnImCropUpload from '../XnImCropUpload/index.vue'
 	import XnImUserSelector from '../XnImUserSelector/index.vue'
 
@@ -310,7 +310,7 @@
 				content: createVNode('div', { style: 'color:red;' }, '如果确认解散群组，将无法恢复，请谨慎操作'),
 				onOk() {
 					imGroupApi
-						.imGroupDelete(props.baseRequest,[{ id: props.id }])
+						.imGroupDelete(props.baseRequest, [{ id: props.id }])
 						.then(() => {
 							notification.success({
 								message: '解散成功'
@@ -339,7 +339,7 @@
 		const fileData = new FormData()
 		fileData.append('file', result)
 		avatarLoading.value = true
-		userCenterApi.userUpdateAvatar(fileData).then((data) => {
+		userCenterApi.userUpdateAvatar(props.baseRequest, fileData).then((data) => {
 			avatarLoading.value = false
 			formData.avatar = data
 		})
@@ -350,7 +350,8 @@
 		//设为管理员
 		if (type == 1) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(props.baseRequest,
+				.imGroupMemberSubmitForm(
+					props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -376,7 +377,8 @@
 			//移除管理员
 		} else if (type == 2) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(props.baseRequest,
+				.imGroupMemberSubmitForm(
+					props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -402,7 +404,8 @@
 			//转让群主
 		} else if (type == 3) {
 			imGroupMemberApi
-				.imGroupMemberSubmitForm(props.baseRequest,
+				.imGroupMemberSubmitForm(
+					props.baseRequest,
 					{
 						id,
 						userId: toUserId,
@@ -413,7 +416,8 @@
 				.then(() => {
 					let id = imGroupMembers.value.find((item) => item.userId == userId.value).id
 					imGroupMemberApi
-						.imGroupMemberSubmitForm(props.baseRequest,
+						.imGroupMemberSubmitForm(
+							props.baseRequest,
 							{
 								id,
 								userId: userId.value,
@@ -453,7 +457,7 @@
 				content: createVNode('div', { style: 'color:red;' }, '如果确认移除此用户，将无法恢复，请谨慎操作'),
 				onOk() {
 					imGroupMemberApi
-						.imGroupMemberDelete(props.baseRequest,[{ id }])
+						.imGroupMemberDelete(props.baseRequest, [{ id }])
 						.then(() => {
 							notification.success({
 								message: '移除成功'
@@ -486,7 +490,11 @@
 		}
 		// 创建群聊
 		imGroupApi
-			.imGroupSubmitForm(params, props.createGroupType == 'update' || props.createGroupType == 'details')
+			.imGroupSubmitForm(
+				props.baseRequest,
+				params,
+				props.createGroupType == 'update' || props.createGroupType == 'details'
+			)
 			.then(() => {
 				notification.success({
 					message: `${
@@ -509,7 +517,7 @@
 
 	const update = (id) => {
 		// 查询原有的数据进行回滚
-		imGroupApi.imGroupDetail(props.baseRequest,{ id: id }).then((data) => {
+		imGroupApi.imGroupDetail(props.baseRequest, { id: id }).then((data) => {
 			formData.name = data.name
 			formData.remark = data.remark
 			formData.avatar = data.avatar
@@ -524,17 +532,17 @@
 	//	传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return userApi.userOrgTreeSelector(props.baseRequest,param).then((data) => {
+			return userApi.userOrgTreeSelector(props.baseRequest, param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		userPageApi: (param) => {
-			return userApi.userSelector(props.baseRequest,param).then((data) => {
+			return userApi.userSelector(props.baseRequest, param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		checkedUserListApi: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(props.baseRequest,param).then((data) => {
+			return userCenterApi.userCenterGetUserListByIdList(props.baseRequest, param).then((data) => {
 				userList.value = data
 				return Promise.resolve(data)
 			})

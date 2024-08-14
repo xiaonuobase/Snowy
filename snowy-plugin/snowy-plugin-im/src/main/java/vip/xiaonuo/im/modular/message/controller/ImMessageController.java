@@ -14,30 +14,26 @@ package vip.xiaonuo.im.modular.message.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
-import vip.xiaonuo.im.modular.message.param.ImMessageUserParam;
-import vip.xiaonuo.im.modular.message.param.ImMessageAddParam;
-import vip.xiaonuo.im.modular.message.param.ImMessageEditParam;
-import vip.xiaonuo.im.modular.message.param.ImMessageIdParam;
-import vip.xiaonuo.im.modular.message.param.ImMessagePageParam;
+import vip.xiaonuo.im.modular.message.param.*;
 import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
  * IM-消息控制器
  *
  * @author liuchunming
- * @date  2024/05/27 16:52
+ * @date 2024/05/27 16:52
  */
 @Tag(name = "IM-消息控制器")
 @RestController
@@ -51,7 +47,7 @@ public class ImMessageController {
      * 获取IM-消息分页
      *
      * @author liuchunming
-     * @date  2024/05/27 16:52
+     * @date 2024/05/27 16:52
      */
     @Operation(summary = "获取IM-消息分页")
     @SaCheckPermission("/im/message/page")
@@ -64,7 +60,7 @@ public class ImMessageController {
      * 添加IM-消息
      *
      * @author liuchunming
-     * @date  2024/05/27 16:52
+     * @date 2024/05/27 16:52
      */
     @Operation(summary = "添加IM-消息")
     @CommonLog("添加IM-消息")
@@ -79,7 +75,7 @@ public class ImMessageController {
      * 编辑IM-消息
      *
      * @author liuchunming
-     * @date  2024/05/27 16:52
+     * @date 2024/05/27 16:52
      */
     @Operation(summary = "编辑IM-消息")
     @CommonLog("编辑IM-消息")
@@ -94,14 +90,14 @@ public class ImMessageController {
      * 删除IM-消息
      *
      * @author liuchunming
-     * @date  2024/05/27 16:52
+     * @date 2024/05/27 16:52
      */
     @Operation(summary = "删除IM-消息")
     @CommonLog("删除IM-消息")
     @SaCheckPermission("/im/message/delete")
     @PostMapping("/im/message/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                                   List<ImMessageIdParam> imMessageIdParamList) {
+                                       List<ImMessageIdParam> imMessageIdParamList) {
         imMessageService.delete(imMessageIdParamList);
         return CommonResult.ok();
     }
@@ -110,7 +106,7 @@ public class ImMessageController {
      * 获取IM-消息详情
      *
      * @author liuchunming
-     * @date  2024/05/27 16:52
+     * @date 2024/05/27 16:52
      */
     @Operation(summary = "获取IM-消息详情")
     @SaCheckPermission("/im/message/detail")
@@ -140,8 +136,8 @@ public class ImMessageController {
      */
     @Operation(summary = "查询当前用户和指定用户的聊天记录")
     @GetMapping("/im/message/queryChatRecordWithUser")
-    public CommonResult<Page<ImMessage>> queryChatRecordWithUser(String userId,@RequestParam(defaultValue = "1",required = false) String chatType) {
-        return CommonResult.data(imMessageService.queryChatRecordWithUser(userId,chatType));
+    public CommonResult<Page<ImMessage>> queryChatRecordWithUser(@RequestParam(value = "userId") String userId, @RequestParam(defaultValue = "1", required = false, value = "chatType") String chatType) {
+        return CommonResult.data(imMessageService.queryChatRecordWithUser(userId, chatType));
     }
 
 
@@ -154,7 +150,7 @@ public class ImMessageController {
     @Operation(summary = "将消息设为已读")
     @PostMapping("/im/message/setRead")
     public CommonResult<String> setRead(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                            List<ImMessageIdParam> imMessageIdParamList) {
+                                        List<ImMessageIdParam> imMessageIdParamList) {
         imMessageService.setRead(imMessageIdParamList);
         return CommonResult.ok();
     }
