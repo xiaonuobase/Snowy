@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.provider;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
@@ -227,5 +228,13 @@ public class SysUserApiProvider implements SysUserApi {
         sysUserSelectorUserParam.setOrgId(orgId);
         sysUserSelectorUserParam.setSearchKey(searchKey);
         return BeanUtil.toBean(sysUserService.userSelector(sysUserSelectorUserParam), Page.class);
+    }
+
+    @Override
+    public List<JSONObject> listUserWithoutCurrent() {
+        return sysUserService.list(new LambdaQueryWrapper<SysUser>()
+                .select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar)
+                .ne(SysUser::getId, StpUtil.getLoginId()))
+                .stream().map(JSONUtil::parseObj).collect(Collectors.toList());
     }
 }
