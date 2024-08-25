@@ -113,7 +113,6 @@ public interface SysUserApi {
      */
     Page<JSONObject> userSelector(String orgId, String searchKey);
 
-
     /**
      * 获取用户列表（排除当前用户）
      *
