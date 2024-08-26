@@ -129,12 +129,16 @@
 			</a-input-number>
 		</a-form-item>
 	</a-modal>
-	<xn-im-crop-upload ref="cropUploadRef" :img-src="formData ? formData.avatar : undefined" @successful="cropUploadSuccess" />
+	<xn-im-crop-upload
+		ref="cropUploadRef"
+		:img-src="formData ? formData.avatar : undefined"
+		@successful="cropUploadSuccess"
+	/>
 </template>
 
 <script setup lang="ts">
 	import { defineEmits, ref, createVNode, onMounted, nextTick, reactive, defineProps, defineExpose } from 'vue'
-	import { notification, Modal } from 'ant-design-vue'
+	import { message, Modal } from 'ant-design-vue'
 	import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 	import tool from '@/utils/tool'
 	import userApi from '../../api/userApi'
@@ -165,7 +169,7 @@
 	const currentUser = ref({})
 	const uploadLogo = () => {
 		if (props.createGroupType == 'details' || (currentUser.value.role && currentUser.value.role != '1')) {
-			notification.error({
+			message.error({
 				message: '无权限修改用户头像'
 			})
 			return
@@ -189,7 +193,7 @@
 		baseRequest: {
 			type: Function,
 			default: () => undefined
-		},
+		}
 	})
 
 	onMounted(() => {
@@ -228,14 +232,11 @@
 			onOk() {
 				let id = imGroupMembers.value.find((item) => item.userId == userId).id
 				imGroupMemberApi
-					.imGroupMemberUnMute(props.baseRequest,{
+					.imGroupMemberUnMute(props.baseRequest, {
 						id,
 						userId
 					})
 					.then(() => {
-						notification.success({
-							message: '解除禁言成功'
-						})
 						imGroupMembers.value.forEach((item) => {
 							if (item.userId == userId) {
 								item.silenceTime = ''
@@ -260,15 +261,12 @@
 			// 当前时间加上参数muteTime的时间(单位分钟)
 			let time = new Date().getTime() + 60000 * mutedValue.value
 			imGroupMemberApi
-				.imGroupMemberMute(props.baseRequest,{
+				.imGroupMemberMute(props.baseRequest, {
 					id,
 					silenceTime: time,
 					userId: mutedShowUserId.value
 				})
 				.then(() => {
-					notification.success({
-						message: '禁言成功'
-					})
 					imGroupMembers.value.forEach((item) => {
 						if (item.userId == mutedShowUserId.value) {
 							item.silenceTime = new Date(time)
@@ -312,16 +310,9 @@
 					imGroupApi
 						.imGroupDelete(props.baseRequest, [{ id: props.id }])
 						.then(() => {
-							notification.success({
-								message: '解散成功'
-							})
 							emit('restChatUser')
 						})
-						.catch(() => {
-							notification.error({
-								message: '解散失败'
-							})
-						})
+						.catch(() => {})
 				}
 			})
 		}
@@ -360,20 +351,13 @@
 					true
 				)
 				.then(() => {
-					notification.success({
-						message: '设置管理员成功'
-					})
 					imGroupMembers.value.forEach((item) => {
 						if (item.userId == toUserId) {
 							item.role = 2
 						}
 					})
 				})
-				.catch(() => {
-					notification.error({
-						message: '设置管理员失败'
-					})
-				})
+				.catch(() => {})
 			//移除管理员
 		} else if (type == 2) {
 			imGroupMemberApi
@@ -387,20 +371,13 @@
 					true
 				)
 				.then(() => {
-					notification.success({
-						message: '移除管理员成功'
-					})
 					imGroupMembers.value.forEach((item) => {
 						if (item.userId == toUserId) {
 							item.role = 3
 						}
 					})
 				})
-				.catch(() => {
-					notification.error({
-						message: '移除管理员失败'
-					})
-				})
+				.catch(() => {})
 			//转让群主
 		} else if (type == 3) {
 			imGroupMemberApi
@@ -426,9 +403,6 @@
 							true
 						)
 						.then(() => {
-							notification.success({
-								message: '转让群主成功'
-							})
 							imGroupMembers.value.forEach((item) => {
 								if (item.userId == toUserId) {
 									item.role = 1
@@ -438,17 +412,9 @@
 								}
 							})
 						})
-						.catch(() => {
-							notification.error({
-								message: '转让群主失败'
-							})
-						})
+						.catch(() => {})
 				})
-				.catch(() => {
-					notification.error({
-						message: '转让群主失败'
-					})
-				})
+				.catch(() => {})
 			//移除当前人
 		} else {
 			Modal.confirm({
@@ -459,17 +425,10 @@
 					imGroupMemberApi
 						.imGroupMemberDelete(props.baseRequest, [{ id }])
 						.then(() => {
-							notification.success({
-								message: '移除成功'
-							})
 							imGroupMembers.value = imGroupMembers.value.filter((item) => item.userId != toUserId)
 							userList.value = userList.value.filter((item) => item.id != toUserId)
 						})
-						.catch(() => {
-							notification.error({
-								message: '移除失败'
-							})
-						})
+						.catch(() => {})
 				}
 			})
 		}
@@ -496,15 +455,6 @@
 				props.createGroupType == 'update' || props.createGroupType == 'details'
 			)
 			.then(() => {
-				notification.success({
-					message: `${
-						props.createGroupType == 'update'
-							? '修改群组'
-							: props.createGroupType == 'details'
-							  ? '邀请人员'
-							  : '创建群组'
-					}成功`
-				})
 				let aa = {
 					avatar: formData.avatar,
 					name: formData.name,
