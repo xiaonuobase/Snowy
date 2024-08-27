@@ -21,6 +21,8 @@ import vip.xiaonuo.dev.api.DevFileApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
+import java.util.Optional;
+
 /**
  * 文件API接口提供者
  *
@@ -45,7 +47,9 @@ public class DevFileApiProvider implements DevFileApi {
 
     @Override
     public JSONObject getFileInfoById(String id) {
-        return JSONUtil.parseObj(devFileService.getById(id));
+        return Optional.ofNullable(devFileService.getById(id))
+                .map(JSONUtil::parseObj)
+                .orElse(new JSONObject());
     }
 
     @Override

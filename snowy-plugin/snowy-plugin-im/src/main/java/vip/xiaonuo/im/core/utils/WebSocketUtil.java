@@ -26,7 +26,6 @@ import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.dev.api.DevFileApi;
 import vip.xiaonuo.im.core.auth.AuthorizationManager;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
-import vip.xiaonuo.im.modular.group.service.ImGroupService;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
@@ -52,8 +51,6 @@ public class WebSocketUtil {
     private static ImMessageService imMessageService = SpringUtil.getBean(ImMessageService.class);
 
     private static DevFileApi devFileApi = SpringUtil.getBean(DevFileApi.class);
-
-    private static ImGroupService imGroupService = SpringUtil.getBean(ImGroupService.class);
 
     private static ImGroupMemberService imGroupMemberService = SpringUtil.getBean(ImGroupMemberService.class);
 
@@ -92,6 +89,10 @@ public class WebSocketUtil {
             // 如果是type不为1 的消息类型 需要进行翻译
             if (!imMessage.getType().equals("1")) {
                 JSONObject fileInfoById = devFileApi.getFileInfoById(imMessage.getContent());
+                boolean aNull = JSONUtil.isNull(fileInfoById);
+                if (aNull) {
+                    throw new RuntimeException("文件信息获取失败");
+                }
                 JSONObject entries = new JSONObject();
                 entries.set("fileId", fileInfoById.getStr("id"));
                 entries.set("suffix", fileInfoById.getStr("suffix"));
