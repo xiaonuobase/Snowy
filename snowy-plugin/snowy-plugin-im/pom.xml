@@ -64,7 +64,7 @@
                     <!-- 是否混淆 默认是true -->
                     <obfuscate>true</obfuscate>
                     <!-- 配置一个文件，通常叫做proguard.conf,该文件主要是配置options选项，也就是说使用proguard.cfg那么options下的所有内容都可以移到proguard.cfg中 -->
-                    <proguardInclude>D:\work\chuzhong\snowy\snowy-plugin\snowy-plugin-im\proguard.conf</proguardInclude>
+                    <proguardInclude>${project.basedir}/proguard.conf</proguardInclude>
                     <!-- 额外的jar包，通常是项目编译所需要的jar -->
                     <libs>
                         <lib>${java.home}/</lib>
