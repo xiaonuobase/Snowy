@@ -49,9 +49,9 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         }
 
         if (!AuthorizationManager.verifySign()){
-            System.err.println("im模块websocket配置签名校验失败");
+            System.err.println("im模块websocket配置授权码失败");
         }else{
-            System.out.println("im模块websocket配置签名校验成功");
+            System.out.println("im模块websocket配置授权码成功");
         }
         registry.addHandler(new ImWebSocketHandler(), webSocketConfig.getPath().toArray(String[]::new))
                 .addInterceptors(new WebSocketInterceptor())

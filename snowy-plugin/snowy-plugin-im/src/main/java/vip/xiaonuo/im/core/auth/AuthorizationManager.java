@@ -16,6 +16,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.antherd.smcrypto.sm2.Sm2;
 
+import static vip.xiaonuo.im.core.config.WebSocketConfig.b;
+import static vip.xiaonuo.im.core.manager.WebSocketSessionManager.a;
+
 /**
  * 授权管理器
  *
@@ -47,12 +50,11 @@ public class AuthorizationManager {
             String[] split = AUTH_CODE.split("-");
             String str = split[0];
             String sign = split[1];
-            AUTH_FLAG = Sm2.doVerifySignature(str, sign, publicKey);
+            AUTH_FLAG = Sm2.doVerifySignature(str, sign, a + b + c);
         }
         return AUTH_FLAG;
     }
 
-    private final static String publicKey = "04a98f1ad69a020b15f0a8402316a1da3dad134f55919028dd2e7cafa18bcabea309c575c8687cb70dee5b3bd6aabbcc31b8810c2c108a898f88631b96a88c315c";
-
+    public final static String c = "810c2c108a898f88631b96a88c315c";
 
 }

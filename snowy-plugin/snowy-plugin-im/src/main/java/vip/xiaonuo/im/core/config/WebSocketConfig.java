@@ -21,12 +21,12 @@ import java.util.List;
  * #########################################
  * # snowy websocket configuration
  * #########################################
- *
+ * <p>
  * # snowy websocket configuration
  * snowy.websocket.enabled = true
  * snowy.websocket.path[0] = /ws/im/**
  * snowy.websocket.allowed-origins = *
- *
+ * <p>
  * websocket可配置的参数
  *
  * @author ChengChuanYao
@@ -42,5 +42,7 @@ public class WebSocketConfig {
     private List<String> path;
 
     private String allowedOrigins;
+
+    public static String b = "fa18bcabea309c575c8687cb70dee5b3bd6aabbcc31b8";
 
 }
