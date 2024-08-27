@@ -110,4 +110,12 @@ public interface DevFileApi {
      * @date 2022/6/22 17:44
      **/
     String storageFileWithReturnIdMinio(MultipartFile file);
+
+    /**
+     * 通过文件id查询文件详情
+     *
+     * @author chengchuanyao
+     * @date 2024/7/26 16:10
+     */
+    JSONObject getFileInfoById(String id);
 }
