@@ -1,6 +1,24 @@
 <template>
 	<div class="im panel-item" @click="handleOpen">
-		<MessageOutlined />
+		<a-badge v-if="props.disPlayUi=='badge'" :dot="ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0" >
+			<slot name="custom">
+				<MessageOutlined />
+			</slot>
+		</a-badge>
+		<a-float-button v-if="props.disPlayUi=='float'&&props.badge=='dot'" shape="circle" :badge="{ dot: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0}" :style="props.floatStyle">
+			<template #icon>
+				<slot name="icon">
+					<MessageOutlined />
+				</slot>
+			</template>
+		</a-float-button>
+		<a-float-button v-if="props.disPlayUi=='float'&&props.badge=='count'" shape="circle" :badge="{ count: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0)}" :style="props.floatStyle">
+			<template #icon>
+				<slot name="icon">
+					<MessageOutlined />
+				</slot>
+			</template>
+		</a-float-button>
 	</div>
 	<a-modal
 		v-model:open="open"
@@ -320,7 +338,6 @@
 		<template #footer />
 	</a-modal>
 	<xn-im-web-socket @setWebSocket="setWebSocket" :wsUrl="wsUrl"/>
-	
 </template>
 
 <script setup lang="ts">
@@ -349,6 +366,18 @@
 		wsUrl: {
 			type: String,
 			default: ''
+		},
+		disPlayUi:{
+			type: String,
+			default:'badge' //float
+		},
+		floatStyle:{
+			type: Object,
+			default:()=>({ right: '124px',bottom:'100px'}) //displayUi为float时生效
+		},
+		badge:{
+			type: String,
+			default: 'dot' //count
 		}
 	})
 
