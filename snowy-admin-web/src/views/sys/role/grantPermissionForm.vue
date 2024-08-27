@@ -42,7 +42,7 @@
 						</a-radio-group>
 					</template>
 				</template>
-				<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }">
+				<template #customFilterDropdown="{ setSelectedKeys, selectedKeys, clearFilters, column }">
 					<div class="xn-pd8">
 						<a-input
 							ref="searchInput"
@@ -50,22 +50,24 @@
 							:value="selectedKeys[0]"
 							class="xn-jk-line"
 							@change="(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])"
-							@pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
+							@pressEnter="handleSearch(selectedKeys, column.dataIndex)"
 						/>
 						<a-button
 							type="primary"
 							size="small"
 							class="xn-wd90 xn-mr8"
-							@click="handleSearch(selectedKeys, confirm, column.dataIndex)"
+							@click="handleSearch(selectedKeys, column.dataIndex)"
 						>
 							<template #icon><SearchOutlined /></template>
 							搜索
 						</a-button>
-						<a-button size="small" class="xn-wd90" @click="handleReset(clearFilters, confirm)"> 重置 </a-button>
+						<a-button size="small" class="xn-wd90" @click="handleReset(clearFilters)"> 重置 </a-button>
 					</div>
 				</template>
 				<template #customFilterIcon="{ filtered }">
-					<search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+					<a-badge :dot="state.searchText?.trim().length > 0" status="processing">
+						<search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+					</a-badge>
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'prefix'">
@@ -148,7 +150,12 @@
 		total: 0,
 		showSizeChanger: true,
 		defaultPageSize: 10,
-		pageSizeOptions: ['10', '20', '50', '100']
+		pageSizeOptions: ['10', '20', '50', '100'],
+		onChange: () => {
+			nextTick(() => {
+				searchFunc()
+			})
+		}
 	})
 	const firstShowMap = ref({})
 	// 全选
@@ -203,6 +210,32 @@
 		loadDatas.value = echoModuleData(res, resOwn)
 		pagination.value.total = loadDatas.value.length
 		allChecked.value = loadDatas.value.every((item) => item.parentCheck)
+		spinningLoading.value = false
+		searchFunc()
+	}
+	// 数据搜索
+	const searchFunc = () => {
+		spinningLoading.value = true
+		const loadData = loadDatas.value.filter((item) => {
+			if (!state.searchText || state.searchText.trim().length === 0) {
+				return true
+			}
+			return item.api.toUpperCase().includes(state.searchText?.toUpperCase())
+		})
+		pagination.value.total = loadData.length
+		const start = (pagination.value.current - 1) * pagination.value.pageSize
+		const end = start + pagination.value.pageSize
+		const tableData = loadData.slice(start, end)
+		firstShowMap.value = {}
+		// 生成map
+		tableData?.forEach((item, index) => {
+			if (firstShowMap.value[item.prefix]) {
+				firstShowMap.value[item.prefix].push(index)
+			} else {
+				firstShowMap.value[item.prefix] = [index]
+			}
+		})
+		tableLoadData.value = tableData
 		spinningLoading.value = false
 	}
 	// table事件触发
@@ -460,16 +493,24 @@
 			})
 	}
 	// 标题接口列搜索
-	const handleSearch = (selectedKeys, confirm, dataIndex) => {
-		confirm()
+	const handleSearch = (selectedKeys, dataIndex) => {
 		state.searchText = selectedKeys[0]
 		state.searchedColumn = dataIndex
+		refreshSearch()
 	}
 	// 标题接口列搜索重置
-	const handleReset = (clearFilters, confirm) => {
+	const handleReset = (clearFilters) => {
 		clearFilters()
-		confirm()
 		state.searchText = ''
+		state.searchedColumn = ''
+		refreshSearch()
+	}
+	// 重置搜索
+	const refreshSearch = () => {
+		pagination.value.current = 1
+		nextTick(() => {
+			searchFunc()
+		})
 	}
 	// 标题数据范围列radio-group事件
 	const radioChange = (obj) => {
@@ -501,11 +542,15 @@
 	}
 	// 监听分页及数据变化
 	watch(
-		() => [pagination.value, loadDatas.value],
+		loadDatas,
 		(val) => {
+			const loadData = val.filter((item) => {
+				return item.api.toUpperCase().includes(state.searchText.toUpperCase())
+			})
+			pagination.value.total = loadData.length
 			const start = (pagination.value.current - 1) * pagination.value.pageSize
 			const end = start + pagination.value.pageSize
-			const tableData = loadDatas.value.slice(start, end)
+			const tableData = loadData.slice(start, end)
 			firstShowMap.value = {}
 			// 生成map
 			tableData?.forEach((item, index) => {
