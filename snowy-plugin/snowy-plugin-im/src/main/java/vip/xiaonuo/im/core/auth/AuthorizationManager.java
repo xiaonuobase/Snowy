@@ -55,6 +55,6 @@ public class AuthorizationManager {
         return AUTH_FLAG;
     }
 
-    public final static String c = "810c2c108a898f88631b96a88c315c";
+    public final static String c = "346150e54c2f4ee5febab66aa9dda2";
 
 }
