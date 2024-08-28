@@ -36,7 +36,7 @@ const routes_404 = [
 const routes = [...systemRouter, ...whiteListRouters, ...routes_404]
 
 const router = createRouter({
-	history: createWebHistory(),
+	history: createWebHistory(import.meta.env.BASE_URL),
 	routes
 })
 
