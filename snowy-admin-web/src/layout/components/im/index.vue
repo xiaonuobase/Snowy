@@ -1,5 +1,5 @@
 <template>
-	<div class="im panel-item" @click="handleOpen">
+	<div @click="handleOpen">
 		<a-badge v-if="props.disPlayUi=='badge'" :dot="ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0" >
 			<slot name="custom">
 				<MessageOutlined />
@@ -734,7 +734,7 @@
 		menuData.y = e.y
 		ContextMenu.showContextMenu(menuData)
 		menuData.items = []
-		let copy = {			
+		let copy = {
 				label: '复制',
 				onClick: () => {
 					if (msg.type != '1') {
@@ -1327,7 +1327,7 @@
 	.message-text {
 		margin: 0;
 		word-wrap: break-word;
-		word-break: normal;
+    word-break:break-all;
 	}
 	.message-box-column {
 		display: flex;

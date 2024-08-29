@@ -89,6 +89,8 @@
         </dependency>
 
         <!-- IM功能插件 -->
+        <!-- mvn install:install-file -Dfile=D:\\work\\chuzhong\\snowy\\snowy-plugin\\snowy-plugin-im\\target\\snowy-plugin-im-end-3.0.0.jar -DgroupId=vip.xiaonuo -DartifactId=snowy-plugin-im -Dversion=2.0.1 -Dpackaging=jar       -->
+        <!-- mvn install:install-file -Dfile=D:\\work\\chuzhong\\snowy\\snowy-plugin\\snowy-plugin-im\\target\\snowy-plugin-im-3.0.0_proguard_base.jar -DgroupId=vip.xiaonuo -DartifactId=snowy-plugin-im -Dversion=2.1.3 -Dpackaging=jar-->
         <dependency>
             <groupId>vip.xiaonuo</groupId>
             <artifactId>snowy-plugin-im</artifactId>

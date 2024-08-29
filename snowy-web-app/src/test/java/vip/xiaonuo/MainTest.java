@@ -29,9 +29,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = Application.class)
 public class MainTest {
 
-    private final static String publicKey = "04a98f1ad69a020b15f0a8402316a1da3dad134f55919028dd2e7cafa18bcabea309c575c8687cb70dee5b3bd6aabbcc31b8810c2c108a898f88631b96a88c315c";
-    
-    private final static String privateKey = "00a78b54cb312fadef390328bad46fb6502b9a86e8156f3d96c7a248612c7b918b";
+    private final static String publicKey = "04269d089bf57ff2e9242a5692f1a79970616bbff5ccfe5f3b52b7d0cd1479791e4c722eb6f6813ead82a7777bc947a0a61c346150e54c2f4ee5febab66aa9dda2";
+
+    private final static String privateKey = "00df47e8486e6eb98a345a6dad46bfa6119bf1d77e295660c2a4fa449af3642ba2";
 
     @Test
     public void test() throws Exception {
@@ -40,10 +40,9 @@ public class MainTest {
     }
 
     public static void main(String[] args) {
-        String s = Sm2.doEncrypt("IM-202408061024", publicKey);
-        System.out.println(s);
+        String s = Sm2.doEncrypt("IM-202408141024", publicKey);
         String s1 = Sm2.doSignature(s, privateKey);
-        System.out.println(s1);
+        System.out.println(s + '-' + s1);
     }
 
 }
