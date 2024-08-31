@@ -14,13 +14,14 @@ package vip.xiaonuo.im.modular.group.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.im.modular.group.entity.ImGroup;
@@ -30,9 +31,6 @@ import vip.xiaonuo.im.modular.group.param.ImGroupIdParam;
 import vip.xiaonuo.im.modular.group.param.ImGroupPageParam;
 import vip.xiaonuo.im.modular.group.service.ImGroupService;
 
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -131,5 +129,18 @@ public class ImGroupController {
     @GetMapping("/im/group/detail")
     public CommonResult<ImGroup> detail(@Valid ImGroupIdParam imGroupIdParam) {
         return CommonResult.data(imGroupService.detail(imGroupIdParam));
+    }
+
+
+    /**
+     * 上传群组头像
+     *
+     * @author chengchuanyao
+     * @date 2024/8/31 14:04
+     */
+    @Operation(summary = "上传群组头像")
+    @PostMapping("/im/group/uploadAvatar")
+    public CommonResult<String> uploadAvatar(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(imGroupService.uploadAvatar(file));
     }
 }

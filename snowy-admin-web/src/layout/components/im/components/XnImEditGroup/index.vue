@@ -330,7 +330,7 @@
 		const fileData = new FormData()
 		fileData.append('file', result)
 		avatarLoading.value = true
-		userCenterApi.userUpdateAvatar(props.baseRequest, fileData).then((data) => {
+		imGroupApi.imGroupUploadAvatar(props.baseRequest, fileData).then((data) => {
 			avatarLoading.value = false
 			formData.avatar = data
 		})

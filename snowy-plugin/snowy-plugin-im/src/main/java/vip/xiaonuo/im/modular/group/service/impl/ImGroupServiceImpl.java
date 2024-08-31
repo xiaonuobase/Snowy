@@ -16,6 +16,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -26,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -41,8 +44,11 @@ import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
 import vip.xiaonuo.im.modular.message.entity.ImMessage;
 import vip.xiaonuo.im.modular.message.service.ImMessageService;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -187,5 +193,23 @@ public class ImGroupServiceImpl extends ServiceImpl<ImGroupMapper, ImGroup> impl
             return this.listByIds(groupIds);
         }
         return List.of();
+    }
+
+    @Override
+    public String uploadAvatar(MultipartFile file) {
+        try {
+            String suffix = Objects.requireNonNull(FileUtil.getSuffix(file.getOriginalFilename())).toLowerCase();
+            BufferedImage image = ImgUtil.toImage(file.getBytes());
+            String base64;
+            if (image.getWidth() <= 200 && image.getHeight() <= 200) {
+                base64 = ImgUtil.toBase64DataUri(image, suffix);
+            } else {
+                base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(image, 200, 200, null), suffix);
+            }
+            return base64;
+        } catch (IOException e) {
+            log.error(">>> 头像上传失败：", e);
+            throw new CommonException("头像上传失败");
+        }
     }
 }

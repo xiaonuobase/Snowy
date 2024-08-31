@@ -19,10 +19,6 @@ const request = (prop, url, ...arg) => {
  * @date 2022-09-22 22:33:20
  */
 export default {
-	// 修改用户头像
-	userUpdateAvatar(prop, data) {
-		return request(prop, 'updateAvatar', data)
-	},
 	// 根据id集合获取用户集合
 	userCenterGetUserListByIdList(prop, data) {
 		return request(prop, 'getUserListByIdList', data)

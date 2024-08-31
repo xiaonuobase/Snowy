@@ -23,5 +23,9 @@ export default {
 	// 获取当前用户的群组
 	imGroupListByUser(prop, data) {
 		return request(prop, 'listByUser', data, 'get')
+	},
+	// 上传群组头像
+	imGroupUploadAvatar(prop, data) {
+		return request(prop, 'uploadAvatar', data)
 	}
 }

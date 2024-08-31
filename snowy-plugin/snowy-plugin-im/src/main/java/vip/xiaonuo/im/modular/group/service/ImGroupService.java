@@ -14,6 +14,7 @@ package vip.xiaonuo.im.modular.group.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.im.modular.group.entity.ImGroup;
 import vip.xiaonuo.im.modular.group.param.ImGroupAddParam;
 import vip.xiaonuo.im.modular.group.param.ImGroupEditParam;
@@ -86,4 +87,11 @@ public interface ImGroupService extends IService<ImGroup> {
      */
     List<ImGroup> listByUser();
 
+    /**
+     * 上传群组头像
+     *
+     * @author chengchuanyao
+     * @date 2024/8/31 14:04
+     */
+    String uploadAvatar(MultipartFile file);
 }
