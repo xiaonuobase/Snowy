@@ -9,14 +9,6 @@
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
 
-	const props = defineProps({
-		wsUrl: {
-			type: String,
-			default: ''
-		}
-	})
-
-	const url = props.wsUrl.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
 	const websocketInstance = ref(null)
 	const isReconnecting = ref(false)
 	const reconnectTimer = ref(null)
@@ -24,6 +16,15 @@
 	const isReconnectingNum = ref(0)
 	const isReconnectingRun = ref(false)
 	const emit = defineEmits(['setWebSocket'])
+
+	const props = defineProps({
+		uri: {
+			type: String,
+			default: ''
+		}
+	})
+
+	const url = props.uri.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
 
 	//监听websocket状态
 	// 重连方法

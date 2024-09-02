@@ -76,7 +76,6 @@
 <script setup name="uploadIndex">
 	import { watch, defineEmits, defineProps, defineExpose } from 'vue'
 	import tool from '@/utils/tool'
-	import sysConfig from '@/config/index'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
 	const fileList = ref([])
@@ -161,22 +160,22 @@
 			default: undefined,
 			required: false
 		},
-		baseUrl: {
+		uri: {
 			type: String,
 			default: ''
 		}
 	})
 	const action =
 		props.uploadResultType === 'id'
-			? props.baseUrl + props.uploadReturnIdApi
-			: props.baseUrl + props.uploadDynamicReturnUrlApi
+			? props.uri + props.uploadReturnIdApi
+			: props.uri + props.uploadDynamicReturnUrlApi
 
 	// 构造文件对象
 	const buildFileObject = (url, id) => {
 		return {
-			data: url ? url : sysConfig.API_URL + props.uploadIdDownloadUrl + id,
+			data: url ? url : props.uri + props.uploadIdDownloadUrl + id,
 			name: url ? url : id,
-			url: url ? url : sysConfig.API_URL + props.uploadIdDownloadUrl + id,
+			url: url ? url : props.uri + props.uploadIdDownloadUrl + id,
 			status: 'done',
 			response: {
 				data: url ? url : id,
@@ -215,7 +214,7 @@
 						delete e.thumbUrl
 					}
 					if (props.uploadResultType === 'id') {
-						e.url = sysConfig.API_URL + props.uploadIdDownloadUrl + e.response.data
+						e.url = props.uri + props.uploadIdDownloadUrl + e.response.data
 					}
 					if (props.uploadResultType === 'url') {
 						e.url = e.response.data
@@ -284,7 +283,7 @@
 		previewTitle.value = file.name
 		// 如果返回的是id
 		if (props.uploadResultType === 'id') {
-			previewImage.value = sysConfig.API_URL + props.uploadIdDownloadUrl + file.response.data
+			previewImage.value = props.uri + props.uploadIdDownloadUrl + file.response.data
 		} else {
 			previewImage.value = file.response.data
 		}

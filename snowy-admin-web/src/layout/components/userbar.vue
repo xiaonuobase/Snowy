@@ -2,7 +2,7 @@
 	<div class="user-bar">
 		<!-- 搜索面板 -->
 		<panel-search v-if="!isMobile" />
-		<SnowyIm :baseRequest="baseRequest" :wsUrl="config.API_URL" />
+		<SnowyIm :baseRequest="baseRequest" :config="config" />
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>

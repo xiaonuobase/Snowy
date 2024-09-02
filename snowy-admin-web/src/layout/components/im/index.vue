@@ -88,10 +88,14 @@
 						<a-badge status="default" v-else style="padding-top: 32px; margin-left: -8px" />
 						<div class="catalog-content-li-user">
 							<div>
-								<span>{{ usersMap[item.userId + ''].name }}</span>
-								<span class="catalog-content-li-user-time">{{ lastMessageDate(item.createTime) }}</span>
+								<a-typography-text
+									:style="{ width: lastMessageDate(item.createTime).length >= 6 ? '60%' : '80%' }"
+									:ellipsis="{ tooltip: usersMap[item.userId + ''].name }"
+									:content="usersMap[item.userId + ''].name"
+								/>
+								<span class="catalog-content-li-user-time" :style="{ width:lastMessageDate(item.createTime).length >= 6 ? '40%' : '20%' }">{{ lastMessageDate(item.createTime) }}</span>
 							</div>
-							<span class="catalog-content-li-user-last-msg">{{ groupRecall(item.content) }}</span>
+							<span class="catalog-content-li-user-last-msg" :style="{ width:'90%' }">{{ groupRecall(item.content) }}</span>
 						</div>
 					</div>
 				</div>
@@ -311,7 +315,7 @@
 	</a-modal>
 
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
-		<xn-im-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef" :baseUrl="wsUrl" />
+		<xn-im-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef" :uri="config.API_URL"/>
 	</a-modal>
 	<a-modal v-model:open="previewShow" title="预览文件" :width="1200" style="top: 10px">
 		<xn-im-file-preview v-if="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
@@ -337,11 +341,11 @@
 		/>
 		<template #footer />
 	</a-modal>
-	<xn-im-web-socket @setWebSocket="setWebSocket" :wsUrl="wsUrl"/>
+	<xn-im-web-socket @setWebSocket="setWebSocket" :uri="config.API_URL"/>
 </template>
 
 <script setup lang="ts">
-	import { ref, reactive, onMounted, watch, nextTick, defineProps,h } from 'vue'
+	import { ref, reactive, onMounted, watch, nextTick, defineProps, h } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import { MessageOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons-vue'
 	import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
@@ -357,15 +361,12 @@
 	import XnImWebSocket from './components/XnImWebSocket/index.vue'
 	import XnImFilePreview from './components/XnImFilePreview/index.vue'
 	import XnImEditGroup from './components/XnImEditGroup/index.vue'
+	import { setServerType } from './utils/request'
 
 	const props = defineProps({
 		baseRequest: {
 			type: Function,
 			default: () => undefined
-		},
-		wsUrl: {
-			type: String,
-			default: ''
 		},
 		disPlayUi:{
 			type: String,
@@ -378,6 +379,10 @@
 		badge:{
 			type: String,
 			default: 'dot' //count
+		},
+		config:{
+			type: Object,
+			default:()=>({})
 		}
 	})
 
@@ -1238,9 +1243,15 @@
 	const setRead = (ids: []) => {
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
-
-	getUserList()
-	initGroupList()
+	
+	setServerType(props.config).then(res=>{
+		getUserList();
+		initGroupList()
+	},()=>{
+		notification.error({
+			message: 'IM模块配置错误，请仔细对比配置文档'
+		})
+	});
 </script>
 <style lang="less" scoped>
 	.record-img {
@@ -1428,7 +1439,8 @@
 	}
 	.container-catalog {
 		flex-grow: 0;
-		width: 230px;
+		min-width: 23%;
+		max-width: 25%;
 		border-right: 1px solid rgb(0 0 0 / 10%);
 		height: 100%;
 	}
@@ -1482,6 +1494,7 @@
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
+		width: 200px;
 	}
 	.catalog-content-li-user-time {
 		float: right;
