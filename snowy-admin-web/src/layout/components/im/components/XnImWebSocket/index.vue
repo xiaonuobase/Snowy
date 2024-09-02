@@ -8,6 +8,7 @@
 	import { ref, onMounted, onBeforeUnmount, defineProps, defineEmits, defineExpose } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
+	import { prefixUrl } from '../../utils/request'
 
 	const websocketInstance = ref(null)
 	const isReconnecting = ref(false)
@@ -23,8 +24,6 @@
 			default: ''
 		}
 	})
-
-	const url = props.uri.replace('http', 'ws') + '/ws/im?token=' + tool.data.get('TOKEN')
 
 	//监听websocket状态
 	// 重连方法
@@ -45,6 +44,7 @@
 		}, 4000)
 	}
 	const initWebSocket = () => {
+		let url = props.uri.replace('http', 'ws') + prefixUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
 		if (!('WebSocket' in window)) {
 			notification.error({
 				message: '错误',

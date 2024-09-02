@@ -5,14 +5,14 @@
 				<MessageOutlined />
 			</slot>
 		</a-badge>
-		<a-float-button v-if="props.disPlayUi=='float'&&props.badge=='dot'" shape="circle" :badge="{ dot: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0}" :style="props.floatStyle">
+		<a-float-button id="float-button" :type="props.floatBottonType"  v-if="props.disPlayUi=='float'&&props.badge=='dot'" shape="circle" :badge="{ dot: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0}" :style="props.floatStyle">
 			<template #icon>
 				<slot name="icon">
 					<MessageOutlined />
 				</slot>
 			</template>
 		</a-float-button>
-		<a-float-button v-if="props.disPlayUi=='float'&&props.badge=='count'" shape="circle" :badge="{ count: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0)}" :style="props.floatStyle">
+		<a-float-button id="float-button" :type="props.floatBottonType"  v-if="props.disPlayUi=='float'&&props.badge=='count'" shape="circle" :badge="{ count: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0)}" :style="props.floatStyle">
 			<template #icon>
 				<slot name="icon">
 					<MessageOutlined />
@@ -383,6 +383,10 @@
 		config:{
 			type: Object,
 			default:()=>({})
+		},
+		floatBottonType:{
+			type: String,
+			default: '' //primary or ''
 		}
 	})
 
@@ -485,6 +489,13 @@
 	onMounted(() => {
 		initMessageList()
 		initGroupMemberMuted()
+		if(props.floatStyle.backgroundColor != '' && props.floatStyle.backgroundColor != undefined){	
+			var floatButton = document.getElementById("float-button")
+			var boxes = floatButton.getElementsByClassName('ant-float-btn-body');
+			for (var i = 0; i < boxes.length; i++) {
+				boxes[0].style.backgroundColor = props.floatStyle.backgroundColor;
+			}
+		}
 	})
 
 	watch(
@@ -1244,13 +1255,9 @@
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
 	
-	setServerType(props.config).then(res=>{
+	setServerType(props.config.SERVER_TYPE).then(res=>{
 		getUserList();
 		initGroupList()
-	},()=>{
-		notification.error({
-			message: 'IM模块配置错误，请仔细对比配置文档'
-		})
 	});
 </script>
 <style lang="less" scoped>

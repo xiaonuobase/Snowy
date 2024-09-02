@@ -47,19 +47,19 @@ const PREFIX = [
 	{
 		label: '/im/',
 		value: '/api/bizapp'
+	},
+	{
+		label: '/ws/',
+		value: '/api/bizapp'
 	}
 ]
 
 // 设置服务类型
 export const setServerType = (serverType) => {
 	return new Promise((resolve, reject) => {
-		if (serverType) {
-			// 设置服务类型
-			SERVER_TYPE = serverType
-			resolve()
-		} else {
-			reject()
-		}
+		// 设置服务类型
+		SERVER_TYPE = serverType
+		resolve(serverType)
 	})
 }
 
@@ -74,8 +74,4 @@ export const prefixUrl = (url) => {
 	} else {
 		return url
 	}
-}
-
-export const request = (prop, url, ...arg) => {
-	return prop(prefixUrl(url), ...arg)
 }
