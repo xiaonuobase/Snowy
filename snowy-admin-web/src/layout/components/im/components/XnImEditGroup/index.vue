@@ -33,7 +33,7 @@
 							data-type="object"
 							v-model:value="formData.receiverIdList"
 							:userShow="props.createGroupType == 'add'"
-							:updateShow="props.createGroupType == 'details' || currentUser.role != '1'"
+							:updateShow="props.createGroupType != 'add'"
 						/>
 					</a-form-item>
 				</a-col>
@@ -57,7 +57,9 @@
 								>
 								<a
 									key="list-loadmore-more"
-									v-if="key.role != '1' && userId != key.userId && currentUser.role == '1'"
+									v-if="
+										key.role != '1' && userId != key.userId && currentUser.role == '1' && '{}' != JSON.stringify(key)
+									"
 									@click="updateGroupMember(3, key.userId)"
 									>转让群主</a
 								>
@@ -116,7 +118,11 @@
 			<a-button class="ml" type="primary" @click="add" v-if="currentUser.role == '1' || props.createGroupType == 'add'"
 				>保存</a-button
 			>
-			<a-button class="ml" type="primary" @click="add" v-if="userList.length != imGroupMembers.length"
+			<a-button
+				class="ml"
+				type="primary"
+				@click="add"
+				v-if="userList.length != imGroupMembers.length && currentUser.role != '1'"
 				>确认邀请</a-button
 			>
 			<a-button @click="cancel">关闭</a-button>
@@ -427,6 +433,7 @@
 						.then(() => {
 							imGroupMembers.value = imGroupMembers.value.filter((item) => item.userId != toUserId)
 							userList.value = userList.value.filter((item) => item.id != toUserId)
+							formData.receiverIdList = userList.value.map((item) => item.id)
 						})
 						.catch(() => {})
 				}

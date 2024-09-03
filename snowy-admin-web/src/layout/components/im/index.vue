@@ -1223,7 +1223,14 @@
 
 	const sendMessageToWebSocket = (msg) => {
 		// 发送消息
-		websocket.value.sendWebSocketMessage(msg)
+		if(websocket.value){
+			websocket.value.sendWebSocketMessage(msg)
+		}else{
+			notification.error({
+				message: 'IM模块断开，请刷新页面检查'
+			})
+		}
+		
 	}
 
 	// 初始化当前用户的好友列表

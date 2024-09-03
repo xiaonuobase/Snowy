@@ -16,6 +16,7 @@
 	const onMessageCallback = ref(null)
 	const isReconnectingNum = ref(0)
 	const isReconnectingRun = ref(false)
+	const closeWebSocketAsync = ref(false)
 	const emit = defineEmits(['setWebSocket'])
 
 	const props = defineProps({
@@ -57,6 +58,7 @@
 		}
 		websocketInstance.value = new WebSocket(url)
 		websocketInstance.value.onopen = () => {
+			closeWebSocketAsync.value = false
 			notification.success({
 				message: '初始化IM成功'
 			})
@@ -68,6 +70,9 @@
 			emit('setWebSocket', websocketInstance.value)
 		}
 		websocketInstance.value.onerror = (e) => {
+			if (closeWebSocketAsync.value) {
+				return
+			}
 			if (isReconnectingNum.value <= 5) {
 				notification.error({
 					message: '错误',
@@ -115,12 +120,17 @@
 	onMounted(() => {
 		initWebSocket()
 	})
-	onBeforeUnmount(() => {
-		closeWebSocket()
-	})
-	window.onbeforeunload = () => {
+	window.onbeforeunload = (e) => {
 		closeWebSocket()
 	}
+	onUnmounted(() => {
+		if (closeWebSocketAsync.value) {
+			return
+		}
+		closeWebSocketAsync.value = true
+		closeWebSocket()
+	})
+
 	defineExpose({
 		initWebSocket,
 		closeWebSocket,
