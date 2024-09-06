@@ -29,7 +29,7 @@ import vip.xiaonuo.dev.modular.slideshow.param.DevSlideshowIdParam;
 import vip.xiaonuo.dev.modular.slideshow.param.DevSlideshowPageParam;
 import vip.xiaonuo.dev.modular.slideshow.service.DevSlideshowService;
 import jakarta.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
