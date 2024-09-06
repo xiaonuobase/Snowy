@@ -31,7 +31,7 @@ import vip.xiaonuo.biz.modular.notice.param.BizNoticePageParam;
 import vip.xiaonuo.biz.modular.notice.service.BizNoticeService;
 
 import jakarta.annotation.Resource;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 

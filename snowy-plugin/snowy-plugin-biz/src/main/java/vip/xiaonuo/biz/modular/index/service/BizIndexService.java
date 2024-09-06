@@ -19,7 +19,7 @@ import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 /**
