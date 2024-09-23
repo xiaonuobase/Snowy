@@ -175,11 +175,4 @@ export const baseRequest = (url, value = {}, method = 'post', options = {}) => {
 	}
 }
 
-// 模块内的请求, 会自动加上模块的前缀
-export const moduleRequest =
-	(moduleUrl) =>
-	(url, ...arg) => {
-		return baseRequest(moduleUrl + url, ...arg)
-	}
-
 export default service
