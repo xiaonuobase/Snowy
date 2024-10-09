@@ -34,7 +34,13 @@
 			<template #operator class="table-operator">
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()"> 发送站内信 </a-button>
-					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchEmail" />
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchEmail"
+					/>
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">

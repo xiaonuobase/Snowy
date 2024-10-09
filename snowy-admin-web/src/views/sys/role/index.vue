@@ -56,7 +56,13 @@
 								<template #icon><plus-outlined /></template>
 								新增角色
 							</a-button>
-							<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchRole" />
+							<xn-batch-button
+								buttonName="批量删除"
+								icon="DeleteOutlined"
+								buttonDanger
+								:selectedRowKeys="selectedRowKeys"
+								@batchCallBack="deleteBatchRole"
+							/>
 						</a-space>
 					</template>
 					<template #bodyCell="{ column, record }">

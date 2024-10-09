@@ -45,5 +45,13 @@ export default {
 	// 获取所有移动端模块
 	basicMobileModuleSelector(data) {
 		return request('mobileModuleSelector', data, 'get')
+	},
+	// 获取所有模块
+	basicModuleSelector(data) {
+		return request('moduleSelector', data, 'get')
+	},
+	// 获取所有菜单树包括未授权的
+	basicMenuTreeSelector(data) {
+		return request('menuTreeSelector', data, 'get')
 	}
 }

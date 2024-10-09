@@ -48,7 +48,13 @@
 						<template #icon><plus-outlined /></template>
 						发送短信
 					</a-button>
-					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchSms" />
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchSms"
+					/>
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">

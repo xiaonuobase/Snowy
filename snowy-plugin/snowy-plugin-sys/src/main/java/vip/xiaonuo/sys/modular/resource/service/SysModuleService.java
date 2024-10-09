@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.resource.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.sys.modular.resource.entity.SysModule;
@@ -61,6 +62,14 @@ public interface SysModuleService extends IService<SysModule> {
      * @date 2022/4/24 21:18
      */
     void delete(List<SysModuleIdParam> sysModuleIdParamList);
+
+    /**
+     * 获取所有模块
+     *
+     * @author yubaoshan
+     * @date 2024/9/6 01:24
+     */
+    List<JSONObject> moduleSelector();
 
     /**
      * 获取模块详情

@@ -44,7 +44,7 @@ public class DevJobListener implements ApplicationListener<ApplicationStartedEve
                 .forEach(devJob -> CronUtil.schedule(devJob.getId(), devJob.getCronExpression(), () -> {
                     try {
                         // 运行定时任务
-                        ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action();
+                        ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action(devJob.getExtJson());
                     } catch (ClassNotFoundException e) {
                         throw new CommonException("定时任务找不到对应的类，名称为：{}", devJob.getActionClass());
                     }

@@ -53,7 +53,12 @@
 				</div>
 			</template>
 
-			<a-tab-pane v-for="tag in tagList" :key="tag.fullPath" :tab="tag.meta.title" :closable="!tag.meta.affix">
+			<a-tab-pane v-for="tag in tagList" :key="tag.fullPath" :closable="!tag.meta.affix">
+				<template #tab>
+					<span :key="tag.meta.key">
+						{{ tag.meta.title }}
+					</span>
+				</template>
 			</a-tab-pane>
 		</a-tabs>
 	</div>

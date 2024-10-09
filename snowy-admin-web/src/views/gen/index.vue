@@ -17,7 +17,13 @@
 						<template #icon><plus-outlined /></template>
 						新建
 					</a-button>
-					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchCodeGen" />
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchCodeGen"
+					/>
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">

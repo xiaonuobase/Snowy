@@ -96,10 +96,12 @@
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
-					<xn-batch-delete
+					<xn-batch-button
 						v-if="hasPerm('${classNameFirstLower}BatchDelete')"
+						buttonName="批量删除"
+                        icon="DeleteOutlined"
 						:selectedRowKeys="selectedRowKeys"
-						@batchDelete="deleteBatch${className}"
+						@batchCallBack="deleteBatch${className}"
 					/>
 				</a-space>
 			</template>

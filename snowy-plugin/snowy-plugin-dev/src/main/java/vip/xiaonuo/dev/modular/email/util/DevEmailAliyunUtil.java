@@ -70,7 +70,7 @@ public class DevEmailAliyunUtil {
         }
 
         try {
-            client = new Client(new Config().setRegionId(regionId).setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret));
+            client = new Client(new Config().setRegionId(regionId).setEndpoint("dm.aliyuncs.com").setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret));
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }

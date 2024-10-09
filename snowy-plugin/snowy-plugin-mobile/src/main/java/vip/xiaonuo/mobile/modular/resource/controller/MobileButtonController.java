@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,7 +97,7 @@ public class MobileButtonController {
     @Operation(summary = "删除移动端按钮")
     @CommonLog("删除移动端按钮")
     @PostMapping("/mobile/button/delete")
-    public CommonResult<String> delete(@RequestBody @Valid List<MobileButtonIdParam> mobileButtonIdParamList) {
+    public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空") List<MobileButtonIdParam> mobileButtonIdParamList) {
         mobileButtonService.delete(mobileButtonIdParamList);
         return CommonResult.ok();
     }

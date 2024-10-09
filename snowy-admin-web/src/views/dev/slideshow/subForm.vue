@@ -1,25 +1,33 @@
 <template>
-	<a-form
-		:model="formData"
-		ref="formRef"
-		name="basic"
-		autocomplete="off"
-	>
+	<a-form :model="formData" ref="formRef" name="basic" autocomplete="off">
 		<a-table :columns="columns" :dataSource="formData" size="middle">
-			<template #bodyCell="{text, record, index, column}">
+			<template #bodyCell="{ text, record, index, column }">
 				<template v-if="column.dataIndex === 'whetherToClick'">
 					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
-						<a-radio-group v-model:value="record.whetherToClick" placeholder="请选择跳转方式" :options="whetherToClickOptions" />
+						<a-radio-group
+							v-model:value="record.whetherToClick"
+							placeholder="请选择跳转方式"
+							:options="whetherToClickOptions"
+						/>
 					</a-form-item>
 				</template>
 				<template v-if="column.dataIndex === 'skipMode'">
 					<a-form-item :validate-status="validateStatus(record, 'skipMode')">
-						<a-select v-model:value="record.skipMode" placeholder="请选择跳转方式" :disabled="record.whetherToClick === 'DISABLE'" :options="skipModeOptions" />
+						<a-select
+							v-model:value="record.skipMode"
+							placeholder="请选择跳转方式"
+							:disabled="record.whetherToClick === 'DISABLE'"
+							:options="skipModeOptions"
+						/>
 					</a-form-item>
 				</template>
 				<template v-if="column.dataIndex === 'url'">
 					<a-form-item :validate-status="validateStatus(record, 'url')">
-						<a-input v-model:value="formData[index].url" :disabled="record.whetherToClick === 'DISABLE'" placeholder="请输入URL或路由地址"/>
+						<a-input
+							v-model:value="formData[index].url"
+							:disabled="record.whetherToClick === 'DISABLE'"
+							placeholder="请输入URL或路由地址"
+						/>
 					</a-form-item>
 				</template>
 			</template>
@@ -28,7 +36,7 @@
 </template>
 
 <script name="subForm" setup>
-	import tool from "@/utils/tool"
+	import tool from '@/utils/tool'
 	import { remove, isEmpty, cloneDeep } from 'lodash-es'
 	const formRef = ref()
 	const formData = ref([])
@@ -48,17 +56,17 @@
 		{
 			title: '位置',
 			dataIndex: 'label',
-			width: '20%',
+			width: '20%'
 		},
 		{
 			title: '点击事件',
 			dataIndex: 'whetherToClick',
-			width: '25%',
+			width: '25%'
 		},
 		{
 			title: '跳转方式',
 			dataIndex: 'skipMode',
-			width: '20%',
+			width: '20%'
 		},
 		{
 			title: 'URL',
@@ -77,7 +85,7 @@
 	const dataFiltrate = (newVal, oldVal) => {
 		let result = ''
 		oldVal.forEach((data) => {
-			if (!newVal.some(item => item === data)) {
+			if (!newVal.some((item) => item === data)) {
 				result = data
 			}
 		})
@@ -89,11 +97,11 @@
 			if (!isEmpty(props.dataArray) && isEmpty(formData.value)) {
 				formData.value = cloneDeep(props.dataArray)
 			} else {
-				if (typeof newVal === "object") {
+				if (typeof newVal === 'object') {
 					if (!isEmpty(formData.value)) {
 						formData.value.forEach(() => {
 							// 如果包含
-							if (!newVal.some(item => item === item.key)) {
+							if (!newVal.some((item) => item === item.key)) {
 								// 需要减少的
 								if (formData.value.length > newVal.length) {
 									const deleteData = dataFiltrate(newVal, oldVal)
@@ -103,10 +111,10 @@
 								if (formData.value.length < newVal.length) {
 									const deleteData = dataFiltrate(oldVal, newVal)
 									// 如果没有，就不增加
-									if (!formData.value.some(item => item === deleteData)) {
+									if (!formData.value.some((item) => item === deleteData)) {
 										const obj = {
 											key: deleteData,
-											label: tool.dictTypeData('DEV_SLIDESHOW_PLACE' , deleteData),
+											label: tool.dictTypeData('DEV_SLIDESHOW_PLACE', deleteData),
 											whetherToClick: 'DISABLE',
 											skipMode: 'URL',
 											url: ''
@@ -120,7 +128,7 @@
 						newVal.forEach((item) => {
 							const obj = {
 								key: item,
-								label: tool.dictTypeData('DEV_SLIDESHOW_PLACE' , item),
+								label: tool.dictTypeData('DEV_SLIDESHOW_PLACE', item),
 								whetherToClick: 'DISABLE',
 								skipMode: 'URL',
 								url: ''

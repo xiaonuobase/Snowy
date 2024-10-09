@@ -10,40 +10,25 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.common.enums;
+package vip.xiaonuo.gen.modular.basic.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import vip.xiaonuo.common.exception.CommonException;
+import lombok.Setter;
 
 /**
- * 通用排序方式枚举
+ * 菜单选择器参数
  *
- * @author xuyuxiang
- * @date 2022/7/13 17:48
+ * @author yubaoshan
+ * @date 2024/9/6 01:24
  **/
 @Getter
-public enum CommonSortOrderEnum {
+@Setter
+public class GenBasicSelectorMenuParam {
 
-    /** 升序 */
-    ASC("ASCEND"),
-
-    /** 降序 */
-    DESC("DESCEND");
-
-    private final String value;
-
-    CommonSortOrderEnum(String value) {
-        this.value = value.toLowerCase();
-    }
-
-    public static void validate(String value) {
-        boolean flag = ASC.getValue().toLowerCase().equals(value) || DESC.getValue().toLowerCase().equals(value);
-        if(!flag) {
-            throw new CommonException("不支持该排序方式：{}", value);
-        }
-    }
-
-    public String getValue() {
-        return value.toLowerCase();
-    }
+    /** 模块 */
+    @Schema(description = "模块")
+    @NotBlank(message = "module不能为空")
+    private String module;
 }

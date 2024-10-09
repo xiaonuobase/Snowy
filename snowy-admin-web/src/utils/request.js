@@ -14,6 +14,7 @@ import qs from 'qs'
 import { Modal, message } from 'ant-design-vue'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
+import { convertUrl } from './apiAdaptive'
 
 // 以下这些code需要重新登录
 const reloadCodes = [401, 1011007, 1011008]
@@ -108,7 +109,7 @@ service.interceptors.response.use(
 			// }
 		} else {
 			// 统一成功提示
-			const responseUrls = response.config.url.split('/')
+			const functionName = response.config.url.split('/').pop()
 			const apiNameArray = [
 				'add',
 				'edit',
@@ -129,7 +130,8 @@ service.interceptors.response.use(
 				'saveDraft'
 			]
 			apiNameArray.forEach((apiName) => {
-				if (responseUrls[responseUrls.length - 1] === apiName) {
+				// 上面去掉接口路径后，方法内包含内置的进行统一提示成功
+				if (functionName.includes(apiName)) {
 					message.success(data.msg)
 				}
 			})
@@ -151,7 +153,7 @@ service.interceptors.response.use(
 
 // 适配器, 用于适配不同的请求方式
 export const baseRequest = (url, value = {}, method = 'post', options = {}) => {
-	url = sysConfig.API_URL + url
+	url = sysConfig.API_URL + convertUrl(url)
 	if (method === 'post') {
 		return service.post(url, value, options)
 	} else if (method === 'get') {

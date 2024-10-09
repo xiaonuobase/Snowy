@@ -12,15 +12,13 @@
  */
 package vip.xiaonuo.gen.modular.basic.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletResponse;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
+import vip.xiaonuo.gen.modular.basic.result.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -128,4 +126,20 @@ public interface GenBasicService extends IService<GenBasic> {
      * @date 2023/7/15 22:28
      **/
     List<GenBasicMobileModuleSelectorResult> mobileModuleSelector();
+
+    /**
+     * 获取模块
+     *
+     * @author yubaoshan
+     * @date 2024/9/6 01:24
+     **/
+    List<GenBasicModuleSelectorResult> moduleSelector();
+
+    /**
+     * 代码生成获取所有菜单树包括未授权的
+     *
+     * @author yubaoshan
+     * @date 2024/9/6 01:24
+     **/
+    List<Tree<String>> menuTreeSelector(GenBasicSelectorMenuParam genBasicSelectorMenuParam);
 }

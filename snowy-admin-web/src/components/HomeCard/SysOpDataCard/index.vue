@@ -1,6 +1,8 @@
 <template>
 	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<a-row>
+			<!-- 因租户内定时任务需解决，暂先注释 -->
+			<!--
 			<a-col :span="4">
 				<a-statistic :value="dataSource.jobCount">
 					<template #title>
@@ -9,7 +11,8 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="4">
+			-->
+			<a-col :span="5">
 				<a-statistic :value="dataSource.sysDictCount">
 					<template #title>
 						<read-outlined style="color: #4b4b4b" />
@@ -17,7 +20,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="4">
+			<a-col :span="5">
 				<a-statistic :value="dataSource.bizDictCount">
 					<template #title>
 						<read-outlined style="color: #353779" />
@@ -25,7 +28,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="4">
+			<a-col :span="5">
 				<a-statistic :value="dataSource.backUserSessionCount">
 					<template #title>
 						<usergroup-delete-outlined style="color: #3ceecd" />
@@ -33,7 +36,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="4">
+			<a-col :span="5">
 				<a-statistic :value="dataSource.clientUserSessionCount">
 					<template #title>
 						<UserSwitchOutlined style="color: rgba(229, 159, 18, 0.35)" />
@@ -58,7 +61,6 @@
 	const title = ref('运维一览')
 	const apiLoading = ref(false)
 	const dataSource = ref({
-		jobCount: 0,
 		sysDictCount: 0,
 		bizDictCount: 0,
 		backUserSessionCount: 0,

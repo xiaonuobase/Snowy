@@ -61,8 +61,9 @@ public class DevApiProvider implements DevApi {
                 DevDictCategoryEnum.FRM.getValue()));
         Long bizDictCount = devDictService.count(new LambdaQueryWrapper<DevDict>().eq(DevDict::getCategory,
                 DevDictCategoryEnum.BIZ.getValue()));
-        Long jobCount = devJobService.count(new LambdaQueryWrapper<DevJob>().eq(DevJob::getJobStatus,
-                DevJobStatusEnum.RUNNING.getValue()));
+        Long jobCount = 0L;
+//        Long jobCount = devJobService.count(new LambdaQueryWrapper<DevJob>().eq(DevJob::getJobStatus,
+//                DevJobStatusEnum.RUNNING.getValue()));
         JSONObject json = new JSONObject();
         json.set("sysDictCount", sysDictCount);
         json.set("bizDictCount", bizDictCount);

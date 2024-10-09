@@ -183,14 +183,10 @@
 				id: record.id
 			}
 		]
-		dictApi.dictDelete(params).then((res) => {
-			if (res.code === 200) {
-				tableRef.value.refresh(true)
-			} else {
-				res.message && tool.error(res.message)
-			}
+		dictApi.dictDelete(params).then(() => {
+			tableRef.value.refresh()
+			refreshStoreDict()
 		})
-		refreshStoreDict()
 	}
 	// 表单界面回调
 	const formSuccessful = () => {

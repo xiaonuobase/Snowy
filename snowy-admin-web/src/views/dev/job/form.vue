@@ -19,6 +19,14 @@
 			<a-form-item ref="cronExpressionRef" label="表达式：" name="cronExpression">
 				<cron v-model:modelValue="formData.cronExpression" />
 			</a-form-item>
+			<a-form-item label="扩展参数：" name="extJson">
+				<a-textarea
+					v-model:value="formData.extJson"
+					placeholder="请输入定时扩展参数"
+					:auto-size="{ minRows: 2, maxRows: 5 }"
+					allow-clear
+				/>
+			</a-form-item>
 			<a-form-item label="排序:" name="sortCode">
 				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 			</a-form-item>
@@ -54,7 +62,18 @@
 			sortCode: 99
 		}
 		if (record) {
-			formData.value = Object.assign({}, record)
+			submitLoading.value = true
+			const param = {
+				id: record.id
+			}
+			jobApi
+				.jobDetail(param)
+				.then((data) => {
+					formData.value = Object.assign({}, data)
+				})
+				.finally(() => {
+					submitLoading.value = false
+				})
 		}
 		// 加载定时任务类列表
 		jobApi.jobGetActionClass().then((data) => {

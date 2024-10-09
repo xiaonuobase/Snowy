@@ -61,9 +61,9 @@ public class CommonNetWorkInfoUtil {
             input = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             long[] result2 = readInLine(input, isWindows);
             String upSpeed = FileUtil.readableFileSize(Convert.toLong(NumberUtil
-                    .div(NumberUtil.sub(result2[0], result1[0]), SLEEP_SECONDS)));
-            String downSpeed = FileUtil.readableFileSize(Convert.toLong(NumberUtil
                     .div(NumberUtil.sub(result2[1], result1[1]), SLEEP_SECONDS)));
+            String downSpeed = FileUtil.readableFileSize(Convert.toLong(NumberUtil
+                    .div(NumberUtil.sub(result2[0], result1[0]), SLEEP_SECONDS)));
             result.put("UP", upSpeed + (upSpeed.endsWith("B")?"/S":"B/S"));
             result.put("DOWN", downSpeed + (downSpeed.endsWith("B")?"/S":"B/S"));
         } catch (Exception e) {

@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.gen.modular.basic.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,10 +30,7 @@ import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
 import vip.xiaonuo.gen.modular.basic.param.*;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
+import vip.xiaonuo.gen.modular.basic.result.*;
 import vip.xiaonuo.gen.modular.basic.service.GenBasicService;
 
 import java.io.IOException;
@@ -191,6 +189,30 @@ public class GenBasicController {
     @GetMapping("/gen/basic/mobileModuleSelector")
     public CommonResult<List<GenBasicMobileModuleSelectorResult>> mobileModuleSelector() {
         return CommonResult.data(genBasicService.mobileModuleSelector());
+    }
+
+    /**
+     * 获取所有模块
+     *
+     * @author yubaoshan
+     * @date 2024/9/6 01:24
+     */
+    @Operation(summary = "获取所有模块")
+    @GetMapping("/gen/basic/moduleSelector")
+    public CommonResult<List<GenBasicModuleSelectorResult>> moduleSelector() {
+        return CommonResult.data(genBasicService.moduleSelector());
+    }
+
+    /**
+     * 代码生成获取所有菜单树包括未授权的
+     *
+     * @author yubaoshan
+     * @date 2024/9/6 01:24
+     **/
+    @Operation(summary = "代码生成获取所有菜单树包括未授权的")
+    @GetMapping("/gen/basic/menuTreeSelector")
+    public CommonResult<List<Tree<String>>> menuTreeSelector(@Valid GenBasicSelectorMenuParam genBasicSelectorMenuParam) {
+        return CommonResult.data(genBasicService.menuTreeSelector(genBasicSelectorMenuParam));
     }
 }
 

@@ -48,7 +48,13 @@
 							<UploadOutlined />
 							文件上传
 						</a-button>
-						<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchFile" />
+						<xn-batch-button
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchFile"
+						/>
 					</a-space>
 				</template>
 				<template #bodyCell="{ column, record }">

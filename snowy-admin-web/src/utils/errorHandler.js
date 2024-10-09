@@ -24,6 +24,6 @@ export default (error) => {
 	}
 	const errorName = errorMap[error.name] || '未知错误'
 	nextTick(() => {
-		console.error(errorName)
+		console.error(errorName + ' ' + error)
 	})
 }

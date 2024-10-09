@@ -40,7 +40,7 @@ export const globalStore = defineStore('global', () => {
 	// 多标签栏
 	const layoutTagsOpen = ref(getCacheConfig('SNOWY_LAYOUT_TAGS_OPEN'))
 	// 是否展示面包屑
-	const breadcrumbOpen = ref(getCacheConfig('SNOWY_BREADCRUMD_OPEN'))
+	const breadcrumbOpen = ref(getCacheConfig('SNOWY_BREADCRUMB_OPEN'))
 	// 是否开启固定宽度（顶栏菜单）
 	const fixedWidth = ref(getCacheConfig('SNOWY_FIXEDWIDTH_OPEN'))
 	// 顶栏是否应用主题色

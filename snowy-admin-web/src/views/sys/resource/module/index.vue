@@ -31,7 +31,13 @@
 						<template #icon><plus-outlined /></template>
 						新增模块
 					</a-button>
-					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchModule" />
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchModule"
+					/>
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
