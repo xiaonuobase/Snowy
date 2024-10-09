@@ -180,7 +180,6 @@
 
 <script setup name="genBasic">
 	import { required } from '@/utils/formRules'
-	import tool from '@/utils/tool'
 	import genBasicApi from '@/api/gen/genBasicApi'
 	const formRef = ref()
 	// 表单数据
@@ -235,10 +234,14 @@
 	// 打开抽屉
 	const onOpen = (record) => {
 		// 加载默认的模块
-		moduleOptions.value = tool.data.get('MENU').map((item) => {
-			return {
-				label: item.name,
-				value: item.id
+		genBasicApi.basicModuleSelector().then((data) => {
+			if (data) {
+				moduleOptions.value = data.map((item) => {
+					return {
+						label: item.name,
+						value: item.id
+					}
+				})
 			}
 		})
 		// 获取数据库中的所有表
@@ -324,19 +327,22 @@
 			formData.value.menuPid = undefined
 		}
 		// 加载默认的模块
-		const menuTree = tool.data.get('MENU').find((item) => {
-			if (item.id === value) {
-				return item
-			}
-		})
 		menuTreeData.value = [
 			{
 				id: '0',
 				title: '顶级',
 				menuType: 'CATALOG',
-				children: traverseChildren(menuTree.children)
+				children: []
 			}
 		]
+		const param = {
+			module: value
+		}
+		genBasicApi.basicMenuTreeSelector(param).then((data) => {
+			if (data) {
+				menuTreeData.value[0].children = traverseChildren(data)
+			}
+		})
 	}
 	// 遍历增加属性
 	const traverseChildren = (data = []) => {

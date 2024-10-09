@@ -69,6 +69,7 @@ export const viewTagsStore = defineStore('viewTags', () => {
 		const nowFullPath = location.hash.substring(1)
 		viewTags.value.forEach((item) => {
 			if (item.fullPath === nowFullPath) {
+				item.meta.key = Date.now()
 				item.meta.title = title
 			}
 		})

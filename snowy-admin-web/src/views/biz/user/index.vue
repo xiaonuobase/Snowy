@@ -77,11 +77,13 @@
 								<template #icon><export-outlined /></template>
 								{{ $t('user.batchExportButton') }}
 							</a-button>
-							<xn-batch-delete
+							<xn-batch-button
 								v-if="hasPerm('bizUserBatchDelete')"
 								:buttonName="$t('common.batchRemoveButton')"
+								icon="DeleteOutlined"
+								buttonDanger
 								:selectedRowKeys="selectedRowKeys"
-								@batchDelete="deleteBatchUser"
+								@batchCallBack="deleteBatchUser"
 							/>
 						</a-space>
 					</template>

@@ -116,7 +116,6 @@ a, button, input, textarea {
 
 /* 头部 */
 .snowy-header {
-	height: 50px;
 	display: flex;
 	justify-content: space-between;
 	border-bottom: 1px solid var(--header-bottom);
@@ -481,6 +480,11 @@ body,
 .snowy-theme-dark .odd {
 	background-color: #1d1d1d
 }
+// 解决浏览器F12爆红aria-hidden问题
+.ant-modal div[aria-hidden="true"] {
+	display: none !important
+}
+
 // 以下是重写表单设计器的样式
 .list-main {
 	background: var(--auto-judge-before-color) !important;

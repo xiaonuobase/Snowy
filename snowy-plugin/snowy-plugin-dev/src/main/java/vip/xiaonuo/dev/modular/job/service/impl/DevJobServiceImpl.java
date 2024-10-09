@@ -214,7 +214,7 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
         CronUtil.schedule(devJob.getId(), devJob.getCronExpression(), () -> {
             try {
                 // 运行定时任务
-                ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action();
+                ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action(devJob.getExtJson());
             } catch (ClassNotFoundException e) {
                 throw new CommonException("定时任务找不到对应的类，名称为：{}", devJob.getActionClass());
             }
@@ -232,7 +232,7 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
         }
         try {
             // 直接运行一次
-            ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action();
+            ((CommonTimerTaskRunner) SpringUtil.getBean(Class.forName(devJob.getActionClass()))).action(devJob.getExtJson());
         } catch (ClassNotFoundException e) {
             throw new CommonException("定时任务找不到对应的类，名称为：{}", devJob.getActionClass());
         }

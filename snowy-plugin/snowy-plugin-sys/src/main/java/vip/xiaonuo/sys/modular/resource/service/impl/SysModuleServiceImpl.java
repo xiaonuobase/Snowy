@@ -18,6 +18,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -148,6 +149,16 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
                 }
             }
         }
+    }
+
+    @Override
+    public List<JSONObject> moduleSelector() {
+        LambdaQueryWrapper<SysModule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.select(SysModule::getId, SysModule::getTitle);
+        lambdaQueryWrapper.eq(SysModule::getCategory, SysResourceCategoryEnum.MODULE.getValue());
+        return this.list(lambdaQueryWrapper).stream()
+                .map(item -> JSONUtil.createObj().set("id", item.getId()).set("name", item.getTitle()))
+                .collect(Collectors.toList());
     }
 
     @Override

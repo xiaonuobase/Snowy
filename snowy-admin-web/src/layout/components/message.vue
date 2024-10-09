@@ -60,6 +60,7 @@
 	import router from '@/router'
 	import { onMounted } from 'vue'
 	import sysConfig from '@/config'
+	import { convertUrl } from '@/utils/apiAdaptive'
 	import { EventSourcePolyfill } from 'event-source-polyfill'
 	import tool from '@/utils/tool'
 
@@ -76,7 +77,7 @@
 	const createSseConnect = () => {
 		if (window.EventSource) {
 			let clientId = tool.data.get('CLIENTID') ? tool.data.get('CLIENTID') : ''
-			let url = sysConfig.API_URL + '/dev/message/createSseConnect?clientId=' + clientId
+			let url = sysConfig.API_URL + convertUrl('/dev/message/createSseConnect?clientId=') + clientId
 			// heartbeatTimeout:心跳超时监测 30s
 			let source = new EventSourcePolyfill(url, {
 				headers: { token: tool.data.get('TOKEN') },

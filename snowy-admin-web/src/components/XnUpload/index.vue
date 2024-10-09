@@ -76,6 +76,7 @@
 <script setup name="uploadIndex">
 	import tool from '@/utils/tool'
 	import sysConfig from '@/config/index'
+	import { convertUrl } from '@/utils/apiAdaptive'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
 	const fileList = ref([])
@@ -91,19 +92,19 @@
 		// 上传返回id
 		uploadReturnIdApi: {
 			type: String,
-			default: '/dev/file/uploadLocalReturnId',
+			default: convertUrl('/dev/file/uploadLocalReturnId'),
 			required: false
 		},
 		// 上传返回url
 		uploadDynamicReturnUrlApi: {
 			type: String,
-			default: '/dev/file/uploadDynamicReturnUrl',
+			default: convertUrl('/dev/file/uploadDynamicReturnUrl'),
 			required: false
 		},
 		// 当上传接口为id的情况下，配置下载接口
 		uploadIdDownloadUrl: {
 			type: String,
-			default: '/dev/file/download?id=',
+			default: convertUrl('/dev/file/download?id='),
 			required: false
 		},
 		// 上传样式或图片方式 file || drag || image

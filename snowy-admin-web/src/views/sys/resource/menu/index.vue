@@ -40,8 +40,22 @@
 						<template #icon><plus-outlined /></template>
 						新增菜单
 					</a-button>
-					<xn-batch-delete :selectedRowKeys="selectedRowKeys" @batchDelete="deleteBatchMenu" />
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchMenu"
+					/>
 				</a-space>
+			</template>
+			<template #headerCell="{ title, column }">
+				<template v-if="column.dataIndex === 'visible'">
+					<a-tooltip>
+						<template #title> 如果将上级目录设置为隐藏，那么上级目录下的菜单都会被隐藏！ </template>
+						<question-circle-outlined />&nbsp {{ title }}
+					</a-tooltip>
+				</template>
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'path'">
@@ -133,12 +147,12 @@
 	const columns = [
 		{
 			title: '显示名称',
-			dataIndex: 'title',
-			width: 260
+			dataIndex: 'title'
 		},
 		{
 			title: '图标',
-			dataIndex: 'icon'
+			dataIndex: 'icon',
+			width: 100
 		},
 		{
 			title: '类型',
@@ -160,12 +174,13 @@
 		{
 			title: '是否可见',
 			dataIndex: 'visible',
-			width: 100
+			width: 120
 		},
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			sorter: true
+			sorter: true,
+			width: 100
 		},
 		{
 			title: '操作',

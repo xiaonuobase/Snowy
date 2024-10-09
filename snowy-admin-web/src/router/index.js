@@ -36,7 +36,7 @@ const routes_404 = [
 const routes = [...systemRouter, ...whiteListRouters, ...routes_404]
 
 const router = createRouter({
-	history: createWebHistory(import.meta.env.BASE_URL),
+	history: createWebHistory(),
 	routes
 })
 
@@ -45,7 +45,6 @@ const router = createRouter({
 
 // 判断是否已加载过动态/静态路由
 const isGetRouter = ref(false)
-
 // 白名单校验
 const exportWhiteListFromRouter = (router) => {
 	const res = []
@@ -53,7 +52,6 @@ const exportWhiteListFromRouter = (router) => {
 	return res
 }
 const whiteList = exportWhiteListFromRouter(whiteListRouters)
-
 router.beforeEach(async (to, from, next) => {
 	NProgress.start()
 	const store = globalStore()
@@ -70,7 +68,6 @@ router.beforeEach(async (to, from, next) => {
 		// NProgress.done()
 		return false
 	}
-
 	if (!isGetRouter.value) {
 		// 初始化菜单加载，代码位置不能变动
 		const menuStore = useMenuStore()
@@ -102,6 +99,14 @@ router.beforeEach(async (to, from, next) => {
 		if (token) {
 			// 有token的时候才保存登录之前要访问的页面
 			tool.data.set('LAST_VIEWS_PATH', to.fullPath)
+			// 验证menu或则用户信息是否存在，不存在那么就是被删除或者退出或者清理缓存了
+			if (!tool.data.get('MENU') || !tool.data.get('USER_INFO')) {
+				tool.data.remove('TOKEN')
+				next({
+					path: '/login'
+				})
+				return false
+			}
 		}
 	}
 	if (!token) {

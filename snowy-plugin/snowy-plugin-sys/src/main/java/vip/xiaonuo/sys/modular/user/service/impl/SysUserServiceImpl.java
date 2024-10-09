@@ -697,19 +697,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
                 if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
-                    // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
-                    if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
-                        metaJsonObject.set("hidden", true);
-                    }
                 }
                 if (sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
                     // 如果是首页，则设置affix
                     metaJsonObject.set("affix", true);
                 }
             }
+            // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
+            if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
+                metaJsonObject.set("hidden", true);
+            }
             menuJsonObject.set("meta", metaJsonObject);
             return menuJsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
 
         // 执行构造树
         List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->

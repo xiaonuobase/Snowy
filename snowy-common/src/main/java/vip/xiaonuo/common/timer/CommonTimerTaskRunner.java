@@ -26,5 +26,5 @@ public interface CommonTimerTaskRunner {
      * @author xuyuxiang
      * @date 2022/8/15 16:09
      **/
-    void action();
+    void action(String extJson);
 }

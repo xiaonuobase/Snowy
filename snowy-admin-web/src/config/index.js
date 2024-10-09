@@ -9,6 +9,9 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 const DEFAULT_CONFIG = {
+	// 是否是微服务cloud版本
+	CLOUD_SERVER: false,
+
 	// 首页地址
 	DASHBOARD_URL: '/index',
 
@@ -17,9 +20,6 @@ const DEFAULT_CONFIG = {
 
 	// 请求超时
 	TIMEOUT: 60000,
-
-	// 版本更新时间 默认10s
-	UPDATE_VERSION_TIME: 10000,
 
 	// TokenName // Authorization
 	TOKEN_NAME: 'token',
@@ -46,7 +46,7 @@ const DEFAULT_CONFIG = {
 	SNOWY_LAYOUT_TAGS_OPEN: true,
 
 	// 是否开启展示面包屑
-	SNOWY_BREADCRUMD_OPEN: false,
+	SNOWY_BREADCRUMB_OPEN: false,
 
 	// 顶栏是否应用主题色
 	SNOWY_TOP_HEADER_THEME_COLOR_OPEN: false,
@@ -61,10 +61,10 @@ const DEFAULT_CONFIG = {
 	SNOWY_LOGIN_USER_WATERMARK_OPEN: false,
 
 	// 页脚版权信息
-	SNOWY_FOOTER_COPYRIGHT_OPEN: true,
+	SNOWY_FOOTER_COPYRIGHT_OPEN: false,
 
 	// 圆角风格
-	SNOWY_ROUNDED_CORNER_STYLE_OPEN: true,
+	SNOWY_ROUNDED_CORNER_STYLE_OPEN: false,
 
 	// 语言
 	LANG: 'zh-cn',

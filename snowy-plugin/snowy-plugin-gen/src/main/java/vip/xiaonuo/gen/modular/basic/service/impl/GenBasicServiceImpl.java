@@ -18,6 +18,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -51,10 +52,7 @@ import vip.xiaonuo.gen.modular.basic.enums.GenEffectTypeEnum;
 import vip.xiaonuo.gen.modular.basic.enums.GenYesNoEnum;
 import vip.xiaonuo.gen.modular.basic.mapper.GenBasicMapper;
 import vip.xiaonuo.gen.modular.basic.param.*;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicMobileModuleSelectorResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicPreviewResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableColumnResult;
-import vip.xiaonuo.gen.modular.basic.result.GenBasicTableResult;
+import vip.xiaonuo.gen.modular.basic.result.*;
 import vip.xiaonuo.gen.modular.basic.service.GenBasicService;
 import vip.xiaonuo.gen.modular.config.entity.GenConfig;
 import vip.xiaonuo.gen.modular.config.param.GenConfigAddParam;
@@ -62,6 +60,7 @@ import vip.xiaonuo.gen.modular.config.service.GenConfigService;
 import vip.xiaonuo.mobile.api.MobileModuleApi;
 import vip.xiaonuo.sys.api.SysButtonApi;
 import vip.xiaonuo.sys.api.SysMenuApi;
+import vip.xiaonuo.sys.api.SysModuleApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
 
 import java.io.File;
@@ -147,6 +146,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
 
     @Resource
     private SysMenuApi sysMenuApi;
+
+    @Resource
+    private SysModuleApi sysModuleApi;
 
     @Resource
     private SysButtonApi sysButtonApi;
@@ -597,7 +599,20 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     @Override
     public List<GenBasicMobileModuleSelectorResult> mobileModuleSelector() {
         return mobileModuleApi.mobileModuleSelector().stream()
-                .map(jsonObject -> JSONUtil.toBean(jsonObject, GenBasicMobileModuleSelectorResult.class)).collect(Collectors.toList());
+                .map(jsonObject -> JSONUtil.toBean(jsonObject, GenBasicMobileModuleSelectorResult.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GenBasicModuleSelectorResult> moduleSelector() {
+        return sysModuleApi.moduleSelector().stream()
+                .map(jsonObject -> JSONUtil.toBean(jsonObject, GenBasicModuleSelectorResult.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Tree<String>> menuTreeSelector(GenBasicSelectorMenuParam genBasicSelectorMenuParam) {
+        return sysMenuApi.menuTreeSelector(genBasicSelectorMenuParam.getModule());
     }
 
     /**

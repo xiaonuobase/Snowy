@@ -9,16 +9,14 @@
 			<template #nextArrow>
 				<div class="custom-slick-arrow" style="right: 10px"><RightOutlined /></div>
 			</template>
-			<div v-if="!isEmpty(slideshowList)">
-				<img
-					v-for="item in slideshowList"
-					:key="item.id"
-					:src="item.image"
-					class="carousel-images"
-					@click="leaveForOpen(item.pathDetails)"
-				/>
-			</div>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<img
+				v-for="item in slideshowList"
+				:key="item.id"
+				:src="item.image"
+				class="carousel-images"
+				@click="leaveForOpen(item.pathDetails)"
+			/>
+			<a-empty v-if="isEmpty(slideshowList)" :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 		</a-carousel>
 	</a-card>
 </template>
@@ -57,18 +55,18 @@
 			return
 		}
 		const detail = cloneDeep(value)
-		let detailObj = {}
+		let result = {}
 		if (typeof detail !== 'object') {
-			detailObj = JSON.parse(detail)
+			result = JSON.parse(detail)
 		}
 		// json内包含且是开启了点击，否则不处理
-		if (detailObj.whetherToClick && detailObj.whetherToClick === 'ENABLE') {
-			if (detailObj.skipMode && detailObj.skipMode === 'URL') {
-				window.open(detailObj.url)
+		if (result.whetherToClick && result.whetherToClick === 'ENABLE') {
+			if (result.skipMode && result.skipMode === 'URL') {
+				window.open(result.url)
 			}
-			if (detailObj.skipMode && detailObj.skipMode === 'ROUTER') {
+			if (result.skipMode && result.skipMode === 'ROUTER') {
 				router.replace({
-					path: detailObj.url
+					path: result.url
 				})
 			}
 		}

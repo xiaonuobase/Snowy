@@ -88,7 +88,6 @@
 	import sysConfig from '@/config/index'
 	import dictApi from '@/api/dev/dictApi'
 
-	let timer = null
 	const store = globalStore()
 	const kStore = keepAliveStore()
 	const route = useRoute()
@@ -265,52 +264,47 @@
 		})
 	})
 	onBeforeUnmount(() => {
-		clearUpdateVersion()
 		window.removeEventListener('resize', onLayoutResize)
 		window.removeEventListener('resize', getNav)
 	})
 	// 新版检测
 	const updateVersion = () => {
-		timer = setInterval(async () => {
-			// 本地
-			let localVersion = getLocalHash()
-			// 线上
-			let onlineVersion = await checkHash()
-			// 如果不一样，提示更新
-			if (localVersion !== onlineVersion) {
-				if (document.querySelector('.notification-update-version')) {
-					return
+		const updateVersionOpen = import.meta.env.VITE_VERSION_UPDATE
+		if (updateVersionOpen) {
+			setTimeout(async () => {
+				// 本地
+				let localVersion = getLocalHash()
+				// 线上
+				let onlineVersion = await checkHash()
+				// 如果不一样，提示更新
+				if (localVersion !== onlineVersion) {
+					if (document.querySelector('.notification-update-version')) {
+						return
+					}
+					const key = `open${Date.now()}`
+					notification.open({
+						type: 'info',
+						message: '发现新版本',
+						description: '检测到新版本，请刷新后使用',
+						duration: 0,
+						class: 'notification-update-version',
+						btn: () =>
+							h(
+								Button,
+								{
+									type: 'primary',
+									size: 'small',
+									onClick: () => {
+										notification.close(key)
+										window.location.reload()
+									}
+								},
+								{ default: () => '立即更新' }
+							),
+						key
+					})
 				}
-				const key = `open${Date.now()}`
-				notification.open({
-					type: 'info',
-					message: '发现新版本',
-					description: '检测到新版本，请刷新后使用',
-					duration: 0,
-					class: 'notification-update-version',
-					btn: () =>
-						h(
-							Button,
-							{
-								type: 'primary',
-								size: 'small',
-								onClick: () => {
-									notification.close(key)
-									window.location.reload()
-								}
-							},
-							{ default: () => '立即更新' }
-						),
-					key
-				})
-			}
-		}, sysConfig.UPDATE_VERSION_TIME)
-	}
-	// 销毁定时器
-	const clearUpdateVersion = () => {
-		if (timer) {
-			clearInterval(timer)
-			timer = null
+			}, 3000)
 		}
 	}
 	// 动态获取横向导航栏隐藏数量
@@ -339,7 +333,7 @@
 				menuList.value = menuNavList
 				return
 			}
-			// 如果大于了课显示的区域，就将其隐藏
+			// 如果大于了显示的区域，就将其隐藏
 			const showNav = menuNavList.slice(0, startIndex)
 			const hiddenNav = menuNavList.slice(startIndex, menuNavList.length)
 			menuList.value = showNav

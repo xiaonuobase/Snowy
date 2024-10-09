@@ -16,6 +16,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.sms4j.api.SmsBlend;
@@ -106,7 +107,8 @@ public class DevSmsXiaonuoUtil {
             if(smsResponse.isSuccess()) {
                 return JSONUtil.toJsonStr(smsResponse.getData());
             } else {
-                throw new CommonException("短信发送失败");
+                JSONObject responseData = JSONUtil.parseObj(smsResponse.getData());
+                throw new CommonException(responseData.getStr("resInfo"));
             }
         } catch (Exception e) {
             throw new CommonException(e.getMessage());

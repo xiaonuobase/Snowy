@@ -57,10 +57,13 @@
 								<template #icon><plus-outlined /></template>
 								新增
 							</a-button>
-							<xn-batch-delete
+							<xn-batch-button
 								v-if="hasPerm('bizOrgBatchDelete')"
+								buttonName="批量删除"
+								icon="DeleteOutlined"
+								buttonDanger
 								:selectedRowKeys="selectedRowKeys"
-								@batchDelete="deleteBatchOrg"
+								@batchCallBack="deleteBatchOrg"
 							/>
 						</a-space>
 					</template>

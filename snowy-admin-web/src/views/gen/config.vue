@@ -43,7 +43,7 @@
 					<span v-else>无</span>
 				</template>
 				<template v-if="column.dataIndex === 'whetherTable'">
-					<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)"/>
+					<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)" />
 				</template>
 				<template v-if="column.dataIndex === 'whetherRetract'">
 					<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable" />
