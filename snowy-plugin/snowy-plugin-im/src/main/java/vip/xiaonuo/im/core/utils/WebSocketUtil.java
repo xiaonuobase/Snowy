@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import vip.xiaonuo.dev.api.DevFileApi;
-import vip.xiaonuo.im.core.auth.AuthorizationManager;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
@@ -131,12 +130,6 @@ public class WebSocketUtil {
             return;
         }
         try {
-            boolean b = AuthorizationManager.verifySign();
-            if (!b) {
-                JSONObject entries = JSONUtil.parseObj(message);
-                entries.set("authStatus", -1);
-                message = entries.toString();
-            }
             session.sendMessage(new TextMessage(message));
         } catch (IOException e) {
             log.error("发送消息失败", e);

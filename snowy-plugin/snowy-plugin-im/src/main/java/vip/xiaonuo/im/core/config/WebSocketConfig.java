@@ -43,6 +43,6 @@ public class WebSocketConfig {
 
     private String allowedOrigins;
 
-    public static String b = "7d0cd1479791e4c722eb6f6813ead82a7777bc947a0a61c";
+    public static String b = "fb9250b9cae01a32a921839b8cc8502ed4a90157ed39";
 
 }

@@ -12,19 +12,26 @@
  */
 package vip.xiaonuo.im.core.config;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import com.antherd.smcrypto.sm2.Sm2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.im.core.Interceptor.WebSocketInterceptor;
-import vip.xiaonuo.im.core.auth.AuthorizationManager;
 import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
 
 import java.util.List;
 import java.util.Optional;
+
+import static vip.xiaonuo.im.core.config.WebSocketConfig.b;
+import static vip.xiaonuo.im.core.manager.WebSocketSessionManager.a;
 
 /**
  * web套接字配置
@@ -41,20 +48,48 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     private final WebSocketConfig webSocketConfig;
 
+    public final static String c = "c8e9b06f3a3fd867cc95da4356ceb0aa345535c772";
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 
         if (ObjectUtil.isEmpty(webSocketConfig) || ObjectUtil.isEmpty(webSocketConfig.getPath())) {
             webSocketConfig.setPath(List.of("/ws/im"));
         }
-
-        if (!AuthorizationManager.verifySign()){
-            System.err.println("im模块websocket配置授权码失败");
-        }else{
-            System.out.println("im模块websocket配置授权码成功");
-        }
+        ALLATORIxDEMO();
         registry.addHandler(new ImWebSocketHandler(), webSocketConfig.getPath().toArray(String[]::new))
                 .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins(Optional.ofNullable(webSocketConfig.getAllowedOrigins()).orElse("*"));
+    }
+
+    /**
+     * 验签方法
+     *
+     * @author xuyuxiang
+     * @date 2024/9/20 13:39
+     **/
+    public void ALLATORIxDEMO() {
+        String authCode = SpringUtil.getApplicationContext().getEnvironment().getProperty("snowy.config.im.auth.code");
+        if(ObjectUtil.isEmpty(authCode)) {
+            throw new CommonException("snowy.config.im.auth.code配置为空");
+        }
+        boolean verifyResult;
+        try {
+            // 解密
+            String signData = Base64.decodeStr(authCode);
+            // 最后一个【-】出现的索引
+            int lastIndex = signData.lastIndexOf(StrUtil.DASHED);
+            // 原文（最后一个【-】出现之前的数据）
+            String dataValue = signData.substring(0, lastIndex);
+            // 获取签名（最后一个【-】出现之后的数据）
+            String signValue = signData.substring(lastIndex + 1);
+            // 执行验签
+            verifyResult = Sm2.doVerifySignature(dataValue, signValue, a + b + c);
+        } catch (Exception e) {
+            throw new CommonException("snowy.config.im.auth.code配置错误");
+        }
+        if(!verifyResult) {
+            throw new CommonException("snowy.config.im.auth.code配置错误");
+        }
     }
 }
