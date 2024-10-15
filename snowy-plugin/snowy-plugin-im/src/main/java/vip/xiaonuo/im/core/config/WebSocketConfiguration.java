@@ -30,9 +30,6 @@ import vip.xiaonuo.im.core.handler.ImWebSocketHandler;
 import java.util.List;
 import java.util.Optional;
 
-import static vip.xiaonuo.im.core.config.WebSocketConfig.b;
-import static vip.xiaonuo.im.core.manager.WebSocketSessionManager.a;
-
 /**
  * web套接字配置
  *
@@ -47,8 +44,6 @@ import static vip.xiaonuo.im.core.manager.WebSocketSessionManager.a;
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
     private final WebSocketConfig webSocketConfig;
-
-    public final static String c = "c8e9b06f3a3fd867cc95da4356ceb0aa345535c772";
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -84,7 +79,8 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
             // 获取签名（最后一个【-】出现之后的数据）
             String signValue = signData.substring(lastIndex + 1);
             // 执行验签
-            verifyResult = Sm2.doVerifySignature(dataValue, signValue, a + b + c);
+            verifyResult = Sm2.doVerifySignature(dataValue, signValue, "04aad74fd8f24e945334ab92bd12152e5654c84e2a74fb9250b9cae01a32a9218"
+                    + "39b8cc8502ed4a90157ed39c8e9b06f3a3fd867cc95da4356ceb0aa345535c772");
         } catch (Exception e) {
             throw new CommonException("snowy.config.im.auth.code配置错误");
         }

@@ -66,8 +66,4 @@ public class ImWebSocketHandler extends TextWebSocketHandler {
         WebSocketSessionManager.removeAndClose(session.getAttributes().get(WebSocketSessionManager.USER_ID).toString());
         WebSocketUtil.sendUnOnlineUserList(session);
     }
-
-
-
-
 }

@@ -42,7 +42,4 @@ public class WebSocketConfig {
     private List<String> path;
 
     private String allowedOrigins;
-
-    public static String b = "fb9250b9cae01a32a921839b8cc8502ed4a90157ed39";
-
 }
