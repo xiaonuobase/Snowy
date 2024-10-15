@@ -28,8 +28,6 @@ public class WebSocketSessionManager {
 
     public final static String FROM_USER_TYPE = "fromUserType";
 
-    public final static String a = "04aad74fd8f24e945334ab92bd12152e5654c84e2a74";
-
     /**
      * session集合
      */
