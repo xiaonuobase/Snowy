@@ -283,7 +283,7 @@
 						<FolderOutlined class="large" @click="uploadImage('文件', 'drag')" />
 						<a-textarea
 							v-model:value="newMessage"
-							@keypress.enter="sendMessage"
+							@keydown.enter="handleEnterKey"
 							:bordered="false"
 							:placeholder="
 								cancelSilenceTime(groupMutedList[chatUser.id])
@@ -1197,6 +1197,14 @@
 		}
 		// 发送消息
 		sendMessageToWebSocket(msg)
+	}
+
+	const handleEnterKey = (e) => {
+		if (e.ctrlKey && e.keyCode == 13) {
+			newMessage.value += '\n'
+		} else {
+			sendMessage()
+		}
 	}
 
 	const sendMessage = () => {
