@@ -22,17 +22,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vip.xiaonuo.biz.modular.notice.enums.BizNoticeStatusEnum;
-import vip.xiaonuo.common.enums.CommonSortOrderEnum;
-import vip.xiaonuo.common.exception.CommonException;
-import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
+import vip.xiaonuo.biz.modular.notice.enums.BizNoticeStatusEnum;
 import vip.xiaonuo.biz.modular.notice.mapper.BizNoticeMapper;
 import vip.xiaonuo.biz.modular.notice.param.BizNoticeAddParam;
 import vip.xiaonuo.biz.modular.notice.param.BizNoticeEditParam;
 import vip.xiaonuo.biz.modular.notice.param.BizNoticeIdParam;
 import vip.xiaonuo.biz.modular.notice.param.BizNoticePageParam;
 import vip.xiaonuo.biz.modular.notice.service.BizNoticeService;
+import vip.xiaonuo.common.enums.CommonSortOrderEnum;
+import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.page.CommonPageRequest;
 
 import java.util.List;
 
@@ -69,7 +69,7 @@ public class BizNoticeServiceImpl extends ServiceImpl<BizNoticeMapper, BizNotice
             queryWrapper.orderBy(true, bizNoticePageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
                     StrUtil.toUnderlineCase(bizNoticePageParam.getSortField()));
         } else {
-            queryWrapper.lambda().orderByAsc(BizNotice::getId);
+            queryWrapper.lambda().orderByAsc(BizNotice::getSortCode);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }

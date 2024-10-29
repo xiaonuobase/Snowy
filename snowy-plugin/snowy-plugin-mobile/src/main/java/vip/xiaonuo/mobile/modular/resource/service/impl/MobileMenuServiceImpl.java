@@ -82,9 +82,10 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
     public void add(MobileMenuAddParam mobileMenuAddParam) {
         MobileMenu mobileMenu = BeanUtil.toBean(mobileMenuAddParam, MobileMenu.class);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getParentId, mobileMenu.getParentId())
-                .eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue()).eq(MobileMenu::getTitle, mobileMenu.getTitle())) > 0;
+                .eq(MobileMenu::getModule, mobileMenu.getModule()).eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue())
+                .eq(MobileMenu::getTitle, mobileMenu.getTitle())) > 0;
         if(repeatTitle) {
-            throw new CommonException("存在重复的菜单，名称为：{}", mobileMenu.getTitle());
+            throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", mobileMenu.getTitle());
         }
         List<MobileMenu> originDataList = this.list(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getCategory,
                 MobileResourceCategoryEnum.MENU.getValue()));
@@ -106,10 +107,11 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         MobileMenu mobileMenu = this.queryEntity(mobileMenuEditParam.getId());
         BeanUtil.copyProperties(mobileMenuEditParam, mobileMenu);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getParentId, mobileMenu.getParentId())
-                .eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue()).eq(MobileMenu::getTitle, mobileMenu.getTitle())
+                .eq(MobileMenu::getModule, mobileMenu.getModule()).eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue())
+                .eq(MobileMenu::getTitle, mobileMenu.getTitle())
                 .ne(MobileMenu::getId, mobileMenu.getId())) > 0;
         if(repeatTitle) {
-            throw new CommonException("存在重复的菜单，名称为：{}", mobileMenu.getTitle());
+            throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", mobileMenu.getTitle());
         }
         List<MobileMenu> originDataList = this.list(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getCategory,
                 MobileResourceCategoryEnum.MENU.getValue()));
@@ -140,6 +142,15 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                 MobileResourceCategoryEnum.MENU.getValue()));
         List<MobileMenu> mobileMenuChildList = this.getChildListById(mobileMenuList, mobileMenu.getId(), true).stream()
                 .peek(mobileMenuTemp -> mobileMenuTemp.setModule(mobileMenuChangeModuleParam.getModule())).collect(Collectors.toList());
+        mobileMenuChildList.forEach(mobileMenuTemp -> {
+            boolean repeatTitle = this.count(new LambdaQueryWrapper<MobileMenu>().eq(MobileMenu::getParentId, mobileMenuTemp.getParentId())
+                    .eq(MobileMenu::getModule, mobileMenuTemp.getModule()).eq(MobileMenu::getCategory, MobileResourceCategoryEnum.MENU.getValue())
+                    .eq(MobileMenu::getTitle, mobileMenuTemp.getTitle())
+                    .ne(MobileMenu::getId, mobileMenuTemp.getId())) > 0;
+            if(repeatTitle) {
+                throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", mobileMenuTemp.getTitle());
+            }
+        });
         this.updateBatchById(mobileMenuChildList);
     }
 

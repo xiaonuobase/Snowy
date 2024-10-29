@@ -149,9 +149,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         checkParam(sysMenuAddParam);
         SysMenu sysMenu = BeanUtil.toBean(sysMenuAddParam, SysMenu.class);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenu.getParentId())
-                .eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue()).eq(SysMenu::getTitle, sysMenu.getTitle())) > 0;
+                .eq(SysMenu::getModule, sysMenu.getModule()).eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
+                .eq(SysMenu::getTitle, sysMenu.getTitle())) > 0;
         if(repeatTitle) {
-            throw new CommonException("存在重复的菜单，名称为：{}", sysMenu.getTitle());
+            throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", sysMenu.getTitle());
         }
         List<SysMenu> originDataList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getCategory,
                 SysResourceCategoryEnum.MENU.getValue()));
@@ -239,7 +240,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         checkParam(sysMenuEditParam);
         BeanUtil.copyProperties(sysMenuEditParam, sysMenu);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenu.getParentId())
-                .eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue()).eq(SysMenu::getTitle, sysMenu.getTitle())
+                .eq(SysMenu::getModule, sysMenu.getModule()).eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
+                .eq(SysMenu::getTitle, sysMenu.getTitle())
                 .ne(SysMenu::getId, sysMenu.getId())) > 0;
         // 不管是哪个改为菜单，设置组件为空
         if(sysMenuEditParam.getMenuType().equals(SysResourceMenuTypeEnum.MENU.getValue())) {
@@ -247,7 +249,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             sysMenuEditParam.setName(null);
         }
         if(repeatTitle) {
-            throw new CommonException("存在重复的菜单，名称为：{}", sysMenu.getTitle());
+            throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", sysMenu.getTitle());
         }
         List<SysMenu> originDataList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getCategory,
                 SysResourceCategoryEnum.MENU.getValue()));
@@ -281,6 +283,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 SysResourceCategoryEnum.MENU.getValue()));
         List<SysMenu> sysMenuChildList = this.getChildListById(sysMenuList, sysMenu.getId(), true).stream()
                 .peek(sysMenuTemp -> sysMenuTemp.setModule(sysMenuChangeModuleParam.getModule())).collect(Collectors.toList());
+        sysMenuChildList.forEach(sysMenuTemp -> {
+            boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenuTemp.getParentId())
+                    .eq(SysMenu::getModule, sysMenuTemp.getModule()).eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
+                    .eq(SysMenu::getTitle, sysMenuTemp.getTitle())
+                    .ne(SysMenu::getId, sysMenuTemp.getId())) > 0;
+            if(repeatTitle) {
+                throw new CommonException("同一模块中，相同父菜单下存在重复的子菜单，名称为：{}", sysMenuTemp.getTitle());
+            }
+        });
         this.updateBatchById(sysMenuChildList);
     }
 

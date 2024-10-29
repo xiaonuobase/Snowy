@@ -22,8 +22,6 @@ import vip.xiaonuo.dev.modular.dict.enums.DevDictCategoryEnum;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 import vip.xiaonuo.dev.modular.email.service.DevEmailService;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
-import vip.xiaonuo.dev.modular.job.entity.DevJob;
-import vip.xiaonuo.dev.modular.job.enums.DevJobStatusEnum;
 import vip.xiaonuo.dev.modular.job.service.DevJobService;
 import vip.xiaonuo.dev.modular.message.service.DevMessageService;
 import vip.xiaonuo.dev.modular.sms.service.DevSmsService;
