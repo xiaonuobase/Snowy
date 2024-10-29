@@ -49,7 +49,6 @@ import org.springframework.stereotype.Component;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
-import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.dev.modular.log.util.DevLogUtil;

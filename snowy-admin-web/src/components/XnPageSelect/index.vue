@@ -1,6 +1,8 @@
 <template>
 	<a-spin size="small" :spinning="spinning">
+		<!-- 重写两边是因为可能是个antdv的bug影响到我们的控制台输出错误 -->
 		<a-select
+			v-if="props.showSearch"
 			v-model:value="modelValue"
 			:options="options"
 			:field-names="{ label: 'name', value: 'id' }"
@@ -8,7 +10,21 @@
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
 			:disabled="props.disabled"
-			:showSearch="props.showSearch"
+			:filterOption="!props.showSearch"
+			show-search
+			@change="handleChange"
+			@search="handleSearch"
+			@popupScroll="handlePopupScroll"
+		/>
+		<a-select
+			v-else
+			v-model:value="modelValue"
+			:options="options"
+			:field-names="{ label: 'name', value: 'id' }"
+			class="xn-wd"
+			:placeholder="props.placeholder"
+			:allow-clear="props.allowClear"
+			:disabled="props.disabled"
 			:filterOption="!props.showSearch"
 			@change="handleChange"
 			@onSearch="handleSearch"

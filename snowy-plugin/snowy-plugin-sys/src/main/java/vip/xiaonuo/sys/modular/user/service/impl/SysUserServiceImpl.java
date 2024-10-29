@@ -709,7 +709,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             menuJsonObject.set("meta", metaJsonObject);
             return menuJsonObject;
-        }).toList();
+        }).collect(Collectors.toList());
 
         // 执行构造树
         List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->
@@ -1529,6 +1529,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysOrg> getOrgListByIdList(SysUserIdListParam sysUserIdListParam) {
+        if (ObjectUtil.isEmpty(sysUserIdListParam.getIdList())) {
+            return CollectionUtil.newArrayList();
+        }
         LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName, SysOrg::getCategory, SysOrg::getSortCode)
@@ -1538,6 +1541,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysUser> getUserListByIdList(SysUserIdListParam sysUserIdListParam) {
+        if (ObjectUtil.isEmpty(sysUserIdListParam.getIdList())) {
+            return CollectionUtil.newArrayList();
+        }
         LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 只查询部分字段
         lambdaQueryWrapper.select(SysUser::getId, SysUser::getOrgId, SysUser::getAvatar, SysUser::getAccount, SysUser::getName,
@@ -1548,6 +1554,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysPosition> getPositionListByIdList(SysUserIdListParam sysUserIdListParam) {
+        if (ObjectUtil.isEmpty(sysUserIdListParam.getIdList())) {
+            return CollectionUtil.newArrayList();
+        }
         LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
@@ -1558,6 +1567,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam) {
+        if (ObjectUtil.isEmpty(sysUserIdListParam.getIdList())) {
+            return CollectionUtil.newArrayList();
+        }
         LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(SysRole::getId, SysRole::getOrgId, SysRole::getName,

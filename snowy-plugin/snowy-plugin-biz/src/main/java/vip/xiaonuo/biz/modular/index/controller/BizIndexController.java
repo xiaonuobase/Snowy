@@ -17,6 +17,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +29,7 @@ import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.index.service.BizIndexService;
 import vip.xiaonuo.common.pojo.CommonResult;
-import jakarta.validation.Valid;
+
 import java.util.List;
 
 /**

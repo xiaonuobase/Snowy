@@ -15,8 +15,6 @@ package vip.xiaonuo.dev.modular.slideshow.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 轮播图查询参数

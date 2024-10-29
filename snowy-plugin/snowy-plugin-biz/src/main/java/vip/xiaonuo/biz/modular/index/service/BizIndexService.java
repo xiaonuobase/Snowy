@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.biz.modular.index.service;
 
+import jakarta.validation.Valid;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeListParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexSlideshowListParam;
@@ -19,7 +20,6 @@ import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 /**
