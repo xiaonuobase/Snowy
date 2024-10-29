@@ -55,10 +55,10 @@
 	})
 	const contentValue = ref()
 	const init = ref({
-		language_url: 'tinymce/langs/zh_CN.js',
+		language_url: '/tinymce/langs/zh_CN.js',
 		language: 'zh_CN',
-		skin_url: 'tinymce/skins/ui/oxide',
-		content_css: 'tinymce/skins/content/default/content.css',
+		skin_url: '/tinymce/skins/ui/oxide',
+		content_css: '/tinymce/skins/content/default/content.css',
 		menubar: false,
 		statusbar: true,
 		plugins: props.plugins,
