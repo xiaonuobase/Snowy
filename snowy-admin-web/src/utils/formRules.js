@@ -59,5 +59,9 @@ export const rules = {
 	initialYesBackslashChart: {
 		pattern: /^\/[^/].*$/,
 		message: '首字母必须是反斜杠 “/”'
+	},
+	mustBeLetters: {
+		pattern: /^[a-zA-Z]+$/,
+		message: '输入内容必须是英文字母'
 	}
 }
