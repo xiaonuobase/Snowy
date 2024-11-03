@@ -166,6 +166,17 @@ tool.snowyUuid = () => {
 	return 'xn' + uuid.slice(2)
 }
 
+// 输入位数获得英文字母大小写随机码
+tool.generateString = (length = 8) => {
+	let result = ''
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+	let charactersLength = characters.length
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength))
+	}
+	return result
+}
+
 tool.parseTime = (time, cFormat) => {
 	if (time == null || time.length === 0) {
 	  return ''
