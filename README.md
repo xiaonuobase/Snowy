@@ -278,13 +278,13 @@ QQ技术群：732230670（已满）、685395081
 
 ## 曾获荣誉
 
-**Snowy系列产品荣获2021年度OSC中国开源项目评选最受欢迎项目**
+🔥 **Snowy系列产品荣获2021年度OSC中国开源项目评选最受欢迎项目**
 
-**2022年度OSC中国开源项目评选最火热中国开源项目社区**
+🔥 **2022年度OSC中国开源项目评选最火热中国开源项目社区**
 
-**GitCode官方G-Star优秀毕业项目认证**
+🔥 **GitCode官方G-Star优秀毕业项目认证**
 
-**2024 GitCode开源共创大会十大新锐项目**
+🔥 **2024 GitCode开源共创大会十大新锐项目**
 
 <p align="center">
     <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLM-zg%7D%2F&_etag=1730698398-294375&shareID=-9mLM-zg"/>
