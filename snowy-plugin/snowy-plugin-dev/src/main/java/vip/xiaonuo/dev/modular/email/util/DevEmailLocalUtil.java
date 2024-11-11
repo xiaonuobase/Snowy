@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 本地邮件工具类
@@ -39,6 +40,16 @@ public class DevEmailLocalUtil {
 
     private static final String SNOWY_EMAIL_LOCAL_FROM_KEY = "SNOWY_EMAIL_LOCAL_FROM";
     private static final String SNOWY_EMAIL_LOCAL_PASSWORD_KEY = "SNOWY_EMAIL_LOCAL_PASSWORD";
+
+    private static final String SNOWY_EMAIL_LOCAL_SMTP_HOST_KEY = "SNOWY_EMAIL_LOCAL_SMTP_HOST";
+
+    private static final String SNOWY_EMAIL_LOCAL_SMTP_PORT_KEY = "SNOWY_EMAIL_LOCAL_SMTP_PORT";
+
+    private static final String SNOWY_EMAIL_LOCAL_AUTH_KEY = "SNOWY_EMAIL_LOCAL_AUTH";
+
+    private static final String SNOWY_EMAIL_LOCAL_SSL_ENABLE_KEY = "SNOWY_EMAIL_LOCAL_SSL_ENABLE";
+
+    private static final String SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE_KEY = "SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE";
 
     /**
      * 初始化操作的客户端
@@ -67,6 +78,28 @@ public class DevEmailLocalUtil {
         mailAccount = new MailAccount();
         mailAccount.setFrom(from);
         mailAccount.setPass(pass);
+
+        /* SMTP服务器域名 */
+        String host = devConfigApi.getValueByKey(SNOWY_EMAIL_LOCAL_SMTP_HOST_KEY);
+        if (ObjectUtil.isNotEmpty(host)) {
+            mailAccount.setHost(host);
+        }
+        /* SMTP服务端口 */
+        String port = devConfigApi.getValueByKey(SNOWY_EMAIL_LOCAL_SMTP_PORT_KEY);
+        if (ObjectUtil.isNotEmpty(port)) {
+            mailAccount.setPort(Integer.parseInt(port));
+        }
+        /* 是否需要用户名密码验证 */
+        String auth = devConfigApi.getValueByKey(SNOWY_EMAIL_LOCAL_AUTH_KEY);
+        mailAccount.setAuth(Objects.equals(auth, "true"));
+
+        /* 是否使用SSL安全连接 */
+        String sslEnable = devConfigApi.getValueByKey(SNOWY_EMAIL_LOCAL_SSL_ENABLE_KEY);
+        mailAccount.setSslEnable(Objects.equals(sslEnable, "true"));
+
+        /* 是否使用STARTTLS安全连接 */
+        String starttlsEnable = devConfigApi.getValueByKey(SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE_KEY);
+        mailAccount.setStarttlsEnable(Objects.equals(starttlsEnable, "true"));
     }
 
     public static MailAccount getClient() {
