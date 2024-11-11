@@ -156,7 +156,7 @@ public class AuthServiceImpl implements AuthService {
             commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 不一致则直接验证码错误
-        if (!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
+        if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
             throw new CommonException("验证码错误");
         }
     }

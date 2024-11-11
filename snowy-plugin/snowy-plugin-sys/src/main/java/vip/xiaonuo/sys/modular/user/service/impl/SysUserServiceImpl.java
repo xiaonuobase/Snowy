@@ -435,7 +435,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 不一致则直接验证码错误
-        if (!validCode.equals(Convert.toStr(existValidCode).toLowerCase())) {
+        if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
             throw new CommonException("验证码错误");
         }
     }
