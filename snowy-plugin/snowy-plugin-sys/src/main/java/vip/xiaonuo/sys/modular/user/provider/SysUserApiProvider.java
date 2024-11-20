@@ -237,4 +237,20 @@ public class SysUserApiProvider implements SysUserApi {
         lqw.select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar);
         return BeanUtil.copyToList(sysUserService.list(lqw), JSONObject.class);
     }
+
+    @Override
+    public List<JSONObject> getPositionListByUserId(String userId) {
+        SysUserIdParam sysUserIdParam = new SysUserIdParam();
+        sysUserIdParam.setId(userId);
+        return sysUserService.loginPositionInfo(sysUserIdParam).stream().map(sysUserPosition -> {
+            JSONObject obj = new JSONObject();
+            obj.set("orgId", sysUserPosition.getOrgId());
+            obj.set("orgName", sysUserPosition.getOrgName());
+            obj.set("positionId", sysUserPosition.getPositionId());
+            obj.set("positionName", sysUserPosition.getPositionName());
+            obj.set("category", sysUserPosition.getCategory());
+            obj.set("type", sysUserPosition.getType());
+            return obj;
+        }).collect(Collectors.toList());
+    }
 }

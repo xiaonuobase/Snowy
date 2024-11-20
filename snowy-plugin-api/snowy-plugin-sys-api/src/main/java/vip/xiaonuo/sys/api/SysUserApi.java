@@ -120,4 +120,12 @@ public interface SysUserApi {
      * @date 2024/7/19 9:54
      */
     List<JSONObject> listUserWithoutCurrent();
+
+    /**
+     * 获取用户的职位列表
+     *
+     * @author xuyuxiang
+     * @date 2022/6/20 18:19
+     **/
+    List<JSONObject> getPositionListByUserId(String userId);
 }
