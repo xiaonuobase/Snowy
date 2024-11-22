@@ -5,15 +5,15 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, onBeforeUnmount, defineProps, defineEmits, defineExpose } from 'vue'
+	import { ref, onMounted, onUnmounted, defineProps, defineEmits, defineExpose } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
-	import { prefixUrl } from '../../utils/request'
+	import { prefixUrl } from '../../utils/request';
 
-	const websocketInstance = ref(null)
+	const websocketInstance = ref<WebSocket | null>(null)
 	const isReconnecting = ref(false)
-	const reconnectTimer = ref(null)
-	const onMessageCallback = ref(null)
+	const reconnectTimer = ref<NodeJS.Timeout | null>(null)
+	const onMessageCallback = ref<((data: string) => void) | null>(null)
 	const isReconnectingNum = ref(0)
 	const isReconnectingRun = ref(false)
 	const closeWebSocketAsync = ref(false)
@@ -25,6 +25,12 @@
 			default: ''
 		}
 	})
+	declare global {
+    interface WebSocket {
+        sendWebSocketMessage: (data: any) => void;
+				setMessageCallback: (callback: (data: string) => void) => void;
+		}
+	}
 
 	//监听websocket状态
 	// 重连方法
@@ -97,13 +103,17 @@
 				!isReconnectingRun.value && reconnect()
 			}
 		}
-		websocketInstance.value.setMessageCallback = (callback) => {
-			onMessageCallback.value = callback
+		if (websocketInstance.value) {
+			websocketInstance.value.setMessageCallback = (callback) => {
+				onMessageCallback.value = callback
+			}
 		}
 		websocketInstance.value.sendWebSocketMessage = (data) => {
 			const msg = JSON.stringify(data)
 			try {
-				websocketInstance.value.send(msg)
+				if (websocketInstance.value) {
+					websocketInstance.value.send(msg)
+				}
 			} catch (e) {
 				notification.error({
 					message: 'IM发送消息失败'
@@ -115,7 +125,9 @@
 	const closeWebSocket = () => {
 		//主动关闭连接
 		isReconnecting.value = true
-		websocketInstance.value.close()
+		if (websocketInstance.value) {
+			websocketInstance.value.close()
+		}
 	}
 	onMounted(() => {
 		initWebSocket()

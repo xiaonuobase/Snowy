@@ -5,14 +5,14 @@
 				<MessageOutlined />
 			</slot>
 		</a-badge>
-		<a-float-button id="float-button" :type="props.floatBottonType"  v-if="props.disPlayUi=='float'&&props.badge=='dot'" shape="circle" :badge="{ dot: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0}" :style="props.floatStyle">
+		<a-float-button id="float-button" :type="props.floatBottonType" v-if="props.disPlayUi=='float'&&props.badge=='dot'" shape="circle" :badge="{ dot: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0) > 0}" :style="props.floatStyle">
 			<template #icon>
 				<slot name="icon">
 					<MessageOutlined />
 				</slot>
 			</template>
 		</a-float-button>
-		<a-float-button id="float-button" :type="props.floatBottonType"  v-if="props.disPlayUi=='float'&&props.badge=='count'" shape="circle" :badge="{ count: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0)}" :style="props.floatStyle">
+		<a-float-button id="float-button" :type="props.floatBottonType" v-if="props.disPlayUi=='float'&&props.badge=='count'" shape="circle" :badge="{ count: ImMessageUserVoList.map(res=> res.unreadCount).reduce((a, b) => a + b, 0)}" :style="props.floatStyle">
 			<template #icon>
 				<slot name="icon">
 					<MessageOutlined />
@@ -567,7 +567,9 @@
 	}
 	const setWebSocket = (ws) => {
 		websocket.value = ws
-		ws.setMessageCallback(onMessage)
+		if (ws) {
+			ws.setMessageCallback(onMessage)
+		}
 	}
 
 	// 判断是否可以发送消息
@@ -1238,7 +1240,6 @@
 				message: 'IM模块断开，请刷新页面检查'
 			})
 		}
-		
 	}
 
 	// 初始化当前用户的好友列表
