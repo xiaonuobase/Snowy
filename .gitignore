@@ -32,3 +32,5 @@ logs/
 tmp/
 !DmJdbcDriver18.jar
 !kingbase8-8.6.0.jar
+!**/src/main/resources/lib/*.jar
+!**/allatori/**
