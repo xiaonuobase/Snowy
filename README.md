@@ -286,15 +286,16 @@ QQ技术群：732230670（已满）、685395081
 
 🔥 **2024 GitCode开源共创大会十大新锐项目**
 
-<p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLM-zg%7D%2F&_etag=1730698398-294375&shareID=-9mLM-zg"/>
-</p>
-<p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLtqmQ%7D%2F&_etag=1730698444-77496&shareID=-9mLtqmQ"/>
-</p>
-<p align="center">
-    <img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9nmI4yQ%7D%2F&_etag=1730707931-764633&shareID=-9nmI4yQ"/>
-</p>
+<table>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLM-zg%7D%2F&_etag=1730698398-294375&shareID=-9mLM-zg"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLtqmQ%7D%2F&_etag=1730698444-77496&shareID=-9mLtqmQ"/></td>
+    </tr>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9nmI4yQ%7D%2F&_etag=1730707931-764633&shareID=-9nmI4yQ"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A_CObZEfQ%7D%2F&_etag=1732686192-736674&shareID=_CObZEfQ"/></td>
+    </tr>
+</table>
 
 ## 版权说明
 
