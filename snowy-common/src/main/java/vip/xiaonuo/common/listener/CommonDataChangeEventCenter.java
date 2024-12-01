@@ -13,6 +13,7 @@
 package vip.xiaonuo.common.listener;
 
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import vip.xiaonuo.common.exception.CommonException;
 
@@ -144,6 +145,19 @@ public class CommonDataChangeEventCenter {
         }
     }
 
+    /**
+     * 执行添加事件发布，数据
+     *
+     * @author 每天一点
+     * @date 2023/3/3 10:22
+     **/
+    public static void doAddWithData(String dataType, JSONObject jsonObject) {
+        for (CommonDataChangeListener listener : listenerList) {
+            listener.doAddWithDataId(dataType, JSONUtil.parseObj(jsonObject).getStr("id"));
+            listener.doAddWithData(dataType, jsonObject);
+        }
+    }
+
     // --------- 事件发布-更新 --------- //
 
     /**
@@ -159,6 +173,19 @@ public class CommonDataChangeEventCenter {
         }
     }
 
+    /**
+     * 执行更新事件发布，数据
+     *
+     * @author 每天一点
+     * @date 2023/3/3 10:22
+     **/
+    public static void doUpdateWithData(String dataType, JSONObject jsonObject) {
+        for (CommonDataChangeListener listener : listenerList) {
+            listener.doUpdateWithDataId(dataType, JSONUtil.parseObj(jsonObject).getStr("id"));
+            listener.doUpdateWithData(dataType, jsonObject);
+        }
+    }
+
     // --------- 事件发布-删除 --------- //
 
     /**
@@ -170,6 +197,18 @@ public class CommonDataChangeEventCenter {
     public static void doDeleteWithDataId(String dataType, List<String> dataIdList) {
         for (CommonDataChangeListener listener : listenerList) {
             listener.doDeleteWithDataIdList(dataType, dataIdList);
+        }
+    }
+
+    /**
+     * 执行删除事件发布，ID
+     *
+     * @author 每天一点
+     * @date 2023/3/3 10:22
+     **/
+    public static void doDeleteWithDataId(String dataType, String dataId) {
+        for (CommonDataChangeListener listener : listenerList) {
+            listener.doDeleteWithDataId(dataType, dataId);
         }
     }
 }
