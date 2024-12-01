@@ -14,6 +14,7 @@ package vip.xiaonuo.sys.core.listener;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
@@ -39,6 +40,11 @@ public class SysDataChangeListener implements CommonDataChangeListener {
     private CommonCacheOperator commonCacheOperator;
 
     @Override
+    public void doAddWithDataId(String dataType, String dataId) {
+        // 此处可做额外处理
+    }
+
+    @Override
     public void doAddWithDataIdList(String dataType, List<String> dataIdList) {
         // 如果检测到机构增加，则将机构的数据缓存清除
         if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
@@ -57,7 +63,17 @@ public class SysDataChangeListener implements CommonDataChangeListener {
     }
 
     @Override
+    public void doAddWithData(String dataType, JSONObject jsonObject) {
+        // 此处可做额外处理
+    }
+
+    @Override
     public void doAddWithDataList(String dataType, JSONArray jsonArray) {
+        // 此处可做额外处理
+    }
+
+    @Override
+    public void doUpdateWithDataId(String dataType, String dataId) {
         // 此处可做额外处理
     }
 
@@ -74,7 +90,17 @@ public class SysDataChangeListener implements CommonDataChangeListener {
     }
 
     @Override
+    public void doUpdateWithData(String dataType, JSONObject jsonObject) {
+        // 此处可做额外处理
+    }
+
+    @Override
     public void doUpdateWithDataList(String dataType, JSONArray jsonArray) {
+        // 此处可做额外处理
+    }
+
+    @Override
+    public void doDeleteWithDataId(String dataType, String dataId) {
         // 此处可做额外处理
     }
 
