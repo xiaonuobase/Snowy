@@ -1,15 +1,14 @@
 <template>
 	<a-row :gutter="10">
 		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<a-card :bordered="false" :loading="cardLoading">
+			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
 					:tree-data="treeData"
 					:field-names="treeFieldNames"
 					@select="treeSelect"
-				>
-				</a-tree>
+				/>
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 			</a-card>
 		</a-col>

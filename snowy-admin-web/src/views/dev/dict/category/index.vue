@@ -1,7 +1,7 @@
 <template>
 	<a-row :gutter="10">
 		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<div class="dict-tree-div">
+			<div class="left-tree-container">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
@@ -207,9 +207,5 @@
 	}
 	.snowy-button-left {
 		margin-left: 8px;
-	}
-	.dict-tree-div {
-		height: 700px;
-		overflow: auto;
 	}
 </style>
