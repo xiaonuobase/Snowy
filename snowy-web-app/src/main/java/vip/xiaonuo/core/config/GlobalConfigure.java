@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.core.config;
 
+import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.context.model.SaResponse;
 import cn.dev33.satoken.filter.SaServletFilter;
@@ -94,6 +95,9 @@ import java.util.Map;
 @Configuration
 @MapperScan(basePackages = {"vip.xiaonuo.**.mapper"})
 public class GlobalConfigure implements WebMvcConfigurer {
+
+    @Autowired
+    private SaTokenConfig saTokenConfig;
 
     private static final String COMMON_REPEAT_SUBMIT_CACHE_KEY = "common-repeatSubmit:";
 
@@ -213,7 +217,11 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 排除C端认证接口
                             .notMatch(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
                             // 校验B端登录
-                            .check(r1 -> StpUtil.checkLogin());
+                            .check(r1 -> {
+                                StpUtil.checkLogin();
+                                // 更新过期时间
+                                StpUtil.renewTimeout(saTokenConfig.getTimeout());
+                            });
 
                     // C端的接口校验C端登录
                     SaRouter.match("/**")
