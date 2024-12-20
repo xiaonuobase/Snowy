@@ -128,12 +128,15 @@
 	const loading = ref(false)
 
 	const ruleForm = reactive({
-		account: 'superAdmin',
-		password: '123456',
 		validCode: '',
 		validCodeReqNo: '',
 		autologin: false
 	})
+	// 如果是开发环境，填充用户名密码
+	if (process.env.NODE_ENV === 'development') {
+		ruleForm.account = 'superAdmin'
+		ruleForm.password = '123456'
+	}
 
 	const rules = reactive({
 		account: [required(proxy.$t('login.accountError'), 'blur')],
