@@ -157,6 +157,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/third/page",
             "/client/user/**",
             "/sys/org/**",
+            "/sys/group/**",
             "/sys/position/**",
             "/sys/button/**",
             "/sys/menu/**",

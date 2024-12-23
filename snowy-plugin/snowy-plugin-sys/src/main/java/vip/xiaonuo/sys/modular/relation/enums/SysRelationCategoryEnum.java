@@ -45,7 +45,10 @@ public enum SysRelationCategoryEnum {
     SYS_ROLE_HAS_MOBILE_MENU("SYS_ROLE_HAS_MOBILE_MENU"),
 
     /** 角色拥有权限 */
-    SYS_ROLE_HAS_PERMISSION("SYS_ROLE_HAS_PERMISSION");
+    SYS_ROLE_HAS_PERMISSION("SYS_ROLE_HAS_PERMISSION"),
+
+    /** 用户拥有用户组 */
+    SYS_USER_HAS_GROUP("SYS_USER_HAS_GROUP");
 
     private final String value;
 
