@@ -37,5 +37,5 @@ public interface SysGroupApi {
      * @author xuyuxiang
      * @date 2022/8/1 18:28
      */
-    void grantUser(String userId, List<String> roleIdList);
+    void grantUser(String groupId, List<String> userIdList);
 }
