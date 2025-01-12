@@ -1594,4 +1594,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .in(SysRole::getId, sysUserIdListParam.getIdList()).orderByAsc(SysRole::getSortCode);
         return sysRoleService.list(lambdaQueryWrapper);
     }
+
+    @Override
+    public String getAvatarById(SysUserIdParam sysUserIdParam) {
+        return this.detail(sysUserIdParam).getAvatar();
+    }
 }
