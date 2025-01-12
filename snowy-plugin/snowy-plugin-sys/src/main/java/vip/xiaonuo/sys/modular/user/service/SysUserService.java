@@ -486,4 +486,12 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2023/6/25 11:03
      **/
     List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam);
+
+    /**
+     * 根据id获取头像
+     *
+     * @author xuyuxiang
+     * @date 2023/8/28 10:10
+     **/
+    String getAvatarById(SysUserIdParam sysUserIdParam);
 }
