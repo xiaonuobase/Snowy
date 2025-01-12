@@ -172,6 +172,10 @@
 			type: Boolean,
 			default: () => false
 		},
+		selectorConverterKey: {
+			type: String,
+			default: () => 'ORG'
+		},
 		orgTreeApi: {
 			type: Function
 		},
@@ -502,7 +506,7 @@
 					value = value + data[i].id + ','
 				}
 			}
-			obj.key = 'ORG'
+			obj.key = props.selectorConverterKey
 			obj.label = label
 			obj.value = value
 			obj.extJson = ''
@@ -548,6 +552,9 @@
 				const ids = goDataConverter(newValue)
 				recordIds.value = ids
 				getDataNameById(ids)
+			} else {
+				dataArray.value = []
+				selectedData.value = []
 			}
 		},
 		{

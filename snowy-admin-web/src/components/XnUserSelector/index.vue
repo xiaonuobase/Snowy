@@ -556,6 +556,9 @@
 				const ids = goDataConverter(newValue)
 				recordIds.value = ids
 				getUserAvatarById(ids)
+			} else {
+				userObj.value = []
+				selectedData.value = []
 			}
 		},
 		{

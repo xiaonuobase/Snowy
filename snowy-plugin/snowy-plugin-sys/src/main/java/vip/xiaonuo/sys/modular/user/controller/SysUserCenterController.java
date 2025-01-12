@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
@@ -324,5 +325,29 @@ public class SysUserCenterController {
     @PostMapping("/sys/userCenter/getRoleListByIdList")
     public CommonResult<List<SysRole>> getRoleListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
         return CommonResult.data(sysUserService.getRoleListByIdList(sysUserIdListParam));
+    }
+
+    /**
+     * 根据id集合获取用户组集合
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @Operation(summary = "根据id集合获取用户组集合")
+    @PostMapping("/sys/userCenter/getGroupListByIdList")
+    public CommonResult<List<SysGroup>> getGroupListByIdList(@RequestBody @Valid SysUserGroupIdListParam sysUserGroupIdListParam) {
+        return CommonResult.data(sysUserService.getGroupListByIdList(sysUserGroupIdListParam));
+    }
+
+    /**
+     * 根据id获取头像
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @Operation(summary = "根据id获取头像")
+    @PostMapping("/sys/userCenter/getAvatarById")
+    public CommonResult<String> getAvatarById(@RequestBody @javax.validation.Valid SysUserIdParam sysUserIdParam) {
+        return CommonResult.data(sysUserService.getAvatarById(sysUserIdParam));
     }
 }

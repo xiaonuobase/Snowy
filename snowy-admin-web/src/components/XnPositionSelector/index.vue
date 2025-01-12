@@ -548,6 +548,9 @@
 				const ids = goDataConverter(newValue)
 				recordIds.value = ids
 				getDataNameById(ids)
+			} else {
+				dataArray.value = []
+				selectedData.value = []
 			}
 		},
 		{

@@ -171,4 +171,19 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
             return sysRelation;
         }).collect(Collectors.toList()));
     }
+
+    @Override
+    public Page<SysGroup> groupSelector(SysGroupSelectorParam sysGroupSelectorParam) {
+        LambdaQueryWrapper<SysGroup> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 只查询部分字段，排掉extJson
+        lambdaQueryWrapper.select(SysGroup::getId, SysGroup::getName, SysGroup::getSortCode, SysGroup::getRemark);
+        lambdaQueryWrapper.orderByAsc(SysGroup::getSortCode);
+        // 如果查询条件为空，则直接查询
+        if (!ObjectUtil.isAllEmpty(sysGroupSelectorParam.getSearchKey())) {
+            if (ObjectUtil.isNotEmpty(sysGroupSelectorParam.getSearchKey())) {
+                lambdaQueryWrapper.like(SysGroup::getName, sysGroupSelectorParam.getSearchKey());
+            }
+        }
+        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+    }
 }

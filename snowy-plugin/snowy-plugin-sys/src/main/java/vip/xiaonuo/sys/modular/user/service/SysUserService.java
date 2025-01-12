@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
@@ -469,6 +470,14 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2023/6/25 11:03
      **/
     List<SysPosition> getPositionListByIdList(SysUserIdListParam sysUserIdListParam);
+
+    /**
+     * 根据id集合获取用户组集合
+     *
+     * @author yubaoshan
+     * @date 2025/1/12 02:36
+     */
+    List<SysGroup> getGroupListByIdList(SysUserGroupIdListParam sysUserGroupIdListParam);
 
     /**
      * 根据id集合获取角色集合

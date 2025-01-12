@@ -108,4 +108,12 @@ public interface SysGroupService extends IService<SysGroup> {
      * @date 2024/12/21 01:25
      */
     void grantUser(SysGroupGrantUserParam sysGroupGrantUserParam);
+
+    /**
+     * 获取用户组选择器
+     *
+     * @author yubaoshan
+     * @date 2024/12/21 01:25
+     */
+    Page<SysGroup> groupSelector(SysGroupSelectorParam sysGroupSelectorParam);
 }

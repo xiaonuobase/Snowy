@@ -98,6 +98,10 @@ export default {
 	userCenterGetRoleListByIdList(data) {
 		return request('getRoleListByIdList', data)
 	},
+	// 根据id集合获取用户组集合
+	userCenterGetGroupListByIdList(data) {
+		return request('getGroupListByIdList', data)
+	},
 	// 根据id获取头像
 	userCenterGtAvatarById(data) {
 		return request('getAvatarById', data)
