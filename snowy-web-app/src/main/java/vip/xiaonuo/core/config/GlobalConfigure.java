@@ -21,6 +21,7 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.*;
 import cn.hutool.extra.spring.SpringUtil;
@@ -80,8 +81,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -612,9 +611,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
                 //为空则设置createTime
                 Object createTime = metaObject.getValue(CREATE_TIME);
                 if (ObjectUtil.isNull(createTime)) {
-                    LocalDateTime dt = LocalDateTime.now();
-                    String now = dt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    setFieldValByName(CREATE_TIME, now, metaObject);
+                    setFieldValByName(CREATE_TIME, DateTime.now(), metaObject);
                 }
             } catch (ReflectionException ignored) {
             }
@@ -629,9 +626,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             }
             try {
                 //设置updateTime
-                LocalDateTime dt = LocalDateTime.now();
-                String now = dt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                setFieldValByName(UPDATE_TIME, now, metaObject);
+                setFieldValByName(UPDATE_TIME, DateTime.now(), metaObject);
             } catch (ReflectionException ignored) {
             }
         }
