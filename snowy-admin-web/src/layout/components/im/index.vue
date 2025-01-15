@@ -415,7 +415,7 @@
 	//聊天界面用户列表参数
 	const queryChatRecordParams = reactive({
 		current: 1,
-		size: 10,
+		size: 30,
 		total: -1
 	})
 
@@ -794,13 +794,8 @@
 
 	// 监听ref 滚动到底部
 	const scrolling = (e) => {
-		const clientHeight = e.target.clientHeight
-		const scrollHeight = e.target.scrollHeight
-		const scrollTop = e.target.scrollTop
+		const {clientHeight, scrollHeight, scrollTop} = e.target
 		if (Math.ceil(scrollTop) + clientHeight >= scrollHeight) {
-			// 判断是哪个tab
-			// if (activeKey.value == '1') {
-			// 判断是否还有数据 -1时候为初始化
 			if (
 				queryChatRecordParams.total != -1 &&
 				queryChatRecordParams.current * queryChatRecordParams.size >= queryChatRecordParams.total
@@ -810,8 +805,6 @@
 			queryChatRecordParams.current += 1
 			initMessageList()
 		}
-		// }
-		// console.log(`到底了!${activeKey.value == '1' ? '聊天' : activeKey.value == '2' ? '用户' : '群组'}`);
 	}
 
 	//监听消息列表
@@ -1185,7 +1178,8 @@
 			type = '3'
 		}
 		// http://localhost:82/dev/file/download?id=1816742994645123073 取出id
-		const content = obj['url'].split('=')[1]
+		let url = new URL(obj['url'])
+		const content = url.searchParams.get('id')
 
 		// 拼接消息
 		const msg: ImMessageBo = {
