@@ -154,7 +154,7 @@ public class ImGroupMemberServiceImpl extends ServiceImpl<ImGroupMemberMapper, I
             synchronized (webSocketSession) {
                 WebSocketUtil.sendMessage(webSocketSession, obj.toString());
             }
-            this.update(imGroupMemberLambdaUpdateWrapper);
         }
+        this.update(imGroupMemberLambdaUpdateWrapper);
     }
 }
