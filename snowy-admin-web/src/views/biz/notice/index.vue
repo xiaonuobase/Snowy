@@ -24,7 +24,7 @@
 				</a-col>
 				<a-col :span="6" v-show="advanced">
 					<a-form-item label="创建时间" name="createTime">
-						<a-range-picker v-model:value="searchFormState.createTime" show-time />
+						<a-range-picker v-model:value="searchFormState.createTime" value-format="YYYY-MM-DD HH:mm:ss" show-time />
 					</a-form-item>
 				</a-col>
 				<a-col :span="6">
