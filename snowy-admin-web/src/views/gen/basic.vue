@@ -3,10 +3,11 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
 				<a-col :span="8">
-					<a-form-item label="选择主表：" name="dbTable">
+					<a-form-item label="选择主表或表名称搜索：" name="dbTable">
 						<a-select
 							v-model:value="formData.dbTable"
 							:options="tableList"
+							showSearch
 							class="xn-wd"
 							placeholder="请选择主表"
 							@select="selectTableColumnsData(formData.dbTable, false)"
