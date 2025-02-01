@@ -52,7 +52,7 @@
 					</a-form-item>
 				<% } else if (configList[i].effectType == 'datepicker') {%>
 					<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
-						<a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" show-time />
+						<a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time />
 					</a-form-item>
 				<% } else {%>
 					<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
@@ -99,7 +99,8 @@
 					<xn-batch-button
 						v-if="hasPerm('${classNameFirstLower}BatchDelete')"
 						buttonName="批量删除"
-                        icon="DeleteOutlined"
+						icon="DeleteOutlined"
+						buttonDanger
 						:selectedRowKeys="selectedRowKeys"
 						@batchCallBack="deleteBatch${className}"
 					/>
