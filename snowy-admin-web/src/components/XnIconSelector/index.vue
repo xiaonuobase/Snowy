@@ -1,0 +1,233 @@
+<template>
+	<div class="icon-selector">
+		<a-popover
+			v-model:open="visible"
+			trigger="click"
+			placement="bottomLeft"
+			:overlayStyle="{ width: '500px' }"
+			@visibleChange="handleVisibleChange"
+		>
+			<template #content>
+				<div class="icon-selector-content">
+					<a-tabs v-model:activeKey="activeKey" tab-position="left" size="small" @change="handleTabChange">
+						<a-tab-pane v-for="group in iconData" :key="group.key" :tab="group.name">
+							<div v-if="group.iconItem.length > 1" class="icon-category">
+								<a-radio-group v-model:value="currentCategory" @change="handleCategoryChange" size="small">
+									<a-radio-button v-for="item in group.iconItem" :key="item.key" :value="item.key">
+										{{ item.name }}
+									</a-radio-button>
+								</a-radio-group>
+							</div>
+
+							<div class="icon-grid">
+								<template v-for="iconGroup in group.iconItem" :key="iconGroup.key">
+									<template v-if="iconGroup.key === currentCategory">
+										<div
+											v-for="icon in iconGroup.item"
+											:key="icon"
+											class="icon-item"
+											:class="{ active: icon === selectedIcon }"
+											@click="handleIconSelect(icon)"
+										>
+											<component :is="icon" class="icon-preview" />
+										</div>
+									</template>
+								</template>
+							</div>
+						</a-tab-pane>
+					</a-tabs>
+				</div>
+			</template>
+			<a-input
+				:value="showIconName ? selectedIcon : ''"
+				:size="size"
+				:disabled="disabled"
+				:placeholder="placeholder"
+				:style="{ width: '100%' }"
+				readonly
+			>
+				<template #prefix>
+					<component v-if="selectedIcon" :is="selectedIcon" />
+					<SearchOutlined v-else />
+				</template>
+			</a-input>
+		</a-popover>
+	</div>
+</template>
+
+<script setup>
+	import { ref, watch } from 'vue'
+	import config from '@/config/iconSelect'
+	import { SearchOutlined } from '@ant-design/icons-vue'
+
+	const props = defineProps({
+		value: {
+			type: String,
+			default: ''
+		},
+		size: {
+			type: String,
+			default: 'middle'
+		},
+		disabled: {
+			type: Boolean,
+			default: false
+		},
+		placeholder: {
+			type: String,
+			default: '请选择图标'
+		},
+		showIconName: {
+			type: Boolean,
+			default: true
+		}
+	})
+
+	const emit = defineEmits(['update:value', 'change'])
+
+	const selectedIcon = ref(props.value)
+	const iconData = ref(config.icons)
+	const visible = ref(false)
+	const activeKey = ref(iconData.value[0]?.key || '')
+	const currentCategory = ref('default')
+
+	watch(
+		() => props.value,
+		(newVal) => {
+			selectedIcon.value = newVal
+		}
+	)
+
+	const handleVisibleChange = (isVisible) => {
+		if (!props.disabled) {
+			visible.value = isVisible
+		}
+	}
+
+	const handleCategoryChange = (e) => {
+		currentCategory.value = e.target.value
+	}
+
+	const handleIconSelect = (icon) => {
+		selectedIcon.value = icon
+		emit('update:value', icon)
+		emit('change', icon)
+		visible.value = false
+	}
+
+	const handleTabChange = (key) => {
+		activeKey.value = key
+		// 重置当前分类为default
+		currentCategory.value = 'default'
+	}
+</script>
+
+<style lang="less" scoped>
+	.icon-selector {
+		width: 100%;
+
+		:deep(.ant-input) {
+			cursor: pointer;
+		}
+	}
+
+	.icon-category {
+		margin-bottom: 10px;
+	}
+
+	.icon-selector-content {
+		max-height: 350px;
+		overflow: hidden;
+
+		:deep(.ant-tabs-left) {
+			.ant-tabs-nav {
+				width: 120px;
+				background-color: #fafafa;
+				border-right: 1px solid #f0f0f0;
+
+				.ant-tabs-tab {
+					padding: 12px 16px;
+					margin: 0;
+					font-size: 14px;
+					color: #666;
+					transition: all 0.3s;
+
+					&:hover {
+						color: var(--primary-color);
+						background-color: #f0f5ff;
+					}
+
+					&.ant-tabs-tab-active {
+						color: var(--primary-color);
+						background-color: #f0f5ff;
+						font-weight: 500;
+
+						.ant-tabs-tab-btn {
+							color: var(--primary-color);
+						}
+					}
+				}
+			}
+
+			.ant-tabs-content-holder {
+				border-left: none;
+				padding-left: 16px;
+			}
+		}
+	}
+
+	.icon-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+		gap: 2px;
+		max-height: 280px;
+		overflow-y: auto;
+
+		&::-webkit-scrollbar {
+			width: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 4px;
+		}
+		&::-webkit-scrollbar-track {
+			background-color: transparent;
+		}
+	}
+
+	.icon-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		border: 1px solid #e8e8e8;
+		border-radius: 2px;
+		cursor: pointer;
+		transition: all 0.3s;
+
+		&:hover {
+			border-color: var(--primary-color);
+			background-color: #f0f5ff;
+		}
+
+		&.active {
+			border-color: var(--primary-color);
+			background-color: #f0f5ff;
+		}
+
+		.icon-preview {
+			font-size: 14px;
+		}
+	}
+	:deep(.ant-tabs-tab) {
+		padding: 8px !important;
+	}
+	:deep(.ant-tabs-nav) {
+		width: 60px !important;
+	}
+	:deep(.ant-tabs-tabpane) {
+		padding-left: 0 !important;
+	}
+</style>
