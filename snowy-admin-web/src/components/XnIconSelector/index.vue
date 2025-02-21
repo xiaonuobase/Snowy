@@ -50,6 +50,9 @@
 					<component v-if="selectedIcon" :is="selectedIcon" />
 					<SearchOutlined v-else />
 				</template>
+				<template #suffix>
+					<close-circle-outlined v-if="selectedIcon && !disabled" class="clear-icon" @click.stop="handleClear" />
+				</template>
 			</a-input>
 		</a-popover>
 	</div>
@@ -58,7 +61,7 @@
 <script setup>
 	import { ref, watch } from 'vue'
 	import config from '@/config/iconSelect'
-	import { SearchOutlined } from '@ant-design/icons-vue'
+	import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 
 	const props = defineProps({
 		value: {
@@ -115,6 +118,12 @@
 		visible.value = false
 	}
 
+	const handleClear = () => {
+		selectedIcon.value = ''
+		emit('update:value', '')
+		emit('change', '')
+	}
+
 	const handleTabChange = (key) => {
 		activeKey.value = key
 		// 重置当前分类为default
@@ -128,6 +137,16 @@
 
 		:deep(.ant-input) {
 			cursor: pointer;
+		}
+
+		:deep(.clear-icon) {
+			cursor: pointer;
+			color: rgba(0, 0, 0, 0.25);
+			transition: color 0.3s;
+			font-size: 12px;
+			&:hover {
+				color: rgba(0, 0, 0, 0.45);
+			}
 		}
 	}
 
