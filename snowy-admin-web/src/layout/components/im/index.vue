@@ -315,7 +315,7 @@
 	</a-modal>
 
 	<a-modal v-model:open="uploadShow" :title="'发送' + uploadTitle" @ok="handleOk">
-		<xn-im-upload v-if="uploadShow" :uploadMode="uploadMode" ref="uploadImageRef" :uri="config.API_URL"/>
+		<xn-im-upload v-if="uploadShow" uploadResultType="id" :uploadMode="uploadMode" ref="uploadImageRef" :uri="config.API_URL"/>
 	</a-modal>
 	<a-modal v-model:open="previewShow" title="预览文件" :width="1200" style="top: 10px">
 		<xn-im-file-preview v-if="previewShow" :src="previewSrc" :file-type="previewFileType" @goBack="previewBack" />
@@ -694,7 +694,6 @@
 		input.select()
 		let result = document.execCommand('copy')
 		document.body.removeChild(input)
-		console.log(123);
 		if (!result || result === 'unsuccessful') {
 			notification.error({
 				message: '复制失败'
@@ -920,7 +919,7 @@
 		let content = null
 		if (json.type != '1') {
 			let itemJson = JSON.parse(json.content)
-			content = imageSuffix.indexOf(itemJson.suffix) > -1 ? '[图片]' : '[文件1]' + itemJson.name
+			content = imageSuffix.indexOf(itemJson.suffix) > -1 ? '【图片】' : '【文件】' + itemJson.name
 		} else {
 			content = json.content
 		}
@@ -1177,15 +1176,11 @@
 		} else if (suffix == 'mp4' || suffix == 'avi' || suffix == 'mov' || suffix == 'rmvb') {
 			type = '3'
 		}
-		// http://localhost:82/dev/file/download?id=1816742994645123073 取出id
-		let url = new URL(obj['url'])
-		const content = url.searchParams.get('id')
-
 		// 拼接消息
 		const msg: ImMessageBo = {
 			fromUserId: currentUser.id,
 			toUserId: chatUser.id,
-			content,
+			content: obj['url'],
 			chatType: chatUser.chatType ? chatUser.chatType : '1',
 			type,
 			toUserType: userClient.value,
