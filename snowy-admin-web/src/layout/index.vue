@@ -544,11 +544,14 @@
 	const getParentKeys = (data, val) => {
 		const traverse = (array, val) => {
 			// 递归父级key
+			if (!Array.isArray(array)) {
+				return undefined
+			}
 			for (const element of array) {
-				if (element.path === val) {
+				if (element?.path === val) {
 					return [element.path]
 				}
-				if (element.children) {
+				if (element?.children) {
 					const far = traverse(element.children, val)
 					if (far) {
 						return far.concat(element.path)
