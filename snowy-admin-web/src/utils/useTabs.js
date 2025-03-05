@@ -61,7 +61,7 @@ export default {
 		const tagList = [...store.viewTags]
 		tagList.forEach((tag) => {
 			// eslint-disable-next-line prettier/prettier
-			if ((tag.meta && tag.meta.affix) || route.fullPath == tag.fullPath) {
+			if ((tag.meta && tag.meta.affix) || route.path === tag.path) {
 				return true
 			} else {
 				this.close(tag)

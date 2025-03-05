@@ -30,7 +30,7 @@ export function afterEach(to) {
 	}
 	nextTick(() => {
 		const store = viewTagsStore()
-		const beforeRoute = store.viewTags.filter((v) => v.fullPath == to.fullPath)[0]
+		const beforeRoute = store.viewTags.filter((v) => v.path === to.path)[0]
 		if (beforeRoute) {
 			adminMain.scrollTop = beforeRoute.scrollTop || 0
 		}
