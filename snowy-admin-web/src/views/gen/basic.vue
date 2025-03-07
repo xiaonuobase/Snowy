@@ -96,7 +96,7 @@
 								</template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 插件名：
+							&nbsp; 插件名：
 						</template>
 						<a-input v-model:value="formData.pluginName" placeholder="请输入插件名" allow-clear />
 					</a-form-item>
@@ -113,7 +113,7 @@
 								<template #title> 代码模块名就是包名后面的代码包，例如：vip.xiaonuo.*，*代表此模块名。 </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 模块名：
+							&nbsp; 模块名：
 						</template>
 						<a-input v-model:value="formData.moduleName" placeholder="请输入模块名" allow-clear />
 					</a-form-item>
@@ -130,7 +130,7 @@
 								<template #title> 业务名是代码生成后，存放controller、service等代码的文件夹名称。 </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 业务名：
+							&nbsp; 业务名：
 						</template>
 						<a-input v-model:value="formData.busName" placeholder="请输入业务名" allow-clear />
 					</a-form-item>
@@ -152,7 +152,7 @@
 								<template #title> 垂直选项生成出来的前端表单代码为名称跟输入框是上下两行，反之水平则是一行。 </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 表单布局：
+							&nbsp; 表单布局：
 						</template>
 						<a-radio-group v-model:value="formData.formLayout" :options="formLayoutOptions" />
 					</a-form-item>
@@ -164,7 +164,7 @@
 								<template #title> 如果使用了栅格配置，即生成出来的前端代码，表单是一排两列，并非一排一列。 </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 使用栅格：
+							&nbsp; 使用栅格：
 						</template>
 						<a-radio-group v-model:value="formData.gridWhether" :options="gridWhetherOptions" />
 					</a-form-item>

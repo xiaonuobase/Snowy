@@ -68,7 +68,7 @@
 								<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 组件地址：
+							&nbsp; 组件地址：
 						</template>
 						<a-input
 							v-model:value="formData.component"
@@ -85,7 +85,7 @@
 								<template #title> 按规范可设置为代码组件文件夹名称,注：首字母无反斜杠哦！ </template>
 								<question-circle-outlined />
 							</a-tooltip>
-							&nbsp 别名：
+							&nbsp; 别名：
 						</template>
 						<a-input
 							v-model:value="formData.name"
