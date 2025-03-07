@@ -14,7 +14,7 @@
 						<template #title> 通过官网申请短信或联系站长！ </template>
 						<question-circle-outlined />
 					</a-tooltip>
-					&nbsp 小诺短信账号：
+					&nbsp; 小诺短信账号：
 				</template>
 				<a-input v-model:value="formData.SNOWY_SMS_XIAONUO_ACCESS_KEY_ID" placeholder="请输入小诺短信账号" />
 			</a-form-item>
@@ -30,7 +30,7 @@
 						<template #title> 注：若账号跟密钥已绑定签名，则此处配置签名后无效！ </template>
 						<question-circle-outlined />
 					</a-tooltip>
-					&nbsp 短信签名：
+					&nbsp; 短信签名：
 				</template>
 				<a-input v-model:value="formData.SNOWY_SMS_XIAONUO_DEFAULT_SIGN_NAME" placeholder="请输入短信签名" />
 			</a-form-item>

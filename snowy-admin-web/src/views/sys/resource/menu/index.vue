@@ -53,7 +53,7 @@
 				<template v-if="column.dataIndex === 'visible'">
 					<a-tooltip>
 						<template #title> 如果将上级目录设置为隐藏，那么上级目录下的菜单都会被隐藏！ </template>
-						<question-circle-outlined />&nbsp {{ title }}
+						<question-circle-outlined />&nbsp; {{ title }}
 					</a-tooltip>
 				</template>
 			</template>
