@@ -52,7 +52,6 @@
 				</span>
 			</div>
 		</div>
-
 		<!-- 统计列数据 -->
 		<a-alert showIcon class="s-table-alert mb-4" v-if="props.alert">
 			<template #message>
@@ -65,7 +64,7 @@
 							}}
 						</a>
 					</span>
-					<span className="mr-3" v-for="item in data.needTotalList">
+					<span className="mr-3" v-for="item in data.needTotalList" :key="item">
 						{{ item.title }} 总计{{ ' ' }}
 						<a className="font-6">{{ !item.customRender ? item.total : item.customRender(item.total) }}</a>
 					</span>
@@ -75,13 +74,11 @@
 						"
 						className="ml-6"
 						@click="
-							rowClear(
-								typeof props.alert === 'boolean' && props.alert
-									? clearSelected()
-									: props.alert.clear && typeof props.alert.clear === 'function'
-									  ? props.alert.clear()
-									  : null
-							)
+							typeof props.alert === 'boolean' && props.alert
+								? clearSelected()
+								: props.alert.clear && typeof props.alert.clear === 'function'
+									? props.alert.clear()
+									: null
 						"
 					>
 						{{ ' ' }}
@@ -121,10 +118,11 @@
 	import columnSetting from './columnSetting.vue'
 	import { useSlots } from 'vue'
 	import { useRoute } from 'vue-router'
-	import { get } from 'lodash-es'
+	import { cloneDeep, get } from 'lodash-es'
+
 	const slots = useSlots()
 	const route = useRoute()
-	const emit = defineEmits(['onExpand'])
+	const emit = defineEmits(['onExpand', 'onSelectionChange'])
 	const renderSlots = Object.keys(slots)
 
 	const props = defineProps(
@@ -207,7 +205,17 @@
 		localSettings: {
 			rowClassName: props.rowClassName,
 			rowClassNameSwitch: Boolean(props.rowClassName)
-		}
+		},
+		renderTableProps: {
+			...props,
+			columns: [],
+			dataSource: [],
+			pagination: {},
+			loading: false,
+			size: props.compSize
+		},
+		selectedRows: [],
+		selectedRowKeys: []
 	})
 
 	watch(
@@ -234,15 +242,127 @@
 			})
 		}
 	)
+	// 监听showPagination的变化
+	watch(
+		() => props.rowSelection,
+		(newVal) => {
+			if (!newVal) {
+				// 如果rowSelection被设置为null，清空选中状态
+				data.selectedRows = []
+				data.selectedRowKeys = []
+			}
+			// 更新表格属性
+			getTableProps()
+		},
+		{ deep: true }
+	)
+	watch(
+		() => props.showPagination,
+		(newVal) => {
+			// 更新分页状态
+			data.localPagination = newVal === false ? false : Object.assign({}, data.localPagination)
+			// 重新加载数据和更新表格属性
+			loadData()
+			getTableProps()
+		}
+	)
 	watch(
 		() => props.columns,
 		(newVal) => {
-			data.columnsSetting = newVal
-		}
+			data.columnsSetting = newVal.map((col) => ({
+				...col,
+				checked: col.checked === undefined ? true : col.checked
+			}))
+		},
+		{ deep: true, immediate: true }
 	)
 
 	// 表格props
-	const renderTableProps = ref([])
+	const renderTableProps = computed(() => {
+		const tableProps = {
+			...props,
+			columns: data.localColumns || props.columns,
+			dataSource: data.localDataSource,
+			pagination: data.localPagination,
+			loading: data.localLoading,
+			size: data.customSize
+		}
+
+		if (props.rowSelection) {
+			tableProps.rowSelection = {
+				...props.rowSelection,
+				selectedRowKeys: data.selectedRowKeys,
+				selectedRows: data.selectedRows,
+				onChange: (selectedRowKeys, selectedRows) => {
+					updateSelect(selectedRowKeys, selectedRows)
+					props.rowSelection.onChange?.(selectedRowKeys, selectedRows)
+				}
+			}
+		}
+
+		if (props.lineSelection && props.rowSelection) {
+			tableProps.customRow = (record, index) => {
+				const customRowProps = typeof props.customRow === 'function' ? props.customRow(record, index) : {}
+				return {
+					...customRowProps,
+					onClick: (event) => {
+						// 执行原有的onClick事件
+						if (customRowProps && typeof customRowProps.onClick === 'function') {
+							customRowProps.onClick(event)
+						}
+
+						// 检查行是否禁用
+						const rowDisabled =
+							typeof props.rowSelection.getCheckboxProps === 'function' &&
+							props.rowSelection.getCheckboxProps(record).disabled
+						if (rowDisabled) return
+
+						// 过滤掉按钮等可交互元素的点击
+						if (
+							event.target?.tagName.toLowerCase() === 'button' ||
+							event.target?.tagName.toLowerCase() === 'a' ||
+							event.target?.closest('button') ||
+							event.target?.closest('a') ||
+							event.target?.closest('.ant-checkbox-wrapper') ||
+							event.target?.closest('.ant-radio-wrapper')
+						) {
+							return
+						}
+
+						// 获取行的key
+						const key = (typeof props.rowKey === 'function' && props.rowKey(record)) || record[props.rowKey] || index
+
+						// 处理选中状态
+						let selectedRowKeys = [...data.selectedRowKeys]
+						let selectedRows = [...data.selectedRows]
+						const rowType = props.rowSelection?.type || 'checkbox'
+
+						if (rowType === 'radio') {
+							// 单选模式下，直接替换选中项
+							selectedRowKeys = [key]
+							selectedRows = [record]
+						} else {
+							// 多选模式下，切换选中状态
+							const existingIndex = selectedRowKeys.indexOf(key)
+							if (existingIndex === -1) {
+								selectedRowKeys.push(key)
+								selectedRows.push(record)
+							} else {
+								selectedRowKeys.splice(existingIndex, 1)
+								selectedRows.splice(existingIndex, 1)
+							}
+						}
+
+						// 更新选中状态并触发事件
+						updateSelect(selectedRowKeys, selectedRows)
+						props.rowSelection.onChange?.(selectedRowKeys, selectedRows)
+					}
+				}
+			}
+		}
+		return tableProps
+	})
+
 	// 右上角工具数组
 	const tool = [
 		{
@@ -291,13 +411,9 @@
 	// 列设置
 	const columnChange = (v) => {
 		data.columnsSetting = v
-		getTableProps()
+		data.localColumns = v.filter((value) => value.checked === undefined || value.checked)
+		getTableProps() // 调用getTableProps以确保表格重新渲染
 	}
-	// 列清空
-	const rowClear = (callback) => {
-		clearSelected()
-	}
-	// 初始化
 	const init = () => {
 		const { current } = route.params
 		const localPageNum = (current && parseInt(current)) || props.pageNum
@@ -305,7 +421,7 @@
 			(['auto', true].includes(props.showPagination) &&
 				Object.assign({}, data.localPagination, {
 					current: localPageNum,
-					pageSize: props.size, //props.compSize, size// 改动
+					pageSize: props.size,
 					showSizeChanger: props.showSizeChanger,
 					defaultPageSize: props.defaultPageSize,
 					pageSizeOptions: props.pageSizeOptions,
@@ -316,6 +432,16 @@
 			false
 		data.needTotalList = initTotalList(props.columns)
 		data.columnsSetting = props.columns
+
+		// 初始化时同步外部的选中状态
+		if (props.rowSelection && props.rowSelection.selectedRowKeys) {
+			data.selectedRowKeys = [...props.rowSelection.selectedRowKeys]
+			// 如果有selectedRows，也同步
+			if (props.rowSelection.selectedRows) {
+				data.selectedRows = cloneDeep(props.rowSelection.selectedRows)
+			}
+		}
+
 		loadData()
 	}
 
@@ -449,87 +575,48 @@
 								updateSelect(selectedRowKeys, selectedRows)
 								typeof props[k].onChange !== 'undefined' && props[k].onChange(selectedRowKeys, selectedRows)
 							}
-					  }
+						}
 					: null
 				return
-			}
-
-			// 设置行属性, 点击行时高亮
-			if (k === 'customRow') {
-				if (props.lineSelection && props.rowSelection) {
-					// 如果需要 整行选择，则重新绑定 customRow 事件
-					renderProps[k] = (record, index) => {
-						return {
-							...(typeof props.customRow !== 'undefined' && props.customRow(record, index)),
-							onClick: (event) => {
-								// 若存在原onClick则执行
-								typeof data[k] !== 'undefined' &&
-									typeof data[k](record, index).onClick !== 'undefined' &&
-									data[k](record, index).onClick(event)
-								// 记录为disabled则直接返回，默认为不可选
-								const rowDisabled =
-									typeof props.rowSelection.getCheckboxProps !== 'undefined' &&
-									props.rowSelection.getCheckboxProps(record).disabled
-								if (rowDisabled) return
-								// 过滤自定义按钮的非空白区域
-								const classList = event.target?.classList
-								if (!classList.contains('ant-table-cell')) return
-								const key = (typeof props.rowKey === 'function' && props.rowKey(record)) || props.rowKey || index
-								let selectedRows = props.rowSelection.selectedRows
-								let selectedRowKeys = props.rowSelection.selectedRowKeys
-								const rowType = props.rowSelection?.type || 'checkbox'
-
-								if (rowType === 'radio' || props.rowSelection.selectedRowKeys === undefined) {
-									selectedRowKeys = [key]
-									selectedRows = [record]
-								} else if (!props.rowSelection.selectedRowKeys?.includes(key)) {
-									selectedRowKeys.push(key)
-									selectedRows.push(record)
-								} else {
-									const index = props.rowSelection.selectedRowKeys?.findIndex((itemKey) => itemKey === key)
-									selectedRows.splice(index, 1)
-									selectedRowKeys.splice(index, 1)
-								}
-								updateSelect(selectedRowKeys, selectedRows)
-							}
-						}
-					}
-					return renderProps[k]
-				}
 			}
 			renderProps[k] = props[k]
 		})
 		renderProps = {
 			...renderProps,
-			size: data.customSize, // 注意这个size是a-table组件需要的，这里不能跟别的地方成为compSize
+			size: data.customSize,
 			columns: data.columnsSetting.filter((value) => value.checked === undefined || value.checked),
 			...data.localSettings
 		}
 		// 将值为 undefined 或者 null 的 table里props属性进行一个过滤
-		renderTableProps.value = Object.entries(renderProps).reduce((x, [y, z]) => (z == null ? x : ((x[y] = z), x)), {})
+		data.renderTableProps = Object.entries(renderProps).reduce((x, [y, z]) => (z == null ? x : ((x[y] = z), x)), {})
 	}
 
 	// 用于更新已选中的列表数据 total 统计
 	const updateSelect = (selectedRowKeys, selectedRows) => {
 		if (props.rowSelection) {
+			// 更新本地响应式数据
+			data.selectedRows = cloneDeep(selectedRows)
+			data.selectedRowKeys = cloneDeep(selectedRowKeys)
+			// 同步更新rowSelection的选中状态
 			// eslint-disable-next-line vue/no-mutating-props
-			props.rowSelection.selectedRows = selectedRows
+			props.rowSelection.selectedRows = cloneDeep(selectedRows)
 			// eslint-disable-next-line vue/no-mutating-props
-			props.rowSelection.selectedRowKeys = selectedRowKeys
-			props.rowSelection.onChange(selectedRowKeys, selectedRows)
+			props.rowSelection.selectedRowKeys = cloneDeep(selectedRowKeys)
+			// 通知父组件更新
+			emit('onSelectionChange', selectedRowKeys, selectedRows)
+			// 更新表格属性
 			getTableProps()
-		}
-		const list = data.needTotalList
-		data.needTotalList = list.map((item) => {
-			return {
-				...item,
-				total: selectedRows.reduce((sum, val) => {
-					return addNumbers(sum, get(val, item.dataIndex))
+			// 更新统计数据
+			data.needTotalList = initTotalList(props.columns)
+			data.needTotalList.forEach((item) => {
+				item.total = selectedRows.reduce((sum, val) => {
+					const value = get(val, item.dataIndex)
+					return addNumbers(sum, value)
 				}, 0)
-			}
-		})
+			})
+		}
 	}
-	// 如果开启了needTotal计算总和，支持小数点
+	// 数值相加辅助函数
 	const addNumbers = (num1, num2) => {
 		// 将参数转换为数字
 		let num1Value = Number(num1)
@@ -554,10 +641,19 @@
 	// 清空 table 已选中项
 	const clearSelected = () => {
 		if (props.rowSelection) {
+			// 清空选中状态
+			// eslint-disable-next-line vue/no-mutating-props
+			props.rowSelection.selectedRowKeys = []
+			// eslint-disable-next-line vue/no-mutating-props
+			props.rowSelection.selectedRows = []
+			// 触发onChange事件
 			props.rowSelection.onChange([], [])
-			updateSelect([], [])
+			// 更新表格属性
 			getTableProps()
+			// 取消选中的
+			updateSelect([], [])
 		}
+		data.needTotalList = initTotalList(props.columns)
 	}
 	// 刷新并清空已选
 	const clearRefreshSelected = (bool = false) => {

@@ -24,6 +24,8 @@
 </template>
 <script setup>
 	import Draggable from 'vuedraggable-es'
+	import { ref, watch } from 'vue'
+
 	const emit = defineEmits(['columnChange'])
 	const props = defineProps({
 		columns: {
@@ -35,25 +37,47 @@
 	const indeterminate = ref(false)
 	const checkAll = ref(true)
 	const columnsSetting = ref([])
-	const originColumns = ref()
+	const originColumns = ref([])
 
-	onMounted(() => {
-		columnsSetting.value = props.columns.map((value) => {
-			if (value.checked === undefined) {
-				return {
-					...value,
-					checked: true
-				}
-			} else return value
-		})
+	const emitColumnChange = () => {
+		// 确保发送的数据包含所有必要的列信息，并保持响应性
+		const updatedColumns = columnsSetting.value.map((col) => ({
+			...col,
+			hidden: !col.checked,
+			checked: col.checked,
+			show: col.checked // 添加show属性以确保列的显示状态正确同步
+		}))
+		// 触发列变化事件，确保父组件能够接收到完整的列信息
+		emit('columnChange', updatedColumns)
+	}
 
-		// 这里要用深的拷贝，否则，勾选了字段时会修改了originColumns里的内容
+	// 初始化列设置
+	const initializeColumns = (columns) => {
+		columnsSetting.value = columns.map((value) => ({
+			...value,
+			checked: value.checked !== undefined ? value.checked : !value.hidden
+		}))
+
+		// 深拷贝保存原始列设置
 		originColumns.value = columnsSetting.value.map((value) => ({ ...value }))
 
-		// 处理全选组件
+		// 处理全选状态
 		const notCheckedList = columnsSetting.value.filter((value) => !value.checked)
-		if (notCheckedList.length) checkAll.value = false
-	})
+		checkAll.value = !notCheckedList.length
+		indeterminate.value = notCheckedList.length > 0 && notCheckedList.length < columnsSetting.value.length
+
+		// 触发列变化事件
+		emitColumnChange()
+	}
+
+	// 监听props.columns的变化
+	watch(
+		() => props.columns,
+		(newColumns) => {
+			initializeColumns(newColumns)
+		},
+		{ immediate: true }
+	)
 
 	const reset = () => {
 		columnsSetting.value = originColumns.value.map((value) => ({ ...value }))
@@ -82,11 +106,6 @@
 			checked: val
 		}))
 		emitColumnChange()
-	}
-
-	const emitColumnChange = () => {
-		// eslint-disable-next-line vue/require-explicit-emits
-		emit('columnChange', columnsSetting.value)
 	}
 </script>
 <style lang="less" scoped>
