@@ -5,20 +5,21 @@
 			trigger="click"
 			placement="bottomLeft"
 			:overlayStyle="{ width: '500px' }"
-			@visibleChange="handleVisibleChange"
+			@openChange="handleOpenChange"
 		>
 			<template #content>
 				<div class="icon-selector-content">
 					<a-tabs v-model:activeKey="activeKey" tab-position="left" size="small" @change="handleTabChange">
 						<a-tab-pane v-for="group in iconData" :key="group.key" :tab="group.name">
 							<div v-if="group.iconItem.length > 1" class="icon-category">
-								<a-radio-group v-model:value="currentCategory" @change="handleCategoryChange" size="small">
-									<a-radio-button v-for="item in group.iconItem" :key="item.key" :value="item.key">
-										{{ item.name }}
-									</a-radio-button>
-								</a-radio-group>
+								<a-form-item-rest>
+									<a-radio-group v-model:value="currentCategory" @change="handleCategoryChange" size="small">
+										<a-radio-button v-for="item in group.iconItem" :key="item.key" :value="item.key">
+											{{ item.name }}
+										</a-radio-button>
+									</a-radio-group>
+								</a-form-item-rest>
 							</div>
-
 							<div class="icon-grid">
 								<template v-for="iconGroup in group.iconItem" :key="iconGroup.key">
 									<template v-if="iconGroup.key === currentCategory">
@@ -59,7 +60,7 @@
 </template>
 
 <script setup>
-	import { ref, watch } from 'vue'
+	import { ref } from 'vue'
 	import config from '@/config/iconSelect'
 	import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 
@@ -85,10 +86,10 @@
 			default: true
 		}
 	})
-
+	const formRef = defineModel('formRef')
 	const emit = defineEmits(['update:value', 'change'])
 
-	const selectedIcon = ref(props.value)
+	const selectedIcon = ref()
 	const iconData = ref(config.icons)
 	const visible = ref(false)
 	const activeKey = ref(iconData.value[0]?.key || '')
@@ -101,9 +102,9 @@
 		}
 	)
 
-	const handleVisibleChange = (isVisible) => {
+	const handleOpenChange = (isOpen) => {
 		if (!props.disabled) {
-			visible.value = isVisible
+			visible.value = isOpen
 		}
 	}
 
@@ -112,16 +113,15 @@
 	}
 
 	const handleIconSelect = (icon) => {
-		selectedIcon.value = icon
 		emit('update:value', icon)
-		emit('change', icon)
+		formRef.value?.validateFields('icon')
 		visible.value = false
 	}
 
 	const handleClear = () => {
-		selectedIcon.value = ''
 		emit('update:value', '')
-		emit('change', '')
+		selectedIcon.value = ''
+		formRef.value?.validateFields('icon')
 	}
 
 	const handleTabChange = (key) => {
@@ -144,6 +144,7 @@
 			color: rgba(0, 0, 0, 0.25);
 			transition: color 0.3s;
 			font-size: 12px;
+
 			&:hover {
 				color: rgba(0, 0, 0, 0.45);
 			}
@@ -210,6 +211,7 @@
 			background-color: rgba(0, 0, 0, 0.2);
 			border-radius: 4px;
 		}
+
 		&::-webkit-scrollbar-track {
 			background-color: transparent;
 		}
@@ -240,12 +242,15 @@
 			font-size: 14px;
 		}
 	}
+
 	:deep(.ant-tabs-tab) {
 		padding: 8px !important;
 	}
+
 	:deep(.ant-tabs-nav) {
 		width: 60px !important;
 	}
+
 	:deep(.ant-tabs-tabpane) {
 		padding-left: 0 !important;
 	}
