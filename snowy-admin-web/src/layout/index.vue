@@ -598,7 +598,9 @@
 		onSelectTag.value = true
 		const pathLength = obj.keyPath.length
 		const path = obj.keyPath[pathLength - 1]
-		router.push({ path })
+		const viewTags = viewTagsStore().viewTags
+		const viewTag = viewTags.find((item) => item.path === path)
+		router.push(viewTag ? viewTag.fullPath : path)
 		// 设置选中
 		selectedKeys.value = obj.selectedKeys
 	}

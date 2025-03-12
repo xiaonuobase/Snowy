@@ -70,6 +70,7 @@
 	import routerUtil from '@/utils/routerUtil'
 	import { useRoute, useRouter } from 'vue-router'
 	import { watch, ref, computed, nextTick, onMounted } from 'vue'
+	import { useMenuStore } from '@/store/menu'
 
 	const route = useRoute()
 	const router = useRouter()
@@ -83,6 +84,7 @@
 	const contextMenuTarget = ref(null)
 	const contextMenuVisible = ref(false)
 	const currentContextMenuTabIndex = ref(0)
+	const menuStore = useMenuStore()
 
 	const viewTags = computed(() => {
 		return vStore.viewTags
@@ -100,7 +102,6 @@
 	})
 	watch(route, (to) => {
 		addViewTags(to)
-		activeKey.value = to.fullPath
 	})
 	watch(layoutTagsOpen, () => {
 		// closeOtherCacheTabs()
@@ -113,7 +114,8 @@
 	})
 	// 增加tag
 	const addViewTags = (to) => {
-		activeKey.value = to.fullPath
+		const viewTag = viewTags.value.find((tag) => tag.path === to.path)
+		activeKey.value = viewTag ? viewTag.fullPath : to.fullPath
 		if (to.name && !to.meta.fullpage) {
 			vStore.pushViewTags(to)
 			kStore.pushKeepLive(to.name)
@@ -123,7 +125,6 @@
 			vStore.removeViewTags(firstTag)
 		}
 	}
-
 	// 查找树
 	const treeFind = (tree, func) => {
 		for (const data of tree) {
