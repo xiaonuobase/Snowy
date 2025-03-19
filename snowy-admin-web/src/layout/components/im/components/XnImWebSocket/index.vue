@@ -8,8 +8,7 @@
 	import { ref, onMounted, onUnmounted, defineProps, defineEmits, defineExpose } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
-	import { prefixUrl } from '../../utils/request';
-
+	import { convertUrl } from '@/utils/apiAdaptive'
 	const websocketInstance = ref<WebSocket | null>(null)
 	const isReconnecting = ref(false)
 	const reconnectTimer = ref<NodeJS.Timeout | null>(null)
@@ -51,7 +50,7 @@
 		}, 4000)
 	}
 	const initWebSocket = () => {
-		let url = props.uri.replace('https', 'ws').replace('http', 'ws') + prefixUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
+		let url = props.uri.replace('https', 'ws').replace('http', 'ws') + convertUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
 		if (!('WebSocket' in window)) {
 			notification.error({
 				message: '错误',

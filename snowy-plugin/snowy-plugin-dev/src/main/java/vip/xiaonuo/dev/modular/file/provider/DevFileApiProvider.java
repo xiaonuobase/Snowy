@@ -81,11 +81,4 @@ public class DevFileApiProvider implements DevFileApi {
     public String storageFileWithReturnIdMinio(MultipartFile file) {
         return devFileService.uploadReturnId(DevFileEngineTypeEnum.MINIO.getValue(), file);
     }
-
-    @Override
-    public JSONObject getFileInfoById(String id) {
-        return Optional.ofNullable(devFileService.getById(id))
-                .map(JSONUtil::parseObj)
-                .orElse(new JSONObject());
-    }
 }

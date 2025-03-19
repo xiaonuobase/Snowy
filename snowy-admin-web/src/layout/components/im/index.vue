@@ -303,7 +303,7 @@
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- 未命中任何聊天 -->
 				<div class="content-center-miss" v-else>
 					<img src="./image/content.png" class="content-center-miss-image" />
@@ -361,7 +361,6 @@
 	import XnImWebSocket from './components/XnImWebSocket/index.vue'
 	import XnImFilePreview from './components/XnImFilePreview/index.vue'
 	import XnImEditGroup from './components/XnImEditGroup/index.vue'
-	import { setServerType } from './utils/request'
 
 	const props = defineProps({
 		baseRequest: {
@@ -489,7 +488,7 @@
 	onMounted(() => {
 		initMessageList()
 		initGroupMemberMuted()
-		if(props.floatStyle.backgroundColor != '' && props.floatStyle.backgroundColor != undefined){	
+		if(props.floatStyle.backgroundColor != '' && props.floatStyle.backgroundColor != undefined){
 			var floatButton = document.getElementById("float-button")
 			var boxes = floatButton.getElementsByClassName('ant-float-btn-body');
 			for (var i = 0; i < boxes.length; i++) {
@@ -1259,11 +1258,9 @@
 	const setRead = (ids: []) => {
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
-	
-	setServerType(props.config.SERVER_TYPE).then(res=>{
-		getUserList();
-		initGroupList()
-	});
+
+	getUserList();
+	initGroupList()
 </script>
 <style lang="less" scoped>
 	.record-img {

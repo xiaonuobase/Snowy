@@ -35,6 +35,14 @@ const PREFIX = [
 	{
 		label: '/biz/',
 		value: '/api/bizapp'
+	},
+	{
+		label: '/im/',
+		value: '/api/bizapp'
+	},
+	{
+		label: '/ws/',
+		value: '/api/bizapp'
 	}
 ]
 // 转换url
