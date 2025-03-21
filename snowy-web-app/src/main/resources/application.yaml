@@ -1,0 +1,163 @@
+server:
+  port: 82 # 服务端口
+
+spring:
+  profiles:
+    active: local # 本地环境
+    # active: test # 测试环境
+    # active: prod # 生产环境
+  servlet:
+    multipart:
+      max-request-size: 100MB # 定义单个HTTP请求的最大体积
+      max-file-size: 100MB # 定义单个上传文件的最大体积限制
+  main:
+    allow-circular-references: true # 允许循环引用
+  # jackson 配置
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
+    serialization:
+      write-dates-as-timestamps: false
+  # 数据源相关配置
+  datasource:
+    dynamic:
+      datasource:
+        master: # 主数据源配置
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/snowy?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&useInformationSchema=true&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+      strict: true
+      public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMWiTVtdXFVrgFHDDKELZM0SywkWY3KjugN90eY5Sogon1j8Y0ClPF7nx3FuE7pAeBKiv7ChIS0vvx/59WUpKmUCAwEAAQ==
+      # Druid连接池参数（针对动态数据源）
+      druid:
+        initial-size: 5
+        max-active: 20
+        min-idle: 5
+        max-wait: 60000
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        validation-query-timeout: 2000
+        test-on-borrow: false
+        test-on-return: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 300000
+        filters: stat
+        break-after-acquire-failure: false
+    # Druid全局配置（监控界面）
+    druid:
+      stat-view-servlet:
+        enabled: true
+        login-username: admin
+        login-password: 123456
+
+  # redis 配置
+  data:
+    redis:
+      database: 1
+      host: 127.0.0.1
+      port: 6379
+      password:
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 200
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 0
+
+# mybatis-plus 配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    jdbc-type-for-null: null
+  global-config:
+    banner: false
+    enable-sql-runner: true
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: DELETE_FLAG
+      logic-delete-value: DELETED
+      logic-not-delete-value: NOT_DELETE
+  mapper-locations: classpath*:vip/xiaonuo/**/mapping/*.xml
+  type-handlers-package: vip.xiaonuo.common.handler
+
+# easy-trans 配置
+easy-trans:
+  is-enable-redis: true
+  is-enable-global: true
+  is-enable-tile: true
+  is-enable-cloud: false
+
+# sa-token 配置
+sa-token:
+  token-name: token
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: false
+  max-login-count: -1
+  token-style: random-32
+  is-log: false
+  is-print: false
+  alone-redis:
+    database: 2
+    host: ${spring.data.redis.host}
+    port: ${spring.data.redis.port}
+    password: ${spring.data.redis.password}
+    timeout: ${spring.data.redis.timeout}
+    lettuce:
+      pool:
+        max-active: ${spring.data.redis.lettuce.pool.max-active}
+        max-wait: ${spring.data.redis.lettuce.pool.max-wait}
+        max-idle: ${spring.data.redis.lettuce.pool.max-idle}
+        min-idle: ${spring.data.redis.lettuce.pool.min-idle}
+
+# knife4j 配置
+knife4j:
+  enable: true
+  production: false
+  basic:
+    enable: true
+    username: admin
+    password: 123456
+  setting:
+    enableOpenApi: false
+    enableSwaggerModels: false
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright 2020-2024[SNOWY](https://www.xiaonuo.vip)
+
+springdoc:
+  default-flat-param-object: true
+  group-configs:
+    - group: SNOWY-PLUGIN-AUTH
+      display-name: SNOWY-PLUGIN-AUTH
+      packages-to-scan: vip.xiaonuo.auth
+    - group: SNOWY-PLUGIN-BIZ
+      display-name: SNOWY-PLUGIN-BIZ
+      packages-to-scan: vip.xiaonuo.biz
+    - group: SNOWY-PLUGIN-CLIENT
+      display-name: SNOWY-PLUGIN-CLIENT
+      packages-to-scan: vip.xiaonuo.client
+    - group: SNOWY-PLUGIN-DEV
+      display-name: SNOWY-PLUGIN-DEV
+      packages-to-scan: vip.xiaonuo.dev
+    - group: SNOWY-PLUGIN-GEN
+      display-name: SNOWY-PLUGIN-GEN
+      packages-to-scan: vip.xiaonuo.gen
+    - group: SNOWY-PLUGIN-MOBILE
+      display-name: SNOWY-PLUGIN-MOBILE
+      packages-to-scan: vip.xiaonuo.mobile
+    - group: SNOWY-PLUGIN-SYS
+      display-name: SNOWY-PLUGIN-SYS
+      packages-to-scan: vip.xiaonuo.sys
+
+# snowy 配置
+snowy:
+  config:
+    common:
+      front-url: http://localhost:${server.port}
+      backend-url: http://localhost:${server.port}
