@@ -19,6 +19,27 @@
 		</a-upload>
 
 		<a-upload
+			v-if="props.uploadMode === 'video'"
+			v-model:file-list="fileList"
+			name="file"
+			:action="action"
+			:headers="headers"
+			:maxCount="props.uploadNumber"
+			:before-upload="beforeUpload"
+			list-type="picture-card"
+			@change="handleChange"
+			@preview="handlePreview"
+			:progress="progress"
+			:showUploadList="props.showUploadList"
+			:accept="accept"
+		>
+			<div class="clearfix" v-if="fileList.length < props.uploadNumber">
+				<plus-outlined />
+				<div style="margin-top: 8px">{{ props.uploadText }}</div>
+			</div>
+		</a-upload>
+
+		<a-upload
 			v-if="props.uploadMode === 'image'"
 			v-model:file-list="fileList"
 			name="file"
@@ -38,14 +59,24 @@
 				<div style="margin-top: 8px">{{ props.uploadText }}</div>
 			</div>
 		</a-upload>
-		<a-modal
-			v-if="props.uploadMode === 'image'"
-			:open="previewVisible"
-			:title="previewTitle"
-			:footer="null"
-			@cancel="handleCancel"
-		>
-			<img alt="example" style="width: 100%" :src="previewImage" />
+
+		<!-- 文件预览 -->
+		<a-modal :open="previewVisible"	:title="previewTitle" :footer="null" @cancel="handleCancel">
+			<template v-if="props.uploadMode === 'image'">
+				<img alt="example" style="width: 100%" :src="previewObj" />
+			</template>
+			<template v-else-if="props.uploadMode === 'video'">
+				<video width="100%" controls type="video" id="video">
+					<source :src="previewObj" type="video/mp4" />
+					<object :data="previewObj" width="100%">
+						<embed :src="previewObj" width="100%" />
+       	 	</object>
+        	您的浏览器不支持video标签哦，请联系管理员
+      	</video>
+			</template>
+			<template v-else>
+				暂不支持该文件预览
+			</template>
 		</a-modal>
 
 		<a-upload-dragger
@@ -80,10 +111,10 @@
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
 	const fileList = ref([])
-	const emit = defineEmits(['update:value', 'onChange'])
+	const emit = defineEmits(['update:value', 'onChange', 'onSuccessful'])
 	const previewVisible = ref(false)
 	const previewTitle = ref('')
-	const previewImage = ref('')
+	const previewObj = ref('')
 	const headers = ref({
 		token: tool.data.get('TOKEN')
 	})
@@ -107,7 +138,7 @@
 			default: convertUrl('/dev/file/download?id='),
 			required: false
 		},
-		// 上传样式或图片方式 file || drag || image
+		// 上传样式或图片方式 file || video || drag || image
 		uploadMode: {
 			type: String,
 			default: 'file',
@@ -268,28 +299,37 @@
 	}
 	// 这是兜底逻辑，保准只让这个image类型上传图片
 	const beforeUpload = (file) => {
-		const isPNG = file.type.startsWith('image/')
-		if (!isPNG) {
-			message.warning('只能上传图片类型文件')
+		if (props.uploadMode == 'image') {
+			const isPNG = file.type.startsWith('image/')
+			if (!isPNG) {
+				message.warning('只能上传图片类型文件')
+			}
+			return isPNG || Upload.LIST_IGNORE
 		}
-		return isPNG || Upload.LIST_IGNORE
+		else if (props.uploadMode == 'video') {
+			const isVideo = file.type.startsWith('video/')
+			if (!isVideo) {
+				message.warning('只能上传视频类型文件')
+			}
+			return isVideo || Upload.LIST_IGNORE
+		}
 	}
-	// 预览图片
+	// 预览资源
 	const handlePreview = async (file) => {
 		previewVisible.value = true
 		previewTitle.value = file.name
 		// 如果返回的是id
 		if (props.uploadResultType === 'id') {
-			previewImage.value = sysConfig.API_URL + props.uploadIdDownloadUrl + file.response.data
+			previewObj.value = sysConfig.API_URL + props.uploadIdDownloadUrl + file.response.data
 		} else {
-			previewImage.value = file.response.data
+			previewObj.value = file.response.data
 		}
 	}
 	// 关闭预览窗口
 	const handleCancel = () => {
 		previewVisible.value = false
 		previewTitle.value = ''
-		previewImage.value = ''
+		previewObj.value = ''
 	}
 	// 上传事件
 	const handleChange = (uploads) => {
@@ -308,6 +348,7 @@
 						data.response.data + (resultIntervalValue.value ? ',' + resultIntervalValue.value : '')
 				})
 				emit('update:value', resultIntervalValue)
+				emit('onSuccessful',resultIntervalValue)
 				emit('onChange', resultIntervalValue)
 			} else if (props.uploadResultCategory === 'array') {
 				if (props.completeResult) {
@@ -319,13 +360,16 @@
 						}
 					})
 					emit('update:value', newResult)
+					emit('onSuccessful',newResult)
 					emit('onChange', newResult)
-				} else {
+				} 
+				else {
 					const resultArrayValue = ref([])
 					result.forEach((data) => {
 						resultArrayValue.value.push(data.response.data)
 					})
 					emit('update:value', resultArrayValue)
+					emit('onSuccessful',resultArrayValue)
 					emit('onChange', resultArrayValue)
 				}
 			}

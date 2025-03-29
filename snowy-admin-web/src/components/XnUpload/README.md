@@ -31,7 +31,7 @@
 |----|--------|---------------------------------------|-----------------------------|
 | 1  | value  | 根据uploadResultType、completeResult 而定  | 当选择用户后通过v-model:value绑定到组件上 |
 | 2  | onChange | 根据uploadResultType、completeResult 而定  | 通过@onChange 方法返回上传的数据       |
-
+| 3  | onSuccessful |  fileUrl | 通过@onSuccessful 方法接收上传成功的文件url     |
 ### slot定义
 
 | 序号 | 插槽名    | 用途          | 
