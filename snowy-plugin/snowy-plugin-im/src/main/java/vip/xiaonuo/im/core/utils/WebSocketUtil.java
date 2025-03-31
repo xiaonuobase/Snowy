@@ -61,6 +61,49 @@ public class WebSocketUtil {
             .build();
 
     /**
+     * 处理WebRTC信令消息
+     */
+    private static void handleWebRTCSignaling(WebSocketSession session, JSONObject jsonObject) {
+        String type = jsonObject.getStr("type");
+        String fromUserId = jsonObject.getStr("fromUserId");
+        String toUserId = jsonObject.getStr("toUserId");
+        
+        // 获取接收方的WebSocket会话
+        WebSocketSession toSession = WebSocketSessionManager.SESSIONS.get(toUserId);
+        if(toSession == null) {
+            // 如果接收方不在线，发送错误消息给发送方
+            JSONObject errorMsg = JSONUtil.createObj()
+                .set("type", "call_error")
+                .set("message", "用户不在线");
+            sendMessage(session, errorMsg.toString());
+            return;
+        }
+
+        // 处理音频相关的信令消息
+        if (type.startsWith("call_")) {
+            // 添加音频配置
+            if (type.equals("call_offer")) {
+                // 确保offer中包含音频配置
+                JSONObject sdp = jsonObject.getJSONObject("sdp");
+                if (sdp != null) {
+                    // 确保SDP中包含音频媒体行
+                    String sdpStr = sdp.toString();
+                    if (!sdpStr.contains("m=audio")) {
+                        JSONObject errorMsg = JSONUtil.createObj()
+                            .set("type", "call_error")
+                            .set("message", "音频配置缺失");
+                        sendMessage(session, errorMsg.toString());
+                        return;
+                    }
+                }
+            }
+        }
+        
+        // 转发信令消息给接收方
+        sendMessage(toSession, jsonObject.toString());
+    }
+
+    /**
      * 接收到消息并处理
      */
     public static String handleMessage(WebSocketSession session, TextMessage message) {
@@ -68,6 +111,16 @@ public class WebSocketUtil {
             // 获取消息
             String payload = message.getPayload();
             // 解析消息
+            JSONObject jsonObject = JSONUtil.parseObj(payload);
+            String messageType = jsonObject.getStr("type");
+            
+            // 处理WebRTC信令消息
+            if(messageType != null && messageType.startsWith("call_")) {
+                handleWebRTCSignaling(session, jsonObject);
+                return;
+            }
+            
+            // 处理普通IM消息
             ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
             imMessage.setIsRead("2");
             imMessage.setStatus("1");

@@ -50,7 +50,7 @@
 		}, 4000)
 	}
 	const initWebSocket = () => {
-		let url = props.uri.replace('https', 'ws').replace('http', 'ws') + convertUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
+		let url = props.uri.replace('https', 'wss').replace('http', 'ws') + convertUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
 		if (!('WebSocket' in window)) {
 			notification.error({
 				message: '错误',

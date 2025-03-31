@@ -281,6 +281,8 @@
 					<div class="message-input">
 						<FileImageOutlined class="large" @click="uploadImage('图片', 'image')" />
 						<FolderOutlined class="large" @click="uploadImage('文件', 'drag')" />
+						<AudioOutlined class="large" @click="startVoiceCall()" />
+						<VideoCameraOutlined class="large" @click="startVideoCall()" />
 						<a-textarea
 							v-model:value="newMessage"
 							@keydown.enter="handleEnterKey"
@@ -342,12 +344,63 @@
 		<template #footer />
 	</a-modal>
 	<xn-im-web-socket @setWebSocket="setWebSocket" :uri="config.API_URL"/>
+	<a-modal
+    v-model:open="callModalVisible"
+    :title="callType === 'voice' ? '语音通话' : '视频通话'"
+    :closable="false"
+    :mask-closable="false"
+    :footer="null"
+    width="400px"
+  >
+    <div class="call-container">
+			<div id="call-container-main">
+				<div v-if="callStatus === 'calling'" class="calling-status">
+					<a-avatar :size="64" :src="chatUser.avatar" />
+					<p>正在呼叫 {{ chatUser.name }}...</p>
+					<a-space>
+						<a-button type="primary" danger @click="endCall">取消</a-button>
+					</a-space>
+				</div>
+				
+				<div v-if="callStatus === 'incoming'" class="incoming-status">
+					<a-avatar :size="64" :src="usersMap[incomingCall.fromUserId]?.avatar" />
+					<p>来自 {{ usersMap[incomingCall.fromUserId]?.name }} 的{{ callType === 'voice' ? '语音' : '视频' }}通话</p>
+					<a-space>
+						<a-button type="primary" @click="acceptCall">接听</a-button>
+						<a-button type="primary" danger @click="rejectCall">拒绝</a-button>
+					</a-space>
+				</div>
+
+				<div v-if="callStatus === 'connected'" class="connected-status">
+					<div class="group-video-grid" v-if="chatUser.chatType === '2'">
+						<div v-for="[userId, stream] in groupCallStreams" :key="userId" class="video-item">
+							<video :srcObject="stream" autoplay class="remote-video"></video>
+							<div class="user-name">{{ usersMap[userId]?.name }}</div>
+						</div>
+						<div class="video-item">
+							<video :srcObject="localStream" autoplay muted class="local-video"></video>
+							<div class="user-name">我</div>
+						</div>
+					</div>
+					<div v-if="callType === 'video'" class="call-content">
+						<video id="remoteVideo" class="remote-video" autoplay playsinline muted="false"></video>
+						<video v-if="localStream" :srcObject="localStream" class="local-video" autoplay playsinline muted></video>
+					</div>
+					<!-- <video v-if="callType === 'video'" id="localVideo" ref="localVideo" autoplay playsinline muted class="local-video"></video> -->
+					<!-- <video v-if="callType === 'video'" id="remoteVideo" ref="remoteVideo" autoplay playsinline class="remote-video"></video> -->
+					<audio id="remoteAudio" ref="remoteAudioRef" autoplay playsinline controls style="width:100%; display:block; margin:10px 0;"></audio>
+					<p>通话时长: {{ callDuration }}</p>
+					<a-button type="primary" danger @click="endCall">结束通话</a-button>
+				</div>
+			</div>
+		</div>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
 	import { ref, reactive, onMounted, watch, nextTick, defineProps, h } from 'vue'
 	import { notification } from 'ant-design-vue'
-	import { MessageOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons-vue'
+	import { MessageOutlined, TeamOutlined, SettingOutlined,AudioOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
 	import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 	import ContextMenu from '@imengyu/vue3-context-menu'
 	import dayjs from 'dayjs'
@@ -484,6 +537,31 @@
 	// 搜索
 	const searchValue = ref()
 	const searchData = ref<any[]>([])
+	// 通话所使用的变量信息
+	const callModalVisible = ref(false)
+	const callType = ref<'voice' | 'video'>('voice')
+	const callStatus = ref<'calling' | 'incoming' | 'connected' | null>(null)
+	const localStream = ref<MediaStream | null>(null)
+	const remoteStream = ref<MediaStream | null>(null)
+	const peerConnection = ref<RTCPeerConnection | null>(null)
+	const callDuration = ref('00:00')
+	const callTimer = ref<NodeJS.Timer | null>(null)
+	const incomingCall = reactive({
+		fromUserId: '',
+		type: ''
+	})
+	const iceServers = [
+		{ urls: 'stun:stun.l.google.com:19302' },
+		{ urls: 'stun:stun1.l.google.com:19302' },
+		{ urls: 'stun:stun2.l.google.com:19302' },
+		{ urls: 'stun:stun3.l.google.com:19302' },
+		{ urls: 'stun:stun4.l.google.com:19302' }
+	]
+	// 在现有变量声明后添加
+	const groupCallPeers = ref<Map<string, RTCPeerConnection>>(new Map())
+	const groupCallStreams = ref<Map<string, MediaStream>>(new Map())
+	const groupCallParticipants = ref<string[]>([])
+	const remoteAudioRef = ref<HTMLAudioElement | null>(null)
 
 	onMounted(() => {
 		initMessageList()
@@ -824,6 +902,11 @@
 
 	const onMessage = (data) => {
 		let json = JSON.parse(data)
+		// 处理通话相关消息
+		if (json.type && json.type.startsWith('call_')) {
+			handleCallMessage(json)
+			return
+		}
 		//messageType 3 在线用户列表  4用户上线通知 5用户离线通知
 		if (json.messageType && (json.messageType == '3' || json.messageType == '4' || json.messageType == '5')) {
 			if (json.messageType == '3') {
@@ -886,6 +969,118 @@
 		) {
 			// 如果是群聊且不是当前聊天对象 则增加未读计数
 			incrementUnreadCount(json)
+		}
+	}
+
+	// 添加通话消息处理函数
+	const handleCallMessage = async (message) => {
+	  console.log('收到通话消息:', message);
+		switch (message.type) {
+			case 'call_offer':
+				// 收到呼叫请求
+				// callType.value = message.callType
+				incomingCall.fromUserId = message.fromUserId
+				incomingCall.sdp = message.sdp
+				callModalVisible.value = true
+				callStatus.value = 'incoming'
+				break
+				
+			case 'call_answer':
+				console.log('收到通话应答');
+				if (peerConnection.value && peerConnection.value.signalingState !== 'closed') {
+					peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.sdp))
+						.then(() => {
+							console.log('成功设置远程描述');
+							callStatus.value = 'connected';
+						})
+						.catch(error => {
+							console.error('设置远程描述失败:', error);
+							notification.error({
+								message: '连接失败',
+								description: '无法建立媒体连接'
+							});
+							endCall();
+						});
+				}
+				break
+				
+			case 'call_ice_candidate':
+				// 处理 ICE 候选
+				console.log('收到ICE候选');
+				if (peerConnection.value && peerConnection.value.signalingState !== 'closed') {
+					try {
+						peerConnection.value.addIceCandidate(new RTCIceCandidate(message.candidate))
+							.then(() => console.log('成功添加ICE候选'))
+							.catch(e => console.error('添加ICE候选失败:', e));
+					} catch (e) {
+						console.error('处理ICE候选异常:', e);
+					}
+				}
+				break
+				
+			case 'call_reject':
+				// 对方拒绝通话
+				notification.warning({
+					message: `${usersMap[message.fromUserId]?.name || '对方'}拒绝了通话`
+				})
+				endCall()
+				break
+				
+			case 'call_end':
+				// 对方结束通话
+				if (callStatus.value === 'connected') {
+					notification.info({
+						message: '通话已结束'
+					})
+				}
+				endCall()
+				break
+
+			case 'call_group_invite':
+				// 收到群组通话邀请
+				// callType.value = message.callType
+				incomingCall.fromUserId = message.fromUserId
+				incomingCall.groupId = message.groupId
+				callModalVisible.value = true
+				callStatus.value = 'incoming'
+				break
+			case 'call_group_accept':
+				// 群组成员接受通话
+				if (message.fromUserId !== currentUser.id) {
+					const peerConnection = groupCallPeers.value.get(message.fromUserId)
+					if (peerConnection) {
+						const offer = await peerConnection.createOffer()
+						await peerConnection.setLocalDescription(offer)
+						sendMessageToWebSocket({
+							type: 'call_group_offer',
+							fromUserId: currentUser.id,
+							toUserId: message.fromUserId,
+							groupId: message.groupId,
+							sdp: offer
+						})
+					}
+				}
+				break
+				
+			case 'call_group_offer':
+				// 处理群组通话提议
+				if (message.toUserId === currentUser.id) {
+					const peerConnection = new RTCPeerConnection({ iceServers })
+					groupCallPeers.value.set(message.fromUserId, peerConnection)
+					
+					await peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp))
+					const answer = await peerConnection.createAnswer()
+					await peerConnection.setLocalDescription(answer)
+					
+					sendMessageToWebSocket({
+						type: 'call_group_answer',
+						fromUserId: currentUser.id,
+						toUserId: message.fromUserId,
+						groupId: message.groupId,
+						sdp: answer
+					})
+				}
+				break
 		}
 	}
 	// 修改或创建用户消息列表
@@ -1259,6 +1454,488 @@
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
 
+
+	// 在开始通话前检查网络
+	const startVoiceCall = () => {
+		checkNetworkConnection();
+		callType.value = 'voice';
+		initializeCall();
+	};
+
+	const startVideoCall = () => {
+		checkNetworkConnection();
+		callType.value = 'video';
+		initializeCall();
+	};
+
+
+	const checkNetworkConnection = () => {
+		const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+		if (connection) {
+			console.log('网络连接类型:', connection.type);
+			console.log('网络有效类型:', connection.effectiveType);
+			console.log('下行带宽:', connection.downlink, 'Mbps');
+			console.log('往返时间:', connection.rtt, 'ms');
+			
+			if (connection.downlink < 0.5 || connection.rtt > 500) {
+				notification.warning({
+					message: '网络连接不佳',
+					description: '当前网络连接质量较差，可能影响通话质量'
+					});
+				}
+			} else {
+				console.log('无法获取网络连接信息');
+			}
+			
+			// 检查WebSocket连接
+			if (websocket) {
+				console.log('WebSocket连接正常');
+			} else {
+				console.error('WebSocket连接异常');
+				notification.error({
+					message: 'WebSocket连接异常',
+					description: '信令服务器连接异常，可能影响通话建立'
+				});
+			}
+	};
+
+	const initializeCall = async () => {
+		try {
+			// 清理现有连接
+			if (localStream.value) {
+				localStream.value.getTracks().forEach(track => track.stop());
+				localStream.value = null;
+			}
+			if (peerConnection.value) {
+				peerConnection.value.close();
+				peerConnection.value = null;
+			}
+			
+			// 使用简单的媒体约束
+			const constraints = {
+				audio: true,
+				video: callType.value === 'video'
+			};
+			
+			console.log('请求媒体设备权限...');
+			try {
+				localStream.value = await navigator.mediaDevices.getUserMedia(constraints);
+				console.log('成功获取本地媒体流:', 
+					localStream.value.getTracks().map(t => `${t.kind}:${t.label}`));
+			} catch (mediaError) {
+				console.error('获取媒体设备失败:', mediaError);
+				notification.error({
+					message: '无法访问麦克风或摄像头',
+					description: mediaError.message
+				});
+				return;
+			}
+			
+			// 创建RTCPeerConnection，添加详细配置
+			peerConnection.value = new RTCPeerConnection({
+				iceServers: iceServers,
+				iceTransportPolicy: 'all',
+				bundlePolicy: 'max-bundle',
+				rtcpMuxPolicy: 'require',
+				sdpSemantics: 'unified-plan'
+			});
+			
+			// 添加连接状态监听
+			peerConnection.value.onconnectionstatechange = () => {
+				console.log('连接状态变化:', peerConnection.value.connectionState);
+				if (peerConnection.value.connectionState === 'connected') {
+					console.log('连接成功建立!');
+					callStatus.value = 'connected';
+				} else if (peerConnection.value.connectionState === 'failed') {
+					console.error('连接失败');
+					notification.error({
+						message: '连接失败',
+						description: '无法建立媒体连接'
+					});
+					endCall();
+				} else if (peerConnection.value.connectionState === 'disconnected') {
+					console.warn('连接断开');
+					notification.warning({
+						message: '连接已断开',
+						description: '尝试重新连接中...'
+					});
+				}
+			};
+			
+			// 添加ICE连接状态监听
+			peerConnection.value.oniceconnectionstatechange = () => {
+				console.log('ICE连接状态:', peerConnection.value.iceConnectionState);
+				if (peerConnection.value.iceConnectionState === 'failed') {
+					console.error('ICE连接失败');
+					// 尝试ICE重启
+					if (peerConnection.value.restartIce) {
+						console.log('尝试ICE重启');
+						peerConnection.value.restartIce();
+					}
+				}
+			};
+			
+			// 添加ICE收集状态监听
+			peerConnection.value.onicegatheringstatechange = () => {
+				console.log('ICE收集状态:', peerConnection.value.iceGatheringState);
+			};
+			
+			// 添加信令状态监听
+			peerConnection.value.onsignalingstatechange = () => {
+				console.log('信令状态:', peerConnection.value.signalingState);
+			};
+			
+			// 监听ICE候选
+			peerConnection.value.onicecandidate = (event) => {
+				if (event.candidate) {
+					console.log('发送ICE候选:', event.candidate.candidate.substr(0, 50) + '...');
+					// 发送ICE候选到对方
+					sendMessageToWebSocket({
+						type: 'call_ice_candidate',
+						fromUserId: currentUser.id,
+						toUserId: chatUser.id,
+						candidate: event.candidate
+					});
+				} else {
+					console.log('ICE候选收集完成');
+				}
+			};
+			
+			// 处理远程流
+			peerConnection.value.ontrack = (event) => {
+				console.log(`收到远程${event.track.kind}轨道`);
+				handleRemoteStream(event.streams[0]);
+			};
+			
+			// 添加本地轨道
+			localStream.value.getTracks().forEach(track => {
+				console.log(`添加本地${track.kind}轨道`);
+				peerConnection.value.addTrack(track, localStream.value);
+			});
+			
+			// 创建offer
+			try {
+				console.log('创建offer...');
+				const offer = await peerConnection.value.createOffer({
+					offerToReceiveAudio: true,
+					offerToReceiveVideo: callType.value === 'video'
+				});
+				
+				console.log('设置本地描述...');
+				await peerConnection.value.setLocalDescription(offer);
+				
+				// 等待ICE收集完成或超时
+				await new Promise((resolve) => {
+					const checkState = () => {
+						if (peerConnection.value.iceGatheringState === 'complete') {
+							console.log('ICE收集完成，发送offer');
+							resolve();
+						} else {
+							setTimeout(checkState, 500);
+						}
+					};
+					
+					// 设置超时
+					const timeout = setTimeout(() => {
+						console.log('ICE收集超时，发送当前offer');
+						resolve();
+					}, 5000);
+					
+					// 检查状态
+					checkState();
+				});
+				
+				// 发送offer
+				console.log('发送offer到对方');
+				sendMessageToWebSocket({
+					type: 'call_offer',
+					fromUserId: currentUser.id,
+					toUserId: chatUser.id,
+					callType: callType.value,
+					sdp: peerConnection.value.localDescription
+				});
+				
+				// 更新UI
+				callModalVisible.value = true;
+				callStatus.value = 'calling';
+				startCallTimer();
+				
+			} catch (offerError) {
+				console.error('创建或设置offer失败:', offerError);
+				notification.error({
+					message: '通话初始化失败',
+					description: offerError.message
+				});
+				endCall();
+			}
+			
+		} catch (error) {
+			console.error('初始化通话失败:', error);
+			notification.error({
+				message: '通话初始化失败',
+				description: error.message
+			});
+			endCall();
+		}
+	};
+
+	// 3. 修改处理远程流的代码，使用ref引用
+	const handleRemoteStream = (stream) => {
+		console.log('处理远程流，轨道:', stream.getTracks().map(t => `${t.kind}:${t.enabled}`));
+		remoteStream.value = stream;
+		
+		// 使用setTimeout确保DOM已完全渲染
+		setTimeout(() => {
+			console.log('延迟处理远程流');
+			
+			// 首先尝试使用ref
+			if (remoteAudioRef.value) {
+				console.log('使用ref设置远程音频流');
+				remoteAudioRef.value.srcObject = stream;
+				remoteAudioRef.value.muted = false;
+				remoteAudioRef.value.volume = 1.0;
+				
+				remoteAudioRef.value.play()
+					.then(() => console.log('音频开始播放'))
+					.catch(e => console.error('音频播放失败:', e));
+			} 
+			// 然后尝试使用ID
+			else {
+				console.log('ref不可用，尝试使用ID查找');
+				const audioElement = document.getElementById('remoteAudio');
+				
+				if (audioElement) {
+					console.log('使用ID找到音频元素');
+					audioElement.srcObject = stream;
+					audioElement.muted = false;
+					audioElement.volume = 1.0;
+					
+					audioElement.play()
+						.then(() => console.log('通过ID找到的音频元素开始播放'))
+						.catch(e => console.error('通过ID找到的音频元素播放失败:', e));
+				} 
+				// 最后尝试创建新元素
+				else {
+					console.error('无法通过ref或ID找到音频元素，尝试直接创建');
+					
+					// 查找容器元素
+					const container = document.getElementById('call-container-main');
+					
+					if (container) {
+						console.log('找到容器元素，创建新音频元素');
+						const newAudio = document.createElement('audio');
+						newAudio.id = 'dynamic-audio';
+						newAudio.autoplay = true;
+						newAudio.controls = true;
+						newAudio.style.width = '100%';
+						newAudio.style.display = 'block';
+						newAudio.style.margin = '10px 0';
+						newAudio.srcObject = stream;
+						
+						// 插入到容器的开头
+						container.insertBefore(newAudio, container.firstChild);
+						
+						newAudio.play()
+							.then(() => console.log('动态创建的音频元素开始播放'))
+							.catch(e => console.error('动态创建的音频元素播放失败:', e));
+					} else {
+						console.error('找不到任何容器元素来添加音频，尝试添加到body');
+						// 最后的尝试：添加到body
+						const newAudio = document.createElement('audio');
+						newAudio.id = 'emergency-audio';
+						newAudio.autoplay = true;
+						newAudio.controls = true;
+						newAudio.style.width = '300px';
+						newAudio.style.position = 'fixed';
+						newAudio.style.top = '10px';
+						newAudio.style.left = '10px';
+						newAudio.style.zIndex = '9999';
+						newAudio.srcObject = stream;
+						
+						document.body.appendChild(newAudio);
+						
+						newAudio.play()
+							.then(() => console.log('添加到body的音频元素开始播放'))
+							.catch(e => console.error('添加到body的音频元素播放失败:', e));
+					}
+				}
+			}
+			
+			// 如果是视频通话，也处理视频元素
+			if (callType.value === 'video') {
+				const remoteVideo = document.getElementById('remoteVideo');
+				if (remoteVideo) {
+					console.log('设置远程视频流');
+					remoteVideo.srcObject = stream;
+					remoteVideo.muted = false;
+					remoteVideo.play().catch(e => console.error('视频播放失败:', e));
+				}
+			}
+		}, 500); // 延迟500ms确保DOM已渲染
+	};
+	// 修改接听通话逻辑
+	const acceptCall = async () => {
+		try {
+			// 1. 确保结束任何现有通话
+			if (localStream.value) {
+				localStream.value.getTracks().forEach(track => track.stop());
+				localStream.value = null;
+			}
+			if (peerConnection.value) {
+				peerConnection.value.close();
+				peerConnection.value = null;
+			}
+			
+			// 2. 获取本地媒体流
+			const constraints = {
+				audio: true,
+				video: callType.value === 'video'
+			};
+			
+			console.log('接听通话: 请求媒体权限...');
+			localStream.value = await navigator.mediaDevices.getUserMedia(constraints);
+			console.log('接听通话: 已获取本地媒体流');
+			
+			// 3. 创建RTCPeerConnection
+			peerConnection.value = new RTCPeerConnection({
+				iceServers: [
+					{ urls: 'stun:stun.l.google.com:19302' }
+				]
+			});
+			
+			// 4. 设置远程描述（必须在添加本地轨道之前）
+			console.log('接听通话: 设置远程描述');
+			await peerConnection.value.setRemoteDescription(new RTCSessionDescription(incomingCall.sdp));
+			
+			// 5. 添加本地轨道
+			localStream.value.getTracks().forEach(track => {
+				console.log(`接听通话: 添加${track.kind}轨道`);
+				peerConnection.value.addTrack(track, localStream.value);
+			});
+			
+			// 6. 设置事件处理器
+			
+			// 处理ICE候选
+			peerConnection.value.onicecandidate = (event) => {
+				if (event.candidate) {
+					console.log('接听通话: 发送ICE候选');
+					sendMessageToWebSocket({
+						type: 'call_ice_candidate',
+						fromUserId: currentUser.id,
+						toUserId: incomingCall.fromUserId,
+						candidate: event.candidate
+					});
+				}
+			};
+			
+			// 监听ICE连接状态
+			peerConnection.value.oniceconnectionstatechange = () => {
+				console.log('接听通话: ICE连接状态:', peerConnection.value.iceConnectionState);
+			};
+			
+			// 监听连接状态
+			peerConnection.value.onconnectionstatechange = () => {
+				console.log('接听通话: 连接状态:', peerConnection.value.connectionState);
+				if (peerConnection.value.connectionState === 'connected') {
+					callStatus.value = 'connected';
+				}
+			};
+			
+			// 处理远程流
+			peerConnection.value.ontrack = (event) => {
+				console.log(`接听通话: 收到远程${event.track.kind}轨道`);
+				handleRemoteStream(event.streams[0]);
+			};
+			
+			// 7. 创建并发送应答
+			console.log('接听通话: 创建应答');
+			const answer = await peerConnection.value.createAnswer();
+			await peerConnection.value.setLocalDescription(answer);
+			
+			console.log('接听通话: 发送应答');
+			sendMessageToWebSocket({
+				type: 'call_answer',
+				fromUserId: currentUser.id,
+				toUserId: incomingCall.fromUserId,
+				sdp: peerConnection.value.localDescription
+			});
+			
+			// 8. 更新UI状态
+			callStatus.value = 'connected';
+			startCallTimer();
+			
+		} catch (error) {
+			console.error('接听通话失败:', error);
+			notification.error({
+				message: '接听失败',
+				description: error.message
+			});
+			endCall();
+		}
+	};
+
+
+	const rejectCall = () => {
+		sendMessageToWebSocket({
+			type: 'call_reject',
+			fromUserId: currentUser.id,
+			toUserId: incomingCall.fromUserId
+		})
+		endCall()
+	}
+
+	const endCall = () => {
+		// 防止重复调用
+		if (!callStatus.value) return
+		
+		if (localStream.value) {
+			localStream.value.getTracks().forEach(track => track.stop())
+			localStream.value = null
+		}
+
+		if (remoteStream.value) {
+			// 清理远程流引用
+			remoteStream.value = null;
+		}
+  
+		if (peerConnection.value) {
+			peerConnection.value.close()
+			peerConnection.value = null;
+		}
+		if (callTimer.value) {
+			clearInterval(callTimer.value)
+			callTimer.value = null;
+		}
+		
+		// 清理音频元素
+		if (remoteAudioRef.value) {
+			remoteAudioRef.value.srcObject = null;
+		}
+		// 只在通话状态时发送结束信号
+		if (callStatus.value === 'connected' || callStatus.value === 'calling') {
+			sendMessageToWebSocket({
+				type: 'call_end',
+				fromUserId: currentUser.id,
+				toUserId: chatUser.id
+			})
+		}
+		
+		// 最后再清空状态
+		callStatus.value = null
+		callModalVisible.value = false
+		callDuration.value = '00:00'
+	}
+
+	const startCallTimer = () => {
+		let seconds = 0
+		callTimer.value = setInterval(() => {
+			seconds++
+			const minutes = Math.floor(seconds / 60)
+			const remainingSeconds = seconds % 60
+			callDuration.value = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+		}, 1000)
+	}
+
 	getUserList();
 	initGroupList()
 </script>
@@ -1296,8 +1973,47 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+	}
+	.call-container {
+		text-align: center;
+		padding: 20px;
+	}
+	.call-header {
+		margin-bottom: 20px;
+	}
+	.call-status {
+		color: #666;
+		margin: 10px 0;
+	}
+	.call-duration {
+		font-size: 24px;
+		margin: 10px 0;
+	}
+	.call-content {
+		position: relative;
+		width: 100%;
+		height: 400px;
+		background: #000;
+		margin-bottom: 20px;
+	}
+	.local-video {
+		position: absolute;
+		right: 20px;
+		bottom: 20px;
+		width: 160px;
+		height: 120px;
+		border: 2px solid #fff;
+		z-index: 1;
+	}
+	.remote-video {
+		width: 100%;
 		height: 100%;
-		width: 80%;
+		object-fit: cover;
+	}
+	.call-controls {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
 	}
 	.current-user {
 		flex: 0 0 auto;
@@ -1567,4 +2283,61 @@
 	:deep(.ant-tabs-nav) {
 		margin: 0 !important;
 	}
+	// 添加通话相关样式
+.call-container {
+  text-align: center;
+  padding: 20px;
+  
+  .calling-status,
+  .incoming-status,
+  .connected-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .local-video {
+    width: 160px;
+    height: 120px;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .remote-video {
+    width: 100%;
+    height: 400px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+}
+.group-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.video-item {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.user-name {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
 </style>
