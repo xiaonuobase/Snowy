@@ -279,7 +279,10 @@ public class GlobalConfigure implements WebMvcConfigurer {
                     // 在[异常处理函数]里的返回值，将作为字符串输出到前端，此处统一转为JSON输出前端
                     SaResponse saResponse = SaHolder.getResponse();
                     saResponse.setHeader(Header.CONTENT_TYPE.getValue(), ContentType.JSON + ";charset=" + CharsetUtil.UTF_8);
-                    return GlobalExceptionUtil.getCommonResult((Exception) e);
+                    // result是字符串，需要手动转为json格式。全局异常处理中的字符串返回信息（ommonResult<String>）已经被@ResponseBody进行json格式化了
+                    CommonResult<String> result = GlobalExceptionUtil.getCommonResult((Exception) e);
+                    Gson g = new GsonBuilder().serializeNulls().create();
+                    return g.toJson(result);
                 });
     }
 
