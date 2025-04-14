@@ -95,6 +95,8 @@ public class JacksonConfig {
                     gen.writeNumber(0);
                 } else if (type == Boolean.class) {
                     gen.writeBoolean(false);
+                } else if (type == Date.class) {
+                    gen.writeString("");
                 } else if (type.isArray() || Collection.class.isAssignableFrom(type)) {
                     gen.writeStartArray();
                     gen.writeEndArray();
