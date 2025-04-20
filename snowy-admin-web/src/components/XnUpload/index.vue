@@ -61,7 +61,7 @@
 		</a-upload>
 
 		<!-- 文件预览 -->
-		<a-modal :open="previewVisible"	:title="previewTitle" :footer="null" @cancel="handleCancel">
+		<a-modal :open="previewVisible"	:title="previewTitle" :footer="null" :destroyOnClose="true" @cancel="handleCancel">
 			<template v-if="props.uploadMode === 'image'">
 				<img alt="example" style="width: 100%" :src="previewObj" />
 			</template>
