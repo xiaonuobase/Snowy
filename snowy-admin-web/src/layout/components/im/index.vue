@@ -210,7 +210,7 @@
 												<a-image
 													:width="80"
 													:src="key.downloadPath"
-													fallback="data:image/png;base64,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"
+													fallback="data:image/png;base64,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"
 													v-if="imageSuffix.indexOf(key.suffix) > -1"
 												/>
 												<img
@@ -383,12 +383,12 @@
 						</div>
 					</div>
 					<div v-if="callType === 'video'" class="call-content">
-						<video id="remoteVideo" class="remote-video" autoplay playsinline muted="false"></video>
+						<video id="remoteVideo" class="remote-video" autoplay playsinline></video>
 						<video v-if="localStream" :srcObject="localStream" class="local-video" autoplay playsinline muted></video>
 					</div>
 					<!-- <video v-if="callType === 'video'" id="localVideo" ref="localVideo" autoplay playsinline muted class="local-video"></video> -->
 					<!-- <video v-if="callType === 'video'" id="remoteVideo" ref="remoteVideo" autoplay playsinline class="remote-video"></video> -->
-					<audio id="remoteAudio" ref="remoteAudioRef" autoplay playsinline controls style="width:100%; display:block; margin:10px 0;"></audio>
+					<audio id="remoteAudio" ref="remoteAudioRef" autoplay playsinline controls style="width:100%; display:block; margin:10px 0;" v-if="callType === 'voice'"></audio>
 					<p>通话时长: {{ callDuration }}</p>
 					<a-button type="primary" danger @click="endCall">结束通话</a-button>
 				</div>
@@ -988,22 +988,20 @@
 			case 'call_answer':
 				console.log('收到通话应答');
 				if (peerConnection.value && peerConnection.value.signalingState !== 'closed') {
-					peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.sdp))
-						.then(() => {
-							console.log('成功设置远程描述');
-							callStatus.value = 'connected';
-						})
-						.catch(error => {
-							console.error('设置远程描述失败:', error);
-							notification.error({
-								message: '连接失败',
-								description: '无法建立媒体连接'
-							});
-							endCall();
+					try {
+						await peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.sdp));
+						console.log('成功设置远程描述');
+						callStatus.value = 'connected';
+					} catch (error) {
+						console.error('设置远程描述失败:', error);
+						notification.error({
+							message: '连接失败',
+							description: '无法建立媒体连接'
 						});
+						endCall();
+					}
 				}
-				break
-				
+				break;
 			case 'call_ice_candidate':
 				// 处理 ICE 候选
 				console.log('收到ICE候选');
@@ -1030,11 +1028,15 @@
 				// 对方结束通话
 				if (callStatus.value === 'connected') {
 					notification.info({
-						message: '通话已结束'
-					})
+						message: `${usersMap[message.fromUserId]?.name || '对方'}已结束通话`
+					});
+				} else if (callStatus.value === 'calling') {
+					notification.info({
+						message: `${usersMap[message.fromUserId]?.name || '对方'}拒绝了通话`
+					});
 				}
-				endCall()
-				break
+				endCall();
+				break;
 
 			case 'call_group_invite':
 				// 收到群组通话邀请
@@ -1216,7 +1218,6 @@
 				notification.warning({
 					message: '您不是该群组成员'
 				})
-				return
 			} else {
 				if (res.records[0].role == '1') {
 					createGroupType.value = 'update'
@@ -1684,99 +1685,32 @@
 		console.log('处理远程流，轨道:', stream.getTracks().map(t => `${t.kind}:${t.enabled}`));
 		remoteStream.value = stream;
 		
-		// 使用setTimeout确保DOM已完全渲染
 		setTimeout(() => {
-			console.log('延迟处理远程流');
-			
-			// 首先尝试使用ref
-			if (remoteAudioRef.value) {
-				console.log('使用ref设置远程音频流');
-				remoteAudioRef.value.srcObject = stream;
-				remoteAudioRef.value.muted = false;
-				remoteAudioRef.value.volume = 1.0;
-				
-				remoteAudioRef.value.play()
-					.then(() => console.log('音频开始播放'))
-					.catch(e => console.error('音频播放失败:', e));
-			} 
-			// 然后尝试使用ID
-			else {
-				console.log('ref不可用，尝试使用ID查找');
-				const audioElement = document.getElementById('remoteAudio');
-				
-				if (audioElement) {
-					console.log('使用ID找到音频元素');
-					audioElement.srcObject = stream;
-					audioElement.muted = false;
-					audioElement.volume = 1.0;
-					
-					audioElement.play()
-						.then(() => console.log('通过ID找到的音频元素开始播放'))
-						.catch(e => console.error('通过ID找到的音频元素播放失败:', e));
-				} 
-				// 最后尝试创建新元素
-				else {
-					console.error('无法通过ref或ID找到音频元素，尝试直接创建');
-					
-					// 查找容器元素
-					const container = document.getElementById('call-container-main');
-					
-					if (container) {
-						console.log('找到容器元素，创建新音频元素');
-						const newAudio = document.createElement('audio');
-						newAudio.id = 'dynamic-audio';
-						newAudio.autoplay = true;
-						newAudio.controls = true;
-						newAudio.style.width = '100%';
-						newAudio.style.display = 'block';
-						newAudio.style.margin = '10px 0';
-						newAudio.srcObject = stream;
-						
-						// 插入到容器的开头
-						container.insertBefore(newAudio, container.firstChild);
-						
-						newAudio.play()
-							.then(() => console.log('动态创建的音频元素开始播放'))
-							.catch(e => console.error('动态创建的音频元素播放失败:', e));
-					} else {
-						console.error('找不到任何容器元素来添加音频，尝试添加到body');
-						// 最后的尝试：添加到body
-						const newAudio = document.createElement('audio');
-						newAudio.id = 'emergency-audio';
-						newAudio.autoplay = true;
-						newAudio.controls = true;
-						newAudio.style.width = '300px';
-						newAudio.style.position = 'fixed';
-						newAudio.style.top = '10px';
-						newAudio.style.left = '10px';
-						newAudio.style.zIndex = '9999';
-						newAudio.srcObject = stream;
-						
-						document.body.appendChild(newAudio);
-						
-						newAudio.play()
-							.then(() => console.log('添加到body的音频元素开始播放'))
-							.catch(e => console.error('添加到body的音频元素播放失败:', e));
-					}
-				}
-			}
-			
-			// 如果是视频通话，也处理视频元素
 			if (callType.value === 'video') {
+				// For video calls, use the video element (which handles both audio and video)
 				const remoteVideo = document.getElementById('remoteVideo');
 				if (remoteVideo) {
 					console.log('设置远程视频流');
 					remoteVideo.srcObject = stream;
-					remoteVideo.muted = false;
 					remoteVideo.play().catch(e => console.error('视频播放失败:', e));
 				}
+			} else {
+				// For voice calls, use only the audio element
+				const audioElement = document.getElementById('remoteAudio') || remoteAudioRef.value;
+				if (audioElement) {
+					console.log('设置远程音频流');
+					audioElement.srcObject = stream;
+					audioElement.play()
+						.then(() => console.log('音频开始播放'))
+						.catch(e => console.error('音频播放失败:', e));
+				}
 			}
-		}, 500); // 延迟500ms确保DOM已渲染
+		}, 300);
 	};
 	// 修改接听通话逻辑
 	const acceptCall = async () => {
 		try {
-			// 1. 确保结束任何现有通话
+			// 1. Clean up existing resources
 			if (localStream.value) {
 				localStream.value.getTracks().forEach(track => track.stop());
 				localStream.value = null;
@@ -1786,7 +1720,7 @@
 				peerConnection.value = null;
 			}
 			
-			// 2. 获取本地媒体流
+			// 2. Get local media stream
 			const constraints = {
 				audio: true,
 				video: callType.value === 'video'
@@ -1796,26 +1730,12 @@
 			localStream.value = await navigator.mediaDevices.getUserMedia(constraints);
 			console.log('接听通话: 已获取本地媒体流');
 			
-			// 3. 创建RTCPeerConnection
+			// 3. Create RTCPeerConnection
 			peerConnection.value = new RTCPeerConnection({
-				iceServers: [
-					{ urls: 'stun:stun.l.google.com:19302' }
-				]
+				iceServers: iceServers
 			});
 			
-			// 4. 设置远程描述（必须在添加本地轨道之前）
-			console.log('接听通话: 设置远程描述');
-			await peerConnection.value.setRemoteDescription(new RTCSessionDescription(incomingCall.sdp));
-			
-			// 5. 添加本地轨道
-			localStream.value.getTracks().forEach(track => {
-				console.log(`接听通话: 添加${track.kind}轨道`);
-				peerConnection.value.addTrack(track, localStream.value);
-			});
-			
-			// 6. 设置事件处理器
-			
-			// 处理ICE候选
+			// 4. Set up event handlers BEFORE setting remote description
 			peerConnection.value.onicecandidate = (event) => {
 				if (event.candidate) {
 					console.log('接听通话: 发送ICE候选');
@@ -1828,26 +1748,23 @@
 				}
 			};
 			
-			// 监听ICE连接状态
-			peerConnection.value.oniceconnectionstatechange = () => {
-				console.log('接听通话: ICE连接状态:', peerConnection.value.iceConnectionState);
-			};
-			
-			// 监听连接状态
-			peerConnection.value.onconnectionstatechange = () => {
-				console.log('接听通话: 连接状态:', peerConnection.value.connectionState);
-				if (peerConnection.value.connectionState === 'connected') {
-					callStatus.value = 'connected';
-				}
-			};
-			
-			// 处理远程流
+			// Critical: Set up ontrack handler before setting remote description
 			peerConnection.value.ontrack = (event) => {
 				console.log(`接听通话: 收到远程${event.track.kind}轨道`);
 				handleRemoteStream(event.streams[0]);
 			};
 			
-			// 7. 创建并发送应答
+			// 5. Add local tracks to the connection
+			localStream.value.getTracks().forEach(track => {
+				console.log(`接听通话: 添加${track.kind}轨道`);
+				peerConnection.value.addTrack(track, localStream.value);
+			});
+			
+			// 6. Set remote description
+			console.log('接听通话: 设置远程描述');
+			await peerConnection.value.setRemoteDescription(new RTCSessionDescription(incomingCall.sdp));
+			
+			// 7. Create and send answer
 			console.log('接听通话: 创建应答');
 			const answer = await peerConnection.value.createAnswer();
 			await peerConnection.value.setLocalDescription(answer);
@@ -1860,7 +1777,7 @@
 				sdp: peerConnection.value.localDescription
 			});
 			
-			// 8. 更新UI状态
+			// 8. Update UI
 			callStatus.value = 'connected';
 			startCallTimer();
 			
@@ -1888,42 +1805,75 @@
 		// 防止重复调用
 		if (!callStatus.value) return
 		
+		// 先发送结束信号，确保对方收到
+		// 只在通话状态时发送结束信号
+		if (callStatus.value === 'connected' || callStatus.value === 'calling') {
+			// 确定发送给谁
+			const targetUserId = incomingCall.fromUserId || chatUser.id;
+			
+			console.log('发送通话结束信号给:', targetUserId);
+			sendMessageToWebSocket({
+				type: 'call_end',
+				fromUserId: currentUser.id,
+				toUserId: targetUserId
+			});
+		}
+		
+		// 停止并清理所有媒体流
 		if (localStream.value) {
-			localStream.value.getTracks().forEach(track => track.stop())
-			localStream.value = null
+			localStream.value.getTracks().forEach(track => {
+				track.stop();
+				console.log(`停止本地${track.kind}轨道`);
+			});
+			localStream.value = null;
 		}
 
 		if (remoteStream.value) {
 			// 清理远程流引用
 			remoteStream.value = null;
 		}
-  
-		if (peerConnection.value) {
-			peerConnection.value.close()
-			peerConnection.value = null;
-		}
-		if (callTimer.value) {
-			clearInterval(callTimer.value)
-			callTimer.value = null;
-		}
 		
+		// 清理视频元素
+		const remoteVideo = document.getElementById('remoteVideo');
+		if (remoteVideo) {
+			remoteVideo.srcObject = null;
+			console.log('清理远程视频元素');
+		}
+
 		// 清理音频元素
 		if (remoteAudioRef.value) {
 			remoteAudioRef.value.srcObject = null;
+			console.log('清理远程音频元素');
 		}
-		// 只在通话状态时发送结束信号
-		if (callStatus.value === 'connected' || callStatus.value === 'calling') {
-			sendMessageToWebSocket({
-				type: 'call_end',
-				fromUserId: currentUser.id,
-				toUserId: chatUser.id
-			})
+		
+		// 关闭并清理RTCPeerConnection
+		if (peerConnection.value) {
+			// 移除所有事件监听器
+			peerConnection.value.onicecandidate = null;
+			peerConnection.value.ontrack = null;
+			peerConnection.value.oniceconnectionstatechange = null;
+			peerConnection.value.onsignalingstatechange = null;
+			peerConnection.value.onconnectionstatechange = null;
+			
+			// 关闭连接
+			peerConnection.value.close();
+			peerConnection.value = null;
+			console.log('关闭并清理RTCPeerConnection');
+		}
+		
+		// 清理计时器
+		if (callTimer.value) {
+			clearInterval(callTimer.value);
+			callTimer.value = null;
 		}
 		
 		// 最后再清空状态
-		callStatus.value = null
-		callModalVisible.value = false
-		callDuration.value = '00:00'
+		callStatus.value = null;
+		callModalVisible.value = false;
+		callDuration.value = '00:00';
+		incomingCall.fromUserId = '';
+		
+		console.log('通话已完全终止');
 	}
 
 	const startCallTimer = () => {
