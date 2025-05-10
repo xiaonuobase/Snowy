@@ -82,6 +82,14 @@ public interface DevFileService extends IService<DevFile> {
     void delete(List<DevFileIdParam> devFileIdParamList);
 
     /**
+     * 物理删除文件
+     *
+     * @author xuyuxiang
+     * @date 2022/8/4 10:36
+     **/
+    void deleteAbsolute(DevFileIdParam devFileIdParam);
+
+    /**
      * 获取文件详情
      *
      * @author xuyuxiang

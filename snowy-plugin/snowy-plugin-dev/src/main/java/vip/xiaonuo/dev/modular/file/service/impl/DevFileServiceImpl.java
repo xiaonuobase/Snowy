@@ -28,7 +28,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -60,6 +62,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2022/2/23 18:43
  **/
+@Slf4j
 @Service
 public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> implements DevFileService {
 
@@ -122,8 +125,38 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(List<DevFileIdParam> devFileIdParamList) {
         this.removeByIds(CollStreamUtil.toList(devFileIdParamList, DevFileIdParam::getId));
+    }
+
+    @Override
+    public void deleteAbsolute(DevFileIdParam devFileIdParam) {
+        DevFile devFile = this.queryEntity(devFileIdParam.getId());
+        try {
+            // 存储引擎
+            String engine = devFile.getEngine();
+            // 存储桶名称
+            String bucketName = devFile.getBucket();
+            // 文件key
+            String fileKey = devFile.getFileKey();
+            // 根据存储引擎删除文件
+            if (DevFileEngineTypeEnum.LOCAL.getValue().equals(engine)) {
+                DevFileLocalUtil.deleteFile(bucketName, fileKey);
+            } else if (DevFileEngineTypeEnum.ALIYUN.getValue().equals(engine)) {
+                DevFileAliyunUtil.deleteFile(bucketName, fileKey);
+            } else if (DevFileEngineTypeEnum.TENCENT.getValue().equals(engine)) {
+                DevFileTencentUtil.deleteFile(bucketName, fileKey);
+            } else if (DevFileEngineTypeEnum.MINIO.getValue().equals(engine)) {
+                DevFileMinIoUtil.deleteFile(bucketName, fileKey);
+            } else {
+                log.error("未知存储引擎：{}", engine);
+            }
+        } catch (Exception e) {
+            log.error("文件删除失败：{}，路径：{}", devFile.getName(), devFile.getStoragePath(), e);
+            throw new CommonException("文件删除失败"); // 触发事务回滚
+        }
+        this.baseMapper.deleteAbsoluteById(devFile.getId());
     }
 
     /**
