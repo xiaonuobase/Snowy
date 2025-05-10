@@ -29,7 +29,12 @@ import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.injector.AbstractMethod;
+import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
+import com.baomidou.mybatisplus.core.injector.ISqlInjector;
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,6 +43,8 @@ import com.google.gson.GsonBuilder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
 import org.aspectj.lang.JoinPoint;
@@ -660,6 +667,45 @@ public class GlobalConfigure implements WebMvcConfigurer {
                 return "-1";
             }
         }
+    }
+
+    /**
+     *  物理删除
+     *  @author xuyuxiang
+     *  @date 2025/4/06 1:20
+     */
+    public static class DeleteAbsoluteById extends AbstractMethod {
+        /**
+         * @param methodName 方法名
+         * @since 3.5.0
+         */
+        protected DeleteAbsoluteById(String methodName) {
+            super(methodName);
+        }
+
+        @Override
+        public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
+            String method = "deleteAbsoluteById";
+            SqlMethod sqlMethod = SqlMethod.DELETE_BY_ID;
+            String sql = String.format(sqlMethod.getSql(), tableInfo.getTableName(), tableInfo.getKeyColumn(), tableInfo.getKeyProperty());
+            SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, Object.class);
+            return this.addDeleteMappedStatement(mapperClass, method, sqlSource);
+        }
+    }
+
+
+    public static class MpSqlInjector extends DefaultSqlInjector {
+        @Override
+        public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
+            List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
+            methodList.add(new DeleteAbsoluteById("deleteAbsoluteById"));
+            return methodList;
+        }
+    }
+
+    @Bean
+    public ISqlInjector sqlInjector() {
+        return new MpSqlInjector();
     }
 
     /**
