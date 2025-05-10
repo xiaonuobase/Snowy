@@ -10,16 +10,26 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.dev.modular.file.mapper;
+package vip.xiaonuo.common.mapper;
 
-import vip.xiaonuo.common.mapper.CommonDeleteAbsoluteMapper;
-import vip.xiaonuo.dev.modular.file.entity.DevFile;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.io.Serializable;
 
 /**
- * 文件Mapper接口
+ * 通用物理删除Mapper，实现此Mapper并调用此方法可实现物理删除数据
  *
  * @author xuyuxiang
- * @date 2022/2/23 18:40
+ * @date 2023/3/3 10:14
  **/
-public interface DevFileMapper extends CommonDeleteAbsoluteMapper<DevFile> {
+public interface CommonDeleteAbsoluteMapper<T> extends BaseMapper<T> {
+
+    /**
+     * 物理删除
+     *
+     * @param  id 主键
+     * @return int
+     */
+    @SuppressWarnings("ALL")
+    int deleteAbsoluteById(Serializable id);
 }

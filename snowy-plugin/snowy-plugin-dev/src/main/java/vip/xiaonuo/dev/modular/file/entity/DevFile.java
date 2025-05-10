@@ -41,6 +41,10 @@ public class DevFile extends CommonEntity {
     @Schema(description = "存储桶")
     private String bucket;
 
+    /** 文件Key */
+    @Schema(description = "文件Key")
+    private String fileKey;
+
     /** 文件名称 */
     @Schema(description = "文件名称")
     private String name;

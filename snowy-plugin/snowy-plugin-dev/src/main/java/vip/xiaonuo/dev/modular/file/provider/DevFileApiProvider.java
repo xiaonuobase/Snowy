@@ -17,8 +17,10 @@ import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevFileApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
+import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
 import java.util.Optional;
@@ -32,8 +34,19 @@ import java.util.Optional;
 @Service
 public class DevFileApiProvider implements DevFileApi {
 
+    /** 默认文件引擎 */
+    private static final String SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY = "SNOWY_SYS_DEFAULT_FILE_ENGINE";
+
     @Resource
     private DevFileService devFileService;
+
+    @Resource
+    private DevConfigApi devConfigApi;
+
+    @Override
+    public String uploadDynamicReturnId(MultipartFile file) {
+        return devFileService.uploadReturnId(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file);
+    }
 
     @Override
     public String storageFileWithReturnUrlLocal(MultipartFile file) {
@@ -80,5 +93,12 @@ public class DevFileApiProvider implements DevFileApi {
         return Optional.ofNullable(devFileService.getById(id))
                 .map(JSONUtil::parseObj)
                 .orElse(new JSONObject());
+    }
+
+    @Override
+    public void deleteAbsoluteById(String id) {
+        DevFileIdParam devFileIdParam = new DevFileIdParam();
+        devFileIdParam.setId(id);
+        devFileService.deleteAbsolute(devFileIdParam);
     }
 }
