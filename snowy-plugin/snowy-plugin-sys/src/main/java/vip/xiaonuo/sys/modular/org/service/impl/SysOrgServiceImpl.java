@@ -331,6 +331,25 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
     }
 
+    @Override
+    public List<String> getParentIdListByOrgId(String orgId) {
+        List<SysOrg> sysOrgList = this.getAllOrgList();
+        List<String> resultList = CollectionUtil.newArrayList();
+        if(ObjectUtil.isNotEmpty(sysOrgList)) {
+            execRecursionFindParentByList(orgId, sysOrgList, resultList);
+        }
+        return resultList;
+    }
+
+    private List<String> execRecursionFindParentByList(String id, List<SysOrg> list,List<String> resultList) {
+        SysOrg parentById = list.stream().filter(sysOrg -> sysOrg.getId().equals(id)).findFirst().orElse(null);
+        if(ObjectUtil.isNotEmpty(parentById)) {
+            resultList.add(parentById.getParentId());
+            execRecursionFindParentByList(parentById.getParentId(), list, resultList);
+        }
+        return resultList;
+    }
+
     /* ====以下为各种递归方法==== */
 
     @Override
