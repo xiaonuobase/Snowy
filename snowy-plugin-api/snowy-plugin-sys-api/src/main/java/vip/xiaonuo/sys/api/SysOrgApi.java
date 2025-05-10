@@ -57,4 +57,20 @@ public interface SysOrgApi {
      * @date 2022/7/22 14:45
      **/
     Page<JSONObject> orgListSelector(String parentId);
+
+    /**
+     * 获取某组织的所有父级id集合
+     *
+     * @author yubaoshan
+     * @date 2025/5/10 12:13
+     */
+    List<String> getParentIdListByOrgId(String orgId);
+
+    /**
+     * 根据组织id获取组织列表
+     *
+     * @author wangshuo
+     * @date 2025/01/10 14:45
+     **/
+    List<JSONObject> getOrgListByIdListWithoutException(List<String> orgIdList);
 }

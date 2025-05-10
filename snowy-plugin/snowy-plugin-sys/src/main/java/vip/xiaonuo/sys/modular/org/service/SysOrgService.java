@@ -172,4 +172,12 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/4/24 20:08
      */
     Page<SysUser> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam);
+
+    /**
+     * 获取某组织的所有父级id集合
+     *
+     * @author yubaoshan
+     * @date 2025/5/10 12:13
+     */
+    List<String> getParentIdListByOrgId(String orgId);
 }
