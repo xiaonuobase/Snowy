@@ -1,0 +1,380 @@
+.record-img {
+	width: 40px;
+	height: 40px;
+	float: left;
+}
+.large {
+	font-size: large;
+	margin-left: 8px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.text-align-center {
+	text-align: center;
+}
+.chat-container {
+	display: flex;
+	height: 100%;
+}
+.user-list {
+	padding-right: 20px;
+	width: 26%;
+	border-right: 1px solid #f0f0f0;
+	overflow-y: auto;
+	min-width: 200px;
+}
+.message {
+	margin-right: 10px;
+	margin-left: 10px;
+}
+.chat-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+.call-container {
+	text-align: center;
+	padding: 20px;
+}
+.call-header {
+	margin-bottom: 20px;
+}
+.call-status {
+	color: #666;
+	margin: 10px 0;
+}
+.call-duration {
+	font-size: 24px;
+	margin: 10px 0;
+}
+.call-content {
+	position: relative;
+	width: 100%;
+	height: 400px;
+	background: #000;
+	margin-bottom: 20px;
+}
+.local-video {
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
+	width: 160px;
+	height: 120px;
+	border: 2px solid #fff;
+	z-index: 1;
+}
+.remote-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.call-controls {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+.current-user {
+	flex: 0 0 auto;
+	padding: 16px;
+	border-bottom: 1px solid #f0f0f0;
+	background-color: #fafafa;
+}
+.messages {
+	flex: 1;
+	padding: 16px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	overflow-x: auto;
+}
+.message-item {
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 16px;
+}
+.my-message {
+	flex-direction: row-reverse;
+}
+.my-message .message-content {
+	background-color: #e6f7ff;
+	margin-left: auto;
+}
+.other-message {
+	text-align: left;
+	display: flex;
+}
+.other-message .message-content {
+	background-color: #f6f6f6;
+	margin-right: auto;
+}
+.message-content {
+	padding: 8px;
+	border-radius: 6px;
+	border-bottom: 1px solid rgb(0 0 0 / 10%);
+	flex: 1;
+}
+.message-sender {
+	font-weight: bold;
+	margin-bottom: 4px;
+}
+.message-text {
+	margin: 0;
+	word-wrap: break-word;
+    word-break:break-all;
+}
+.message-box-column {
+	display: flex;
+	flex-direction: column;
+	width: auto;
+	max-width: 90%;
+}
+.message-input {
+	padding: 5px 10px 10px;
+	display: flex;
+	flex-wrap: wrap;
+	border-top: 1px solid #f0f0f0;
+}
+.listItem {
+	padding: 10px 0px;
+}
+.current-user {
+	flex: 0 0 auto;
+	padding: 16px;
+	display: flex;
+	/* 垂直居中 */
+	border-bottom: 1px solid #f0f0f0;
+	background-color: #fafafa;
+	justify-content: space-between;
+	align-items: center;
+}
+.current-user-info {
+	display: flex;
+}
+.user-name {
+	margin-left: 10px;
+	/* 为用户名称添加左边距 */
+}
+.space-around {
+	display: flex;
+	justify-content: space-around;
+}
+.text-r {
+	text-align: right !important;
+}
+.text-l {
+	text-align: left !important;
+}
+.text-long {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+}
+.webkit-scrollbar {
+	overflow-y: auto;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	height: calc(100vh - 323px);
+}
+.webkit-scrollbar-2 {
+	overflow-y: auto;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+	height: calc(100vh - 343px);
+}
+.flex {
+	display: flex;
+}
+.create-group {
+	margin-left: 10px;
+}
+.online {
+	position: relative;
+	bottom: 15px;
+	left: 32px;
+}
+.online-chat-content {
+	position: relative;
+	bottom: -20px;
+}
+.xn-im-total-container {
+	margin: -28px -24px -20px;
+	display: flex;
+	height: 100%;
+}
+.container-side {
+	width: 65px;
+	background-color: #001529;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-grow: 0;
+}
+.container-side-avatar {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	cursor: pointer;
+}
+.container-catalog {
+	flex-grow: 0;
+	min-width: 23%;
+	max-width: 25%;
+	border-right: 1px solid rgb(0 0 0 / 10%);
+	height: 100%;
+}
+.container-content {
+	flex-grow: 1;
+}
+/*  目录区 -start */
+.catalog-search {
+	width: 100%;
+	height: 60px;
+	padding-left: 10px;
+	padding-right: 10px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	flex-direction: column-reverse;
+	border-bottom: 1px solid rgb(0 0 0 / 10%);
+}
+.catalog-content {
+	height: calc(100vh - 263px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+.catalog-content-else {
+	overflow-x: hidden;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+.catalog-content-li {
+	background-color: #ffffff;
+	border-bottom: 1px solid rgb(0 0 0 / 0.06);
+	display: flex;
+	cursor: pointer;
+	height: 60px;
+}
+.li-checked {
+	background-color: #e7e7e7;
+}
+.catalog-content-li-avatar {
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	flex-grow: 0;
+}
+.catalog-content-li-user {
+	margin-left: 5px;
+	margin-top: 10px;
+	margin-right: 10px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	width: 200px;
+}
+.catalog-content-li-user-time {
+	float: right;
+	color: #b3b3b3;
+}
+.catalog-content-li-user-last-msg {
+	font-size: 12px;
+	color: #b3b3b3;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 120px;
+}
+/* 目录区 -end */
+.content-header {
+	width: auto;
+	height: 60px;
+	border-bottom: 1px solid rgb(0 0 0 / 10%);
+}
+.header-title {
+	min-width: 260px;
+	margin-left: 20px;
+	height: 60px;
+	display: flex;
+	align-items: center;
+}
+.header-title-font {
+	font-weight: 600;
+}
+.header-close {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+}
+.header-close-icon {
+	padding: 5px 10px 5px 5px;
+}
+.content-center-miss {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 100px;
+	flex: 1;
+	height: 100%;
+	width: 80%;
+}
+.content-center-miss-image {
+	width: 180px;
+}
+.content-center {
+	height: 90%;
+}
+.tab-person {
+	overflow-y: auto;
+}
+.send-msg-bto {
+	justify-content: flex-end;
+	display: flex;
+	flex: 1;
+}
+
+/* 通话相关样式 */
+.calling-status,
+.incoming-status,
+.connected-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+  
+.group-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.video-item {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.user-name {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Ant Design深度选择器 */
+:deep(.ant-tabs-nav) {
+	margin: 0 !important;
+}

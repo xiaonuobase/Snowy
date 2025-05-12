@@ -191,9 +191,21 @@
 											{{ usersMap[message.fromUserId]?.name || currentUser.name }}
 											<span style="font-weight: 100"> &nbsp;{{ message.createTime }}</span>
 										</div>
-										<div class="message-content" v-if="message.type == '1'">
-											<div class="box2" @contextmenu="onContextMenu($event, message)">
+										<div class="message-content" v-if="message.type == '1' || message.type == '5' || message.type == '6'">
+											<div v-if="message.type == '1'" class="box2" @contextmenu="onContextMenu($event, message)">
 												<p class="message-text">{{ message.content }}</p>
+											</div>
+											<div v-if="message.type == '5' || message.type == '6'">
+												<div v-if="JSON.parse(message.content).status == '通话结束'">
+													<PhoneOutlined v-if="isTrue(message.type,'5')"/>
+													<VideoCameraOutlined v-if="isTrue(message.type,'6')"/>
+													通话时长：{{ durationFormat(JSON.parse(message.content).duration)}}
+												</div>
+												<div v-if="JSON.parse(message.content).status != '通话结束'">
+													<PhoneOutlined v-if="isTrue(message.type,'5')"/>
+													<VideoCameraOutlined v-if="isTrue(message.type,'6')"/>
+													{{ JSON.parse(message.content).status }}
+												</div>
 											</div>
 										</div>
 										<div
@@ -210,7 +222,7 @@
 												<a-image
 													:width="80"
 													:src="key.downloadPath"
-													fallback="data:image/png;base64,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"
+													:fallback="downIcon"
 													v-if="imageSuffix.indexOf(key.suffix) > -1"
 												/>
 												<img
@@ -344,66 +356,29 @@
 		<template #footer />
 	</a-modal>
 	<xn-im-web-socket @setWebSocket="setWebSocket" :uri="config.API_URL"/>
-	<a-modal
-    v-model:open="callModalVisible"
-    :title="callType === 'voice' ? '语音通话' : '视频通话'"
-    :closable="false"
-    :mask-closable="false"
-    :footer="null"
-    width="400px"
-  >
-    <div class="call-container">
-			<div id="call-container-main">
-				<div v-if="callStatus === 'calling'" class="calling-status">
-					<a-avatar :size="64" :src="chatUser.avatar" />
-					<p>正在呼叫 {{ chatUser.name }}...</p>
-					<a-space>
-						<a-button type="primary" danger @click="endCall">取消</a-button>
-					</a-space>
-				</div>
-				
-				<div v-if="callStatus === 'incoming'" class="incoming-status">
-					<a-avatar :size="64" :src="usersMap[incomingCall.fromUserId]?.avatar" />
-					<p>来自 {{ usersMap[incomingCall.fromUserId]?.name }} 的{{ callType === 'voice' ? '语音' : '视频' }}通话</p>
-					<a-space>
-						<a-button type="primary" @click="acceptCall">接听</a-button>
-						<a-button type="primary" danger @click="rejectCall">拒绝</a-button>
-					</a-space>
-				</div>
-
-				<div v-if="callStatus === 'connected'" class="connected-status">
-					<div class="group-video-grid" v-if="chatUser.chatType === '2'">
-						<div v-for="[userId, stream] in groupCallStreams" :key="userId" class="video-item">
-							<video :srcObject="stream" autoplay class="remote-video"></video>
-							<div class="user-name">{{ usersMap[userId]?.name }}</div>
-						</div>
-						<div class="video-item">
-							<video :srcObject="localStream" autoplay muted class="local-video"></video>
-							<div class="user-name">我</div>
-						</div>
-					</div>
-					<div v-if="callType === 'video'" class="call-content">
-						<video id="remoteVideo" class="remote-video" autoplay playsinline></video>
-						<video v-if="localStream" :srcObject="localStream" class="local-video" autoplay playsinline muted></video>
-					</div>
-					<!-- <video v-if="callType === 'video'" id="localVideo" ref="localVideo" autoplay playsinline muted class="local-video"></video> -->
-					<!-- <video v-if="callType === 'video'" id="remoteVideo" ref="remoteVideo" autoplay playsinline class="remote-video"></video> -->
-					<audio id="remoteAudio" ref="remoteAudioRef" autoplay playsinline controls style="width:100%; display:block; margin:10px 0;" v-if="callType === 'voice'"></audio>
-					<p>通话时长: {{ callDuration }}</p>
-					<a-button type="primary" danger @click="endCall">结束通话</a-button>
-				</div>
-			</div>
-		</div>
-  </a-modal>
+	<XnImCallModal 
+		:callState="callService.state"
+		:currentUser="currentUser"
+		:targetUser="computeTargetUser()"
+		:usersMap="usersMap"
+		:isGroupCall="chatUser.chatType === '2'"
+		:sendMessageFunc="(msg) => sendMessageToWebSocket(msg)"
+		@accept-call="onAcceptCall"
+		@reject-call="onRejectCall"
+		@end-call="onEndCall"
+		ref="callModalRef"
+	/>
 </template>
 
 <script setup lang="ts">
 	import { ref, reactive, onMounted, watch, nextTick, defineProps, h } from 'vue'
 	import { notification } from 'ant-design-vue'
-	import { MessageOutlined, TeamOutlined, SettingOutlined,AudioOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
+	import { MessageOutlined, TeamOutlined, SettingOutlined,AudioOutlined,PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
 	import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 	import ContextMenu from '@imengyu/vue3-context-menu'
 	import dayjs from 'dayjs'
+	import downIcon from './image/baseImages'
+	import {durationFormat, isTrue} from './utils/common'
 	import tool from '@/utils/tool'
 	import imSysUserApi from './api/imSysUserApi'
 	import imMessageApi from './api/imMessageApi'
@@ -414,7 +389,7 @@
 	import XnImWebSocket from './components/XnImWebSocket/index.vue'
 	import XnImFilePreview from './components/XnImFilePreview/index.vue'
 	import XnImEditGroup from './components/XnImEditGroup/index.vue'
-
+  import { XnImCallModal, useCallService } from './components/XnImCall'
 	const props = defineProps({
 		baseRequest: {
 			type: Function,
@@ -441,7 +416,7 @@
 			default: '' //primary or ''
 		}
 	})
-
+	const callService = useCallService((msg) => websocket.value?.sendWebSocketMessage(msg));
 	const websocket = ref(null)
 	const leftSelectedKeys = ref(['1'])
 	const leftMenuItems = ref([
@@ -537,31 +512,6 @@
 	// 搜索
 	const searchValue = ref()
 	const searchData = ref<any[]>([])
-	// 通话所使用的变量信息
-	const callModalVisible = ref(false)
-	const callType = ref<'voice' | 'video'>('voice')
-	const callStatus = ref<'calling' | 'incoming' | 'connected' | null>(null)
-	const localStream = ref<MediaStream | null>(null)
-	const remoteStream = ref<MediaStream | null>(null)
-	const peerConnection = ref<RTCPeerConnection | null>(null)
-	const callDuration = ref('00:00')
-	const callTimer = ref<NodeJS.Timer | null>(null)
-	const incomingCall = reactive({
-		fromUserId: '',
-		type: ''
-	})
-	const iceServers = [
-		{ urls: 'stun:stun.l.google.com:19302' },
-		{ urls: 'stun:stun1.l.google.com:19302' },
-		{ urls: 'stun:stun2.l.google.com:19302' },
-		{ urls: 'stun:stun3.l.google.com:19302' },
-		{ urls: 'stun:stun4.l.google.com:19302' }
-	]
-	// 在现有变量声明后添加
-	const groupCallPeers = ref<Map<string, RTCPeerConnection>>(new Map())
-	const groupCallStreams = ref<Map<string, MediaStream>>(new Map())
-	const groupCallParticipants = ref<string[]>([])
-	const remoteAudioRef = ref<HTMLAudioElement | null>(null)
 
 	onMounted(() => {
 		initMessageList()
@@ -597,6 +547,21 @@
 			}
 		}
 	)
+
+	// 接听通话
+	const onAcceptCall = () => {
+		callService.acceptCall(currentUser.id);
+	};
+
+	// 拒绝通话
+	const onRejectCall = () => {
+		callService.rejectCall(currentUser.id);
+	};
+
+	// 结束通话
+	const onEndCall = () => {
+		callService.endCall();
+	};
 
 	const lastMessageDate = (date) => {
 		// 格式化时间 如果是今天的只显示时间 如果是昨天的显示昨天 如果是昨天之前的显示日期
@@ -904,8 +869,8 @@
 		let json = JSON.parse(data)
 		// 处理通话相关消息
 		if (json.type && json.type.startsWith('call_')) {
-			handleCallMessage(json)
-			return
+			callService.handleWebSocketMessage(json, currentUser.id);
+			return;
 		}
 		//messageType 3 在线用户列表  4用户上线通知 5用户离线通知
 		if (json.messageType && (json.messageType == '3' || json.messageType == '4' || json.messageType == '5')) {
@@ -951,9 +916,9 @@
 
 		// 更新消息列表
 		updateMessageListMap(json)
-
+		
 		// 如果是当前聊天对象，设置消息为已读并滚动到底部
-		if (json.toUserId === currentUser.id && json.fromUserId === chatUser.id) {
+		if (json.toUserId === currentUser.id && json.fromUserId === chatUser.id&&open.value) {
 			setMessagesAsRead(json)
 		} else if (json.toUserId == currentUser.id) {
 			// 不是当前聊天对象，增加未读计数
@@ -972,119 +937,6 @@
 		}
 	}
 
-	// 添加通话消息处理函数
-	const handleCallMessage = async (message) => {
-	  console.log('收到通话消息:', message);
-		switch (message.type) {
-			case 'call_offer':
-				// 收到呼叫请求
-				// callType.value = message.callType
-				incomingCall.fromUserId = message.fromUserId
-				incomingCall.sdp = message.sdp
-				callModalVisible.value = true
-				callStatus.value = 'incoming'
-				break
-				
-			case 'call_answer':
-				console.log('收到通话应答');
-				if (peerConnection.value && peerConnection.value.signalingState !== 'closed') {
-					try {
-						await peerConnection.value.setRemoteDescription(new RTCSessionDescription(message.sdp));
-						console.log('成功设置远程描述');
-						callStatus.value = 'connected';
-					} catch (error) {
-						console.error('设置远程描述失败:', error);
-						notification.error({
-							message: '连接失败',
-							description: '无法建立媒体连接'
-						});
-						endCall();
-					}
-				}
-				break;
-			case 'call_ice_candidate':
-				// 处理 ICE 候选
-				console.log('收到ICE候选');
-				if (peerConnection.value && peerConnection.value.signalingState !== 'closed') {
-					try {
-						peerConnection.value.addIceCandidate(new RTCIceCandidate(message.candidate))
-							.then(() => console.log('成功添加ICE候选'))
-							.catch(e => console.error('添加ICE候选失败:', e));
-					} catch (e) {
-						console.error('处理ICE候选异常:', e);
-					}
-				}
-				break
-				
-			case 'call_reject':
-				// 对方拒绝通话
-				notification.warning({
-					message: `${usersMap[message.fromUserId]?.name || '对方'}拒绝了通话`
-				})
-				endCall()
-				break
-				
-			case 'call_end':
-				// 对方结束通话
-				if (callStatus.value === 'connected') {
-					notification.info({
-						message: `${usersMap[message.fromUserId]?.name || '对方'}已结束通话`
-					});
-				} else if (callStatus.value === 'calling') {
-					notification.info({
-						message: `${usersMap[message.fromUserId]?.name || '对方'}拒绝了通话`
-					});
-				}
-				endCall();
-				break;
-
-			case 'call_group_invite':
-				// 收到群组通话邀请
-				// callType.value = message.callType
-				incomingCall.fromUserId = message.fromUserId
-				incomingCall.groupId = message.groupId
-				callModalVisible.value = true
-				callStatus.value = 'incoming'
-				break
-			case 'call_group_accept':
-				// 群组成员接受通话
-				if (message.fromUserId !== currentUser.id) {
-					const peerConnection = groupCallPeers.value.get(message.fromUserId)
-					if (peerConnection) {
-						const offer = await peerConnection.createOffer()
-						await peerConnection.setLocalDescription(offer)
-						sendMessageToWebSocket({
-							type: 'call_group_offer',
-							fromUserId: currentUser.id,
-							toUserId: message.fromUserId,
-							groupId: message.groupId,
-							sdp: offer
-						})
-					}
-				}
-				break
-				
-			case 'call_group_offer':
-				// 处理群组通话提议
-				if (message.toUserId === currentUser.id) {
-					const peerConnection = new RTCPeerConnection({ iceServers })
-					groupCallPeers.value.set(message.fromUserId, peerConnection)
-					
-					await peerConnection.setRemoteDescription(new RTCSessionDescription(message.sdp))
-					const answer = await peerConnection.createAnswer()
-					await peerConnection.setLocalDescription(answer)
-					
-					sendMessageToWebSocket({
-						type: 'call_group_answer',
-						fromUserId: currentUser.id,
-						toUserId: message.fromUserId,
-						groupId: message.groupId,
-						sdp: answer
-					})
-				}
-				break
-		}
-	}
 	// 修改或创建用户消息列表
 	const updateOrCreateUserVoList = (json) => {
 		var userId =
@@ -1455,839 +1307,60 @@
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
 
-
-	// 在开始通话前检查网络
 	const startVoiceCall = () => {
-		checkNetworkConnection();
-		callType.value = 'voice';
-		initializeCall();
+		callService.startVoiceCall(currentUser.id, chatUser.id);
 	};
 
+	// 发起视频通话
 	const startVideoCall = () => {
-		checkNetworkConnection();
-		callType.value = 'video';
-		initializeCall();
-	};
-
-
-	const checkNetworkConnection = () => {
-		const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-		if (connection) {
-			console.log('网络连接类型:', connection.type);
-			console.log('网络有效类型:', connection.effectiveType);
-			console.log('下行带宽:', connection.downlink, 'Mbps');
-			console.log('往返时间:', connection.rtt, 'ms');
-			
-			if (connection.downlink < 0.5 || connection.rtt > 500) {
-				notification.warning({
-					message: '网络连接不佳',
-					description: '当前网络连接质量较差，可能影响通话质量'
-					});
-				}
-			} else {
-				console.log('无法获取网络连接信息');
-			}
-			
-			// 检查WebSocket连接
-			if (websocket) {
-				console.log('WebSocket连接正常');
-			} else {
-				console.error('WebSocket连接异常');
-				notification.error({
-					message: 'WebSocket连接异常',
-					description: '信令服务器连接异常，可能影响通话建立'
-				});
-			}
-	};
-
-	const initializeCall = async () => {
-		try {
-			// 清理现有连接
-			if (localStream.value) {
-				localStream.value.getTracks().forEach(track => track.stop());
-				localStream.value = null;
-			}
-			if (peerConnection.value) {
-				peerConnection.value.close();
-				peerConnection.value = null;
-			}
-			
-			// 使用简单的媒体约束
-			const constraints = {
-				audio: true,
-				video: callType.value === 'video'
-			};
-			
-			console.log('请求媒体设备权限...');
-			try {
-				localStream.value = await navigator.mediaDevices.getUserMedia(constraints);
-				console.log('成功获取本地媒体流:', 
-					localStream.value.getTracks().map(t => `${t.kind}:${t.label}`));
-			} catch (mediaError) {
-				console.error('获取媒体设备失败:', mediaError);
-				notification.error({
-					message: '无法访问麦克风或摄像头',
-					description: mediaError.message
-				});
-				return;
-			}
-			
-			// 创建RTCPeerConnection，添加详细配置
-			peerConnection.value = new RTCPeerConnection({
-				iceServers: iceServers,
-				iceTransportPolicy: 'all',
-				bundlePolicy: 'max-bundle',
-				rtcpMuxPolicy: 'require',
-				sdpSemantics: 'unified-plan'
-			});
-			
-			// 添加连接状态监听
-			peerConnection.value.onconnectionstatechange = () => {
-				console.log('连接状态变化:', peerConnection.value.connectionState);
-				if (peerConnection.value.connectionState === 'connected') {
-					console.log('连接成功建立!');
-					callStatus.value = 'connected';
-				} else if (peerConnection.value.connectionState === 'failed') {
-					console.error('连接失败');
-					notification.error({
-						message: '连接失败',
-						description: '无法建立媒体连接'
-					});
-					endCall();
-				} else if (peerConnection.value.connectionState === 'disconnected') {
-					console.warn('连接断开');
-					notification.warning({
-						message: '连接已断开',
-						description: '尝试重新连接中...'
-					});
-				}
-			};
-			
-			// 添加ICE连接状态监听
-			peerConnection.value.oniceconnectionstatechange = () => {
-				console.log('ICE连接状态:', peerConnection.value.iceConnectionState);
-				if (peerConnection.value.iceConnectionState === 'failed') {
-					console.error('ICE连接失败');
-					// 尝试ICE重启
-					if (peerConnection.value.restartIce) {
-						console.log('尝试ICE重启');
-						peerConnection.value.restartIce();
-					}
-				}
-			};
-			
-			// 添加ICE收集状态监听
-			peerConnection.value.onicegatheringstatechange = () => {
-				console.log('ICE收集状态:', peerConnection.value.iceGatheringState);
-			};
-			
-			// 添加信令状态监听
-			peerConnection.value.onsignalingstatechange = () => {
-				console.log('信令状态:', peerConnection.value.signalingState);
-			};
-			
-			// 监听ICE候选
-			peerConnection.value.onicecandidate = (event) => {
-				if (event.candidate) {
-					console.log('发送ICE候选:', event.candidate.candidate.substr(0, 50) + '...');
-					// 发送ICE候选到对方
-					sendMessageToWebSocket({
-						type: 'call_ice_candidate',
-						fromUserId: currentUser.id,
-						toUserId: chatUser.id,
-						candidate: event.candidate
-					});
-				} else {
-					console.log('ICE候选收集完成');
-				}
-			};
-			
-			// 处理远程流
-			peerConnection.value.ontrack = (event) => {
-				console.log(`收到远程${event.track.kind}轨道`);
-				handleRemoteStream(event.streams[0]);
-			};
-			
-			// 添加本地轨道
-			localStream.value.getTracks().forEach(track => {
-				console.log(`添加本地${track.kind}轨道`);
-				peerConnection.value.addTrack(track, localStream.value);
-			});
-			
-			// 创建offer
-			try {
-				console.log('创建offer...');
-				const offer = await peerConnection.value.createOffer({
-					offerToReceiveAudio: true,
-					offerToReceiveVideo: callType.value === 'video'
-				});
-				
-				console.log('设置本地描述...');
-				await peerConnection.value.setLocalDescription(offer);
-				
-				// 等待ICE收集完成或超时
-				await new Promise((resolve) => {
-					const checkState = () => {
-						if (peerConnection.value.iceGatheringState === 'complete') {
-							console.log('ICE收集完成，发送offer');
-							resolve();
-						} else {
-							setTimeout(checkState, 500);
-						}
-					};
-					
-					// 设置超时
-					const timeout = setTimeout(() => {
-						console.log('ICE收集超时，发送当前offer');
-						resolve();
-					}, 5000);
-					
-					// 检查状态
-					checkState();
-				});
-				
-				// 发送offer
-				console.log('发送offer到对方');
-				sendMessageToWebSocket({
-					type: 'call_offer',
-					fromUserId: currentUser.id,
-					toUserId: chatUser.id,
-					callType: callType.value,
-					sdp: peerConnection.value.localDescription
-				});
-				
-				// 更新UI
-				callModalVisible.value = true;
-				callStatus.value = 'calling';
-				startCallTimer();
-				
-			} catch (offerError) {
-				console.error('创建或设置offer失败:', offerError);
-				notification.error({
-					message: '通话初始化失败',
-					description: offerError.message
-				});
-				endCall();
-			}
-			
-		} catch (error) {
-			console.error('初始化通话失败:', error);
-			notification.error({
-				message: '通话初始化失败',
-				description: error.message
-			});
-			endCall();
-		}
-	};
-
-	// 3. 修改处理远程流的代码，使用ref引用
-	const handleRemoteStream = (stream) => {
-		console.log('处理远程流，轨道:', stream.getTracks().map(t => `${t.kind}:${t.enabled}`));
-		remoteStream.value = stream;
-		
-		setTimeout(() => {
-			if (callType.value === 'video') {
-				// For video calls, use the video element (which handles both audio and video)
-				const remoteVideo = document.getElementById('remoteVideo');
-				if (remoteVideo) {
-					console.log('设置远程视频流');
-					remoteVideo.srcObject = stream;
-					remoteVideo.play().catch(e => console.error('视频播放失败:', e));
-				}
-			} else {
-				// For voice calls, use only the audio element
-				const audioElement = document.getElementById('remoteAudio') || remoteAudioRef.value;
-				if (audioElement) {
-					console.log('设置远程音频流');
-					audioElement.srcObject = stream;
-					audioElement.play()
-						.then(() => console.log('音频开始播放'))
-						.catch(e => console.error('音频播放失败:', e));
-				}
-			}
-		}, 300);
-	};
-	// 修改接听通话逻辑
-	const acceptCall = async () => {
-		try {
-			// 1. Clean up existing resources
-			if (localStream.value) {
-				localStream.value.getTracks().forEach(track => track.stop());
-				localStream.value = null;
-			}
-			if (peerConnection.value) {
-				peerConnection.value.close();
-				peerConnection.value = null;
-			}
-			
-			// 2. Get local media stream
-			const constraints = {
-				audio: true,
-				video: callType.value === 'video'
-			};
-			
-			console.log('接听通话: 请求媒体权限...');
-			localStream.value = await navigator.mediaDevices.getUserMedia(constraints);
-			console.log('接听通话: 已获取本地媒体流');
-			
-			// 3. Create RTCPeerConnection
-			peerConnection.value = new RTCPeerConnection({
-				iceServers: iceServers
-			});
-			
-			// 4. Set up event handlers BEFORE setting remote description
-			peerConnection.value.onicecandidate = (event) => {
-				if (event.candidate) {
-					console.log('接听通话: 发送ICE候选');
-					sendMessageToWebSocket({
-						type: 'call_ice_candidate',
-						fromUserId: currentUser.id,
-						toUserId: incomingCall.fromUserId,
-						candidate: event.candidate
-					});
-				}
-			};
-			
-			// Critical: Set up ontrack handler before setting remote description
-			peerConnection.value.ontrack = (event) => {
-				console.log(`接听通话: 收到远程${event.track.kind}轨道`);
-				handleRemoteStream(event.streams[0]);
-			};
-			
-			// 5. Add local tracks to the connection
-			localStream.value.getTracks().forEach(track => {
-				console.log(`接听通话: 添加${track.kind}轨道`);
-				peerConnection.value.addTrack(track, localStream.value);
-			});
-			
-			// 6. Set remote description
-			console.log('接听通话: 设置远程描述');
-			await peerConnection.value.setRemoteDescription(new RTCSessionDescription(incomingCall.sdp));
-			
-			// 7. Create and send answer
-			console.log('接听通话: 创建应答');
-			const answer = await peerConnection.value.createAnswer();
-			await peerConnection.value.setLocalDescription(answer);
-			
-			console.log('接听通话: 发送应答');
-			sendMessageToWebSocket({
-				type: 'call_answer',
-				fromUserId: currentUser.id,
-				toUserId: incomingCall.fromUserId,
-				sdp: peerConnection.value.localDescription
-			});
-			
-			// 8. Update UI
-			callStatus.value = 'connected';
-			startCallTimer();
-			
-		} catch (error) {
-			console.error('接听通话失败:', error);
-			notification.error({
-				message: '接听失败',
-				description: error.message
-			});
-			endCall();
-		}
-	};
-
-
-	const rejectCall = () => {
-		sendMessageToWebSocket({
-			type: 'call_reject',
-			fromUserId: currentUser.id,
-			toUserId: incomingCall.fromUserId
-		})
-		endCall()
-	}
-
-	const endCall = () => {
-		// 防止重复调用
-		if (!callStatus.value) return
-		
-		// 先发送结束信号，确保对方收到
-		// 只在通话状态时发送结束信号
-		if (callStatus.value === 'connected' || callStatus.value === 'calling') {
-			// 确定发送给谁
-			const targetUserId = incomingCall.fromUserId || chatUser.id;
-			
-			console.log('发送通话结束信号给:', targetUserId);
-			sendMessageToWebSocket({
-				type: 'call_end',
-				fromUserId: currentUser.id,
-				toUserId: targetUserId
-			});
-		}
-		
-		// 停止并清理所有媒体流
-		if (localStream.value) {
-			localStream.value.getTracks().forEach(track => {
-				track.stop();
-				console.log(`停止本地${track.kind}轨道`);
-			});
-			localStream.value = null;
-		}
-
-		if (remoteStream.value) {
-			// 清理远程流引用
-			remoteStream.value = null;
-		}
-		
-		// 清理视频元素
-		const remoteVideo = document.getElementById('remoteVideo');
-		if (remoteVideo) {
-			remoteVideo.srcObject = null;
-			console.log('清理远程视频元素');
-		}
-
-		// 清理音频元素
-		if (remoteAudioRef.value) {
-			remoteAudioRef.value.srcObject = null;
-			console.log('清理远程音频元素');
-		}
-		
-		// 关闭并清理RTCPeerConnection
-		if (peerConnection.value) {
-			// 移除所有事件监听器
-			peerConnection.value.onicecandidate = null;
-			peerConnection.value.ontrack = null;
-			peerConnection.value.oniceconnectionstatechange = null;
-			peerConnection.value.onsignalingstatechange = null;
-			peerConnection.value.onconnectionstatechange = null;
-			
-			// 关闭连接
-			peerConnection.value.close();
-			peerConnection.value = null;
-			console.log('关闭并清理RTCPeerConnection');
-		}
-		
-		// 清理计时器
-		if (callTimer.value) {
-			clearInterval(callTimer.value);
-			callTimer.value = null;
-		}
-		
-		// 最后再清空状态
-		callStatus.value = null;
-		callModalVisible.value = false;
-		callDuration.value = '00:00';
-		incomingCall.fromUserId = '';
-		
-		console.log('通话已完全终止');
-	}
-
-	const startCallTimer = () => {
-		let seconds = 0
-		callTimer.value = setInterval(() => {
-			seconds++
-			const minutes = Math.floor(seconds / 60)
-			const remainingSeconds = seconds % 60
-			callDuration.value = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
-		}, 1000)
-	}
+		callService.startVideoCall(currentUser.id, chatUser.id);
+	}; 
 
 	getUserList();
 	initGroupList()
+
+	const computeTargetUser = () => {
+		console.log('computeTargetUser被调用, callStatus:', callService.state.callStatus);
+		console.log('incomingCall:', callService.state.incomingCall);
+		
+		if (callService.state.callStatus === 'incoming') {
+			// 被呼叫方，处理传入的呼叫
+			const fromUserId = callService.state.incomingCall.fromUserId;
+			if (fromUserId) {
+				// 首先尝试从usersMap中查找用户信息
+				if (usersMap[fromUserId]) {
+					console.log('找到呼叫方信息:', usersMap[fromUserId]);
+					return usersMap[fromUserId];
+				} else {
+					// 如果找不到用户信息，返回一个基本对象
+					console.log('未找到呼叫方信息,创建临时对象:', fromUserId);
+					return {
+						id: fromUserId,
+						name: '未知用户',
+						avatar: ''
+					};
+				}
+			}
+		} else if (callService.state.callStatus === 'calling' || callService.state.callStatus === 'connected') {
+			// 呼叫方，使用当前选择的聊天用户
+			if (chatUser.id) {
+				console.log('使用当前聊天用户:', chatUser);
+				return chatUser;
+			}
+		}
+		
+		// 默认返回一个空对象，避免出错
+		if (callService.state.incomingCall && callService.state.incomingCall.fromUserId) {
+			return { 
+				id: callService.state.incomingCall.fromUserId, 
+				name: '未知用户', 
+				avatar: '' 
+			};
+		}
+		
+		return { id: '', name: '未知', avatar: '' };
+	}
 </script>
 <style lang="less" scoped>
-	.record-img {
-		width: 40px;
-		height: 40px;
-		float: left;
-	}
-	.large {
-		font-size: large;
-		margin-left: 8px;
-		padding-top: 2px;
-		padding-bottom: 2px;
-	}
-	.text-align-center {
-		text-align: center;
-	}
-	.chat-container {
-		display: flex;
-		height: 100%;
-	}
-	.user-list {
-		padding-right: 20px;
-		width: 26%;
-		border-right: 1px solid #f0f0f0;
-		overflow-y: auto;
-		min-width: 200px;
-	}
-	.message {
-		margin-right: 10px;
-		margin-left: 10px;
-	}
-	.chat-content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-	.call-container {
-		text-align: center;
-		padding: 20px;
-	}
-	.call-header {
-		margin-bottom: 20px;
-	}
-	.call-status {
-		color: #666;
-		margin: 10px 0;
-	}
-	.call-duration {
-		font-size: 24px;
-		margin: 10px 0;
-	}
-	.call-content {
-		position: relative;
-		width: 100%;
-		height: 400px;
-		background: #000;
-		margin-bottom: 20px;
-	}
-	.local-video {
-		position: absolute;
-		right: 20px;
-		bottom: 20px;
-		width: 160px;
-		height: 120px;
-		border: 2px solid #fff;
-		z-index: 1;
-	}
-	.remote-video {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-	.call-controls {
-		display: flex;
-		justify-content: center;
-		gap: 10px;
-	}
-	.current-user {
-		flex: 0 0 auto;
-		padding: 16px;
-		border-bottom: 1px solid #f0f0f0;
-		background-color: #fafafa;
-	}
-	.messages {
-		flex: 1;
-		padding: 16px;
-		overflow-y: auto;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		overflow-x: auto;
-	}
-	.message-item {
-		display: flex;
-		align-items: flex-start;
-		margin-bottom: 16px;
-	}
-	.my-message {
-		flex-direction: row-reverse;
-	}
-	.my-message .message-content {
-		background-color: #e6f7ff;
-		margin-left: auto;
-	}
-	.other-message {
-		text-align: left;
-		display: flex;
-	}
-	.other-message .message-content {
-		background-color: #f6f6f6;
-		margin-right: auto;
-	}
-	.message-content {
-		padding: 8px;
-		border-radius: 6px;
-		border-bottom: 1px solid rgb(0 0 0 / 10%);
-		flex: 1;
-	}
-	.message-sender {
-		font-weight: bold;
-		margin-bottom: 4px;
-	}
-	.message-text {
-		margin: 0;
-		word-wrap: break-word;
-    word-break:break-all;
-	}
-	.message-box-column {
-		display: flex;
-		flex-direction: column;
-		width: auto;
-		max-width: 90%;
-	}
-	.message-input {
-		padding: 5px 10px 10px;
-		display: flex;
-		flex-wrap: wrap;
-		border-top: 1px solid #f0f0f0;
-	}
-	.listItem {
-		padding: 10px 0px;
-	}
-	.current-user {
-		flex: 0 0 auto;
-		padding: 16px;
-		display: flex;
-		/* 垂直居中 */
-		border-bottom: 1px solid #f0f0f0;
-		background-color: #fafafa;
-		justify-content: space-between;
-		align-items: center;
-	}
-	.current-user-info {
-		display: flex;
-	}
-	.user-name {
-		margin-left: 10px;
-		/* 为用户名称添加左边距 */
-	}
-	.space-around {
-		display: flex;
-		justify-content: space-around;
-	}
-	.text-r {
-		text-align: right !important;
-	}
-	.text-l {
-		text-align: left !important;
-	}
-	.text-long {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		width: 100%;
-	}
-	.webkit-scrollbar {
-		overflow-y: auto;
-		overflow-x: hidden;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-		height: calc(100vh - 323px);
-	}
-	.webkit-scrollbar-2 {
-		overflow-y: auto;
-		overflow-x: hidden;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-		height: calc(100vh - 343px);
-	}
-	.flex {
-		display: flex;
-	}
-	.create-group {
-		margin-left: 10px;
-	}
-	.online {
-		position: relative;
-		bottom: 15px;
-		left: 32px;
-	}
-	.online-chat-content {
-		position: relative;
-		bottom: -20px;
-	}
-	.xn-im-total-container {
-		margin: -28px -24px -20px;
-
-		display: flex;
-		display: flex;
-		height: 100%;
-	}
-	.container-side {
-		width: 65px;
-		background-color: #001529;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		flex-grow: 0;
-	}
-	.container-side-avatar {
-		margin-top: 20px;
-		margin-bottom: 20px;
-		cursor: pointer;
-	}
-	.container-catalog {
-		flex-grow: 0;
-		min-width: 23%;
-		max-width: 25%;
-		border-right: 1px solid rgb(0 0 0 / 10%);
-		height: 100%;
-	}
-	.container-content {
-		flex-grow: 1;
-	}
-	/*  目录区 -start */
-	.catalog-search {
-		width: 100%;
-		height: 60px;
-		padding-left: 10px;
-		padding-right: 10px;
-		text-align: center;
-		display: flex;
-		justify-content: center;
-		flex-direction: column-reverse;
-		border-bottom: 1px solid rgb(0 0 0 / 10%);
-	}
-	.catalog-content {
-		height: calc(100vh - 263px);
-		overflow-y: auto;
-		overflow-x: hidden;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-	.catalog-content-else {
-		overflow-x: hidden;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-	.catalog-content-li {
-		background-color: #ffffff;
-		border-bottom: 1px solid rgb(0 0 0 / 0.06);
-		display: flex;
-		cursor: pointer;
-		height: 60px;
-	}
-	.li-checked {
-		background-color: #e7e7e7;
-	}
-	.catalog-content-li-avatar {
-		margin-left: 10px;
-		margin-top: 10px;
-		margin-bottom: 10px;
-		flex-grow: 0;
-	}
-	.catalog-content-li-user {
-		margin-left: 5px;
-		margin-top: 10px;
-		margin-right: 10px;
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-		width: 200px;
-	}
-	.catalog-content-li-user-time {
-		float: right;
-		color: #b3b3b3;
-	}
-	.catalog-content-li-user-last-msg {
-		font-size: 12px;
-		color: #b3b3b3;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		width: 120px;
-	}
-	/* 目录区 -end */
-	.content-header {
-		width: auto;
-		height: 60px;
-		border-bottom: 1px solid rgb(0 0 0 / 10%);
-	}
-	.header-title {
-		min-width: 260px;
-		margin-left: 20px;
-		height: 60px;
-		display: flex;
-		align-items: center;
-	}
-	.header-title-font {
-		font-weight: 600;
-	}
-	.header-close {
-		width: 100%;
-		display: flex;
-		justify-content: flex-end;
-	}
-	.header-close-icon {
-		padding: 5px 10px 5px 5px;
-	}
-	.content-center-miss {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding-top: 100px;
-		flex: 1;
-		height: 100%;
-		width: 80%;
-	}
-	.content-center-miss-image {
-		width: 180px;
-	}
-	.content-center {
-		height: 90%;
-	}
-	.tab-person {
-		overflow-y: auto;
-	}
-	.send-msg-bto {
-		justify-content: flex-end;
-		display: flex;
-		flex: 1;
-	}
-	:deep(.ant-tabs-nav) {
-		margin: 0 !important;
-	}
-	// 添加通话相关样式
-.call-container {
-  text-align: center;
-  padding: 20px;
-  
-  .calling-status,
-  .incoming-status,
-  .connected-status {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .local-video {
-    width: 160px;
-    height: 120px;
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
-  
-  .remote-video {
-    width: 100%;
-    height: 400px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
-}
-.group-video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-}
-
-.video-item {
-  position: relative;
-  aspect-ratio: 16/9;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.user-name {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
+@import './styles/im.less';
 </style>

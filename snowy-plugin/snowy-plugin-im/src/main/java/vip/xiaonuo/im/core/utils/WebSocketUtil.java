@@ -122,7 +122,11 @@ public class WebSocketUtil {
             
             // 处理普通IM消息
             ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
-            imMessage.setIsRead("2");
+            if (imMessage.getType().equals("5")||imMessage.getType().equals("6")) {
+                imMessage.setIsRead("1");
+            }else{
+                imMessage.setIsRead("2");
+            }
             imMessage.setStatus("1");
             imMessage.setIsRecall("2");
             imMessage.setId(String.valueOf(IdWorker.getId()));
@@ -139,7 +143,7 @@ public class WebSocketUtil {
                 toUserIds = List.of(toUserId);
             }
             // 如果是type不为1 的消息类型 需要进行翻译
-            if (!imMessage.getType().equals("1")) {
+            if (!imMessage.getType().equals("1")&&!imMessage.getType().equals("5")&&!imMessage.getType().equals("6")) {
                 JSONObject fileInfoById = devFileApi.getFileInfoById(imMessage.getContent());
                 boolean aNull = JSONUtil.isNull(fileInfoById);
                 if (aNull) {

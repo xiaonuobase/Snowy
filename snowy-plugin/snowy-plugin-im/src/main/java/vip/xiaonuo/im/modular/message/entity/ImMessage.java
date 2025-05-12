@@ -59,8 +59,8 @@ public class ImMessage extends CommonEntity {
     @Schema(description = "聊天类型：1-单聊，2-群聊")
     private String chatType;
 
-    /** 消息类型：1-文本，2-图片，3-视频，4-文件 */
-    @Schema(description = "消息类型：1-文本，2-图片，3-视频，4-文件")
+    /** 消息类型：1-文本，2-图片，3-视频，4-文件 5-语音通话 6-视频通话*/
+    @Schema(description = "消息类型：1-文本，2-图片，3-视频，4-文件， 5-语音通话，6-视频通话")
     private String type;
 
     /** 消息状态：1-已发送，2-已接收 */
