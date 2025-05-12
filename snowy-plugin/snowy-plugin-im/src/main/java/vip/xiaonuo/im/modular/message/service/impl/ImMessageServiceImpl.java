@@ -32,6 +32,7 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.im.core.manager.WebSocketSessionManager;
+import vip.xiaonuo.im.core.utils.CommonUtil;
 import vip.xiaonuo.im.core.utils.WebSocketUtil;
 import vip.xiaonuo.im.modular.member.entity.ImGroupMember;
 import vip.xiaonuo.im.modular.member.service.ImGroupMemberService;
@@ -113,13 +114,21 @@ public class ImMessageServiceImpl extends ServiceImpl<ImMessageMapper, ImMessage
         // 如果有撤回消息进行替换
         imMessageUserVoPage.getRecords().forEach(imMessageUserVo -> {
             if (!imMessageUserVo.getType().equals("1")) {
-                String content = imMessageUserVo.getContent();
-                JSONObject jsonObject = JSONUtil.parseObj(content);
-                boolean suffix = imageSuffix.contains(jsonObject.getStr("suffix"));
-                if (suffix) {
-                    imMessageUserVo.setContent("【图片】");
-                } else {
-                    imMessageUserVo.setContent("【文件】" + jsonObject.getStr("name"));
+                if(imMessageUserVo.getType().equals("5") || imMessageUserVo.getType().equals("6")) {
+                    String content = "";
+                    JSONObject entries = JSONUtil.parseObj(imMessageUserVo.getContent());
+                    content = (imMessageUserVo.getType().equals("5")? "【语音】" : "【视频】") +
+                            (imMessageUserVo.getContent().equals("通话结束") ? "通话时长：" + CommonUtil.durationFormat(entries.getLong("duration")) : entries.getStr("status"));
+                    imMessageUserVo.setContent(content);
+                }else{
+                    String content = imMessageUserVo.getContent();
+                    JSONObject jsonObject = JSONUtil.parseObj(content);
+                    boolean suffix = imageSuffix.contains(jsonObject.getStr("suffix"));
+                    if (suffix) {
+                        imMessageUserVo.setContent("【图片】");
+                    } else {
+                        imMessageUserVo.setContent("【文件】" + jsonObject.getStr("name"));
+                    }
                 }
             }
             if (imMessageUserVo.getToUserId().equals(StpUtil.getLoginId().toString()) && imMessageUserVo.getIsRecall().equals("1")) {

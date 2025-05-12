@@ -9,6 +9,9 @@
   >
     <div class="call-container">
       <div id="call-container-main">
+				<div v-if="!callState.callStatus">
+					<p>正在初始化通道...</p>
+				</div>
         <!-- 呼叫状态 -->
         <div v-if="callState.callStatus === 'calling'" class="calling-status">
           <a-avatar :size="64" :src="targetUser.avatar" />
@@ -237,11 +240,16 @@ const onRejectCall = () => {
 const onEndCall = () => {
   const duration = Math.floor((Date.now() - callStartTime.value) / 1000);
   let status = '通话结束';
+  
+  // 根据不同的通话状态设置不同的状态信息
   if (props.callState.callStatus === 'calling') {
-    status = '对方已拒绝';
+    // 如果是呼叫方主动取消
+    status = '已取消';
   } else if (props.callState.callStatus === 'incoming') {
+    // 如果是被呼叫方拒绝
     status = '对方已拒绝';
   }
+  
 	console.log("结束通话",status,duration)
   sendCallMessage(status, duration);
   emit('end-call', true);

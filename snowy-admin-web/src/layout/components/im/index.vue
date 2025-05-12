@@ -513,6 +513,8 @@
 	const searchValue = ref()
 	const searchData = ref<any[]>([])
 
+	// 保存通话前的聊天对象信息
+	const priorChatUser = reactive<User>({ id: '', name: '', avatar: '' });
 	onMounted(() => {
 		initMessageList()
 		initGroupMemberMuted()
@@ -561,6 +563,10 @@
 	// 结束通话
 	const onEndCall = () => {
 		callService.endCall();
+		// 如果当前聊天对象为空或已更改，则恢复到通话前的聊天对象
+		if (!chatUser.id && priorChatUser.id) {
+			initChatUser(priorChatUser);
+		}
 	};
 
 	const lastMessageDate = (date) => {
@@ -966,8 +972,12 @@
 		// 是什么类型的信息
 		let content = null
 		if (json.type != '1') {
-			let itemJson = JSON.parse(json.content)
-			content = imageSuffix.indexOf(itemJson.suffix) > -1 ? '【图片】' : '【文件】' + itemJson.name
+			if(json.type == '5' || json.type == '6'){
+				content = (json.type == '5'? '【语音】':'【视频】') + (JSON.parse(json.content).status == '通话结束'?`通话时长：${ durationFormat(JSON.parse(json.content).duration)}`:JSON.parse(json.content).status)
+			}else{
+				let itemJson = JSON.parse(json.content)
+				content = imageSuffix.indexOf(itemJson.suffix) > -1 ? '【图片】' : '【文件】' + itemJson.name
+			}
 		} else {
 			content = json.content
 		}
@@ -1307,14 +1317,33 @@
 		imMessageApi.setMessageRead(props.baseRequest,ids)
 	}
 
+	// 开始视频通话
+	const startVideoCall = () => {
+		notification.success({
+			message:'正在初始化视频通道'
+		})
+		// 保存当前聊天对象信息，以便通话结束后恢复
+		savePriorChatUser();
+		callService.startVideoCall(currentUser.id, chatUser.id);
+	};
+
+	// 开始语音通话
 	const startVoiceCall = () => {
+		notification.success({
+			message:'正在初始化语音通道'
+		})
+		// 保存当前聊天对象信息，以便通话结束后恢复
+		savePriorChatUser();
 		callService.startVoiceCall(currentUser.id, chatUser.id);
 	};
 
-	// 发起视频通话
-	const startVideoCall = () => {
-		callService.startVideoCall(currentUser.id, chatUser.id);
-	}; 
+	// 保存通话前的聊天对象信息
+	const savePriorChatUser = () => {
+		priorChatUser.id = chatUser.id;
+		priorChatUser.name = chatUser.name;
+		priorChatUser.avatar = chatUser.avatar;
+		priorChatUser.chatType = chatUser.chatType;
+	};
 
 	getUserList();
 	initGroupList()

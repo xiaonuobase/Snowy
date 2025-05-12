@@ -915,6 +915,7 @@ export function useCallService(
    * @param targetUserId 对方用户ID
    */
   const startVideoCall = (userId: string, targetUserId: string) => {
+		state.callModalVisible = true;
     if (!targetUserId || targetUserId === userId) {
       console.error('无法与自己通话');
       notification.error({
@@ -939,6 +940,7 @@ export function useCallService(
    * @param targetUserId 对方用户ID
    */
   const startVoiceCall = (userId: string, targetUserId: string) => {
+		state.callModalVisible = true;
     if (!targetUserId || targetUserId === userId) {
       console.error('无法与自己通话');
       notification.error({
