@@ -12,10 +12,10 @@ import config from '@/config'
 import tool from '@/utils/tool'
 import routerUtil from '@/utils/routerUtil'
 
-import Layout from '@/layout/index.vue'
-import Login from '@/views/auth/login/login.vue'
-import Findpwd from '@/views/auth/findPwd/index.vue'
-import Callback from '@/views/auth/login/callback.vue'
+const Layout = () => import('@/layout/index.vue')
+const Login = () => import('@/views/auth/login/login.vue')
+const Findpwd = () => import('@/views/auth/findPwd/index.vue')
+const Callback = () => import('@/views/auth/login/callback.vue')
 
 // 系统路由
 const routes = [

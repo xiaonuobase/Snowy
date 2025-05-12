@@ -145,6 +145,7 @@
 <script setup name="devMonitor">
 	import { onMounted } from 'vue'
 	import monitorApi from '@/api/dev/monitorApi'
+	import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons-vue'
 	const spinning = ref(false)
 	const networkSpinning = ref(false)
 	// CPU信息

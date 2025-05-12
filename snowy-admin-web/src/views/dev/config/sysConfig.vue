@@ -1,8 +1,16 @@
 <template>
 	<a-spin :spinning="loadSpinning">
-		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical" :label-col="labelCol">
+		<a-form
+			ref="formRef"
+			:model="formData"
+			:rules="formRules"
+			layout="vertical"
+			:label-col="{ ...layout.labelCol, offset: 0 }"
+			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
+			style="width: 90%"
+		>
 			<a-row :gutter="16">
-				<a-col :span="3">
+				<a-col :span="4">
 					<a-form-item label="系统LOGO：" name="SNOWY_SYS_LOGO">
 						<a-upload
 							v-model:file-list="formData.SNOWY_SYS_LOGO"
@@ -21,60 +29,134 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-row :gutter="16">
+			<a-row :gutter="8">
 				<a-col :span="8">
 					<a-form-item label="系统名称：" name="SNOWY_SYS_NAME">
 						<a-input v-model:value="formData.SNOWY_SYS_NAME" placeholder="请输入系统名称" />
 					</a-form-item>
 				</a-col>
+				<a-col :span="14">
+					<a-row :gutter="8">
+						<a-col :span="12">
+							<a-form-item label="后台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B">
+								<a-switch
+									v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B"
+									checked-children="开"
+									un-checked-children="关"
+									placeholder="请选择后台验证码开关"
+								/>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="前台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C">
+								<a-switch
+									v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C"
+									checked-children="开"
+									un-checked-children="关"
+									placeholder="请选择前台验证码开关"
+								/>
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
 				<a-col :span="8">
 					<a-form-item label="系统版本：" name="SNOWY_SYS_VERSION">
 						<a-input v-model:value="formData.SNOWY_SYS_VERSION" placeholder="请输入系统版本" />
 					</a-form-item>
 				</a-col>
+				<a-col :span="14">
+					<a-row :gutter="8">
+						<a-col :span="12">
+							<a-form-item label="全局后台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B">
+								<a-input-number
+									v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B"
+									placeholder="分钟"
+								>
+									<template #addonAfter> 分钟 </template>
+								</a-input-number>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="全局前台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C">
+								<a-input-number
+									v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C"
+									placeholder="分钟"
+								>
+									<template #addonAfter> 分钟 </template>
+								</a-input-number>
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
 				<a-col :span="8">
 					<a-form-item label="版权信息：" name="SNOWY_SYS_COPYRIGHT">
 						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT" placeholder="请输入版权信息" />
 					</a-form-item>
 				</a-col>
+				<a-col :span="14">
+					<a-row :gutter="8">
+						<a-col :span="12">
+							<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
+								<a-radio-group
+									v-model:value="formData.SNOWY_SYS_DEFAULT_FILE_ENGINE"
+									:options="fileEngineOptions"
+									placeholder="请选择系统默认文件引擎"
+								/>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="默认短信引擎：" name="SNOWY_SYS_DEFAULT_SMS_ENGINE">
+								<a-radio-group
+									v-model:value="formData.SNOWY_SYS_DEFAULT_SMS_ENGINE"
+									:options="smsEngineOptions"
+									placeholder="请选择系统默认短信引擎"
+								/>
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-col>
 			</a-row>
-			<a-row :gutter="16">
+			<a-row :gutter="8">
 				<a-col :span="8">
 					<a-form-item label="版权链接URL：" name="SNOWY_SYS_COPYRIGHT_URL">
 						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT_URL" placeholder="请输入版权链接URL" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
-					<a-form-item label="验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN">
-						<a-radio-group
-							v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN"
-							:options="commonSwitchOptions"
-							placeholder="请选择验证码开关"
-						></a-radio-group>
-					</a-form-item>
-				</a-col>
-				<a-col :span="8">
-					<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
-						<a-radio-group
-							v-model:value="formData.SNOWY_SYS_DEFAULT_FILE_ENGINE"
-							:options="fileEngineOptions"
-							placeholder="请选择系统默认文件引擎"
-						></a-radio-group>
-					</a-form-item>
+				<a-col :span="14">
+					<a-row :gutter="8">
+						<a-col :span="12">
+							<a-form-item label="默认邮件引擎：" name="SNOWY_SYS_DEFAULT_EMAIL_ENGINE">
+								<a-radio-group
+									v-model:value="formData.SNOWY_SYS_DEFAULT_EMAIL_ENGINE"
+									:options="emailEngineOptions"
+									placeholder="请选择系统默认邮件引擎"
+								/>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="默认消息推送引擎：" name="SNOWY_SYS_DEFAULT_PUSH_ENGINE">
+								<a-radio-group
+									v-model:value="formData.SNOWY_SYS_DEFAULT_PUSH_ENGINE"
+									:options="pushEngineOptions"
+									placeholder="请选择系统默认消息推送引擎"
+								/>
+							</a-form-item>
+						</a-col>
+					</a-row>
 				</a-col>
 			</a-row>
+
 			<a-row :gutter="16">
 				<a-col :span="8">
 					<a-form-item label="默认快捷方式：" name="SNOWY_SYS_DEFAULT_WORKBENCH_DATA">
 						<menuTreeSelect ref="menuTreeSelectRef" :resultData="true" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
-					<a-form-item label="系统默认密码：" name="SNOWY_SYS_DEFAULT_PASSWORD">
-						<a-input v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD" placeholder="请输入系统默认密码" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="8">
+				<a-col :span="14">
 					<a-form-item label="系统描述：" name="SNOWY_SYS_DEFAULT_DESCRRIPTION">
 						<a-textarea
 							v-model:value="formData.SNOWY_SYS_DEFAULT_DESCRRIPTION"
@@ -84,8 +166,8 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-row :gutter="16">
-				<a-col :span="24">
+			<a-row :gutter="14">
+				<a-col :span="12">
 					<a-form-item>
 						<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
 						<a-button class="xn-ml10" @click="resetForm">重置</a-button>
@@ -134,7 +216,7 @@
 						// eslint-disable-next-line no-empty
 					} catch (e) {}
 				} else {
-					formData.value[item.configKey] = item.configValue
+					formData.value[item.configKey] = transferBooleanInValue(item.configValue)
 				}
 			})
 		} else {
@@ -143,9 +225,21 @@
 	})
 	// 文件引擎
 	const fileEngineOptions = tool.dictList('FILE_ENGINE')
-	// 开关
-	const commonSwitchOptions = tool.dictList('COMMON_SWITCH')
+	// 短信引擎
+	const smsEngineOptions = tool.dictList('SMS_ENGINE')
+	// 邮件引擎
+	const emailEngineOptions = tool.dictList('EMAIL_ENGINE')
+	// 消息推送引擎
+	const pushEngineOptions = tool.dictList('PUSH_ENGINE')
 
+	// 转换值
+	const transferBooleanInValue = (value) => {
+		if (value === 'true' || value === 'false') {
+			return value === 'true'
+		} else {
+			return value
+		}
+	}
 	const customRequest = (data) => {
 		formData.value.SNOWY_SYS_LOGO = ref([])
 		getBase64(data.file)
@@ -177,13 +271,19 @@
 		SNOWY_SYS_COPYRIGHT: [required('请输入版权信息')],
 		SNOWY_SYS_COPYRIGHT_URL: [required('请输入版权链接URL')],
 		SNOWY_SYS_DEFAULT_FILE_ENGINE: [required('请选择系统默认文件引擎')],
-		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN: [required('请选择系统验证码开关')],
+		SNOWY_SYS_DEFAULT_SMS_ENGINE: [required('请选择系统默认短信引擎')],
+		SNOWY_SYS_DEFAULT_EMAIL_ENGINE: [required('请选择系统默认邮件引擎')],
+		SNOWY_SYS_DEFAULT_PUSH_ENGINE: [required('请选择系统默认消息推送引擎')],
+		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C: [required('请选择前台验证码开关')],
+		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B: [required('请选择后台验证码开关')],
+		SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C: [required('请输入过期时间')],
+		SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B: [required('请输入过期时间')],
 		SNOWY_SYS_DEFAULT_PASSWORD: [required('请输入系统重置密码默认密码')]
 	}
 	// 表单固定label实现
 	const labelCol = ref({
 		style: {
-			width: '150px'
+			width: '200px'
 		}
 	})
 	// 验证并提交数据
@@ -222,8 +322,20 @@
 	const resetForm = () => {
 		imageUrl.value = ''
 		formData.value = {
-			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN: 'true',
-			SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL'
+			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C: true,
+			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B: true,
+			SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL',
+			SNOWY_SYS_DEFAULT_SMS_ENGINE: 'XIAONUO',
+			SNOWY_SYS_DEFAULT_EMAIL_ENGINE: 'LOCAL',
+			SNOWY_SYS_DEFAULT_PUSH_ENGINE: 'DINGTALK'
+		}
+	}
+	const layout = {
+		labelCol: {
+			span: 16
+		},
+		wrapperCol: {
+			span: 22
 		}
 	}
 </script>

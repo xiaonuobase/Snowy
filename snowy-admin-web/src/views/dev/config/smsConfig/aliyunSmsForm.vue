@@ -14,9 +14,6 @@
 			<a-form-item label="阿里云密钥SECRET：" name="SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET">
 				<a-input v-model:value="formData.SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET" placeholder="请输入阿里云密钥SECRET" />
 			</a-form-item>
-			<a-form-item label="阿里云短信端点：" name="SNOWY_SMS_ALIYUN_END_POINT">
-				<a-input v-model:value="formData.SNOWY_SMS_ALIYUN_END_POINT" placeholder="请输入阿里云短信端点" />
-			</a-form-item>
 			<a-form-item label="阿里云短信签名：" name="SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME">
 				<a-input v-model:value="formData.SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME" placeholder="请输入阿里云短信签名" />
 			</a-form-item>
@@ -58,7 +55,6 @@
 	const formRules = {
 		SNOWY_SMS_ALIYUN_ACCESS_KEY_ID: [required('请输入阿里云密钥ID')],
 		SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET: [required('请输入阿里云密钥SECRET')],
-		SNOWY_SMS_ALIYUN_END_POINT: [required('请输入阿里云短信端点')],
 		SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME: [required('请输入阿里云短信签名')]
 	}
 	// 验证并提交数据

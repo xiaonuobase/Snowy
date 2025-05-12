@@ -25,14 +25,26 @@
 				/>
 			</a-form-item>
 			<a-form-item label="是否需要用户名密码验证：" name="SNOWY_EMAIL_LOCAL_AUTH">
-				<a-switch v-model:checked="formData.SNOWY_EMAIL_LOCAL_AUTH" placeholder="请选择是否需要用户名密码验证" />
+				<a-switch
+					v-model:checked="formData.SNOWY_EMAIL_LOCAL_AUTH"
+					checked-children="是"
+					un-checked-children="否"
+					placeholder="请选择是否需要用户名密码验证"
+				/>
 			</a-form-item>
 			<a-form-item label="是否使用SSL安全连接：" name="SNOWY_EMAIL_LOCAL_SSL_ENABLE">
-				<a-switch v-model:checked="formData.SNOWY_EMAIL_LOCAL_SSL_ENABLE" placeholder="请选择是否使用SSL安全连接" />
+				<a-switch
+					v-model:checked="formData.SNOWY_EMAIL_LOCAL_SSL_ENABLE"
+					checked-children="是"
+					un-checked-children="否"
+					placeholder="请选择是否使用SSL安全连接"
+				/>
 			</a-form-item>
 			<a-form-item label="是否使用STARTTLS安全连接：" name="SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE">
 				<a-switch
 					v-model:checked="formData.SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE"
+					checked-children="是"
+					un-checked-children="否"
 					placeholder="请选择是否使用STARTTLS安全连接"
 				/>
 			</a-form-item>
@@ -80,7 +92,10 @@
 	// 默认要校验的
 	const formRules = {
 		SNOWY_EMAIL_LOCAL_FROM: [required('请输入发送邮箱号')],
-		SNOWY_EMAIL_LOCAL_PASSWORD: [required('请输入邮箱密钥')]
+		SNOWY_EMAIL_LOCAL_PASSWORD: [required('请输入邮箱密钥')],
+		SNOWY_EMAIL_LOCAL_AUTH: [required('请选择是否需要用户名密码验证')],
+		SNOWY_EMAIL_LOCAL_SSL_ENABLE: [required('请选择是否使用SSL安全连接')],
+		SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE: [required('请选择是否使用STARTTLS安全连接')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {

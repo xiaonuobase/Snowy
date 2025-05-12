@@ -28,16 +28,19 @@
 
 <style lang="less" scoped>
 	:deep(tree-org-node__content) {
-		background: var(--body-background);
+		background: var(--snowy-background-color);
 	}
 	:deep(.tree-org) {
 		padding-top: 10px;
 		padding-left: 10px;
 	}
 	.xn-tree-line {
-		background: var(--card-actions-background);
+		background: var(--snowy-background-color);
 	}
 	.xn-ht500 {
 		height: 500px;
+	}
+	:deep(.zm-tree-handle .zm-tree-handle-item) {
+		background: var(--snowy-background-color);
 	}
 </style>

@@ -163,13 +163,13 @@
 			title: '路由地址',
 			dataIndex: 'path',
 			ellipsis: true,
-			width: 150
+			width: 220
 		},
 		{
 			title: '组件',
 			dataIndex: 'component',
 			ellipsis: true,
-			width: 150
+			width: 220
 		},
 		{
 			title: '是否可见',

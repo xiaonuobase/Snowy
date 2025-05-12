@@ -123,7 +123,7 @@
 	import userApi from '@/api/sys/userApi'
 	import roleApi from '@/api/sys/roleApi'
 	import ScopeDefineOrg from './scopeDefineOrg.vue'
-	import { userStore } from '@/store/user'
+	import { useUserStore } from '@/store/user'
 	import { cloneDeep } from 'lodash-es'
 
 	const visible = ref(false)
@@ -487,7 +487,7 @@
 				emit('successful')
 				// 刷新权限
 				nextTick(() => {
-					userStore().refreshUserLoginUserInfo()
+					useUserStore().refreshUserLoginUserInfo()
 				})
 			})
 			.finally(() => {

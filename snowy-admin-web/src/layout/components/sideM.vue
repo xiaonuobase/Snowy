@@ -20,6 +20,7 @@
 	import NavMenu from './NavMenu.vue'
 	import { globalStore } from '@/store'
 	import { useRouter } from 'vue-router'
+	import { AppstoreOutlined } from '@ant-design/icons-vue'
 
 	const router = useRouter()
 	const store = globalStore()

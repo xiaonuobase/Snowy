@@ -14,9 +14,6 @@
 			<a-form-item label="腾讯云密钥SECRET：" name="SNOWY_SMS_TENCENT_SECRET_KEY">
 				<a-input v-model:value="formData.SNOWY_SMS_TENCENT_SECRET_KEY" placeholder="请输入腾讯云密钥SECRET" />
 			</a-form-item>
-			<a-form-item label="腾讯云区域ID：" name="SNOWY_SMS_TENCENT_REGION_ID">
-				<a-input v-model:value="formData.SNOWY_SMS_TENCENT_REGION_ID" placeholder="请输入腾讯云区域ID" />
-			</a-form-item>
 			<a-form-item label="腾讯云应用ID：" name="SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID">
 				<a-input v-model:value="formData.SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID" placeholder="请输入腾讯云应用ID" />
 			</a-form-item>
@@ -61,7 +58,6 @@
 	const formRules = {
 		SNOWY_SMS_TENCENT_SECRET_ID: [required('请输入腾讯云密钥ID')],
 		SNOWY_SMS_TENCENT_SECRET_KEY: [required('请输入腾讯云密钥SECRET')],
-		SNOWY_SMS_TENCENT_REGION_ID: [required('请输入腾讯云区域ID')],
 		SNOWY_SMS_TENCENT_DEFAULT_SDK_APP_ID: [required('请输入腾讯云应用ID')],
 		SNOWY_SMS_TENCENT_DEFAULT_SIGN_NAME: [required('请输入腾讯云短信签名')]
 	}

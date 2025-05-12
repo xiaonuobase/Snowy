@@ -20,6 +20,8 @@ import { cloneDeep } from 'lodash-es'
 import { globalStore } from '@/store'
 import { NextLoading } from '@/utils/loading'
 import { useMenuStore } from '@/store/menu'
+import { useUserStore } from '@/store/user'
+import { useDictStore } from '@/store/dict'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
@@ -76,12 +78,31 @@ router.beforeEach(async (to, from, next) => {
 		next({ ...to, replace: true })
 		return false
 	}
-
 	const token = tool.data.get('TOKEN')
-
 	// 页面刷新，加载loading
 	if (from.path === '/' && to.path !== '/login' && !window.nextLoading && token) {
 		NextLoading.start()
+		// 并行刷新请求
+		try {
+			await Promise.all([
+				// 刷新登录信息
+				useUserStore().refreshUserLoginUserInfo(),
+				// 刷新菜单信息
+				useMenuStore().refreshApiMenu(),
+				// 刷新字典
+				useDictStore().refreshDict()
+			])
+		} catch (error) {
+			console.error('页面刷新,数据初始化失败:', error)
+		}
+	} else if (
+		to.matched.length === 1 &&
+		!to.matched.some((record) => record.path.includes('layout')) &&
+		to.path !== '/login' &&
+		token
+	) {
+		// 从404等页面返回时只刷新菜单
+		useMenuStore().refreshApiMenu()
 	}
 	if (to.path === '/login') {
 		// 当用户输入了login路由，将其跳转首页即可

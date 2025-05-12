@@ -12,7 +12,7 @@ import { defineStore } from 'pinia'
 import loginApi from '@/api/auth/loginApi'
 import { useGlobalStore } from '@/store'
 import tool from '@/utils/tool'
-export const userStore = defineStore('userStore', () => {
+export const useUserStore = defineStore('useUserStore', () => {
 	// 初始化用户信息
 	const initUserInfo = async () => {
 		const data = await loginApi.getLoginUser()

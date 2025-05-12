@@ -1,22 +1,23 @@
-import userCenterApi from '@/api/sys/userCenterApi'
 import dictApi from '@/api/dev/dictApi'
+import userCenterApi from '@/api/sys/userCenterApi'
 import router from '@/router'
 import tool from '@/utils/tool'
 import { message } from 'ant-design-vue'
 import routerUtil from '@/utils/routerUtil'
 import { useMenuStore } from '@/store/menu'
-import { userStore } from '@/store/user'
+import { useUserStore } from '@/store/user'
 
 export const afterLogin = async (loginToken) => {
 	const menuStore = useMenuStore()
 	tool.data.set('TOKEN', loginToken)
 	// 初始化用户信息
-	await userStore().initUserInfo()
+	await useUserStore().initUserInfo()
 
 	// 获取用户的菜单
-	const menu = await userCenterApi.userLoginMenu()
-	let indexMenu = routerUtil.getIndexMenu(menu).path
 	await menuStore.fetchMenu()
+	const menu = tool.data.get('MENU')
+	let indexMenu = routerUtil.getIndexMenu(menu).path
+
 	// 重置系统默认应用
 	tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
 	message.success('登录成功')
@@ -45,5 +46,11 @@ export const afterLogin = async (loginToken) => {
 	})
 	await router.replace({
 		path: indexMenu
+	})
+	// 判断用户密码是否过期
+	userCenterApi.userCenterIsUserPasswordExpired().then((expired) => {
+		if (expired) {
+			message.warning('当前登录密码已过期，请及时更改！')
+		}
 	})
 }

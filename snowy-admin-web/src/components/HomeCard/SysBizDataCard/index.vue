@@ -39,6 +39,7 @@
 
 <script setup name="sysBizDataCard">
 	import indexApi from '@/api/sys/indexApi'
+	import { UserOutlined, ClusterOutlined, ApartmentOutlined, DeploymentUnitOutlined } from '@ant-design/icons-vue'
 	const title = ref('业务数据')
 	const apiLoading = ref(false)
 	const dataSource = ref({

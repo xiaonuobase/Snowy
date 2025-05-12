@@ -14,8 +14,8 @@
 			<a-form-item label="腾讯云密钥SECRET：" name="SNOWY_EMAIL_TENCENT_SECRET_KEY">
 				<a-input v-model:value="formData.SNOWY_EMAIL_TENCENT_SECRET_KEY" placeholder="请输入腾讯云密钥SECRET" />
 			</a-form-item>
-			<a-form-item label="腾讯云区域ID：" name="SNOWY_EMAIL_TENCENT_REGION_ID">
-				<a-input v-model:value="formData.SNOWY_EMAIL_TENCENT_REGION_ID" placeholder="请输入腾讯云区域ID" />
+			<a-form-item label="默认发送账号：" name="SNOWY_EMAIL_TENCENT_FROM">
+				<a-input v-model:value="formData.SNOWY_EMAIL_TENCENT_FROM" placeholder="请输入默认发送账号" />
 			</a-form-item>
 			<a-form-item>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
@@ -55,7 +55,7 @@
 	const formRules = {
 		SNOWY_EMAIL_TENCENT_SECRET_ID: [required('请输入腾讯云密钥ID')],
 		SNOWY_EMAIL_TENCENT_SECRET_KEY: [required('请输入腾讯云密钥SECRET')],
-		SNOWY_EMAIL_TENCENT_REGION_ID: [required('请输入腾讯云密钥SECRET')]
+		SNOWY_EMAIL_TENCENT_FROM: [required('请输入默认发送账号')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {

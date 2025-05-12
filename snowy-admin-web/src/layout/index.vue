@@ -78,15 +78,13 @@
 	import { useRoute, useRouter } from 'vue-router'
 	import tool from '@/utils/tool'
 	import { notification, Button } from 'ant-design-vue'
+	import { FullscreenExitOutlined } from '@ant-design/icons-vue'
 	import ClassicalMenu from '@/layout/menu/classicalMenu.vue'
 	import DoubleRowMenu from '@/layout/menu/doubleRowMenu.vue'
 	import TopMenu from '@/layout/menu/topMenu.vue'
 	import { NextLoading } from '@/utils/loading'
 	import { useMenuStore } from '@/store/menu'
-	import { userStore } from '@/store/user'
 	import { getLocalHash, checkHash } from '@/utils/version'
-	import sysConfig from '@/config/index'
-	import dictApi from '@/api/dev/dictApi'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -252,15 +250,6 @@
 		updateVersion()
 		nextTick(() => {
 			getNav()
-			// 刷新登录信息，不影响其他
-			userStore().refreshUserLoginUserInfo()
-			// 刷新菜单信息，不影响其他
-			useMenuStore().refreshApiMenu()
-			// 刷新字典信息，不影响其他
-			dictApi.dictTree().then((data) => {
-				// 设置字典到store中
-				tool.data.set('DICT_TYPE_TREE_DATA', data)
-			})
 		})
 	})
 	onBeforeUnmount(() => {

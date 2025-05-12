@@ -83,5 +83,9 @@ export default {
 	// 删除文件
 	fileDelete(data) {
 		return request('delete', data)
+	},
+	// 物理删除文件
+	fileDeleteAbsolute(data) {
+		return request('deleteAbsolute', data)
 	}
 }

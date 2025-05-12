@@ -58,7 +58,7 @@
 <script setup name="grantResourceForm">
 	import roleApi from '@/api/sys/roleApi'
 	import { useMenuStore } from '@/store/menu'
-	import { userStore } from '@/store/user'
+	import { useUserStore } from '@/store/user'
 	const spinningLoading = ref(false)
 	const firstShowMap = ref({})
 	const emit = defineEmits({ successful: null })
@@ -299,7 +299,7 @@
 	const refreshCache = () => {
 		const menuStore = useMenuStore()
 		menuStore.fetchMenu()
-		userStore().refreshUserLoginUserInfo()
+		useUserStore().refreshUserLoginUserInfo()
 	}
 	// 调用这个函数将子组件的一些数据和方法暴露出去
 	defineExpose({
