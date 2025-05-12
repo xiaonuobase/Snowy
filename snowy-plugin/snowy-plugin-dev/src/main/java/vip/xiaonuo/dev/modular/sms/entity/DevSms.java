@@ -30,7 +30,7 @@ import vip.xiaonuo.common.pojo.CommonEntity;
 public class DevSms extends CommonEntity {
 
     /** id */
-    @Schema(description = "id")
+    @Schema(description = "主键")
     private String id;
 
     /** 短信引擎 */

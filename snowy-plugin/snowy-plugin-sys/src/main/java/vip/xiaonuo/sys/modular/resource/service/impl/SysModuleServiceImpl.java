@@ -95,7 +95,6 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
         sysModule.setCode(RandomUtil.randomString(10));
         sysModule.setCategory(SysResourceCategoryEnum.MODULE.getValue());
         this.save(sysModule);
-
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysModule));
     }
@@ -117,6 +116,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysModule));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<SysModuleIdParam> sysModuleIdParamList) {
         List<String> sysModuleIdList = CollStreamUtil.toList(sysModuleIdParamList, SysModuleIdParam::getId);

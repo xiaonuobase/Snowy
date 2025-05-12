@@ -37,6 +37,24 @@ public class DevEmailApiProvider implements DevEmailApi {
     private DevEmailService devEmailService;
 
     @Override
+    public void sendDynamicTxtEmail(String tos, String subject, String content) {
+        DevEmailSendDynamicTxtParam sendDynamicTxtParam = new DevEmailSendDynamicTxtParam();
+        sendDynamicTxtParam.setReceiveAccounts(tos);
+        sendDynamicTxtParam.setSubject(subject);
+        sendDynamicTxtParam.setContent(content);
+        devEmailService.sendDynamicTxt(sendDynamicTxtParam);
+    }
+
+    @Override
+    public void sendDynamicHtmlEmail(String tos, String subject, String content) {
+        DevEmailSendDynamicHtmlParam sendDynamicHtmlParam = new DevEmailSendDynamicHtmlParam();
+        sendDynamicHtmlParam.setReceiveAccounts(tos);
+        sendDynamicHtmlParam.setSubject(subject);
+        sendDynamicHtmlParam.setContent(content);
+        devEmailService.sendDynamicHtml(sendDynamicHtmlParam);
+    }
+
+    @Override
     public void sendTextEmailLocal(String tos, String subject, String content, List<File> files) {
         DevEmailSendLocalTxtParam devEmailSendLocalTxtParam = new DevEmailSendLocalTxtParam();
         devEmailSendLocalTxtParam.setReceiveAccounts(tos);

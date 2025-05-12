@@ -63,22 +63,16 @@
             <artifactId>tencentcloud-sdk-java-ses</artifactId>
         </dependency>
 
-        <!--阿里云短信sdk-->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dysmsapi20170525</artifactId>
-        </dependency>
-
-        <!--腾讯云短信sdk-->
-        <dependency>
-            <groupId>com.tencentcloudapi</groupId>
-            <artifactId>tencentcloud-sdk-java-sms</artifactId>
-        </dependency>
-
         <!-- sms4j短信sdk -->
         <dependency>
             <groupId>org.dromara.sms4j</groupId>
             <artifactId>sms4j-javase-plugin</artifactId>
+        </dependency>
+
+        <!-- sms4j消息推送sdk -->
+        <dependency>
+            <groupId>org.dromara.sms4j</groupId>
+            <artifactId>sms4j-oa-core</artifactId>
         </dependency>
 
         <!--系统硬件信息-->

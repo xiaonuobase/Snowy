@@ -16,7 +16,6 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ import java.util.Map;
 @RestController
 public class GlobalErrorViewHandler extends BasicErrorController {
 
-    public GlobalErrorViewHandler(@Autowired(required = false) ServerProperties serverProperties) {
+    public GlobalErrorViewHandler(ServerProperties serverProperties) {
         super(new GlobalErrorAttributesHandler(), serverProperties.getError());
     }
 

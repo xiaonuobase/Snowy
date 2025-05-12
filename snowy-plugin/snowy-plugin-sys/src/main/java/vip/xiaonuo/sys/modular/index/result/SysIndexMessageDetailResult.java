@@ -29,7 +29,7 @@ import java.util.List;
 public class SysIndexMessageDetailResult {
 
     /** id */
-    @Schema(description = "id")
+    @Schema(description = "主键")
     private String id;
 
     /** 分类 */

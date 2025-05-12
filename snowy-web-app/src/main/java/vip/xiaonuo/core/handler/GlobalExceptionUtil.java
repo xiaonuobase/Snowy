@@ -16,8 +16,6 @@ import cn.dev33.satoken.exception.SaTokenException;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,8 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -127,7 +127,7 @@ public class GlobalExceptionUtil {
                     log.error(">>> 数据操作异常：", e);
                     commonResult = CommonResult.error("数据操作异常");
                 }
-            } else {
+            }else {
                 log.error(">>> 数据操作异常：", e);
                 commonResult = CommonResult.error("数据操作异常");
             }

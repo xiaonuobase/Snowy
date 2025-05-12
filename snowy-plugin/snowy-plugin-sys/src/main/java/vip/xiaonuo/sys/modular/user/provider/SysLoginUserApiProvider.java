@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.user.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.result.SysLoginUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
@@ -92,6 +94,11 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
         return sysUserService.getUserByPhone(phone);
     }
 
+    @Override
+    public SaBaseLoginUser getUserByEmail(String email) {
+        return sysUserService.getUserByEmail(email);
+    }
+
     /**
      * 不实现C端用户信息
      *
@@ -100,6 +107,11 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
      **/
     @Override
     public SaBaseClientLoginUser getClientUserByPhone(String phone) {
+        return null;
+    }
+
+    @Override
+    public SaBaseClientLoginUser getClientUserByEmail(String email) {
         return null;
     }
 
@@ -167,5 +179,32 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public void updateUserLoginInfo(String userId, String device) {
         sysUserService.updateUserLoginInfo(userId, device);
+    }
+
+    @Override
+    public SaBaseLoginUser createUserWithPhone(String phone) {
+        SysUser sysUser = sysUserService.createUserWithPhone(phone);
+        return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
+    }
+
+    @Override
+    public SaBaseClientLoginUser createClientUserWithPhone(String phone) {
+        return null;
+    }
+
+    @Override
+    public SaBaseLoginUser createUserWithEmail(String email) {
+        SysUser sysUser = sysUserService.createUserWithEmail(email);
+        return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
+    }
+
+    @Override
+    public SaBaseClientLoginUser createClientUserWithEmail(String email) {
+        return null;
+    }
+
+    @Override
+    public void doRegister(String account, String password) {
+        sysUserService.doRegister(account, password);
     }
 }

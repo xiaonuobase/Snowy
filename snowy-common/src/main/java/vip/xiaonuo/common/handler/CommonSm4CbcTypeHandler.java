@@ -42,20 +42,20 @@ public class CommonSm4CbcTypeHandler<T> extends BaseTypeHandler<T> {
     public T getNullableResult(ResultSet rs, String columnName) throws SQLException {
         String columnValue = rs.getString(columnName);
         //有一些可能是空字符
-        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T)CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
+        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T) CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
     }
 
     @SuppressWarnings("ALL")
     @Override
     public T getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
         String columnValue = rs.getString(columnIndex);
-        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T)CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
+        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T) CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
     }
 
     @SuppressWarnings("ALL")
     @Override
     public T getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         String columnValue = cs.getString(columnIndex);
-        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T)CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
+        return StringUtils.isBlank(columnValue) ? (T)columnValue : (T) CommonCryptogramUtil.doSm4CbcDecrypt(columnValue);
     }
 }

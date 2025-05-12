@@ -32,22 +32,22 @@ import java.util.List;
 public class DevEmailSendTencentHtmlParam {
 
     /** 发件人邮箱 */
-    @Schema(description = "管理控制台中配置的发信地址", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "管理控制台中配置的发信地址")
     @NotBlank(message = "sendAccount不能为空")
     private String sendAccount;
 
     /** 接收人 */
-    @Schema(description = "接收人邮箱地址，多个逗号拼接", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "接收人邮箱地址，多个逗号拼接")
     @NotBlank(message = "receiveAccounts不能为空")
     private String receiveAccounts;
 
     /** 邮件主题 */
-    @Schema(description = "邮件主题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "邮件主题")
     @NotBlank(message = "subject不能为空")
     private String subject;
 
     /** 邮件正文 */
-    @Schema(description = "邮件正文", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "邮件正文")
     @NotBlank(message = "content不能为空")
     private String content;
 

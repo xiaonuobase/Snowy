@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.dev.modular.monitor.controller;
 
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -29,6 +31,7 @@ import vip.xiaonuo.dev.modular.monitor.service.DevMonitorService;
  * @date 2022/6/21 14:57
  **/
 @Tag(name = "监控控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 9)
 @RestController
 @Validated
 public class DevMonitorController {
@@ -42,6 +45,7 @@ public class DevMonitorController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取服务器监控信息")
     @GetMapping("/dev/monitor/serverInfo")
     public CommonResult<DevMonitorServerResult> serverInfo() {
@@ -54,6 +58,7 @@ public class DevMonitorController {
      * @author diantu
      * @date 2023/7/27
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取服务器网络情况")
     @GetMapping("/dev/monitor/networkInfo")
     public CommonResult<DevMonitorServerResult> networkInfo() {

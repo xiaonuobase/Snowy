@@ -148,7 +148,7 @@ public class DevLogServiceImpl extends ServiceImpl<DevLogMapper, DevLog> impleme
                                 DevLog::getName,DevLog::getOpIp, DevLog::getOpAddress, DevLog::getCategory, DevLog::getClassName,
                                 DevLog::getMethodName, DevLog::getOpTime, DevLog::getOpUser)
                         .in(DevLog::getCategory, DevLogCategoryEnum.OPERATE.getValue(),
-                DevLogCategoryEnum.EXCEPTION.getValue()).between(DevLog::getOpTime, lastWeek, now).orderByAsc(DevLog::getOpTime))
+                                DevLogCategoryEnum.EXCEPTION.getValue()).between(DevLog::getOpTime, lastWeek, now).orderByAsc(DevLog::getOpTime))
                 .stream().map(devLog -> JSONUtil.parseObj(devLog).set("date", DateUtil.formatDate(devLog.getOpTime())))
                 .collect(Collectors.groupingBy(jsonObject -> jsonObject.getStr("date")));
         long between = DateUtil.between(lastWeek, now, DateUnit.DAY);

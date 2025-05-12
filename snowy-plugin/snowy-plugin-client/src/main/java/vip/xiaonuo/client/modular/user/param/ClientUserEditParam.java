@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * C端用户参数
+ * 用户编辑参数
  *
  * @author xuyuxiang
  * @date 2022/4/21 16:13

@@ -13,10 +13,11 @@
 package vip.xiaonuo.sys.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ import vip.xiaonuo.sys.modular.resource.param.button.SysButtonIdParam;
 import vip.xiaonuo.sys.modular.resource.param.button.SysButtonPageParam;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,6 +43,7 @@ import java.util.List;
  * @date 2022/6/27 13:56
  **/
 @Tag(name = "按钮控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 3)
 @RestController
 @Validated
 public class SysButtonController {
@@ -54,6 +57,7 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取按钮分页")
     @GetMapping("/sys/button/page")
     public CommonResult<Page<SysButton>> page(SysButtonPageParam sysButtonPageParam) {
@@ -66,6 +70,7 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加按钮")
     @CommonLog("添加按钮")
     @PostMapping("/sys/button/add")
@@ -80,6 +85,7 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑按钮")
     @CommonLog("编辑按钮")
     @PostMapping("/sys/button/edit")
@@ -94,6 +100,7 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除按钮")
     @CommonLog("删除按钮")
     @PostMapping("/sys/button/delete")
@@ -108,6 +115,7 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取按钮详情")
     @GetMapping("/sys/button/detail")
     public CommonResult<SysButton> detail(@Valid SysButtonIdParam sysButtonIdParam) {

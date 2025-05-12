@@ -30,7 +30,7 @@ public class DevJobTimerTaskRunner implements CommonTimerTaskRunner {
 
     @Override
     public void action(String extJson) {
-        log.info("我是一个定时任务，正在在被执行第" + n + "次");
+        log.info("我是一个定时任务，正在在被执行第{}次", n);
         n = n + 1;
     }
 }

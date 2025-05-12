@@ -28,27 +28,27 @@ import lombok.Setter;
 public class BizUserEditParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 账号 */
-    @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "账号")
     @NotBlank(message = "account不能为空")
     private String account;
 
     /** 姓名 */
-    @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "姓名")
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 机构id */
-    @Schema(description = "机构id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "机构id")
     @NotBlank(message = "orgId不能为空")
     private String orgId;
 
     /** 岗位id */
-    @Schema(description = "岗位id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "岗位id")
     @NotBlank(message = "positionId不能为空")
     private String positionId;
 

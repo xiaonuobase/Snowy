@@ -13,7 +13,9 @@
 package vip.xiaonuo.common.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -23,6 +25,7 @@ import java.io.Serializable;
  * @date 2022/8/15 16:08
  **/
 public class CommonResult<T> implements Serializable{
+    @Serial
     private static final long serialVersionUID = 1L;
     public static final int CODE_SUCCESS = 200;
     public static final int CODE_ERROR = 500;
@@ -30,9 +33,17 @@ public class CommonResult<T> implements Serializable{
     @Schema(description = "状态码")
     private int code;
 
+    /**
+     *  获取msg
+     */
+    @Getter
     @Schema(description = "提示语")
     private String msg;
 
+    /**
+     *  获取data
+     */
+    @Getter
     @Schema(description = "返回数据")
     private T data;
 
@@ -51,21 +62,6 @@ public class CommonResult<T> implements Serializable{
      */
     public Integer getCode() {
         return this.code;
-    }
-
-    /**
-     * 获取msg
-     * @return msg
-     */
-    public String getMsg() {
-        return this.msg;
-    }
-    /**
-     * 获取data
-     * @return data
-     */
-    public T getData() {
-        return this.data;
     }
 
     /**

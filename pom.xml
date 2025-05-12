@@ -245,21 +245,28 @@
                 <version>3.3.3</version>
             </dependency>
 
-            <!-- Sa-token-core -->
+            <!-- json-flattener -->
+            <dependency>
+                <groupId>com.github.wnameless.json</groupId>
+                <artifactId>json-flattener</artifactId>
+                <version>0.16.4</version>
+            </dependency>
+
+            <!-- sa-token-core -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-core</artifactId>
                 <version>1.37.0</version>
             </dependency>
 
-            <!-- Sa-token -->
+            <!-- sa-token -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
                 <version>1.37.0</version>
             </dependency>
 
-            <!-- Sa-token 整合 redis （使用jackson序列化方式） -->
+            <!-- sa-token 整合 redis （使用jackson序列化方式） -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-jackson</artifactId>
@@ -343,25 +350,18 @@
                 <version>3.1.944</version>
             </dependency>
 
-            <!--阿里云短信sdk-->
-            <dependency>
-                <groupId>com.aliyun</groupId>
-                <artifactId>dysmsapi20170525</artifactId>
-                <version>2.0.24</version>
-            </dependency>
-
-            <!--腾讯云短信sdk-->
-            <dependency>
-                <groupId>com.tencentcloudapi</groupId>
-                <artifactId>tencentcloud-sdk-java-sms</artifactId>
-                <version>3.1.893</version>
-            </dependency>
-
             <!-- sms4j短信sdk -->
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-javase-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.3.4</version>
+            </dependency>
+
+            <!-- sms4j消息推送sdk -->
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-oa-core</artifactId>
+                <version>3.3.4</version>
             </dependency>
 
             <!--系统硬件信息-->
@@ -369,6 +369,14 @@
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
                 <version>6.4.11</version>
+            </dependency>
+
+            <!-- junit -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.10.1</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- dynamic-datasource -->
@@ -432,7 +440,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -461,11 +469,19 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>_sql/*</exclude>
+                    <exclude>*.md</exclude>
+                </excludes>
             </resource>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
                     <include>**/*.xml</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.ttc</include>
+                    <include>**/*.TTF</include>
+                    <include>**/*.TTC</include>
                 </includes>
             </resource>
         </resources>

@@ -37,5 +37,5 @@ public interface SysPositionApi {
      * @author xuyuxiang
      * @date 2022/7/22 14:47
      **/
-    Page<JSONObject> positionSelector(String orgId, String searchKey);
+    Page<JSONObject> positionSelector(String orgId, String searchKey, Integer current, Integer size);
 }

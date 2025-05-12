@@ -35,17 +35,17 @@ import java.util.Map;
 public class DevEmailSendLocalHtmlParam {
 
     /** 接收人 */
-    @Schema(description = "接收人邮箱地址，多个逗号拼接", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "接收人邮箱地址，多个逗号拼接")
     @NotBlank(message = "receiveAccounts不能为空")
     private String receiveAccounts;
 
     /** 邮件主题 */
-    @Schema(description = "邮件主题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "邮件主题")
     @NotBlank(message = "subject不能为空")
     private String subject;
 
     /** 邮件正文 */
-    @Schema(description = "邮件正文", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "邮件正文")
     @NotBlank(message = "content不能为空")
     private String content;
 

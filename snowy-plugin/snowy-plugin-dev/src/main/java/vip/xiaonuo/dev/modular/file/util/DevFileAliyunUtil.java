@@ -23,13 +23,13 @@ import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
-import jakarta.activation.MimetypesFileTypeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileBucketAuthEnum;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * 阿里云文件工具类
- * 参考文档：https://help.aliyun.com/document_detail/32010.html
+ * 参考文档：<a href="https://help.aliyun.com/document_detail/32010.html">参考文档</a>
  *
  * @author xuyuxiang
  * @date 2022/1/2 18:13

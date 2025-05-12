@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 用户找回密码参数
+ * 用户通过手机号找回密码参数
  *
  * @author xuyuxiang
  * @date 2022/7/26 16:04
@@ -28,22 +28,22 @@ import lombok.Setter;
 public class SysUserFindPwdByPhoneParam {
 
     /** 手机号 */
-    @Schema(description = "手机号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "手机号")
     @NotBlank(message = "phone不能为空")
     private String phone;
 
     /** 验证码 */
-    @Schema(description = "验证码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "验证码")
     @NotBlank(message = "validCode不能为空")
     private String validCode;
 
     /** 验证码请求号 */
-    @Schema(description = "验证码请求号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "验证码请求号")
     @NotBlank(message = "validCodeReqNo不能为空")
     private String validCodeReqNo;
 
     /** 新密码 */
-    @Schema(description = "新密码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "新密码")
     @NotBlank(message = "newPassword不能为空")
     private String newPassword;
 }

@@ -21,7 +21,6 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,17 +28,18 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.biz.modular.group.entity.BizGroup;
+import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
 import vip.xiaonuo.biz.modular.group.param.*;
+import vip.xiaonuo.biz.modular.group.service.BizGroupService;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
+import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
-import vip.xiaonuo.biz.modular.group.entity.BizGroup;
-import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
-import vip.xiaonuo.biz.modular.group.service.BizGroupService;
 import vip.xiaonuo.sys.api.SysGroupApi;
 
 import java.util.List;
@@ -143,32 +143,34 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
 
     @Override
     public Page<BizUser> userSelector(BizGroupSelectorUserParam bizGroupSelectorUserParam) {
-        LambdaQueryWrapper<BizUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
+        // 只查询状态为正常的
+        queryWrapper.lambda().eq(BizUser::getUserStatus, BizUserStatusEnum.ENABLE.getValue());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizUser::getOrgId, loginUserDataScope);
+            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 只查询部分字段
-        lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
+        queryWrapper.lambda().select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
                 BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
         if (ObjectUtil.isNotEmpty(bizGroupSelectorUserParam.getOrgId())) {
             // 如果机构id不为空，则查询该机构及其子机构下的所有人
             List<String> childOrgIdList = CollStreamUtil.toList(bizOrgService.getChildListById(bizOrgService
                     .getAllOrgList(), bizGroupSelectorUserParam.getOrgId(), true), BizOrg::getId);
             if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                lambdaQueryWrapper.in(BizUser::getOrgId, childOrgIdList);
+                queryWrapper.lambda().in(BizUser::getOrgId, childOrgIdList);
             } else {
                 return new Page<>();
             }
         }
         if(ObjectUtil.isNotEmpty(bizGroupSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizUser::getName, bizGroupSelectorUserParam.getSearchKey());
+            queryWrapper.lambda().like(BizUser::getName, bizGroupSelectorUserParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizUser::getSortCode);
-        return bizUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizUser::getSortCode);
+        return bizUserService.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
     @Override

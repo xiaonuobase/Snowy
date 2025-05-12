@@ -30,7 +30,7 @@ import java.util.List;
 public class SysUserIdListParam {
 
     /** id集合 */
-    @Schema(description = "id集合", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id集合")
     @NotNull(message = "idList不能为空")
     private List<String> idList;
 }

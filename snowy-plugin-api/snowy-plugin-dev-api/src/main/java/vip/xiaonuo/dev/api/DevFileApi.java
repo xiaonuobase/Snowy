@@ -31,6 +31,14 @@ public interface DevFileApi {
      **/
     String uploadDynamicReturnId(MultipartFile file);
 
+    /**
+     * 动态上传文件返回url（使用系统配置的默认文件引擎）
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    String uploadDynamicReturnUrl(MultipartFile file);
+
     /* =========本地文件========= */
 
     /**
@@ -118,6 +126,7 @@ public interface DevFileApi {
      * @date 2024/7/26 16:10
      */
     JSONObject getFileInfoById(String id);
+
 
     /**
      * 根据文件id物理删除文件

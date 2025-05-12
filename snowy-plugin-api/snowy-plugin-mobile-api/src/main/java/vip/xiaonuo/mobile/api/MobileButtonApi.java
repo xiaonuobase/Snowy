@@ -28,5 +28,5 @@ public interface MobileButtonApi {
      * @author 每天一点
      * @date 2023/2/5 13:26
      **/
-    List<String> listByIds(List<String> idList);
+    List<String> listButtonCodeListByIdList(List<String> idList);
 }

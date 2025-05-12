@@ -90,9 +90,14 @@ public enum DevConfigCategoryEnum {
     SMS_ALIYUN("SMS_ALIYUN"),
 
     /**
-     * 短信-小诺短信
+     * 支付-支付宝
      */
-    SMS_XIAONUO("SMS_XIAONUO");
+    PAY_ALI("PAY_ALI"),
+
+    /**
+     * 支付-微信
+     */
+    PAY_WX("PAY_WX");
 
     private final String value;
 
@@ -107,7 +112,7 @@ public enum DevConfigCategoryEnum {
                 FILE_ALIYUN.getValue().equals(value) || FILE_MINIO.getValue().equals(value) ||
                 EMAIL_TENCENT.getValue().equals(value) || EMAIL_ALIYUN.getValue().equals(value) ||
                 SMS_TENCENT.getValue().equals(value) || SMS_ALIYUN.getValue().equals(value) ||
-                SMS_XIAONUO.getValue().equals(value);
+                PAY_ALI.getValue().equals(value) || PAY_WX.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持的配置分类：{}", value);
         }

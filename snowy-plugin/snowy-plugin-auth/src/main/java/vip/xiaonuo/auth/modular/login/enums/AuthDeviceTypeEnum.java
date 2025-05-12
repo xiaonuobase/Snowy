@@ -24,19 +24,13 @@ import vip.xiaonuo.common.exception.CommonException;
 @Getter
 public enum AuthDeviceTypeEnum {
 
-    /**
-     * PC端
-     */
+    /** PC端 */
     PC("PC"),
 
-    /**
-     * 移动端
-     */
+    /** 移动端 */
     APP("APP"),
 
-    /**
-     * 小程序端
-     */
+    /** 小程序端 */
     MINI("MINI");
 
     private final String value;

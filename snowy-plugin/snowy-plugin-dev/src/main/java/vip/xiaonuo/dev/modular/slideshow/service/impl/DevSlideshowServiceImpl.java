@@ -147,7 +147,7 @@ public class DevSlideshowServiceImpl extends ServiceImpl<DevSlideshowMapper, Dev
                 }
             });
         });
-        if (resultList.size() == 0) {
+        if (resultList.isEmpty()) {
             // 如果库里未配置，则补充一条静态的，避免图片为空
             JSONObject staticObj = new JSONObject();
             staticObj.set("id", IdWorker.getIdStr());

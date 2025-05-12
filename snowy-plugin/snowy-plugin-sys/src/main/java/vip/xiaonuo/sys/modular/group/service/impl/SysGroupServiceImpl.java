@@ -39,6 +39,7 @@ import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.List;
@@ -131,9 +132,11 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
 
     @Override
     public Page<SysUser> userSelector(SysGroupSelectorUserParam sysGroupSelectorUserParam) {
-        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().checkSqlInjection();
+        // 只查询状态为正常的
+        queryWrapper.lambda().eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue());
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
+        queryWrapper.lambda().select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysGroupSelectorUserParam.getOrgId(), sysGroupSelectorUserParam.getSearchKey())) {
@@ -144,16 +147,16 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
                 List<String> childOrgIdList = CollStreamUtil.toList(sysOrgService.getChildListById(sysOrgService
                         .getAllOrgList(), sysGroupSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                    lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
+                    queryWrapper.lambda().in(SysUser::getOrgId, childOrgIdList);
                 } else {
                     return new Page<>();
                 }
             }
             if (ObjectUtil.isNotEmpty(sysGroupSelectorUserParam.getSearchKey())) {
-                lambdaQueryWrapper.like(SysUser::getName, sysGroupSelectorUserParam.getSearchKey());
+                queryWrapper.lambda().like(SysUser::getName, sysGroupSelectorUserParam.getSearchKey());
             }
-            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-            return sysUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+            queryWrapper.lambda().orderByAsc(SysUser::getSortCode);
+            return sysUserService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
         }
     }
 
@@ -174,16 +177,16 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
 
     @Override
     public Page<SysGroup> groupSelector(SysGroupSelectorParam sysGroupSelectorParam) {
-        LambdaQueryWrapper<SysGroup> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysGroup> queryWrapper = new QueryWrapper<SysGroup>().checkSqlInjection();
         // 只查询部分字段，排掉extJson
-        lambdaQueryWrapper.select(SysGroup::getId, SysGroup::getName, SysGroup::getSortCode, SysGroup::getRemark);
-        lambdaQueryWrapper.orderByAsc(SysGroup::getSortCode);
+        queryWrapper.lambda().select(SysGroup::getId, SysGroup::getName, SysGroup::getSortCode, SysGroup::getRemark);
+        queryWrapper.lambda().orderByAsc(SysGroup::getSortCode);
         // 如果查询条件为空，则直接查询
         if (!ObjectUtil.isAllEmpty(sysGroupSelectorParam.getSearchKey())) {
             if (ObjectUtil.isNotEmpty(sysGroupSelectorParam.getSearchKey())) {
-                lambdaQueryWrapper.like(SysGroup::getName, sysGroupSelectorParam.getSearchKey());
+                queryWrapper.lambda().like(SysGroup::getName, sysGroupSelectorParam.getSearchKey());
             }
         }
-        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 }

@@ -29,22 +29,27 @@ import lombok.Setter;
 public class SysRoleEditParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 名称 */
-    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "名称")
     @NotBlank(message = "name不能为空")
     private String name;
 
+    /** 编码 */
+    @Schema(description = "编码")
+    @NotBlank(message = "code不能为空")
+    private String code;
+
     /** 分类 */
-    @Schema(description = "分类", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "分类")
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

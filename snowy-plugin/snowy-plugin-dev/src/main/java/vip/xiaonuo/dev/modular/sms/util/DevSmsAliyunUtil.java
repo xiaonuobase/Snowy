@@ -12,21 +12,27 @@
  */
 package vip.xiaonuo.dev.modular.sms.util;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.aliyun.dysmsapi20170525.Client;
-import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
-import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
-import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
-import com.aliyun.teaopenapi.models.Config;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.sms4j.aliyun.config.AlibabaConfig;
+import org.dromara.sms4j.api.SmsBlend;
+import org.dromara.sms4j.api.entity.SmsResponse;
+import org.dromara.sms4j.core.factory.SmsFactory;
+import org.dromara.sms4j.javase.config.SEInitializer;
+import org.dromara.sms4j.provider.config.SmsConfig;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 
+import java.util.LinkedHashMap;
+
 /**
  * 阿里云短信工具类
- * 参考文档：https://next.api.aliyun.com/api-tools/sdk/Dysmsapi?version=2017-05-25&language=java-tea
  *
  * @author xuyuxiang
  * @date 2022/1/2 17:05
@@ -34,11 +40,10 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 @Slf4j
 public class DevSmsAliyunUtil {
 
-    private static Client client;
+    private static SmsBlend smsBlend;
 
     private static final String SNOWY_SMS_ALIYUN_ACCESS_KEY_ID_KEY = "SNOWY_SMS_ALIYUN_ACCESS_KEY_ID";
     private static final String SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET_KEY = "SNOWY_SMS_ALIYUN_ACCESS_KEY_SECRET";
-    private static final String SNOWY_SMS_ALIYUN_END_POINT_KEY = "SNOWY_SMS_ALIYUN_END_POINT";
     private static final String SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME_KEY = "SNOWY_SMS_ALIYUN_DEFAULT_SIGN_NAME";
 
     /**
@@ -47,7 +52,7 @@ public class DevSmsAliyunUtil {
      * @author xuyuxiang
      * @date 2022/1/5 23:24
      */
-    private static void initClient() {
+    private static void initClient(String signName) {
 
         DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
 
@@ -65,50 +70,62 @@ public class DevSmsAliyunUtil {
             throw new CommonException("阿里云短信操作客户端未正确配置：accessKeySecret为空");
         }
 
-        /* endpoint */
-        String endpoint = devConfigApi.getValueByKey(SNOWY_SMS_ALIYUN_END_POINT_KEY);
-
-        if(ObjectUtil.isEmpty(endpoint)) {
-            throw new CommonException("阿里云短信操作客户端未正确配置：endpoint为空");
-        }
-
-        try {
-            client = new Client(new Config().setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret).setEndpoint(endpoint));
-        } catch (Exception e) {
-            throw new CommonException(e.getMessage());
-        }
+        AlibabaConfig alibabaConfig = new AlibabaConfig();
+        alibabaConfig.setConfigId(accessKeyId);
+        alibabaConfig.setAccessKeyId(accessKeyId);
+        alibabaConfig.setAccessKeySecret(accessKeySecret);
+        alibabaConfig.setSignature(signName);
+        SEInitializer.initializer().fromConfig(new SmsConfig(), CollectionUtil.newArrayList(alibabaConfig));
+        smsBlend = SmsFactory.getSmsBlend(alibabaConfig.getConfigId());
     }
 
     /**
-     * 发送短信
+     * 发送模板短信
      *
      * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
-     *                     上限为1000个手机号码。批量调用相对于单条调用及时性稍有延迟。
-     * @param signName 短信服务控制台配置且审核通过的短信签名，为空则使用默认签名
-     * @param templateCode 短信服务控制台配置且审核通过的模板编码
+     * @param signName 短信签名，为空则使用默认签名
+     * @param templateId 模板id
      * @param templateParam 短信模板变量对应的实际值，JSON格式。支持传入多个参数，示例：{"name":"张三","number":"15038****76"}
-     * @return 发送的结果信息集合 com.aliyun.dysmsapi20170525.models.SendSmsResponse
+     * @return 发送的结果信息
      * @author xuyuxiang
      * @date 2022/2/24 13:42
      **/
-    public static String sendSms(String phoneNumbers, String signName, String templateCode, String templateParam) {
+    public static String sendSms(String phoneNumbers, String signName, String templateId, String templateParam) {
+        LinkedHashMap<String, String> paramMap = new LinkedHashMap<>();
+        JSONUtil.parseObj(templateParam).forEach((k, v) -> paramMap.put(k, Convert.toStr(v)));
+        return sendSms(phoneNumbers, signName, templateId, paramMap);
+    }
+
+    /**
+     * 发送模板短信
+     *
+     * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
+     * @param signName 短信签名，为空则使用默认签名
+     * @param templateId 模板id
+     * @param paramMap 短信参数，HashMap
+     * @return 发送的结果信息
+     * @author xuyuxiang
+     * @date 2022/2/24 13:42
+     **/
+    public static String sendSms(String phoneNumbers, String signName, String templateId, LinkedHashMap<String, String> paramMap) {
         try {
-            initClient();
             if(ObjectUtil.isEmpty(signName)) {
                 signName = getDefaultSignName();
             }
-            SendSmsRequest sendSmsRequest = new SendSmsRequest()
-                    .setPhoneNumbers(phoneNumbers)
-                    .setSignName(signName)
-                    .setTemplateCode(templateCode)
-                    .setTemplateParam(templateParam);
-            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
-            SendSmsResponseBody body = sendSmsResponse.getBody();
-            String code = body.getCode().toLowerCase();
-            if("ok".equals(code)) {
-                return JSONUtil.toJsonStr(body);
+            // 初始化客户端
+            initClient(signName);
+            // 发送短信
+            SmsResponse smsResponse = smsBlend.massTexting(StrUtil.split(phoneNumbers, StrUtil.COMMA), templateId, paramMap);
+            if(smsResponse.isSuccess()) {
+                return JSONUtil.toJsonStr(smsResponse.getData());
             } else {
-                throw new CommonException(body.getMessage());
+                String data = Convert.toStr(smsResponse.getData());
+                if(JSONUtil.isTypeJSON(data)) {
+                    JSONObject responseData = JSONUtil.parseObj(smsResponse.getData());
+                    throw new CommonException(responseData.getStr("resInfo"));
+                } else {
+                    throw new CommonException(data);
+                }
             }
         } catch (Exception e) {
             throw new CommonException(e.getMessage());

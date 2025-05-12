@@ -51,7 +51,7 @@ public interface SysOrgService extends IService<SysOrg> {
      * @author xuyuxiang
      * @date 2022/4/24 20:48
      */
-    void add(SysOrgAddParam sysOrgAddParam);
+    void add(SysOrgAddParam sysOrgAddParam, String sourceFromType);
 
     /**
      * 编辑组织

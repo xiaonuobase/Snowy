@@ -23,7 +23,9 @@ import lombok.Getter;
 @Getter
 public enum BizBuildInEnum {
 
-    /** 超管用户账号 */
+    /**
+     * 超管用户账号
+     */
     BUILD_IN_USER_ACCOUNT("superAdmin", "超管");
 
     private final String value;

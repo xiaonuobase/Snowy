@@ -30,8 +30,8 @@ public class CommonEmailUtil {
      * @author xuyuxiang
      * @date 2022/8/15 13:32
      **/
-    public static boolean isEmail(String email) {
-        return  Validator.isEmail(email);
+    public static boolean isNotEmail(String email) {
+        return !Validator.isEmail(email);
     }
 
     /**
@@ -42,7 +42,7 @@ public class CommonEmailUtil {
      **/
     public static void validEmail(String emails) {
         StrUtil.split(emails, StrUtil.COMMA).forEach(email -> {
-            if(!isEmail(email)) {
+            if(isNotEmail(email)) {
                 throw new CommonException("邮件地址：{}格式错误", email);
             }
         });

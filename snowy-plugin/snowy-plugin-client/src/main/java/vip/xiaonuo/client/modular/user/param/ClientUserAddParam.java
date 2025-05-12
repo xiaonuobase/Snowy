@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * C端用户添加参数
+ * 用户添加参数
  *
  * @author xuyuxiang
  * @date 2022/4/21 16:13
@@ -36,6 +36,10 @@ public class ClientUserAddParam {
     @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "name不能为空")
     private String name;
+
+    /** 密码 */
+    @Schema(description = "密码")
+    private String password;
 
     /** 头像 */
     @Schema(description = "头像，图片base64")

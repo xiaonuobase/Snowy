@@ -23,18 +23,19 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import io.minio.*;
 import io.minio.http.Method;
-import jakarta.activation.MimetypesFileTypeMap;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileBucketAuthEnum;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 
 /**
  * MINIO文件工具类
- * 参考文档：http://docs.minio.org.cn/docs/master/java-client-quickstart-guide
+ * 参考文档：<a href="http://docs.minio.org.cn/docs/master/java-client-quickstart-guide">参考文档</a>
  *
  * @author xuyuxiang
  * @date 2022/1/2 18:13
@@ -42,6 +43,12 @@ import java.io.*;
 @Slf4j
 public class DevFileMinIoUtil {
 
+    /**
+     * -- GETTER --
+     *  获取操作的客户端
+     *
+     */
+    @Getter
     private static MinioClient client;
 
     private static String defaultBucketName;
@@ -80,7 +87,7 @@ public class DevFileMinIoUtil {
         String endpoint = devConfigApi.getValueByKey(SNOWY_FILE_MINIO_END_POINT_KEY);
 
         if(ObjectUtil.isEmpty(endpoint)) {
-            throw new CommonException("MINIO文件操作客户端未正确配置：endpoint为空");
+            throw new CommonException("MINIO文件操作客户端未正确配置：secretKey为空");
         }
 
         /* 默认BucketName */
@@ -112,16 +119,6 @@ public class DevFileMinIoUtil {
      */
     public static void destroyClient() {
         // 无需
-    }
-
-    /**
-     * 获取操作的客户端
-     *
-     * @author xuyuxiang
-     * @date 2022/1/5 23:24
-     */
-    public static MinioClient getClient() {
-        return client;
     }
 
     /**

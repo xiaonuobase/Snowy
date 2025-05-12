@@ -13,10 +13,11 @@
 package vip.xiaonuo.mobile.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ import vip.xiaonuo.mobile.modular.resource.param.button.MobileButtonIdParam;
 import vip.xiaonuo.mobile.modular.resource.param.button.MobileButtonPageParam;
 import vip.xiaonuo.mobile.modular.resource.service.MobileButtonService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,6 +43,7 @@ import java.util.List;
  * @date 2022/6/27 13:56
  **/
 @Tag(name = "移动端按钮控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 3)
 @RestController
 @Validated
 public class MobileButtonController {
@@ -54,6 +57,7 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取移动端按钮分页")
     @GetMapping("/mobile/button/page")
     public CommonResult<Page<MobileButton>> page(MobileButtonPageParam mobileButtonPageParam) {
@@ -66,6 +70,7 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加移动端按钮")
     @CommonLog("添加移动端按钮")
     @PostMapping("/mobile/button/add")
@@ -80,6 +85,7 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑移动端按钮")
     @CommonLog("编辑移动端按钮")
     @PostMapping("/mobile/button/edit")
@@ -94,6 +100,7 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除移动端按钮")
     @CommonLog("删除移动端按钮")
     @PostMapping("/mobile/button/delete")
@@ -108,6 +115,7 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取移动端按钮详情")
     @GetMapping("/mobile/button/detail")
     public CommonResult<MobileButton> detail(@Valid MobileButtonIdParam mobileButtonIdParam) {

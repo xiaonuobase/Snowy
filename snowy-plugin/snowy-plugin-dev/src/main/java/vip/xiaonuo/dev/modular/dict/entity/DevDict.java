@@ -47,6 +47,10 @@ public class DevDict extends CommonEntity {
     @Schema(description = "字典值")
     private String dictValue;
 
+    /** 编码 */
+    @Schema(description = "编码")
+    private String code;
+
     /** 分类 */
     @Schema(description = "分类")
     private String category;
@@ -57,6 +61,6 @@ public class DevDict extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

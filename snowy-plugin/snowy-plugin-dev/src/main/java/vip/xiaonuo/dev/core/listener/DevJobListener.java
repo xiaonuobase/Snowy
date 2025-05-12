@@ -15,6 +15,7 @@ package vip.xiaonuo.dev.core.listener;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
@@ -36,9 +37,8 @@ import vip.xiaonuo.dev.modular.job.service.DevJobService;
 @Configuration
 public class DevJobListener implements ApplicationListener<ApplicationStartedEvent>, Ordered {
 
-    @SuppressWarnings("ALL")
     @Override
-    public void onApplicationEvent( ApplicationStartedEvent applicationStartedEvent) {
+    public void onApplicationEvent(@NonNull ApplicationStartedEvent applicationStartedEvent) {
         SpringUtil.getBean(DevJobService.class).list(new LambdaQueryWrapper<DevJob>()
                 .eq(DevJob::getJobStatus, DevJobStatusEnum.RUNNING.getValue()).orderByAsc(DevJob::getSortCode))
                 .forEach(devJob -> CronUtil.schedule(devJob.getId(), devJob.getCronExpression(), () -> {
@@ -52,7 +52,7 @@ public class DevJobListener implements ApplicationListener<ApplicationStartedEve
         // 设置秒级别的启用
         CronUtil.setMatchSecond(true);
         // 启动定时器执行器
-        CronUtil.restart();
+        CronUtil.start();
     }
 
     @Override

@@ -13,10 +13,11 @@
 package vip.xiaonuo.auth.modular.third.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import me.zhyd.oauth.model.AuthCallback;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,8 @@ import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 import vip.xiaonuo.common.pojo.CommonResult;
 
+import javax.validation.Valid;
+
 /**
  * 第三方登录控制器
  *
@@ -36,6 +39,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
  * @date 2022/7/8 16:18
  **/
 @Tag(name = "三方登录控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 5)
 @RestController
 @Validated
 public class AuthThirdController {
@@ -49,6 +53,7 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/7/8 16:19
      **/
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "第三方登录页面渲染")
     @GetMapping("/auth/third/render")
     public CommonResult<AuthThirdRenderResult> render(@Valid AuthThirdRenderParam authThirdRenderParam) {
@@ -61,6 +66,7 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/7/8 16:42
      **/
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "第三方登录授权回调")
     @GetMapping("/auth/third/callback")
     public CommonResult<String> callback(@Valid AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback) {
@@ -73,6 +79,7 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "获取三方用户分页")
     @GetMapping("/auth/third/page")
     public CommonResult<Page<AuthThirdUser>> page(AuthThirdUserPageParam authThirdUserPageParam) {

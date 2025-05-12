@@ -14,11 +14,14 @@ package vip.xiaonuo.core.handler;
 
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
+
+import java.io.IOException;
 
 /**
  * 全局异常页面处理器，覆盖默认的Whitelabel Error Page
@@ -37,7 +40,7 @@ public class GlobalErrorViewController {
      * @date 2022/2/11 16:11
      **/
     @RequestMapping("/errorView")
-    public CommonResult<String> globalError(HttpServletRequest request) {
+    public CommonResult<String> globalError(HttpServletRequest request, HttpServletResponse response) throws IOException {
         CommonResult<String> commonResult = new CommonResult<>(404, "路径不存在", null);
         Object model = request.getAttribute("model");
         if(ObjectUtil.isNotEmpty(model)) {

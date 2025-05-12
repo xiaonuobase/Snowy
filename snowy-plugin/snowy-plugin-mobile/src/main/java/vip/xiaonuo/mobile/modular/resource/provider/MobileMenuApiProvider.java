@@ -12,11 +12,13 @@
  */
 package vip.xiaonuo.mobile.modular.resource.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
+import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 
 import java.util.List;
@@ -36,6 +38,11 @@ public class MobileMenuApiProvider implements MobileMenuApi {
     @Override
     public List<JSONObject> mobileMenuTreeSelector() {
         return mobileMenuService.mobileMenuTreeSelector();
+    }
+
+    @Override
+    public List<JSONObject> mobileMenuTreeSelector(List<JSONObject> originDataList) {
+        return mobileMenuService.mobileMenuTreeSelector(BeanUtil.copyToList(originDataList, MobileMenu.class));
     }
 
     @Override

@@ -28,6 +28,46 @@ import java.util.List;
 public interface DevEmailService extends IService<DevEmail> {
 
     /**
+     * 动态发送TXT邮件
+     *
+     * @param engine 发送引擎
+     * @param receiveAccounts 收件人邮箱，逗号拼接
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @author xuyuxiang
+     * @date 2022/2/7 22:29
+     */
+    void sendDynamicTxt(String engine, String receiveAccounts, String subject, String content);
+
+    /**
+     * 动态发送HTML邮件
+     *
+     * @param engine 发送引擎
+     * @param receiveAccounts 收件人邮箱，逗号拼接
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @author xuyuxiang
+     * @date 2022/2/7 22:29
+     */
+    void sendDynamicHtml(String engine, String receiveAccounts, String subject, String content);
+
+    /**
+     * 动态发送TXT邮件
+     *
+     * @author xuyuxiang
+     * @date 2022/6/21 18:37
+     **/
+    void sendDynamicTxt(DevEmailSendDynamicTxtParam devEmailSendDynamicTxtParam);
+
+    /**
+     * 动态发送HTML邮件
+     *
+     * @author xuyuxiang
+     * @date 2022/6/21 18:37
+     **/
+    void sendDynamicHtml(DevEmailSendDynamicHtmlParam devEmailSendDynamicHtmlParam);
+
+    /**
      * 发送邮件——本地TXT
      *
      * @author xuyuxiang

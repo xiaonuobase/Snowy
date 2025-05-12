@@ -27,13 +27,13 @@ import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
 import com.qcloud.cos.transfer.TransferManager;
 import com.qcloud.cos.transfer.TransferManagerConfiguration;
-import jakarta.activation.MimetypesFileTypeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileBucketAuthEnum;
 
+import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
@@ -42,7 +42,7 @@ import java.util.concurrent.Executors;
 
 /**
  * 腾讯云文件工具类
- * 参考文档：https://cloud.tencent.com/document/product/436/10199
+ * 参考文档：<a href="https://cloud.tencent.com/document/product/436/10199">参考文档</a>
  *
  * @author xuyuxiang
  * @date 2022/1/2 18:13

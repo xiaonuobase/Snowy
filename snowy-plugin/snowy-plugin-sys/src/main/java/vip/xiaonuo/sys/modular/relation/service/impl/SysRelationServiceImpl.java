@@ -72,41 +72,49 @@ public class SysRelationServiceImpl extends ServiceImpl<SysRelationMapper, SysRe
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationWithAppend(String objectId, String targetId, String category) {
         this.saveRelation(objectId, targetId, category, null, false);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationWithAppend(String objectId, String targetId, String category, String extJson) {
         this.saveRelation(objectId, targetId, category, extJson, false);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationBatchWithAppend(String objectId, List<String> targetIdList, String category) {
         this.saveRelationBatch(objectId, targetIdList, category, null, false);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationBatchWithAppend(String objectId, List<String> targetIdList, String category, List<String> extJsonList) {
         this.saveRelationBatch(objectId, targetIdList, category, extJsonList, false);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationWithClear(String objectId, String targetId, String category) {
         this.saveRelation(objectId, targetId, category, null, true);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationWithClear(String objectId, String targetId, String category, String extJson) {
         this.saveRelation(objectId, targetId, category, extJson, true);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationBatchWithClear(String objectId, List<String> targetIdList, String category) {
         this.saveRelationBatch(objectId, targetIdList, category, null, true);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void saveRelationBatchWithClear(String objectId, List<String> targetIdList, String category, List<String> extJsonList) {
         this.saveRelationBatch(objectId, targetIdList, category, extJsonList, true);

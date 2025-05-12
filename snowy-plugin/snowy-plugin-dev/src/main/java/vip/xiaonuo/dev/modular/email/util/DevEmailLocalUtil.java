@@ -39,6 +39,7 @@ public class DevEmailLocalUtil {
     private static MailAccount mailAccount;
 
     private static final String SNOWY_EMAIL_LOCAL_FROM_KEY = "SNOWY_EMAIL_LOCAL_FROM";
+
     private static final String SNOWY_EMAIL_LOCAL_PASSWORD_KEY = "SNOWY_EMAIL_LOCAL_PASSWORD";
 
     private static final String SNOWY_EMAIL_LOCAL_SMTP_HOST_KEY = "SNOWY_EMAIL_LOCAL_SMTP_HOST";

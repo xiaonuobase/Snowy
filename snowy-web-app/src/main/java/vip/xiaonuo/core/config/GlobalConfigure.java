@@ -147,9 +147,6 @@ public class GlobalConfigure implements WebMvcConfigurer {
             /* 系统字典树 */
             "/dev/dict/tree",
 
-            /* 文件下载 */
-            "/dev/file/download",
-
             /* 用户个人中心相关 */
             "/sys/userCenter/getPicCaptcha",
             "/sys/userCenter/findPasswordGetPhoneValidCode",
@@ -576,29 +573,19 @@ public class GlobalConfigure implements WebMvcConfigurer {
     @Component
     public static class CustomMetaObjectHandler implements MetaObjectHandler {
 
-        /**
-         * 删除标志
-         */
+        /** 删除标志 */
         private static final String DELETE_FLAG = "deleteFlag";
 
-        /**
-         * 创建人
-         */
+        /** 创建人 */
         private static final String CREATE_USER = "createUser";
 
-        /**
-         * 创建时间
-         */
+        /** 创建时间 */
         private static final String CREATE_TIME = "createTime";
 
-        /**
-         * 更新人
-         */
+        /** 更新人 */
         private static final String UPDATE_USER = "updateUser";
 
-        /**
-         * 更新时间
-         */
+        /** 更新时间 */
         private static final String UPDATE_TIME = "updateTime";
 
         @Override
@@ -609,24 +596,21 @@ public class GlobalConfigure implements WebMvcConfigurer {
                 if (ObjectUtil.isNull(deleteFlag)) {
                     setFieldValByName(DELETE_FLAG, EnumUtil.toString(CommonDeleteFlagEnum.NOT_DELETE), metaObject);
                 }
-            } catch (ReflectionException ignored) {
-            }
+            } catch (ReflectionException ignored) { }
             try {
                 //为空则设置createUser
                 Object createUser = metaObject.getValue(CREATE_USER);
                 if (ObjectUtil.isNull(createUser)) {
                     setFieldValByName(CREATE_USER, this.getUserId(), metaObject);
                 }
-            } catch (ReflectionException ignored) {
-            }
+            } catch (ReflectionException ignored) { }
             try {
                 //为空则设置createTime
                 Object createTime = metaObject.getValue(CREATE_TIME);
                 if (ObjectUtil.isNull(createTime)) {
                     setFieldValByName(CREATE_TIME, DateTime.now(), metaObject);
                 }
-            } catch (ReflectionException ignored) {
-            }
+            } catch (ReflectionException ignored) { }
         }
 
         @Override

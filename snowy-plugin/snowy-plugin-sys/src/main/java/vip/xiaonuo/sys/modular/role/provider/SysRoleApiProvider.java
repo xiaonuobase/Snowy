@@ -107,4 +107,14 @@ public class SysRoleApiProvider implements SysRoleApi {
         }
         sysRelationService.saveRelationBatchWithAppend(superAdminRoleId, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue(), extJsonList);
     }
+
+    @Override
+    public List<JSONObject> resourceTreeSelector() {
+        return sysRoleService.resourceTreeSelector(false).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> permissionTreeSelector() {
+        return sysRoleService.permissionTreeSelector();
+    }
 }

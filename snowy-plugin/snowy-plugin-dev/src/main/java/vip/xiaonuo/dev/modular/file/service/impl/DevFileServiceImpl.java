@@ -124,8 +124,8 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public void delete(List<DevFileIdParam> devFileIdParamList) {
         this.removeByIds(CollStreamUtil.toList(devFileIdParamList, DevFileIdParam::getId));
     }
@@ -178,6 +178,8 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         // 存储桶名称
         String bucketName;
 
+        String fileKey = genFileKey(fileId, file);
+
         // 定义存储的url，本地文件返回文件实际路径，其他引擎返回网络地址
         String storageUrl;
 
@@ -186,22 +188,22 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
             // 使用固定名称defaultBucketName
             bucketName = "defaultBucketName";
-            storageUrl = DevFileLocalUtil.storageFileWithReturnUrl(bucketName, genFileKey(fileId, file), file);
+            storageUrl = DevFileLocalUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else if(engine.equals(DevFileEngineTypeEnum.ALIYUN.getValue())) {
 
             // 使用阿里云默认配置的bucketName
             bucketName = DevFileAliyunUtil.getDefaultBucketName();
-            storageUrl = DevFileAliyunUtil.storageFileWithReturnUrl(bucketName, genFileKey(fileId, file), file);
+            storageUrl = DevFileAliyunUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else if(engine.equals(DevFileEngineTypeEnum.TENCENT.getValue())) {
 
             // 使用腾讯云默认配置的bucketName
             bucketName = DevFileTencentUtil.getDefaultBucketName();
-            storageUrl = DevFileTencentUtil.storageFileWithReturnUrl(bucketName, genFileKey(fileId, file), file);
+            storageUrl = DevFileTencentUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else if(engine.equals(DevFileEngineTypeEnum.MINIO.getValue())) {
 
             // 使用MINIO默认配置的bucketName
             bucketName = DevFileMinIoUtil.getDefaultBucketName();
-            storageUrl = DevFileMinIoUtil.storageFileWithReturnUrl(bucketName, genFileKey(fileId, file), file);
+            storageUrl = DevFileMinIoUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else {
             throw new CommonException("不支持的文件引擎：{}", engine);
         }
@@ -215,12 +217,13 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         // 设置存储引擎类型
         devFile.setEngine(engine);
         devFile.setBucket(bucketName);
+        devFile.setFileKey(fileKey);
         devFile.setName(file.getOriginalFilename());
         String suffix = ObjectUtil.isNotEmpty(file.getOriginalFilename())?StrUtil.subAfter(file.getOriginalFilename(),
                 StrUtil.DOT, true):null;
         devFile.setSuffix(suffix);
         devFile.setSizeKb(Convert.toStr(NumberUtil.div(new BigDecimal(file.getSize()), BigDecimal.valueOf(1024))
-                .setScale(0, RoundingMode.HALF_UP)));
+                .setScale(0,  RoundingMode.HALF_UP )));
         devFile.setSizeInfo(FileUtil.readableFileSize(file.getSize()));
         devFile.setObjName(ObjectUtil.isNotEmpty(devFile.getSuffix())?fileId + StrUtil.DOT + devFile.getSuffix():null);
         // 如果是图片，则压缩生成缩略图

@@ -44,7 +44,7 @@ public class BizOrg extends CommonEntity {
 
     /** 主管id */
     @Schema(description = "主管id")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     @Trans(type = TransType.SIMPLE, target = BizUser.class, fields = "name", alias = "director", ref = "directorName")
     private String directorId;
 
@@ -66,6 +66,6 @@ public class BizOrg extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

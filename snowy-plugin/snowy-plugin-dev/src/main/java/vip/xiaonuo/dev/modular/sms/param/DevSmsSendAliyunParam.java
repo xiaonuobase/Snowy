@@ -28,12 +28,12 @@ import lombok.Setter;
 public class DevSmsSendAliyunParam {
 
     /** 手机号 */
-    @Schema(description = "手机号，多个逗号拼接", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "手机号，多个逗号拼接")
     @NotBlank(message = "phoneNumbers不能为空")
     private String phoneNumbers;
 
     /** 模板编码 */
-    @Schema(description = "短信服务控制台配置且审核通过的模板编码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "短信服务控制台配置且审核通过的模板编码")
     @NotBlank(message = "templateCode不能为空")
     private String templateCode;
 

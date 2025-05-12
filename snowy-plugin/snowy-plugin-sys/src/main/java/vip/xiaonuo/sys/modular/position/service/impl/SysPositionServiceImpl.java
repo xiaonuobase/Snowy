@@ -91,7 +91,6 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysPositionAddParam sysPositionAddParam) {
-        SysPositionCategoryEnum.validate(sysPositionAddParam.getCategory());
         SysPosition sysPosition = BeanUtil.toBean(sysPositionAddParam, SysPosition.class);
         boolean repeatName = this.count(new LambdaQueryWrapper<SysPosition>().eq(SysPosition::getOrgId, sysPosition.getOrgId())
                 .eq(SysPosition::getName, sysPosition.getName())) > 0;
@@ -108,7 +107,6 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(SysPositionEditParam sysPositionEditParam) {
-        SysPositionCategoryEnum.validate(sysPositionEditParam.getCategory());
         SysPosition sysPosition = this.queryEntity(sysPositionEditParam.getId());
         BeanUtil.copyProperties(sysPositionEditParam, sysPosition);
         boolean repeatName = this.count(new LambdaQueryWrapper<SysPosition>().eq(SysPosition::getOrgId, sysPosition.getOrgId())
@@ -182,7 +180,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
             sysPosition.setOrgId(orgId);
             sysPosition.setName(positionName);
             sysPosition.setCode(RandomUtil.randomString(10));
-            sysPosition.setCategory(SysPositionCategoryEnum.LOW.getValue());
+            sysPosition.setCategory(SysPositionCategoryEnum.HIGH.getValue());
             sysPosition.setSortCode(99);
             this.save(sysPosition);
             // 发布增加事件
@@ -204,17 +202,17 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
 
     @Override
     public Page<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
-        LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>().checkSqlInjection();
         // 查询部分字段
-        lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
+        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
                 SysPosition::getCategory, SysPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(sysPositionSelectorPositionParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysPosition::getOrgId, sysPositionSelectorPositionParam.getOrgId());
+            queryWrapper.lambda().eq(SysPosition::getOrgId, sysPositionSelectorPositionParam.getOrgId());
         }
         if(ObjectUtil.isNotEmpty(sysPositionSelectorPositionParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysPosition::getName, sysPositionSelectorPositionParam.getSearchKey());
+            queryWrapper.lambda().like(SysPosition::getName, sysPositionSelectorPositionParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(SysPosition::getSortCode);
-        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(SysPosition::getSortCode);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 }

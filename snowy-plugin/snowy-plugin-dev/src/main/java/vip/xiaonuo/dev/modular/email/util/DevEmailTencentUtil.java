@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * 腾讯云邮件工具类
- * 参考文档：https://cloud.tencent.com/document/api/1288/51034
+ * 参考文档：<a href="https://cloud.tencent.com/document/api/1288/51034">参考文档</a>
  *
  * @author xuyuxiang
  * @date 2022/6/17 11:26
@@ -43,7 +43,7 @@ public class DevEmailTencentUtil {
 
     private static final String SNOWY_EMAIL_TENCENT_SECRET_ID_KEY = "SNOWY_EMAIL_TENCENT_SECRET_ID";
     private static final String SNOWY_EMAIL_TENCENT_SECRET_KEY_KEY = "SNOWY_EMAIL_TENCENT_SECRET_KEY";
-    private static final String SNOWY_EMAIL_TENCENT_REGION_ID_KEY = "SNOWY_EMAIL_TENCENT_REGION_ID";
+    private static final String SNOWY_EMAIL_TENCENT_FROM_KEY = "SNOWY_EMAIL_TENCENT_FROM";
 
     /**
      * 初始化操作的客户端
@@ -68,15 +68,7 @@ public class DevEmailTencentUtil {
         if(ObjectUtil.isEmpty(secretKey)) {
             throw new CommonException("腾讯云邮件操作客户端未正确配置：secretKey为空");
         }
-
-        /* regionId */
-        String regionId = devConfigApi.getValueByKey(SNOWY_EMAIL_TENCENT_REGION_ID_KEY);
-
-        if(ObjectUtil.isEmpty(regionId)) {
-            throw new CommonException("腾讯云邮件操作客户端未正确配置：regionId为空");
-        }
-
-        client = new SesClient(new Credential(secretId, secretKey), regionId);
+        client = new SesClient(new Credential(secretId, secretKey), "ap-guangzhou");
     }
 
     /**
@@ -88,7 +80,7 @@ public class DevEmailTencentUtil {
      * @param subject 邮件主题，必传
      * @param content 邮件 txt 正文，必传，注意：腾讯云api目前要求请求包大小不得超过8 MB。
      * @param attachmentList 需要发送附件时，填写附件相关参数，格式:[{"FileName": "xxxx", "Content": "xxx"}]
-     *                       支持的格式与说明见：https://cloud.tencent.com/document/api/1288/51053#Attachment
+     *                       支持的格式与说明见：<a href="https://cloud.tencent.com/document/api/1288/51053#Attachment">参考文档</a>
      * @return 发送成功的回执id
      * @author xuyuxiang
      * @date 2022/2/23 14:24
@@ -96,6 +88,9 @@ public class DevEmailTencentUtil {
     public static String sendTextEmail(String from, String user, String tos, String subject, String content, List<JSONObject> attachmentList) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             SendEmailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, false, attachmentList);
             return client.SendEmail(singleSendMailRequest).getMessageId();
         } catch (TencentCloudSDKException e) {
@@ -112,7 +107,7 @@ public class DevEmailTencentUtil {
      * @param subject 邮件主题，必传
      * @param content 邮件 txt 正文，必传，注意：腾讯云api目前要求请求包大小不得超过8 MB。
      * @param attachmentList 需要发送附件时，填写附件相关参数，格式:[{"FileName": "xxxx", "Content": "xxx"}]
-     *                       支持的格式与说明见：https://cloud.tencent.com/document/api/1288/51053#Attachment
+     *                       支持的格式与说明见：<a href="https://cloud.tencent.com/document/api/1288/51053#Attachment">参考文档</a>
      * @return 发送成功的回执id
      * @author xuyuxiang
      * @date 2022/2/23 14:24
@@ -120,6 +115,9 @@ public class DevEmailTencentUtil {
     public static String sendHtmlEmail(String from, String user, String tos, String subject, String content, List<JSONObject> attachmentList) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             SendEmailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, true, attachmentList);
             return client.SendEmail(singleSendMailRequest).getMessageId();
         } catch (TencentCloudSDKException e) {
@@ -137,7 +135,7 @@ public class DevEmailTencentUtil {
      * @param templateParam 预先创建且通过审核的模板的参数json，格式{"name":"张三"}，可不传
      * @param subject 邮件主题，必传
      * @param attachmentList 需要发送附件时，填写附件相关参数，格式:[{"FileName": "xxxx", "Content": "xxx"}]
-     *                       支持的格式与说明见：https://cloud.tencent.com/document/api/1288/51053#Attachment
+     *                       支持的格式与说明见：<a href="https://cloud.tencent.com/document/api/1288/51053#Attachment">参考文档</a>
      * @return 发送成功的回执id
      * @author xuyuxiang
      * @date 2022/2/23 14:24
@@ -146,6 +144,9 @@ public class DevEmailTencentUtil {
                                         String templateParam, String subject, List<JSONObject> attachmentList) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             BatchSendEmailRequest batchSendEmailRequest = createBatchSendRequest(from, user, toId, templateId, templateParam, subject, attachmentList);
             return client.BatchSendEmail(batchSendEmailRequest).getTaskId().toString();
         } catch (TencentCloudSDKException e) {
@@ -209,5 +210,20 @@ public class DevEmailTencentUtil {
             batchSendEmailRequest.setAttachments(attachments);
         }
         return batchSendEmailRequest;
+    }
+
+    /**
+     * 获取默认发送账号
+     *
+     * @author xuyuxiang
+     * @date 2024/1/26 16:40
+     **/
+    public static String getDefaultFrom() {
+        DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+        String signName = devConfigApi.getValueByKey(SNOWY_EMAIL_TENCENT_FROM_KEY);
+        if(ObjectUtil.isEmpty(signName)) {
+            throw new CommonException("腾讯云邮件操作客户端未正确配置：from为空");
+        }
+        return signName;
     }
 }

@@ -28,8 +28,8 @@ import java.util.List;
 @Setter
 public class SysRoleGrantResourceTreeResult {
 
-    /** 模块id */
-    @Schema(description = "模块id")
+    /** 模块主键 */
+    @Schema(description = "模块主键")
     private String id;
 
     /** 模块名称*/
@@ -54,12 +54,12 @@ public class SysRoleGrantResourceTreeResult {
     @Setter
     public static class SysRoleGrantResourceMenuResult {
 
-        /** 菜单id */
-        @Schema(description = "菜单id")
+        /** id */
+        @Schema(description = "菜单主键")
         private String id;
 
         /** 父id */
-        @Schema(description = "父id")
+        @Schema(description = "菜单id")
         private String parentId;
 
         /** 父名称 */
@@ -88,8 +88,8 @@ public class SysRoleGrantResourceTreeResult {
         @Setter
         public static class SysRoleGrantResourceButtonResult {
 
-            /** 按钮id */
-            @Schema(description = "按钮id")
+            /** id */
+            @Schema(description = "按钮主键")
             private String id;
 
             /** 标题 */

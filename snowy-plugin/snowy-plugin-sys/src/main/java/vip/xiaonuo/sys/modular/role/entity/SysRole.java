@@ -37,7 +37,7 @@ public class SysRole extends CommonEntity {
 
     /** 组织id */
     @Schema(description = "组织id")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String orgId;
 
     /** 名称 */
@@ -58,6 +58,6 @@ public class SysRole extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

@@ -34,6 +34,14 @@ public interface MobileMenuApi {
     List<JSONObject> mobileMenuTreeSelector();
 
     /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:10
+     **/
+    List<JSONObject> mobileMenuTreeSelector(List<JSONObject> originDataList);
+
+    /**
      * 获取移动端登录菜单树
      *
      * @author xuyuxiang

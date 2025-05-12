@@ -79,6 +79,8 @@ import vip.xiaonuo.mobile.api.MobileButtonApi;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
+import vip.xiaonuo.sys.core.util.SysEmailFormatUtl;
+import vip.xiaonuo.sys.core.util.SysPasswordUtl;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -98,12 +100,18 @@ import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.enums.SysRoleDataScopeCategoryEnum;
+import vip.xiaonuo.sys.modular.role.param.SysRoleGrantUserParam;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
+import vip.xiaonuo.sys.modular.user.enums.SysUpdatePasswordValidTypeEnum;
+import vip.xiaonuo.sys.modular.user.enums.SysUserSourceFromTypeEnum;
 import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.mapper.SysUserMapper;
 import vip.xiaonuo.sys.modular.user.param.*;
 import vip.xiaonuo.sys.modular.user.result.*;
+import vip.xiaonuo.sys.modular.user.service.SysUserExtService;
+import vip.xiaonuo.sys.modular.user.service.SysUserPasswordService;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.awt.image.BufferedImage;
@@ -123,13 +131,71 @@ import java.util.stream.Collectors;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
 
-    private static final String SNOWY_SYS_DEFAULT_PASSWORD_KEY = "SNOWY_SYS_DEFAULT_PASSWORD";
+    /** B端验证码失效时间（适用图片验证码和短信验证码，单位：分钟，默认5分钟有效） */
+    private static final String SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B_KEY = "SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B";
 
+    /** B端重置密码验证码短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B";
+
+    /** B端重置密码验证码邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B";
+
+    /** B端修改密码验证码短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B";
+
+    /** B端修改密码验证码邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B";
+
+    /** B端重置密码成功短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B";
+
+    /** B端重置密码成功邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B";
+
+    /** B端密码即将到期短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B";
+
+    /** B端密码即将到期邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B";
+
+    /** B端绑定手机验证码短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_VALID_CODE_BINDING_PHONE_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_VALID_CODE_BINDING_PHONE_FOR_B";
+
+    /** B端绑定邮箱验证码邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_VALID_CODE_BINDING_EMAIL_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_VALID_CODE_BINDING_EMAIL_FOR_B";
+
+    /** B端修改绑定手机验证码短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_BINDING_PHONE_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_BINDING_PHONE_FOR_B";
+
+    /** B端修改绑定邮箱验证码邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_BINDING_EMAIL_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_BINDING_EMAIL_FOR_B";
+
+    /** B端注册账号成功短信消息模板 */
+    private static final String SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY = "SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B";
+
+    /** B端注册账号成功邮件消息模板 */
+    private static final String SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY = "SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B";
+
+    /** B端注册后是否需要绑定手机号 */
+    private static final String SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY = "SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B";
+
+    /** B端注册后是否需要绑定邮箱 */
+    private static final String SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY = "SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B";
+
+    /** B端新用户默认机构 */
+    private static final String SNOWY_SYS_DEFAULT_NEW_USER_ORG_FOR_B_KEY = "SNOWY_SYS_DEFAULT_NEW_USER_ORG_FOR_B";
+
+    /** B端新用户默认职位 */
+    private static final String SNOWY_SYS_DEFAULT_NEW_USER_POSITION_FOR_B_KEY = "SNOWY_SYS_DEFAULT_NEW_USER_POSITION_FOR_B";
+
+    /** B端新用户默认角色 */
+    private static final String SNOWY_SYS_DEFAULT_NEW_USER_ROLE_FOR_B_KEY = "SNOWY_SYS_DEFAULT_NEW_USER_ROLE_FOR_B";
+
+    /** 工作台默认快捷方式 */
     private static final String SNOWY_SYS_DEFAULT_WORKBENCH_DATA_KEY = "SNOWY_SYS_DEFAULT_WORKBENCH_DATA";
 
+    /** 验证码缓存前缀 */
     private static final String USER_VALID_CODE_CACHE_KEY = "user-validCode:";
-
-    public static final String USER_CACHE_ALL_KEY = "sys-user:all";
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
@@ -178,6 +244,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private SysGroupService sysGroupService;
+
+    @Resource
+    private SysUserExtService sysUserExtService;
+
+    @Resource
+    private SysUserPasswordService sysUserPasswordService;
 
     @Override
     public SysLoginUser getUserById(String id) {
@@ -244,19 +316,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(SysUserAddParam sysUserAddParam) {
+    public void add(SysUserAddParam sysUserAddParam, String sourceFromType) {
         checkParam(sysUserAddParam);
         SysUser sysUser = BeanUtil.toBean(sysUserAddParam, SysUser.class);
         if (ObjectUtil.isEmpty(sysUser.getAvatar())) {
             // 设置默认头像
             sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
         }
-        // 设置默认密码
-        sysUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+        if(ObjectUtil.isEmpty(sysUser.getPassword())) {
+            // 设置默认密码
+            sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
+        } else {
+            // 设置传入的密码
+            sysUser.setPassword(CommonCryptogramUtil.doHashValue(sysUser.getPassword()));
+        }
         // 设置状态
         sysUser.setUserStatus(SysUserStatusEnum.ENABLE.getValue());
+        // 保存用户
         this.save(sysUser);
-
+        // 插入扩展信息
+        sysUserExtService.createExtInfo(sysUser.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
     }
@@ -276,7 +355,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         }
         if (ObjectUtil.isNotEmpty(sysUserAddParam.getEmail())) {
-            if (!CommonEmailUtil.isEmail(sysUserAddParam.getEmail())) {
+            if (CommonEmailUtil.isNotEmail(sysUserAddParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", sysUserAddParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -297,8 +376,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("不可修改系统内置超管用户账号");
         }
         BeanUtil.copyProperties(sysUserEditParam, sysUser);
+        // 更新用户
         this.updateById(sysUser);
-
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
     }
@@ -320,7 +399,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         }
         if (ObjectUtil.isNotEmpty(sysUserEditParam.getEmail())) {
-            if (!CommonEmailUtil.isEmail(sysUserEditParam.getEmail())) {
+            if (CommonEmailUtil.isNotEmail(sysUserEditParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", sysUserEditParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
@@ -364,6 +443,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 执行删除
             this.removeByIds(sysUserIdList);
 
+            // 删除扩展信息
+            sysUserExtService.remove(new LambdaQueryWrapper<SysUserExt>().in(SysUserExt::getUserId, sysUserIdList));
+
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.USER.getValue(), sysUserIdList);
         }
@@ -382,16 +464,69 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void enableUser(SysUserIdParam sysUserIdParam) {
-
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()));
     }
 
     @Override
     public void resetPassword(SysUserIdParam sysUserIdParam) {
+        // 获取用户
+        SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+        // 获取默认密码
+        String defaultPassword = SysPasswordUtl.getDefaultPassword();
+        // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getPassword,
-                CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY))));
+                CommonCryptogramUtil.doHashValue(defaultPassword)));
+        // 获取手机号
+        String phone = sysUser.getPhone();
+        // 手机号不为空则发送密码重置成功短信
+        if(ObjectUtil.isNotEmpty(phone)){
+            // 重置密码成功短信消息模板编码
+            String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(smsTemplateCode)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", defaultPassword);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
+                }
+            }
+        }
+        // 获取手机号
+        String email = sysUser.getEmail();
+        // 密码不为空则发送密码重置成功邮件
+        if(ObjectUtil.isNotEmpty(email)){
+            // 重置密码成功邮件消息模板内容
+            String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(emailTemplateContent)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", defaultPassword);
+                // 获取格式化后的主题
+                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                // 获取格式化后的内容
+                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            }
+        }
     }
 
     @Override
@@ -410,8 +545,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserPicValidCodeResult.setValidCodeBase64(validCodeBase64);
         // 将请求号返回前端
         sysUserPicValidCodeResult.setValidCodeReqNo(validCodeReqNo);
-        // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + validCodeReqNo, validCode, 5 * 60);
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + validCodeReqNo, validCode, validCodeExpiredDuration);
         return sysUserPicValidCodeResult;
     }
 
@@ -447,9 +584,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public String findPasswordGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
+       return this.getPhoneValidCode(sysUserGetPhoneValidCodeParam, "重置密码验证码短信消息模板编码", SNOWY_SMS_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B_KEY);
+    }
+
+    /**
+     * 获取手机验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    private String getPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam, String templateCodeName, String templateCodeValue) {
         // 手机号
         String phone = sysUserGetPhoneValidCodeParam.getPhone();
-        // 验证码正确则校验手机号格式
+        // 校验手机号格式
         if (!PhoneUtil.isMobile(phone)) {
             throw new CommonException("手机号码：{}格式错误", phone);
         }
@@ -457,85 +604,484 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validValidCode(null, sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
         // 根据手机号获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
-            throw new CommonException("手机码：{}不存在", phone);
+            throw new CommonException("手机号码：{}不存在对应用户", phone);
         }
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
         String phoneValidCodeReqNo = IdWorker.getIdStr();
-
-        // TODO 使用阿里云执行发送验证码，将验证码作为短信内容的参数变量放入，
-        // TODO 签名不传则使用系统默认配置的签名，支持传入多个参数，示例：{"name":"张三","number":"15038****76"}
-        //devSmsApi.sendSmsAliyun(phone, null, "验证码模板号", JSONUtil.toJsonStr(JSONUtil.createObj().set("validCode", phoneValidCode)));
-
-        // TODO 使用腾讯云执行发送验证码，将验证码作为短信内容的参数变量放入，
-        // TODO sdkAppId和签名不传则使用系统默认配置的sdkAppId和签名，支持传入多个参数，逗号拼接，示例："张三,15038****76,进行中"
-        //devSmsApi.sendSmsTencent(null, phone, null, "验证码模板号", phoneValidCode);
-
-        // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, 5 * 60);
+        // 短信消息模板编码
+        String smsTemplateCode = devConfigApi.getValueByKey(templateCodeValue);
+        if(ObjectUtil.isEmpty(smsTemplateCode)){
+            throw new CommonException("请联系管理员配置{}", templateCodeName);
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("validCode", phoneValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取编码
+        String codeValue = contentJSONObject.getStr("code");
+        // 发送短信
+        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, validCodeExpiredDuration);
         // 返回请求号
         return phoneValidCodeReqNo;
     }
 
     @Override
     public String findPasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
+        return this.getEmailValidCode(sysUserGetEmailValidCodeParam, "重置密码验证码邮件消息模板内容", SNOWY_EMAIL_TEMPLATE_VALID_CODE_RESET_PASSWORD_FOR_B_KEY);
+    }
+
+    /**
+     * 获取邮箱验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    private String getEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam, String templateContentName, String templateContentValue) {
         // 邮箱
         String email = sysUserGetEmailValidCodeParam.getEmail();
-        // 验证码正确则校验邮箱格式
-        if (!CommonEmailUtil.isEmail(email)) {
+        // 校验邮箱格式
+        if (CommonEmailUtil.isNotEmail(email)) {
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 执行校验验证码
         validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
-            throw new CommonException("邮箱：{}不存在", email);
+            throw new CommonException("邮箱：{}不存在对应用户", email);
         }
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
         String emailValidCodeReqNo = IdWorker.getIdStr();
-
-        // TODO 使用本地发送邮件
-        String content = "您正在找回密码，验证码为：" + emailValidCode + "，5分钟内有效。";
-        devEmailApi.sendTextEmailLocal(email, "找回密码邮件", content, CollectionUtil.newArrayList());
-
-        // 将请求号作为key，验证码的值作为value放到redis，用于校验，5分钟有效
-        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + email + StrUtil.UNDERLINE + emailValidCodeReqNo, emailValidCode, 5 * 60);
+        // 邮件消息模板内容
+        String emailTemplateContent = devConfigApi.getValueByKey(templateContentValue);
+        if(ObjectUtil.isEmpty(emailTemplateContent)){
+            throw new CommonException("请联系管理员配置{}", templateContentName);
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取格式化后的主题
+        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        // 获取格式化后的内容
+        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        // 发送邮件
+        devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + email + StrUtil.UNDERLINE + emailValidCodeReqNo, emailValidCode, validCodeExpiredDuration);
         // 返回请求号
         return emailValidCodeReqNo;
     }
 
     @Override
     public void findPasswordByPhone(SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam) {
+        // 再次校验手机号是否合法
+        String phone = sysUserFindPwdByPhoneParam.getPhone();
+        // 校验手机号格式
+        if (!PhoneUtil.isMobile(phone)) {
+            throw new CommonException("手机号码：{}格式错误", phone);
+        }
+        // 根据手机号获取用户信息，判断用户是否存在
+        SysLoginUser sysLoginUser = this.getUserByPhone(phone);
+        if (ObjectUtil.isEmpty(sysLoginUser)) {
+            throw new CommonException("手机号码：{}不存在对应用户", phone);
+        }
         // 执行校验验证码
-        validValidCode(sysUserFindPwdByPhoneParam.getPhone(), sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
+        validValidCode(phone, sysUserFindPwdByPhoneParam.getValidCode(), sysUserFindPwdByPhoneParam.getValidCodeReqNo());
+        // 获取新密码
+        String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()).trim();
+        // 校验新密码
+        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
-                CommonCryptogramUtil.doSm4CbcEncrypt(sysUserFindPwdByPhoneParam.getPhone())).set(SysUser::getPassword,
-                CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()))));
+                CommonCryptogramUtil.doSm4CbcEncrypt(phone)).set(SysUser::getPassword,
+                CommonCryptogramUtil.doHashValue(newPassword)));
+        // 更新用户最新修改密码时间
+        sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
+        // 追加用户历史密码信息
+        sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
+        // 重置密码成功短信消息模板编码
+        String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+        // 不为空才发送
+        if(ObjectUtil.isNotEmpty(smsTemplateCode)){
+            // 模板内容转为JSONObject
+            JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+            // 定义变量参数
+            JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
+            // 获取编码
+            String codeValue = contentJSONObject.getStr("code");
+            // 编码不为空
+            if(ObjectUtil.isNotEmpty(codeValue)){
+                try {
+                    // 发送短信
+                    devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                } catch (Exception e) {
+                    log.error(">>> 短信发送失败", e);
+                }
+            }
+        }
     }
 
     @Override
     public void findPasswordByEmail(SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam) {
+        // 再次校验邮箱是否合法
+        String email = sysUserFindPwdByEmailParam.getEmail();
+        // 校验邮箱格式
+        if (CommonEmailUtil.isNotEmail(email)) {
+            throw new CommonException("邮箱：{}格式错误", email);
+        }
+        // 根据邮箱获取用户信息，判断用户是否存在
+        SysLoginUser sysLoginUser = this.getUserByEmail(email);
+        if (ObjectUtil.isEmpty(sysLoginUser)) {
+            throw new CommonException("邮箱：{}不存在对应用户", email);
+        }
         // 执行校验验证码
-        validValidCode(sysUserFindPwdByEmailParam.getEmail(), sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
-        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail,
-                sysUserFindPwdByEmailParam.getEmail()).set(SysUser::getPassword,
-                CommonCryptogramUtil.doHashValue(CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByEmailParam.getNewPassword()))));
+        validValidCode(email, sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
+        // 获取新密码
+        String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByEmailParam.getNewPassword()).trim();
+        // 更新用户最新修改密码时间
+        sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
+        // 追加用户历史密码信息
+        sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
+        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        // 修改密码
+        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail, email).set(SysUser::getPassword,
+                CommonCryptogramUtil.doHashValue(newPassword)));
+        // 重置密码成功邮件消息模板内容
+        String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+        // 不为空才发送
+        if(ObjectUtil.isNotEmpty(emailTemplateContent)){
+            // 模板内容转为JSONObject
+            JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+            // 定义变量参数
+            JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
+            // 获取格式化后的主题
+            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            // 获取格式化后的内容
+            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            try {
+                // 发送邮件
+                devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+            } catch (Exception e) {
+                log.error(">>> 邮件发送失败", e);
+            }
+        }
     }
 
     @Override
-    public void updatePassword(SysUserUpdatePwdParam sysUserUpdatePwdParam) {
+    public String updatePasswordGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
+        // 判断密码验证方式
+        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        return this.getPhoneValidCode(sysUserGetPhoneValidCodeParam, "修改密码验证码短信消息模板编码", SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
+    }
+
+    @Override
+    public String updatePasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
+        // 判断密码验证方式
+        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        return this.getEmailValidCode(sysUserGetEmailValidCodeParam, "修改密码验证码邮件消息模板内容", SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
+    }
+
+    @Override
+    public void updatePasswordByOld(SysUserUpdatePwdByOldParam sysUserUpdatePwdByOldParam) {
+        // 判断密码验证方式
+        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.OLD.getValue());
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
-        String password = sysUserUpdatePwdParam.getPassword();
-        String newPassword = sysUserUpdatePwdParam.getNewPassword();
+        String password = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getPassword()).trim();
+        String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getNewPassword()).trim();
         if (!CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword())) {
             throw new CommonException("原密码错误");
         }
+        // 校验新密码
+        SysPasswordUtl.validNewPassword(sysUser, newPassword);
+        // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUser.getId()).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
+        // 更新用户最新修改密码时间
+        sysUserExtService.updatePasswordLastTime(sysUser.getId());
+        // 追加用户历史密码信息
+        sysUserPasswordService.insertUserPasswordHistory(sysUser.getId(), newPassword);
+        // 获取手机号
+        String phone = sysUser.getPhone();
+        // 手机号不为空则发送密码重置成功短信
+        if(ObjectUtil.isNotEmpty(phone)){
+            // 重置密码成功短信消息模板编码
+            String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(smsTemplateCode)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
+                }
+            }
+        }
+        // 获取手机号
+        String email = sysUser.getEmail();
+        // 密码不为空则发送密码重置成功邮件
+        if(ObjectUtil.isNotEmpty(email)){
+            // 重置密码成功邮件消息模板内容
+            String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(emailTemplateContent)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
+                // 获取格式化后的主题
+                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                // 获取格式化后的内容
+                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updatePasswordByPhone(SysUserUpdatePwdByPhoneParam sysUserUpdatePwdByPhoneParam) {
+        // 判断密码验证方式
+        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam = new SysUserFindPwdByPhoneParam();
+        BeanUtil.copyProperties(sysUserUpdatePwdByPhoneParam, sysUserFindPwdByPhoneParam);
+        this.findPasswordByPhone(sysUserFindPwdByPhoneParam);
+    }
+
+    @Override
+    public void updatePasswordByEmail(SysUserUpdatePwdByEmailParam sysUserUpdatePwdByEmailParam) {
+        // 判断密码验证方式
+        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam = new SysUserFindPwdByEmailParam();
+        BeanUtil.copyProperties(sysUserUpdatePwdByEmailParam, sysUserFindPwdByEmailParam);
+        this.findPasswordByEmail(sysUserFindPwdByEmailParam);
+    }
+
+    @Override
+    public String bindPhoneGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
+        // 手机号
+        String phone = sysUserGetPhoneValidCodeParam.getPhone();
+        // 校验手机号格式
+        if (!PhoneUtil.isMobile(phone)) {
+            throw new CommonException("手机号码：{}格式错误", phone);
+        }
+        // 执行校验验证码
+        validValidCode(null, sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
+        // 根据手机号获取用户信息，判断用户是否存在，如果存在则不能绑定该手机号
+        if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
+            throw new CommonException("手机号码：{}已存在对应用户", phone);
+        }
+        // 生成手机验证码的值，随机6为数字
+        String phoneValidCode = RandomUtil.randomNumbers(6);
+        // 生成手机验证码的请求号
+        String phoneValidCodeReqNo = IdWorker.getIdStr();
+        // 绑定手机验证码短信消息模板编码
+        String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_VALID_CODE_BINDING_PHONE_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(smsTemplateCode)){
+            throw new CommonException("请联系管理员配置绑定手机验证码短信消息模板编码");
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("validCode", phoneValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取编码
+        String codeValue = contentJSONObject.getStr("code");
+        // 发送短信
+        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, validCodeExpiredDuration);
+        // 返回请求号
+        return phoneValidCodeReqNo;
+    }
+
+    @Override
+    public String updateBindPhoneGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
+        // 手机号
+        String phone = sysUserGetPhoneValidCodeParam.getPhone();
+        // 校验手机号格式
+        if (!PhoneUtil.isMobile(phone)) {
+            throw new CommonException("手机号码：{}格式错误", phone);
+        }
+        // 执行校验验证码
+        validValidCode(null, sysUserGetPhoneValidCodeParam.getValidCode(), sysUserGetPhoneValidCodeParam.getValidCodeReqNo());
+        // 根据手机号获取用户信息，判断用户是否存在，如果存在则不能绑定该手机号
+        if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
+            throw new CommonException("手机号码：{}已存在对应用户", phone);
+        }
+        // 生成手机验证码的值，随机6为数字
+        String phoneValidCode = RandomUtil.randomNumbers(6);
+        // 生成手机验证码的请求号
+        String phoneValidCodeReqNo = IdWorker.getIdStr();
+        // 修改绑定手机验证码短信消息模板编码
+        String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_BINDING_PHONE_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(smsTemplateCode)){
+            throw new CommonException("请联系管理员配置修改绑定手机验证码短信消息模板编码");
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("validCode", phoneValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取编码
+        String codeValue = contentJSONObject.getStr("code");
+        // 发送短信
+        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + phone + StrUtil.UNDERLINE + phoneValidCodeReqNo, phoneValidCode, validCodeExpiredDuration);
+        // 返回请求号
+        return phoneValidCodeReqNo;
+    }
+
+    @Override
+    public void bindPhone(SysUserBindPhoneParam sysUserBindPhoneParam) {
+        // 再次校验手机号是否合法
+        String phone = sysUserBindPhoneParam.getPhone();
+        // 校验手机号格式
+        if (!PhoneUtil.isMobile(phone)) {
+            throw new CommonException("手机号码：{}格式错误", phone);
+        }
+        // 根据手机号获取用户信息，判断用户是否存在，如果存在则不能绑定该手机号
+        if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
+            throw new CommonException("手机号码：{}已存在对应用户", phone);
+        }
+        // 执行校验验证码
+        validValidCode(phone, sysUserBindPhoneParam.getValidCode(), sysUserBindPhoneParam.getValidCodeReqNo());
+        // 修改手机号
+        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, StpUtil.getLoginIdAsString())
+                .set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+    }
+
+    @Override
+    public String bindEmailGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
+        // 邮箱
+        String email = sysUserGetEmailValidCodeParam.getEmail();
+        // 校验邮箱格式
+        if (CommonEmailUtil.isNotEmail(email)) {
+            throw new CommonException("邮箱：{}格式错误", email);
+        }
+        // 执行校验验证码
+        validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
+        // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
+        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+            throw new CommonException("邮箱：{}已存在对应用户", email);
+        }
+        // 生成邮箱验证码的值，随机6为数字
+        String emailValidCode = RandomUtil.randomNumbers(6);
+        // 生成邮箱验证码的请求号
+        String emailValidCodeReqNo = IdWorker.getIdStr();
+        // 绑定邮箱验证码邮件消息模板内容
+        String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_VALID_CODE_BINDING_EMAIL_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(emailTemplateContent)){
+            throw new CommonException("请联系管理员配置绑定邮箱验证码邮件消息模板内容");
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取格式化后的主题
+        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        // 获取格式化后的内容
+        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        // 发送邮件
+        devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + email + StrUtil.UNDERLINE + emailValidCodeReqNo, emailValidCode, validCodeExpiredDuration);
+        // 返回请求号
+        return emailValidCodeReqNo;
+    }
+
+    @Override
+    public String updateBindEmailGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
+        // 邮箱
+        String email = sysUserGetEmailValidCodeParam.getEmail();
+        // 校验邮箱格式
+        if (CommonEmailUtil.isNotEmail(email)) {
+            throw new CommonException("邮箱：{}格式错误", email);
+        }
+        // 执行校验验证码
+        validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
+        // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
+        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+            throw new CommonException("邮箱：{}已存在对应用户", email);
+        }
+        // 生成邮箱验证码的值，随机6为数字
+        String emailValidCode = RandomUtil.randomNumbers(6);
+        // 生成邮箱验证码的请求号
+        String emailValidCodeReqNo = IdWorker.getIdStr();
+        // 修改绑定邮箱验证码邮件消息模板内容
+        String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_BINDING_EMAIL_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(emailTemplateContent)){
+            throw new CommonException("请联系管理员配置修改绑定邮箱验证码邮件消息模板内容");
+        }
+        // 获取验证码失效时间（单位：秒）
+        long validCodeExpiredDuration = this.getValidCodeExpiredDuration();
+        // 模板内容转为JSONObject
+        JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+        // 定义变量参数
+        JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
+                .set("validTime", validCodeExpiredDuration/60);
+        // 获取格式化后的主题
+        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        // 获取格式化后的内容
+        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        // 发送邮件
+        devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+        // 将请求号作为key，验证码的值作为value放到redis，用于校验
+        commonCacheOperator.put(USER_VALID_CODE_CACHE_KEY + email + StrUtil.UNDERLINE + emailValidCodeReqNo, emailValidCode, validCodeExpiredDuration);
+        // 返回请求号
+        return emailValidCodeReqNo;
+    }
+
+    @Override
+    public void bindEmail(SysUserBindEmailParam sysUserBindEmailParam) {
+        // 再次校验邮箱是否合法
+        String email = sysUserBindEmailParam.getEmail();
+        // 校验邮箱格式
+        if (CommonEmailUtil.isNotEmail(email)) {
+            throw new CommonException("邮箱：{}格式错误", email);
+        }
+        // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
+        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+            throw new CommonException("邮箱：{}已存在对应用户", email);
+        }
+        // 执行校验验证码
+        validValidCode(email, sysUserBindEmailParam.getValidCode(), sysUserBindEmailParam.getValidCodeReqNo());
+        // 修改邮箱
+        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, StpUtil.getLoginIdAsString())
+                .set(SysUser::getEmail, email));
     }
 
     @Override
@@ -629,7 +1175,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         // 获取拥有的菜单列表
         List<SysMenu> menuList = allMenuList.stream().filter(sysMenu ->
-                menuIdList.contains(sysMenu.getId())).collect(Collectors.toList());
+                menuIdList.contains(sysMenu.getId())).toList();
 
         // 对获取到的角色对应的菜单列表进行处理，获取父列表
         menuList.forEach(sysMenu -> execRecursionFindParent(allMenuList, sysMenu.getId(), resultList));
@@ -703,7 +1249,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
                 }
-                if (sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
+                if (sysMenus.orElse(null) != null && sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
                     // 如果是首页，则设置affix
                     metaJsonObject.set("affix", true);
                 }
@@ -714,12 +1260,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             menuJsonObject.set("meta", metaJsonObject);
             return menuJsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
 
         // 执行构造树
         List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->
-                        new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
-                                jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
+                new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
+                        jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
@@ -801,10 +1347,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                 }
             }
+            List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                    .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+            sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
         }
-        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
-                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-        sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
     }
 
     @Override
@@ -832,8 +1378,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<SysOrg> originDataList = sysOrgService.getAllOrgList();
-        List<SysOrg> sysOrgList = sysOrgService.getParentListById(originDataList, sysUser.getOrgId(), true);
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg -> {
+        // 构建一个根组织
+        SysOrg rootSysOrg = new SysOrg();
+        rootSysOrg.setId("0");
+        rootSysOrg.setParentId("-1");
+        rootSysOrg.setName("根组织");
+        originDataList.add(rootSysOrg);
+        List<TreeNode<String>> treeNodeList = originDataList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
             if (sysOrg.getId().equals(sysUser.getOrgId())) {
                 treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
@@ -841,34 +1392,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             return treeNode;
         }).collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0", new TreeNodeConfig().setParentIdKey("pid")
+        return TreeUtil.build(treeNodeList, "-1", new TreeNodeConfig().setParentIdKey("pid")
                 .setNameKey("label"), new DefaultNodeParser<>());
     }
 
     @Override
     public void updateUserInfo(SysUserUpdateInfoParam sysUserUpdateInfoParam) {
         String id = StpLoginUserUtil.getLoginUser().getId();
-        if (!StrUtil.equals(id,sysUserUpdateInfoParam.getId())){
-            throw new CommonException("禁止修改他人信息");
+        if (!StrUtil.equals(id, sysUserUpdateInfoParam.getId())){
+            throw new CommonException("被修改用户与当前登录用户不匹配");
         }
-
         SysUser sysUser = this.queryEntity(sysUserUpdateInfoParam.getId());
-
-        if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getPhone())) {
-            if (!PhoneUtil.isMobile(sysUserUpdateInfoParam.getPhone())) {
-                throw new CommonException("手机号码：{}格式错误", sysUserUpdateInfoParam.getPhone());
-            }
-            if (this.count(new LambdaQueryWrapper<SysUser>().ne(SysUser::getId, sysUser.getId())
-                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()))) > 0) {
-                throw new CommonException("存在重复的手机号，手机号为：{}", sysUserUpdateInfoParam.getPhone());
-            }
-        }
         LambdaUpdateWrapper<SysUser> lambdaUpdateWrapper = new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId());
         if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getName())) {
             lambdaUpdateWrapper.set(SysUser::getName, sysUserUpdateInfoParam.getName());
-        }
-        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getPhone())) {
-            lambdaUpdateWrapper.set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserUpdateInfoParam.getPhone()));
         }
         if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getNickname())) {
             lambdaUpdateWrapper.set(SysUser::getNickname, sysUserUpdateInfoParam.getNickname());
@@ -878,12 +1415,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getBirthday())) {
             lambdaUpdateWrapper.set(SysUser::getBirthday, sysUserUpdateInfoParam.getBirthday());
-        }
-        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getEmail())) {
-            lambdaUpdateWrapper.set(SysUser::getEmail, sysUserUpdateInfoParam.getEmail());
-        }
-        if(ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getSignature())) {
-            lambdaUpdateWrapper.set(SysUser::getSignature, sysUserUpdateInfoParam.getSignature());
         }
         // 更新指定字段
         this.update(lambdaUpdateWrapper);
@@ -951,7 +1482,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         });
         if (ObjectUtil.isNotEmpty(buttonIdList)) {
-            return mobileButtonApi.listByIds(buttonIdList);
+            return mobileButtonApi.listButtonCodeListByIdList(buttonIdList);
         }
         return CollectionUtil.newArrayList();
     }
@@ -969,10 +1500,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
         List<JSONObject> resultList = CollectionUtil.newArrayList();
         List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).toList();
         List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
         List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
-                .stream().map(SysOrg::getId).collect(Collectors.toList());
+                .stream().map(SysOrg::getId).toList();
         groupMap.forEach((key, value) -> {
             JSONObject jsonObject = JSONUtil.createObj().set("apiUrl", key);
             Set<String> scopeSet = CollectionUtil.newHashSet();
@@ -1139,7 +1670,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     // 设置默认头像
                     sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
                     // 设置默认密码
-                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
                     // 设置排序码
                     sysUser.setSortCode(99);
                     // 设置状态
@@ -1160,6 +1691,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 保存或更新
                 this.saveOrUpdate(sysUser);
 
+                // 如果是增加，则同时增加用户扩展信息
+                if(isAdd) {
+                    sysUserExtService.createExtInfo(sysUser.getId(), SysUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
+                }
                 // 返回成功
                 return JSONUtil.createObj().set("success", true);
             } catch (Exception e) {
@@ -1427,7 +1962,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Page<SysUser> getAllUserSelectorList() {
         return this.page(CommonPageRequest.defaultPage(), new LambdaQueryWrapper<SysUser>().select(SysUser::getId,
                 SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount, SysUser::getName,
-                SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate).orderByAsc(SysUser::getSortCode));
+                SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate)
+                .eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()).orderByAsc(SysUser::getSortCode));
     }
 
     /* ====用户部分所需要用到的选择器==== */
@@ -1436,66 +1972,68 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<Tree<String>> orgTreeSelector() {
         List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
+                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
 
     @Override
     public Page<SysOrg> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam) {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<SysOrg>().checkSqlInjection();
         // 查询部分字段
-        lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
+        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
                 SysOrg::getCategory, SysOrg::getSortCode);
         if (ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getParentId())) {
-            lambdaQueryWrapper.eq(SysOrg::getParentId, sysUserSelectorOrgListParam.getParentId());
+            queryWrapper.lambda().eq(SysOrg::getParentId, sysUserSelectorOrgListParam.getParentId());
         }
         if (ObjectUtil.isNotEmpty(sysUserSelectorOrgListParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysOrg::getName, sysUserSelectorOrgListParam.getSearchKey());
+            queryWrapper.lambda().like(SysOrg::getName, sysUserSelectorOrgListParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        return sysOrgService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(SysOrg::getSortCode);
+        return sysOrgService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
     public Page<SysPosition> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam) {
-        LambdaQueryWrapper<SysPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>().checkSqlInjection();
         // 查询部分字段
-        lambdaQueryWrapper.select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
+        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
                 SysPosition::getCategory, SysPosition::getSortCode);
         if (ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysPosition::getOrgId, sysUserSelectorPositionParam.getOrgId());
+            queryWrapper.lambda().eq(SysPosition::getOrgId, sysUserSelectorPositionParam.getOrgId());
         }
         if (ObjectUtil.isNotEmpty(sysUserSelectorPositionParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysPosition::getName, sysUserSelectorPositionParam.getSearchKey());
+            queryWrapper.lambda().like(SysPosition::getName, sysUserSelectorPositionParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(SysPosition::getSortCode);
-        return sysPositionService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(SysPosition::getSortCode);
+        return sysPositionService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
     public Page<SysRole> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam) {
-        LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.select(SysRole::getId, SysRole::getOrgId, SysRole::getName,
+        QueryWrapper<SysRole> queryWrapper = new QueryWrapper<SysRole>().checkSqlInjection();
+        queryWrapper.lambda().select(SysRole::getId, SysRole::getOrgId, SysRole::getName, SysRole::getCode,
                 SysRole::getCategory, SysRole::getSortCode);
         if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getOrgId())) {
-            lambdaQueryWrapper.eq(SysRole::getOrgId, sysUserSelectorRoleParam.getOrgId());
+            queryWrapper.lambda().eq(SysRole::getOrgId, sysUserSelectorRoleParam.getOrgId());
         }
         if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getCategory())) {
-            lambdaQueryWrapper.eq(SysRole::getCategory, sysUserSelectorRoleParam.getCategory());
+            queryWrapper.lambda().eq(SysRole::getCategory, sysUserSelectorRoleParam.getCategory());
         }
         if (ObjectUtil.isNotEmpty(sysUserSelectorRoleParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysRole::getName, sysUserSelectorRoleParam.getSearchKey());
+            queryWrapper.lambda().like(SysRole::getName, sysUserSelectorRoleParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(SysRole::getSortCode);
-        return sysRoleService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(SysRole::getSortCode);
+        return sysRoleService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
     public Page<SysUser> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam) {
-        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().checkSqlInjection();
+        // 只查询状态为正常的
+        queryWrapper.lambda().eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue());
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
+        queryWrapper.lambda().select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysUserSelectorUserParam.getOrgId(), sysUserSelectorUserParam.getSearchKey())) {
@@ -1504,18 +2042,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getOrgId())) {
                 // 如果组织id不为空，则查询该组织及其子组织下的所有人
                 List<String> childOrgIdList = CollStreamUtil.toList(sysOrgService.getChildListById(sysOrgService
-                        .getAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
+                .getAllOrgList(), sysUserSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                    lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
+                    queryWrapper.lambda().in(SysUser::getOrgId, childOrgIdList);
                 } else {
                     return new Page<>();
                 }
             }
             if (ObjectUtil.isNotEmpty(sysUserSelectorUserParam.getSearchKey())) {
-                lambdaQueryWrapper.like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
+                queryWrapper.lambda().like(SysUser::getName, sysUserSelectorUserParam.getSearchKey());
             }
-            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-            return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+            queryWrapper.lambda().orderByAsc(SysUser::getSortCode);
+            return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
         }
     }
 
@@ -1571,18 +2109,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysGroup> getGroupListByIdList(SysUserGroupIdListParam sysUserGroupIdListParam) {
-        if (ObjectUtil.isEmpty(sysUserGroupIdListParam.getIdList())) {
-            return CollectionUtil.newArrayList();
-        }
-        LambdaQueryWrapper<SysGroup> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 查询部分字段
-        lambdaQueryWrapper.select(SysGroup::getId, SysGroup::getName, SysGroup::getRemark, SysGroup::getSortCode)
-                .in(SysGroup::getId, sysUserGroupIdListParam.getIdList()).orderByAsc(SysGroup::getSortCode);
-        return sysGroupService.list(lambdaQueryWrapper);
-    }
-
-    @Override
     public List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam) {
         if (ObjectUtil.isEmpty(sysUserIdListParam.getIdList())) {
             return CollectionUtil.newArrayList();
@@ -1596,7 +2122,299 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
+    public List<SysGroup> getGroupListByIdList(SysUserGroupIdListParam sysUserGroupIdListParam) {
+        if (ObjectUtil.isEmpty(sysUserGroupIdListParam.getIdList())) {
+            return CollectionUtil.newArrayList();
+        }
+        LambdaQueryWrapper<SysGroup> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(SysGroup::getId, SysGroup::getName, SysGroup::getRemark, SysGroup::getSortCode)
+                .in(SysGroup::getId, sysUserGroupIdListParam.getIdList()).orderByAsc(SysGroup::getSortCode);
+        return sysGroupService.list(lambdaQueryWrapper);
+    }
+
+    @Override
     public String getAvatarById(SysUserIdParam sysUserIdParam) {
         return this.detail(sysUserIdParam).getAvatar();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public SysUser createUserWithPhone(String phone) {
+        SysUserAddParam sysUserAddParam = new SysUserAddParam();
+        sysUserAddParam.setAccount(phone);
+        sysUserAddParam.setName(phone);
+        sysUserAddParam.setPhone(phone);
+        sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
+        sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        // 保存用户
+        this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
+        // 获取用户信息
+        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        // 授权默认角色
+        SysRoleGrantUserParam sysRoleGrantUserParam = new SysRoleGrantUserParam();
+        sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());
+        sysRoleGrantUserParam.setGrantInfoList(CollectionUtil.newArrayList(sysUser.getId()));
+        sysRoleService.grantUser(sysRoleGrantUserParam);
+        // 发送注册成功短信
+        String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY);
+        // 不为空才发送
+        if(ObjectUtil.isNotEmpty(smsTemplateCode)){
+            // 模板内容转为JSONObject
+            JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+            // 定义变量参数
+            JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone);
+            // 获取编码
+            String codeValue = contentJSONObject.getStr("code");
+            // 发送短信
+            devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+        }
+        // 返回用户
+        return sysUser;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public SysUser createUserWithEmail(String email) {
+        SysUserAddParam sysUserAddParam = new SysUserAddParam();
+        sysUserAddParam.setAccount(email);
+        sysUserAddParam.setName(email);
+        sysUserAddParam.setEmail(email);
+        sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
+        sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        // 保存用户
+        this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
+        // 获取用户信息
+        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmail, email));
+        // 授权默认角色
+        SysRoleGrantUserParam sysRoleGrantUserParam = new SysRoleGrantUserParam();
+        sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());
+        sysRoleGrantUserParam.setGrantInfoList(CollectionUtil.newArrayList(sysUser.getId()));
+        sysRoleService.grantUser(sysRoleGrantUserParam);
+        // 发送注册成功邮件
+        String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY);
+        // 不为空才发送
+        if(ObjectUtil.isNotEmpty(emailTemplateContent)){
+            // 模板内容转为JSONObject
+            JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+            // 定义变量参数
+            JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
+            // 获取格式化后的主题
+            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            // 获取格式化后的内容
+            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            // 发送邮件
+            devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+        }
+        // 返回用户
+        return sysUser;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public SysUser createUserWithAccount(String account, String password) {
+        SysUserAddParam sysUserAddParam = new SysUserAddParam();
+        sysUserAddParam.setAccount(account);
+        sysUserAddParam.setName(account);
+        sysUserAddParam.setPassword(password);
+        sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
+        sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        // 保存用户
+        this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
+        // 获取用户信息
+        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account));
+        // 授权默认角色
+        SysRoleGrantUserParam sysRoleGrantUserParam = new SysRoleGrantUserParam();
+        sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());
+        sysRoleGrantUserParam.setGrantInfoList(CollectionUtil.newArrayList(sysUser.getId()));
+        sysRoleService.grantUser(sysRoleGrantUserParam);
+        // 返回用户
+        return sysUser;
+    }
+
+    @Override
+    public Boolean isUserNeedBindPhone() {
+        // 获取当前用户
+        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        // 查询当前用户是否注册的
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+                .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
+        // 不为空，则判断手机号是否为空
+        if(ObjectUtil.isNotEmpty(sysUserExt)){
+            // 手机号为空，判断系统注册后是否需要绑定手机号
+            if(ObjectUtil.isEmpty(sysUser.getPhone())) {
+                String registerNeedBindPhone = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY);
+                if(ObjectUtil.isNotEmpty(registerNeedBindPhone)){
+                    return Convert.toBool(registerNeedBindPhone);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean isUserNeedBindEmail() {
+        // 获取当前用户
+        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        // 查询当前用户是否注册的
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+                .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
+        // 不为空，则判断邮箱是否为空
+        if(ObjectUtil.isNotEmpty(sysUserExt)){
+            // 邮箱为空，判断系统注册后是否需要绑定邮箱
+            if(ObjectUtil.isEmpty(sysUser.getEmail())) {
+                String registerNeedBindEmail = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY);
+                if(ObjectUtil.isNotEmpty(registerNeedBindEmail)){
+                    return Convert.toBool(registerNeedBindEmail);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 获取新用户默认机构配置
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    private String getDefaultNewUserOrgId() {
+        String defaultNewUserOrgId = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_NEW_USER_ORG_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(defaultNewUserOrgId)){
+            throw new CommonException("请联系管理员配置新用户默认机构");
+        }
+        return defaultNewUserOrgId;
+    }
+
+    /**
+     * 获取新用户默认职位配置
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    private String getDefaultNewUserPositionId() {
+        String defaultNewUserPositionId = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_NEW_USER_POSITION_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(defaultNewUserPositionId)){
+            throw new CommonException("请联系管理员配置新用户默认职位");
+        }
+        return defaultNewUserPositionId;
+    }
+
+    /**
+     * 获取新用户默认角色配置
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    private String getDefaultNewUserRoleId() {
+        String defaultNewUserRoleId = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_NEW_USER_ROLE_FOR_B_KEY);
+        if(ObjectUtil.isEmpty(defaultNewUserRoleId)){
+            throw new CommonException("请联系管理员配置新用户默认角色");
+        }
+        return defaultNewUserRoleId;
+    }
+
+    @Override
+    public Boolean isUserPasswordExpired() {
+        return SysPasswordUtl.isUserPasswordExpired(StpUtil.getLoginIdAsString());
+    }
+
+    @Override
+    public void noticeUserPasswordAboutToExpired() {
+        // 密码即将到期短信消息模板
+        String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY);
+        // 密码即将到期邮件消息模板
+        String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY);
+        // 获取今日需要提醒密码到期的用户集合
+        SysPasswordUtl.thisDayPasswordExpiredNeedNoticeUserIdList().forEach(sysUser -> {
+            // 获取手机号
+            String phone = sysUser.getPhone();
+            // 不为空才发送
+            if(ObjectUtil.isAllNotEmpty(phone, smsTemplateCode)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
+                }
+            }
+            // 获取邮箱
+            String email = sysUser.getEmail();
+            // 不为空才发送
+            if(ObjectUtil.isAllNotEmpty(email, emailTemplateContent)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
+                // 获取格式化后的主题
+                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                // 获取格式化后的内容
+                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            }
+        });
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void doRegister(String account, String password) {
+        // 校验账号
+        SysLoginUser sysLoginUser = this.getUserByAccount(account);
+        if(ObjectUtil.isNotEmpty(sysLoginUser)) {
+            throw new CommonException("账号已存在");
+        }
+        // 校验密码
+        SysPasswordUtl.validNewPassword(password);
+        // 根据账号密码创建用户
+        this.createUserWithAccount(account, password);
+    }
+
+    @Override
+    public JSONObject getUpdatePasswordValidConfig() {
+        return SysPasswordUtl.getUpdatePasswordValidConfig();
+    }
+
+    /**
+     * 获取验证码失效时间（单位：秒）
+     *
+     * @author xuyuxiang
+     * @date 2025/3/21 20:25
+     **/
+    private long getValidCodeExpiredDuration() {
+        // 默认5分钟
+        int defaultExpiredTime = 5;
+        // 获取配置验证码失效时间
+        String configCaptchaExpiredDuration = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B_KEY);
+        // 判断是否为空
+        if(ObjectUtil.isNotEmpty(configCaptchaExpiredDuration)){
+            // 配置了则使用配置的失效时间
+            defaultExpiredTime = Convert.toInt(configCaptchaExpiredDuration);
+        }
+        // 转为秒
+        return defaultExpiredTime * 60L;
     }
 }

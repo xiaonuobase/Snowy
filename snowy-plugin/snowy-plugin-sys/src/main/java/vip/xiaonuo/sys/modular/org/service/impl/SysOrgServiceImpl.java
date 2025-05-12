@@ -30,7 +30,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -38,14 +37,17 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.enums.SysOrgCategoryEnum;
+import vip.xiaonuo.sys.modular.org.enums.SysOrgSourceFromTypeEnum;
 import vip.xiaonuo.sys.modular.org.mapper.SysOrgMapper;
 import vip.xiaonuo.sys.modular.org.param.*;
+import vip.xiaonuo.sys.modular.org.service.SysOrgExtService;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.Iterator;
@@ -61,10 +63,8 @@ import java.util.stream.Collectors;
 @Service
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
 
-    public static final String ORG_CACHE_ALL_KEY = "sys-org:all";
-
     @Resource
-    private CommonCacheOperator commonCacheOperator;
+    private SysOrgExtService sysOrgExtService;
 
     @Resource
     private SysRoleService sysRoleService;
@@ -109,7 +109,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(SysOrgAddParam sysOrgAddParam) {
+    public void add(SysOrgAddParam sysOrgAddParam, String sourceFromType) {
         SysOrgCategoryEnum.validate(sysOrgAddParam.getCategory());
         SysOrg sysOrg = BeanUtil.toBean(sysOrgAddParam, SysOrg.class);
         // 重复名称
@@ -119,8 +119,10 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             throw new CommonException("存在重复的同级组织，名称为：{}", sysOrg.getName());
         }
         sysOrg.setCode(RandomUtil.randomString(10));
+        // 保存组织
         this.save(sysOrg);
-
+        // 插入扩展信息
+        sysOrgExtService.createExtInfo(sysOrg.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
@@ -142,8 +144,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if(errorLevel) {
             throw new CommonException("不可选择上级组织：{}", this.getById(originDataList, sysOrg.getParentId()).getName());
         }
+        // 更新组织
         this.updateById(sysOrg);
-
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
@@ -171,7 +173,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 List<String> positionOrgIdList = CollectionUtil.newArrayList();
                 positionJsonList.forEach(positionJson -> JSONUtil.toList(JSONUtil.parseArray(positionJson), JSONObject.class)
                         .forEach(jsonObject -> positionOrgIdList.add(jsonObject.getStr("orgId"))));
-                boolean hasPositionUser = CollectionUtil.intersectionDistinct(toDeleteOrgIdList, CollectionUtil.removeNull(positionOrgIdList)).size() > 0;
+                boolean hasPositionUser = !CollectionUtil.intersectionDistinct(toDeleteOrgIdList, CollectionUtil.removeNull(positionOrgIdList)).isEmpty();
                 if(hasPositionUser) {
                     throw new CommonException("请先删除组织下的用户");
                 }
@@ -210,43 +212,33 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<SysOrg> getAllOrgList() {
-        // 从缓存中取
-        Object cacheValue = commonCacheOperator.get(ORG_CACHE_ALL_KEY);
-        if(ObjectUtil.isNotEmpty(cacheValue)) {
-            return JSONUtil.toList(JSONUtil.parseArray(cacheValue), SysOrg.class);
-        }
-        List<SysOrg> orgList = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
-        if(ObjectUtil.isNotEmpty(orgList)) {
-            // 更新到缓存
-            commonCacheOperator.put(ORG_CACHE_ALL_KEY, JSONUtil.toJsonStr(orgList));
-        }
-        return orgList;
+        return this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
     }
 
     @Override
     public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
-        List<SysOrg> cachedAllOrgList = this.getAllOrgList();
-        List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(sysOrg ->
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        List<Tree<String>> treeList = TreeUtil.build(allOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList()), "0");
-        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), cachedAllOrgList, treeList);
+        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), allOrgList, treeList);
     }
 
-    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<SysOrg> cachedAllOrgList, List<Tree<String>> treeList) {
+    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<SysOrg> allOrgList, List<Tree<String>> treeList) {
         String orgName = iterator.next();
         if(ObjectUtil.isNotEmpty(treeList)) {
             List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(orgName)).collect(Collectors.toList());
             if(ObjectUtil.isNotEmpty(findList)) {
                 if(iterator.hasNext()) {
-                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
+                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, allOrgList, findList.get(0).getChildren());
                 } else {
                     return findList.get(0).getId();
                 }
             }
         }
-        String orgId = this.doCreateOrg(parentId, orgName, cachedAllOrgList);
+        String orgId = this.doCreateOrg(parentId, orgName, allOrgList);
         if(iterator.hasNext()) {
-            return findOrgIdByOrgName(orgId, iterator, cachedAllOrgList, CollectionUtil.newArrayList());
+            return findOrgIdByOrgName(orgId, iterator, allOrgList, CollectionUtil.newArrayList());
         } else {
             return orgId;
         }
@@ -258,7 +250,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
      * @author xuyuxiang
      * @date 2023/3/8 9:38
      **/
-    public String doCreateOrg(String parentId, String orgName, List<SysOrg> cachedAllOrgList) {
+    public String doCreateOrg(String parentId, String orgName, List<SysOrg> allOrgList) {
         //创建该组织
         SysOrg sysOrg = new SysOrg();
         sysOrg.setName(orgName);
@@ -266,13 +258,12 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         sysOrg.setParentId(parentId);
         sysOrg.setCategory("0".equals(parentId)?SysOrgCategoryEnum.COMPANY.getValue():SysOrgCategoryEnum.DEPT.getValue());
         sysOrg.setSortCode(99);
+        // 保存组织
         this.save(sysOrg);
+        // 插入扩展信息
+        sysOrgExtService.createExtInfo(sysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-        // 将该组织加入缓存
-        cachedAllOrgList.add(sysOrg);
-        // 更新缓存
-        commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
         return sysOrg.getId();
     }
 
@@ -289,25 +280,27 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public Page<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {
-        LambdaQueryWrapper<SysOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<SysOrg>().checkSqlInjection();
         // 查询部分字段
-        lambdaQueryWrapper.select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
+        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
                 SysOrg::getCategory, SysOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(sysOrgSelectorOrgListParam.getParentId())) {
-            lambdaQueryWrapper.eq(SysOrg::getParentId, sysOrgSelectorOrgListParam.getParentId());
+            queryWrapper.lambda().eq(SysOrg::getParentId, sysOrgSelectorOrgListParam.getParentId());
         }
         if(ObjectUtil.isNotEmpty(sysOrgSelectorOrgListParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysOrg::getName, sysOrgSelectorOrgListParam.getSearchKey());
+            queryWrapper.lambda().like(SysOrg::getName, sysOrgSelectorOrgListParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(SysOrg::getSortCode);
-        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(SysOrg::getSortCode);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
     public Page<SysUser> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
-        LambdaQueryWrapper<SysUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().checkSqlInjection();
+        // 只查询状态为正常的
+        queryWrapper.lambda().eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue());
         // 只查询部分字段
-        lambdaQueryWrapper.select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
+        queryWrapper.lambda().select(SysUser::getId, SysUser::getAvatar, SysUser::getOrgId, SysUser::getPositionId, SysUser::getAccount,
                 SysUser::getName, SysUser::getSortCode, SysUser::getGender, SysUser::getEntryDate);
         // 如果查询条件为空，则直接查询
         if(ObjectUtil.isAllEmpty(sysOrgSelectorUserParam.getOrgId(), sysOrgSelectorUserParam.getSearchKey())) {
@@ -318,16 +311,16 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 List<String> childOrgIdList = CollStreamUtil.toList(this.getChildListById(this
                         .getAllOrgList(), sysOrgSelectorUserParam.getOrgId(), true), SysOrg::getId);
                 if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                    lambdaQueryWrapper.in(SysUser::getOrgId, childOrgIdList);
+                    queryWrapper.lambda().in(SysUser::getOrgId, childOrgIdList);
                 } else {
                     return new Page<>();
                 }
             }
             if(ObjectUtil.isNotEmpty(sysOrgSelectorUserParam.getSearchKey())) {
-                lambdaQueryWrapper.like(SysUser::getName, sysOrgSelectorUserParam.getSearchKey());
+                queryWrapper.lambda().like(SysUser::getName, sysOrgSelectorUserParam.getSearchKey());
             }
-            lambdaQueryWrapper.orderByAsc(SysUser::getSortCode);
-            return sysUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+            queryWrapper.lambda().orderByAsc(SysUser::getSortCode);
+            return sysUserService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
         }
     }
 

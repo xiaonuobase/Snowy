@@ -45,7 +45,7 @@ public class AuthThirdUser extends CommonEntity {
 
     /** 头像 */
     @Schema(description = "头像")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String avatar;
 
     /** 姓名 */
@@ -54,12 +54,12 @@ public class AuthThirdUser extends CommonEntity {
 
     /** 昵称 */
     @Schema(description = "昵称")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String nickname;
 
     /** 性别 */
     @Schema(description = "性别")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String gender;
 
     /** 分类 */
@@ -68,6 +68,6 @@ public class AuthThirdUser extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

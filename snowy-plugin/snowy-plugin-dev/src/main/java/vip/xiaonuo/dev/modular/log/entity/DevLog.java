@@ -33,7 +33,7 @@ import java.util.Date;
 public class DevLog {
 
     /** id */
-    @Schema(description = "id")
+    @Schema(description = "主键")
     private String id;
 
     /** 日志分类 */

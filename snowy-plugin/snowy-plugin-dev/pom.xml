@@ -15,6 +15,7 @@
     <description>开发工具插件</description>
 
     <dependencies>
+
         <!-- 每个插件都要引入自己的对外接口 -->
         <dependency>
             <groupId>vip.xiaonuo</groupId>

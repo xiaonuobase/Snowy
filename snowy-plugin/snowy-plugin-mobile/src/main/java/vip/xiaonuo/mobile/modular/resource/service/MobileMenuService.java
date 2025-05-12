@@ -128,6 +128,14 @@ public interface MobileMenuService extends IService<MobileMenu> {
     List<JSONObject> mobileMenuTreeSelector();
 
     /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2023/1/31 10:14
+     **/
+    List<JSONObject> mobileMenuTreeSelector(List<MobileMenu> originDataList);
+
+    /**
      * 获取移动端登录菜单树
      *
      * @author xuyuxiang
