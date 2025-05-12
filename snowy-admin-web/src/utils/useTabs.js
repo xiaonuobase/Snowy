@@ -42,6 +42,23 @@ export default {
 			router.push('/')
 		}
 	},
+	// 关闭并返回
+	closeBack(tag) {
+		const route = tag || router.currentRoute.value
+		const store = viewTagsStore()
+		store.removeViewTags(route)
+		iframeStore().removeIframeList(route)
+		keepAliveStore().removeKeepLive(route.name)
+		// 获取当前路由历史
+		const currentHistory = router.options.history
+		// 如果有上一个路由，则返回上一个路由
+		if (currentHistory.state.back) {
+			router.back()
+		} else {
+			// 如果没有上一个路由，则跳转到首页
+			router.push('/')
+		}
+	},
 	// 关闭标签后处理
 	closeNext(next) {
 		const route = router.currentRoute.value

@@ -2,8 +2,8 @@
 	<div class="d2-panel-search-item" :class="props.hoverMode ? 'can-hover' : ''" flex>
 		<div class="d2-panel-search-item__icon" flex-box="0">
 			<div class="d2-panel-search-item__icon-box" flex="main:center cross:center">
-				<a-icon v-if="props.item.icon" :type="props.item.icon" />
-				<a-icon v-else type="menu" />
+				<component v-if="props.item.icon" :is="props.item.icon" />
+				<menu-outlined v-else />
 			</div>
 		</div>
 		<div class="d2-panel-search-item__info" flex-box="1" flex="dir:top">
@@ -21,11 +21,16 @@
 </template>
 
 <script setup>
+	import { MenuOutlined } from '@ant-design/icons-vue'
+
 	const props = defineProps({
 		item: {
+			type: Object,
+			required: true,
 			default: () => ({})
 		},
 		hoverMode: {
+			type: Boolean,
 			default: false
 		}
 	})

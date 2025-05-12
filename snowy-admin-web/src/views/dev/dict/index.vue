@@ -20,4 +20,7 @@
 	:deep(.ant-card-body) {
 		padding-top: 0 !important;
 	}
+	:deep(.ant-tabs-tab) {
+		font-size: 14px !important;
+	}
 </style>

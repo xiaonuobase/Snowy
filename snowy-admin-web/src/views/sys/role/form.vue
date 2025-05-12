@@ -10,6 +10,9 @@
 			<a-form-item label="角色名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入角色名称" allow-clear />
 			</a-form-item>
+			<a-form-item label="角色编码：" name="code">
+				<a-input v-model:value="formData.code" placeholder="请输入角色编码" allow-clear />
+			</a-form-item>
 			<a-form-item label="角色分类：" name="category">
 				<a-select
 					v-model:value="formData.category"
@@ -66,9 +69,6 @@
 	// 打开抽屉
 	const onOpen = (record, category, orgId) => {
 		visible.value = true
-		formData.value = {
-			sortCode: 99
-		}
 		// 判断角色的类型
 		if (category) {
 			formData.value.category = category
@@ -79,6 +79,9 @@
 		}
 		if (record) {
 			formData.value = Object.assign({}, record)
+		} else {
+			formData.value.sortCode = 99
+			formData.value.code = tool.generateString(10)
 		}
 		// 获取机构树并加入顶级
 		roleApi.roleOrgTreeSelector().then((res) => {
@@ -93,6 +96,7 @@
 	const formRules = {
 		orgId: [required('请选择所属组织')],
 		name: [required('请输入角色名称')],
+		code: [required('请输入角色编码')],
 		category: [required('请选择角色分类')],
 		sortCode: [required('请选择排序')]
 	}

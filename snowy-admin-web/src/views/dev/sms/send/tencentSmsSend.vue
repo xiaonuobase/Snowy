@@ -21,13 +21,6 @@
 				:auto-size="{ minRows: 3, maxRows: 5 }"
 			/>
 		</a-form-item>
-		<a-form-item label="sdkAppId：" name="sdkAppId">
-			<a-input
-				v-model:value="formData.sdkAppId"
-				placeholder="请输入在短信控制台添加应用后生成的实际SdkAppId"
-				allow-clear
-			/>
-		</a-form-item>
 		<a-form-item label="短信签名：" name="signName">
 			<a-input v-model:value="formData.signName" placeholder="请输入短信签名" allow-clear />
 		</a-form-item>

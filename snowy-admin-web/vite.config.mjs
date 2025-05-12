@@ -47,7 +47,9 @@ export default defineConfig(({ command, mode }) => {
 			}
 		},
 		resolve: {
-			alias
+			alias,
+			// 优化依赖解析
+			dedupe: ['vue', 'ant-design-vue']
 		},
 		// 解决警告You are running the esm-bundler build of vue-i18n.
 		define: {
@@ -57,19 +59,42 @@ export default defineConfig(({ command, mode }) => {
 			__VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true
 		},
 		build: {
-			// sourcemap: true,
+			// 生产环境移除console
+			minify: 'terser',
+			terserOptions: {
+				compress: {
+					drop_console: true,
+					drop_debugger: true,
+					pure_funcs: ['console.log']
+				}
+			},
+			// 禁用 gzip 压缩大小报告，因为压缩大型文件可能会很慢
+			reportCompressedSize: true,
+			// CSS代码分割，设为false将所有CSS合并到一个文件
+			cssCodeSplit: true,
+			// 启用源码映射用于调试
+			sourcemap: command === 'serve',
 			manifest: true,
 			brotliSize: false,
+			assetsInlineLimit: 4096,
 			rollupOptions: {
 				output: {
+					// 静态资源分类打包
+					chunkFileNames: 'static/js/[name]-[hash].js',
+					entryFileNames: 'static/js/[name]-[hash].js',
+					assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 					manualChunks: {
-						echarts: ['echarts'],
-						'ant-design-vue': ['ant-design-vue'],
-						vue: ['vue', 'vue-router', 'pinia', 'vue-i18n']
+						// 第三方库分包配置保持不变
+						'vue-vendor': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
+						'ant-design-vendor': ['ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'axios', 'dayjs'],
+						'echarts-vendor': ['echarts', 'echarts-stat'],
+						'editor-vendor': ['@tinymce/tinymce-vue', 'tinymce'],
+						'office-vendor': ['@vue-office/docx', '@vue-office/excel', '@vue-office/pdf']
 					}
 				}
 			},
-			chunkSizeWarningLimit: 1000
+			// 调整chunk大小警告限制
+			chunkSizeWarningLimit: 2000
 		},
 		plugins: [
 			vue({

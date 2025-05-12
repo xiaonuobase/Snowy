@@ -45,5 +45,21 @@ export default {
 	// 获取系统基础配置
 	configSysBaseList(data) {
 		return request('sysBaseList', data, 'get')
+	},
+	// 获取机构树
+	configOrgTree(data) {
+		return request('orgTree', data, 'get')
+	},
+	// 获取机构选择器
+	configOrgSelector(data) {
+		return request('orgSelector', data, 'get')
+	},
+	// 获取角色选择器
+	configRoleSelector(data) {
+		return request('roleSelector', data, 'get')
+	},
+	// 获取职位选择器
+	configPositionSelector(data) {
+		return request('positionSelector', data, 'get')
 	}
 }

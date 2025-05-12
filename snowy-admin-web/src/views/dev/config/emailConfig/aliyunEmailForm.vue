@@ -14,8 +14,8 @@
 			<a-form-item label="阿里云密钥SECRET：" name="SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET">
 				<a-input v-model:value="formData.SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET" placeholder="请输入阿里云密钥SECRET" />
 			</a-form-item>
-			<a-form-item label="阿里云区域ID：" name="SNOWY_EMAIL_ALIYUN_REGION_ID">
-				<a-input v-model:value="formData.SNOWY_EMAIL_ALIYUN_REGION_ID" placeholder="请输入阿里云区域ID" />
+			<a-form-item label="默认发送账号：" name="SNOWY_EMAIL_ALIYUN_FROM">
+				<a-input v-model:value="formData.SNOWY_EMAIL_ALIYUN_FROM" placeholder="请输入默认发送账号" />
 			</a-form-item>
 			<a-form-item>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
@@ -55,7 +55,7 @@
 	const formRules = {
 		SNOWY_EMAIL_ALIYUN_ACCESS_KEY_ID: [required('请输入阿里云密钥ID')],
 		SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET: [required('请输入阿里云密钥SECRET')],
-		SNOWY_EMAIL_ALIYUN_REGION_ID: [required('请输入阿里云区域ID')]
+		SNOWY_EMAIL_ALIYUN_FROM: [required('请输入默认发送账号')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {

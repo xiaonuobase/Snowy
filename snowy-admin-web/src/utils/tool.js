@@ -99,6 +99,9 @@ tool.dictTypeData = (dictValue, value) => {
 		return '无此字典'
 	}
 	const children = tree.children
+	if (!tree.children) {
+		return '无此字典'
+	}
 	const dict = children.find((item) => item.dictValue === value)
 	return dict ? dict.dictLabel : '无此字典项'
 }
@@ -123,15 +126,18 @@ tool.dictList = (dictValue) => {
 		return []
 	}
 	const tree = dictTypeTree.find((item) => item.dictValue === dictValue)
-	if (tree) {
-		return tree.children.map((item) => {
-			return {
-				value: item['dictValue'],
-				label: item['name']
-			}
-		})
+	if (!tree) {
+		return []
 	}
-	return []
+	if (!tree.children) {
+		return []
+	}
+	return tree.children.map((item) => {
+		return {
+			value: item['dictValue'],
+			label: item['name']
+		}
+	})
 }
 
 // 树形翻译 需要指定最顶级的 parentValue  和当级的value
@@ -216,6 +222,21 @@ tool.parseTime = (time, cFormat) => {
 		return value || 0
 	})
 	return time_str
+}
+
+// 判断不为空
+tool.isNotEmpty = (value) => {
+	if (typeof value === 'object') {
+		for (const key in value) {
+			return true
+		}
+		return false
+	}
+	return !(value === null || value === undefined || value === 'undefined' || value === '')
+}
+// 判断为空
+tool.isEmpty = (value) => {
+	return !tool.isNotEmpty(value)
 }
 
 export default tool

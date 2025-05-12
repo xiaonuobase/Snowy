@@ -38,9 +38,49 @@ export default {
 	userFindPasswordByEmail(data) {
 		return request('findPasswordByEmail', data)
 	},
-	// 修改用户密码
-	userUpdatePassword(data) {
-		return request('updatePassword', data)
+	// 修改密码获取手机验证码
+	userUpdatePasswordGetPhoneValidCode(data) {
+		return request('updatePasswordGetPhoneValidCode', data, 'get')
+	},
+	// 修改密码获取邮箱验证码
+	userUpdatePasswordGetEmailValidCode(data) {
+		return request('updatePasswordGetEmailValidCode', data, 'get')
+	},
+	// 通过验证旧密码修改用户密码
+	userUpdatePasswordByOld(data) {
+		return request('updatePasswordByOld', data)
+	},
+	// 通过验证手机号修改用户密码
+	userUpdatePasswordByPhone(data) {
+		return request('updatePasswordByPhone', data)
+	},
+	// 通过验证邮箱修改用户密码
+	userUpdatePasswordByEmail(data) {
+		return request('updatePasswordByEmail', data)
+	},
+	// 绑定手机号获取手机验证码
+	userBindPhoneGetPhoneValidCode(data) {
+		return request('bindPhoneGetPhoneValidCode', data)
+	},
+	// 修改绑定手机号获取手机验证码
+	userUpdateBindPhoneGetPhoneValidCode(data) {
+		return request('updateBindPhoneGetPhoneValidCode', data)
+	},
+	// 修改绑定手机号获取手机验证码
+	userBindPhone(data) {
+		return request('bindPhone', data)
+	},
+	// 绑定邮箱获取邮箱验证码
+	userBindEmailGetEmailValidCode(data) {
+		return request('bindEmailGetEmailValidCode', data)
+	},
+	// 修改绑定邮箱获取邮箱验证码
+	userUpdateBindEmailGetEmailValidCode(data) {
+		return request('updateBindEmailGetEmailValidCode', data)
+	},
+	// 绑定邮箱
+	userBindEmail(data) {
+		return request('bindEmail', data)
 	},
 	// 修改用户头像
 	userUpdateAvatar(data) {
@@ -104,6 +144,22 @@ export default {
 	},
 	// 根据id获取头像
 	userCenterGtAvatarById(data) {
-		return request('getAvatarById', data)
+		return request('getAvatarById', data, 'get')
+	},
+	// 判断当前用户是否需要绑定手机号
+	userCenterIsUserNeedBindPhone(data) {
+		return request('isUserNeedBindPhone', data, 'get')
+	},
+	// 判断当前用户是否需要绑定邮箱
+	userCenterIsUserNeedBindEmail(data) {
+		return request('isUserNeedBindEmail', data, 'get')
+	},
+	// 判断当前用户密码是否过期
+	userCenterIsUserPasswordExpired(data) {
+		return request('isUserPasswordExpired', data, 'get')
+	},
+	// 获取修改密码验证方式及配置
+	userGetUpdatePasswordValidConfig(data) {
+		return request('getUpdatePasswordValidConfig', data, 'get')
 	}
 }

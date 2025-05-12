@@ -3,7 +3,7 @@
 		<a-alert message="无任何菜单" type="info" :closable="false" />
 	</div>
 	<template v-for="navMenu in navMenus" :key="navMenu">
-		<a-menu-item v-if="!hasChildren(navMenu) & !hasHidden(navMenu)" :key="navMenu.path">
+		<a-menu-item v-if="!hasChildren(navMenu) && !hasHidden(navMenu)" :key="navMenu.path">
 			<template v-if="navMenu.meta.icon" #icon>
 				<component :is="navMenu.meta.icon" />
 			</template>
@@ -16,10 +16,11 @@
 			>
 			<a v-else>{{ navMenu.meta.title }}</a>
 		</a-menu-item>
-		<a-sub-menu v-else-if="!hasHidden(navMenu)" :key="navMenu.path" :title="navMenu.meta.title">
+		<a-sub-menu v-else-if="!hasHidden(navMenu)" :key="navMenu.path">
 			<template v-if="navMenu.meta.icon" #icon>
 				<component :is="navMenu.meta.icon" />
 			</template>
+			<template #title>{{ navMenu.meta.title }}</template>
 			<NavMenu :nav-menus="navMenu.children" />
 		</a-sub-menu>
 	</template>

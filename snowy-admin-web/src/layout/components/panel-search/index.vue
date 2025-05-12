@@ -39,7 +39,6 @@
 				@keypress.up="handleKeyUp"
 				@keypress.down="handleKeyDown"
 				class="xn-mn10p0"
-
 			>
 				<div ref="cardListRef" class="search-card beauty-scroll">
 					<a-list size="small" :data-source="resultsList">
@@ -47,7 +46,7 @@
 							<a-list-item
 								@click="handleSelect(item.fullPath)"
 								@mouseover="onCardItemHover(index)"
-								:class="{ active: index === cardIndex },'xn-pr10'"
+								:class="[{ active: index === cardIndex }, 'xn-pr10']"
 							>
 								<template #actions>
 									<a>
@@ -100,6 +99,7 @@
 	import { searchStore } from '@/store'
 	import { useRouter, useRoute } from 'vue-router'
 	import hotkeys from 'hotkeys-js'
+	import { SearchOutlined, ArrowUpOutlined, ArrowDownOutlined, EnterOutlined } from '@ant-design/icons-vue'
 
 	const route = useRoute()
 	const router = useRouter()
@@ -121,7 +121,7 @@
 		return search.hotkey
 	})
 	const mixinSearch = computed(() => {
-		return mixinSearch
+		return search.mixinSearch
 	})
 	// 这份数据是展示在搜索面板下面的
 	const resultsList = computed(() => {

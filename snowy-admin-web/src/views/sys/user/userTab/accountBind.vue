@@ -28,6 +28,10 @@
 <script setup>
 	import { message } from 'ant-design-vue'
 	import UpdatePassword from './bindForm/updatePassword.vue'
+	// 按需导入图标组件
+	import QqOutlined from '@ant-design/icons-vue/QqOutlined'
+	import WechatOutlined from '@ant-design/icons-vue/WechatOutlined'
+	import AlipayCircleOutlined from '@ant-design/icons-vue/AlipayCircleOutlined'
 
 	const updatePasswordRef = ref()
 	// 获取绑定的情况

@@ -23,6 +23,7 @@
 		"@antv/g2plot": "2.4.32",
 		"@chenfengyuan/vue-qrcode": "2.0.0",
 		"@highlightjs/vue-plugin": "2.1.0",
+		"@kangc/v-md-editor": "2.3.18",
 		"@tinymce/tinymce-vue": "5.1.1",
 		"@vue-office/docx": "1.6.2",
 		"@vue-office/excel": "1.7.11",
