@@ -61,7 +61,7 @@
 		</a-upload>
 
 		<!-- 文件预览 -->
-		<a-modal :open="previewVisible"	:title="previewTitle" :footer="null" :destroyOnClose="true" @cancel="handleCancel">
+		<a-modal :open="previewVisible" :title="previewTitle" :footer="null" :destroyOnClose="true" @cancel="handleCancel">
 			<template v-if="props.uploadMode === 'image'">
 				<img alt="example" style="width: 100%" :src="previewObj" />
 			</template>
@@ -70,13 +70,11 @@
 					<source :src="previewObj" type="video/mp4" />
 					<object :data="previewObj" width="100%">
 						<embed :src="previewObj" width="100%" />
-       	 	</object>
-        	您的浏览器不支持video标签哦，请联系管理员
-      	</video>
+					</object>
+					您的浏览器不支持video标签哦，请联系管理员
+				</video>
 			</template>
-			<template v-else>
-				暂不支持该文件预览
-			</template>
+			<template v-else> 暂不支持该文件预览 </template>
 		</a-modal>
 
 		<a-upload-dragger
@@ -305,8 +303,7 @@
 				message.warning('只能上传图片类型文件')
 			}
 			return isPNG || Upload.LIST_IGNORE
-		}
-		else if (props.uploadMode == 'video') {
+		} else if (props.uploadMode == 'video') {
 			const isVideo = file.type.startsWith('video/')
 			if (!isVideo) {
 				message.warning('只能上传视频类型文件')
@@ -348,7 +345,7 @@
 						data.response.data + (resultIntervalValue.value ? ',' + resultIntervalValue.value : '')
 				})
 				emit('update:value', resultIntervalValue)
-				emit('onSuccessful',resultIntervalValue)
+				emit('onSuccessful', resultIntervalValue)
 				emit('onChange', resultIntervalValue)
 			} else if (props.uploadResultCategory === 'array') {
 				if (props.completeResult) {
@@ -360,16 +357,15 @@
 						}
 					})
 					emit('update:value', newResult)
-					emit('onSuccessful',newResult)
+					emit('onSuccessful', newResult)
 					emit('onChange', newResult)
-				} 
-				else {
+				} else {
 					const resultArrayValue = ref([])
 					result.forEach((data) => {
 						resultArrayValue.value.push(data.response.data)
 					})
 					emit('update:value', resultArrayValue)
-					emit('onSuccessful',resultArrayValue)
+					emit('onSuccessful', resultArrayValue)
 					emit('onChange', resultArrayValue)
 				}
 			}
