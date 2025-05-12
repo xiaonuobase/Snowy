@@ -26,6 +26,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -84,6 +85,9 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
         if(repeatTitle) {
             throw new CommonException("存在重复的模块，名称为：{}", mobileModule.getTitle());
         }
+        if(ObjectUtil.isEmpty(mobileModule.getCode())){
+            mobileModule.setCode(RandomUtil.randomString(10));
+        }
         mobileModule.setCode(RandomUtil.randomString(10));
         mobileModule.setCategory(MobileResourceCategoryEnum.MODULE.getValue());
         this.save(mobileModule);
@@ -102,6 +106,7 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
         this.updateById(mobileModule);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<MobileModuleIdParam> mobileModuleIdParamList) {
         List<String> mobileModuleIdList = CollStreamUtil.toList(mobileModuleIdParamList, MobileModuleIdParam::getId);

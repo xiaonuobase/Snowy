@@ -67,12 +67,28 @@ public interface SaBaseLoginUserApi {
     SaBaseLoginUser getUserByPhone(String phone);
 
     /**
+     * 根据邮箱获取B端用户信息，查不到则返回null
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseLoginUser getUserByEmail(String email);
+
+    /**
      * 根据手机号获取C端用户信息，查不到则返回null
      *
      * @author xuyuxiang
      * @date 2022/3/10 16:14
      **/
     SaBaseClientLoginUser getClientUserByPhone(String phone);
+
+    /**
+     * 根据邮箱获取C端用户信息，查不到则返回null
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseClientLoginUser getClientUserByEmail(String email);
 
     /**
      * 根据用户id获取用户集合
@@ -121,4 +137,44 @@ public interface SaBaseLoginUserApi {
      * @date 2022/4/27 22:57
      */
     void updateUserLoginInfo(String userId, String device);
+
+    /**
+     * 使用手机号创建B端用户
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseLoginUser createUserWithPhone(String phone);
+
+    /**
+     * 使用手机号创建C端用户
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseClientLoginUser createClientUserWithPhone(String phone);
+
+    /**
+     * 使用邮箱创建B端用户
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseLoginUser createUserWithEmail(String email);
+
+    /**
+     * 使用邮箱创建C端用户
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    SaBaseClientLoginUser createClientUserWithEmail(String email);
+
+    /**
+     * 执行注册
+     *
+     * @author xuyuxiang
+     * @date 2022/3/10 16:14
+     **/
+    void doRegister(String account, String password);
 }

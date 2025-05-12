@@ -31,12 +31,12 @@ import java.util.List;
 public class DevMessageSendParam {
 
     /** 主题 */
-    @Schema(description = "主题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "主题")
     @NotBlank(message = "subject不能为空")
     private String subject;
 
     /** 接收人id集合 */
-    @Schema(description = "接收人id集合", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "接收人id集合")
     @NotEmpty(message = "receiverIdList不能为空")
     private List<String> receiverIdList;
 

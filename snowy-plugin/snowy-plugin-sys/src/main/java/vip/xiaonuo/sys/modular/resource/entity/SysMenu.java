@@ -45,7 +45,7 @@ public class SysMenu extends CommonEntity {
 
     /** 别名 */
     @Schema(description = "别名")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String name;
 
     /** 编码 */
@@ -70,11 +70,11 @@ public class SysMenu extends CommonEntity {
 
     /** 组件 */
     @Schema(description = "组件")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String component;
 
     /** 图标 */
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     @Schema(description = "图标")
     private String icon;
 
@@ -92,6 +92,6 @@ public class SysMenu extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

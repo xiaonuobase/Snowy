@@ -48,4 +48,20 @@ public interface SysRoleApi {
      * @date 2022/11/1 15:58
      **/
     void grantForGenMenuAndButton(String menuId);
+
+    /**
+     * 获取资源授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<JSONObject> resourceTreeSelector();
+
+    /**
+     * 获取权限授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<String> permissionTreeSelector();
 }

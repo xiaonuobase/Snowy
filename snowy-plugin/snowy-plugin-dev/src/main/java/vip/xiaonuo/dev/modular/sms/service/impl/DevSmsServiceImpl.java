@@ -14,17 +14,22 @@ package vip.xiaonuo.dev.modular.sms.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.sms.entity.DevSms;
 import vip.xiaonuo.dev.modular.sms.enums.DevSmsEngineTypeEnum;
 import vip.xiaonuo.dev.modular.sms.mapper.DevSmsMapper;
@@ -34,6 +39,7 @@ import vip.xiaonuo.dev.modular.sms.util.DevSmsAliyunUtil;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsTencentUtil;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsXiaonuoUtil;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -44,6 +50,52 @@ import java.util.List;
  **/
 @Service
 public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> implements DevSmsService {
+
+    /** 默认短信引擎 */
+    private static final String SNOWY_SYS_DEFAULT_SMS_ENGINE_KEY = "SNOWY_SYS_DEFAULT_SMS_ENGINE";
+
+    @Resource
+    private DevConfigApi devConfigApi;
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamic(String engine, String phoneNumbers, String templateCodeOrId, JSONObject templateParam) {
+        if(engine.equals(DevSmsEngineTypeEnum.XIAONUO.getValue())) {
+            DevSmsSendXiaonuoParam devSmsSendXiaonuoParam = new DevSmsSendXiaonuoParam();
+            devSmsSendXiaonuoParam.setPhoneNumbers(phoneNumbers);
+            devSmsSendXiaonuoParam.setTemplateCode(templateCodeOrId);
+            devSmsSendXiaonuoParam.setTemplateParam(JSONUtil.toJsonStr(templateParam));
+            this.sendXiaonuo(devSmsSendXiaonuoParam);
+        } else if (engine.equals(DevSmsEngineTypeEnum.ALIYUN.getValue())) {
+            DevSmsSendAliyunParam devSmsSendAliyunParam = new DevSmsSendAliyunParam();
+            devSmsSendAliyunParam.setPhoneNumbers(phoneNumbers);
+            devSmsSendAliyunParam.setTemplateCode(templateCodeOrId);
+            devSmsSendAliyunParam.setTemplateParam(JSONUtil.toJsonStr(templateParam));
+            this.sendAliyun(devSmsSendAliyunParam);
+        } else if (engine.equals(DevSmsEngineTypeEnum.TENCENT.getValue())) {
+            DevSmsSendTencentParam devSmsSendTencentParam = new DevSmsSendTencentParam();
+            devSmsSendTencentParam.setPhoneNumbers(phoneNumbers);
+            devSmsSendTencentParam.setTemplateCode(templateCodeOrId);
+            devSmsSendTencentParam.setTemplateParam(JSONUtil.toJsonStr(templateParam));
+            this.sendTencent(devSmsSendTencentParam);
+        } else {
+            throw new CommonException("不支持的短信引擎：{}", engine);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamic(DevSmsSendDynamicParam devSmsSendDynamicParam) {
+        String defaultSmsEngine = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_SMS_ENGINE_KEY);
+        if(ObjectUtil.isEmpty(defaultSmsEngine)) {
+            throw new CommonException("请联系管理员配置默认短信发送引擎");
+        }
+        String phoneNumbers = devSmsSendDynamicParam.getPhoneNumbers();
+        String templateCodeOrId = devSmsSendDynamicParam.getTemplateCodeOrId();
+        String templateParamStr = devSmsSendDynamicParam.getTemplateParam();
+        JSONObject templateParam = JSONUtil.parseObj(templateParamStr);
+        this.sendDynamic(defaultSmsEngine, phoneNumbers, templateCodeOrId, templateParam);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -63,7 +115,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
     @Override
     public void sendTencent(DevSmsSendTencentParam smsSendTencentParam) {
         validPhone(smsSendTencentParam.getPhoneNumbers());
-        String receiptInfo = DevSmsTencentUtil.sendSms(smsSendTencentParam.getSdkAppId(), smsSendTencentParam.getPhoneNumbers(),
+        String receiptInfo =DevSmsTencentUtil.sendSms(smsSendTencentParam.getPhoneNumbers(),
                 smsSendTencentParam.getSignName(), smsSendTencentParam.getTemplateCode(), smsSendTencentParam.getTemplateParam());
         DevSms devSms = new DevSms();
         BeanUtil.copyProperties(smsSendTencentParam, devSms);
@@ -76,8 +128,16 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
     @Override
     public void sendXiaonuo(DevSmsSendXiaonuoParam devSmsSendXiaonuoParam) {
         validPhone(devSmsSendXiaonuoParam.getPhoneNumbers());
-        String receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
-                devSmsSendXiaonuoParam.getMessage());
+        String receiptInfo;
+        if(ObjectUtil.isEmpty(devSmsSendXiaonuoParam.getTemplateCode())) {
+            receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
+                    devSmsSendXiaonuoParam.getMessage());
+        } else {
+            LinkedHashMap<String, String> paramMap = new LinkedHashMap<>();
+            JSONUtil.parseObj(devSmsSendXiaonuoParam.getTemplateParam()).forEach((k, v) -> paramMap.put(k, Convert.toStr(v)));
+            receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
+                    devSmsSendXiaonuoParam.getTemplateCode(), paramMap);
+        }
         DevSms devSms = new DevSms();
         BeanUtil.copyProperties(devSmsSendXiaonuoParam, devSms);
         devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsXiaonuoUtil.getDefaultSignName());
@@ -103,6 +163,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<DevSmsIdParam> devSmsIdParamList) {
         this.removeByIds(CollStreamUtil.toList(devSmsIdParamList, DevSmsIdParam::getId));

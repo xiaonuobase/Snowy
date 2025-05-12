@@ -61,6 +61,6 @@ public class SysModule extends CommonEntity {
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
 }

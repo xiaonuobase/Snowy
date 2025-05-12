@@ -61,12 +61,14 @@ import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
+import vip.xiaonuo.biz.modular.user.entity.BizUserExt;
 import vip.xiaonuo.biz.modular.user.enums.BizRoleCategoryEnum;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.mapper.BizUserMapper;
 import vip.xiaonuo.biz.modular.user.param.*;
 import vip.xiaonuo.biz.modular.user.result.BizUserExportResult;
 import vip.xiaonuo.biz.modular.user.result.BizUserRoleResult;
+import vip.xiaonuo.biz.modular.user.service.BizUserExtService;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
@@ -74,7 +76,7 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.*;
-import vip.xiaonuo.dev.api.DevConfigApi;
+import vip.xiaonuo.sys.api.SysApi;
 import vip.xiaonuo.sys.api.SysRoleApi;
 import vip.xiaonuo.sys.api.SysUserApi;
 
@@ -82,10 +84,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,19 +96,20 @@ import java.util.stream.Collectors;
 @Service
 public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> implements BizUserService {
 
-    private static final String SNOWY_SYS_DEFAULT_PASSWORD_KEY = "SNOWY_SYS_DEFAULT_PASSWORD";
-
     @Resource
     private TransService transService;
 
     @Resource
-    private DevConfigApi devConfigApi;
+    private SysApi sysApi;
 
     @Resource
     private SysUserApi sysUserApi;
 
     @Resource
     private SysRoleApi sysRoleApi;
+
+    @Resource
+    private BizUserExtService bizUserExtService;
 
     @Resource
     private BizOrgService bizOrgService;
@@ -151,7 +151,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(BizUserAddParam bizUserAddParam) {
+    public void add(BizUserAddParam bizUserAddParam, String sourceFromType) {
         checkParam(bizUserAddParam);
         BizUser bizUser = BeanUtil.toBean(bizUserAddParam, BizUser.class);
         if(ObjectUtil.isEmpty(bizUser.getAvatar())) {
@@ -159,11 +159,13 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             bizUser.setAvatar(CommonAvatarUtil.generateImg(bizUser.getName()));
         }
         // 设置密码
-        bizUser.setPassword(CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY)));
+        bizUser.setPassword(CommonCryptogramUtil.doHashValue(sysApi.getDefaultPassword()));
         // 设置状态
         bizUser.setUserStatus(BizUserStatusEnum.ENABLE.getValue());
+        // 保存用户
         this.save(bizUser);
-
+        // 插入扩展信息
+        bizUserExtService.createExtInfo(bizUser.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
     }
@@ -192,7 +194,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             }
         }
         if(ObjectUtil.isNotEmpty(bizUserAddParam.getEmail())) {
-            if(!CommonEmailUtil.isEmail(bizUserAddParam.getEmail())) {
+            if(CommonEmailUtil.isNotEmail(bizUserAddParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", bizUserAddParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
@@ -213,8 +215,8 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             throw new CommonException("不可修改系统内置超管人员账号");
         }
         BeanUtil.copyProperties(bizUserEditParam, bizUser);
+        // 更新用户
         this.updateById(bizUser);
-
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
     }
@@ -247,7 +249,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             }
         }
         if(ObjectUtil.isNotEmpty(bizUserEditParam.getEmail())) {
-            if(!CommonEmailUtil.isEmail(bizUserEditParam.getEmail())) {
+            if(CommonEmailUtil.isNotEmail(bizUserEditParam.getEmail())) {
                 throw new CommonException("邮箱：{}格式错误", bizUserEditParam.getEmail());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
@@ -273,7 +275,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-                if(!loginUserDataScope.containsAll(userOrgIdList)) {
+                if(!new HashSet<>(loginUserDataScope).containsAll(userOrgIdList)) {
                     throw new CommonException("您没有权限删除这些机构下的人员，机构id：{}",
                             CollectionUtil.subtract(userOrgIdList, loginUserDataScope));
                 }
@@ -303,6 +305,9 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
             // 执行删除
             this.removeByIds(bizUserIdList);
+
+            // 删除扩展信息
+            bizUserExtService.remove(new LambdaQueryWrapper<BizUserExt>().in(BizUserExt::getUserId, bizUserIdList));
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.USER.getValue(), bizUserIdList);
@@ -369,7 +374,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         }
         this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId,
                 bizUserIdParam.getId()).set(BizUser::getPassword,
-                CommonCryptogramUtil.doHashValue(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_KEY))));
+                CommonCryptogramUtil.doHashValue(sysApi.getDefaultPassword())));
     }
 
     @Override
@@ -563,7 +568,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             if(ObjectUtil.isNotEmpty(bizUser.getBirthday())) {
                 try {
                     // 年龄
-                    long age = cn.hutool.core.date.DateUtil.betweenYear(cn.hutool.core.date.DateUtil.parseDate(bizUser.getBirthday()), DateTime.now(), true);
+                    long age = DateUtil.betweenYear(DateUtil.parseDate(bizUser.getBirthday()), DateTime.now(), true);
                     if(age != 0) {
                         map.put("age", age + "岁");
                     }
@@ -633,48 +638,48 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
     @Override
     public Page<BizOrg> orgListSelector(BizUserSelectorOrgListParam bizUserSelectorOrgListParam) {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScope);
+            queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 查询部分字段
-        lambdaQueryWrapper.select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
+        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
                 BizOrg::getCategory, BizOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(bizUserSelectorOrgListParam.getParentId())) {
-            lambdaQueryWrapper.eq(BizOrg::getParentId, bizUserSelectorOrgListParam.getParentId());
+            queryWrapper.lambda().eq(BizOrg::getParentId, bizUserSelectorOrgListParam.getParentId());
         }
         if(ObjectUtil.isNotEmpty(bizUserSelectorOrgListParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizOrg::getName, bizUserSelectorOrgListParam.getSearchKey());
+            queryWrapper.lambda().like(BizOrg::getName, bizUserSelectorOrgListParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        return bizOrgService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizOrg::getSortCode);
+        return bizOrgService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
     public Page<BizPosition> positionSelector(BizUserSelectorPositionParam bizUserSelectorPositionParam) {
-        LambdaQueryWrapper<BizPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizPosition::getOrgId, loginUserDataScope);
+            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 查询部分字段
-        lambdaQueryWrapper.select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
+        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
                 BizPosition::getCategory, BizPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(bizUserSelectorPositionParam.getOrgId())) {
-            lambdaQueryWrapper.eq(BizPosition::getOrgId, bizUserSelectorPositionParam.getOrgId());
+            queryWrapper.lambda().eq(BizPosition::getOrgId, bizUserSelectorPositionParam.getOrgId());
         }
         if(ObjectUtil.isNotEmpty(bizUserSelectorPositionParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizPosition::getName, bizUserSelectorPositionParam.getSearchKey());
+            queryWrapper.lambda().like(BizPosition::getName, bizUserSelectorPositionParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizPosition::getSortCode);
-        return bizPositionService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizPosition::getSortCode);
+        return bizPositionService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @SuppressWarnings("ALL")
@@ -707,31 +712,31 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
     @Override
     public Page<BizUser> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {
-        LambdaQueryWrapper<BizUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizUser::getOrgId, loginUserDataScope);
+            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 只查询部分字段
-        lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
+        queryWrapper.lambda().select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
                 BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
         if (ObjectUtil.isNotEmpty(bizUserSelectorUserParam.getOrgId())) {
             // 如果机构id不为空，则查询该机构及其子机构下的所有人
             List<String> childOrgIdList = CollStreamUtil.toList(bizOrgService.getChildListById(bizOrgService
                     .getAllOrgList(), bizUserSelectorUserParam.getOrgId(), true), BizOrg::getId);
             if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                lambdaQueryWrapper.in(BizUser::getOrgId, childOrgIdList);
+                queryWrapper.lambda().in(BizUser::getOrgId, childOrgIdList);
             } else {
                 return new Page<>();
             }
         }
         if(ObjectUtil.isNotEmpty(bizUserSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizUser::getName, bizUserSelectorUserParam.getSearchKey());
+            queryWrapper.lambda().like(BizUser::getName, bizUserSelectorUserParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizUser::getSortCode);
-        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizUser::getSortCode);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 }

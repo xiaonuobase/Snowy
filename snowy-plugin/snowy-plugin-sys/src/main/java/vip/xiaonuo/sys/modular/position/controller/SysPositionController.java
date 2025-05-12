@@ -14,10 +14,11 @@ package vip.xiaonuo.sys.modular.position.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -39,6 +41,7 @@ import java.util.List;
  * @date 2022/4/25 20:40
  */
 @Tag(name = "职位控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class SysPositionController {
@@ -52,6 +55,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取职位分页")
     @GetMapping("/sys/position/page")
     public CommonResult<Page<SysPosition>> page(SysPositionPageParam sysPositionPageParam) {
@@ -64,6 +68,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加职位")
     @CommonLog("添加职位")
     @PostMapping("/sys/position/add")
@@ -78,6 +83,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑职位")
     @CommonLog("编辑职位")
     @PostMapping("/sys/position/edit")
@@ -92,6 +98,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除职位")
     @CommonLog("删除职位")
     @PostMapping("/sys/position/delete")
@@ -107,6 +114,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取职位详情")
     @GetMapping("/sys/position/detail")
     public CommonResult<SysPosition> detail(@Valid SysPositionIdParam sysPositionIdParam) {
@@ -121,6 +129,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取组织树选择器")
     @GetMapping("/sys/position/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
@@ -133,6 +142,7 @@ public class SysPositionController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取职位选择器")
     @GetMapping("/sys/position/positionSelector")
     public CommonResult<Page<SysPosition>> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {

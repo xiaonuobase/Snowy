@@ -29,22 +29,22 @@ import lombok.Setter;
 public class SysOrgAddParam {
 
     /** 父id */
-    @Schema(description = "父id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "父id")
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 名称 */
-    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "名称")
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 分类 */
-    @Schema(description = "分类", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "分类")
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

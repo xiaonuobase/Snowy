@@ -19,7 +19,7 @@ import com.antherd.smcrypto.sm4.Sm4Options;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 加密工具类，本框架目前使用 https://github.com/antherd/sm-crypto 项目中一些加解密方式
+ * 加密工具类，本框架目前使用 <a href="https://github.com/antherd/sm-crypto">sm-crypto</a> 项目中一些加解密方式
  * 使用小伙伴需要过等保密评相关，请在此处更改为自己的加密方法，或加密机，使用加密机同时需要替换公钥，私钥在内部无法导出，提供加密的方法
  * 如果不涉及到加密机方面的内容，请更改公私要为自己重新生成的，生成方式请看集成的sm-crypto主页
  *

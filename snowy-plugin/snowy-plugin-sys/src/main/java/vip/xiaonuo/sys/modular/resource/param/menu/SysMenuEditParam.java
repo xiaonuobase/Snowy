@@ -29,37 +29,37 @@ import lombok.Setter;
 public class SysMenuEditParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 父id */
-    @Schema(description = "父id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "父id")
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 标题 */
-    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "标题")
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 菜单类型 */
-    @Schema(description = "菜单类型", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "菜单类型")
     @NotBlank(message = "menuType不能为空")
     private String menuType;
 
     /** 模块 */
-    @Schema(description = "模块", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "模块")
     @NotBlank(message = "module不能为空")
     private String module;
 
     /** 路径 */
-    @Schema(description = "路径", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "路径")
     @NotBlank(message = "path不能为空")
     private String path;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

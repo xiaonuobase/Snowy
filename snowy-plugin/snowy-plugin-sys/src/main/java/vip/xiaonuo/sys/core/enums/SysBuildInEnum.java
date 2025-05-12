@@ -29,8 +29,17 @@ public enum SysBuildInEnum {
     /** 超管角色编码 */
     BUILD_IN_ROLE_CODE("superAdmin", "超管"),
 
-    /** 系统内置模块编码 */
-    BUILD_IN_MODULE_CODE("system", "系统内置");
+    /** 超管职位编码 */
+    BUILD_IN_POSITION_CODE("superAdmin", "超管"),
+
+    /** 系统内置系统模块编码 */
+    BUILD_IN_MODULE_CODE("system", "系统内置"),
+
+    /** 系统内置业务模块编码 */
+    BUILD_IN_MODULE_CODE_BIZ("biz", "系统内置"),
+
+    /** 系统内置非租户菜单编码 */
+    BUILD_IN_NO_TEN_MENU_CODE("noten", "非租户菜单");
 
     private final String value;
 

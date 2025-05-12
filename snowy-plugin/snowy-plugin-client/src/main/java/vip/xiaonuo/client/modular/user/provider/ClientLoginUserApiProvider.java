@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.client.modular.user.provider;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.client.modular.user.entity.ClientUser;
 import vip.xiaonuo.client.modular.user.result.ClientLoginUser;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
 
@@ -93,6 +95,11 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
         return null;
     }
 
+    @Override
+    public SaBaseLoginUser getUserByEmail(String email) {
+        return null;
+    }
+
     /**
      * 根据手机号获取C端用户信息，查不到则返回null
      *
@@ -102,6 +109,11 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public SaBaseClientLoginUser getClientUserByPhone(String phone) {
         return clientUserService.getUserByPhone(phone);
+    }
+
+    @Override
+    public SaBaseClientLoginUser getClientUserByEmail(String email) {
+        return clientUserService.getUserByEmail(email);
     }
 
     /**
@@ -172,5 +184,32 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public void updateUserLoginInfo(String userId, String device) {
         clientUserService.updateUserLoginInfo(userId, device);
+    }
+
+    @Override
+    public SaBaseLoginUser createUserWithPhone(String phone) {
+        return null;
+    }
+
+    @Override
+    public SaBaseClientLoginUser createClientUserWithPhone(String phone) {
+        ClientUser clientUser = clientUserService.createUserWithPhone(phone);
+        return BeanUtil.copyProperties(clientUser, SaBaseClientLoginUser.class);
+    }
+
+    @Override
+    public SaBaseLoginUser createUserWithEmail(String email) {
+        return null;
+    }
+
+    @Override
+    public SaBaseClientLoginUser createClientUserWithEmail(String email) {
+        ClientUser clientUser = clientUserService.createUserWithEmail(email);
+        return BeanUtil.copyProperties(clientUser, SaBaseClientLoginUser.class);
+    }
+
+    @Override
+    public void doRegister(String account, String password) {
+        clientUserService.doRegister(account, password);
     }
 }

@@ -14,10 +14,11 @@ package vip.xiaonuo.dev.modular.dict.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import vip.xiaonuo.dev.modular.dict.entity.DevDict;
 import vip.xiaonuo.dev.modular.dict.param.*;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -39,6 +41,7 @@ import java.util.List;
  * @date 2022/6/21 14:58
  **/
 @Tag(name = "字典控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class DevDictController {
@@ -52,6 +55,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取字典分页")
     @GetMapping("/dev/dict/page")
     public CommonResult<Page<DevDict>> page(DevDictPageParam devDictPageParam) {
@@ -64,6 +68,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取字典列表")
     @GetMapping("/dev/dict/list")
     public CommonResult<List<DevDict>> list(DevDictListParam devDictListParam) {
@@ -76,6 +81,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "获取字典树")
     @GetMapping("/dev/dict/tree")
     public CommonResult<List<Tree<String>>> tree(DevDictTreeParam devDictTreeParam) {
@@ -88,6 +94,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "添加字典")
     @CommonLog("添加字典")
     @PostMapping("/dev/dict/add")
@@ -102,6 +109,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "编辑字典")
     @CommonLog("编辑字典")
     @PostMapping("/dev/dict/edit")
@@ -116,6 +124,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "删除字典")
     @CommonLog("删除字典")
     @PostMapping("/dev/dict/delete")
@@ -131,6 +140,7 @@ public class DevDictController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取字典详情")
     @GetMapping("/dev/dict/detail")
     public CommonResult<DevDict> detail(@Valid DevDictIdParam devDictIdParam) {

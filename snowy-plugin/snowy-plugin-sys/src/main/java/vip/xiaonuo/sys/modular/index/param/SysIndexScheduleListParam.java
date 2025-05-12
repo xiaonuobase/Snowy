@@ -28,7 +28,7 @@ import lombok.Setter;
 public class SysIndexScheduleListParam {
 
     /** 日程日期 */
-    @Schema(description = "日程日期", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "日程日期")
     @NotBlank(message = "scheduleDate不能为空")
     private String scheduleDate;
 }

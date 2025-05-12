@@ -77,29 +77,15 @@ public class CommonTimeFormatUtil {
                     String weekday;
                     //获取是本周的第几天
                     int dayOfWeek = DateUtil.dayOfWeek(date) - 1;
-                    switch (dayOfWeek) {
-                        case 1:
-                            weekday = "周一";
-                            break;
-                        case 2:
-                            weekday = "周二";
-                            break;
-                        case 3:
-                            weekday = "周三";
-                            break;
-                        case 4:
-                            weekday = "周四";
-                            break;
-                        case 5:
-                            weekday = "周五";
-                            break;
-                        case 6:
-                            weekday = "周六";
-                            break;
-                        default:
-                            weekday = "周日";
-                            break;
-                    }
+                    weekday = switch (dayOfWeek) {
+                        case 1 -> "周一";
+                        case 2 -> "周二";
+                        case 3 -> "周三";
+                        case 4 -> "周四";
+                        case 5 -> "周五";
+                        case 6 -> "周六";
+                        default -> "周日";
+                    };
                     //显示本周时分
                     return weekday + " " + DateUtil.format(date, "HH:mm");
                 } else {

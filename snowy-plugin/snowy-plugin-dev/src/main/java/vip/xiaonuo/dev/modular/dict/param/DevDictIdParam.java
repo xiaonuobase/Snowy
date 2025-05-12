@@ -28,7 +28,7 @@ import lombok.Setter;
 public class DevDictIdParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 }

@@ -32,6 +32,14 @@ public class DevSmsSendXiaonuoParam {
     @NotBlank(message = "phoneNumbers不能为空")
     private String phoneNumbers;
 
+    /** 模板编码 */
+    @Schema(description = "模板编码")
+    private String templateCode;
+
+    /** 发送参数 */
+    @Schema(description = "发送参数")
+    private String templateParam;
+
     /** 短信内容 */
     @Schema(description = "短信内容")
     private String message;
@@ -39,4 +47,7 @@ public class DevSmsSendXiaonuoParam {
     /** 短信签名 */
     @Schema(description = "短信签名")
     private String signName;
+
+
+
 }

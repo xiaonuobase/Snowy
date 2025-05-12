@@ -92,16 +92,16 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<Tree<String>> tree(SysMenuTreeParam sysMenuTreeParam) {
-        LambdaQueryWrapper<SysMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
+        QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<SysMenu>().checkSqlInjection();
+        queryWrapper.lambda().eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
                 .orderByAsc(SysMenu::getSortCode);
         if(ObjectUtil.isNotEmpty(sysMenuTreeParam.getModule())) {
-            lambdaQueryWrapper.eq(SysMenu::getModule, sysMenuTreeParam.getModule());
+            queryWrapper.lambda().eq(SysMenu::getModule, sysMenuTreeParam.getModule());
         }
         if(ObjectUtil.isNotEmpty(sysMenuTreeParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysMenu::getTitle, sysMenuTreeParam.getSearchKey());
+            queryWrapper.lambda().like(SysMenu::getTitle, sysMenuTreeParam.getSearchKey());
         }
-        List<SysMenu> resourceList = this.list(lambdaQueryWrapper);
+        List<SysMenu> resourceList = this.list(queryWrapper.lambda());
 
         // 填充上层的父级菜单
         this.fillParentSysMenuInfo(resourceList);
@@ -165,6 +165,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 throw new CommonException("module与上级菜单不一致");
             }
         }
+        sysMenu.setCode(RandomUtil.randomString(10));
         sysMenu.setCategory(SysResourceCategoryEnum.MENU.getValue());
         this.save(sysMenu);
 
@@ -273,6 +274,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysMenu));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void changeModule(SysMenuChangeModuleParam sysMenuChangeModuleParam) {
         SysMenu sysMenu = this.queryEntity(sysMenuChangeModuleParam.getId());
@@ -319,6 +321,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<SysMenuIdParam> sysMenuIdParamList) {
         List<String> sysMenuIdList = CollStreamUtil.toList(sysMenuIdParamList, SysMenuIdParam::getId);
@@ -359,12 +362,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public List<SysModule> moduleSelector(SysMenuSelectorModuleParam sysMenuSelectorModuleParam) {
-        LambdaQueryWrapper<SysModule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<SysModule> queryWrapper = new QueryWrapper<SysModule>().checkSqlInjection();
         if(ObjectUtil.isNotEmpty(sysMenuSelectorModuleParam.getSearchKey())) {
-            lambdaQueryWrapper.like(SysModule::getTitle, sysMenuSelectorModuleParam.getSearchKey());
+            queryWrapper.lambda().like(SysModule::getTitle, sysMenuSelectorModuleParam.getSearchKey());
         }
-        lambdaQueryWrapper.eq(SysModule::getCategory, SysResourceCategoryEnum.MODULE.getValue());
-        return sysModuleService.list(lambdaQueryWrapper);
+        queryWrapper.lambda().eq(SysModule::getCategory, SysResourceCategoryEnum.MODULE.getValue());
+        return sysModuleService.list(queryWrapper.lambda());
     }
 
     @Override

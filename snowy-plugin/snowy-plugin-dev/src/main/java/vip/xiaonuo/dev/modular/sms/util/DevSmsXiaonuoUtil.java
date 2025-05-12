@@ -13,6 +13,7 @@
 package vip.xiaonuo.dev.modular.sms.util;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -27,6 +28,8 @@ import org.dromara.sms4j.javase.config.SEInitializer;
 import org.dromara.sms4j.provider.config.SmsConfig;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
+
+import java.util.LinkedHashMap;
 
 /**
  * 小诺短信工具类
@@ -76,21 +79,21 @@ public class DevSmsXiaonuoUtil {
         }
 
         DingZhongConfig dingZhongConfig = new DingZhongConfig();
+        dingZhongConfig.setConfigId(accessKeyId);
         dingZhongConfig.setAccessKeyId(accessKeyId);
         dingZhongConfig.setAccessKeySecret(accessKeySecret);
-        dingZhongConfig.setRequestUrl(requestUrl);
         dingZhongConfig.setSignature(signName);
-        dingZhongConfig.setConfigId("XIAONUO");
+        dingZhongConfig.setRequestUrl(requestUrl);
         SEInitializer.initializer().fromConfig(new SmsConfig(), CollectionUtil.newArrayList(dingZhongConfig));
         smsBlend = SmsFactory.getSmsBlend(dingZhongConfig.getConfigId());
     }
 
     /**
-     * 发送短信
+     * 发送纯文字短信
      *
      * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
      * @param signName 短信签名，为空则使用默认签名
-     * @param message 短信内容
+     * @param message 短信内容，自定义文字
      * @return 发送的结果信息
      * @author xuyuxiang
      * @date 2022/2/24 13:42
@@ -104,6 +107,42 @@ public class DevSmsXiaonuoUtil {
             initClient(signName);
             // 发送短信
             SmsResponse smsResponse = smsBlend.massTexting(StrUtil.split(phoneNumbers, StrUtil.COMMA), message);
+            if(smsResponse.isSuccess()) {
+                return JSONUtil.toJsonStr(smsResponse.getData());
+            } else {
+                String data = Convert.toStr(smsResponse.getData());
+                if(JSONUtil.isTypeJSON(data)) {
+                    JSONObject responseData = JSONUtil.parseObj(smsResponse.getData());
+                    throw new CommonException(responseData.getStr("resInfo"));
+                } else {
+                    throw new CommonException(data);
+                }
+            }
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+    }
+
+    /**
+     * 发送模板短信
+     *
+     * @param phoneNumbers 手机号码，支持对多个手机号码发送短信，手机号码之间以半角逗号（,）分隔。
+     * @param signName 短信签名，为空则使用默认签名
+     * @param templateId 模板id
+     * @param paramMap 短信参数
+     * @return 发送的结果信息
+     * @author xuyuxiang
+     * @date 2022/2/24 13:42
+     **/
+    public static String sendSms(String phoneNumbers, String signName, String templateId, LinkedHashMap<String, String> paramMap) {
+        try {
+            if(ObjectUtil.isEmpty(signName)) {
+                signName = getDefaultSignName();
+            }
+            // 初始化客户端
+            initClient(signName);
+            // 发送短信
+            SmsResponse smsResponse = smsBlend.massTexting(StrUtil.split(phoneNumbers, StrUtil.COMMA), templateId, paramMap);
             if(smsResponse.isSuccess()) {
                 return JSONUtil.toJsonStr(smsResponse.getData());
             } else {

@@ -13,10 +13,11 @@
 package vip.xiaonuo.dev.modular.log.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,7 @@ import vip.xiaonuo.dev.modular.log.result.DevLogVisLineChartDataResult;
 import vip.xiaonuo.dev.modular.log.result.DevLogVisPieChartDataResult;
 import vip.xiaonuo.dev.modular.log.service.DevLogService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -43,6 +45,7 @@ import java.util.List;
  * @date 2022/9/2 15:15
  */
 @Tag(name = "日志控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 8)
 @RestController
 @Validated
 public class DevLogController {
@@ -56,6 +59,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取日志分页")
     @GetMapping("/dev/log/page")
     public CommonResult<Page<DevLog>> page(DevLogPageParam devLogPageParam) {
@@ -68,6 +72,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "清空日志")
     @CommonLog("清空日志")
     @PostMapping("/dev/log/delete")
@@ -82,6 +87,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "获取访问日志折线图数据")
     @GetMapping("/dev/log/vis/lineChartData")
     public CommonResult<List<DevLogVisLineChartDataResult>> visLogLineChartData() {
@@ -94,6 +100,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取访问日志饼状图数据")
     @GetMapping("/dev/log/vis/pieChartData")
     public CommonResult<List<DevLogVisPieChartDataResult>> visLogPieChartData() {
@@ -106,6 +113,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取操作日志柱状图数据")
     @GetMapping("/dev/log/op/barChartData")
     public CommonResult<List<DevLogOpBarChartDataResult>> opLogBarChartData() {
@@ -118,6 +126,7 @@ public class DevLogController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取操作日志饼状图数据")
     @GetMapping("/dev/log/op/pieChartData")
     public CommonResult<List<DevLogOpPieChartDataResult>> opLogPieChartData() {
@@ -127,6 +136,7 @@ public class DevLogController {
     /**
      * 依据id获取单条日志详情
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "依据id获取日志详情")
     @GetMapping("/dev/log/detail")
     public CommonResult<DevLog> detail(@Valid DevLogIdParam devLogIdParam) {

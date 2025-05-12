@@ -51,7 +51,7 @@ public interface BizOrgService extends IService<BizOrg> {
      * @author xuyuxiang
      * @date 2022/4/24 20:48
      */
-    void add(BizOrgAddParam bizOrgAddParam);
+    void add(BizOrgAddParam bizOrgAddParam, String sourceFromType);
 
     /**
      * 编辑机构

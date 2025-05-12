@@ -18,6 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.util.CommonServletUtil;
 
+/**
+ * 认证相关异常处理工具类
+ *
+ * @author xuyuxiang
+ * @date 2021/10/9 14:24
+ **/
 @Slf4j
 public class AuthExceptionUtil {
 

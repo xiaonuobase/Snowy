@@ -13,9 +13,9 @@
 package vip.xiaonuo.sys.modular.group.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * 用户组Id参数

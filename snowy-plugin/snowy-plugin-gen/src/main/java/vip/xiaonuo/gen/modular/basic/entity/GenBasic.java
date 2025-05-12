@@ -69,7 +69,7 @@ public class GenBasic extends CommonEntity {
 
     /** 移动端所属模块 */
     @Schema(description = "移动端所属模块")
-    @TableField(insertStrategy = FieldStrategy.IGNORED, updateStrategy = FieldStrategy.IGNORED)
+    @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String mobileModule;
 
     /** 功能名 */

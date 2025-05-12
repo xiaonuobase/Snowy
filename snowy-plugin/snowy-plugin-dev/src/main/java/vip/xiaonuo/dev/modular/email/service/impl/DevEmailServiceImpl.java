@@ -21,12 +21,14 @@ import cn.hutool.extra.mail.MailAccount;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.common.util.CommonEmailUtil;
+import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.email.entity.DevEmail;
 import vip.xiaonuo.dev.modular.email.enums.DevEmailEngineTypeEnum;
 import vip.xiaonuo.dev.modular.email.mapper.DevEmailMapper;
@@ -46,6 +48,90 @@ import java.util.List;
  **/
 @Service
 public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> implements DevEmailService {
+
+    /** 默认邮件引擎 */
+    private static final String SNOWY_SYS_DEFAULT_EMAIL_ENGINE_KEY = "SNOWY_SYS_DEFAULT_EMAIL_ENGINE";
+
+    @Resource
+    private DevConfigApi devConfigApi;
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamicTxt(String engine, String receiveAccounts, String subject, String content) {
+        if(engine.equals(DevEmailEngineTypeEnum.LOCAL.getValue())) {
+            DevEmailSendLocalTxtParam devEmailSendLocalTxtParam = new DevEmailSendLocalTxtParam();
+            devEmailSendLocalTxtParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendLocalTxtParam.setSubject(subject);
+            devEmailSendLocalTxtParam.setContent(content);
+            this.sendLocal(devEmailSendLocalTxtParam);
+        } else if (engine.equals(DevEmailEngineTypeEnum.ALIYUN.getValue())) {
+            DevEmailSendAliyunTxtParam devEmailSendAliyunTxtParam = new DevEmailSendAliyunTxtParam();
+            devEmailSendAliyunTxtParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendAliyunTxtParam.setSubject(subject);
+            devEmailSendAliyunTxtParam.setContent(content);
+            this.sendAliyun(devEmailSendAliyunTxtParam);
+        } else if (engine.equals(DevEmailEngineTypeEnum.TENCENT.getValue())) {
+            DevEmailSendTencentTxtParam devEmailSendTencentTxtParam = new DevEmailSendTencentTxtParam();
+            devEmailSendTencentTxtParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendTencentTxtParam.setSubject(subject);
+            devEmailSendTencentTxtParam.setContent(content);
+            this.sendTencent(devEmailSendTencentTxtParam);
+        } else {
+            throw new CommonException("不支持的邮件引擎：{}", engine);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamicHtml(String engine, String receiveAccounts, String subject, String content) {
+        if(engine.equals(DevEmailEngineTypeEnum.LOCAL.getValue())) {
+            DevEmailSendLocalHtmlParam devEmailSendLocalHtmlParam = new DevEmailSendLocalHtmlParam();
+            devEmailSendLocalHtmlParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendLocalHtmlParam.setSubject(subject);
+            devEmailSendLocalHtmlParam.setContent(content);
+            this.sendLocal(devEmailSendLocalHtmlParam);
+        } else if (engine.equals(DevEmailEngineTypeEnum.ALIYUN.getValue())) {
+            DevEmailSendAliyunHtmlParam devEmailSendAliyunHtmlParam = new DevEmailSendAliyunHtmlParam();
+            devEmailSendAliyunHtmlParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendAliyunHtmlParam.setSubject(subject);
+            devEmailSendAliyunHtmlParam.setContent(content);
+            this.sendAliyun(devEmailSendAliyunHtmlParam);
+        } else if (engine.equals(DevEmailEngineTypeEnum.TENCENT.getValue())) {
+            DevEmailSendTencentHtmlParam devEmailSendTencentHtmlParam = new DevEmailSendTencentHtmlParam();
+            devEmailSendTencentHtmlParam.setReceiveAccounts(receiveAccounts);
+            devEmailSendTencentHtmlParam.setSubject(subject);
+            devEmailSendTencentHtmlParam.setContent(content);
+            this.sendTencent(devEmailSendTencentHtmlParam);
+        } else {
+            throw new CommonException("不支持的邮件引擎：{}", engine);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamicTxt(DevEmailSendDynamicTxtParam devEmailSendDynamicTxtParam) {
+        String defaultEmailEngine = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_EMAIL_ENGINE_KEY);
+        if(ObjectUtil.isEmpty(defaultEmailEngine)) {
+            throw new CommonException("请联系管理员配置默认邮件发送引擎");
+        }
+        String receiveAccounts = devEmailSendDynamicTxtParam.getReceiveAccounts();
+        String subject = devEmailSendDynamicTxtParam.getSubject();
+        String content = devEmailSendDynamicTxtParam.getContent();
+        this.sendDynamicTxt(defaultEmailEngine, receiveAccounts, subject, content);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void sendDynamicHtml(DevEmailSendDynamicHtmlParam devEmailSendDynamicHtmlParam) {
+        String defaultEmailEngine = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_EMAIL_ENGINE_KEY);
+        if(ObjectUtil.isEmpty(defaultEmailEngine)) {
+            throw new CommonException("请联系管理员配置默认邮件发送引擎");
+        }
+        String receiveAccounts = devEmailSendDynamicHtmlParam.getReceiveAccounts();
+        String subject = devEmailSendDynamicHtmlParam.getSubject();
+        String content = devEmailSendDynamicHtmlParam.getContent();
+        this.sendDynamicHtml(defaultEmailEngine, receiveAccounts, subject, content);
+    }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -180,6 +266,7 @@ public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> i
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<DevEmailIdParam> devEmailIdParamList) {
         this.removeByIds(CollStreamUtil.toList(devEmailIdParamList, DevEmailIdParam::getId));

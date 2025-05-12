@@ -31,12 +31,12 @@ import java.util.List;
 public class SysRoleGrantUserParam {
 
     /** 角色id */
-    @Schema(description = "角色id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "角色id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 授权用户信息 */
-    @Schema(description = "授权用户信息", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "授权用户信息")
     @NotNull(message = "grantInfoList不能为空")
     private List<String> grantInfoList;
 }

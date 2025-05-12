@@ -24,7 +24,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 
 /**
  * 阿里云邮件工具类
- * 参考文档：https://help.aliyun.com/document_detail/29459.html
+ * 参考文档：<a href="https://help.aliyun.com/document_detail/29459.html">参考文档</a>
  *
  * @author xuyuxiang
  * @date 2022/6/17 10:17
@@ -36,7 +36,7 @@ public class DevEmailAliyunUtil {
 
     private static final String SNOWY_EMAIL_ALIYUN_ACCESS_KEY_ID_KEY = "SNOWY_EMAIL_ALIYUN_ACCESS_KEY_ID";
     private static final String SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET_KEY = "SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET";
-    private static final String SNOWY_EMAIL_ALIYUN_REGION_ID_KEY = "SNOWY_EMAIL_ALIYUN_REGION_ID";
+    private static final String SNOWY_EMAIL_ALIYUN_FROM_KEY = "SNOWY_EMAIL_ALIYUN_FROM";
 
     /**
      * 初始化操作的客户端
@@ -61,16 +61,8 @@ public class DevEmailAliyunUtil {
         if(ObjectUtil.isEmpty(accessKeySecret)) {
             throw new CommonException("阿里云邮件操作客户端未正确配置：accessKeySecret为空");
         }
-
-        /* regionId */
-        String regionId = devConfigApi.getValueByKey(SNOWY_EMAIL_ALIYUN_REGION_ID_KEY);
-
-        if(ObjectUtil.isEmpty(regionId)) {
-            throw new CommonException("阿里云邮件操作客户端未正确配置：regionId为空");
-        }
-
         try {
-            client = new Client(new Config().setRegionId(regionId).setEndpoint("dm.aliyuncs.com").setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret));
+            client = new Client(new Config().setRegionId("cn-hangzhou").setEndpoint("dm.aliyuncs.com").setAccessKeyId(accessKeyId).setAccessKeySecret(accessKeySecret));
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
@@ -91,6 +83,9 @@ public class DevEmailAliyunUtil {
     public static String sendTextEmail(String from, String user, String tos, String subject, String content) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             SingleSendMailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, false);
             return client.singleSendMail(singleSendMailRequest).getBody().getEnvId();
         } catch (Exception e) {
@@ -113,6 +108,9 @@ public class DevEmailAliyunUtil {
     public static String sendHtmlEmail(String from, String user, String tos, String subject, String content) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             SingleSendMailRequest singleSendMailRequest = createSingleSendRequest(from, user, tos, subject, content, true);
             return client.singleSendMail(singleSendMailRequest).getBody().getEnvId();
         } catch (Exception e) {
@@ -134,6 +132,9 @@ public class DevEmailAliyunUtil {
     public static String sendEmailWithTemplate(String from, String tagName, String toName, String templateName) {
         try {
             initClient();
+            if(ObjectUtil.isEmpty(from)) {
+                from = getDefaultFrom();
+            }
             BatchSendMailRequest batchSendMailRequest = createBatchSendRequest(from, tagName, toName, templateName);
             return client.batchSendMail(batchSendMailRequest).getBody().getEnvId();
         } catch (Exception e) {
@@ -210,5 +211,20 @@ public class DevEmailAliyunUtil {
         request.setClickTrace("0");
 
         return request;
+    }
+
+    /**
+     * 获取默认发送账号
+     *
+     * @author xuyuxiang
+     * @date 2024/1/26 16:40
+     **/
+    public static String getDefaultFrom() {
+        DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+        String signName = devConfigApi.getValueByKey(SNOWY_EMAIL_ALIYUN_FROM_KEY);
+        if(ObjectUtil.isEmpty(signName)) {
+            throw new CommonException("阿里云邮件操作客户端未正确配置：from为空");
+        }
+        return signName;
     }
 }

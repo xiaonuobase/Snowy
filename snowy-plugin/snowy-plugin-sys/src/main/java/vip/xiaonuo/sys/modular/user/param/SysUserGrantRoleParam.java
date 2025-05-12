@@ -31,12 +31,12 @@ import java.util.List;
 public class SysUserGrantRoleParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 角色id集合 */
-    @Schema(description = "角色id集合", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "角色id集合")
     @NotNull(message = "roleIdList不能为空")
     private List<String> roleIdList;
 }

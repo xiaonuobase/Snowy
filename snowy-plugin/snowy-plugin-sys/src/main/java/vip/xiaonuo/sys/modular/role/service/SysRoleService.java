@@ -13,8 +13,10 @@
 package vip.xiaonuo.sys.modular.role.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
 import vip.xiaonuo.sys.modular.role.result.*;
@@ -158,7 +160,15 @@ public interface SysRoleService extends IService<SysRole> {
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<SysRoleGrantResourceTreeResult> resourceTreeSelector();
+    List<SysRoleGrantResourceTreeResult> resourceTreeSelector(boolean containsTen);
+
+    /**
+     * 获取资源授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<SysRoleGrantResourceTreeResult> resourceTreeSelector(List<SysMenu> originDataList);
 
     /**
      * 获取移动端菜单授权树
@@ -167,6 +177,14 @@ public interface SysRoleService extends IService<SysRole> {
      * @date 2022/4/24 20:08
      */
     List<SysRoleGrantMobileMenuTreeResult> mobileMenuTreeSelector();
+
+    /**
+     * 获取移动端菜单授权树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<SysRoleGrantMobileMenuTreeResult> mobileMenuTreeSelector(List<JSONObject> originDataList);
 
     /**
      * 获取权限授权树

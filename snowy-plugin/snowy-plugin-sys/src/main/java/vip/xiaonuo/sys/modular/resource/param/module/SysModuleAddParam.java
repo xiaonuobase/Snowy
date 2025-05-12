@@ -29,22 +29,22 @@ import lombok.Setter;
 public class SysModuleAddParam {
 
     /** 标题 */
-    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "标题")
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 图标 */
-    @Schema(description = "图标", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "图标")
     @NotBlank(message = "icon不能为空")
     private String icon;
 
     /** 颜色 */
-    @Schema(description = "颜色", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "颜色")
     @NotBlank(message = "color不能为空")
     private String color;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

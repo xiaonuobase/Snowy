@@ -29,22 +29,22 @@ import lombok.Setter;
 public class SysButtonAddParam {
 
     /** 父id */
-    @Schema(description = "父id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "父id")
     @NotBlank(message = "parentId不能为空")
     private String parentId;
 
     /** 标题 */
-    @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "标题")
     @NotBlank(message = "title不能为空")
     private String title;
 
     /** 编码 */
-    @Schema(description = "编码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "编码")
     @NotBlank(message = "code不能为空")
     private String code;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

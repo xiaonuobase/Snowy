@@ -28,7 +28,7 @@ import lombok.Setter;
 public class DevLogDeleteParam {
 
     /** 日志分类 */
-    @Schema(description = "日志分类", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "日志分类")
     @NotBlank(message = "category不能为空")
     private String category;
 }

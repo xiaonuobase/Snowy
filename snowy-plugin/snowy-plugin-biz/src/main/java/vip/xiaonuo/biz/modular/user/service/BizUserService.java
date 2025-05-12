@@ -47,7 +47,7 @@ public interface BizUserService extends IService<BizUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:48
      */
-    void add(BizUserAddParam bizUserAddParam);
+    void add(BizUserAddParam bizUserAddParam, String sourceFromType);
 
     /**
      * 编辑人员
@@ -83,7 +83,7 @@ public interface BizUserService extends IService<BizUser> {
 
     /**
      * 禁用人员
-     * 
+     *
      * @author xuyuxiang
      * @date 2022/7/5 18:20
      **/

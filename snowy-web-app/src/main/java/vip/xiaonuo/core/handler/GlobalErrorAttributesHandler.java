@@ -60,8 +60,7 @@ public class GlobalErrorAttributesHandler extends DefaultErrorAttributes {
         // 如果返回的异常是CommonException，则按CommonException响应的内容进行返回
         Throwable throwable = this.getError(webRequest);
         if (ObjectUtil.isNotEmpty(throwable)) {
-            if (throwable instanceof CommonException) {
-                CommonException commonException = (CommonException) throwable;
+            if (throwable instanceof CommonException commonException) {
                 return BeanUtil.beanToMap(CommonResult.error(commonException.getMsg()));
             } else {
                 return BeanUtil.beanToMap(CommonResult.get(HttpStatus.HTTP_INTERNAL_ERROR, "服务器异常，请求地址：" +

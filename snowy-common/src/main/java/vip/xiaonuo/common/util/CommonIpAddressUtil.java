@@ -26,7 +26,7 @@ import java.io.InputStream;
 
 /**
  * 根据ip地址定位工具类，离线方式
- * 参考地址：https://gitee.com/lionsoul/ip2region/tree/master/binding/java
+ * 参考地址：<a href="https://gitee.com/lionsoul/ip2region/tree/master/binding/java">ip2region</a>
  *
  * @author xuyuxiang
  * @date 2020/3/16 11:25

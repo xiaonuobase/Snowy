@@ -83,7 +83,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/4/24 20:48
      */
-    void add(SysUserAddParam sysUserAddParam);
+    void add(SysUserAddParam sysUserAddParam, String sourceFromType);
 
     /**
      * 编辑用户
@@ -182,12 +182,92 @@ public interface SysUserService extends IService<SysUser> {
     void findPasswordByEmail(SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam);
 
     /**
-     * 修改用户密码
+     * 修改密码获取手机验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String updatePasswordGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam);
+
+    /**
+     * 修改密码获取邮箱验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String updatePasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam);
+
+    /**
+     * 通过验证旧密码修改用户密码
      *
      * @author xuyuxiang
      * @date 2022/4/22 15:53
      **/
-    void updatePassword(SysUserUpdatePwdParam sysUserUpdatePwdParam);
+    void updatePasswordByOld(SysUserUpdatePwdByOldParam sysUserUpdatePwdByOldParam);
+
+    /**
+     * 通过验证手机号修改用户密码
+     *
+     * @author xuyuxiang
+     * @date 2022/4/22 15:53
+     **/
+    void updatePasswordByPhone(SysUserUpdatePwdByPhoneParam sysUserUpdatePwdByPhoneParam);
+
+    /**
+     * 通过验证邮箱修改用户密码
+     *
+     * @author xuyuxiang
+     * @date 2022/4/22 15:53
+     **/
+    void updatePasswordByEmail(SysUserUpdatePwdByEmailParam sysUserUpdatePwdByEmailParam);
+
+    /**
+     * 绑定手机号获取手机验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String bindPhoneGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam);
+
+    /**
+     * 修改绑定手机号获取手机验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String updateBindPhoneGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam);
+
+    /**
+     * 绑定手机号
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    void bindPhone(SysUserBindPhoneParam sysUserBindPhoneParam);
+
+    /**
+     * 绑定邮箱获取邮箱验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String bindEmailGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam);
+
+    /**
+     * 修改绑定邮箱获取邮箱验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    String updateBindEmailGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam);
+
+    /**
+     * 绑定邮箱
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    void bindEmail(SysUserBindEmailParam sysUserBindEmailParam);
 
     /**
      * 修改用户头像返回base64
@@ -472,14 +552,6 @@ public interface SysUserService extends IService<SysUser> {
     List<SysPosition> getPositionListByIdList(SysUserIdListParam sysUserIdListParam);
 
     /**
-     * 根据id集合获取用户组集合
-     *
-     * @author yubaoshan
-     * @date 2025/1/12 02:36
-     */
-    List<SysGroup> getGroupListByIdList(SysUserGroupIdListParam sysUserGroupIdListParam);
-
-    /**
      * 根据id集合获取角色集合
      *
      * @author xuyuxiang
@@ -488,10 +560,90 @@ public interface SysUserService extends IService<SysUser> {
     List<SysRole> getRoleListByIdList(SysUserIdListParam sysUserIdListParam);
 
     /**
+     * 根据id集合获取用户组集合
+     *
+     * @author yubaoshan
+     * @date 2025/1/12 02:36
+     */
+    List<SysGroup> getGroupListByIdList(SysUserGroupIdListParam sysUserGroupIdListParam);
+
+    /**
      * 根据id获取头像
      *
      * @author xuyuxiang
      * @date 2023/8/28 10:10
      **/
     String getAvatarById(SysUserIdParam sysUserIdParam);
+
+    /**
+     * 根据手机号创建用户
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    SysUser createUserWithPhone(String phone);
+
+    /**
+     * 根据邮箱创建用户
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    SysUser createUserWithEmail(String email);
+
+    /**
+     * 根据账号密码创建用户
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    SysUser createUserWithAccount(String account, String password);
+
+    /**
+     * 判断当前用户是否需要绑定手机号
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    Boolean isUserNeedBindPhone();
+
+    /**
+     * 判断当前用户是否需要绑定邮箱
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    Boolean isUserNeedBindEmail();
+
+    /**
+     * 判断当前用户密码是否过期
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    Boolean isUserPasswordExpired();
+
+    /**
+     * 通知用户密码即将到期
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    void noticeUserPasswordAboutToExpired();
+
+    /**
+     * 执行注册
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    void doRegister(String account, String password);
+
+    /**
+     * 获取修改密码验证方式及配置
+     *
+     * @author xuyuxiang
+     * @date 2022/8/25 15:16
+     **/
+    JSONObject getUpdatePasswordValidConfig();
 }

@@ -15,10 +15,11 @@ package vip.xiaonuo.biz.modular.org.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +27,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.enums.BizOrgSourceFromTypeEnum;
 import vip.xiaonuo.biz.modular.org.param.*;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,6 +44,7 @@ import java.util.List;
  * @date 2022/4/24 19:55
  */
 @Tag(name = "机构控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class BizOrgController {
@@ -54,6 +58,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取机构分页")
     @SaCheckPermission("/biz/org/page")
     @GetMapping("/biz/org/page")
@@ -67,6 +72,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取机构树")
     @SaCheckPermission("/biz/org/tree")
     @GetMapping("/biz/org/tree")
@@ -80,12 +86,13 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加机构")
     @CommonLog("添加机构")
     @SaCheckPermission("/biz/org/add")
     @PostMapping("/biz/org/add")
     public CommonResult<String> add(@RequestBody @Valid BizOrgAddParam bizOrgAddParam) {
-        bizOrgService.add(bizOrgAddParam);
+        bizOrgService.add(bizOrgAddParam, BizOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
         return CommonResult.ok();
     }
 
@@ -95,6 +102,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑机构")
     @CommonLog("编辑机构")
     @SaCheckPermission("/biz/org/edit")
@@ -110,6 +118,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除机构")
     @CommonLog("删除机构")
     @SaCheckPermission("/biz/org/delete")
@@ -126,6 +135,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取机构详情")
     @SaCheckPermission("/biz/org/detail")
     @GetMapping("/biz/org/detail")
@@ -141,6 +151,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取机构树选择器")
     @SaCheckPermission("/biz/org/orgTreeSelector")
     @GetMapping("/biz/org/orgTreeSelector")
@@ -154,6 +165,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 8)
     @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/org/userSelector")
     @GetMapping("/biz/org/userSelector")

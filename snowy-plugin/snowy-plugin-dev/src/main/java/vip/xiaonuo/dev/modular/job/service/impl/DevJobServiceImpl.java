@@ -82,20 +82,20 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
 
     @Override
     public List<DevJob> list(DevJobListParam devJobListParam) {
-        LambdaQueryWrapper<DevJob> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<DevJob> queryWrapper = new QueryWrapper<DevJob>().checkSqlInjection();
         // 查询部分字段
-        lambdaQueryWrapper.select(DevJob::getId, DevJob::getName, DevJob::getCategory,
+        queryWrapper.lambda().select(DevJob::getId, DevJob::getName, DevJob::getCategory,
                 DevJob::getActionClass, DevJob::getCronExpression, DevJob::getJobStatus, DevJob::getSortCode);
         if(ObjectUtil.isNotEmpty(devJobListParam.getCategory())) {
-            lambdaQueryWrapper.eq(DevJob::getCategory, devJobListParam.getCategory());
+            queryWrapper.lambda().eq(DevJob::getCategory, devJobListParam.getCategory());
         }
         if(ObjectUtil.isNotEmpty(devJobListParam.getSearchKey())) {
-            lambdaQueryWrapper.like(DevJob::getName, devJobListParam.getSearchKey());
+            queryWrapper.lambda().like(DevJob::getName, devJobListParam.getSearchKey());
         }
         if(ObjectUtil.isNotEmpty(devJobListParam.getJobStatus())) {
-            lambdaQueryWrapper.like(DevJob::getJobStatus, devJobListParam.getJobStatus());
+            queryWrapper.lambda().like(DevJob::getJobStatus, devJobListParam.getJobStatus());
         }
-        return this.list(lambdaQueryWrapper);
+        return this.list(queryWrapper);
     }
 
     @Override
@@ -223,6 +223,7 @@ public class DevJobServiceImpl extends ServiceImpl<DevJobMapper, DevJob> impleme
                 .set(DevJob::getJobStatus, DevJobStatusEnum.RUNNING.getValue()));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void runJobNow(DevJobIdParam devJobIdParam) {
         DevJob devJob = this.detail(devJobIdParam);

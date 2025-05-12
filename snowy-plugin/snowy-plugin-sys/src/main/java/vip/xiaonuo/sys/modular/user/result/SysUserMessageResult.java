@@ -29,7 +29,7 @@ import java.util.Date;
 public class SysUserMessageResult {
 
     /** id */
-    @Schema(description = "id")
+    @Schema(description = "主键")
     private String id;
 
     /** 分类 */

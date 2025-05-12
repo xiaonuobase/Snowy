@@ -47,6 +47,7 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
-                BizPosition::getCategory, BizPosition::getSortCode);
+                BizPosition::getCategory, BizPosition::getSortCode, BizPosition::getExtJson);
         if(ObjectUtil.isNotEmpty(bizPositionPageParam.getOrgId())) {
             queryWrapper.lambda().eq(BizPosition::getOrgId, bizPositionPageParam.getOrgId());
         }
@@ -162,7 +163,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-                if(!loginUserDataScope.containsAll(positionOrgIdList)) {
+                if(!new HashSet<>(loginUserDataScope).containsAll(positionOrgIdList)) {
                     throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
                 }
             } else {
@@ -180,7 +181,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
                 List<String> extPositionIdList = CollectionUtil.newArrayList();
                 positionJsonList.forEach(positionJson -> JSONUtil.toList(JSONUtil.parseArray(positionJson), JSONObject.class)
                         .forEach(jsonObject -> extPositionIdList.add(jsonObject.getStr("positionId"))));
-                boolean hasPositionUser = CollectionUtil.intersectionDistinct(positionIdList, CollectionUtil.removeNull(extPositionIdList)).size() > 0;
+                boolean hasPositionUser = !CollectionUtil.intersectionDistinct(positionIdList, CollectionUtil.removeNull(extPositionIdList)).isEmpty();
                 if(hasPositionUser) {
                     throw new CommonException("请先删除岗位下的用户");
                 }
@@ -240,24 +241,24 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
 
     @Override
     public Page<BizPosition> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
-        LambdaQueryWrapper<BizPosition> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizPosition::getOrgId, loginUserDataScope);
+            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 查询部分字段
-        lambdaQueryWrapper.select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
+        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
                 BizPosition::getCategory, BizPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(bizPositionSelectorPositionParam.getOrgId())) {
-            lambdaQueryWrapper.eq(BizPosition::getOrgId, bizPositionSelectorPositionParam.getOrgId());
+            queryWrapper.lambda().eq(BizPosition::getOrgId, bizPositionSelectorPositionParam.getOrgId());
         }
         if(ObjectUtil.isNotEmpty(bizPositionSelectorPositionParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizPosition::getName, bizPositionSelectorPositionParam.getSearchKey());
+            queryWrapper.lambda().like(BizPosition::getName, bizPositionSelectorPositionParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizPosition::getSortCode);
-        return this.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizPosition::getSortCode);
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 }

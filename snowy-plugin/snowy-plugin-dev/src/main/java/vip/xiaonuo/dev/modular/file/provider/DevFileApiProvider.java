@@ -38,14 +38,19 @@ public class DevFileApiProvider implements DevFileApi {
     private static final String SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY = "SNOWY_SYS_DEFAULT_FILE_ENGINE";
 
     @Resource
-    private DevFileService devFileService;
+    private DevConfigApi devConfigApi;
 
     @Resource
-    private DevConfigApi devConfigApi;
+    private DevFileService devFileService;
 
     @Override
     public String uploadDynamicReturnId(MultipartFile file) {
         return devFileService.uploadReturnId(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file);
+    }
+
+    @Override
+    public String uploadDynamicReturnUrl(MultipartFile file) {
+        return devFileService.uploadReturnUrl(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file);
     }
 
     @Override

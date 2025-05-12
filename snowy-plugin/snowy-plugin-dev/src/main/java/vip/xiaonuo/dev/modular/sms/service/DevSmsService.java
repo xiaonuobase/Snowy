@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.dev.modular.sms.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.dev.modular.sms.entity.DevSms;
@@ -26,6 +27,26 @@ import java.util.List;
  * @date 2022/2/23 18:27
  **/
 public interface DevSmsService extends IService<DevSms> {
+
+    /**
+     * 动态发送短信
+     *
+     * @param engine 发送引擎
+     * @param phoneNumbers 手机号
+     * @param templateCodeOrId 模板id或编码
+     * @param templateParam 发送参数
+     * @author xuyuxiang
+     * @date 2022/2/7 22:29
+     */
+    void sendDynamic(String engine, String phoneNumbers, String templateCodeOrId, JSONObject templateParam);
+
+    /**
+     * 动态发送短信
+     *
+     * @author xuyuxiang
+     * @date 2022/6/21 18:37
+     **/
+    void sendDynamic(DevSmsSendDynamicParam devSmsSendDynamicParam);
 
     /**
      * 发送短信——阿里云

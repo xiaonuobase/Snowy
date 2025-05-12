@@ -12,11 +12,14 @@
  */
 package vip.xiaonuo.dev.modular.config.controller;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +31,11 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.config.entity.DevConfig;
 import vip.xiaonuo.dev.modular.config.param.*;
 import vip.xiaonuo.dev.modular.config.service.DevConfigService;
+import vip.xiaonuo.sys.api.SysOrgApi;
+import vip.xiaonuo.sys.api.SysPositionApi;
+import vip.xiaonuo.sys.api.SysRoleApi;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -38,6 +45,7 @@ import java.util.List;
  * @date 2022/4/22 10:56
  **/
 @Tag(name = "配置控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class DevConfigController {
@@ -45,12 +53,22 @@ public class DevConfigController {
     @Resource
     private DevConfigService devConfigService;
 
+    @Resource
+    private SysPositionApi sysPositionApi;
+
+    @Resource
+    private SysOrgApi sysOrgApi;
+
+    @Resource
+    private SysRoleApi sysRoleApi;
+
     /**
      * 获取配置分页
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取配置分页")
     @GetMapping("/dev/config/page")
     public CommonResult<Page<DevConfig>> page(DevConfigPageParam devConfigPageParam) {
@@ -63,6 +81,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取系统基础配置")
     @GetMapping("/dev/config/sysBaseList")
     public CommonResult<List<DevConfig>> sysBaseList() {
@@ -75,6 +94,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取配置列表")
     @GetMapping("/dev/config/list")
     public CommonResult<List<DevConfig>> list(DevConfigListParam devConfigListParam) {
@@ -87,6 +107,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加配置")
     @CommonLog("添加配置")
     @PostMapping("/dev/config/add")
@@ -101,6 +122,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑配置")
     @CommonLog("编辑配置")
     @PostMapping("/dev/config/edit")
@@ -115,6 +137,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除配置")
     @CommonLog("删除配置")
     @PostMapping("/dev/config/delete")
@@ -130,6 +153,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取配置详情")
     @GetMapping("/dev/config/detail")
     public CommonResult<DevConfig> detail(@Valid DevConfigIdParam devConfigIdParam) {
@@ -142,6 +166,7 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "配置批量更新")
     @CommonLog("配置批量更新")
     @PostMapping("/dev/config/editBatch")
@@ -150,4 +175,55 @@ public class DevConfigController {
         devConfigService.editBatch(devConfigBatchParamList);
         return CommonResult.ok();
     }
+
+    /**
+     * 获取机构选树
+     *
+     * @author yubaoshan
+     * @date 2025/4/23 20:00
+     */
+    @Operation(summary = "获取机构选树")
+    @GetMapping("/dev/config/orgTree")
+    public CommonResult<List<Tree<String>>> orgTree() {
+        return CommonResult.data(sysOrgApi.orgTreeSelector());
+    }
+
+    /**
+     * 获取角色选择器
+     *
+     * @author yubaoshan
+     * @date 2025/4/23 20:00
+     */
+    @Operation(summary = "获取角色选择器")
+    @GetMapping("/dev/config/roleSelector")
+    public CommonResult<Page<JSONObject>> roleSelector(DevConfigSelectorRoleParam devConfigSelectorRoleParam) {
+        return CommonResult.data(sysRoleApi.roleSelector(devConfigSelectorRoleParam.getOrgId(), devConfigSelectorRoleParam.getCategory(),
+                devConfigSelectorRoleParam.getSearchKey(), null , false));
+    }
+
+    /**
+     * 获取机构选择器
+     *
+     * @author yubaoshan
+     * @date 2025/4/23 20:00
+     */
+    @Operation(summary = "获取机构选择器")
+    @GetMapping("/dev/config/orgSelector")
+    public CommonResult<Page<JSONObject>> orgSelector(DevConfigSelectorOrgListParam devConfigSelectorOrgListParam) {
+        return CommonResult.data(sysOrgApi.orgListSelector(devConfigSelectorOrgListParam.getParentId()));
+    }
+
+    /**
+     * 获取职位选择器
+     *
+     * @author yubaoshan
+     * @date 2025/4/23 20:00
+     */
+    @Operation(summary = "获取职位选择器")
+    @GetMapping("/dev/config/positionSelector")
+    public CommonResult<Page<JSONObject>> positionSelector(@Valid DevConfigSelectorPositionParam devConfigSelectorPositionParam) {
+        return CommonResult.data(sysPositionApi.positionSelector(devConfigSelectorPositionParam.getOrgId(), devConfigSelectorPositionParam.getSearchKey(),
+                devConfigSelectorPositionParam.getCurrent(), devConfigSelectorPositionParam.getSize()));
+    }
+
 }

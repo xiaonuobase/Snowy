@@ -29,17 +29,17 @@ import lombok.Setter;
 public class DevConfigEditParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 配置键 */
-    @Schema(description = "配置键", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "配置键")
     @NotBlank(message = "configKey不能为空")
     private String configKey;
 
     /** 配置值 */
-    @Schema(description = "配置值", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "配置值")
     @NotBlank(message = "configValue不能为空")
     private String configValue;
 
@@ -48,7 +48,7 @@ public class DevConfigEditParam {
     private String remark;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

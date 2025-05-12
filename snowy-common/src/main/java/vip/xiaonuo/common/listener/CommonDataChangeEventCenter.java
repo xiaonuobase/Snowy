@@ -15,6 +15,7 @@ package vip.xiaonuo.common.listener;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import lombok.Getter;
 import vip.xiaonuo.common.exception.CommonException;
 
 import java.util.ArrayList;
@@ -31,15 +32,11 @@ public class CommonDataChangeEventCenter {
 
     // --------- 注册侦听器 
 
-    private static List<CommonDataChangeListener> listenerList = new ArrayList<>();
-
     /**
      * 获取已注册的所有侦听器
-     * @return / 
      */
-    public static List<CommonDataChangeListener> getListenerList() {
-        return listenerList;
-    }
+    @Getter
+    private static List<CommonDataChangeListener> listenerList = new ArrayList<>();
 
     /**
      * 重置侦听器集合

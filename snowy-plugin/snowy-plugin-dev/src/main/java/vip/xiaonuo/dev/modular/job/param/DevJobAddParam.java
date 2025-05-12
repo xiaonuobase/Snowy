@@ -29,27 +29,27 @@ import lombok.Setter;
 public class DevJobAddParam {
 
     /** 名称 */
-    @Schema(description = "名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "名称")
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 分类 */
-    @Schema(description = "分类", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "分类")
     @NotBlank(message = "category不能为空")
     private String category;
 
     /** 任务类名 */
-    @Schema(description = "任务类名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "任务类名")
     @NotBlank(message = "actionClass不能为空")
     private String actionClass;
 
     /** cron表达式 */
-    @Schema(description = "cron表达式", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "cron表达式")
     @NotBlank(message = "cronExpression不能为空")
     private String cronExpression;
 
     /** 排序码 */
-    @Schema(description = "排序码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
     private Integer sortCode;
 

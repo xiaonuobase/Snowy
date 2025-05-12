@@ -14,9 +14,7 @@ package vip.xiaonuo.auth.modular.login.service;
 
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
-import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
-import vip.xiaonuo.auth.modular.login.param.AuthGetPhoneValidCodeParam;
-import vip.xiaonuo.auth.modular.login.param.AuthPhoneValidCodeLoginParam;
+import vip.xiaonuo.auth.modular.login.param.*;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 
 /**
@@ -36,12 +34,20 @@ public interface AuthService {
     AuthPicValidCodeResult getPicCaptcha(String type);
 
     /**
-     * 获取手机验证码
+     * 获取手机登录验证码
      *
      * @author xuyuxiang
      * @date 2021/12/28 14:46
      **/
     String getPhoneValidCode(AuthGetPhoneValidCodeParam authGetPhoneValidCodeParam, String type);
+
+    /**
+     * 获取邮箱登录验证码
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    String getEmailValidCode(AuthGetEmailValidCodeParam authGetEmailValidCodeParam, String type);
 
     /**
      * 账号密码登录
@@ -58,6 +64,14 @@ public interface AuthService {
      * @date 2021/12/28 14:46
      **/
     String doLoginByPhone(AuthPhoneValidCodeLoginParam authPhoneValidCodeLoginParam, String type);
+
+    /**
+     * 邮箱验证码登录
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    String doLoginByEmail(AuthEmailValidCodeLoginParam authEmailValidCodeLoginParam, String type);
 
     /**
      * 获取B端登录用户信息
@@ -82,4 +96,12 @@ public interface AuthService {
      * @date 2022/7/9 14:44
      */
     String doLoginById(String userId, String device, String type);
+
+    /**
+     * C端注册
+     *
+     * @author xuyuxiang
+     * @date 2022/7/9 14:44
+     */
+    void register(AuthRegisterParam authRegisterParam, String type);
 }

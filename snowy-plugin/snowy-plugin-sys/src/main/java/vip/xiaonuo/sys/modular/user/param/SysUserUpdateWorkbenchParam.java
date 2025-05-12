@@ -28,7 +28,7 @@ import lombok.Setter;
 public class SysUserUpdateWorkbenchParam {
 
     /** 工作台数据 */
-    @Schema(description = "工作台数据", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "工作台数据")
     @NotBlank(message = "workbenchData不能为空")
     private String workbenchData;
 }

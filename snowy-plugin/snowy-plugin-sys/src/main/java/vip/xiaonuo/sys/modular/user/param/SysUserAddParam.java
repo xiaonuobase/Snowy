@@ -28,22 +28,22 @@ import lombok.Setter;
 public class SysUserAddParam {
 
     /** 账号 */
-    @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "账号")
     @NotBlank(message = "account不能为空")
     private String account;
 
     /** 姓名 */
-    @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "姓名")
     @NotBlank(message = "name不能为空")
     private String name;
 
     /** 组织id */
-    @Schema(description = "组织id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "组织id")
     @NotBlank(message = "orgId不能为空")
     private String orgId;
 
     /** 职位id */
-    @Schema(description = "职位id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "职位id")
     @NotBlank(message = "positionId不能为空")
     private String positionId;
 
@@ -54,6 +54,10 @@ public class SysUserAddParam {
     /** 主管id */
     @Schema(description = "主管id")
     private String directorId;
+
+    /** 密码 */
+    @Schema(description = "密码")
+    private String password;
 
     /** 头像 */
     @Schema(description = "头像，图片base64")

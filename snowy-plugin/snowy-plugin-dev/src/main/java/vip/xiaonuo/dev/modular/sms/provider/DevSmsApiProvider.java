@@ -12,10 +12,13 @@
  */
 package vip.xiaonuo.dev.modular.sms.provider;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.dev.modular.sms.param.DevSmsSendAliyunParam;
+import vip.xiaonuo.dev.modular.sms.param.DevSmsSendDynamicParam;
 import vip.xiaonuo.dev.modular.sms.param.DevSmsSendTencentParam;
 import vip.xiaonuo.dev.modular.sms.param.DevSmsSendXiaonuoParam;
 import vip.xiaonuo.dev.modular.sms.service.DevSmsService;
@@ -33,6 +36,15 @@ public class DevSmsApiProvider implements DevSmsApi {
     private DevSmsService devSmsService;
 
     @Override
+    public void sendDynamicSms(String phoneNumbers, String templateCodeOrId, JSONObject paramMap) {
+        DevSmsSendDynamicParam dynamicParam = new DevSmsSendDynamicParam();
+        dynamicParam.setPhoneNumbers(phoneNumbers);
+        dynamicParam.setTemplateCodeOrId(templateCodeOrId);
+        dynamicParam.setTemplateParam(JSONUtil.toJsonStr(paramMap));
+        devSmsService.sendDynamic(dynamicParam);
+    }
+
+    @Override
     public void sendSmsAliyun(String phoneNumbers, String signName, String templateCode, String templateParam) {
         DevSmsSendAliyunParam devSmsSendAliyunParam = new DevSmsSendAliyunParam();
         devSmsSendAliyunParam.setPhoneNumbers(phoneNumbers);
@@ -43,9 +55,8 @@ public class DevSmsApiProvider implements DevSmsApi {
     }
 
     @Override
-    public void sendSmsTencent(String sdkAppId, String phoneNumbers, String signName, String templateCode, String templateParam) {
+    public void sendSmsTencent(String phoneNumbers, String signName, String templateCode, String templateParam) {
         DevSmsSendTencentParam devSmsSendTencentParam = new DevSmsSendTencentParam();
-        devSmsSendTencentParam.setSdkAppId(sdkAppId);
         devSmsSendTencentParam.setPhoneNumbers(phoneNumbers);
         devSmsSendTencentParam.setSignName(signName);
         devSmsSendTencentParam.setTemplateCode(templateCode);

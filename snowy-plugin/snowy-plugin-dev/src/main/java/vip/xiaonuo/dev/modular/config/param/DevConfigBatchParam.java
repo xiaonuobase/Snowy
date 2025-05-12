@@ -28,12 +28,12 @@ import lombok.Setter;
 public class DevConfigBatchParam {
 
     /** 配置键 */
-    @Schema(description = "配置键", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "配置键")
     @NotBlank(message = "configKey不能为空")
     private String configKey;
 
     /** 配置值 */
-    @Schema(description = "配置值", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "配置值")
     @NotBlank(message = "configValue不能为空")
     private String configValue;
 

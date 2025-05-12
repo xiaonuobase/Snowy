@@ -27,6 +27,28 @@ import java.util.Map;
  **/
 public interface DevEmailApi {
 
+    /**
+     * 动态发送TXT邮件（使用系统配置的默认邮件引擎）
+     *
+     * @param tos 收件人邮箱，逗号拼接
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @author xuyuxiang
+     * @date 2022/2/7 22:29
+     */
+    void sendDynamicTxtEmail(String tos, String subject, String content);
+
+    /**
+     * 动态发送HTML邮件（使用系统配置的默认邮件引擎）
+     *
+     * @param tos 收件人邮箱，逗号拼接
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @author xuyuxiang
+     * @date 2022/2/7 22:29
+     */
+    void sendDynamicHtmlEmail(String tos, String subject, String content);
+
     /* =========本地邮件========= */
 
     /**

@@ -27,7 +27,7 @@ import lombok.Setter;
 public class SysIndexScheduleListResult {
 
     /** id */
-    @Schema(description = "id")
+    @Schema(description = "主键")
     private String id;
 
     /** 用户id */

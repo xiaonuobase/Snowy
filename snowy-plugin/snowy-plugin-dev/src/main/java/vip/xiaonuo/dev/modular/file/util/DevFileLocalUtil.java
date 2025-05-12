@@ -19,6 +19,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.system.SystemUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
@@ -39,6 +40,12 @@ import java.io.InputStream;
 @Slf4j
 public class DevFileLocalUtil {
 
+    /**
+     * -- GETTER --
+     *  获取操作的客户端
+     *
+     */
+    @Getter
     private static JSONObject client;
 
     private static final String SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS_KEY = "SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS";
@@ -90,16 +97,6 @@ public class DevFileLocalUtil {
      */
     public static void destroyClient() {
         client.clear();
-    }
-
-    /**
-     * 获取操作的客户端
-     *
-     * @author xuyuxiang
-     * @date 2022/1/5 23:24
-     */
-    public static JSONObject getClient() {
-        return client;
     }
 
     /**

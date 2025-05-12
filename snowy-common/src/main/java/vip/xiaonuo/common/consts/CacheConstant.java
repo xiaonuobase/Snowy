@@ -13,7 +13,8 @@
 package vip.xiaonuo.common.consts;
 
 /**
- * @description 缓存静态常量
+ * 缓存静态常量
+ *
  * @author dongxiayu
  * @date 2023/1/30 0:44
  **/

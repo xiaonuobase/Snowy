@@ -38,7 +38,7 @@ public class DevSseCacheUtil {
     /**
      * 创建一个容器来存储所有的 SseEmitter(使用ConcurrentHashMap是因为它是线程安全的)。
      */
-    public static Map<String, Map<String,Object>> sseCache = new ConcurrentHashMap<>();
+    public static Map<String, Map<String, Object>> sseCache = new ConcurrentHashMap<>();
 
 
     /**
@@ -48,7 +48,7 @@ public class DevSseCacheUtil {
      * @date 2023/7/3
      **/
     public static SseEmitter getSseEmitterByClientId(String clientId) {
-        Map<String,Object> map = sseCache.get(clientId);
+        Map<String, Object> map = sseCache.get(clientId);
         if (map == null || map.isEmpty()) {
             return null;
         }
@@ -62,7 +62,7 @@ public class DevSseCacheUtil {
      * @date 2023/7/18
      **/
     public static ScheduledFuture<?> getSseFutureByClientId(String clientId) {
-        Map<String,Object> map = sseCache.get(clientId);
+        Map<String, Object> map = sseCache.get(clientId);
         if (map == null || map.isEmpty()) {
             return null;
         }
@@ -76,7 +76,7 @@ public class DevSseCacheUtil {
      * @date 2023/7/18
      **/
     public static ScheduledFuture<?> getLoginIdByClientId(String clientId) {
-        Map<String,Object> map = sseCache.get(clientId);
+        Map<String, Object> map = sseCache.get(clientId);
         if (map == null || map.isEmpty()) {
             return null;
         }
@@ -89,12 +89,12 @@ public class DevSseCacheUtil {
      * @author diantu
      * @date 2023/7/18
      **/
-    public static String getClientIdByLoginId(String loginId){
-        if(existSseCache()){
+    public static String getClientIdByLoginId(String loginId) {
+        if (existSseCache()) {
             for (Map.Entry<String, Map<String, Object>> entry : sseCache.entrySet()) {
-                Map<String,Object> map = sseCache.get(entry.getKey());
+                Map<String, Object> map = sseCache.get(entry.getKey());
                 String lId = (String) map.get(DevSseEmitterParameterEnum.LOGINID.getValue());
-                if(loginId.equals(lId)){
+                if (loginId.equals(lId)) {
                     return entry.getKey();
                 }
             }
@@ -109,7 +109,7 @@ public class DevSseCacheUtil {
      * @date 2023/7/3
      **/
     public static boolean existSseCache() {
-        return sseCache.size()>0;
+        return !sseCache.isEmpty();
     }
 
     /**
@@ -118,8 +118,8 @@ public class DevSseCacheUtil {
      * @author diantu
      * @date 2023/7/3
      **/
-    public static boolean connectionValidity(String clientId,String loginId){
-        if(sseCache.get(clientId) == null){
+    public static boolean connectionValidity(String clientId, String loginId) {
+        if (sseCache.get(clientId) == null) {
             return false;
         }
         return Objects.equals(loginId, sseCache.get(clientId).get(DevSseEmitterParameterEnum.LOGINID.getValue()));
@@ -131,14 +131,14 @@ public class DevSseCacheUtil {
      * @author diantu
      * @date 2023/7/3
      **/
-    public static void addConnection(String clientId,String loginId, SseEmitter emitter, ScheduledFuture<?> future) {
+    public static void addConnection(String clientId, String loginId, SseEmitter emitter, ScheduledFuture<?> future) {
         final SseEmitter oldEmitter = getSseEmitterByClientId(clientId);
         if (oldEmitter != null) {
-            throw new CommonException("连接已存在:{}",clientId);
+            throw new CommonException("连接已存在:{}", clientId);
         }
-        Map<String,Object> map = new ConcurrentHashMap<>();
-        map.put(DevSseEmitterParameterEnum.EMITTER.getValue(),emitter);
-        if(future!=null){
+        Map<String, Object> map = new ConcurrentHashMap<>();
+        map.put(DevSseEmitterParameterEnum.EMITTER.getValue(), emitter);
+        if (future != null) {
             map.put(DevSseEmitterParameterEnum.FUTURE.getValue(), future);
         }
         map.put(DevSseEmitterParameterEnum.LOGINID.getValue(), loginId);
@@ -166,7 +166,7 @@ public class DevSseCacheUtil {
      * @author diantu
      * @date 2023/7/3
      */
-    public static void cancelScheduledFuture(String clientId){
+    public static void cancelScheduledFuture(String clientId) {
         ScheduledFuture<?> future = getSseFutureByClientId(clientId);
         if (future != null) {
             future.cancel(true);
@@ -194,8 +194,8 @@ public class DevSseCacheUtil {
      * @author diantu
      * @date 2023/7/3
      **/
-    public static Runnable timeoutCallBack(String clientId){
-        return ()->{
+    public static Runnable timeoutCallBack(String clientId) {
+        return () -> {
             log.info("连接超时:{}", clientId);
             removeConnection(clientId);
             cancelScheduledFuture(clientId);
@@ -227,11 +227,11 @@ public class DevSseCacheUtil {
             return;
         }
         // 判断发送的消息是否为空
-        if (StrUtil.isEmpty(msg)){
+        if (StrUtil.isEmpty(msg)) {
             log.info("群发消息为空");
             return;
         }
-        CommonResult<String> message = new CommonResult<>(CommonResult.CODE_SUCCESS,"",msg);
+        CommonResult<String> message = new CommonResult<>(CommonResult.CODE_SUCCESS, "", msg);
         for (Map.Entry<String, Map<String, Object>> entry : sseCache.entrySet()) {
             sendMessageToClientByClientId(entry.getKey(), message);
         }
@@ -244,16 +244,16 @@ public class DevSseCacheUtil {
      * @date 2023/7/3
      **/
     public static void sendMessageToOneClient(String clientId, String msg) {
-        if (StrUtil.isEmpty(clientId)){
+        if (StrUtil.isEmpty(clientId)) {
             log.info("客户端ID为空");
             return;
         }
-        if (StrUtil.isEmpty(msg)){
-            log.info("向客户端{}推送消息为空",clientId);
+        if (StrUtil.isEmpty(msg)) {
+            log.info("向客户端{}推送消息为空", clientId);
             return;
         }
-        CommonResult<String> message = new CommonResult<>(CommonResult.CODE_SUCCESS,"",msg);
-        sendMessageToClientByClientId(clientId,message);
+        CommonResult<String> message = new CommonResult<>(CommonResult.CODE_SUCCESS, "", msg);
+        sendMessageToClientByClientId(clientId, message);
     }
 
     /**
@@ -264,16 +264,16 @@ public class DevSseCacheUtil {
      **/
     public static void sendMessageToClientByClientId(String clientId, CommonResult<String> message) {
         Map<String, Object> map = sseCache.get(clientId);
-        if (map==null||map.size()==0) {
-            log.error("推送消息失败:客户端{}未创建长链接,失败消息:{}",clientId, message.toString());
+        if (map == null || map.isEmpty()) {
+            log.error("推送消息失败:客户端{}未创建长链接,失败消息:{}", clientId, message.toString());
             return;
         }
-        SseEmitter.SseEventBuilder sendData = SseEmitter.event().data(message,MediaType.APPLICATION_JSON);
+        SseEmitter.SseEventBuilder sendData = SseEmitter.event().data(message, MediaType.APPLICATION_JSON);
         SseEmitter sseEmitter = getSseEmitterByClientId(clientId);
         try {
             Objects.requireNonNull(sseEmitter).send(sendData);
         } catch (Exception e) {
-            log.error("推送消息失败,报错异常:",e);
+            log.error("推送消息失败,报错异常:", e);
             removeConnection(clientId);
         }
     }

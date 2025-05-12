@@ -20,6 +20,7 @@ import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -30,6 +31,7 @@ import com.fhs.trans.service.impl.DictionaryTransService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -108,8 +110,8 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         }
         List<DevDict> devDictList = this.list(lambdaQueryWrapper);
         List<TreeNode<String>> treeNodeList = devDictList.stream().map(devDict ->
-                        new TreeNode<>(devDict.getId(), devDict.getParentId(),
-                                devDict.getDictLabel(), devDict.getSortCode()).setExtra(JSONUtil.parseObj(devDict)))
+                new TreeNode<>(devDict.getId(), devDict.getParentId(),
+                        devDict.getDictLabel(), devDict.getSortCode()).setExtra(JSONUtil.parseObj(devDict)))
                 .collect(Collectors.toList());
         // 精简冗余字段(sortCode、weight字段合并)
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -121,6 +123,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
     public void add(DevDictAddParam devDictAddParam) {
         checkParam(devDictAddParam);
         DevDict devDict = BeanUtil.toBean(devDictAddParam, DevDict.class);
+        devDict.setCode(RandomUtil.randomString(10));
         this.save(devDict);
         refreshTransCache();
     }
@@ -172,6 +175,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<DevDictIdParam> devDictIdParamList) {
         List<String> devDictIdList = CollStreamUtil.toList(devDictIdParamList, DevDictIdParam::getId);
@@ -205,6 +209,12 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         refreshTransCache();
     }
 
+    /**
+     * 刷新字典缓存
+     *
+     * @author xuyuxiang
+     * @date 2022/9/26 15:33
+     **/
     private void refreshTransCache() {
         // 异步不阻塞主线程，不会 增加启动用时
         CompletableFuture.supplyAsync(() -> {

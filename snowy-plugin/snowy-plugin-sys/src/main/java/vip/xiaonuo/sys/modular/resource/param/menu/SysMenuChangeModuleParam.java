@@ -28,12 +28,12 @@ import lombok.Setter;
 public class SysMenuChangeModuleParam {
 
     /** id */
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id")
     @NotBlank(message = "id不能为空")
     private String id;
 
     /** 模块 */
-    @Schema(description = "module", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "module")
     @NotBlank(message = "module不能为空")
     private String module;
 }

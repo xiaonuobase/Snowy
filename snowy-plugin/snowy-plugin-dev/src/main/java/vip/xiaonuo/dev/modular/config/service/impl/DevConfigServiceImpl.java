@@ -50,8 +50,6 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
 
     private static final String CONFIG_CACHE_KEY = "dev-config:";
 
-    private static final String SNOWY_SYS_DEFAULT_PASSWORD_KEY = "SNOWY_SYS_DEFAULT_PASSWORD";
-
     @Resource
     private CommonCacheOperator commonCacheOperator;
 
@@ -95,8 +93,7 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
     public List<DevConfig> sysBaseList() {
         DevConfigListParam devConfigListParam = new DevConfigListParam();
         devConfigListParam.setCategory(DevConfigCategoryEnum.SYS_BASE.getValue());
-        return this.list(devConfigListParam).stream().filter(devConfig -> !devConfig.getConfigKey()
-                .equals(SNOWY_SYS_DEFAULT_PASSWORD_KEY)).collect(Collectors.toList());
+        return this.list(devConfigListParam);
     }
 
     @Override
@@ -104,7 +101,7 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
         LambdaQueryWrapper<DevConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(DevConfig::getId, DevConfig::getConfigKey, DevConfig::getConfigValue,
-                DevConfig::getCategory, DevConfig::getSortCode);
+                DevConfig::getCategory, DevConfig::getSortCode, DevConfig::getRemark);
         if(ObjectUtil.isNotEmpty(devConfigListParam.getCategory())) {
             lambdaQueryWrapper.eq(DevConfig::getCategory, devConfigListParam.getCategory());
         }

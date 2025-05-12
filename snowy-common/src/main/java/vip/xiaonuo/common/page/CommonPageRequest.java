@@ -56,7 +56,6 @@ public class CommonPageRequest {
                 }
             } catch (Exception e) {
                 log.error(">>> 分页条数转换异常：", e);
-                size = 20;
             }
         }
 
@@ -67,7 +66,6 @@ public class CommonPageRequest {
                 page = Convert.toInt(pageString);
             } catch (Exception e) {
                 log.error(">>> 分页页数转换异常：", e);
-                page = 1;
             }
         }
         Page<T> objectPage = new Page<>(page, size);

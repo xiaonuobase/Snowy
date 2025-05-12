@@ -13,10 +13,11 @@
 package vip.xiaonuo.sys.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ import vip.xiaonuo.sys.modular.resource.param.module.SysModuleIdParam;
 import vip.xiaonuo.sys.modular.resource.param.module.SysModulePageParam;
 import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -41,6 +43,7 @@ import java.util.List;
  * @date 2022/6/27 14:12
  **/
 @Tag(name = "模块控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 6)
 @RestController
 @Validated
 public class SysModuleController {
@@ -54,6 +57,7 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取模块分页")
     @GetMapping("/sys/module/page")
     public CommonResult<Page<SysModule>> page(SysModulePageParam sysModulePageParam) {
@@ -66,6 +70,7 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加模块")
     @CommonLog("添加模块")
     @PostMapping("/sys/module/add")
@@ -80,6 +85,7 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑模块")
     @CommonLog("编辑模块")
     @PostMapping("/sys/module/edit")
@@ -94,11 +100,12 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除模块")
     @CommonLog("删除模块")
     @PostMapping("/sys/module/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                               List<SysModuleIdParam> sysModuleIdParamList) {
+                                       List<SysModuleIdParam> sysModuleIdParamList) {
         sysModuleService.delete(sysModuleIdParamList);
         return CommonResult.ok();
     }
@@ -109,6 +116,7 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取模块详情")
     @GetMapping("/sys/module/detail")
     public CommonResult<SysModule> detail(@Valid SysModuleIdParam sysModuleIdParam) {

@@ -192,13 +192,7 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
         List<DevMessageResult.DevReceiveInfo> receiveInfoList = devRelationService.getRelationListByObjectIdAndCategory(devMessage.getId(),
                 DevRelationCategoryEnum.MSG_TO_USER.getValue()).stream().map(devRelation -> {
             DevMessageResult.DevReceiveInfo devReceiveInfo = new DevMessageResult.DevReceiveInfo();
-            JSONObject userObj = null;
-            try {
-                userObj = sysUserApi.getUserByIdWithException(devRelation.getTargetId());
-            }
-            catch (Exception e) {
-                // 收件人中包含删除用户 在此处做处理
-            }
+            JSONObject userObj = sysUserApi.getUserByIdWithException(devRelation.getTargetId());
             String userName = "未知用户";
             if(ObjectUtil.isNotEmpty(userObj)) {
                 userName = userObj.getStr("name");

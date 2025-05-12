@@ -34,7 +34,7 @@ public class MobileButtonApiProvider implements MobileButtonApi {
     private MobileButtonService mobileButtonService;
 
     @Override
-    public List<String> listByIds(List<String> buttonIdList) {
+    public List<String> listButtonCodeListByIdList(List<String> buttonIdList) {
         return mobileButtonService.listByIds(buttonIdList).stream().map(MobileButton::getCode).collect(Collectors.toList());
     }
 }

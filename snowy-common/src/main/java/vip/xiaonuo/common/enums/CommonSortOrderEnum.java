@@ -42,8 +42,4 @@ public enum CommonSortOrderEnum {
             throw new CommonException("不支持该排序方式：{}", value);
         }
     }
-
-    public String getValue() {
-        return value.toLowerCase();
-    }
 }

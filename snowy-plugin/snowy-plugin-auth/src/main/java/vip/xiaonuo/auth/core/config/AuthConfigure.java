@@ -17,7 +17,8 @@ import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.strategy.SaStrategy;
-import cn.hutool.json.JSONUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -71,6 +72,7 @@ public class AuthConfigure implements WebMvcConfigurer {
 
     @Bean("stpClientLogic")
     public StpLogic getStpClientLogic(SaTokenConfig saTokenConfig) {
+
         // 重写Sa-Token的StpLogic，默认客户端类型为C
         return new StpLogic(SaClientTypeEnum.C.getValue()).setConfig(saTokenConfig);
     }
@@ -105,7 +107,12 @@ public class AuthConfigure implements WebMvcConfigurer {
             } else {
                 permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + loginId);
             }
-            return JSONUtil.parseArray(permissionListObject).toList(String.class);
+            // 转为字符串
+            String permissionListString = permissionListObject.toString();
+            // 去除首尾的方括号
+            String trimmedStr = StrUtil.sub(permissionListString, 1, -1);
+            // 使用逗号和空格分割字符串，并转换为列表
+            return CollectionUtil.newArrayList(StrUtil.split(trimmedStr, ", "));
         }
 
         /**

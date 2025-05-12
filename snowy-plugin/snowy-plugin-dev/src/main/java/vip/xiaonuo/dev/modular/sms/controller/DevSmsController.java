@@ -13,10 +13,11 @@
 package vip.xiaonuo.dev.modular.sms.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import vip.xiaonuo.dev.modular.sms.entity.DevSms;
 import vip.xiaonuo.dev.modular.sms.param.*;
 import vip.xiaonuo.dev.modular.sms.service.DevSmsService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -38,6 +40,7 @@ import java.util.List;
  * @date 2022/2/23 18:26
  **/
 @Tag(name = "短信控制器")
+@ApiSupport(author = "SNOWY_TEAM", order = 5)
 @RestController
 @Validated
 public class DevSmsController {
@@ -46,11 +49,27 @@ public class DevSmsController {
     private DevSmsService devSmsService;
 
     /**
+     * 动态发送短信
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:47
+     */
+    @ApiOperationSupport(order = 1)
+    @Operation(summary = "动态发送短信")
+    @CommonLog("动态发送短信")
+    @PostMapping("/dev/sms/sendDynamic")
+    public CommonResult<String> sendDynamic(@RequestBody @Valid DevSmsSendDynamicParam devSmsSendDynamicParam) {
+        devSmsService.sendDynamic(devSmsSendDynamicParam);
+        return CommonResult.ok();
+    }
+
+    /**
      * 发送短信——阿里云
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 2)
     @Operation(summary = "发送阿里云短信")
     @CommonLog("发送阿里云短信")
     @PostMapping("/dev/sms/sendAliyun")
@@ -65,6 +84,7 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "发送腾讯云短信")
     @CommonLog("发送腾讯云短信")
     @PostMapping("/dev/sms/sendTencent")
@@ -79,6 +99,7 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "发送小诺短信")
     @CommonLog("发送小诺短信")
     @PostMapping("/dev/sms/sendXiaonuo")
@@ -93,7 +114,8 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-   @Operation(summary = "获取短信分页")
+    @ApiOperationSupport(order = 5)
+    @Operation(summary = "获取短信分页")
     @GetMapping("/dev/sms/page")
     public CommonResult<Page<DevSms>> page(DevSmsPageParam devSmsPageParam) {
         return CommonResult.data(devSmsService.page(devSmsPageParam));
@@ -105,11 +127,12 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 6)
     @Operation(summary = "删除短信")
     @CommonLog("删除短信")
     @PostMapping("/dev/sms/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
-                                               List<DevSmsIdParam> devSmsIdParamList) {
+                                       List<DevSmsIdParam> devSmsIdParamList) {
         devSmsService.delete(devSmsIdParamList);
         return CommonResult.ok();
     }
@@ -120,6 +143,7 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取短信详情")
     @GetMapping("/dev/sms/detail")
     public CommonResult<DevSms> detail(@Valid DevSmsIdParam devSmsIdParam) {

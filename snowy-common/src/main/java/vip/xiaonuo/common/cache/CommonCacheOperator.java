@@ -58,21 +58,13 @@ public class CommonCacheOperator {
 
     public Collection<String> getAllKeys() {
         Set<String> keys = redisTemplate.keys(CACHE_KEY_PREFIX + "*");
-        if (keys != null) {
-            // 去掉缓存key的common prefix前缀
-            return keys.stream().map(key -> StrUtil.removePrefix(key, CACHE_KEY_PREFIX)).collect(Collectors.toSet());
-        } else {
-            return CollectionUtil.newHashSet();
-        }
+        // 去掉缓存key的common prefix前缀
+        return keys.stream().map(key -> StrUtil.removePrefix(key, CACHE_KEY_PREFIX)).collect(Collectors.toSet());
     }
 
     public Collection<Object> getAllValues() {
         Set<String> keys = redisTemplate.keys(CACHE_KEY_PREFIX + "*");
-        if (keys != null) {
-            return redisTemplate.opsForValue().multiGet(keys);
-        } else {
-            return CollectionUtil.newArrayList();
-        }
+        return redisTemplate.opsForValue().multiGet(keys);
     }
 
     public Map<String, Object> getAllKeyValues() {
@@ -86,8 +78,6 @@ public class CommonCacheOperator {
 
     public void removeBatch(String pattern) {
         Set<String> keys = redisTemplate.keys(CACHE_KEY_PREFIX + pattern);
-        if (keys != null) {
-            redisTemplate.delete(keys);
-        }
+        redisTemplate.delete(keys);
     }
 }

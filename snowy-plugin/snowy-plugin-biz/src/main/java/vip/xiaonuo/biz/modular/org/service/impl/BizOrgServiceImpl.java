@@ -36,18 +36,19 @@ import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.enums.BizOrgCategoryEnum;
 import vip.xiaonuo.biz.modular.org.mapper.BizOrgMapper;
 import vip.xiaonuo.biz.modular.org.param.*;
+import vip.xiaonuo.biz.modular.org.service.BizOrgExtService;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
-import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysRoleApi;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -62,13 +63,11 @@ import java.util.stream.Collectors;
 @Service
 public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> implements BizOrgService {
 
-    public static final String ORG_CACHE_ALL_KEY = "sys-org:all";
-    
-    @Resource
-    private CommonCacheOperator commonCacheOperator;
-    
     @Resource
     private SysRoleApi sysRoleApi;
+
+    @Resource
+    private BizOrgExtService bizOrgExtService;
 
     @Resource
     private BizPositionService bizPositionService;
@@ -127,7 +126,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(BizOrgAddParam bizOrgAddParam) {
+    public void add(BizOrgAddParam bizOrgAddParam, String sourceFromType) {
         BizOrgCategoryEnum.validate(bizOrgAddParam.getCategory());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
@@ -147,8 +146,10 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             throw new CommonException("存在重复的同级机构，名称为：{}", bizOrg.getName());
         }
         bizOrg.setCode(RandomUtil.randomString(10));
+        // 保存机构
         this.save(bizOrg);
-
+        // 插入扩展信息
+        bizOrgExtService.createExtInfo(bizOrg.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
     }
@@ -182,8 +183,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if(errorLevel) {
             throw new CommonException("不可选择上级机构：{}", this.getById(originDataList, bizOrg.getParentId()).getName());
         }
+        // 更新机构
         this.updateById(bizOrg);
-
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
     }
@@ -196,7 +197,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-                if(!loginUserDataScope.containsAll(orgIdList)) {
+                if(!new HashSet<>(loginUserDataScope).containsAll(orgIdList)) {
                     throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
                 }
             } else {
@@ -219,7 +220,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 List<String> positionOrgIdList = CollectionUtil.newArrayList();
                 positionJsonList.forEach(positionJson -> JSONUtil.toList(JSONUtil.parseArray(positionJson), JSONObject.class)
                         .forEach(jsonObject -> positionOrgIdList.add(jsonObject.getStr("orgId"))));
-                boolean hasPositionUser = CollectionUtil.intersectionDistinct(toDeleteOrgIdList, CollectionUtil.removeNull(positionOrgIdList)).size() > 0;
+                boolean hasPositionUser = !CollectionUtil.intersectionDistinct(toDeleteOrgIdList, CollectionUtil.removeNull(positionOrgIdList)).isEmpty();
                 if(hasPositionUser) {
                     throw new CommonException("请先删除机构下的人员");
                 }
@@ -263,28 +264,28 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public String getOrgIdByOrgFullNameWithCreate(String orgFullName) {
-        List<BizOrg> cachedAllOrgList = this.getAllOrgList();
-        List<Tree<String>> treeList = TreeUtil.build(cachedAllOrgList.stream().map(bizOrg ->
+        List<BizOrg> allOrgList = this.getAllOrgList();
+        List<Tree<String>> treeList = TreeUtil.build(allOrgList.stream().map(bizOrg ->
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
                 .collect(Collectors.toList()), "0");
-        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), cachedAllOrgList, treeList);
+        return findOrgIdByOrgName("0", StrUtil.split(orgFullName, StrUtil.DASHED).iterator(), allOrgList, treeList);
     }
 
-    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<BizOrg> cachedAllOrgList, List<Tree<String>> treeList) {
+    public String findOrgIdByOrgName(String parentId, Iterator<String> iterator, List<BizOrg> allOrgList, List<Tree<String>> treeList) {
         String orgName = iterator.next();
         if(ObjectUtil.isNotEmpty(treeList)) {
             List<Tree<String>> findList = treeList.stream().filter(tree -> tree.getName().equals(orgName)).collect(Collectors.toList());
             if(ObjectUtil.isNotEmpty(findList)) {
                 if(iterator.hasNext()) {
-                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, cachedAllOrgList, findList.get(0).getChildren());
+                    return findOrgIdByOrgName(findList.get(0).getId(), iterator, allOrgList, findList.get(0).getChildren());
                 } else {
                     return findList.get(0).getId();
                 }
             }
         }
-        String orgId = this.doCreateOrg(parentId, orgName, cachedAllOrgList);
+        String orgId = this.doCreateOrg(parentId, orgName, allOrgList);
         if(iterator.hasNext()) {
-            return findOrgIdByOrgName(orgId, iterator, cachedAllOrgList, CollectionUtil.newArrayList());
+            return findOrgIdByOrgName(orgId, iterator, allOrgList, CollectionUtil.newArrayList());
         } else {
             return orgId;
         }
@@ -296,7 +297,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
      * @author xuyuxiang
      * @date 2023/3/8 9:38
      **/
-    public String doCreateOrg(String parentId, String orgName, List<BizOrg> cachedAllOrgList) {
+    public String doCreateOrg(String parentId, String orgName, List<BizOrg> allOrgList) {
         //创建该机构
         BizOrg bizOrg = new BizOrg();
         bizOrg.setName(orgName);
@@ -307,10 +308,6 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         this.save(bizOrg);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
-        // 将该机构加入缓存
-        cachedAllOrgList.add(bizOrg);
-        // 更新缓存
-        commonCacheOperator.put(ORG_CACHE_ALL_KEY, cachedAllOrgList);
         return bizOrg.getId();
     }
 
@@ -342,55 +339,55 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public List<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScope);
+            queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
         } else {
             return CollectionUtil.newArrayList();
         }
         // 查询部分字段
-        lambdaQueryWrapper.select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
+        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
                 BizOrg::getCategory, BizOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(bizOrgSelectorOrgListParam.getParentId())) {
-            lambdaQueryWrapper.eq(BizOrg::getParentId, bizOrgSelectorOrgListParam.getParentId());
+            queryWrapper.lambda().eq(BizOrg::getParentId, bizOrgSelectorOrgListParam.getParentId());
         }
         if(ObjectUtil.isNotEmpty(bizOrgSelectorOrgListParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizOrg::getName, bizOrgSelectorOrgListParam.getSearchKey());
+            queryWrapper.lambda().like(BizOrg::getName, bizOrgSelectorOrgListParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        return this.list(lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizOrg::getSortCode);
+        return this.list(queryWrapper.lambda());
     }
 
     @Override
     public Page<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
-        LambdaQueryWrapper<BizUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            lambdaQueryWrapper.in(BizUser::getOrgId, loginUserDataScope);
+            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
         } else {
             return new Page<>();
         }
         // 只查询部分字段
-        lambdaQueryWrapper.select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
+        queryWrapper.lambda().select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
                 BizUser::getName, BizUser::getSortCode, BizUser::getGender, BizUser::getEntryDate);
         if (ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getOrgId())) {
             // 如果机构id不为空，则查询该机构及其子机构下的所有人
             List<String> childOrgIdList = CollStreamUtil.toList(this.getChildListById(this
                     .getAllOrgList(), bizOrgSelectorUserParam.getOrgId(), true), BizOrg::getId);
             if (ObjectUtil.isNotEmpty(childOrgIdList)) {
-                lambdaQueryWrapper.in(BizUser::getOrgId, childOrgIdList);
+                queryWrapper.lambda().in(BizUser::getOrgId, childOrgIdList);
             } else {
                 return new Page<>();
             }
         }
         if(ObjectUtil.isNotEmpty(bizOrgSelectorUserParam.getSearchKey())) {
-            lambdaQueryWrapper.like(BizUser::getName, bizOrgSelectorUserParam.getSearchKey());
+            queryWrapper.lambda().like(BizUser::getName, bizOrgSelectorUserParam.getSearchKey());
         }
-        lambdaQueryWrapper.orderByAsc(BizUser::getSortCode);
-        return bizUserService.page(CommonPageRequest.defaultPage(), lambdaQueryWrapper);
+        queryWrapper.lambda().orderByAsc(BizUser::getSortCode);
+        return bizUserService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     /* ====以下为各种递归方法==== */

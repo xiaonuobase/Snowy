@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -102,6 +103,7 @@ public class MobileButtonServiceImpl extends ServiceImpl<MobileButtonMapper, Mob
         this.updateById(mobileButton);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<MobileButtonIdParam> mobileButtonIdParamList) {
         List<String> buttonIdList = CollStreamUtil.toList(mobileButtonIdParamList, MobileButtonIdParam::getId);
