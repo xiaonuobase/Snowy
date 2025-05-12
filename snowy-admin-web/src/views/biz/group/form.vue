@@ -14,7 +14,13 @@
 				<a-textarea v-model:value="formData.remark" placeholder="请输入备注" :auto-size="{ minRows: 3, maxRows: 5 }" />
 			</a-form-item>
 			<a-form-item label="排序码：" name="sortCode">
-				<a-input-number v-model:value="formData.sortCode" placeholder="请输入排序码" :min="1" :max="10000" style="width: 100%" />
+				<a-input-number
+					v-model:value="formData.sortCode"
+					placeholder="请输入排序码"
+					:min="1"
+					:max="10000"
+					style="width: 100%"
+				/>
 			</a-form-item>
 		</a-form>
 		<template #footer>
@@ -53,7 +59,7 @@
 	// 默认要校验的
 	const formRules = {
 		name: [required('请输入名称')],
-		sortCode: [required('请输入排序码')],
+		sortCode: [required('请输入排序码')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
