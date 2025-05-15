@@ -99,7 +99,9 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                 throw new CommonException("module与上级菜单不一致");
             }
         }
-        mobileMenu.setCode(RandomUtil.randomString(10));
+        if(ObjectUtil.isEmpty(mobileMenu.getCode())) {
+            mobileMenu.setCode(RandomUtil.randomString(10));
+        }
         mobileMenu.setCategory(MobileResourceCategoryEnum.MENU.getValue());
         this.save(mobileMenu);
     }

@@ -97,7 +97,9 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
         if(repeatCode) {
             throw new CommonException("存在重复的按钮，编码为：{}", sysButton.getCode());
         }
-        sysButton.setCode(RandomUtil.randomString(10));
+        if(ObjectUtil.isEmpty(sysButton.getCode())) {
+            sysButton.setCode(RandomUtil.randomString(10));
+        }
         sysButton.setCategory(SysResourceCategoryEnum.BUTTON.getValue());
         this.save(sysButton);
 

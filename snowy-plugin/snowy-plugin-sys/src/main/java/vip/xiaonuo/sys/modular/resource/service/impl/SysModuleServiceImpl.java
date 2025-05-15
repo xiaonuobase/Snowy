@@ -92,7 +92,9 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
         if(repeatTitle) {
             throw new CommonException("存在重复的模块，名称为：{}", sysModule.getTitle());
         }
-        sysModule.setCode(RandomUtil.randomString(10));
+        if(ObjectUtil.isEmpty(sysModule.getCode())) {
+            sysModule.setCode(RandomUtil.randomString(10));
+        }
         sysModule.setCategory(SysResourceCategoryEnum.MODULE.getValue());
         this.save(sysModule);
         // 发布增加事件
