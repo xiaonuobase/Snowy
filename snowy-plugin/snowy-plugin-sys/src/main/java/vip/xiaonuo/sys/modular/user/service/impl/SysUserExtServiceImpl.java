@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
+import vip.xiaonuo.sys.modular.user.enums.SysUserSourceFromTypeEnum;
 import vip.xiaonuo.sys.modular.user.mapper.SysUserExtMapper;
 import vip.xiaonuo.sys.modular.user.service.SysUserExtService;
 
@@ -36,6 +37,7 @@ public class SysUserExtServiceImpl extends ServiceImpl<SysUserExtMapper, SysUser
         if(ObjectUtil.isEmpty(sysUserExt)){
             sysUserExt = new SysUserExt();
             sysUserExt.setUserId(userId);
+            sysUserExt.setSourceFromType(SysUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
             sysUserExt.setPasswordUpdateTime(DateTime.now());
             this.save(sysUserExt);
         } else {
