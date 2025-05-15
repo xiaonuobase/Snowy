@@ -148,7 +148,7 @@ public class DevPushWorkWechatUtil {
             weTalkRequestArticle.setDescription(content);
             weTalkRequestArticle.setPicUrl(picUrl);
             weTalkRequestArticle.setUrl(messageUrl);
-            request.setArticleList(CollectionUtil.newArrayList());
+            request.setArticleList(CollectionUtil.newArrayList(weTalkRequestArticle));
             Response response = oaSender.sender(request, MessageType.WE_TALK_NEWS);
             if(!response.isSuccess()) {
                 throw new CommonException("消息推送错误，返回内容：{}", JSONUtil.toJsonStr(response.getData()));

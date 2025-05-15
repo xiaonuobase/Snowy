@@ -243,6 +243,11 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
             }
         });
         List<JSONObject> leafMenuList = CollectionUtil.newArrayList();
+        MobileMenu rootMobileMenu = new MobileMenu();
+        rootMobileMenu.setId("0");
+        rootMobileMenu.setParentId("-1");
+        rootMobileMenu.setSortCode(-1);
+        mobileMenuList.add(rootMobileMenu);
         List<TreeNode<String>> treeNodeList = mobileMenuList.stream().map(mobileMenu ->
                 new TreeNode<>(mobileMenu.getId(), mobileMenu.getParentId(),
                         mobileMenu.getTitle(), mobileMenu.getSortCode())).collect(Collectors.toList());
@@ -267,7 +272,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
                     mobileRoleGrantResourceMenuResult.set("parentName", parentJsonObject.getStr("parentName"));
                 }
                 mobileRoleGrantResourceMenuResult.set("button", this.getChildListById(mobileButtonList, mobileMenu.getId(), false)
-                        .stream().map(sysMenuItem -> JSONUtil.createObj().set("id", sysMenuItem.getId()).set("title", sysMenuItem.getTitle()))
+                        .stream().map(tempMobileMenu -> JSONUtil.createObj().set("id", tempMobileMenu.getId()).set("title", tempMobileMenu.getTitle()))
                         .collect(Collectors.toList()));
                 leafMenuList.add(mobileRoleGrantResourceMenuResult);
             }
