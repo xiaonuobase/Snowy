@@ -24,6 +24,9 @@ import vip.xiaonuo.common.exception.CommonException;
 @Getter
 public enum AuthStrategyWhenNoUserWithPhoneOrEmailEnum {
 
+    /** 允许登录（手机或者邮箱存在时） */
+    ALLOW_LOGIN("ALLOW_LOGIN"),
+
     /** 不允许登录 */
     NOT_ALLOW_LOGIN("NOT_ALLOW_LOGIN"),
 
@@ -39,7 +42,7 @@ public enum AuthStrategyWhenNoUserWithPhoneOrEmailEnum {
     public static void validate(String value) {
         boolean flag = NOT_ALLOW_LOGIN.getValue().equals(value) || AUTO_CREATE_USER.getValue().equals(value);
         if(!flag) {
-            throw new CommonException("不支持的手机号或邮箱无对应用户时策略型：{}", value);
+            throw new CommonException("不支持的手机号或邮箱无对应用户时策略类型：{}", value);
         }
     }
 }

@@ -48,10 +48,7 @@ import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysRoleApi;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -117,7 +114,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         } else {
             return CollectionUtil.newArrayList();
         }
-        List<TreeNode<String>> treeNodeList = bizOrgSet.stream().map(bizOrg ->
+        // 先根据排序码排序
+        List<BizOrg> bizOrgArrayList = CollectionUtil.sort(bizOrgSet, Comparator.comparingInt(BizOrg::getSortCode));
+        // 再重置排序码，解决每次相同排序码顺序不一致的问题
+        for (int i = 0; i < bizOrgArrayList.size(); i++) {
+            bizOrgArrayList.get(i).setSortCode(i);
+        }
+        List<TreeNode<String>> treeNodeList = bizOrgArrayList.stream().map(bizOrg ->
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
                         bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
                 .collect(Collectors.toList());

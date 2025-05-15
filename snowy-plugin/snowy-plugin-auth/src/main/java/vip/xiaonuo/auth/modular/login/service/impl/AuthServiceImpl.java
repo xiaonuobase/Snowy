@@ -194,7 +194,7 @@ public class AuthServiceImpl implements AuthService {
         // 验证码请求号
         String validCodeReqNo = authGetPhoneValidCodeParam.getValidCodeReqNo();
         // 校验参数
-        validPhoneOrEmailValidCodeParam(null, AuthPhoneOrEmailTypeEnum.PHONE.getValue(), validCode, validCodeReqNo, type);
+        validValidCode(null, validCode, validCodeReqNo);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -257,7 +257,7 @@ public class AuthServiceImpl implements AuthService {
         // 验证码请求号
         String validCodeReqNo = authGetEmailValidCodeParam.getValidCodeReqNo();
         // 校验参数
-        validPhoneOrEmailValidCodeParam(null, AuthPhoneOrEmailTypeEnum.EMAIL.getValue(), validCode, validCodeReqNo, type);
+        validValidCode(null, validCode, validCodeReqNo);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -351,59 +351,63 @@ public class AuthServiceImpl implements AuthService {
      * @author xuyuxiang
      * @date 2022/8/25 14:29
      **/
-    private String validPhoneOrEmailValidCodeParam(String phoneOrEmail, String phoneOrEmailType, String validCode,
-                                                 String validCodeReqNo, String type) {
-        // 验证码正确则校验手机号格式
-        if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            // 根据手机号或者邮箱获取用户信息，判断用户是否存在，根据B端或C端判断
-            if(SaClientTypeEnum.B.getValue().equals(type)) {
-                if(phoneOrEmailType.equals(AuthPhoneOrEmailTypeEnum.PHONE.getValue())) {
-                    SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByPhone(phoneOrEmail);
-                    if(ObjectUtil.isEmpty(saBaseLoginUser)) {
-                        // B端手机号无对应用户时策略
-                        return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B_KEY);
-                    }
-                } else {
-                    SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByEmail(phoneOrEmail);
-                    if(ObjectUtil.isEmpty(saBaseLoginUser)) {
-                        // B端邮箱无对应用户时策略
-                        return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B_KEY);
-                    }
-                }
-            } else {
-                if(phoneOrEmailType.equals(AuthPhoneOrEmailTypeEnum.PHONE.getValue())) {
-                    SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByPhone(phoneOrEmail);
-                    if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                        // C端手机号无对应用户时策略
-                        return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_C_KEY);
-                    }
-                } else {
-                    SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByEmail(phoneOrEmail);
-                    if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                        // BC端邮箱无对应用户时策略
-                        return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_C_KEY);
-                    }
-                }
+    private String validPhoneOrEmailValidCodeParam(String phoneOrEmail, String phoneOrEmailType,
+                                                   String validCode, String validCodeReqNo, String type) {
+        // 校验手机号或邮箱类型
+        AuthPhoneOrEmailTypeEnum.validate(phoneOrEmailType);
+        // 校验手机号或邮箱格式
+        if(phoneOrEmailType.equals(AuthPhoneOrEmailTypeEnum.PHONE.getValue())) {
+            if(!PhoneUtil.isMobile(phoneOrEmail)) {
+                throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
             }
-            // 执行校验图形验证码
-            validValidCode(null, validCode, validCodeReqNo);
-            // 返回空值
-            return null;
         } else {
-            AuthPhoneOrEmailTypeEnum.validate(phoneOrEmailType);
+            if(CommonEmailUtil.isNotEmail(phoneOrEmail)) {
+                throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+            }
+        }
+        // 先校验验证码
+        validValidCode(phoneOrEmail, validCode, validCodeReqNo);
+        // 根据手机号或者邮箱获取用户信息，判断用户是否存在，根据B端或C端判断
+        if(SaClientTypeEnum.B.getValue().equals(type)) {
             if(phoneOrEmailType.equals(AuthPhoneOrEmailTypeEnum.PHONE.getValue())) {
-                if(!PhoneUtil.isMobile(phoneOrEmail)) {
-                    throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+                SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByPhone(phoneOrEmail);
+                if(ObjectUtil.isEmpty(saBaseLoginUser)) {
+                    // B端手机号无对应用户时策略
+                    return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B_KEY);
+                } else {
+                    // 存在则允许登录
+                    return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
             } else {
-                if(CommonEmailUtil.isNotEmail(phoneOrEmail)) {
-                    throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+                SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByEmail(phoneOrEmail);
+                if(ObjectUtil.isEmpty(saBaseLoginUser)) {
+                    // B端邮箱无对应用户时策略
+                    return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B_KEY);
+                } else {
+                    // 存在则允许登录
+                    return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
             }
-            // 执行校验手机或者邮箱验证码
-            validValidCode(phoneOrEmail, validCode, validCodeReqNo);
-            // 返回空值
-            return null;
+        } else {
+            if(phoneOrEmailType.equals(AuthPhoneOrEmailTypeEnum.PHONE.getValue())) {
+                SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByPhone(phoneOrEmail);
+                if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+                    // C端手机号无对应用户时策略
+                    return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_C_KEY);
+                } else {
+                    // 存在则允许登录
+                    return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
+                }
+            } else {
+                SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByEmail(phoneOrEmail);
+                if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+                    // C端邮箱无对应用户时策略
+                    return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_C_KEY);
+                } else {
+                    // 存在则允许登录
+                    return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
+                }
+            }
         }
     }
 
@@ -504,41 +508,53 @@ public class AuthServiceImpl implements AuthService {
         }
         // 根据手机号获取用户信息，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByPhone(phone);
-            if(ObjectUtil.isEmpty(saBaseLoginUser)) {
-                // 判断手机号无对应用户时的策略，如果为空则直接抛出异常
-                if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+            // 判断手机号无对应用户时的策略，如果为空则直接抛出异常
+            if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+                throw new CommonException("手机号码：{}不存在对应用户", phone);
+            } else {
+                // 如果不允许登录，则抛出异常
+                if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                     throw new CommonException("手机号码：{}不存在对应用户", phone);
                 } else {
-                    // 如果不允许登录，则抛出异常
-                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
-                        throw new CommonException("手机号码：{}不存在对应用户", phone);
-                    } else {
+                    // 定义B端用户
+                    SaBaseLoginUser saBaseLoginUser;
+                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 允许登录，即用户存在
+                        saBaseLoginUser = loginUserApi.getUserByPhone(phone);
+                    }else if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                         // 根据手机号自动创建B端用户
                         saBaseLoginUser = loginUserApi.createUserWithPhone(phone);
+                    } else {
+                        throw new CommonException("不支持的手机号或邮箱无对应用户时策略类型：{}", strategyWhenNoUserWithPhoneOrEmail);
                     }
+                    // 执行B端登录
+                    return execLoginB(saBaseLoginUser, device);
                 }
             }
-            // 执行B端登录
-            return execLoginB(saBaseLoginUser, device);
         } else {
-            SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByPhone(phone);
-            if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                // 判断手机号无对应用户时的策略，如果为空则直接抛出异常
-                if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+            // 判断手机号无对应用户时的策略，如果为空则直接抛出异常
+            if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+                throw new CommonException("手机号码：{}不存在对应用户", phone);
+            } else {
+                // 如果不允许登录，则抛出异常
+                if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                     throw new CommonException("手机号码：{}不存在对应用户", phone);
                 } else {
-                    // 如果不允许登录，则抛出异常
-                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
-                        throw new CommonException("手机号码：{}不存在对应用户", phone);
-                    } else {
-                        // 根据手机号自动创建C端用户
+                    // 定义C端用户
+                    SaBaseClientLoginUser saBaseClientLoginUser;
+                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 允许登录，即用户存在
+                        saBaseClientLoginUser = clientLoginUserApi.getClientUserByPhone(phone);
+                    }else if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 根据手机号自动创建B端用户
                         saBaseClientLoginUser = clientLoginUserApi.createClientUserWithPhone(phone);
+                    } else {
+                        throw new CommonException("不支持的手机号或邮箱无对应用户时策略类型：{}", strategyWhenNoUserWithPhoneOrEmail);
                     }
+                    // 执行C端登录
+                    return execLoginC(saBaseClientLoginUser, device);
                 }
             }
-            // 执行C端登录
-            return execLoginC(saBaseClientLoginUser, device);
         }
     }
 
@@ -562,41 +578,53 @@ public class AuthServiceImpl implements AuthService {
         }
         // 根据邮箱获取用户信息，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByEmail(email);
-            if(ObjectUtil.isEmpty(saBaseLoginUser)) {
-                // 判断邮箱无对应用户时的策略，如果为空则直接抛出异常
-                if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+            // 判断邮箱无对应用户时的策略，如果为空则直接抛出异常
+            if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+                throw new CommonException("邮箱：{}不存在对应用户", email);
+            } else {
+                // 如果不允许登录，则抛出异常
+                if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                     throw new CommonException("邮箱：{}不存在对应用户", email);
                 } else {
-                    // 如果不允许登录，则抛出异常
-                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
-                        throw new CommonException("邮箱：{}不存在对应用户", email);
-                    } else {
+                    // 定义B端用户
+                    SaBaseLoginUser saBaseLoginUser;
+                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 允许登录，即用户存在
+                        saBaseLoginUser = loginUserApi.getUserByEmail(email);
+                    }else if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                         // 根据邮箱自动创建B端用户
                         saBaseLoginUser = loginUserApi.createUserWithEmail(email);
+                    } else {
+                        throw new CommonException("不支持的手机号或邮箱无对应用户时策略类型：{}", strategyWhenNoUserWithPhoneOrEmail);
                     }
+                    // 执行B端登录
+                    return execLoginB(saBaseLoginUser, device);
                 }
             }
-            // 执行B端登录
-            return execLoginB(saBaseLoginUser, device);
         } else {
-            SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByEmail(email);
-            if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                // 判断邮箱无对应用户时的策略，如果为空则直接抛出异常
-                if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+            // 判断邮箱无对应用户时的策略，如果为空则直接抛出异常
+            if(ObjectUtil.isEmpty(strategyWhenNoUserWithPhoneOrEmail)) {
+                throw new CommonException("邮箱：{}不存在对应用户", email);
+            } else {
+                // 如果不允许登录，则抛出异常
+                if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
                     throw new CommonException("邮箱：{}不存在对应用户", email);
                 } else {
-                    // 如果不允许登录，则抛出异常
-                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
-                        throw new CommonException("邮箱：{}不存在对应用户", email);
+                    // 定义C端用户
+                    SaBaseClientLoginUser saBaseClientLoginUser;
+                    if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 允许登录，即用户存在
+                        saBaseClientLoginUser = clientLoginUserApi.getClientUserByEmail(email);
+                    }else if(AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue().equals(strategyWhenNoUserWithPhoneOrEmail)) {
+                        // 根据邮箱自动创建B端用户
+                        saBaseClientLoginUser = loginUserApi.createClientUserWithEmail(email);
                     } else {
-                        // 根据邮箱自动创建C端用户
-                        saBaseClientLoginUser = clientLoginUserApi.createClientUserWithEmail(email);
+                        throw new CommonException("不支持的手机号或邮箱无对应用户时策略类型：{}", strategyWhenNoUserWithPhoneOrEmail);
                     }
+                    // 执行C端登录
+                    return execLoginC(saBaseClientLoginUser, device);
                 }
             }
-            // 执行C端登录
-            return execLoginC(saBaseClientLoginUser, device);
         }
     }
 
@@ -924,9 +952,9 @@ public class AuthServiceImpl implements AuthService {
         String passwordDecrypt = CommonCryptogramUtil.doSm2Decrypt(password);
         // 根据账号获取用户信息，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            clientLoginUserApi.doRegister(account, passwordDecrypt);
-        } else {
             loginUserApi.doRegister(account, passwordDecrypt);
+        } else {
+            clientLoginUserApi.doRegister(account, passwordDecrypt);
         }
     }
 
