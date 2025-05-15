@@ -88,7 +88,9 @@ public class MobileModuleServiceImpl extends ServiceImpl<MobileModuleMapper, Mob
         if(ObjectUtil.isEmpty(mobileModule.getCode())){
             mobileModule.setCode(RandomUtil.randomString(10));
         }
-        mobileModule.setCode(RandomUtil.randomString(10));
+        if(ObjectUtil.isEmpty(mobileModule.getCode())) {
+            mobileModule.setCode(RandomUtil.randomString(10));
+        }
         mobileModule.setCategory(MobileResourceCategoryEnum.MODULE.getValue());
         this.save(mobileModule);
     }

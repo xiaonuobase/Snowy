@@ -165,7 +165,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 throw new CommonException("module与上级菜单不一致");
             }
         }
-        sysMenu.setCode(RandomUtil.randomString(10));
+        if(ObjectUtil.isEmpty(sysMenu.getCode())) {
+            sysMenu.setCode(RandomUtil.randomString(10));
+        }
         sysMenu.setCategory(SysResourceCategoryEnum.MENU.getValue());
         this.save(sysMenu);
 
