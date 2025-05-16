@@ -10,7 +10,7 @@
  */
 
 const request = (prop, url, ...arg) => {
-	return prop(`/sys/user/` + url, ...arg)
+	return prop(`/im/user/` + url, ...arg)
 }
 
 /**

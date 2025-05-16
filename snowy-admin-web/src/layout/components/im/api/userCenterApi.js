@@ -10,7 +10,7 @@
  */
 
 const request = (prop, url, ...arg) => {
-	return prop(`/sys/userCenter/` + url, ...arg)
+	return prop(`/im/userCenter/` + url, ...arg)
 }
 
 /**

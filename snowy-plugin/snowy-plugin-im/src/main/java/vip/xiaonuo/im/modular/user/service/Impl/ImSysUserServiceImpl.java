@@ -12,10 +12,15 @@
  */
 package vip.xiaonuo.im.modular.user.service.Impl;
 
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import vip.xiaonuo.im.modular.user.param.ImSysUserIdListParam;
+import vip.xiaonuo.im.modular.user.param.ImSysUserSelectorUserParam;
 import vip.xiaonuo.im.modular.user.service.ImSysUserService;
+import vip.xiaonuo.sys.api.SysOrgApi;
 import vip.xiaonuo.sys.api.SysUserApi;
 
 import java.util.List;
@@ -32,6 +37,8 @@ public class ImSysUserServiceImpl implements ImSysUserService {
 
     private final SysUserApi sysUserApi;
 
+    private final SysOrgApi sysOrgApi;
+
     /**
      * 获取用户列表
      *
@@ -42,4 +49,45 @@ public class ImSysUserServiceImpl implements ImSysUserService {
         return sysUserApi.listUserWithoutCurrent();
     }
 
+
+    /**
+     * 获取组织树选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @Override
+    public List<Tree<String>> orgTreeSelector() {
+        return sysOrgApi.orgTreeSelector();
+    }
+
+    /**
+     * 根据id集合获取用户集合
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @Override
+    public List<JSONObject> getUserListByIdList(ImSysUserIdListParam imSysUserIdListParam) {
+        if (imSysUserIdListParam == null) {
+            return List.of();
+        }
+        List<JSONObject> userIdList = sysUserApi.getUserListByIdListWithoutException(imSysUserIdListParam.getIdList());
+        return userIdList;
+    }
+
+    /**
+     * 获取用户选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @Override
+    public Page<JSONObject> userSelector(ImSysUserSelectorUserParam imSysUserSelectorUserParam) {
+        Page<JSONObject> jsonObjectPage = sysUserApi.userSelector(imSysUserSelectorUserParam.getOrgId(), imSysUserSelectorUserParam.getSearchKey());
+        if (jsonObjectPage == null) {
+            return new Page<>();
+        }
+        return jsonObjectPage;
+    }
 }

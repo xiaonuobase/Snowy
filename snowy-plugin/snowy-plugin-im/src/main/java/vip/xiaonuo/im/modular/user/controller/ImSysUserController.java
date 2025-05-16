@@ -12,16 +12,24 @@
  */
 package vip.xiaonuo.im.modular.user.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.im.modular.user.param.ImSysUserIdListParam;
+import vip.xiaonuo.im.modular.user.param.ImSysUserSelectorUserParam;
 import vip.xiaonuo.im.modular.user.service.ImSysUserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -49,5 +57,46 @@ public class ImSysUserController {
     @GetMapping("/im/user/list")
     public CommonResult<List<JSONObject>> list() {
         return CommonResult.data(imSysUserService.list());
+    }
+
+
+
+    /**
+     * 获取组织树选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @ApiOperationSupport(order = 19)
+    @Operation(summary = "IM-获取组织树选择器")
+    @GetMapping("/im/user/orgTreeSelector")
+    public CommonResult<List<Tree<String>>> orgTreeSelector() {
+        return CommonResult.data(imSysUserService.orgTreeSelector());
+    }
+
+    /**
+     * 根据id集合获取用户集合
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @ApiOperationSupport(order = 29)
+    @Operation(summary = "IM-根据id集合获取用户集合")
+    @PostMapping("/im/userCenter/getUserListByIdList")
+    public CommonResult<List<JSONObject>> getUserListByIdList(@RequestBody @Valid ImSysUserIdListParam imSysUserIdListParam) {
+        return CommonResult.data(imSysUserService.getUserListByIdList(imSysUserIdListParam));
+    }
+
+    /**
+     * 获取用户选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    @ApiOperationSupport(order = 23)
+    @Operation(summary = "IM-获取用户选择器")
+    @GetMapping("/im/user/userSelector")
+    public CommonResult<Page<JSONObject>> userSelector(ImSysUserSelectorUserParam imSysUserSelectorUserParam) {
+        return CommonResult.data(imSysUserService.userSelector(imSysUserSelectorUserParam));
     }
 }

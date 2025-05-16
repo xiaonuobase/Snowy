@@ -12,7 +12,11 @@
  */
 package vip.xiaonuo.im.modular.user.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import vip.xiaonuo.im.modular.user.param.ImSysUserIdListParam;
+import vip.xiaonuo.im.modular.user.param.ImSysUserSelectorUserParam;
 
 import java.util.List;
 
@@ -30,4 +34,29 @@ public interface ImSysUserService {
      * @date 2024/7/19 10:23
      */
     List<JSONObject> list();
+
+    /**
+     * 获取组织树选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    List<Tree<String>> orgTreeSelector();
+
+
+    /**
+     * 根据id集合获取用户集合
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    List<JSONObject> getUserListByIdList(ImSysUserIdListParam imSysUserIdListParam);
+
+    /**
+     * 获取用户选择器
+     *
+     * @author chengchuanyao
+     * @date 2025/5/16 15:23
+     */
+    Page<JSONObject> userSelector(ImSysUserSelectorUserParam imSysUserSelectorUserParam);
 }

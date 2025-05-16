@@ -19,15 +19,15 @@
                                             FROM_USER_ID = #{userId} THEN TO_USER_ID
                                         ELSE FROM_USER_ID END AS user_id,
                                     MAX(CREATE_TIME)          AS last_message_time
-                    FROM im_message
+                    FROM IM_MESSAGE
                     WHERE (FROM_USER_ID = #{userId} OR TO_USER_ID = #{userId})
                       AND DELETE_FLAG = 'NOT_DELETE'
                     GROUP BY CASE WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID ELSE FROM_USER_ID END) AS ui
-                       JOIN im_message m ON ((m.FROM_USER_ID = ui.user_id AND m.TO_USER_ID = #{userId}) OR
+                       JOIN IM_MESSAGE m ON ((m.FROM_USER_ID = ui.user_id AND m.TO_USER_ID = #{userId}) OR
                                              (m.FROM_USER_ID = #{userId} AND m.TO_USER_ID = ui.user_id)) JOIN sys_user su ON ui.user_id = su.id
                        LEFT JOIN (SELECT CASE WHEN FROM_USER_ID = #{userId} THEN TO_USER_ID ELSE FROM_USER_ID END AS user_id,
                                          COUNT(*)                                                                 AS unread_count
-                                  FROM im_message
+                                  FROM IM_MESSAGE
                                   WHERE (TO_USER_ID = #{userId})
                                     AND DELETE_FLAG = 'NOT_DELETE'
                                     AND IS_READ = 2
@@ -47,17 +47,17 @@
                       m.TO_USER_ID,
                       COALESCE(SUM(CASE WHEN m2.IS_READ = 2 THEN 1 ELSE 0 END), 0) AS unread_count,
                       '2'                                                          AS chat_type
-               FROM im_message m
+               FROM IM_MESSAGE m
                         JOIN (SELECT im.TO_USER_ID,
                                      MAX(im.CREATE_TIME) AS latest_time
-                              FROM im_message im
+                              FROM IM_MESSAGE im
                                        JOIN (SELECT DISTINCT group_id,DELETE_FLAG
                                              FROM im_group_member
                                              WHERE user_id = #{userId}) gm ON im.TO_USER_ID = gm.group_id
                               WHERE im.DELETE_FLAG = 'NOT_DELETE' and gm.DELETE_FLAG = 'NOT_DELETE'
                               GROUP BY im.TO_USER_ID) lgm ON m.TO_USER_ID = lgm.TO_USER_ID
                    AND m.CREATE_TIME = lgm.latest_time
-                        LEFT JOIN im_message m2 ON m.TO_USER_ID = m2.TO_USER_ID
+                        LEFT JOIN IM_MESSAGE m2 ON m.TO_USER_ID = m2.TO_USER_ID
                    AND m2.DELETE_FLAG = 'NOT_DELETE'
                    AND m2.IS_READ = 2
                WHERE m.DELETE_FLAG = 'NOT_DELETE'
