@@ -29,6 +29,9 @@ public enum AuthExceptionEnum {
     /** 验证码请求号不能为空 */
     VALID_CODE_REQ_NO_EMPTY("验证码请求号不能为空"),
 
+    /** 验证码过期 */
+    VALID_CODE_EXPIRED("验证码过期"),
+
     /** 验证码错误 */
     VALID_CODE_ERROR("验证码错误"),
 

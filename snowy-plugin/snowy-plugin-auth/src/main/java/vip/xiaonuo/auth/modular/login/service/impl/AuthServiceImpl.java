@@ -327,21 +327,21 @@ public class AuthServiceImpl implements AuthService {
             // 手机或者邮箱验证码
             existValidCode = commonCacheOperator.get(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
-        // 为空则直接验证码错误
-        if(ObjectUtil.isEmpty(existValidCode)) {
+        // 缓存中不存在验证码则返回失效错误
+        if (ObjectUtil.isEmpty(existValidCode)){
+            throw new CommonException(AuthExceptionEnum.VALID_CODE_EXPIRED.getValue());
+        }
+        // 不一致则直接验证码错误
+        if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
             throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
         }
-        // 移除该验证码
+        // 验证成功，移除该验证码
         if(ObjectUtil.isEmpty(phoneOrEmail)) {
             // 图形验证码
             commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo);
         } else {
             // 手机或者邮箱验证码
             commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
-        }
-        // 不一致则直接验证码错误
-        if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
-            throw new CommonException("验证码错误");
         }
     }
 
