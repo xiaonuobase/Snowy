@@ -16,6 +16,9 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 <p align="center">     
     <p align="center">
+        <a href="https://gitcode.com/xiaonuobase/Snowy">
+            <img src="https://gitcode.com/xiaonuobase/Snowy/star/badge.svg" alt="bootstrap">
+        </a>
         <a href="https://gitee.com/xiaonuobase/snowy">
             <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
         </a>
