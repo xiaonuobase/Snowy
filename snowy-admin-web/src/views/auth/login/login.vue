@@ -90,7 +90,9 @@
 								</a-form-item>
 
 								<a-form-item>
-									<a href="/findpwd" class="xn-color-0d84ff">{{ $t('login.forgetPassword') }}？</a>
+									<a-button type="link" class="p-0">
+										<router-link to="/findpwd">{{ $t('login.forgetPassword') }}？</router-link>
+									</a-button>
 								</a-form-item>
 								<a-form-item>
 									<a-button type="primary" class="w-full" :loading="loading" round size="large" @click="login"
