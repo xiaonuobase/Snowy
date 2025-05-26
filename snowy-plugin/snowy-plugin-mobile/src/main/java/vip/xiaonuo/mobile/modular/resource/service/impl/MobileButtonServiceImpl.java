@@ -15,6 +15,7 @@ package vip.xiaonuo.mobile.modular.resource.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -85,7 +86,9 @@ public class MobileButtonServiceImpl extends ServiceImpl<MobileButtonMapper, Mob
         if(repeatCode) {
             throw new CommonException("存在重复的移动端按钮，编码为：{}", mobileButton.getCode());
         }
-        mobileButton.setCategory(MobileResourceCategoryEnum.BUTTON.getValue());
+        if(ObjectUtil.isEmpty(mobileButton.getCode())) {
+            mobileButton.setCode(RandomUtil.randomString(10));
+        }
         this.save(mobileButton);
     }
 
