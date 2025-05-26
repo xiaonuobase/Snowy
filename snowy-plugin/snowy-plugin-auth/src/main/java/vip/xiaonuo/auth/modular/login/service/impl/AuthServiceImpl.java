@@ -31,7 +31,7 @@ import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
-import vip.xiaonuo.auth.core.util.AuthEmailFormatUtl;
+import vip.xiaonuo.auth.core.util.AuthEmailFormatUtil;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
@@ -279,9 +279,9 @@ public class AuthServiceImpl implements AuthService {
         // 定义变量参数
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode).set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = AuthEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = AuthEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = AuthEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = AuthEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验

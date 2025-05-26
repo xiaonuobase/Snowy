@@ -24,7 +24,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
  * @author xuyuxiang
  * @date 2025/3/21 19:07
  **/
-public class AuthEmailFormatUtl {
+public class AuthEmailFormatUtil {
 
     /** 系统名称 */
     private static final String SNOWY_SYS_NAME_KEY = "SNOWY_SYS_NAME";
