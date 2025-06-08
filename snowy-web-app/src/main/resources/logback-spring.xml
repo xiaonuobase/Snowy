@@ -4,6 +4,10 @@
     <!--日志格式应用spring boot默认的格式，也可以自己更改-->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
+    <!-- 注册自定义转换器 -->
+    <conversionRule conversionWord="tid" converterClass="vip.xiaonuo.common.aspect.CustomTraceIdConverter" />
+
+
     <!--定义日志存放的位置，默认存放在项目启动的相对路径的目录-->
     <springProperty scope="context" name="LOG_PATH" source="log.path" defaultValue="app-log"/>
 
