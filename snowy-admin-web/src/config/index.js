@@ -75,8 +75,14 @@ const DEFAULT_CONFIG = {
 	// 默认整体主题
 	SNOWY_THEME: 'dark',
 
-	// 整体表单风格
+	// 整体表单风格 modal|drawer
 	SNOWY_FORM_STYLE: 'drawer',
+
+	// 前后台登录链接是否展示
+	FRONT_BACK_LOGIN_URL_SHOW: true,
+
+	// 三方登录是否展示
+	THREE_LOGIN_SHOW: true,
 
 	// 系统基础配置，这些是数据库中保存起来的
 	SYS_BASE_CONFIG: {
@@ -87,15 +93,15 @@ const DEFAULT_CONFIG = {
 		// 系统名称
 		SNOWY_SYS_NAME: 'Snowy',
 		// 版本
-		SNOWY_SYS_VERSION: '2.0',
+		SNOWY_SYS_VERSION: '3.0',
 		// 版权
 		SNOWY_SYS_COPYRIGHT: 'Snowy ©2022 Created by xiaonuo.vip',
 		// 版权跳转URL
 		SNOWY_SYS_COPYRIGHT_URL: 'https://www.xiaonuo.vip',
 		// 默认文件存储
 		SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL',
-		// 是否开启验证码
-		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN: 'false',
+		// 是否开启B端验证码
+		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B: 'false',
 		// 默认重置密码
 		SNOWY_SYS_DEFAULT_PASSWORD: '123456'
 	}

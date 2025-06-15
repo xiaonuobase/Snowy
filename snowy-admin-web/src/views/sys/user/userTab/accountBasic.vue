@@ -13,9 +13,6 @@
 		<a-form-item label="姓名：" name="name">
 			<a-input v-model:value="formData.name" placeholder="请输入姓名" allow-clear />
 		</a-form-item>
-		<a-form-item label="手机：" name="phone">
-			<a-input v-model:value="formData.phone" placeholder="请输入手机" allow-clear />
-		</a-form-item>
 		<a-form-item label="昵称：" name="nickname">
 			<a-input v-model:value="formData.nickname" placeholder="请输入昵称" allow-clear />
 		</a-form-item>
@@ -25,10 +22,6 @@
 		<a-form-item label="生日：" name="birthday">
 			<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
 		</a-form-item>
-		<a-form-item label="邮箱：" name="email">
-			<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
-		</a-form-item>
-
 		<a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 4 }">
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存基本信息</a-button>
 		</a-form-item>
@@ -36,7 +29,7 @@
 </template>
 
 <script setup name="AccountBasic">
-	import { required } from '@/utils/formRules'
+	import { required, rules } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 	import { cloneDeep } from 'lodash-es'

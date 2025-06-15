@@ -33,6 +33,9 @@
 		<p v-else-if="noTitleKey === 'fileConfig'">
 			<FileConfig />
 		</p>
+		<p v-else-if="noTitleKey === 'pushConfig'">
+			<PushConfig />
+		</p>
 		<p v-else-if="noTitleKey === 'thirdConfig'">
 			<ThirdConfig />
 		</p>
@@ -54,6 +57,7 @@
 	import FileConfig from './fileConfig/index.vue'
 	import ThirdConfig from './thirdConfig/index.vue'
 	import OtherConfig from './otherConfig/index.vue'
+	import PushConfig from './pushConfig/index.vue'
 	const key = ref('sysConfig')
 	const noTitleKey = ref('sysConfig')
 
@@ -93,6 +97,10 @@
 		{
 			key: 'fileConfig',
 			tab: '文件配置'
+		},
+		{
+			key: 'pushConfig',
+			tab: '推送配置'
 		},
 		{
 			key: 'thirdConfig',

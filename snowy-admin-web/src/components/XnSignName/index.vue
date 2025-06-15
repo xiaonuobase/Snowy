@@ -17,7 +17,8 @@
 			</a-col>
 			<a-col :span="9">
 				<div class="xn-h90wat">
-					<img :src="resultImg" class="xn-bdr236 xn-h90w100" />
+					<img v-if="resultImg" :src="resultImg" class="xn-bdr236 xn-h90w100" />
+					<a-empty v-else />
 				</div>
 			</a-col>
 		</a-row>

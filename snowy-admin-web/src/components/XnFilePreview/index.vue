@@ -9,26 +9,28 @@
 				返回
 			</a-button>
 		</a-space>
-		<a-card :bordered="false" :body-style="{ padding: '0px' }">
+		<a-card :bordered="false" :body-style="{ padding: 0 }">
 			<a-spin :spinning="loading">
 				<vue-office-docx
 					v-if="fileType === 'doc' || fileType === 'docx'"
-					:src="props.src"
+					:src="props.src + '&token=' + tool.data.get('TOKEN')"
 					class="xn-ht82"
 					@rendered="renderedHandler"
 				/>
 				<vue-office-excel
 					v-else-if="fileType === 'xls' || fileType === 'xlsx'"
-					:src="props.src"
+					:src="props.src + '&token=' + tool.data.get('TOKEN')"
 					class="xn-ht82"
 					@rendered="renderedHandler"
 					@error="errorHandler"
 				/>
-				<vue-office-pdf
+				<vue-pdf-embed
 					v-else-if="fileType === 'pdf'"
-					:src="props.src"
+					annotation-layer
+					text-layer
+					:source="props.src + '&token=' + tool.data.get('TOKEN')"
 					@rendered="renderedHandler"
-					@error="errorHandler"
+					@renderingFailed="errorHandler"
 				/>
 				<img
 					v-else-if="
@@ -40,7 +42,7 @@
 						fileType === 'ico' ||
 						fileType === 'svg'
 					"
-					:src="props.src"
+					:src="props.src + '&token=' + tool.data.get('TOKEN')"
 					class="xn-mwh"
 				/>
 				<a-result v-else status="warning" title="不支持预览的文件类型" />
@@ -50,6 +52,7 @@
 </template>
 
 <script setup>
+	import tool from '@/utils/tool'
 	import { message } from 'ant-design-vue'
 	//引入VueOfficeDocx组件
 	import VueOfficeDocx from '@vue-office/docx'
@@ -59,8 +62,11 @@
 	import VueOfficeExcel from '@vue-office/excel'
 	//引入相关样式
 	import '@vue-office/excel/lib/index.css'
-	//引入VueOfficePdf组件
-	import VueOfficePdf from '@vue-office/pdf'
+	//引Pdf组件
+	// 调用组件：https://github.com/hrynko/vue-pdf-embed
+	import VuePdfEmbed from 'vue-pdf-embed'
+	import 'vue-pdf-embed/dist/styles/annotationLayer.css'
+	import 'vue-pdf-embed/dist/styles/textLayer.css'
 
 	const loading = ref(false)
 	const emit = defineEmits({ goBack: null })

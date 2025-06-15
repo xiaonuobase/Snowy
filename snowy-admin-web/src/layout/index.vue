@@ -19,6 +19,7 @@
 		@onOpenChange="onOpenChange"
 		@switchModule="switchModule"
 		@menuIsCollapseClick="menuIsCollapseClick"
+		@displayLayoutChange="exitMaximize"
 	/>
 	<!-- 双排菜单布局 -->
 	<DoubleRowMenu
@@ -43,6 +44,7 @@
 		@onSelect="onSelect"
 		@switchModule="switchModule"
 		@showMenu="showMenu"
+		@displayLayoutChange="exitMaximize"
 	/>
 	<!-- 顶部菜单布局 -->
 	<TopMenu
@@ -63,12 +65,15 @@
 		@switchModule="switchModule"
 		@onOpenChange="onOpenChange"
 		@onSelect="onSelect"
+		@displayLayoutChange="exitMaximize"
 	/>
 
 	<!-- 退出最大化 -->
 	<div class="main-maximize-exit" @click="exitMaximize">
 		<fullscreen-exit-outlined class="xn-color-fff" />
 	</div>
+	<bind-phone ref="bindPhoneRef" />
+	<bind-email ref="bindEmailRef" />
 </template>
 
 <script setup>
@@ -85,6 +90,8 @@
 	import { NextLoading } from '@/utils/loading'
 	import { useMenuStore } from '@/store/menu'
 	import { getLocalHash, checkHash } from '@/utils/version'
+	import BindPhone from '@/layout/components/bindPhone.vue'
+	import BindEmail from '@/layout/components/bindEmail.vue'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -101,6 +108,8 @@
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
 	const menuList = ref([])
+	const bindPhoneRef = ref()
+	const bindEmailRef = ref()
 	// computed计算方法 - start
 	const layout = computed(() => {
 		return store.layout
@@ -240,7 +249,7 @@
 	onMounted(() => {
 		// 取消loading
 		NextLoading.done()
-		showThis()
+		// showThis()
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)
@@ -250,6 +259,8 @@
 		updateVersion()
 		nextTick(() => {
 			getNav()
+			bindPhoneRef.value.checkNeedBindPhone()
+			bindEmailRef.value.checkNeedBindEmail()
 		})
 	})
 	onBeforeUnmount(() => {

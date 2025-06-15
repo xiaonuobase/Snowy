@@ -13,6 +13,9 @@ const constRouters = [
 		path: '/findpwd'
 	},
 	{
+		path: '/register'
+	},
+	{
 		path: '/callback'
 	},
 	{

@@ -7,6 +7,7 @@
 			collapsible
 			:theme="sideTheme"
 			width="210"
+			v-show="displayLayout"
 		>
 			<header id="snowyHeaderLogo" class="snowy-header-logo">
 				<div class="snowy-header-left">
@@ -19,8 +20,8 @@
 			<div :class="menuIsCollapse ? 'admin-ui-side isCollapse' : 'admin-ui-side'">
 				<div class="admin-ui-side-scroll">
 					<a-menu
-						v-bind:openKeys="openKeys"
-						v-bind:selectedKeys="selectedKeys"
+						:openKeys="openKeys"
+						:selectedKeys="selectedKeys"
 						:theme="sideTheme"
 						mode="inline"
 						@select="onSelect"
@@ -32,10 +33,10 @@
 			</div>
 		</a-layout-sider>
 		<!-- 手机端情况下的左侧菜单 -->
-		<Side-m v-if="isMobile" />
+		<Side-m v-if="isMobile" v-show="displayLayout" />
 		<!-- 右侧布局 -->
 		<a-layout>
-			<div id="snowyHeader" class="snowy-header">
+			<div id="snowyHeader" class="snowy-header" v-show="displayLayout">
 				<div class="snowy-header-left xn-pl0">
 					<div v-if="!isMobile" class="panel-item hidden-sm-and-down" @click="menuIsCollapseClick">
 						<MenuUnfoldOutlined v-if="menuIsCollapse" />
@@ -47,10 +48,12 @@
 					<user-bar />
 				</div>
 			</div>
-			<Breadcrumb v-if="!isMobile && breadcrumbOpen" />
+			<Breadcrumb v-if="!isMobile && breadcrumbOpen" v-show="displayLayout" />
 			<!-- 多标签 -->
-			<Tags v-if="!isMobile && layoutTagsOpen" />
-			<a-layout-content class="main-content-wrapper">
+			<Tags v-if="!isMobile && layoutTagsOpen" v-show="displayLayout" />
+			<a-layout-content
+				:class="displayLayout ? 'main-content-wrapper' : 'main-content-wrapper main-content-wrapper-max'"
+			>
 				<div id="admin-ui-main" class="admin-ui-main">
 					<router-view v-slot="{ Component }">
 						<keep-alive :include="kStore.keepLiveRoute">
@@ -72,8 +75,6 @@
 <script setup>
 	import { useRoute } from 'vue-router'
 	import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-	const route = useRoute()
-
 	import UserBar from '@/layout/components/userbar.vue'
 	import Tags from '@/layout/components/tags.vue'
 	import SideM from '@/layout/components/sideM.vue'
@@ -97,8 +98,39 @@
 		footerCopyrightOpen: { type: Boolean }, //页脚版权信息
 		moduleMenuShow: { type: Boolean }
 	})
-
-	const emit = defineEmits(['onSelect', 'onOpenChange', 'switchModule', 'menuIsCollapseClick'])
+	const emit = defineEmits(['onSelect', 'onOpenChange', 'switchModule', 'menuIsCollapseClick', 'displayLayoutChange'])
+	const displayLayout = ref(true)
+	const route = useRoute()
+	watch(route, () => {
+		nextTick(() => {
+			displayLayout.value = displayLayoutResult()
+		})
+		if (displayLayout.value) {
+			emit('displayLayoutChange')
+		}
+	})
+	onMounted(() => {
+		nextTick(() => {
+			displayLayout.value = displayLayoutResult()
+		})
+	})
+	const displayLayoutResult = () => {
+		// 根据route.meta.keepLive动态管理keepLiveRoute
+		if (route.meta.keepLive === true) {
+			props.kStore.pushKeepLive(route.name)
+		} else {
+			props.kStore.removeKeepLive(route.name)
+		}
+		if (
+			route.meta.displayLayout === undefined ||
+			route.meta.displayLayout === null ||
+			route.meta.displayLayout === 'null'
+		) {
+			return true
+		} else {
+			return route.meta.displayLayout
+		}
+	}
 	const onSelect = (obj) => {
 		emit('onSelect', obj)
 	}
@@ -151,5 +183,8 @@
 	}
 	.xn-mg050 {
 		margin: 0px 150px;
+	}
+	.main-content-wrapper-max {
+		padding: 0;
 	}
 </style>

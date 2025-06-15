@@ -1,15 +1,20 @@
 <template>
 	<a-form ref="phoneLoginFormRef" :model="phoneFormData" :rules="formRules">
 		<a-form-item name="phone">
-			<a-input v-model:value="phoneFormData.phone" :placeholder="$t('login.phonePlaceholder')" size="large">
+			<a-input-number
+				v-model:value="phoneFormData.phone"
+				:placeholder="$t('login.phonePlaceholder')"
+				size="large"
+				style="width: 100%"
+			>
 				<template #prefix>
 					<mobile-outlined class="text-black text-opacity-25" />
 				</template>
-			</a-input>
+			</a-input-number>
 		</a-form-item>
 		<a-form-item name="phoneValidCode">
 			<a-row :gutter="8">
-				<a-col :span="17">
+				<a-col :span="16">
 					<a-input
 						v-model:value="phoneFormData.phoneValidCode"
 						:placeholder="$t('login.smsCodePlaceholder')"
@@ -20,7 +25,7 @@
 						</template>
 					</a-input>
 				</a-col>
-				<a-col :span="7">
+				<a-col :span="8">
 					<a-button size="large" class="xn-wd" @click="getPhoneValidCode" :disabled="state.smsSendBtn">
 						{{ (!state.smsSendBtn && $t('login.getSmsCode')) || state.time + ' s' }}
 					</a-button>
@@ -55,11 +60,7 @@
 						</a-input>
 					</a-col>
 					<a-col :span="7">
-						<img
-							:src="validCodeBase64"
-							class="xn-findform-line"
-							@click="getPhonePicCaptcha"
-						/>
+						<img :src="validCodeBase64" class="xn-findform-line" @click="getPhonePicCaptcha" />
 					</a-col>
 				</a-row>
 			</a-form-item>
@@ -72,6 +73,7 @@
 	import { required, rules } from '@/utils/formRules'
 	import loginApi from '@/api/auth/loginApi'
 	import { afterLogin } from './util'
+	const { proxy } = getCurrentInstance()
 
 	const phoneLoginFormRef = ref()
 	const phoneFormData = ref({})
@@ -82,10 +84,9 @@
 	})
 	let formRules = ref({})
 	const phoneValidCodeReqNo = ref('')
-
 	// 点击获取短信验证码
 	const getPhoneValidCode = () => {
-		formRules.value.phone = [required('请输入11位手机号'), rules.phone]
+		formRules.value.phone = [required(proxy.$t('login.phoneInputNumberPlaceholder')), rules.phone]
 		delete formRules.value.phoneValidCode
 		phoneLoginFormRef.value.validate().then(() => {
 			// 显示弹框
@@ -94,11 +95,10 @@
 			getPhonePicCaptcha()
 		})
 	}
-
 	// 点击登录按钮
 	const submitLogin = async () => {
-		formRules.value.phone = [required('请输入11位手机号'), rules.phone]
-		formRules.value.phoneValidCode = [required('请输入短信验证码'), rules.number]
+		formRules.value.phone = [required(proxy.$t('login.phoneInputNumberPlaceholder')), rules.phone]
+		formRules.value.phoneValidCode = [required(proxy.$t('login.smsCodePlaceholder')), rules.number]
 
 		const validate = await phoneLoginFormRef.value.validate().catch(() => {})
 		if (!validate) return false
@@ -107,11 +107,14 @@
 		// delete phoneFormData.value.phoneValidCode
 		phoneFormData.value.validCodeReqNo = phoneValidCodeReqNo.value
 		loading.value = true
-		loginApi.loginByPhone(phoneFormData.value).then((token) => {
-			afterLogin(token)
-		}).catch((err) => {
-			loading.value = false
-		})
+		loginApi
+			.loginByPhone(phoneFormData.value)
+			.then((token) => {
+				afterLogin(token)
+			})
+			.catch((err) => {
+				loading.value = false
+			})
 	}
 
 	// 弹框的
@@ -121,7 +124,7 @@
 	const validCodeBase64 = ref('')
 	const validCodeReqNo = ref('')
 	const formModalRules = {
-		validCode: [required('请输入图形验证码'), rules.lettersNum]
+		validCode: [required(proxy.$t('login.validError')), rules.lettersNum]
 	}
 	const getPhonePicCaptcha = () => {
 		loginApi.getPicCaptcha().then((data) => {

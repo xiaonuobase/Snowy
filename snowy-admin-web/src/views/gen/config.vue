@@ -8,6 +8,20 @@
 			:showPagination="false"
 			bordered
 		>
+			<template #headerCell="{ title, column }">
+				<template v-if="column.dataIndex === 'whetherRequired'">
+					<a-tooltip>
+						<template #title> 非增改字段不可选择必填 </template>
+						<question-circle-outlined />&nbsp; {{ title }}
+					</a-tooltip>
+				</template>
+				<template v-if="column.dataIndex === 'whetherUnique'">
+					<a-tooltip>
+						<template #title> 非必填字段不可选择唯一 </template>
+						<question-circle-outlined />&nbsp; {{ title }}
+					</a-tooltip>
+				</template>
+			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'fieldRemark'">
 					<a-input v-model:value="record.fieldRemark" />
@@ -49,12 +63,22 @@
 					<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable" />
 				</template>
 				<template v-if="column.dataIndex === 'whetherAddUpdate'">
-					<a-checkbox v-model:checked="record.whetherAddUpdate" :disabled="toFieldEstimate(record)" />
+					<a-checkbox
+						v-model:checked="record.whetherAddUpdate"
+						@change="whetherAddUpdateChange(record)"
+						:disabled="toFieldEstimate(record)" />
 				</template>
 				<template v-if="column.dataIndex === 'whetherRequired'">
 					<a-checkbox
 						v-model:checked="record.whetherRequired"
+						@change="whetherRequiredChange(record)"
 						:disabled="toFieldEstimate(record) || !record.whetherAddUpdate"
+					/>
+				</template>
+				<template v-if="column.dataIndex === 'whetherUnique'">
+					<a-checkbox
+						v-model:checked="record.whetherUnique"
+						:disabled="toFieldEstimate(record) || !record.whetherAddUpdate || !record.whetherRequired"
 					/>
 				</template>
 				<template v-if="column.dataIndex === 'queryWhether'">
@@ -144,6 +168,12 @@
 			title: '必填',
 			align: 'center',
 			dataIndex: 'whetherRequired',
+			width: 80
+		},
+		{
+			title: '唯一',
+			align: 'center',
+			dataIndex: 'whetherUnique',
 			width: 80
 		},
 		{
@@ -387,6 +417,19 @@
 		if (!record.whetherTable) {
 			record.queryWhether = 'N'
 			record.queryType = null
+		}
+	}
+	// 是否增改选择触发
+	const whetherAddUpdateChange = (element) => {
+		if (!element.checked) {
+			element.whetherRequired = false;
+			element.whetherUnique = false;
+		}
+	}
+	// 是否必填选择触发
+	const whetherRequiredChange = (element) => {
+		if (!element.checked) {
+			element.whetherUnique = false;
 		}
 	}
 	// 查询条件是否可用

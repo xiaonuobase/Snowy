@@ -90,9 +90,12 @@
 								</a-form-item>
 
 								<a-form-item>
-									<a-button type="link" class="p-0">
-										<router-link to="/findpwd">{{ $t('login.forgetPassword') }}？</router-link>
-									</a-button>
+									<div style="display: flex; justify-content: space-between">
+										<a href="/findpwd" class="xn-color-0d84ff">{{ $t('login.forgetPassword') }}？</a>
+										<a href="/register" class="xn-color-0d84ff" v-if="registerOpen === 'true'">
+											{{ $t('login.notAccountPleaseRegister') }}
+										</a>
+									</div>
 								</a-form-item>
 								<a-form-item>
 									<a-button type="primary" class="w-full" :loading="loading" round size="large" @click="login"
@@ -101,11 +104,17 @@
 								</a-form-item>
 							</a-form>
 						</a-tab-pane>
-						<a-tab-pane key="userSms" :tab="$t('login.phoneSms')" force-render>
+						<a-tab-pane key="userSms" :tab="$t('login.phoneSms')" force-render v-if="phoneLogin === 'true'">
 							<phone-login-form />
 						</a-tab-pane>
+						<a-tab-pane key="userEmail" :tab="$t('login.emailLogin')" force-render v-if="emailLogin === 'true'">
+							<email-login-form />
+						</a-tab-pane>
 					</a-tabs>
-					<three-login />
+					<div v-if="configData.FRONT_BACK_LOGIN_URL_SHOW">
+						<a href="/front/client/index" class="xn-color-0d84ff">前台登录</a>
+					</div>
+					<three-login v-if="configData.THREE_LOGIN_SHOW" />
 				</a-card>
 			</div>
 		</div>
@@ -114,6 +123,7 @@
 <script setup>
 	import loginApi from '@/api/auth/loginApi'
 	const PhoneLoginForm = defineAsyncComponent(() => import('./phoneLoginForm.vue'))
+	const EmailLoginForm = defineAsyncComponent(() => import('./emailLoginForm.vue'))
 	import ThreeLogin from './threeLogin.vue'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
@@ -126,6 +136,9 @@
 
 	const activeKey = ref('userAccount')
 	const captchaOpen = ref(configData.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN)
+	const registerOpen = ref('false')
+	const phoneLogin = ref('false')
+	const emailLogin = ref('false')
 	const validCodeBase64 = ref('')
 	const loading = ref(false)
 
@@ -183,6 +196,9 @@
 						formData.value[item.configKey] = item.configValue
 					})
 					captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
+					registerOpen.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B
+					phoneLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B
+					emailLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B
 					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
 					setSysBaseConfig(formData.value)
 					refreshSwitch()

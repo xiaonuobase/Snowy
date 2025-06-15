@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<xn-form-container title="修改密码" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
+		<a-modal title="修改密码" :width="400" :open="visible" :destroy-on-close="true" @cancel="onClose">
 			<a-skeleton active v-if="!updatePasswordConfig" />
 			<a-form v-else ref="formRef" :model="formState" :rules="formRules" layout="vertical">
 				<div v-if="updatePasswordConfig.SNOWY_SYS_DEFAULT_PASSWORD_UPDATE_VALID_TYPE_FOR_B === 'OLD'">
@@ -14,7 +14,6 @@
 					</a-form-item>
 				</div>
 				<a-form-item
-					label="手机号："
 					name="phone"
 					has-feedback
 					v-if="updatePasswordConfig.SNOWY_SYS_DEFAULT_PASSWORD_UPDATE_VALID_TYPE_FOR_B === 'PHONE'"
@@ -22,7 +21,6 @@
 					<a-input v-model:value="formState.phone" placeholder="请输入手机号" allow-clear autocomplete="off" />
 				</a-form-item>
 				<a-form-item
-					label="邮箱号："
 					name="email"
 					has-feedback
 					v-if="updatePasswordConfig.SNOWY_SYS_DEFAULT_PASSWORD_UPDATE_VALID_TYPE_FOR_B === 'EMAIL'"
@@ -51,7 +49,7 @@
 						</a-col>
 					</a-row>
 				</a-form-item>
-				<a-form-item label="新密码：" name="newPassword" has-feedback>
+				<a-form-item name="newPassword" has-feedback>
 					<a-input-password
 						v-model:value="formState.newPassword"
 						placeholder="请输入新密码"
@@ -64,7 +62,7 @@
 				<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 			</template>
-		</xn-form-container>
+		</a-modal>
 		<a-modal
 			v-model:open="captchaVisible"
 			:width="400"

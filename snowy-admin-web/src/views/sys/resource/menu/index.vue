@@ -58,6 +58,10 @@
 				</template>
 			</template>
 			<template #bodyCell="{ column, record }">
+				<template v-if="column.dataIndex === 'title'">
+					<component :is="record.icon" />
+					{{ record.title }}
+				</template>
 				<template v-if="column.dataIndex === 'path'">
 					<span v-if="record.menuType === 'MENU'">{{ record.path }}</span>
 					<span v-else>-</span>
@@ -65,9 +69,6 @@
 				<template v-if="column.dataIndex === 'component'">
 					<span v-if="record.menuType === 'MENU'">{{ record.component }}</span>
 					<span v-else>-</span>
-				</template>
-				<template v-if="column.dataIndex === 'icon'">
-					<component :is="record.icon" />
 				</template>
 				<template v-if="column.dataIndex === 'menuType'">
 					<a-tag v-if="record.menuType === 'CATALOG'" color="cyan">
@@ -147,12 +148,9 @@
 	const columns = [
 		{
 			title: '显示名称',
-			dataIndex: 'title'
-		},
-		{
-			title: '图标',
-			dataIndex: 'icon',
-			width: 100
+			dataIndex: 'title',
+			ellipsis: true,
+			width: 300
 		},
 		{
 			title: '类型',
@@ -161,15 +159,11 @@
 		},
 		{
 			title: '路由地址',
-			dataIndex: 'path',
-			ellipsis: true,
-			width: 220
+			dataIndex: 'path'
 		},
 		{
 			title: '组件',
-			dataIndex: 'component',
-			ellipsis: true,
-			width: 220
+			dataIndex: 'component'
 		},
 		{
 			title: '是否可见',

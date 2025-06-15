@@ -89,7 +89,7 @@ export default defineConfig(({ command, mode }) => {
 						'ant-design-vendor': ['ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'axios', 'dayjs'],
 						'echarts-vendor': ['echarts', 'echarts-stat'],
 						'editor-vendor': ['@tinymce/tinymce-vue', 'tinymce'],
-						'office-vendor': ['@vue-office/docx', '@vue-office/excel', '@vue-office/pdf']
+						'office-vendor': ['@vue-office/docx', 'vue-pdf-embed', '@vue-office/excel']
 					}
 				}
 			},

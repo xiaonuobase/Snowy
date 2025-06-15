@@ -14,8 +14,9 @@ import routerUtil from '@/utils/routerUtil'
 
 const Layout = () => import('@/layout/index.vue')
 const Login = () => import('@/views/auth/login/login.vue')
-const Findpwd = () => import('@/views/auth/findPwd/index.vue')
+const FindPwd = () => import('@/views/auth/findPwd/index.vue')
 const Callback = () => import('@/views/auth/login/callback.vue')
+const Register = () => import('@/views/auth/login/register.vue')
 
 // 系统路由
 const routes = [
@@ -34,8 +35,15 @@ const routes = [
 		}
 	},
 	{
+		path: '/register',
+		component: Register,
+		meta: {
+			title: '注册'
+		}
+	},
+	{
 		path: '/findpwd',
-		component: Findpwd,
+		component: FindPwd,
 		meta: {
 			title: '找回密码'
 		}

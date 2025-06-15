@@ -59,24 +59,18 @@ export default {
 		return request('updatePasswordByEmail', data)
 	},
 	// 绑定手机号获取手机验证码
-	userBindPhoneGetPhoneValidCode(data) {
-		return request('bindPhoneGetPhoneValidCode', data)
+	userBindPhoneGetPhoneValidCode(data, phone) {
+		// 如果有手机号，则修改获取、否则首次绑定
+		return request(phone ? 'updateBindPhoneGetPhoneValidCode' : 'bindPhoneGetPhoneValidCode', data, 'get')
 	},
-	// 修改绑定手机号获取手机验证码
-	userUpdateBindPhoneGetPhoneValidCode(data) {
-		return request('updateBindPhoneGetPhoneValidCode', data)
-	},
-	// 修改绑定手机号获取手机验证码
+	// 绑定手机号
 	userBindPhone(data) {
 		return request('bindPhone', data)
 	},
 	// 绑定邮箱获取邮箱验证码
-	userBindEmailGetEmailValidCode(data) {
-		return request('bindEmailGetEmailValidCode', data)
-	},
-	// 修改绑定邮箱获取邮箱验证码
-	userUpdateBindEmailGetEmailValidCode(data) {
-		return request('updateBindEmailGetEmailValidCode', data)
+	userBindEmailGetEmailValidCode(data, email) {
+		// 如果有邮箱号，则修改获取、否则首次绑定
+		return request(email ? 'updateBindEmailGetEmailValidCode' : 'bindEmailGetEmailValidCode', data, 'get')
 	},
 	// 绑定邮箱
 	userBindEmail(data) {

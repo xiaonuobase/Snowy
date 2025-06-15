@@ -12,6 +12,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import systemRouter from './systemRouter'
+import clientBaseRouter, { validateClientAccess } from './clientBaseRouter'
 import { afterEach, beforeEach } from './scrollBehavior'
 import whiteListRouters from './whiteList'
 import userRoutes from '@/config/route'
@@ -35,7 +36,7 @@ const routes_404 = [
 	}
 ]
 // 系统路由
-const routes = [...systemRouter, ...whiteListRouters, ...routes_404]
+const routes = [...systemRouter, ...whiteListRouters, ...clientBaseRouter, ...routes_404]
 
 const router = createRouter({
 	history: createWebHistory(),
@@ -70,6 +71,11 @@ router.beforeEach(async (to, from, next) => {
 		// NProgress.done()
 		return false
 	}
+	// C端检验逻辑
+	if (to.path.includes('/front/client/')) {
+		return validateClientAccess(to.path).valid ? next() : next({ path: validateClientAccess(to.path).redirectPath })
+	}
+
 	if (!isGetRouter.value) {
 		// 初始化菜单加载，代码位置不能变动
 		const menuStore = useMenuStore()

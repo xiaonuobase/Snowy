@@ -26,6 +26,10 @@ export default {
 	getPhoneValidCode(data) {
 		return request('getPhoneValidCode', data, 'get')
 	},
+	// B端获取邮箱验证码
+	getEmailValidCode(data) {
+		return request('getEmailValidCode', data, 'get')
+	},
 	// B端账号密码登录
 	login(data) {
 		return request('doLogin', data, 'post', false)
@@ -34,6 +38,10 @@ export default {
 	loginByPhone(data) {
 		return request('doLoginByPhone', data, 'post', false)
 	},
+	// B端邮箱验证码登录
+	loginByEmail(data) {
+		return request('doLoginByEmail', data, 'post', false)
+	},
 	// 退出
 	logout(data) {
 		return request('doLogout', data, 'get')
@@ -41,5 +49,9 @@ export default {
 	// 获取用户信息
 	getLoginUser(data) {
 		return request('getLoginUser', data, 'get')
+	},
+	// 注册用户
+	register(data) {
+		return request('register', data)
 	}
 }
