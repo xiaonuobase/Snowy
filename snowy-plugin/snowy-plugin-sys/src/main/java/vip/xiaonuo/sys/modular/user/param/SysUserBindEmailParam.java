@@ -41,9 +41,4 @@ public class SysUserBindEmailParam {
     @Schema(description = "验证码请求号")
     @NotBlank(message = "validCodeReqNo不能为空")
     private String validCodeReqNo;
-
-    /** 新密码 */
-    @Schema(description = "新密码")
-    @NotBlank(message = "newPassword不能为空")
-    private String newPassword;
 }

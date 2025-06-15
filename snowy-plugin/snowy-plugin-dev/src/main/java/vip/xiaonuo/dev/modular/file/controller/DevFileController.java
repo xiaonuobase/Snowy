@@ -241,12 +241,26 @@ public class DevFileController {
     }
 
     /**
+     * 下载文件
+     *
+     * @author xuyuxiang
+     * @date 2022/6/21 15:44
+     **/
+    @ApiOperationSupport(order = 14)
+    @Operation(summary = "授权下载文件")
+    @CommonLog("授权下载文件")
+    @GetMapping(value = "/dev/file/authDownload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void authDownload(@Valid DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
+        devFileService.authDownload(devFileIdParam, response);
+    }
+
+    /**
      * 删除文件
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
+    @ApiOperationSupport(order = 15)
     @Operation(summary = "删除文件")
     @CommonLog("删除文件")
     @PostMapping(value = "/dev/file/delete")
@@ -262,6 +276,7 @@ public class DevFileController {
      * @author 每天一点
      * @date 2025/4/06 20:25
      */
+    @ApiOperationSupport(order = 16)
     @Operation(summary = "物理删除文件")
     @CommonLog("物理删除文件")
     @PostMapping(value = "/dev/file/deleteAbsolute")
@@ -276,7 +291,7 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 15)
+    @ApiOperationSupport(order = 17)
     @Operation(summary = "获取文件详情")
     @GetMapping("/dev/file/detail")
     public CommonResult<DevFile> detail(@Valid DevFileIdParam devFileIdParam) {
@@ -289,7 +304,7 @@ public class DevFileController {
      * @author yubaoshan
      * @date 2024/6/9 23:52
      **/
-    @ApiOperationSupport(order = 16)
+    @ApiOperationSupport(order = 18)
     @Operation(summary = "根据文件url集合获取文件集合")
     @PostMapping("/dev/file/getFileListByUrlList")
     public CommonResult<List<DevFile>> getFileListByUrlList(@RequestBody @Valid DevFileUrlListParam devFileUrlListParam) {

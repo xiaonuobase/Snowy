@@ -146,7 +146,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
             this.removeByIds(positionIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.POSITION.getValue(), positionIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.POSITION.getValue(), positionIdList);
         }
     }
 

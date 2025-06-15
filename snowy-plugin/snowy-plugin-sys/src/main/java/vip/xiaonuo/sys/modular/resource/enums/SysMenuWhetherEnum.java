@@ -10,21 +10,28 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.dev.api;
+package vip.xiaonuo.sys.modular.resource.enums;
+
+import lombok.Getter;
 
 /**
- * 字典API
+ * 菜单是否与
  *
- * @author xuyuxiang
- * @date 2022/9/2 15:58
- */
-public interface DevDictApi {
+ * @author yubaoshan
+ * @date 2024/9/17 00:14
+ **/
+@Getter
+public enum SysMenuWhetherEnum {
 
-    /**
-     * 根据类型跟子类型获得翻译后的label
-     *
-     * @author yubaoshan
-     * @date 2025/6/6 13:04
-     */
-    String getDictLabel(String typeCode, String value);
+    /** 写入 */
+    YES("YES"),
+
+    /** 不写入 */
+    NO("NO");
+
+    private final String value;
+
+    SysMenuWhetherEnum(String value) {
+        this.value = value;
+    }
 }

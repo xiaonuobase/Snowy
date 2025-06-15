@@ -54,6 +54,7 @@ import vip.xiaonuo.client.modular.user.service.ClientUserExtService;
 import vip.xiaonuo.client.modular.user.service.ClientUserPasswordService;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.enums.CommonGenderEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -942,6 +943,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(phone);
         clientUserAddParam.setName(phone);
         clientUserAddParam.setPhone(phone);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -970,6 +972,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(email);
         clientUserAddParam.setName(email);
         clientUserAddParam.setEmail(email);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -1000,6 +1003,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(account);
         clientUserAddParam.setName(account);
         clientUserAddParam.setPassword(password);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 返回用户

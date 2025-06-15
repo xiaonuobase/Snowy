@@ -310,7 +310,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             bizUserExtService.remove(new LambdaQueryWrapper<BizUserExt>().in(BizUserExt::getUserId, bizUserIdList));
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.USER.getValue(), bizUserIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.USER.getValue(), bizUserIdList);
         }
     }
 

@@ -231,6 +231,7 @@ public class SysRoleController {
     @CommonLog("给角色授权用户")
     @PostMapping("/sys/role/grantUser")
     public CommonResult<String> grantUser(@RequestBody @Valid SysRoleGrantUserParam sysRoleGrantUserParam) {
+        sysRoleGrantUserParam.setRemoveFirst(true);
         sysRoleService.grantUser(sysRoleGrantUserParam);
         return CommonResult.ok();
     }

@@ -36,6 +36,7 @@ import vip.xiaonuo.dev.modular.config.mapper.DevConfigMapper;
 import vip.xiaonuo.dev.modular.config.param.*;
 import vip.xiaonuo.dev.modular.config.service.DevConfigService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,26 @@ import java.util.stream.Collectors;
 @Service
 public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig> implements DevConfigService {
 
+    /** 缓存前缀 */
     private static final String CONFIG_CACHE_KEY = "dev-config:";
+
+    /** B端注册是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B_KEY = "SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B";
+
+    /** C端注册是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_C_KEY = "SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_C";
+
+    /** B端手机号登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B_KEY = "SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B";
+
+    /** C端手机号登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C_KEY = "SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C";
+
+    /** B端邮箱登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B_KEY = "SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B";
+
+    /** C端邮箱登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C_KEY = "SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C";
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
@@ -91,9 +111,20 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
 
     @Override
     public List<DevConfig> sysBaseList() {
-        DevConfigListParam devConfigListParam = new DevConfigListParam();
-        devConfigListParam.setCategory(DevConfigCategoryEnum.SYS_BASE.getValue());
-        return this.list(devConfigListParam);
+        LambdaQueryWrapper<DevConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(DevConfig::getId, DevConfig::getConfigKey, DevConfig::getConfigValue,
+                DevConfig::getCategory, DevConfig::getSortCode, DevConfig::getRemark);
+        // 类型为系统基础的
+        lambdaQueryWrapper.eq(DevConfig::getCategory, DevConfigCategoryEnum.SYS_BASE.getValue());
+        // 或key为特殊的几个
+        lambdaQueryWrapper.or().in(DevConfig::getConfigKey, CollectionUtil.newArrayList(SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_C_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C_KEY));
+        return this.list(lambdaQueryWrapper);
     }
 
     @Override

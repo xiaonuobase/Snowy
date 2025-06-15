@@ -190,7 +190,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             this.removeByIds(positionIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.POSITION.getValue(), positionIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.POSITION.getValue(), positionIdList);
         }
     }
 

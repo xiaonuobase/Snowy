@@ -24,5 +24,21 @@ export default {
 	// 获取${functionName}详情
 	${classNameFirstLower}Detail(data) {
 		return request('detail', data, 'get')
-	}
+	},
+	// 下载${functionName}导入模板
+    ${classNameFirstLower}DownloadTemplate(data) {
+        return request('downloadImportTemplate', data, 'get', {
+            responseType: 'blob'
+        })
+    },
+    // 导入${functionName}
+    ${classNameFirstLower}Import(data) {
+        return request('importData', data)
+    },
+    // 导出${functionName}
+    ${classNameFirstLower}Export(data) {
+        return request('exportData', data, 'post', {
+            responseType: 'blob'
+        })
+    }
 }

@@ -242,7 +242,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             this.removeByIds(toDeleteOrgIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
 

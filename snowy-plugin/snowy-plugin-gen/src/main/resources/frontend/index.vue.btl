@@ -82,11 +82,7 @@
 			:data="loadData"
 			:alert="options.alert.show"
 			bordered
-			<% for(var i = 0; i < configList.~size; i++) { %>
-			<% if(configList[i].needTableId) { %>
-			:row-key="(record) => record.${configList[i].fieldNameCamelCase}"
-			<% } %>
-			<% } %>
+			:row-key="(record) => record.${dbTableKeyCamelCase}"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
 		>
@@ -96,6 +92,14 @@
 						<template #icon><plus-outlined /></template>
 						新增
 					</a-button>
+					<a-button @click="importModelRef.onOpen()" v-if="hasPerm('${classNameFirstLower}Import')">
+                        <template #icon><import-outlined /></template>
+                        <span>导入</span>
+                    </a-button>
+                    <a-button @click="exportData" v-if="hasPerm('${classNameFirstLower}Export')">
+                        <template #icon><export-outlined /></template>
+                        <span>导出</span>
+                    </a-button>
 					<xn-batch-button
 						v-if="hasPerm('${classNameFirstLower}BatchDelete')"
 						buttonName="批量删除"
@@ -140,6 +144,7 @@
 			</template>
 		</s-table>
 	</a-card>
+	<ImportModel ref="importModelRef" />
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
@@ -161,12 +166,15 @@
 	<% } %>
 	import { cloneDeep } from 'lodash-es'
 	import Form from './form.vue'
+	import ImportModel from './importModel.vue'
+    import downloadUtil from '@/utils/downloadUtil'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
 	<% if (searchCount > 0) { %>
 	const searchFormState = ref({})
 	const searchFormRef = ref()
 	<% } %>
 	const tableRef = ref()
+	const importModelRef = ref()
 	const formRef = ref()
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 	<% if(searchCount > 3) { %>
@@ -245,17 +253,30 @@
 	const delete${className} = (record) => {
 		let params = [
 			{
-				<% for(var i = 0; i < configList.~size; i++) { %>
-				<% if(configList[i].needTableId) { %>
-				${configList[i].fieldNameCamelCase}: record.${configList[i].fieldNameCamelCase}
-				<% } %>
-				<% } %>
+				${dbTableKeyCamelCase}: record.${dbTableKeyCamelCase}
 			}
 		]
 		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
+	// 导出
+    const exportData = () => {
+        if (selectedRowKeys.value.length > 0) {
+            const params = selectedRowKeys.value.map((m) => {
+                return {
+                    id: m
+                }
+            })
+            ${classNameFirstLower}Api.${classNameFirstLower}Export(params).then((res) => {
+                downloadUtil.resultDownload(res)
+            })
+        } else {
+            ${classNameFirstLower}Api.${classNameFirstLower}Export([]).then((res) => {
+                downloadUtil.resultDownload(res)
+            })
+        }
+    }
 	// 批量删除
 	const deleteBatch${className} = (params) => {
 		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {

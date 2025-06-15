@@ -65,6 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.enums.CommonGenderEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
 import vip.xiaonuo.common.exception.CommonException;
@@ -93,6 +94,7 @@ import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.resource.entity.SysButton;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.resource.entity.SysModule;
+import vip.xiaonuo.sys.modular.resource.enums.SysMenuWhetherEnum;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceMenuTypeEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
@@ -447,7 +449,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserExtService.remove(new LambdaQueryWrapper<SysUserExt>().in(SysUserExt::getUserId, sysUserIdList));
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.USER.getValue(), sysUserIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.USER.getValue(), sysUserIdList);
         }
     }
 
@@ -992,7 +994,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 执行校验验证码
         validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 生成邮箱验证码的值，随机6为数字
@@ -1034,7 +1036,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 执行校验验证码
         validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 生成邮箱验证码的值，随机6为数字
@@ -1074,7 +1076,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 执行校验验证码
@@ -1253,6 +1255,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     // 如果是首页，则设置affix
                     metaJsonObject.set("affix", true);
                 }
+                String menuMetaKeepLiveKey = "keepLive";
+                String menuMetaDisplayLayoutKey = "displayLayout";
+                // 设置缓存
+                if (ObjectUtil.isEmpty(sysMenu.getKeepLive()) || sysMenu.getKeepLive().equals(SysMenuWhetherEnum.NO.getValue())) {
+                    metaJsonObject.set(menuMetaKeepLiveKey, false);
+                } else if (sysMenu.getKeepLive().equals(SysMenuWhetherEnum.YES.getValue())) {
+                    metaJsonObject.set(menuMetaKeepLiveKey, true);
+                }
+                // 设置显示布局
+                if (ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.YES.getValue())) {
+                    metaJsonObject.set(menuMetaDisplayLayoutKey, true);
+                } else if (sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.NO.getValue())) {
+                    metaJsonObject.set(menuMetaDisplayLayoutKey, false);
+                }
             }
             // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
             if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
@@ -1347,10 +1363,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                 }
             }
-            List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
-                    .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-            sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
         }
+        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
     }
 
     @Override
@@ -1551,7 +1567,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
             // 读取excel
             List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read(tempFile).head(SysUserImportParam.class).sheet()
-                    .headRowNumber(2).doReadSync();
+                    .headRowNumber(3).doReadSync();
             List<SysUser> allUserList = this.list();
             for (int i = 0; i < sysUserImportParamList.size(); i++) {
                 JSONObject jsonObject = this.doImport(allUserList, sysUserImportParamList.get(i), i);
@@ -2147,6 +2163,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setPhone(phone);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -2182,6 +2199,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setEmail(email);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -2219,6 +2237,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setPassword(password);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息

@@ -147,7 +147,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
                     this.removeByIds(toDeleteMenuIdList);
 
                     // 发布删除事件
-                    CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.RESOURCE.getValue(), toDeleteMenuIdList);
+                    CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.RESOURCE.getValue(), toDeleteMenuIdList);
                 }
             }
         }

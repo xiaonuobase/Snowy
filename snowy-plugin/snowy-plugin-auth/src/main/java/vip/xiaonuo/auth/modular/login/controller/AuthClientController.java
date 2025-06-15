@@ -26,10 +26,7 @@ import vip.xiaonuo.auth.core.annotation.SaClientCheckLogin;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
-import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
-import vip.xiaonuo.auth.modular.login.param.AuthGetPhoneValidCodeParam;
-import vip.xiaonuo.auth.modular.login.param.AuthPhoneValidCodeLoginParam;
-import vip.xiaonuo.auth.modular.login.param.AuthRegisterParam;
+import vip.xiaonuo.auth.modular.login.param.*;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -65,16 +62,29 @@ public class AuthClientController {
     }
 
     /**
-     * C端获取手机验证码
+     * C端获取手机登录验证码
      *
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
     @ApiOperationSupport(order = 2)
-    @Operation(summary = "C端获取手机验证码")
+    @Operation(summary = "C端获取手机登录验证码")
     @GetMapping("/auth/c/getPhoneValidCode")
     public CommonResult<String> getPhoneValidCode(@Valid AuthGetPhoneValidCodeParam authGetPhoneValidCodeParam) {
         return CommonResult.data(authService.getPhoneValidCode(authGetPhoneValidCodeParam, SaClientTypeEnum.C.getValue()));
+    }
+
+    /**
+     * C端获取邮箱登录验证码
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    @ApiOperationSupport(order = 3)
+    @Operation(summary = "C端获取邮箱登录验证码")
+    @GetMapping("/auth/c/getEmailValidCode")
+    public CommonResult<String> getEmailValidCode(@Valid AuthGetEmailValidCodeParam authGetEmailValidCodeParam) {
+        return CommonResult.data(authService.getEmailValidCode(authGetEmailValidCodeParam, SaClientTypeEnum.C.getValue()));
     }
 
     /**
@@ -83,7 +93,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "C端账号密码登录")
     @PostMapping("/auth/c/doLogin")
     public CommonResult<String> doLogin(@RequestBody @Valid AuthAccountPasswordLoginParam authAccountPasswordLoginParam) {
@@ -96,11 +106,24 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 4)
+    @ApiOperationSupport(order = 5)
     @Operation(summary = "C端手机验证码登录")
     @PostMapping("/auth/c/doLoginByPhone")
     public CommonResult<String> doLoginByPhone(@RequestBody @Valid AuthPhoneValidCodeLoginParam authPhoneValidCodeLoginParam) {
         return CommonResult.data(authService.doLoginByPhone(authPhoneValidCodeLoginParam, SaClientTypeEnum.C.getValue()));
+    }
+
+    /**
+     * C端邮箱验证码登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    @ApiOperationSupport(order = 6)
+    @Operation(summary = "C端邮箱验证码登录")
+    @PostMapping("/auth/c/doLoginByEmail")
+    public CommonResult<String> doLoginByEmail(@RequestBody @Valid AuthEmailValidCodeLoginParam authEmailValidCodeLoginParam) {
+        return CommonResult.data(authService.doLoginByEmail(authEmailValidCodeLoginParam, SaClientTypeEnum.C.getValue()));
     }
 
     /**
@@ -109,7 +132,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 5)
+    @ApiOperationSupport(order = 7)
     @Operation(summary = "C端退出")
     @SaClientCheckLogin
     @GetMapping("/auth/c/doLogout")
@@ -124,7 +147,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 6)
+    @ApiOperationSupport(order = 8)
     @Operation(summary = "C端获取用户信息")
     @SaClientCheckLogin
     @GetMapping("/auth/c/getLoginUser")
@@ -138,7 +161,7 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 9)
     @Operation(summary = "C端注册")
     @PostMapping("/auth/c/register")
     public CommonResult<String> register(@RequestBody @Valid AuthRegisterParam authRegisterParam) {

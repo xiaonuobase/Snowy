@@ -235,4 +235,20 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
             return null;
         });
     }
+
+    @Override
+    public String getDictLabel(String typeCode, String value) {
+        List<DevDict> devDictList = this.list(new LambdaQueryWrapper<DevDict>().eq(DevDict::getDictValue, typeCode));
+        if (ObjectUtil.isNotEmpty(devDictList) && devDictList.size() == 1) {
+            DevDict devDictClone = devDictList.get(0);
+            DevDict devDict = this.getOne(new LambdaQueryWrapper<DevDict>().eq(DevDict::getParentId, devDictClone.getId())
+                    .eq(DevDict::getDictValue, value));
+            if (ObjectUtil.isNotEmpty(devDict)) {
+                return devDict.getDictLabel();
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
 }

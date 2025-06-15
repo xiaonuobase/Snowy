@@ -73,6 +73,10 @@ public class DevFile extends CommonEntity {
     @Schema(description = "文件下载路径")
     private String downloadPath;
 
+    /** 文件下载是否需要授权 */
+    @Schema(description = "文件下载是否需要授权")
+    private Boolean isDownloadAuth;
+
     /** 图片缩略图 */
     @Schema(description = "图片缩略图")
     private String thumbnail;

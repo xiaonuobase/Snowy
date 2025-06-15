@@ -80,6 +80,10 @@ public class GenConfigAddParam {
     @Schema(description = "必填")
     private String whetherRequired;
 
+    /** 唯一 */
+    @Schema(description = "唯一")
+    private String whetherUnique;
+
     /** 查询 */
     @Schema(description = "查询")
     private String queryWhether;

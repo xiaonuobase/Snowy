@@ -18,9 +18,11 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -71,12 +73,12 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public String uploadReturnId(String engine, MultipartFile file) {
-        return this.storageFile(engine, file, true);
+        return this.storageFile(engine, file, true,  true);
     }
 
     @Override
     public String uploadReturnUrl(String engine, MultipartFile file) {
-        return this.storageFile(engine, file, false);
+        return this.storageFile(engine, file, false, false);
     }
 
     @Override
@@ -105,6 +107,33 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Override
     public void download(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
+        unifiedDownload(devFileIdParam, response, false);
+//        DevFile devFile;
+//        try {
+//            devFile = this.queryEntity(devFileIdParam.getId());
+//        } catch (Exception e) {
+//            CommonResponseUtil.renderError(response, e.getMessage());
+//            return;
+//        }
+//        if(!devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
+//            CommonResponseUtil.renderError(response, "非本地文件不支持此方式下载，id值为：" + devFile.getId());
+//            return;
+//        }
+//        File file = FileUtil.file(devFile.getStoragePath());
+//        if(!FileUtil.exist(file)) {
+//            CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
+//            return;
+//        }
+//        CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
+    }
+
+    @Override
+    public void authDownload(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
+        unifiedDownload(devFileIdParam, response, true);
+    }
+
+    // 统一下载
+    private void unifiedDownload(DevFileIdParam devFileIdParam, HttpServletResponse response,  boolean isDownloadAuth)  throws IOException{
         DevFile devFile;
         try {
             devFile = this.queryEntity(devFileIdParam.getId());
@@ -112,16 +141,21 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             CommonResponseUtil.renderError(response, e.getMessage());
             return;
         }
-        if(!devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
-            CommonResponseUtil.renderError(response, "非本地文件不支持此方式下载，id值为：" + devFile.getId());
+        if (BooleanUtil.isTrue(devFile.getIsDownloadAuth()) && !isDownloadAuth){
+            CommonResponseUtil.renderError(response, "该文件需要授权下载，请使用授权接口authDownload进行下载！");
             return;
         }
-        File file = FileUtil.file(devFile.getStoragePath());
-        if(!FileUtil.exist(file)) {
-            CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
-            return;
+        if(devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
+            File file = FileUtil.file(devFile.getStoragePath());
+            if(!FileUtil.exist(file)) {
+                CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
+                return;
+            }
+            CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
+        } else {
+            String storagePath = devFile.getStoragePath();
+            CommonDownloadUtil.download(devFile.getName(), HttpUtil.downloadBytes(storagePath), response);
         }
-        CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -165,7 +199,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
      * @author xuyuxiang
      * @date 2022/6/16 16:24
      **/
-    private String storageFile(String engine, MultipartFile file, boolean returnFileId) {
+    private String storageFile(String engine, MultipartFile file, boolean returnFileId, Boolean isDownloadAuth) {
 
         // 如果引擎为空，默认使用本地
         if(ObjectUtil.isEmpty(engine)) {
@@ -241,20 +275,32 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
         // 定义下载地址
         String downloadUrl;
-
-        // 下载路径，注意：本地文件下载地址设置为下载接口地址 + 文件id
-        if(engine.equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
-            String apiUrl = commonProperties.getBackendUrl();
-            if(ObjectUtil.isEmpty(apiUrl)) {
-                throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
-            }
-            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId;
-            devFile.setDownloadPath(downloadUrl);
-        } else {
-            // 阿里云、腾讯云、MINIO可以直接使用存储地址（公网）作为下载地址
-            downloadUrl= storageUrl;
-            devFile.setDownloadPath(devFile.getStoragePath());
+        String apiUrl = commonProperties.getBackendUrl();
+        if(ObjectUtil.isEmpty(apiUrl)) {
+            throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
         }
+        if (BooleanUtil.isTrue(isDownloadAuth)){
+            downloadUrl= apiUrl + "/dev/file/authDownload?id=" + fileId + "&tenCode=" + tenApi.getCurrentTenCode() + "&token=";
+        }else {
+            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId;
+        }
+        devFile.setDownloadPath(downloadUrl);
+
+//        // 下载路径，注意：本地文件下载地址设置为下载接口地址 + 文件id
+//        if(engine.equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
+//            String apiUrl = commonProperties.getBackendUrl();
+//            if(ObjectUtil.isEmpty(apiUrl)) {
+//                throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
+//            }
+//            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId + "&tenCode=" + tenApi.getCurrentTenCode();
+//            devFile.setDownloadPath(downloadUrl);
+//        } else {
+//            // 阿里云、腾讯云、MINIO可以直接使用存储地址（公网）作为下载地址
+//            downloadUrl= storageUrl;
+//            devFile.setDownloadPath(devFile.getStoragePath());
+//        }
+
+        devFile.setIsDownloadAuth(isDownloadAuth);
 
         this.save(devFile);
 

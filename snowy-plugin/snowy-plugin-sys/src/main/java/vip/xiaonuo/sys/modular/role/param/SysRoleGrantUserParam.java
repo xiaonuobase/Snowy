@@ -39,4 +39,7 @@ public class SysRoleGrantUserParam {
     @Schema(description = "授权用户信息")
     @NotNull(message = "grantInfoList不能为空")
     private List<String> grantInfoList;
+
+    /** 是否先清空授权信息 */
+    private Boolean removeFirst = false;
 }

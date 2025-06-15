@@ -343,7 +343,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 this.removeByIds(toDeleteMenuIdList);
 
                 // 发布删除事件
-                CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.RESOURCE.getValue(), toDeleteMenuIdList);
+                CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.RESOURCE.getValue(), toDeleteMenuIdList);
             }
         }
     }

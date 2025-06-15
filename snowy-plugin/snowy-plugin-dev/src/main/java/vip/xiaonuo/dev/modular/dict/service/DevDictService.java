@@ -91,4 +91,12 @@ public interface DevDictService extends IService<DevDict> {
      * @date 2022/4/24 21:18
      */
     DevDict queryEntity(String id);
+
+    /**
+     * 根据类型跟子类型获得翻译后的label
+     *
+     * @author yubaoshan
+     * @date 2025/6/6 13:04
+     */
+    String getDictLabel(String typeCode, String value);
 }

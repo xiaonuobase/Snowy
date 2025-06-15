@@ -233,7 +233,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             this.removeByIds(sysRoleIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.ROLE.getValue(), sysRoleIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ROLE.getValue(), sysRoleIdList);
         }
     }
 
@@ -326,8 +326,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public void grantUser(SysRoleGrantUserParam sysRoleGrantUserParam) {
         String id = sysRoleGrantUserParam.getId();
         List<String> grantInfoList = sysRoleGrantUserParam.getGrantInfoList();
-        sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().eq(SysRelation::getTargetId, id)
-                .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue()));
+        if(sysRoleGrantUserParam.getRemoveFirst()) {
+            sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().eq(SysRelation::getTargetId, id)
+                    .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue()));
+        }
         sysRelationService.saveBatch(grantInfoList.stream().map(userId -> {
             SysRelation sysRelation = new SysRelation();
             sysRelation.setObjectId(userId);

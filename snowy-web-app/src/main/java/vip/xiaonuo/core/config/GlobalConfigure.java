@@ -107,7 +107,7 @@ import java.util.Map;
 @MapperScan(basePackages = {"vip.xiaonuo.**.mapper"})
 public class GlobalConfigure implements WebMvcConfigurer {
 
-    @Autowired
+    @Resource
     private SaTokenConfig saTokenConfig;
 
     private static final String COMMON_REPEAT_SUBMIT_CACHE_KEY = "common-repeatSubmit:";
@@ -118,7 +118,6 @@ public class GlobalConfigure implements WebMvcConfigurer {
     public static final String[] NO_LOGIN_PATH_ARR = {
             /* 主入口 */
             "/",
-
             /* 静态资源 */
             "/favicon.ico",
             "/doc.html",
@@ -133,11 +132,17 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/c/getPhoneValidCode",
             "/auth/c/doLogin",
             "/auth/c/doLoginByPhone",
+            "/auth/c/register",
+            "/auth/c/getEmailValidCode",
+            "/auth/c/doLoginByEmail",
 
             "/auth/b/getPicCaptcha",
             "/auth/b/getPhoneValidCode",
             "/auth/b/doLogin",
             "/auth/b/doLoginByPhone",
+            "/auth/b/register",
+            "/auth/b/getEmailValidCode",
+            "/auth/b/doLoginByEmail",
 
             /* 三方登录相关 */
             "/auth/third/render",
@@ -154,7 +159,10 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/sys/userCenter/findPasswordGetPhoneValidCode",
             "/sys/userCenter/findPasswordGetEmailValidCode",
             "/sys/userCenter/findPasswordByPhone",
-            "/sys/userCenter/findPasswordByEmail"
+            "/sys/userCenter/findPasswordByEmail",
+
+            /* 文件下载 */
+            "/dev/file/download"
     };
 
     /**

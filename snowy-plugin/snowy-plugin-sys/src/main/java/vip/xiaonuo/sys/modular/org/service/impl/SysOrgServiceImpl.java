@@ -192,7 +192,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             this.removeByIds(toDeleteOrgIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
 

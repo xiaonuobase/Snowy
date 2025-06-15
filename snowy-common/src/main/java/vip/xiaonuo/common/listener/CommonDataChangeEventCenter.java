@@ -191,7 +191,7 @@ public class CommonDataChangeEventCenter {
      * @author xuyuxiang
      * @date 2023/3/3 10:22
      **/
-    public static void doDeleteWithDataId(String dataType, List<String> dataIdList) {
+    public static void doDeleteWithDataIdList(String dataType, List<String> dataIdList) {
         for (CommonDataChangeListener listener : listenerList) {
             listener.doDeleteWithDataIdList(dataType, dataIdList);
         }
