@@ -280,7 +280,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
         }
         if (BooleanUtil.isTrue(isDownloadAuth)){
-            downloadUrl= apiUrl + "/dev/file/authDownload?id=" + fileId + "&tenCode=" + tenApi.getCurrentTenCode() + "&token=";
+            downloadUrl= apiUrl + "/dev/file/authDownload?id=" + fileId + "&token=";
         }else {
             downloadUrl= apiUrl + "/dev/file/download?id=" + fileId;
         }
@@ -292,7 +292,7 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 //            if(ObjectUtil.isEmpty(apiUrl)) {
 //                throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
 //            }
-//            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId + "&tenCode=" + tenApi.getCurrentTenCode();
+//            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId;
 //            devFile.setDownloadPath(downloadUrl);
 //        } else {
 //            // 阿里云、腾讯云、MINIO可以直接使用存储地址（公网）作为下载地址
