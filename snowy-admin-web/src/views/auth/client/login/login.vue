@@ -100,7 +100,6 @@
 </template>
 <script setup>
 	import clientLoginApi from '@/api/auth/client/clientLoginApi'
-	import loginTenApi from '@/api/auth/loginTenApi'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
 	import { afterLogin } from './util'
@@ -154,52 +153,7 @@
 	})
 
 	onMounted(() => {
-		// 获得租户code编码
-		if (!isEmpty(route.query.tenCode)) {
-			ruleForm.tenCode = route.query.tenCode
-		}
-		loginButtonDisable.value = true
-		tool.data.set('SNOWY_TEN_CODE', '')
-		// 获得租户列表
-		loginTenApi
-			.getTenSelector()
-			.then((data) => {
-				if (isEmpty(data)) {
-					tool.data.remove('SNOWY_TEN_CODE')
-				} else {
-					tenOptions.value = data.map((m) => {
-						return {
-							label: m.name,
-							value: m.code
-						}
-					})
-					// 如果为空，默认选中里面的第一个，如果有那么就按指定的走
-					if (isEmpty(ruleForm.tenCode)) {
-						ruleForm.tenCode = tenOptions.value[0].value
-						tool.data.set('SNOWY_TEN_CODE', ruleForm.tenCode)
-						tenSelectShow.value = true
-					} else {
-						// 我们来验证这个code是否是有效的
-						const tenObj = tenOptions.value.find((f) => f.value === ruleForm.tenCode)
-						// 如果界面上整了个假的code
-						if (isEmpty(tenObj)) {
-							// 将其清理掉就行
-							ruleForm.tenCode = tenOptions.value[0].value
-							tool.data.set('SNOWY_TEN_CODE', ruleForm.tenCode)
-							tenSelectShow.value = true
-						} else {
-							// 如果验证成功是有的，就加进去
-							tool.data.set('SNOWY_TEN_CODE', ruleForm.tenCode)
-						}
-					}
-				}
-				// 再去查配置
-				getSysConfig()
-			})
-			.catch(() => {
-				// 报错就清理掉
-				tool.data.set('SNOWY_TEN_CODE', '')
-			})
+		getSysConfig()
 	})
 	// 查询这个租户的配置，租户code已经被放domain里了
 	const getSysConfig = () => {

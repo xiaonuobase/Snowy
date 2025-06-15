@@ -43,9 +43,7 @@
 		<a-form-item>
 			<a-row :gutter="8">
 				<a-col :span="7">
-					<a-button type="link" class="p-0">
-						<router-link to="/login">{{ $t('login.backLogin') }}？</router-link>
-					</a-button>
+					<a-button class="xn-wd" round size="large" href="/login">{{ $t('login.backLogin') }}</a-button>
 				</a-col>
 				<a-col :span="17">
 					<a-button type="primary" class="xn-wd" :loading="islogin" round size="large" @click="submitReset">{{
