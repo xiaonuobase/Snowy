@@ -25,6 +25,7 @@ import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.Collection;
@@ -51,8 +52,10 @@ public class SysRelationApiProvider implements SysRelationApi {
     public List<String> getUserIdListByRoleIdList(List<String> roleIdList) {
         List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(roleIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
-        if(ObjectUtil.isEmpty(userIdList)){
-            return sysUserService.listByIds(userIdList).stream().map(SysUser::getId).collect(Collectors.toList());
+        if(ObjectUtil.isNotEmpty(userIdList)){
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList)
+                            .eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()))
+                    .stream().map(SysUser::getId).collect(Collectors.toList());
         } else {
             return CollectionUtil.newArrayList();
         }
@@ -62,8 +65,10 @@ public class SysRelationApiProvider implements SysRelationApi {
     public List<String> getUserIdListByGroupIdList(List<String> groupIdList) {
         List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(groupIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_GROUP.getValue());
-        if(ObjectUtil.isEmpty(userIdList)){
-            return sysUserService.listByIds(userIdList).stream().map(SysUser::getId).collect(Collectors.toList());
+        if(ObjectUtil.isNotEmpty(userIdList)){
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList)
+                            .eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()))
+                    .stream().map(SysUser::getId).collect(Collectors.toList());
         } else {
             return CollectionUtil.newArrayList();
         }
