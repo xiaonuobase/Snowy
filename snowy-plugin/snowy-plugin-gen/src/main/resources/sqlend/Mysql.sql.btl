@@ -15,7 +15,7 @@ INSERT INTO `SYS_RESOURCE` VALUES ('${deleteButtonId}', '${menuId}', '删除${fu
 
 INSERT INTO `SYS_RESOURCE` VALUES ('${importButtonId}', '${menuId}', '导入${functionName}', NULL, '${classNameFirstLower}Import', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
-INSERT INTO `SYS_RESOURCE` VALUES ('${exportButtonId}', ${menuId}', '导出${functionName}', NULL, '${classNameFirstLower}Export', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+INSERT INTO `SYS_RESOURCE` VALUES ('${exportButtonId}', '${menuId}', '导出${functionName}', NULL, '${classNameFirstLower}Export', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 <% if (mobileModuleId != null && mobileModuleId != '') { %>
 INSERT INTO `MOBILE_RESOURCE` VALUES ('${menuId}', '0', '${functionName}管理', NULL, 'MENU', '${mobileModuleId}', 'MENU', '/pages/${moduleName}/${busName}/index', 'apartment-outlined',  '#1890ff', 'YES', 'ENABLE', 99, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);

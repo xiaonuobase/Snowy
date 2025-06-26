@@ -251,15 +251,6 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     }
 
     @Override
-    public ${className} queryEntity(String id) {
-        ${className} ${classNameFirstLower} = this.getById(id);
-        if(ObjectUtil.isEmpty(${classNameFirstLower})) {
-            throw new CommonException("${functionName}不存在，id值为：{}", id);
-        }
-        return ${classNameFirstLower};
-    }
-
-    @Override
     public void exportData(List<${className}IdParam> ${classNameFirstLower}IdParamList, HttpServletResponse response) throws IOException {
        File tempFile = null;
        try {
