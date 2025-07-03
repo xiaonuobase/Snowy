@@ -29,12 +29,12 @@ public class AuthRegisterParam {
 
     /** 账号 */
     @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "账号不能为空")
+    @NotBlank(message = "account不能为空")
     private String account;
 
     /** 密码 */
     @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "密码不能为空")
+    @NotBlank(message = "password不能为空")
     private String password;
 
     /** 验证码 */

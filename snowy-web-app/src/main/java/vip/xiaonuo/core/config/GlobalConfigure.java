@@ -154,12 +154,19 @@ public class GlobalConfigure implements WebMvcConfigurer {
             /* 系统字典树 */
             "/dev/dict/tree",
 
-            /* 用户个人中心相关 */
+            /* B端用户个人中心相关 */
             "/sys/userCenter/getPicCaptcha",
             "/sys/userCenter/findPasswordGetPhoneValidCode",
             "/sys/userCenter/findPasswordGetEmailValidCode",
             "/sys/userCenter/findPasswordByPhone",
             "/sys/userCenter/findPasswordByEmail",
+
+            /* C端用户个人中心相关 */
+            "/client/userCenter/getPicCaptcha",
+            "/client/userCenter/findPasswordGetPhoneValidCode",
+            "/client/userCenter/findPasswordGetEmailValidCode",
+            "/client/userCenter/findPasswordByPhone",
+            "/client/userCenter/findPasswordByEmail",
 
             /* 文件下载 */
             "/dev/file/download"
