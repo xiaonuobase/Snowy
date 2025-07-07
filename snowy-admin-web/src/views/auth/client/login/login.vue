@@ -62,10 +62,8 @@
 
 								<a-form-item>
 									<div style="display: flex; justify-content: space-between">
-										<a href="/front/client/findPwd" class="xn-color-0d84ff">忘记密码？</a>
-										<a href="/front/client/register" class="xn-color-0d84ff" v-if="registerOpen === 'true'">
-											没有账号？前往注册
-										</a>
+										<a href="/front/client/findPwd">忘记密码？</a>
+										<a href="/front/client/register" v-if="registerOpen === 'true'"> 没有账号？前往注册 </a>
 									</div>
 								</a-form-item>
 								<a-form-item>
@@ -91,7 +89,7 @@
 						</a-tab-pane>
 					</a-tabs>
 					<div v-if="configData.FRONT_BACK_LOGIN_URL_SHOW">
-						<a href="/login" class="xn-color-0d84ff">后台登录</a>
+						<a href="/login">后台登录</a>
 					</div>
 				</a-card>
 			</div>

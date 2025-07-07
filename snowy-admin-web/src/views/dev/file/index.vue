@@ -110,7 +110,7 @@
 				</template>
 			</s-table>
 		</a-card>
-		<uploadForm ref="uploadFormRef" @successful="tableRef.refresh(true)" />
+		<uploadForm ref="uploadFormRef" @successful="tableRef.refresh()" />
 		<detail ref="detailRef" />
 	</div>
 	<preview v-if="!indexShow" ref="previewRef" @goBack="previewBack" />
@@ -238,7 +238,7 @@
 			}
 		]
 		fileApi.fileDelete(params).then(() => {
-			tableRef.value.refresh(true)
+			tableRef.value.refresh()
 		})
 	}
 	// 批量删除

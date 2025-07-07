@@ -215,7 +215,7 @@
 							</a-button>
 						</a-form-item>
 						<div style="display: flex; justify-content: flex-end">
-							<a href="/front/client/login" class="xn-color-0d84ff">已有账号？前往登录</a>
+							<a href="/front/client/login">已有账号？前往登录</a>
 						</div>
 					</a-form>
 				</a-card>
