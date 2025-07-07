@@ -135,7 +135,7 @@
 	const { proxy } = getCurrentInstance()
 
 	const activeKey = ref('userAccount')
-	const captchaOpen = ref(configData.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN)
+	const captchaOpen = ref(configData.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B)
 	const registerOpen = ref('false')
 	const phoneLogin = ref('false')
 	const emailLogin = ref('false')
