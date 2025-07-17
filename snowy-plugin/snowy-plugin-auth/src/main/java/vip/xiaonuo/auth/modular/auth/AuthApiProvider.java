@@ -47,7 +47,7 @@ public class AuthApiProvider implements AuthApi {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTokenSignList().size();
+            int tokenCount = saSession.getTerminalList().size();
             long createTime = saSession.getCreateTime();
             jsonObject.set("userId", userId);
             jsonObject.set("tokenCount", tokenCount);
@@ -59,7 +59,7 @@ public class AuthApiProvider implements AuthApi {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpClientUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTokenSignList().size();
+            int tokenCount = saSession.getTerminalList().size();
             long createTime = saSession.getCreateTime();
             jsonObject.set("userId", userId);
             jsonObject.set("tokenCount", tokenCount);

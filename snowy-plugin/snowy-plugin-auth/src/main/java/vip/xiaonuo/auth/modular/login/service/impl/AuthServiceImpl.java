@@ -12,8 +12,8 @@
  */
 package vip.xiaonuo.auth.modular.login.service.impl;
 
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.collection.CollectionUtil;
@@ -751,7 +751,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CommonException(AuthExceptionEnum.ACCOUNT_DISABLED.getValue());
         }
         // 执行登录
-        StpUtil.login(saBaseLoginUser.getId(), new SaLoginModel().setDevice(device).setExtra("name", saBaseLoginUser.getName()));
+        StpUtil.login(saBaseLoginUser.getId(), new SaLoginParameter().setDeviceType(device).setExtra("name", saBaseLoginUser.getName()));
         // 填充B端用户信息并更新缓存
         fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
         // 返回token
@@ -805,7 +805,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CommonException(AuthExceptionEnum.ACCOUNT_DISABLED.getValue());
         }
         // 执行登录
-        StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginModel().setDevice(device).setExtra("name", saBaseClientLoginUser.getName()));
+        StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginParameter().setDevice(device).setExtra("name", saBaseClientLoginUser.getName()));
         // 填充C端用户信息并更新缓存
         fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
         // 返回token
