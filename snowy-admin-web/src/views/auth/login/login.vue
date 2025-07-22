@@ -195,7 +195,7 @@
 					data.forEach((item) => {
 						formData.value[item.configKey] = item.configValue
 					})
-					captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN
+					captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B
 					registerOpen.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B
 					phoneLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B
 					emailLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B
