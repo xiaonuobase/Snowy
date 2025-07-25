@@ -121,7 +121,7 @@
 	}
 	const loadData = (parameter) => {
 		const searchFormParam = cloneDeep(searchFormState.value)
-		return bizGroupApi.bizGroupPage(Object.assign(parameter, searchFormParam)).then((data) => {
+		return bizGroupApi.groupPage(Object.assign(parameter, searchFormParam)).then((data) => {
 			return data
 		})
 	}
@@ -137,13 +137,13 @@
 				id: record.id
 			}
 		]
-		bizGroupApi.bizGroupDelete(params).then(() => {
+		bizGroupApi.groupDelete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchBizGroup = (params) => {
-		bizGroupApi.bizGroupDelete(params).then(() => {
+		bizGroupApi.groupDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
 	}
@@ -155,7 +155,7 @@
 		const param = {
 			id: record.id
 		}
-		bizGroupApi.bizGroupOwnUser(param).then((data) => {
+		bizGroupApi.groupOwnUser(param).then((data) => {
 			userSelectorRef.value.showUserPlusModal(data)
 		})
 	}
@@ -165,17 +165,17 @@
 			id: recordCacheData.value.id,
 			grantInfoList: value
 		}
-		bizGroupApi.bizGroupGrantUser(param).then(() => {})
+		bizGroupApi.groupGrantUser(param).then(() => {})
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return bizGroupApi.bizGroupOrgTreeSelector(param).then((data) => {
+			return bizGroupApi.groupOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		userPageApi: (param) => {
-			return bizGroupApi.bizGroupUserSelector(param).then((data) => {
+			return bizGroupApi.groupUserSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}
