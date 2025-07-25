@@ -198,7 +198,7 @@
 			searchFormParam.endCreateTime = searchFormParam.createTime[1]
 			delete searchFormParam.createTime
 		}
-		return bizNoticeApi.bizNoticePage(Object.assign(parameter, searchFormParam)).then((data) => {
+		return bizNoticeApi.noticePage(Object.assign(parameter, searchFormParam)).then((data) => {
 			return data
 		})
 	}
@@ -214,13 +214,13 @@
 				id: record.id
 			}
 		]
-		bizNoticeApi.bizNoticeDelete(params).then(() => {
+		bizNoticeApi.noticeDelete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchBizNotice = (params) => {
-		bizNoticeApi.bizNoticeDelete(params).then(() => {
+		bizNoticeApi.noticeDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
 	}
@@ -229,7 +229,7 @@
 		loading.value = true
 		if (record.status === 'ENABLE') {
 			bizNoticeApi
-				.bizNoticeDisableStatus(record)
+				.noticeDisableStatus(record)
 				.then(() => {
 					tableRef.value.refresh()
 				})
@@ -238,7 +238,7 @@
 				})
 		} else {
 			bizNoticeApi
-				.bizNoticeEnableStatus(record)
+				.noticeEnableStatus(record)
 				.then(() => {
 					tableRef.value.refresh()
 				})
