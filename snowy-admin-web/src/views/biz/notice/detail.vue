@@ -72,7 +72,7 @@
 			const param = {
 				id: id
 			}
-			bizNoticeApi.bizNoticeDetail(param).then((data) => {
+			bizNoticeApi.noticeDetail(param).then((data) => {
 				formData.value = Object.assign({}, data)
 			})
 		} else {

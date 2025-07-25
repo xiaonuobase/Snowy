@@ -133,7 +133,7 @@
 			const formDataParam = cloneDeep(formData.value)
 			formDataParam.place = JSON.stringify(formDataParam.place)
 			bizNoticeApi
-				.bizNoticeSubmitForm(formDataParam, formDataParam.id)
+				.noticeSubmitForm(formDataParam, formDataParam.id)
 				.then(() => {
 					onClose()
 					emit('successful')
