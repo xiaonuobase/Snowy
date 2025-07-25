@@ -117,7 +117,7 @@
 	}
 	const loadData = (parameter) => {
 		const searchFormParam = cloneDeep(searchFormState.value)
-		return sysGroupApi.sysGroupPage(Object.assign(parameter, searchFormParam)).then((data) => {
+		return sysGroupApi.groupPage(Object.assign(parameter, searchFormParam)).then((data) => {
 			return data
 		})
 	}
@@ -133,13 +133,13 @@
 				id: record.id
 			}
 		]
-		sysGroupApi.sysGroupDelete(params).then(() => {
+		sysGroupApi.groupDelete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchSysGroup = (params) => {
-		sysGroupApi.sysGroupDelete(params).then(() => {
+		sysGroupApi.groupDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
 	}
@@ -151,7 +151,7 @@
 		const param = {
 			id: record.id
 		}
-		sysGroupApi.sysGroupOwnUser(param).then((data) => {
+		sysGroupApi.groupOwnUser(param).then((data) => {
 			userSelectorRef.value.showUserPlusModal(data)
 		})
 	}
@@ -161,17 +161,17 @@
 			id: recordCacheData.value.id,
 			grantInfoList: value
 		}
-		sysGroupApi.sysGroupGrantUser(param).then(() => {})
+		sysGroupApi.groupGrantUser(param).then(() => {})
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return sysGroupApi.sysGroupOrgTreeSelector(param).then((data) => {
+			return sysGroupApi.groupOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		userPageApi: (param) => {
-			return sysGroupApi.sysGroupUserSelector(param).then((data) => {
+			return sysGroupApi.groupUserSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}

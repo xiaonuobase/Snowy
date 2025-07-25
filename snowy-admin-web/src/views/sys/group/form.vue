@@ -72,7 +72,7 @@
 				submitLoading.value = true
 				const formDataParam = cloneDeep(formData.value)
 				sysGroupApi
-					.sysGroupSubmitForm(formDataParam, formDataParam.id)
+					.groupSubmitForm(formDataParam, formDataParam.id)
 					.then(() => {
 						onClose()
 						emit('successful')

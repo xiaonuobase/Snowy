@@ -10,35 +10,35 @@ const request = (url, ...arg) => baseRequest(`/biz/group/` + url, ...arg)
  **/
 export default {
 	// 获取用户组分页
-	bizGroupPage(data) {
+	groupPage(data) {
 		return request('page', data, 'get')
 	},
 	// 提交用户组表单 edit为true时为编辑，默认为新增
-	bizGroupSubmitForm(data, edit = false) {
+	groupSubmitForm(data, edit = false) {
 		return request(edit ? 'edit' : 'add', data)
 	},
 	// 删除用户组
-	bizGroupDelete(data) {
+	groupDelete(data) {
 		return request('delete', data)
 	},
 	// 获取用户组详情
-	bizGroupDetail(data) {
+	groupDetail(data) {
 		return request('detail', data, 'get')
 	},
 	// 获取用户组下的用户
-	bizGroupOwnUser(data) {
+	groupOwnUser(data) {
 		return request('ownUser', data, 'get')
 	},
 	// 获取机构树
-	bizGroupOrgTreeSelector(data) {
+	groupOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取用户选择器
-	bizGroupUserSelector(data) {
+	groupUserSelector(data) {
 		return request('userSelector', data, 'get')
 	},
 	// 给用户组授权用户
-	bizGroupGrantUser(data) {
+	groupGrantUser(data) {
 		return request('grantUser', data)
 	}
 }
