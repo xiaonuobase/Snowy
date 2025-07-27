@@ -1,24 +1,22 @@
 <template>
-	<Editor v-model="contentValue" :init="init" :disabled="disabled" :placeholder="placeholder" @onClick="onClick" />
+	<div style="border: 1px solid #ccc">
+		<Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
+		<Editor
+			:style="{ height: props.height, overflowY: 'hidden' }"
+			v-model="contentValue"
+			:defaultConfig="editorConfig"
+			:mode="mode"
+			@onCreated="handleCreated"
+		/>
+	</div>
 </template>
-
-<script setup name="Editor">
+<script setup name="XnEditor">
+	import '@wangeditor/editor/dist/css/style.css' // 引入 css
+	import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 	import fileApi from '@/api/dev/fileApi'
-	import Editor from '@tinymce/tinymce-vue'
-	import tinymce from 'tinymce/tinymce'
-	import 'tinymce/themes/silver'
-	import 'tinymce/icons/default'
-	import 'tinymce/models/dom'
-	// 引入编辑器插件
-	import 'tinymce/plugins/code' // 编辑源码
-	import 'tinymce/plugins/image' // 插入编辑图片
-	import 'tinymce/plugins/link' // 超链接
-	import 'tinymce/plugins/preview' // 预览
-	import 'tinymce/plugins/table' // 表格
-	import 'tinymce/plugins/lists' // 列表编号
-	import 'tinymce/plugins/advlist' //高级列表编号
 
-	const emit = defineEmits(['update:value', 'onClick', 'onChange'])
+	const emit = defineEmits(['update:value'])
+
 	const props = defineProps({
 		value: {
 			type: [String, Array],
@@ -27,78 +25,76 @@
 		},
 		placeholder: {
 			type: String,
-			default: ''
+			default: '请输入内容...'
 		},
 		height: {
-			type: Number,
-			default: 300
+			type: String,
+			default: '500px'
 		},
-		disabled: {
-			type: Boolean,
-			default: false
-		},
-		plugins: {
-			type: [String, Array],
-			default: 'code image link preview table lists advlist'
-		},
-		toolbar: {
-			type: [String, Array],
-			default:
-				'undo redo |  forecolor backcolor bold italic underline strikethrough link | blocks fontfamily fontsize | \
-				alignleft aligncenter alignright alignjustify outdent indent lineheight | bullist numlist | \
-				image table  preview | code selectall'
+		mode: {
+			type: String,
+			default: 'default' // 或 'default' 'simple'
 		},
 		fileUploadFunction: {
 			type: Function,
 			default: undefined
 		}
 	})
-	const contentValue = ref()
-	const init = ref({
-		language_url: '/tinymce/langs/zh_CN.js',
-		language: 'zh_CN',
-		skin_url: '/tinymce/skins/ui/oxide',
-		content_css: '/tinymce/skins/content/default/content.css',
-		menubar: false,
-		statusbar: true,
-		plugins: props.plugins,
-		toolbar: props.toolbar,
-		fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px',
-		height: props.height,
-		placeholder: props.placeholder,
-		branding: false,
-		resize: true,
-		elementpath: true,
-		content_style: '',
-		selector: '#textarea1',
-		skin: 'oxide-dark',
-		images_upload_handler(blobInfo, progress) {
-			return new Promise((resolve, reject) => {
-				const param = new FormData()
-				param.append('file', blobInfo.blob(), blobInfo.filename())
-				// 如果外部配置了文件上传，就用外部的，下面是兜底
-				if (props.fileUploadFunction) {
-					props
-						.fileUploadFunction(param)
-						.then((data) => {
-							return resolve(data)
+
+	// 编辑器实例，必须用 shallowRef
+	const editorRef = shallowRef()
+	const toolbarConfig = {}
+	const editorConfig = {
+		MENU_CONF: {
+			placeholder: props.placeholder,
+			uploadImage: {
+				// 自定义上传
+				async customUpload(file, insertFn) {
+					const param = new FormData()
+					param.append('file', file)
+					// 如果外部配置了文件上传，就用外部的，下面是兜底
+					if (props.fileUploadFunction) {
+						props
+							.fileUploadFunction(param)
+							.then((data) => {
+								insertFn(data) // insertFn(url, alt, href)
+							})
+							.catch((err) => {
+								console.error('err:' + err)
+							})
+					} else {
+						fileApi.fileUploadDynamicReturnUrl(param).then((data) => {
+							insertFn(data) // insertFn(url, alt, href)
 						})
-						.catch((err) => {
-							return reject('err:' + err)
-						})
-				} else {
-					fileApi.fileUploadDynamicReturnUrl(param).then((data) => {
-						return resolve(data)
-					})
+					}
 				}
-			})
-		},
-		setup: (editor) => {
-			editor.on('init', () => {
-				// getBody().style.fontSize = '14px'
-			})
+			},
+			uploadVideo: {
+				// 自定义上传
+				async customUpload(file, insertFn) {
+					const param = new FormData()
+					param.append('file', file)
+					// 如果外部配置了文件上传，就用外部的，下面是兜底
+					if (props.fileUploadFunction) {
+						props
+							.fileUploadFunction(param)
+							.then((data) => {
+								insertFn(data) // insertFn(url, poster)
+							})
+							.catch((err) => {
+								console.error('err:' + err)
+							})
+					} else {
+						fileApi.fileUploadDynamicReturnUrl(param).then((data) => {
+							insertFn(data) // insertFn(url, poster)
+						})
+					}
+				}
+			}
 		}
-	})
+	}
+	// 内容 HTML
+	const contentValue = ref('')
 	// 监听数据回显
 	watch(
 		() => props.value,
@@ -111,15 +107,17 @@
 	watch(contentValue, (newValue) => {
 		emit('update:value', newValue)
 	})
-	const onClick = (e) => {
-		emit('onClick', e, tinymce)
+	// 记录 editor 实例，重要！
+	const handleCreated = (editor) => {
+		editorRef.value = editor
 	}
-	onMounted(() => {
-		tinymce.init({})
+
+	// 组件销毁时，也及时销毁编辑器
+	onBeforeUnmount(() => {
+		const editor = editorRef.value
+		if (editor == null) return
+		editor.destroy()
 	})
 </script>
-<style lang="less">
-	.tox-toolbar__primary {
-		border-bottom: 1px solid rgb(5 5 5 / 0%) !important;
-	}
-</style>
+
+<style scoped lang="less"></style>
