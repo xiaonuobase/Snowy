@@ -37,4 +37,20 @@ public interface AuthApi {
      * @date 2024/7/18 17:35
      */
     Long getThirdUserCount();
+
+    /**
+     * B端登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginForB(String account, String password, String validCode, String validCodeReqNo);
+
+    /**
+     * BC端登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginForC(String account, String password, String validCode, String validCodeReqNo);
 }

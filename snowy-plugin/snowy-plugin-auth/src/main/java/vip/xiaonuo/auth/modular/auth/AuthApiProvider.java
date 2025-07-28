@@ -22,7 +22,10 @@ import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.AuthApi;
+import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
+import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
+import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 
 import java.util.List;
@@ -39,6 +42,9 @@ public class AuthApiProvider implements AuthApi {
 
     @Resource
     private AuthThirdService authThirdService;
+
+    @Resource
+    private AuthService authService;
 
     @Override
     public JSONObject getUserSessionCount() {
@@ -74,5 +80,25 @@ public class AuthApiProvider implements AuthApi {
     @Override
     public Long getThirdUserCount() {
         return authThirdService.count();
+    }
+
+    @Override
+    public String doLoginForB(String account, String password, String validCode, String validCodeReqNo) {
+        AuthAccountPasswordLoginParam authAccountPasswordLoginParam = new AuthAccountPasswordLoginParam();
+        authAccountPasswordLoginParam.setAccount(account);
+        authAccountPasswordLoginParam.setPassword(password);
+        authAccountPasswordLoginParam.setValidCode(validCode);
+        authAccountPasswordLoginParam.setValidCodeReqNo(validCodeReqNo);
+        return authService.doLogin(authAccountPasswordLoginParam, SaClientTypeEnum.B.getValue());
+    }
+
+    @Override
+    public String doLoginForC(String account, String password, String validCode, String validCodeReqNo) {
+        AuthAccountPasswordLoginParam authAccountPasswordLoginParam = new AuthAccountPasswordLoginParam();
+        authAccountPasswordLoginParam.setAccount(account);
+        authAccountPasswordLoginParam.setPassword(password);
+        authAccountPasswordLoginParam.setValidCode(validCode);
+        authAccountPasswordLoginParam.setValidCodeReqNo(validCodeReqNo);
+        return authService.doLogin(authAccountPasswordLoginParam, SaClientTypeEnum.C.getValue());
     }
 }
