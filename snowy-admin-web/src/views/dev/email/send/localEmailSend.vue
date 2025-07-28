@@ -36,7 +36,7 @@
 
 <script setup name="localEmailSend">
 	import { message } from 'ant-design-vue'
-	import XnEditor from '@/components/Editor/index.vue'
+	import XnEditor from '@/components/XnEditor/index.vue'
 	import { required } from '@/utils/formRules'
 	import emailApi from '@/api/dev/emailApi'
 	import fileApi from '@/api/dev/fileApi'
