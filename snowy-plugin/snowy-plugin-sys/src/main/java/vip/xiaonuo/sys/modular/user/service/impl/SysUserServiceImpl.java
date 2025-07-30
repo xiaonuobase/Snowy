@@ -2253,52 +2253,36 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public Boolean isUserNeedBindPhone() {
+        // 获取当前用户id
+        String loginId = StpUtil.getLoginIdAsString();
         // 获取当前用户
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        SysUser sysUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>()
+                .eq(SysUserExt::getUserId, loginId)
                 .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断手机号是否为空
-        if(ObjectUtil.isNotEmpty(sysUserExt)){
-            // 手机号为空，判断系统注册后是否需要绑定手机号
-            if(ObjectUtil.isEmpty(sysUser.getPhone())) {
-                String registerNeedBindPhone = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindPhone)){
-                    return Convert.toBool(registerNeedBindPhone);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定手机号
+        return ObjectUtil.isNotEmpty(sysUserExt)
+                && ObjectUtil.isEmpty(sysUser.getPhone())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY), false)
+                : false;
     }
 
     @Override
     public Boolean isUserNeedBindEmail() {
+        // 获取当前用户id
+        String loginId = StpUtil.getLoginIdAsString();
         // 获取当前用户
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        SysUser sysUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>()
+                .eq(SysUserExt::getUserId, loginId)
                 .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断邮箱是否为空
-        if(ObjectUtil.isNotEmpty(sysUserExt)){
-            // 邮箱为空，判断系统注册后是否需要绑定邮箱
-            if(ObjectUtil.isEmpty(sysUser.getEmail())) {
-                String registerNeedBindEmail = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindEmail)){
-                    return Convert.toBool(registerNeedBindEmail);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定邮箱
+        return ObjectUtil.isNotEmpty(sysUserExt)
+                && ObjectUtil.isEmpty(sysUser.getEmail())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY), false)
+                : false;
     }
 
     /**

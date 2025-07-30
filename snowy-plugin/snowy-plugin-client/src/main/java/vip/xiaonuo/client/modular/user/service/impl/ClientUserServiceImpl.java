@@ -1017,52 +1017,36 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Override
     public Boolean isUserNeedBindPhone() {
+        // 获取当前用户id
+        String loginId = StpClientUtil.getLoginIdAsString();
         // 获取当前用户
-        ClientUser clientUser = this.queryEntity(StpClientUtil.getLoginIdAsString());
+        ClientUser clientUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, StpClientUtil.getLoginIdAsString())
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>()
+                .eq(ClientUserExt::getUserId, loginId)
                 .eq(ClientUserExt::getSourceFromType, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断手机号是否为空
-        if(ObjectUtil.isNotEmpty(clientUserExt)){
-            // 手机号为空，判断系统注册后是否需要绑定手机号
-            if(ObjectUtil.isEmpty(clientUser.getPhone())) {
-                String registerNeedBindPhone = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_C_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindPhone)){
-                    return Convert.toBool(registerNeedBindPhone);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定手机号
+        return ObjectUtil.isNotEmpty(clientUserExt)
+                && ObjectUtil.isEmpty(clientUser.getPhone())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_C_KEY), false)
+                : false;
     }
 
     @Override
     public Boolean isUserNeedBindEmail() {
+        // 获取当前用户id
+        String loginId = StpClientUtil.getLoginIdAsString();
         // 获取当前用户
-        ClientUser clientUser = this.queryEntity(StpClientUtil.getLoginIdAsString());
+        ClientUser clientUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, StpClientUtil.getLoginIdAsString())
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>()
+                .eq(ClientUserExt::getUserId,loginId)
                 .eq(ClientUserExt::getSourceFromType, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断邮箱是否为空
-        if(ObjectUtil.isNotEmpty(clientUserExt)){
-            // 邮箱为空，判断系统注册后是否需要绑定邮箱
-            if(ObjectUtil.isEmpty(clientUser.getEmail())) {
-                String registerNeedBindEmail = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_C_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindEmail)){
-                    return Convert.toBool(registerNeedBindEmail);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定邮箱
+        return ObjectUtil.isNotEmpty(clientUserExt)
+                && ObjectUtil.isEmpty(clientUser.getEmail())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_C_KEY), false)
+                : false;
     }
 
     @Override
