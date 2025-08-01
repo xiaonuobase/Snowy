@@ -75,7 +75,7 @@ public class DevSmsAliyunUtil {
         alibabaConfig.setAccessKeyId(accessKeyId);
         alibabaConfig.setAccessKeySecret(accessKeySecret);
         alibabaConfig.setSignature(signName);
-        SEInitializer.initializer().fromConfig(new SmsConfig(), CollectionUtil.newArrayList(alibabaConfig));
+        SEInitializer.initializer().registerSmsDao(SmsDaoDefaultImpl.getInstance()).fromConfig(new SmsConfig(), CollectionUtil.newArrayList(alibabaConfig));
         smsBlend = SmsFactory.getSmsBlend(alibabaConfig.getConfigId());
     }
 
