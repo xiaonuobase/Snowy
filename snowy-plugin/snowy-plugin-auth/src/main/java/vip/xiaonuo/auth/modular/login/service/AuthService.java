@@ -112,4 +112,12 @@ public interface AuthService {
      * @date 2022/7/9 14:44
      */
     void register(AuthRegisterParam authRegisterParam, String type);
+
+    /**
+     * 校验验证码
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo);
 }

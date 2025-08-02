@@ -317,7 +317,8 @@ public class AuthServiceImpl implements AuthService {
      * @author xuyuxiang
      * @date 2022/8/25 15:26
      **/
-    private void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
+    @Override
+    public void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
         // 依据请求号，取出缓存中的验证码进行校验
         Object existValidCode;
         if(ObjectUtil.isEmpty(phoneOrEmail)) {

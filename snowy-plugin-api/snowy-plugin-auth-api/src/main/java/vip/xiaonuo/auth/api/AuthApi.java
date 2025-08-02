@@ -39,6 +39,14 @@ public interface AuthApi {
     Long getThirdUserCount();
 
     /**
+     * 校验验证码
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo);
+
+    /**
      * B端账号密码登录
      *
      * @author yubaoshan
