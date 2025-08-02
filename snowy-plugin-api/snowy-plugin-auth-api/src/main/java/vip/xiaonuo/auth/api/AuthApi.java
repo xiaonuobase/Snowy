@@ -39,7 +39,7 @@ public interface AuthApi {
     Long getThirdUserCount();
 
     /**
-     * B端登录
+     * B端账号密码登录
      *
      * @author yubaoshan
      * @date 2024/7/18 17:35
@@ -47,10 +47,42 @@ public interface AuthApi {
     String doLoginForB(String account, String password, String validCode, String validCodeReqNo);
 
     /**
-     * BC端登录
+     * C端账号密码登录
      *
      * @author yubaoshan
      * @date 2024/7/18 17:35
      */
     String doLoginForC(String account, String password, String validCode, String validCodeReqNo);
+
+    /**
+     * B端用户id登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByIdForB(String userId);
+
+    /**
+     * C端用户id登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByIdForC(String userId);
+
+    /**
+     * B端账号登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByAccountForB(String account);
+
+    /**
+     * C端账号登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByAccountForC(String account);
 }

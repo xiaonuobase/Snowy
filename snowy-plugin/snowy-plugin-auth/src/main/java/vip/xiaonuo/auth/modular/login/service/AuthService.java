@@ -98,6 +98,14 @@ public interface AuthService {
     String doLoginById(String userId, String device, String type);
 
     /**
+     * 根据用户账号和客户端类型登录，用于第三方登录
+     *
+     * @author xuyuxiang
+     * @date 2022/7/9 14:44
+     */
+    String doLoginByAccount(String account, String device, String type);
+
+    /**
      * C端注册
      *
      * @author xuyuxiang
