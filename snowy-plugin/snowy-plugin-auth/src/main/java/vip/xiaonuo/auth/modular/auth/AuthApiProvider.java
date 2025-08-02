@@ -60,7 +60,7 @@ public class AuthApiProvider implements AuthApi {
             jsonObject.set("tokenCount", tokenCount);
             jsonObject.set("createTime", DateTime.of(createTime));
             return jsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
 
         List<JSONObject> sessionListC = StpClientUtil.searchSessionId("", -1, -1, true).stream().map(sessionId -> {
             JSONObject jsonObject = JSONUtil.createObj();
@@ -72,7 +72,7 @@ public class AuthApiProvider implements AuthApi {
             jsonObject.set("tokenCount", tokenCount);
             jsonObject.set("createTime", DateTime.of(createTime));
             return jsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
         resultObj.set("backUserSessionCount" ,sessionListB.size());
         resultObj.set("clientUserSessionCount" ,sessionListC.size());
         return resultObj;
@@ -81,6 +81,11 @@ public class AuthApiProvider implements AuthApi {
     @Override
     public Long getThirdUserCount() {
         return authThirdService.count();
+    }
+
+    @Override
+    public void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
+        authService.validValidCode(phoneOrEmail, validCode, validCodeReqNo);
     }
 
     @Override
