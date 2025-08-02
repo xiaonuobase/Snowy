@@ -916,6 +916,26 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public String doLoginByAccount(String account, String device, String type) {
+        // 根据id获取用户信息，根据B端或C端判断
+        if(SaClientTypeEnum.B.getValue().equals(type)) {
+            SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByAccount(account);
+            if (ObjectUtil.isEmpty(saBaseLoginUser)) {
+                throw new CommonException(AuthExceptionEnum.ACCOUNT_ERROR.getValue());
+            }
+            // 执行B端登录
+            return execLoginB(saBaseLoginUser, device);
+        } else {
+            SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByAccount(account);
+            if (ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+                throw new CommonException(AuthExceptionEnum.ACCOUNT_ERROR.getValue());
+            }
+            // 执行C端登录
+            return execLoginC(saBaseClientLoginUser, device);
+        }
+    }
+
+    @Override
     public void register(AuthRegisterParam authRegisterParam, String type) {
         // 校验是否允许注册
         this.checkAllowRegisterFlag(type);

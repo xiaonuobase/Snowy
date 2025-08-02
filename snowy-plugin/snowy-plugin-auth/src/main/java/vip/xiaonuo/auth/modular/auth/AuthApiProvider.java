@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
+import vip.xiaonuo.auth.modular.login.enums.AuthDeviceTypeEnum;
 import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
@@ -100,5 +101,25 @@ public class AuthApiProvider implements AuthApi {
         authAccountPasswordLoginParam.setValidCode(validCode);
         authAccountPasswordLoginParam.setValidCodeReqNo(validCodeReqNo);
         return authService.doLogin(authAccountPasswordLoginParam, SaClientTypeEnum.C.getValue());
+    }
+
+    @Override
+    public String doLoginByIdForB(String userId) {
+        return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
+    }
+
+    @Override
+    public String doLoginByIdForC(String userId) {
+        return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
+    }
+
+    @Override
+    public String doLoginByAccountForB(String account) {
+        return authService.doLoginByAccount(account, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
+    }
+
+    @Override
+    public String doLoginByAccountForC(String account) {
+        return authService.doLoginByAccount(account, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
     }
 }
