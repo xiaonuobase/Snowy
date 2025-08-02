@@ -84,7 +84,7 @@ public interface AuthApi {
      * @author yubaoshan
      * @date 2024/7/18 17:35
      */
-    String doLoginByIdForB(String userId);
+    String doLoginByIdForB(String userId, String device);
 
     /**
      * C端用户id登录
@@ -92,7 +92,7 @@ public interface AuthApi {
      * @author yubaoshan
      * @date 2024/7/18 17:35
      */
-    String doLoginByIdForC(String userId);
+    String doLoginByIdForC(String userId, String device);
 
     /**
      * B端账号登录
@@ -100,7 +100,7 @@ public interface AuthApi {
      * @author yubaoshan
      * @date 2024/7/18 17:35
      */
-    String doLoginByAccountForB(String account);
+    String doLoginByAccountForB(String account, String device);
 
     /**
      * C端账号登录
@@ -108,5 +108,5 @@ public interface AuthApi {
      * @author yubaoshan
      * @date 2024/7/18 17:35
      */
-    String doLoginByAccountForC(String account);
+    String doLoginByAccountForC(String account, String device);
 }

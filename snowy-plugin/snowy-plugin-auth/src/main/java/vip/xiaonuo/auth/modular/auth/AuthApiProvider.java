@@ -16,6 +16,7 @@ package vip.xiaonuo.auth.modular.auth;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -30,7 +31,6 @@ import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 认证鉴权API实现类
@@ -119,22 +119,22 @@ public class AuthApiProvider implements AuthApi {
     }
 
     @Override
-    public String doLoginByIdForB(String userId) {
-        return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
+    public String doLoginByIdForB(String userId, String device) {
+        return authService.doLoginById(userId, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
     }
 
     @Override
-    public String doLoginByIdForC(String userId) {
-        return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
+    public String doLoginByIdForC(String userId, String device) {
+        return authService.doLoginById(userId, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
     }
 
     @Override
-    public String doLoginByAccountForB(String account) {
-        return authService.doLoginByAccount(account, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
+    public String doLoginByAccountForB(String account, String device) {
+        return authService.doLoginByAccount(account, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
     }
 
     @Override
-    public String doLoginByAccountForC(String account) {
-        return authService.doLoginByAccount(account, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
+    public String doLoginByAccountForC(String account, String device) {
+        return authService.doLoginByAccount(account, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
     }
 }
