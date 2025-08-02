@@ -346,6 +346,26 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Override
+    public boolean getDefaultCaptchaOpenForB() {
+        String defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B_KEY);
+        if(ObjectUtil.isNotEmpty(defaultCaptchaOpen)) {
+            return Convert.toBool(defaultCaptchaOpen);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean getDefaultCaptchaOpenForC() {
+        String defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C_KEY);
+        if(ObjectUtil.isNotEmpty(defaultCaptchaOpen)) {
+            return Convert.toBool(defaultCaptchaOpen);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * 校验手机号与验证码等参数
      *
@@ -429,29 +449,27 @@ public class AuthServiceImpl implements AuthService {
             AuthDeviceTypeEnum.validate(device);
         }
         // 校验验证码
-        String defaultCaptchaOpen;
+        boolean defaultCaptchaOpen;
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B_KEY);
+            defaultCaptchaOpen = getDefaultCaptchaOpenForB();
         } else {
-            defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C_KEY);
+            defaultCaptchaOpen = getDefaultCaptchaOpenForC();
         }
-        if(ObjectUtil.isNotEmpty(defaultCaptchaOpen)) {
-            if(Convert.toBool(defaultCaptchaOpen)) {
-                // 获取验证码
-                String validCode = authAccountPasswordLoginParam.getValidCode();
-                // 获取验证码请求号
-                String validCodeReqNo = authAccountPasswordLoginParam.getValidCodeReqNo();
-                // 开启验证码则必须传入验证码
-                if(ObjectUtil.isEmpty(validCode)) {
-                    throw new CommonException(AuthExceptionEnum.VALID_CODE_EMPTY.getValue());
-                }
-                // 开启验证码则必须传入验证码请求号
-                if(ObjectUtil.isEmpty(validCodeReqNo)) {
-                    throw new CommonException(AuthExceptionEnum.VALID_CODE_REQ_NO_EMPTY.getValue());
-                }
-                // 执行校验图形验证码
-                validValidCode(null, validCode, validCodeReqNo);
+        if(defaultCaptchaOpen) {
+            // 获取验证码
+            String validCode = authAccountPasswordLoginParam.getValidCode();
+            // 获取验证码请求号
+            String validCodeReqNo = authAccountPasswordLoginParam.getValidCodeReqNo();
+            // 开启验证码则必须传入验证码
+            if(ObjectUtil.isEmpty(validCode)) {
+                throw new CommonException(AuthExceptionEnum.VALID_CODE_EMPTY.getValue());
             }
+            // 开启验证码则必须传入验证码请求号
+            if(ObjectUtil.isEmpty(validCodeReqNo)) {
+                throw new CommonException(AuthExceptionEnum.VALID_CODE_REQ_NO_EMPTY.getValue());
+            }
+            // 执行校验图形验证码
+            validValidCode(null, validCode, validCodeReqNo);
         }
         // SM2解密并获得前端传来的密码哈希值
         String passwordHash;
@@ -806,7 +824,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CommonException(AuthExceptionEnum.ACCOUNT_DISABLED.getValue());
         }
         // 执行登录
-        StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginParameter().setDevice(device).setExtra("name", saBaseClientLoginUser.getName()));
+        StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginParameter().setDeviceType(device).setExtra("name", saBaseClientLoginUser.getName()));
         // 填充C端用户信息并更新缓存
         fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
         // 返回token
@@ -945,29 +963,27 @@ public class AuthServiceImpl implements AuthService {
         // 获取密码
         String password = authRegisterParam.getPassword();
         // 校验验证码
-        String defaultCaptchaOpen;
+        boolean defaultCaptchaOpen;
         if(SaClientTypeEnum.B.getValue().equals(type)) {
-            defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B_KEY);
+            defaultCaptchaOpen = getDefaultCaptchaOpenForB();
         } else {
-            defaultCaptchaOpen = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C_KEY);
+            defaultCaptchaOpen = getDefaultCaptchaOpenForC();
         }
-        if(ObjectUtil.isNotEmpty(defaultCaptchaOpen)) {
-            if(Convert.toBool(defaultCaptchaOpen)) {
-                // 获取验证码
-                String validCode = authRegisterParam.getValidCode();
-                // 获取验证码请求号
-                String validCodeReqNo = authRegisterParam.getValidCodeReqNo();
-                // 开启验证码则必须传入验证码
-                if(ObjectUtil.isEmpty(validCode)) {
-                    throw new CommonException(AuthExceptionEnum.VALID_CODE_EMPTY.getValue());
-                }
-                // 开启验证码则必须传入验证码请求号
-                if(ObjectUtil.isEmpty(validCodeReqNo)) {
-                    throw new CommonException(AuthExceptionEnum.VALID_CODE_REQ_NO_EMPTY.getValue());
-                }
-                // 执行校验图形验证码
-                validValidCode(null, validCode, validCodeReqNo);
+        if(Convert.toBool(defaultCaptchaOpen)) {
+            // 获取验证码
+            String validCode = authRegisterParam.getValidCode();
+            // 获取验证码请求号
+            String validCodeReqNo = authRegisterParam.getValidCodeReqNo();
+            // 开启验证码则必须传入验证码
+            if(ObjectUtil.isEmpty(validCode)) {
+                throw new CommonException(AuthExceptionEnum.VALID_CODE_EMPTY.getValue());
             }
+            // 开启验证码则必须传入验证码请求号
+            if(ObjectUtil.isEmpty(validCodeReqNo)) {
+                throw new CommonException(AuthExceptionEnum.VALID_CODE_REQ_NO_EMPTY.getValue());
+            }
+            // 执行校验图形验证码
+            validValidCode(null, validCode, validCodeReqNo);
         }
         // SM2解密前端传来的密码
         String passwordDecrypt = CommonCryptogramUtil.doSm2Decrypt(password);

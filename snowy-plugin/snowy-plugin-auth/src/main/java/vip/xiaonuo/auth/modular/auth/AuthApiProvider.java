@@ -84,6 +84,16 @@ public class AuthApiProvider implements AuthApi {
     }
 
     @Override
+    public boolean getDefaultCaptchaOpenForB() {
+        return authService.getDefaultCaptchaOpenForB();
+    }
+
+    @Override
+    public boolean getDefaultCaptchaOpenForC() {
+        return authService.getDefaultCaptchaOpenForC();
+    }
+
+    @Override
     public void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
         authService.validValidCode(phoneOrEmail, validCode, validCodeReqNo);
     }
