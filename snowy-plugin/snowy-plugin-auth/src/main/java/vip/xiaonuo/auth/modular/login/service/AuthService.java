@@ -120,4 +120,20 @@ public interface AuthService {
      * @date 2021/12/28 14:46
      **/
     void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo);
+
+    /**
+     * 获取B端验证码是否开启
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    boolean getDefaultCaptchaOpenForB();
+
+    /**
+     * 获取C端验证码是否开启
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    boolean getDefaultCaptchaOpenForC();
 }
