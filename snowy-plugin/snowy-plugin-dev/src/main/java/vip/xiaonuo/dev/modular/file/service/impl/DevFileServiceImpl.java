@@ -26,6 +26,7 @@ import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -361,6 +362,11 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             throw new CommonException("文件不存在，id值为：{}", id);
         }
         return devFile;
+    }
+
+    @Override
+    public List<DevFile> getFileListByIds(List<String> ids) {
+        return list(Wrappers.<DevFile>lambdaQuery().in(DevFile::getId,ids));
     }
 
     /**
