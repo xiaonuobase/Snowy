@@ -122,4 +122,12 @@ public interface DevFileService extends IService<DevFile> {
      * @date 2022/4/24 21:18
      */
     DevFile queryEntity(String id);
+
+    /**
+     * 根据文件ids获得文件列表
+     *
+     * @author yubaoshan
+     * @date 2025/8/25 21:18
+     */
+    List<DevFile> getFileListByIds(List<String> ids);
 }
