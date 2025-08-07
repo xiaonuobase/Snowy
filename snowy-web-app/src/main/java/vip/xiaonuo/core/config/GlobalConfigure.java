@@ -169,7 +169,15 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/client/userCenter/findPasswordByEmail",
 
             /* 文件下载 */
-            "/dev/file/download"
+            "/dev/file/download",
+
+            /* 可视化大屏 */
+            "/screen/project/release-detail",
+            "/screen/project/verify-access-password",
+
+            /* 数据集 */
+            "/dbs/application/getAuth",
+            "/dbs/dataSet/invoke"
     };
 
     /**
