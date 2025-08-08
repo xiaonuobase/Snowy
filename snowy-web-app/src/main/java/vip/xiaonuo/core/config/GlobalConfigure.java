@@ -92,10 +92,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Snowy配置
@@ -171,13 +168,16 @@ public class GlobalConfigure implements WebMvcConfigurer {
             /* 文件下载 */
             "/dev/file/download",
 
-            /* 可视化大屏 */
-            "/screen/project/release-detail",
-            "/screen/project/verify-access-password",
-
-            /* 数据集 */
+            /* 可视化大屏插件放行 */
+            "/screen/project/releaseDetail",
+            "/screen/project/verifyAccessPassword",
             "/dbs/application/getAuth",
-            "/dbs/dataSet/invoke"
+            "/dbs/dataSet/invoke",
+
+            /* 知识库插件放行 */
+            "/wiki/wikidocumentshare/getInfoByCode",
+            "/wiki/wikidocument/getInfoById",
+            "/wiki/wikidocumentfile/pdfProxy",
     };
 
     /**
