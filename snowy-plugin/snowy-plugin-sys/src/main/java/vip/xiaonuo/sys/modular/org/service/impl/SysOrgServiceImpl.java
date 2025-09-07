@@ -50,6 +50,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,6 +101,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<Tree<String>> tree() {
         List<SysOrg> sysOrgList = this.getAllOrgList();
+        // 使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
+        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
+                .thenComparing(SysOrg::getId)); // 添加ID作为次级排序条件
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
                         sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
