@@ -11,6 +11,7 @@
 			@change="handleChange"
 			:showUploadList="props.showUploadList"
 			:accept="accept"
+			:disabled="props.disabled"
 		>
 			<a-button>
 				<upload-outlined />
@@ -32,6 +33,7 @@
 			:progress="progress"
 			:showUploadList="props.showUploadList"
 			:accept="accept"
+			:disabled="props.disabled"
 		>
 			<div class="clearfix" v-if="fileList.length < props.uploadNumber">
 				<plus-outlined />
@@ -53,6 +55,7 @@
 			:progress="progress"
 			:showUploadList="props.showUploadList"
 			:accept="accept"
+			:disabled="props.disabled"
 		>
 			<div class="clearfix" v-if="fileList.length < props.uploadNumber">
 				<plus-outlined />
@@ -89,6 +92,7 @@
 			:progress="progress"
 			:showUploadList="props.showUploadList"
 			:accept="accept"
+			:disabled="props.disabled"
 		>
 			<p class="ant-upload-drag-icon">
 				<inbox-outlined />
@@ -189,7 +193,13 @@
 			type: [String, Array],
 			default: undefined,
 			required: false
-		}
+		},
+		// 组件禁用状态
+		disabled: {
+			type: Boolean,
+			default: false,
+			required: false
+		},
 	})
 	const action =
 		props.uploadResultType === 'id'
