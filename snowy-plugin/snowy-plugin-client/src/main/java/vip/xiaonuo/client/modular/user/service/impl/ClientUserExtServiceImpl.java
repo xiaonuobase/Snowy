@@ -17,10 +17,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import vip.xiaonuo.client.core.enums.ClientYesOrNoEnum;
 import vip.xiaonuo.client.modular.user.entity.ClientUserExt;
 import vip.xiaonuo.client.modular.user.enums.ClientUserSourceFromTypeEnum;
 import vip.xiaonuo.client.modular.user.mapper.ClientUserExtMapper;
 import vip.xiaonuo.client.modular.user.service.ClientUserExtService;
+import vip.xiaonuo.common.util.CommonCryptogramUtil;
+import vip.xiaonuo.common.util.CommonOtpUtil;
 
 /**
  * C端用户扩展Service接口实现类
@@ -47,11 +50,15 @@ public class ClientUserExtServiceImpl extends ServiceImpl<ClientUserExtMapper, C
     }
 
     @Override
-    public void createExtInfo(String userId, String sourceFromType) {
+    public ClientUserExt createExtInfo(String userId, String sourceFromType) {
         ClientUserExt clientUserExt = new ClientUserExt();
         clientUserExt.setUserId(userId);
         clientUserExt.setSourceFromType(sourceFromType);
         clientUserExt.setPasswordUpdateTime(DateTime.now());
+        clientUserExt.setHasBindOtp(ClientYesOrNoEnum.NO.getValue());
+        String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+        clientUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
         this.save(clientUserExt);
+        return clientUserExt;
     }
 }

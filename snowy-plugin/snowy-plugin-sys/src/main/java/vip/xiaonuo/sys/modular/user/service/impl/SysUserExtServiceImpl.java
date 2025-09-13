@@ -17,6 +17,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import vip.xiaonuo.common.util.CommonCryptogramUtil;
+import vip.xiaonuo.common.util.CommonOtpUtil;
+import vip.xiaonuo.sys.core.enums.SysYesOrNoEnum;
 import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
 import vip.xiaonuo.sys.modular.user.enums.SysUserSourceFromTypeEnum;
 import vip.xiaonuo.sys.modular.user.mapper.SysUserExtMapper;
@@ -47,11 +50,15 @@ public class SysUserExtServiceImpl extends ServiceImpl<SysUserExtMapper, SysUser
     }
 
     @Override
-    public void createExtInfo(String userId, String sourceFromType) {
+    public SysUserExt createExtInfo(String userId, String sourceFromType) {
         SysUserExt sysUserExt = new SysUserExt();
         sysUserExt.setUserId(userId);
         sysUserExt.setSourceFromType(sourceFromType);
         sysUserExt.setPasswordUpdateTime(DateTime.now());
+        sysUserExt.setHasBindOtp(SysYesOrNoEnum.NO.getValue());
+        String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+        sysUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
         this.save(sysUserExt);
+        return sysUserExt;
     }
 }

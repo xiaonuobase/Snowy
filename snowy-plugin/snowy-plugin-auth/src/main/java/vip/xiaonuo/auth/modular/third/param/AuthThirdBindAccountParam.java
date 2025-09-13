@@ -18,22 +18,39 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 第三方登录授权参数
+ * 第三方登录绑定账号参数
  *
  * @author xuyuxiang
- * @date 2022/7/8 20:38
- */
+ * @date 2022/7/7 16:46
+ **/
 @Getter
 @Setter
-public class AuthThirdRenderParam {
+public class AuthThirdBindAccountParam {
 
-    /** 第三方平台标识 */
-    @Schema(description = "第三方平台标识", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "platform不能为空")
-    private String platform;
+    /** 三方主键 */
+    @Schema(description = "三方主键", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "thirdId不能为空")
+    private String thirdId;
 
-    /** 登录端类型 */
-    @Schema(description = "登录端类型", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "clientType不能为空")
-    private String clientType;
+    /** 账号 */
+    @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "account不能为空")
+    private String account;
+
+    /** 密码 */
+    @Schema(description = "密码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "password不能为空")
+    private String password;
+
+    /** 设备 */
+    @Schema(description = "设备")
+    private String device;
+
+    /** 验证码 */
+    @Schema(description = "验证码")
+    private String validCode;
+
+    /** 验证码请求号 */
+    @Schema(description = "验证码请求号")
+    private String validCodeReqNo;
 }

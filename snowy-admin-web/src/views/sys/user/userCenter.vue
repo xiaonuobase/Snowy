@@ -58,7 +58,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<CropUpload ref="cropUploadRef" :img-src="userInfo ? userInfo.avatar : undefined" @successful="cropUploadSuccess" />
+	<CropUpload ref="cropUploadRef" :img-src="userInfo ? userInfo.avatar : undefined" @successful="cropUploadSuccess" :z-index="2000" />
 </template>
 
 <script setup name="userCenter">

@@ -155,5 +155,21 @@ export default {
 	// 获取修改密码验证方式及配置
 	userGetUpdatePasswordValidConfig(data) {
 		return request('getUpdatePasswordValidConfig', data, 'get')
-	}
+	},
+	// 获取动态口令绑定状态
+	userCenterGetOtpInfoBindStatus(data) {
+		return request('getOtpInfoBindStatus', data, 'get')
+	},
+	// 获取动态口令信息
+	userCenterGetOtpInfo(data) {
+		return request('getOtpInfo', data, 'get')
+	},
+	// 绑定动态口令
+	userCenterBindOtp(data) {
+		return request('bindOtp', data)
+	},
+	// 解绑动态口令
+	userCenterUnBindOtp(data) {
+		return request('unBindOtp', data)
+	},
 }

@@ -10,4 +10,28 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.client;
+package vip.xiaonuo.client.core.enums;
+
+import lombok.Getter;
+
+/**
+ * 是否枚举
+ *
+ * @author yubaoshan
+ * @date 2024/9/17 00:14
+ **/
+@Getter
+public enum ClientYesOrNoEnum {
+
+    /** 是 */
+    YES("YES"),
+
+    /** 否 */
+    NO("NO");
+
+    private final String value;
+
+    ClientYesOrNoEnum(String value) {
+        this.value = value;
+    }
+}

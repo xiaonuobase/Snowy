@@ -32,10 +32,7 @@ import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.param.*;
-import vip.xiaonuo.sys.modular.user.result.SysUserMessageDetailResult;
-import vip.xiaonuo.sys.modular.user.result.SysUserMessageResult;
-import vip.xiaonuo.sys.modular.user.result.SysUserPicValidCodeResult;
-import vip.xiaonuo.sys.modular.user.result.SysUserPositionResult;
+import vip.xiaonuo.sys.modular.user.result.*;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import javax.validation.Valid;
@@ -566,5 +563,61 @@ public class SysUserCenterController {
     @GetMapping("/sys/userCenter/getUpdatePasswordValidConfig")
     public CommonResult<JSONObject> getUpdatePasswordValidConfig() {
         return CommonResult.data(sysUserService.getUpdatePasswordValidConfig());
+    }
+
+    /**
+     * 获取绑定动态口令状态
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    @ApiOperationSupport(order = 38)
+    @Operation(summary = "获取绑定动态口令状态")
+    @GetMapping("/sys/userCenter/getOtpInfoBindStatus")
+    public CommonResult<Boolean> getOtpInfoBindStatus() {
+        return CommonResult.data(sysUserService.getOtpInfoBindStatus());
+    }
+
+    /**
+     * 获取动态口令信息
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    @ApiOperationSupport(order = 39)
+    @Operation(summary = "获取动态口令信息")
+    @GetMapping("/sys/userCenter/getOtpInfo")
+    public CommonResult<SysUserOtpInfoResult> getOtpInfo() {
+        return CommonResult.data(sysUserService.getOtpInfo());
+    }
+
+    /**
+     * 绑定动态口令
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    @ApiOperationSupport(order = 40)
+    @Operation(summary = "绑定动态口令")
+    @CommonLog("绑定动态口令")
+    @PostMapping("/sys/userCenter/bindOtp")
+    public CommonResult<String> bindOtp(@RequestBody @Valid SysUserOtpParam sysUserOtpParam) {
+        sysUserService.bindOtp(sysUserOtpParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 解绑动态口令
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    @ApiOperationSupport(order = 41)
+    @Operation(summary = "解绑动态口令")
+    @CommonLog("解绑动态口令")
+    @PostMapping("/sys/userCenter/unBindOtp")
+    public CommonResult<String> unBindOtp(@RequestBody @Valid SysUserOtpParam sysUserOtpParam) {
+        sysUserService.unBindOtp(sysUserOtpParam);
+        return CommonResult.ok();
     }
 }

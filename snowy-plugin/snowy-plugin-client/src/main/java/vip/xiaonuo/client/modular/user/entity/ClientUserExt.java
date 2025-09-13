@@ -49,4 +49,11 @@ public class ClientUserExt extends CommonEntity {
     @Schema(description = "密码修改日期")
     private Date passwordUpdateTime;
 
+    /** OTP密钥 */
+    @Schema(description = "OTP密钥")
+    private String otpSecretKey;
+
+    /** OTP绑定状态 */
+    @Schema(description = "OTP绑定状态")
+    private String hasBindOtp;
 }

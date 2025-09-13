@@ -10,13 +10,16 @@
  */
 const constRouters = [
 	{
+		path: '/sso'
+	},
+	{
 		path: '/findpwd'
 	},
 	{
 		path: '/register'
 	},
 	{
-		path: '/callback'
+		path: '/callback/:platform'
 	},
 	{
 		path: '/other',

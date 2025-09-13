@@ -10,7 +10,7 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.param;
+package vip.xiaonuo.auth.modular.login.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -18,22 +18,34 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 第三方登录授权参数
+ * 动态口令登录参数
  *
  * @author xuyuxiang
- * @date 2022/7/8 20:38
- */
+ * @date 2022/7/7 16:46
+ **/
 @Getter
 @Setter
-public class AuthThirdRenderParam {
+public class AuthOtpLoginParam {
 
-    /** 第三方平台标识 */
-    @Schema(description = "第三方平台标识", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "platform不能为空")
-    private String platform;
+    /** 账号 */
+    @Schema(description = "账号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "account不能为空")
+    private String account;
 
-    /** 登录端类型 */
-    @Schema(description = "登录端类型", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "clientType不能为空")
-    private String clientType;
+    /** 动态口令 */
+    @Schema(description = "动态口令", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "otpCode不能为空")
+    private String otpCode;
+
+    /** 设备 */
+    @Schema(description = "设备")
+    private String device;
+
+    /** 验证码 */
+    @Schema(description = "验证码")
+    private String validCode;
+
+    /** 验证码请求号 */
+    @Schema(description = "验证码请求号")
+    private String validCodeReqNo;
 }

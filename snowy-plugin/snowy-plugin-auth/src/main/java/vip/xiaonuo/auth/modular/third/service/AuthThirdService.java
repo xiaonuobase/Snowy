@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.zhyd.oauth.model.AuthCallback;
 import vip.xiaonuo.auth.modular.third.entity.AuthThirdUser;
+import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
@@ -44,6 +45,14 @@ public interface AuthThirdService extends IService<AuthThirdUser> {
      * @date 2022/7/8 16:42
      **/
     String callback(AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback);
+
+    /**
+     * 第三方登录绑定账号
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    String bindAccount(AuthThirdBindAccountParam authThirdBindAccountParam);
 
     /**
      * 获取三方用户分页

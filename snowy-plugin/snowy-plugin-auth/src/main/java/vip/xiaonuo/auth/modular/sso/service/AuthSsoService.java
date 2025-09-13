@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.auth.modular.sso.service;
 
+import vip.xiaonuo.auth.modular.sso.param.AuthGetSsoAuthUrlParam;
 import vip.xiaonuo.auth.modular.sso.param.AuthSsoTicketLoginParam;
 
 /**
@@ -23,10 +24,34 @@ import vip.xiaonuo.auth.modular.sso.param.AuthSsoTicketLoginParam;
 public interface AuthSsoService {
 
     /**
+     * 获取认证中心地址
+     *
+     * @author xuyuxiang
+     * @date 2022/8/30 9:36
+     **/
+    String getSsoAuthUrl(AuthGetSsoAuthUrlParam authGetSsoAuthUrlParam, String type);
+
+    /**
      * 根据ticket执行单点登录
      *
      * @author xuyuxiang
      * @date 2022/8/30 9:36
      **/
-    String doLogin(AuthSsoTicketLoginParam authAccountPasswordLoginParam, String value);
+    String doLoginByTicket(AuthSsoTicketLoginParam authSsoTicketLoginParam, String type);
+
+    /**
+     * 单点注销回调
+     *
+     * @author xuyuxiang
+     * @date 2022/8/30 9:36
+     **/
+    Object logoutCall(String type);
+
+    /**
+     * 推送客户端地址
+     *
+     * @author xuyuxiang
+     * @date 2022/8/30 9:36
+     **/
+    Object pushClient(String type);
 }

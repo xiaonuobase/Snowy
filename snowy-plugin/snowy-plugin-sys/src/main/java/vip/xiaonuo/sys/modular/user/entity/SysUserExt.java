@@ -49,4 +49,20 @@ public class SysUserExt extends CommonEntity {
     @Schema(description = "密码修改日期")
     private Date passwordUpdateTime;
 
+    /** 身份源ID */
+    @Schema(description = "身份源ID")
+    private String idSourceId;
+
+    /** 身份源用户ID */
+    @Schema(description = "身份源用户ID")
+    private String idSourceUserId;
+
+    /** OTP密钥 */
+    @Schema(description = "OTP密钥")
+    private String otpSecretKey;
+
+    /** OTP绑定状态 */
+    @Schema(description = "OTP绑定状态")
+    private String hasBindOtp;
+
 }

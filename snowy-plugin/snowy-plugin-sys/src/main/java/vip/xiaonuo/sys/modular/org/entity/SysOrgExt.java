@@ -43,4 +43,12 @@ public class SysOrgExt extends CommonEntity {
     @Schema(description = "来源类别")
     private String sourceFromType;
 
+    /** 身份源ID */
+    @Schema(description = "身份源ID")
+    private String idSourceId;
+
+    /** 身份源组织ID */
+    @Schema(description = "身份源机构ID")
+    private String idSourceOrgId;
+
 }

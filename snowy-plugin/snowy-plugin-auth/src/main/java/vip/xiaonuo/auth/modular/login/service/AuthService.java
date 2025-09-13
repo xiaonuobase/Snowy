@@ -106,12 +106,36 @@ public interface AuthService {
     String doLoginByAccount(String account, String device, String type);
 
     /**
+     * 手机号登录
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    String doLoginByPhone(String phone, String device, String type, String strategy);
+
+    /**
+     * 邮箱登录
+     *
+     * @author xuyuxiang
+     * @date 2021/12/28 14:46
+     **/
+    String doLoginByEmail(String email, String device, String type, String strategy);
+
+    /**
      * C端注册
      *
      * @author xuyuxiang
      * @date 2022/7/9 14:44
      */
     void register(AuthRegisterParam authRegisterParam, String type);
+
+    /**
+     * B端动态口令登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    String doLoginByOtp(AuthOtpLoginParam authOtpLoginParam, String type);
 
     /**
      * 校验验证码

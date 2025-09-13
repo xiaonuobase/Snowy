@@ -10,7 +10,7 @@
  */
 import { baseRequest } from '@/utils/request'
 
-const request = (url, ...arg) => baseRequest(`/auth/third/` + url, ...arg)
+const request = (url, ...arg) => baseRequest(`/auth/sso/b/` + url, ...arg)
 /**
  * 三方登录
  *
@@ -18,12 +18,13 @@ const request = (url, ...arg) => baseRequest(`/auth/third/` + url, ...arg)
  * @date 2022-09-22 22:33:20
  */
 export default {
-	// 第三方登录页面渲染
-	thirdRender(data) {
-		return request('render', data, 'get')
+
+	// B端获取认证中心地址
+	getSsoAuthUrl(data) {
+		return request('getSsoAuthUrl', data, 'get')
 	},
-	// 第三方登录授权回调
-	thirdCallback(data) {
-		return request('callback', data, 'get')
+	// B端根据ticket执行单点登录
+	doLoginByTicket(data) {
+		return request('doLoginByTicket', data)
 	}
 }

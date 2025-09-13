@@ -168,4 +168,30 @@ public class AuthClientController {
         authService.register(authRegisterParam, SaClientTypeEnum.C.getValue());
         return CommonResult.ok();
     }
+
+    /**
+     * C端动态口令登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    @ApiOperationSupport(order = 10)
+    @Operation(summary = "C端动态口令登录")
+    @PostMapping("/auth/c/doLoginByOtp")
+    public CommonResult<String> doLoginByOtp(@RequestBody @Valid AuthOtpLoginParam authOtpLoginParam) {
+        return CommonResult.data(authService.doLoginByOtp(authOtpLoginParam, SaClientTypeEnum.C.getValue()));
+    }
+
+    /**
+     * C端判断是否登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    @ApiOperationSupport(order = 11)
+    @Operation(summary = "C端判断是否登录")
+    @GetMapping("/auth/c/isLogin")
+    public CommonResult<Boolean> isLogin() {
+        return CommonResult.data(StpClientUtil.isLogin());
+    }
 }

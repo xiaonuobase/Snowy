@@ -253,4 +253,9 @@ public class SysUserApiProvider implements SysUserApi {
             return obj;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public JSONObject getOrCreateSysUserExt(String userId) {
+        return JSONUtil.parseObj(sysUserService.getOrCreateSysUserExt(userId));
+    }
 }
