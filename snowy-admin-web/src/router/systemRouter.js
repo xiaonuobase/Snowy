@@ -13,11 +13,11 @@ import tool from '@/utils/tool'
 import routerUtil from '@/utils/routerUtil'
 
 const Layout = () => import('@/layout/index.vue')
+const Sso = () => import('@/views/auth/sso/index.vue')
 const Login = () => import('@/views/auth/login/login.vue')
 const FindPwd = () => import('@/views/auth/findPwd/index.vue')
 const Callback = () => import('@/views/auth/login/callback.vue')
 const Register = () => import('@/views/auth/login/register.vue')
-
 // 系统路由
 const routes = [
 	{
@@ -26,6 +26,13 @@ const routes = [
 		component: Layout,
 		redirect: tool.data.get('MENU') ? routerUtil.getIndexMenu(tool.data.get('MENU')).path : config.DASHBOARD_URL,
 		children: []
+	},
+	{
+		path: '/sso',
+		component: Sso,
+		meta: {
+			title: '单点登录'
+		}
 	},
 	{
 		path: '/login',
@@ -49,12 +56,12 @@ const routes = [
 		}
 	},
 	{
-		path: '/callback',
+		path: '/callback/:platform',
 		component: Callback,
 		meta: {
-			title: '三方登录'
+			title: '三方登录回调'
 		}
-	}
+	},
 ]
 
 export default routes

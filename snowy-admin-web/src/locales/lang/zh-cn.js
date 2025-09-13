@@ -40,11 +40,14 @@ export default {
 		accountError: '请输入账号',
 		PWPlaceholder: '请输入密码',
 		PWError: '请输入密码',
-		validLaceholder: '请输入验证码',
+		validPlaceholder: '请输入验证码',
 		validError: '请输入验证码',
 		accountPassword: '账号密码',
-		phoneSms: '手机号登录',
-		emailLogin: '邮箱号登录',
+		phoneLogin: '手机号登录',
+		emailLogin: '邮箱登录',
+		otpLogin: '动态口令登录',
+		thirdLogin: '三方登录',
+		bindAccount: '绑定账号',
 		phonePlaceholder: '请输入手机号',
 		phoneInputNumberPlaceholder: '请输入11位手机号',
 		smsCodePlaceholder: '请输入短信验证码',
@@ -55,9 +58,10 @@ export default {
 		newPwdPlaceholder: '请输入新密码',
 		backLogin: '返回登录',
 		restPassword: '重置密码',
-		emailPlaceholder: '请输入邮箱号',
+		emailPlaceholder: '请输入邮箱',
 		emailCodePlaceholder: '请输入邮件验证码',
 		emailValidPlaceholder: '请输入正确的邮箱号',
+		otpCodePlaceholder: '请输入动态口令',
 		restPhoneType: '手机号找回',
 		restEmailType: '邮箱找回',
 		register: '注册',
@@ -65,7 +69,10 @@ export default {
 		notAccountPleaseRegister: '没有账号？前往注册！',
 		haveAccountPleaseLogin: '已有账号？去登录！',
 		enterAgainPassword: '请再次输入密码',
-		enteredPasswordsDiffer: '两次输入密码不一致'
+		enteredPasswordsDiffer: '两次输入密码不一致',
+		paramError: '参数错误',
+		thirdLoginError: '登录失败',
+		frontLogin: '前台登录',
 	},
 	user: {
 		userStatus: '用户状态',
@@ -78,7 +85,7 @@ export default {
 		exportUserInfo: '导出信息',
 		placeholderNameAndSearchKey: '请输入姓名或关键词',
 		placeholderUserStatus: '请选择状态',
-		popconfirmDeleteUser: '确定要删除吗？',
-		popconfirmResatUserPwd: '确定要重置吗？'
+		popConfirmDeleteUser: '确定要删除吗？',
+		popConfirmResatUserPwd: '确定要重置吗？'
 	}
 }

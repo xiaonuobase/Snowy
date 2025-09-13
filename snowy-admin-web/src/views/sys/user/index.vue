@@ -98,7 +98,7 @@
 						<template v-if="column.dataIndex === 'action'">
 							<a @click="formRef.onOpen(record)">{{ $t('common.editButton') }}</a>
 							<a-divider type="vertical" />
-							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
+							<a-popconfirm :title="$t('user.popConfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
 								<a-button type="link" danger size="small">
 									{{ $t('common.removeButton') }}
 								</a-button>
@@ -113,7 +113,7 @@
 									<a-menu>
 										<a-menu-item>
 											<a-popconfirm
-												:title="$t('user.popconfirmResatUserPwd')"
+												:title="$t('user.popConfirmResatUserPwd')"
 												placement="topRight"
 												@confirm="resetPassword(record)"
 											>

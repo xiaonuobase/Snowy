@@ -10,30 +10,28 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.param;
+package vip.xiaonuo.sys.core.enums;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * 第三方登录授权参数
+ * 是否枚举
  *
- * @author xuyuxiang
- * @date 2022/7/8 20:38
- */
+ * @author yubaoshan
+ * @date 2024/9/17 00:14
+ **/
 @Getter
-@Setter
-public class AuthThirdRenderParam {
+public enum SysYesOrNoEnum {
 
-    /** 第三方平台标识 */
-    @Schema(description = "第三方平台标识", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "platform不能为空")
-    private String platform;
+    /** 是 */
+    YES("YES"),
 
-    /** 登录端类型 */
-    @Schema(description = "登录端类型", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "clientType不能为空")
-    private String clientType;
+    /** 否 */
+    NO("NO");
+
+    private final String value;
+
+    SysYesOrNoEnum(String value) {
+        this.value = value;
+    }
 }

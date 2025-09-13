@@ -53,5 +53,13 @@ export default {
 	// 注册用户
 	register(data) {
 		return request('register', data)
+	},
+	// B端动态口令登录
+	loginByOtp(data) {
+		return request('doLoginByOtp', data, 'post', false)
+	},
+	// B端判断是否登录
+	isLogin(data) {
+		return request('isLogin', data, 'get')
 	}
 }

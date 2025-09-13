@@ -105,7 +105,7 @@
 						<template v-if="column.dataIndex === 'action'">
 							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">{{ $t('common.editButton') }}</a>
 							<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
-							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" @confirm="removeUser(record)">
+							<a-popconfirm :title="$t('user.popConfirmDeleteUser')" @confirm="removeUser(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')">{{
 									$t('common.removeButton')
 								}}</a-button>
@@ -123,7 +123,7 @@
 									<a-menu>
 										<a-menu-item v-if="hasPerm('bizUserPwdReset')">
 											<a-popconfirm
-												:title="$t('user.popconfirmResatUserPwd')"
+												:title="$t('user.popConfirmResatUserPwd')"
 												placement="topRight"
 												@confirm="resetPassword(record)"
 											>

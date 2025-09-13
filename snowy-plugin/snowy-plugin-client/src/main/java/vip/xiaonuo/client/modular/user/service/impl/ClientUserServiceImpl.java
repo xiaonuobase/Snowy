@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.client.core.enums.ClientYesOrNoEnum;
 import vip.xiaonuo.client.core.util.ClientEmailFormatUtl;
 import vip.xiaonuo.client.core.util.ClientPasswordUtl;
 import vip.xiaonuo.client.modular.user.entity.ClientUser;
@@ -1111,6 +1112,22 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         ClientPasswordUtl.validNewPassword(password);
         // 根据账号密码创建用户
         this.createUserWithAccount(account, password);
+    }
+
+    @Override
+    public ClientUserExt getOrCreateClientUserExt(String userId) {
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, userId));
+        if(ObjectUtil.isEmpty(clientUserExt)){
+            clientUserExt = clientUserExtService.createExtInfo(userId, ClientUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
+        } else {
+            if(ObjectUtil.isEmpty(clientUserExt.getOtpSecretKey())){
+                String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+                clientUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
+                clientUserExt.setHasBindOtp(ClientYesOrNoEnum.NO.getValue());
+                clientUserExtService.updateById(clientUserExt);
+            }
+        }
+        return clientUserExt;
     }
 
     /**

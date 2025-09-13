@@ -26,6 +26,7 @@ import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.modular.login.enums.AuthDeviceTypeEnum;
+import vip.xiaonuo.auth.modular.login.enums.AuthStrategyWhenNoUserWithPhoneOrEmailEnum;
 import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
@@ -136,5 +137,29 @@ public class AuthApiProvider implements AuthApi {
     @Override
     public String doLoginByAccountForC(String account, String device) {
         return authService.doLoginByAccount(account, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
+    }
+
+    @Override
+    public String doLoginByPhoneForB(String phone, String device) {
+        return authService.doLoginByPhone(phone, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(),
+                SaClientTypeEnum.B.getValue(), AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue());
+    }
+
+    @Override
+    public String doLoginByPhoneForC(String phone, String device) {
+        return authService.doLoginByPhone(phone, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(),
+                SaClientTypeEnum.C.getValue(), AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue());
+    }
+
+    @Override
+    public String doLoginByEmailForB(String email, String device) {
+        return authService.doLoginByEmail(email, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(),
+                SaClientTypeEnum.B.getValue(), AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue());
+    }
+
+    @Override
+    public String doLoginByEmailForC(String email, String device) {
+        return authService.doLoginByEmail(email, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(),
+                SaClientTypeEnum.C.getValue(), AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue());
     }
 }

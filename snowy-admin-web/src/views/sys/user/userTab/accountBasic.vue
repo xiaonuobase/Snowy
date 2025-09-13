@@ -16,7 +16,7 @@
 		<a-form-item label="昵称：" name="nickname">
 			<a-input v-model:value="formData.nickname" placeholder="请输入昵称" allow-clear />
 		</a-form-item>
-		<a-form-item label="性别：" name="sex">
+		<a-form-item label="性别：" name="gender">
 			<a-radio-group v-model:value="formData.gender" :options="genderOptions" />
 		</a-form-item>
 		<a-form-item label="生日：" name="birthday">
@@ -43,8 +43,8 @@
 	const submitLoading = ref(false)
 	// 默认要校验的
 	const formRules = {
-		name: [required('请输入姓名')],
-		gender: [required('请选择性别')]
+		account: [required('请输入账号')],
+		name: [required('请输入姓名')]
 	}
 	const genderOptions = tool.dictList('GENDER')
 	// 验证并提交数据

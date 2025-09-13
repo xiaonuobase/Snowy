@@ -85,7 +85,14 @@
 					placeholder="请选择邮箱无对应用户时策略"
 				/>
 			</a-form-item>
-
+			<a-form-item label="是否允许动态口令登录：" name="SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B">
+				<a-switch
+					v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B"
+					checked-children="是"
+					un-checked-children="否"
+					placeholder="请选择是否允许动态口令登录"
+				/>
+			</a-form-item>
 			<a-form-item>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
 				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
@@ -166,7 +173,8 @@
 		SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B: [required('请选择是否允许手机号登录')],
 		SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B: [required('请选择手机号无对应用户时策略')],
 		SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B: [required('请选择是否允许邮箱登录')],
-		SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B: [required('请选择邮箱无对应用户时策略')]
+		SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B: [required('请选择邮箱无对应用户时策略')],
+		SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B: [required('请选择是否允许动态口令登录')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {

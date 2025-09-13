@@ -252,6 +252,27 @@
                 <version>0.16.4</version>
             </dependency>
 
+            <!-- zxing -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+
+            <!-- bouncycastle -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
+            <!-- bouncycastle -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
             <!-- sa-token-core -->
             <dependency>
                 <groupId>cn.dev33</groupId>
@@ -284,6 +305,13 @@
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-sso</artifactId>
+                <version>1.44.0</version>
+            </dependency>
+
+            <!-- Sa-Token 插件：整合 Forest 请求工具 -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-forest</artifactId>
                 <version>1.44.0</version>
             </dependency>
 

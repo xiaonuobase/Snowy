@@ -37,6 +37,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -80,6 +82,7 @@ import vip.xiaonuo.mobile.api.MobileButtonApi;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
+import vip.xiaonuo.sys.core.enums.SysYesOrNoEnum;
 import vip.xiaonuo.sys.core.util.SysEmailFormatUtl;
 import vip.xiaonuo.sys.core.util.SysPasswordUtl;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
@@ -195,6 +198,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /** 工作台默认快捷方式 */
     private static final String SNOWY_SYS_DEFAULT_WORKBENCH_DATA_KEY = "SNOWY_SYS_DEFAULT_WORKBENCH_DATA";
+
+    /** 系统名称 */
+    private static final String SNOWY_SYS_NAME_KEY = "SNOWY_SYS_NAME";
 
     /** 验证码缓存前缀 */
     private static final String USER_VALID_CODE_CACHE_KEY = "user-validCode:";
@@ -2399,6 +2405,84 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public JSONObject getUpdatePasswordValidConfig() {
         return SysPasswordUtl.getUpdatePasswordValidConfig();
+    }
+
+    @Override
+    public SysUserExt getOrCreateSysUserExt(String userId) {
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, userId));
+        if(ObjectUtil.isEmpty(sysUserExt)){
+            sysUserExt = sysUserExtService.createExtInfo(userId, SysUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
+        } else {
+            if(ObjectUtil.isEmpty(sysUserExt.getOtpSecretKey())){
+                String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+                sysUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
+                sysUserExt.setHasBindOtp(SysYesOrNoEnum.NO.getValue());
+                sysUserExtService.updateById(sysUserExt);
+            }
+        }
+        return sysUserExt;
+    }
+
+    @Override
+    public Boolean getOtpInfoBindStatus() {
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        return sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.YES.getValue());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public SysUserOtpInfoResult getOtpInfo() {
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUser sysUser = this.queryEntity(loginIdAsString);
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        String otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(sysUserExt.getOtpSecretKey());
+        String account = sysUser.getAccount();
+        String issuer = devConfigApi.getValueByKey(SNOWY_SYS_NAME_KEY);
+        String uri = CommonOtpUtil.getTotUri(otpSecretKey, issuer, account);
+        String qrCodeBase64 = QrCodeUtil.generateAsBase64(uri, new QrConfig(200, 200), ImgUtil.IMAGE_TYPE_PNG);
+        return SysUserOtpInfoResult.builder().otpInfoBase64(qrCodeBase64)
+                .otpInfo(SysUserOtpInfoResult.OtpInfo.builder()
+                        .issuer(issuer)
+                        .account(account)
+                        .secretKey(otpSecretKey)
+                        .algorithm("HmacSHA1")
+                        .digits("6位")
+                        .period("30秒")
+                        .build()).build();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void bindOtp(SysUserOtpParam sysUserOtpParam) {
+        doCheckAndUpdate(sysUserOtpParam, SysYesOrNoEnum.YES.getValue());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void unBindOtp(SysUserOtpParam sysUserOtpParam) {
+        doCheckAndUpdate(sysUserOtpParam, SysYesOrNoEnum.NO.getValue());
+    }
+
+    public void doCheckAndUpdate(SysUserOtpParam sysUserOtpParam, String binOtpStatus) {
+        String otpCode = sysUserOtpParam.getOtpCode();
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        if(binOtpStatus.equals(SysYesOrNoEnum.YES.getValue()) && sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.YES.getValue())){
+            throw new CommonException("该账户已绑定动态口令，不可重复绑定");
+        }
+        if(binOtpStatus.equals(SysYesOrNoEnum.NO.getValue()) && sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.NO.getValue())){
+            throw new CommonException("该账户未绑定动态口令，无需解绑");
+        }
+        // 解密密钥
+        String otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(sysUserExt.getOtpSecretKey());
+        // 校验动态口令
+        boolean isValid = CommonOtpUtil.validateCode(otpSecretKey, otpCode, 1);
+        if(!isValid){
+            throw new CommonException("动态口令错误");
+        }
+        sysUserExt.setHasBindOtp(binOtpStatus);
+        sysUserExtService.updateById(sysUserExt);
     }
 
     /**

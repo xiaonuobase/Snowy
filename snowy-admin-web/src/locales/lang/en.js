@@ -38,11 +38,14 @@ export default {
 		accountError: 'Please input a user account',
 		PWPlaceholder: 'Please input a password',
 		PWError: 'Please input a password',
-		validLaceholder: 'Please input a valid',
+		validPlaceholder: 'Please input a valid',
 		validError: 'Please input a valid',
 		accountPassword: 'Account Password',
-		phoneSms: 'Phone SMS',
+		phoneLogin: 'Phone Login',
 		emailLogin: 'Email Login',
+		otpLogin: 'OTP Login',
+		thirdLogin: 'Third Login',
+		bindAccount: 'Bind Account',
 		phonePlaceholder: 'Please input a phone',
 		phoneInputNumberPlaceholder: 'Please input a phone 11-digit',
 		smsCodePlaceholder: 'Please input a SMS code',
@@ -56,6 +59,7 @@ export default {
 		emailPlaceholder: 'Please input a correct email',
 		emailCodePlaceholder: 'Please input a Email code',
 		emailValidPlaceholder: 'Please input a email',
+		otpCodePlaceholder: 'Please input a OTP code',
 		restPhoneType: 'For phone rest',
 		restEmailType: 'For email rest',
 		register: 'Register',
@@ -63,7 +67,10 @@ export default {
 		notAccountPleaseRegister: 'Not Account? Register!',
 		haveAccountPleaseLogin: 'Have Account? Go Login!',
 		enterAgainPassword: 'Please re-enter your password',
-		enteredPasswordsDiffer: 'Entered passwords differ'
+		enteredPasswordsDiffer: 'Entered passwords differ',
+		paramError: 'Param Error',
+		thirdLoginError: 'Third Login Error',
+		frontLogin: 'Front Login',
 	},
 	user: {
 		userStatus: 'User Status',
@@ -76,7 +83,7 @@ export default {
 		exportUserInfo: 'Export UserInfo',
 		placeholderNameAndSearchKey: 'Please enter your name or keyword',
 		placeholderUserStatus: 'Please select status',
-		popconfirmDeleteUser: 'Are you sure you want to delete it？',
-		popconfirmResatUserPwd: 'Are you sure you want to reset？'
+		popConfirmDeleteUser: 'Are you sure you want to delete it？',
+		popConfirmResatUserPwd: 'Are you sure you want to reset？'
 	}
 }

@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.client.modular.user.entity.ClientUser;
+import vip.xiaonuo.client.modular.user.entity.ClientUserExt;
 import vip.xiaonuo.client.modular.user.param.*;
 import vip.xiaonuo.client.modular.user.result.ClientLoginUser;
 import vip.xiaonuo.client.modular.user.result.ClientUserPicValidCodeResult;
@@ -341,4 +342,12 @@ public interface ClientUserService extends IService<ClientUser> {
      * @date 2022/8/25 15:16
      **/
     void doRegister(String account, String password);
+
+    /**
+     * 获取用户扩展信息，没有则创建
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    ClientUserExt getOrCreateClientUserExt(String userId);
 }

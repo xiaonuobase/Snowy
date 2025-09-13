@@ -109,4 +109,36 @@ public interface AuthApi {
      * @date 2024/7/18 17:35
      */
     String doLoginByAccountForC(String account, String device);
+
+    /**
+     * B端手机号登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByPhoneForB(String phone, String device);
+
+    /**
+     * C端手机号登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByPhoneForC(String phone, String device);
+
+    /**
+     * B端邮箱登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByEmailForB(String email, String device);
+
+    /**
+     * C端邮箱登录
+     *
+     * @author yubaoshan
+     * @date 2024/7/18 17:35
+     */
+    String doLoginByEmailForC(String email, String device);
 }

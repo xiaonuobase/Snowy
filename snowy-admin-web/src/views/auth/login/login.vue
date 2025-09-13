@@ -8,8 +8,8 @@
 					target="_blank"
 					@click="handleLink"
 				>
-					<img :alt="sysBaseConfig.SNOWY_SYS_NAME" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-					<label>{{ sysBaseConfig.SNOWY_SYS_NAME }}</label>
+					<img :alt="systemName" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
+					<label>{{ systemName }}</label>
 				</a>
 			</div>
 			<div class="version">
@@ -74,7 +74,7 @@
 										<a-col :span="17">
 											<a-input
 												v-model:value="ruleForm.validCode"
-												:placeholder="$t('login.validLaceholder')"
+												:placeholder="$t('login.validPlaceholder')"
 												size="large"
 												@keyup.enter="login"
 											>
@@ -104,17 +104,26 @@
 								</a-form-item>
 							</a-form>
 						</a-tab-pane>
-						<a-tab-pane key="userSms" :tab="$t('login.phoneSms')" force-render v-if="phoneLogin === 'true'">
+						<a-tab-pane key="userSms" :tab="$t('login.phoneLogin')" force-render v-if="loginTypes.phoneLogin === 'true'">
 							<phone-login-form />
 						</a-tab-pane>
-						<a-tab-pane key="userEmail" :tab="$t('login.emailLogin')" force-render v-if="emailLogin === 'true'">
+						<a-tab-pane key="userEmail" :tab="$t('login.emailLogin')" force-render v-if="loginTypes.emailLogin === 'true'">
 							<email-login-form />
+						</a-tab-pane>
+						<a-tab-pane key="userOtp" :tab="$t('login.otpLogin')" force-render v-if="loginTypes.otpLogin === 'true'">
+							<otp-login-form :captchaOpen="captchaOpen" />
 						</a-tab-pane>
 					</a-tabs>
 					<div v-if="configData.FRONT_BACK_LOGIN_URL_SHOW">
-						<a href="/front/client/index" class="xn-color-0d84ff">前台登录</a>
+						<a href="/front/client/index" class="xn-color-0d84ff">{{ $t('login.frontLogin') }}</a>
 					</div>
-					<three-login v-if="configData.THREE_LOGIN_SHOW" />
+					<three-login v-if="configData.THREE_LOGIN_SHOW && !appId" />
+					<three-login-for-app ref="threeLoginForAppRef"
+										 v-if="configData.THREE_LOGIN_SHOW && appId"
+										 :appId="appId"
+										 :loginTypes="loginTypes"
+										 @updateLoginTypes="updateLoginTypes"
+										 @updateSystemName="updateSystemName"/>
 				</a-card>
 			</div>
 		</div>
@@ -124,7 +133,9 @@
 	import loginApi from '@/api/auth/loginApi'
 	const PhoneLoginForm = defineAsyncComponent(() => import('./phoneLoginForm.vue'))
 	const EmailLoginForm = defineAsyncComponent(() => import('./emailLoginForm.vue'))
+	const OtpLoginForm = defineAsyncComponent(() => import('./otpLoginForm.vue'))
 	import ThreeLogin from './threeLogin.vue'
+	import ThreeLoginForApp from './threeLoginForApp.vue'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
 	import { afterLogin } from './util'
@@ -132,13 +143,28 @@
 	import configApi from '@/api/dev/configApi'
 	import tool from '@/utils/tool'
 	import { globalStore, iframeStore, keepAliveStore, viewTagsStore } from '@/store'
+	import router from '@/router'
+	const route = router.currentRoute.value
+	const appId = computed(() => {
+		return route.query.appId
+	})
+	const threeLoginForAppRef = ref(null)
 	const { proxy } = getCurrentInstance()
-
 	const activeKey = ref('userAccount')
+
 	const captchaOpen = ref(configData.SYS_BASE_CONFIG.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B)
 	const registerOpen = ref('false')
-	const phoneLogin = ref('false')
-	const emailLogin = ref('false')
+	const loginTypes = reactive({
+		phoneLogin: 'false',
+		emailLogin: 'false',
+		otpLogin: 'false'
+	})
+	const updateLoginTypes = (newTypes) => {
+		Object.assign(loginTypes, newTypes)
+	}
+	const updateSystemName = (newSystemName) => {
+		systemName.value = newSystemName
+	}
 	const validCodeBase64 = ref('')
 	const loading = ref(false)
 
@@ -185,7 +211,7 @@
 	const sysBaseConfig = computed(() => {
 		return store.sysBaseConfig
 	})
-
+	const systemName = ref(sysBaseConfig.value.SNOWY_SYS_NAME)
 	onMounted(() => {
 		let formData = ref(configData.SYS_BASE_CONFIG)
 		configApi
@@ -197,11 +223,15 @@
 					})
 					captchaOpen.value = formData.value.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B
 					registerOpen.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_REGISTER_FLAG_FOR_B
-					phoneLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B
-					emailLogin.value = formData.value.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B
+					loginTypes.phoneLogin = formData.value.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B
+					loginTypes.emailLogin = formData.value.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B
+					loginTypes.otpLogin = formData.value.SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B
 					tool.data.set('SNOWY_SYS_BASE_CONFIG', formData.value)
 					setSysBaseConfig(formData.value)
 					refreshSwitch()
+					if (threeLoginForAppRef.value) {
+						threeLoginForAppRef.value.init(appId)
+					}
 				}
 			})
 			.catch(() => {})
@@ -245,7 +275,7 @@
 			ruleForm.validCodeReqNo = data.validCodeReqNo
 		})
 	}
-	//登陆
+	// 登录
 	const loginForm = ref()
 	const login = async () => {
 		loginForm.value
@@ -259,18 +289,16 @@
 					validCode: ruleForm.validCode,
 					validCodeReqNo: ruleForm.validCodeReqNo
 				}
-				// 获取token
-				try {
-					const loginToken = await loginApi.login(loginData)
-					await afterLogin(loginToken)
-				} catch (err) {
-					loading.value = false
-					if (captchaOpen.value === 'true') {
-						loginCaptcha()
-					}
-				}
+				const loginToken = await loginApi.login(loginData)
+				await afterLogin(loginToken)
 			})
-			.catch(() => {})
+			.catch((err) => {
+				console.log(err)
+				loading.value = false
+				if (captchaOpen.value === 'true') {
+					loginCaptcha()
+				}}
+			)
 	}
 	const configLang = (key) => {
 		config.value.lang = key

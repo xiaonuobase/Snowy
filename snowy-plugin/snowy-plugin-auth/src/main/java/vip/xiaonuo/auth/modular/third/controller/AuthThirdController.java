@@ -21,8 +21,11 @@ import jakarta.annotation.Resource;
 import me.zhyd.oauth.model.AuthCallback;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.auth.modular.third.entity.AuthThirdUser;
+import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
@@ -74,12 +77,25 @@ public class AuthThirdController {
     }
 
     /**
+     * 第三方登录绑定账号
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 16:42
+     **/
+    @ApiOperationSupport(order = 3)
+    @Operation(summary = "第三方登录绑定账号")
+    @PostMapping("/auth/third/bindAccount")
+    public CommonResult<String> bindAccount(@RequestBody @Valid AuthThirdBindAccountParam authThirdBindAccountParam) {
+        return CommonResult.data(authThirdService.bindAccount(authThirdBindAccountParam));
+    }
+
+    /**
      * 获取三方用户分页
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取三方用户分页")
     @GetMapping("/auth/third/page")
     public CommonResult<Page<AuthThirdUser>> page(AuthThirdUserPageParam authThirdUserPageParam) {

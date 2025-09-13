@@ -70,6 +70,12 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
     /** C端邮箱登录是否开启 */
     private static final String SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C_KEY = "SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C";
 
+    /** B端动态口令登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B_KEY = "SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B";
+
+    /** C端动态口令登录是否开启 */
+    private static final String SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_C_KEY = "SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_C";
+
     @Resource
     private CommonCacheOperator commonCacheOperator;
 
@@ -123,7 +129,9 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
                 SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B_KEY,
                 SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C_KEY,
                 SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B_KEY,
-                SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C_KEY));
+                SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B_KEY,
+                SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_C_KEY));
         return this.list(lambdaQueryWrapper);
     }
 

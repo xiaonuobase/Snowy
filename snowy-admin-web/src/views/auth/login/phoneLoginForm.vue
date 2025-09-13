@@ -51,7 +51,7 @@
 					<a-col :span="17">
 						<a-input
 							v-model:value="phoneFormModalData.validCode"
-							:placeholder="$t('login.validLaceholder')"
+							:placeholder="$t('login.validPlaceholder')"
 							size="large"
 						>
 							<template #prefix>
