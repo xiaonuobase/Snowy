@@ -10,7 +10,14 @@
 			<slot :name="slotKey" />
 		</template>
 	</a-modal>
-	<a-drawer v-else :open="visible" v-bind="$attrs" @close="cancel" :footer-style="{ textAlign: 'right' }">
+	<a-drawer
+		v-else
+		:open="visible"
+		v-bind="$attrs"
+		@close="cancel"
+		:footer-style="{ textAlign: 'right' }"
+		:width="drawerWidth"
+	>
 		<template v-for="slotKey in slotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
@@ -18,9 +25,10 @@
 </template>
 
 <script setup>
-	import { useSlots } from 'vue'
+	import { useSlots, computed, useAttrs, onMounted, onUnmounted } from 'vue'
 	import { globalStore } from '@/store'
 	const slots = useSlots()
+	const attrs = useAttrs()
 	const store = globalStore()
 	const props = defineProps({
 		visible: {
@@ -42,10 +50,30 @@
 	const isModal = computed(() => {
 		return FormContainerTypeEnum.MODAL === formStyle.value
 	})
+
+	// 响应式抽屉宽度
+	const isSmallScreen = ref(window.innerWidth <= 576)
+	const drawerWidth = computed(() => {
+		return isSmallScreen.value ? '100%' : attrs.width // 小屏幕100%宽度，其他情况使用默认值
+	})
+
 	const emit = defineEmits(['close'])
 	const cancel = () => {
 		emit('close')
 	}
+
+	// 监听窗口大小变化
+	const handleResize = () => {
+		isSmallScreen.value = window.innerWidth <= 576
+	}
+
+	onMounted(() => {
+		window.addEventListener('resize', handleResize)
+	})
+
+	onUnmounted(() => {
+		window.removeEventListener('resize', handleResize)
+	})
 </script>
 <script>
 	// 声明额外的选项
@@ -53,3 +81,13 @@
 		inheritAttrs: false
 	}
 </script>
+
+<style scoped>
+	/* 确保小屏幕下抽屉不会有额外的边距或滚动条 */
+	@media (max-width: 576px) {
+		:deep(.ant-drawer-content-wrapper) {
+			width: 100% !important;
+			max-width: 100% !important;
+		}
+	}
+</style>
