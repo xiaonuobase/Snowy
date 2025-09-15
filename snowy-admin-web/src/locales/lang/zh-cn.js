@@ -75,6 +75,7 @@ export default {
 		frontLogin: '前台登录',
 	},
 	user: {
+		userOrg: '所属组织',
 		userStatus: '用户状态',
 		resetPassword: '重置密码',
 		role: '角色',
@@ -83,6 +84,7 @@ export default {
 		grantResource: '授权资源',
 		grantPermission: '授权权限',
 		exportUserInfo: '导出信息',
+		placeholderUserOrg: '请选择组织',
 		placeholderNameAndSearchKey: '请输入姓名或关键词',
 		placeholderUserStatus: '请选择状态',
 		popConfirmDeleteUser: '确定要删除吗？',
