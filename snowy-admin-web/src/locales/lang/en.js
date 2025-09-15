@@ -73,6 +73,7 @@ export default {
 		frontLogin: 'Front Login',
 	},
 	user: {
+		userOrg: 'User Org',
 		userStatus: 'User Status',
 		resetPassword: 'Reset Password',
 		role: 'Role',
@@ -83,6 +84,7 @@ export default {
 		exportUserInfo: 'Export UserInfo',
 		placeholderNameAndSearchKey: 'Please enter your name or keyword',
 		placeholderUserStatus: 'Please select status',
+		placeholderUserOrg: 'Please select org',
 		popConfirmDeleteUser: 'Are you sure you want to delete it？',
 		popConfirmResatUserPwd: 'Are you sure you want to reset？'
 	}
