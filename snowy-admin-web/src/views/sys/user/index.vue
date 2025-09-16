@@ -1,7 +1,7 @@
 <template>
 	<a-row :gutter="10">
 		<a-col :xs="0" :sm="0" :md="0" :lg="4" :xl="4">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container mb-3">
+			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
 				<a-tree
 					v-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
