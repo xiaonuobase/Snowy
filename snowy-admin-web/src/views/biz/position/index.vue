@@ -1,6 +1,6 @@
 <template>
 	<a-row :gutter="10">
-		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
+		<a-col :xs="0" :sm="0" :md="0" :lg="4" :xl="4">
 			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
 				<a-tree
 					v-if="treeData.length > 0"
@@ -12,24 +12,47 @@
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 			</a-card>
 		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
+		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
 			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-					<a-row :gutter="24">
-						<a-col :span="8">
+				<a-form ref="searchFormRef" :model="searchFormState">
+					<a-row :gutter="10">
+						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+							<a-form-item label="组织：" name="orgId">
+								<a-tree-select
+									v-model:value="searchFormState.orgId"
+									class="xn-wd"
+									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+									placeholder="请选择组织"
+									allow-clear
+									:tree-data="treeData"
+									:field-names="{
+											children: 'children',
+											label: 'name',
+											value: 'id'
+										}"
+									selectable="false"
+									tree-line
+								/>
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 							<a-form-item name="searchKey" label="名称关键词">
 								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入岗位名称关键词" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
-							<a-button type="primary" @click="tableRef.refresh(true)">
-								<template #icon><SearchOutlined /></template>
-								查询
-							</a-button>
-							<a-button class="snowy-button-left" @click="reset">
-								<template #icon><redo-outlined /></template>
-								重置
-							</a-button>
+						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+							<a-form-item>
+								<a-space>
+									<a-button type="primary" @click="tableRef.refresh(true)">
+										<template #icon><SearchOutlined /></template>
+										查询
+									</a-button>
+									<a-button class="snowy-button-left" @click="reset">
+										<template #icon><redo-outlined /></template>
+										重置
+									</a-button>
+								</a-space>
+							</a-form-item>
 						</a-col>
 					</a-row>
 				</a-form>
@@ -45,6 +68,7 @@
 					:tool-config="toolConfig"
 					:row-key="(record) => record.id"
 					:row-selection="options.rowSelection"
+					:scroll="{ x: 'max-content' }"
 				>
 					<template #operator class="table-operator">
 						<a-space>
@@ -111,6 +135,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: '150px'
 		})
 	}
@@ -209,10 +234,5 @@
 </script>
 
 <style scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
-	}
+
 </style>

@@ -2,12 +2,12 @@
 	<a-card :bordered="false">
 		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
 			<a-row :gutter="24">
-				<a-col :span="6">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 					<a-form-item label="名称" name="name">
 						<a-input v-model:value="searchFormState.name" placeholder="请输入名称" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
 					<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
 					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
 				</a-col>
@@ -22,6 +22,7 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -100,6 +101,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: 220
 		})
 	}
