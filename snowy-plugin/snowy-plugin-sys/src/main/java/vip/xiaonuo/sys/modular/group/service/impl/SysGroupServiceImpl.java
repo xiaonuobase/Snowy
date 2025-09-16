@@ -66,6 +66,9 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     @Override
     public Page<SysGroup> page(SysGroupPageParam sysGroupPageParam) {
         QueryWrapper<SysGroup> queryWrapper = new QueryWrapper<SysGroup>().checkSqlInjection();
+        if(ObjectUtil.isNotEmpty(sysGroupPageParam.getSearchKey())) {
+            queryWrapper.lambda().like(SysGroup::getName, sysGroupPageParam.getSearchKey());
+        }
         if(ObjectUtil.isNotEmpty(sysGroupPageParam.getName())) {
             queryWrapper.lambda().like(SysGroup::getName, sysGroupPageParam.getName());
         }
