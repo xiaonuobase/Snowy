@@ -36,7 +36,7 @@
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="searchKey" label="名称关键词">
+							<a-form-item name="searchKey" label="名称">
 								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入名称关键词" />
 							</a-form-item>
 						</a-col>

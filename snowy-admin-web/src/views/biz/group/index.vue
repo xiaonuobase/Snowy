@@ -1,18 +1,24 @@
 <template>
-	<a-card :bordered="false">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+	<a-card :bordered="false" class="xn-mb10">
+		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="24">
 				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-					<a-form-item label="名称" name="name">
-						<a-input v-model:value="searchFormState.name" placeholder="请输入名称" />
+					<a-form-item label="关键词" name="name">
+						<a-input v-model:value="searchFormState.name" placeholder="请输入名称关键词" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
-					<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
+							<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
+	</a-card>
+	<a-card :bordered="false">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
