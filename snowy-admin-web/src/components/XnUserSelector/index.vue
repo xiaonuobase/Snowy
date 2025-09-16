@@ -35,7 +35,7 @@
 		@cancel="handleClose"
 	>
 		<a-row :gutter="10">
-			<a-col :span="7">
+			<a-col :xs="0" :sm="0" :md="0" :lg="7" :xl="7">
 				<a-card size="small" :loading="cardLoading" class="selectorTreeDiv">
 					<a-tree
 						v-if="treeData"
@@ -47,18 +47,41 @@
 					</a-tree>
 				</a-card>
 			</a-col>
-			<a-col :span="11">
+			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
 				<div class="table-operator xn-mb10">
 					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
 						<a-row :gutter="24">
-							<a-col :span="12">
+							<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+								<a-form-item label="组织：" name="orgId">
+									<a-tree-select
+										v-model:value="searchFormState.orgId"
+										class="xn-wd"
+										:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+										placeholder="请选择组织"
+										allow-clear
+										:tree-data="treeData"
+										:field-names="{
+											children: 'children',
+											label: 'name',
+											value: 'id'
+										}"
+										selectable="false"
+										tree-line
+									/>
+								</a-form-item>
+							</a-col>
+							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 								<a-form-item name="searchKey">
 									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户名" />
 								</a-form-item>
 							</a-col>
-							<a-col :span="12">
-								<a-button type="primary" class="xn-mr-10" @click="loadData()"> 查询 </a-button>
-								<a-button @click="reset()"> 重置 </a-button>
+							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+								<a-form-item>
+									<a-space>
+										<a-button type="primary" class="xn-mr-10" @click="loadData()"> 查询 </a-button>
+										<a-button @click="reset()"> 重置 </a-button>
+									</a-space>
+								</a-form-item>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -73,6 +96,7 @@
 						:loading="pageLoading"
 						bordered
 						:pagination="false"
+						:scroll="{ x: 'max-content' }"
 					>
 						<template #title>
 							<span>待选择列表 {{ tableRecordNum }} 条</span>
@@ -105,7 +129,7 @@
 					</div>
 				</div>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 				<div class="user-table">
 					<a-table
 						ref="selectedTable"
@@ -441,7 +465,7 @@
 	}
 	// 重置
 	const reset = () => {
-		delete searchFormState.value.searchKey
+		searchFormRef.value.resetFields()
 		loadData()
 	}
 	const handleClose = () => {
@@ -579,9 +603,6 @@
 	.selectorTreeDiv {
 		max-height: 500px;
 		overflow: auto;
-	}
-	.ant-form-item {
-		margin-bottom: 0 !important;
 	}
 	.user-table {
 		overflow: auto;
