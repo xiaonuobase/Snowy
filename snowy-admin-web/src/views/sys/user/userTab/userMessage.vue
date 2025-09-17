@@ -1,15 +1,15 @@
 <template>
 	<a-row :gutter="10">
-		<a-col :span="4">
+		<a-col :span="6">
 			<a-menu id="userMessage" v-model:selected-keys="selectedKeys" mode="inline" @click="handleClick">
 				<a-menu-item :key="messageCategory.value" v-for="messageCategory in messageCategoryList">{{
 					messageCategory.label
 				}}</a-menu-item>
 			</a-menu>
 		</a-col>
-		<a-col :span="20">
+		<a-col :span="18">
 			<div class="xn-mt-16">
-				<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
+				<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'subject'">
 							<ellipsis :length="40" tooltip>
@@ -61,6 +61,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
+			fixed: 'right',
 			width: '100px'
 		}
 	]

@@ -15,7 +15,7 @@
 			<a-row :gutter="16">
 			<% for(var i = 0; i < configList.~size; i++) { %>
 			<% if(!configList[i].needTableId && configList[i].whetherAddUpdate) { %>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 					<a-form-item label="${configList[i].fieldRemark}：" name="${configList[i].fieldNameCamelCase}">
 						<% if(configList[i].effectType == 'input') { %>
 						<a-input v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" allow-clear />

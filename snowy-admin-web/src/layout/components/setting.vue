@@ -56,58 +56,77 @@
 					@change="changeTopHeaderThemeColorSpread"
 				/>
 			</div>
-
 			<a-divider />
-			<a-form ref="formRef" class="text-right">
-				<a-form-item label="模块坞" v-if="!moduleUnfoldDisabled">
-					<a-switch
-						:checked="moduleUnfoldOpen"
-						@change="toggleState('moduleUnfoldOpen')"
-						:disabled="moduleUnfoldDisabled"
-					/>
-				</a-form-item>
-				<a-form-item label="固定宽度" v-if="layout == layoutEnum.TOP">
-					<a-switch :checked="fixedWidth" @change="toggleState('fixedWidth')" />
-				</a-form-item>
-				<a-form-item label="面包屑">
-					<a-switch :checked="breadcrumbOpen" @change="toggleState('breadcrumbOpen')" />
-				</a-form-item>
-				<a-form-item label="多标签">
-					<a-switch :checked="layoutTagsOpen" @change="toggleState('layoutTagsOpen')" />
-				</a-form-item>
-				<a-form-item label="折叠菜单" v-if="!menuIsCollapseDisabled">
-					<a-switch
-						:checked="menuIsCollapse"
-						@change="toggleState('menuIsCollapse')"
-						:disabled="menuIsCollapseDisabled"
-					/>
-				</a-form-item>
-				<a-form-item label="菜单排他展开" v-if="!sideUniqueOpenDisabled">
-					<a-switch
-						:checked="sideUniqueOpen"
-						@change="toggleState('sideUniqueOpen')"
-						:disabled="sideUniqueOpenDisabled"
-					/>
-				</a-form-item>
-				<a-form-item label="登录用户水印">
-					<a-switch :checked="loginUserWatermarkOpen" @change="toggleState('loginUserWatermarkOpen')" />
-				</a-form-item>
-				<a-form-item label="页脚版权信息">
-					<a-switch :checked="footerCopyrightOpen" @change="toggleState('footerCopyrightOpen')" />
-				</a-form-item>
-				<a-form-item label="圆角风格">
-					<a-switch :checked="roundedCornerStyleOpen" @change="toggleState('roundedCornerStyleOpen')" />
-				</a-form-item>
-				<a-form-item label="表单风格">
-					<a-select
-						:value="formStyle"
-						class="!w-[80px]"
-						size="small"
-						:options="xnFormStyleOptions"
-						@change="formStyleChange"
-					/>
-				</a-form-item>
-			</a-form>
+			<div class="mb-4 layout-slide" v-if="!moduleUnfoldDisabled">
+				<h4 class="setting-item-title">模块坞：</h4>
+				<a-switch
+					:checked="moduleUnfoldOpen"
+					@change="toggleState('moduleUnfoldOpen')"
+					:disabled="moduleUnfoldDisabled"
+				/>
+			</div>
+			<div class="mb-4 layout-slide" v-if="layout === layoutEnum.TOP">
+				<h4 class="setting-item-title">固定宽度：</h4>
+				<a-switch :checked="fixedWidth"
+						  @change="toggleState('fixedWidth')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">面包屑：</h4>
+				<a-switch :checked="breadcrumbOpen"
+						  @change="toggleState('breadcrumbOpen')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">多标签：</h4>
+				<a-switch :checked="layoutTagsOpen"
+						  @change="toggleState('layoutTagsOpen')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide" v-if="!menuIsCollapseDisabled">
+				<h4 class="setting-item-title">折叠菜单：</h4>
+				<a-switch
+					:checked="menuIsCollapse"
+					@change="toggleState('menuIsCollapse')"
+					:disabled="menuIsCollapseDisabled"
+				/>
+			</div>
+			<div class="mb-4 layout-slide" v-if="!sideUniqueOpenDisabled">
+				<h4 class="setting-item-title">菜单排他展开：</h4>
+				<a-switch
+					:checked="sideUniqueOpen"
+					@change="toggleState('sideUniqueOpen')"
+					:disabled="sideUniqueOpenDisabled"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">登录用户水印：</h4>
+				<a-switch :checked="loginUserWatermarkOpen"
+						  @change="toggleState('loginUserWatermarkOpen')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">页脚版权信息：</h4>
+				<a-switch :checked="footerCopyrightOpen"
+						  @change="toggleState('footerCopyrightOpen')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">圆角风格：</h4>
+				<a-switch :checked="roundedCornerStyleOpen"
+						  @change="toggleState('roundedCornerStyleOpen')"
+				/>
+			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">表单风格：</h4>
+				<a-select
+					:value="formStyle"
+					class="!w-[80px]"
+					size="small"
+					:options="xnFormStyleOptions"
+					@change="formStyleChange"
+				/>
+			</div>
 			<a-alert
 				message="以上配置可实时预览，开发者可在 config/index.js 中配置默认值，不建议在生产环境下开放布局设置"
 				type="warning"

@@ -17,12 +17,12 @@
 				<a-form ref="searchFormRef" :model="searchFormState">
 					<a-row :gutter="10">
 						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
-							<a-form-item :label="$t('user.userOrg')" name="orgId">
+							<a-form-item label="所属机构" name="orgId">
 								<a-tree-select
 									v-model:value="searchFormState.orgId"
 									class="xn-wd"
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									:placeholder="$t('user.placeholderUserOrg')"
+									placeholder="请选择所属机构"
 									allow-clear
 									:tree-data="treeData"
 									:field-names="{
@@ -36,18 +36,18 @@
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="searchKey" :label="$t('common.searchKey')">
+							<a-form-item name="searchKey" label="关键词">
 								<a-input
 									v-model:value="searchFormState.searchKey"
-									:placeholder="$t('user.placeholderNameAndSearchKey')"
+									placeholder="请输入姓名或关键词"
 								/>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="userStatus" :label="$t('user.userStatus')">
+							<a-form-item name="userStatus" label="人员状态">
 								<a-select
 									v-model:value="searchFormState.userStatus"
-									:placeholder="$t('user.placeholderUserStatus')"
+									placeholder="请选择人员状态"
 									:getPopupContainer="(trigger) => trigger.parentNode"
 								>
 									<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
@@ -61,11 +61,11 @@
 								<a-space>
 									<a-button type="primary" @click="tableRef.refresh(true)">
 										<template #icon><SearchOutlined /></template>
-										{{ $t('common.searchButton') }}
+										查询
 									</a-button>
 									<a-button @click="reset">
 										<template #icon><redo-outlined /></template>
-										{{ $t('common.resetButton') }}
+										重置
 									</a-button>
 								</a-space>
 							</a-form-item>
@@ -94,15 +94,15 @@
 								v-if="hasPerm('bizUserAdd')"
 							>
 								<template #icon><plus-outlined /></template>
-								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
+								<span>增加人员</span>
 							</a-button>
 							<a-button @click="exportBatchUserVerify" v-if="hasPerm('bizUserBatchExport')">
 								<template #icon><export-outlined /></template>
-								{{ $t('user.batchExportButton') }}
+								批量导出
 							</a-button>
 							<xn-batch-button
 								v-if="hasPerm('bizUserBatchDelete')"
-								:buttonName="$t('common.batchRemoveButton')"
+								buttonName="批量删除"
 								icon="DeleteOutlined"
 								buttonDanger
 								:selectedRowKeys="selectedRowKeys"
@@ -127,12 +127,12 @@
 							<span v-else>{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</span>
 						</template>
 						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">{{ $t('common.editButton') }}</a>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">编辑</a>
 							<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
-							<a-popconfirm :title="$t('user.popConfirmDeleteUser')" @confirm="removeUser(record)">
-								<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')">{{
-									$t('common.removeButton')
-								}}</a-button>
+							<a-popconfirm title="确定要删除吗？" @confirm="removeUser(record)">
+								<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')">
+									删除
+								</a-button>
 							</a-popconfirm>
 							<a-divider
 								type="vertical"
@@ -140,25 +140,25 @@
 							/>
 							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])">
 								<a class="ant-dropdown-link">
-									{{ $t('common.more') }}
+									更多
 									<DownOutlined />
 								</a>
 								<template #overlay>
 									<a-menu>
 										<a-menu-item v-if="hasPerm('bizUserPwdReset')">
 											<a-popconfirm
-												:title="$t('user.popConfirmResatUserPwd')"
+												title="确定要重置吗？"
 												placement="topRight"
 												@confirm="resetPassword(record)"
 											>
-												<a>{{ $t('user.resetPassword') }}</a>
+												<a>重置密码</a>
 											</a-popconfirm>
 										</a-menu-item>
 										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
-											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
+											<a @click="selectRole(record)">授权角色</a>
 										</a-menu-item>
 										<a-menu-item v-if="hasPerm('bizUserExportUserInfo')">
-											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
+											<a @click="exportUserInfo(record)">导出信息</a>
 										</a-menu-item>
 									</a-menu>
 								</template>

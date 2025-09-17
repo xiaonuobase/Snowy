@@ -17,12 +17,12 @@
 				<a-form ref="searchFormRef" :model="searchFormState">
 					<a-row :gutter="10">
 						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
-							<a-form-item label="上级组织：" name="parentId">
+							<a-form-item label="上级机构：" name="parentId">
 								<a-tree-select
 									v-model:value="searchFormState.parentId"
 									class="xn-wd"
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择上级组织"
+									placeholder="请选择上级机构"
 									allow-clear
 									:tree-data="treeData"
 									:field-names="{

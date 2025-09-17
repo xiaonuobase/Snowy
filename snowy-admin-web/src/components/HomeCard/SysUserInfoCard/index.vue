@@ -2,7 +2,7 @@
 	<a-card :bordered="false">
 		<div class="xn-card-line">
 			<div class="xn-flex">
-				<a-avatar class="xn-wh60" :src="userInfo.avatar" :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }" />
+				<a-avatar class="xn-wh60" :src="userInfo.avatar" :size="{ xs: 80, sm: 80, md: 80, lg: 80, xl: 80 }" />
 				<div class="snowy-index-card-left-one-username">
 					<span>{{ userInfo.name }}</span>
 					<span>{{ userInfo.orgName }} | {{ userInfo.positionName }}</span>

@@ -1,8 +1,8 @@
 <template>
 	<xn-form-container :visible="visible" :width="700" title="电子签名" @close="handleClear" @ok="handleOk">
 		<a-row :gutter="5">
-			<a-col :span="15">
-				<div class="xn-bdr236">
+			<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+				<div class="imgBox">
 					<vue-esign
 						ref="esignRef"
 						v-model:bgColor="bgColor"
@@ -15,32 +15,36 @@
 					/>
 				</div>
 			</a-col>
-			<a-col :span="9">
-				<div class="xn-h90wat">
-					<img v-if="resultImg" :src="resultImg" class="xn-bdr236 xn-h90w100" />
+			<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+				<div class="imgBox">
+					<img v-if="resultImg" :src="resultImg"/>
 					<a-empty v-else />
 				</div>
 			</a-col>
 		</a-row>
 		<div class="xn-mt10">
-			<a-space>
-				<a-form>
-					<a-row :gutter="16">
-						<a-col :span="12">
-							<a-form-item label="画笔粗细：">
-								<a-input-number v-model:value="lineWidth" :min="1" :max="20" />
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item>
-								<div class="xn-pr50">是否裁剪：<a-checkbox v-model:checked="isCrop"></a-checkbox></div>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-form>
-				<a-button type="primary" @click="handleGenerate">预览</a-button>
-				<a-button @click="handleReset">清屏</a-button>
-			</a-space>
+			<a-form>
+				<a-row :gutter="16">
+					<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+						<a-form-item label="画笔粗细：">
+							<a-input-number v-model:value="lineWidth" :min="1" :max="20" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+						<a-form-item label="是否裁剪：">
+							<a-checkbox v-model:checked="isCrop"></a-checkbox>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="handleGenerate">预览</a-button>
+								<a-button @click="handleReset">清屏</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
 		</div>
 		<template #footer>
 			<a-button class="xn-mr8" @click="handleClear">取消</a-button>
@@ -100,24 +104,17 @@
 </script>
 
 <style scoped>
-	.xn-h90w100 {
-		height: 90px;
+	.imgBox {
+		height: 160px;
+		width: 100%;
+		border: 1px solid rgb(236 236 236);
+		margin-top: 10px;
+	}
+	.imgBox img {
+		height: 160px;
 		width: 100%;
 	}
 	.xn-mt10 {
 		margin-top: 10px;
-	}
-	.xn-h90wat {
-		height: 90px;
-		width: auto;
-	}
-	.xn-bdr236 {
-		border: 1px solid rgb(236 236 236);
-	}
-	.ant-form-item {
-		margin-bottom: 0px !important;
-	}
-	.xn-pr50 {
-		padding-right: 50px;
 	}
 </style>

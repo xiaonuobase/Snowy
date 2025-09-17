@@ -27,7 +27,6 @@
 			<xn-editor
 				v-model="formData.content"
 				placeholder="请输入邮件正文"
-				:height="200"
 				:file-upload-function="apiFunction.fileUploadApi"
 			/>
 		</a-form-item>

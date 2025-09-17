@@ -11,56 +11,45 @@
 			<a-tabs v-model:activeKey="activeTabsKey">
 				<a-tab-pane key="1" tab="基础信息" force-render>
 					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="账号：" name="account">
 								<a-input v-model:value="formData.account" placeholder="请输入账号" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="姓名：" name="name">
 								<a-input v-model:value="formData.name" placeholder="请输入姓名" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="性别：" name="gender">
-								<a-radio-group v-model:value="formData.gender" :options="genderOptions"> </a-radio-group>
+								<a-radio-group v-model:value="formData.gender" :options="genderOptions" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="昵称：" name="nickname">
 								<a-input v-model:value="formData.nickname" placeholder="请输入昵称" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="手机号：" name="phone">
 								<a-input v-model:value="formData.phone" placeholder="请输入手机" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="邮箱：" name="email">
 								<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
 							</a-form-item>
 						</a-col>
 					</a-row>
 					<a-row :gutter="16">
-						<a-col :span="12">
-							<a-form-item label="出生日期：" name="birthday">
-								<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
-							</a-form-item>
-						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="8">
-							<a-form-item label="选择组织：" name="orgId">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+							<a-form-item label="选择机构：" name="orgId">
 								<a-tree-select
 									v-model:value="formData.orgId"
 									class="xn-wd"
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择组织"
+									placeholder="请选择机构"
 									allow-clear
 									tree-default-expand-all
 									:tree-data="treeData"
@@ -71,22 +60,22 @@
 										value: 'id'
 									}"
 									@change="selePositionData(formData.orgId, 0)"
-								></a-tree-select>
+								/>
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
-							<a-form-item label="选择职位：" name="positionId">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+							<a-form-item label="选择岗位：" name="positionId">
 								<xn-page-select
 									ref="xnPositionPageSelectRef"
 									v-model:value="formData.positionId"
-									placeholder="请选择职位"
+									placeholder="请选择岗位"
 									allow-clear
 									:page-function="selectApiFunction.positionSelector"
 									:echo-function="selectApiFunction.echoPosition"
 								/>
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择主管：" name="directorId">
 								<xn-page-select
 									ref="xnUserPageSelectRef"
@@ -100,17 +89,17 @@
 						</a-col>
 					</a-row>
 					<a-row :gutter="16">
-						<a-col :span="8">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="员工编号：" name="empNo">
 								<a-input v-model:value="formData.empNo" placeholder="请输入员工编号" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="职级：" name="positionLevel">
 								<a-input v-model:value="formData.positionLevel" placeholder="请输入职级" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="入职日期：" name="entryDate">
 								<a-date-picker v-model:value="formData.entryDate" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
@@ -118,11 +107,11 @@
 					</a-row>
 
 					<a-form-item label="任职信息" name="positionJson">
-						<a-row :gutter="10" class="form-row">
-							<a-col :span="7" class="form-row-con"> 机构 </a-col>
-							<a-col :span="7" class="form-row-con"> 职位 </a-col>
-							<a-col :span="7" class="form-row-con"> 主管 </a-col>
-							<a-col :span="3" class="form-row-con">
+						<a-row :gutter="10" class="form-row mb-5">
+							<a-col :span="7"> 机构 </a-col>
+							<a-col :span="7"> 岗位 </a-col>
+							<a-col :span="7"> 主管 </a-col>
+							<a-col :span="3">
 								<a-button type="primary" @click="addDomains()" size="small">
 									<PlusOutlined />
 									增加
@@ -130,8 +119,8 @@
 							</a-col>
 						</a-row>
 						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
-							<a-row :gutter="16">
-								<a-col :span="7">
+							<a-row :gutter="10">
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
 									<a-form-item
 										:name="['positionJson', index, 'orgId']"
 										:rules="{ required: true, message: '请选择机构' }"
@@ -147,10 +136,10 @@
 											:tree-default-expanded-keys="treeDefaultExpandedKeys"
 											:field-names="{ children: 'children', label: 'name', value: 'id' }"
 											@select="childOrgSelect(positionInfo, 0, index)"
-										></a-tree-select>
+										/>
 									</a-form-item>
 								</a-col>
-								<a-col :span="7">
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
 									<a-form-item
 										:name="['positionJson', index, 'positionId']"
 										:rules="{ required: true, message: '请选择岗位' }"
@@ -165,7 +154,7 @@
 										/>
 									</a-form-item>
 								</a-col>
-								<a-col :span="7">
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
 									<a-form-item :name="['positionJson', index, 'directorId']">
 										<xn-page-select
 											ref="xnChildUserPageSelectRef"
@@ -177,8 +166,13 @@
 										/>
 									</a-form-item>
 								</a-col>
-								<a-col :span="3" class="xn-mt4">
-									<a-button size="small" type="primary" danger ghost @click="delDomains(index)">移除</a-button>
+								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
+									<a-form-item>
+										<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
+											<DeleteOutlined />
+											移除
+										</a-button>
+									</a-form-item>
 								</a-col>
 							</a-row>
 						</div>
@@ -186,19 +180,27 @@
 				</a-tab-pane>
 				<a-tab-pane key="2" tab="更多信息" force-render>
 					<a-row :gutter="16">
-						<a-col :span="12">
-							<a-form-item label="民族：" name="nation">
-								<a-select v-model:value="formData.nation" placeholder="请选择民族" :options="nationOptions"> </a-select>
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+							<a-form-item label="出生日期：" name="birthday">
+								<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+							<a-form-item label="民族：" name="nation">
+								<a-select v-model:value="formData.nation" placeholder="请选择民族" :options="nationOptions" />
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="籍贯：" name="nativePlace">
 								<a-input v-model:value="formData.nativePlace" placeholder="请输入籍贯" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+							<a-form-item label="家庭电话：" name="homeTel">
+								<a-input v-model:value="formData.homeTel" placeholder="请输入家庭电话" allow-clear />
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 							<a-form-item label="家庭住址：" name="homeAddress">
 								<a-textarea
 									v-model:value="formData.homeAddress"
@@ -208,101 +210,75 @@
 								/>
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
-							<a-form-item label="通信地址：" name="mailingAddress">
-								<a-textarea
-									v-model:value="formData.mailingAddress"
-									placeholder="请输入通信地址"
-									:auto-size="{ minRows: 2, maxRows: 5 }"
-									allow-clear
+						<!--						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+													<a-form-item label="通信地址：" name="mailingAddress">
+														<a-textarea
+															v-model:value="formData.mailingAddress"
+															placeholder="请输入通信地址"
+															:auto-size="{ minRows: 2, maxRows: 5 }"
+															allow-clear
+														/>
+													</a-form-item>
+												</a-col>-->
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+							<a-form-item label="证件类型：" name="idCardType">
+								<a-select
+									v-model:value="formData.idCardType"
+									placeholder="请选择证件类型"
+									:options="idcardTypeOptions"
 								/>
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
-							<a-form-item label="证件类型：" name="idCardType">
-								<a-select v-model:value="formData.idCardType" placeholder="请选择证件类型" :options="idcardTypeOptions">
-								</a-select>
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="证件号码：" name="idCardNumber">
 								<a-input v-model:value="formData.idCardNumber" placeholder="请输入证件号码" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="文化程度：" name="cultureLevel">
 								<a-select
 									v-model:value="formData.cultureLevel"
 									placeholder="请选择文化程度"
 									:options="cultureLevelOptions"
-								>
-								</a-select>
+								/>
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="政治面貌：" name="politicalOutlook">
 								<a-input v-model:value="formData.politicalOutlook" placeholder="请输入政治面貌" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="毕业学校：" name="college">
 								<a-input v-model:value="formData.college" placeholder="请输入毕业学校" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="学历：" name="education">
 								<a-input v-model:value="formData.education" placeholder="请输入学历" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="学制：" name="eduLength">
 								<a-input v-model:value="formData.eduLength" placeholder="请输入学制" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="学位：" name="degree">
 								<a-input v-model:value="formData.degree" placeholder="请输入学位" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-
-					<a-row :gutter="16">
-						<a-col :span="12">
-							<a-form-item label="家庭电话：" name="homeTel">
-								<a-input v-model:value="formData.homeTel" placeholder="请输入家庭电话" allow-clear />
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item label="办公电话：" name="officeTel">
-								<a-input v-model:value="formData.officeTel" placeholder="请输入办公电话" allow-clear />
-							</a-form-item>
-						</a-col>
-					</a-row>
-
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="紧急联系人：" name="emergencyContact">
 								<a-input v-model:value="formData.emergencyContact" placeholder="请输入紧急联系人" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="紧急联系电话：" name="emergencyPhone">
 								<a-input v-model:value="formData.emergencyPhone" placeholder="请输入紧急联系电话" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-
-					<a-row :gutter="16">
-						<a-col :span="12">
+						<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 							<a-form-item label="紧急联系人地址：" name="emergencyAddress">
 								<a-textarea
 									v-model:value="formData.emergencyAddress"
@@ -353,7 +329,7 @@
 		}
 		if (orgId) {
 			formData.value.orgId = orgId
-			// 通过机构再查询职位、主管
+			// 通过机构再查询岗位、主管
 			nextTick(() => {
 				selePositionData(orgId)
 			})
@@ -417,10 +393,10 @@
 		account: [required('请输入账号')],
 		name: [required('请输入姓名')],
 		sex: [required('请选择性别')],
-		orgId: [required('请选择组织')],
+		orgId: [required('请选择机构')],
 		positionId: [required('请选择岗位')]
 	}
-	// 机构选择后查询对应的职位
+	// 机构选择后查询对应的岗位
 	const selePositionData = (orgId, type) => {
 		if (orgId) {
 			const xnPositionPageSelectParam = {
@@ -428,7 +404,7 @@
 			}
 			xnPositionPageSelectRef.value.onPage(xnPositionPageSelectParam)
 			xnUserPageSelectRef.value.onPage()
-			// 此类型代表选择的时候重置后面的职位
+			// 此类型代表选择的时候重置后面的岗位
 			if (type === 0) {
 				formData.value.positionId = undefined
 				formData.value.directorId = undefined
@@ -472,7 +448,7 @@
 			})
 		}
 	}
-	// 附属职位信息增行
+	// 附属岗位信息增行
 	const addDomains = () => {
 		if (formData.value.positionJson === null) {
 			formData.value.positionJson = []
@@ -549,12 +525,7 @@
 <style scoped lang="less">
 	.form-row {
 		background-color: var(--item-hover-bg);
-		margin-left: 0 !important;
 		margin-bottom: 10px;
-	}
-	.form-row-con {
-		padding-bottom: 5px;
-		padding-top: 5px;
-		padding-left: 15px;
+		padding: 4px;
 	}
 </style>

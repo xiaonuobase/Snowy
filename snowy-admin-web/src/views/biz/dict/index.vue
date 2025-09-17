@@ -14,12 +14,7 @@
 		</a-col>
 		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
 			<a-card :bordered="false" class="xn-mb10">
-				<a-form
-					ref="searchFormRef"
-					name="advanced_search"
-					class="ant-advanced-search-form mb-3"
-					:model="searchFormState"
-				>
+				<a-form ref="searchFormRef" :model="searchFormState">
 					<a-row :gutter="10">
 						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
 							<a-form-item label="请选择上级字典：" name="parentId">
