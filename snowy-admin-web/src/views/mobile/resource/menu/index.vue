@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-space style="align-items: normal">
 				<a-radio-group v-model:value="module" button-style="solid">
 					<a-radio-button

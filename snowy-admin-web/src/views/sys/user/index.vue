@@ -12,7 +12,7 @@
 				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE"/>
 			</a-card>
 		</a-col>
-		<a-col :xs="24" :sm="20" :md="20" :lg="20" :xl="20">
+		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
 			<a-card :bordered="false" class="xn-mb10">
 				<a-form ref="searchFormRef" :model="searchFormState">
 					<a-row :gutter="10">
@@ -65,7 +65,7 @@
 										</template>
 										{{ $t('common.searchButton') }}
 									</a-button>
-									<a-button class="snowy-button-left" @click="reset">
+									<a-button @click="reset">
 										<template #icon>
 											<redo-outlined/>
 										</template>

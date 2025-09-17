@@ -47,7 +47,7 @@
 										<template #icon><SearchOutlined /></template>
 										查询
 									</a-button>
-									<a-button class="snowy-button-left" @click="reset">
+									<a-button @click="reset">
 										<template #icon><redo-outlined /></template>
 										重置
 									</a-button>

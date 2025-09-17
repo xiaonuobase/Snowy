@@ -1,8 +1,8 @@
 <template>
 	<a-card :bordered="false" class="xn-mb10">
-		<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-			<a-row :gutter="24">
-				<a-col :span="8">
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 					<a-form-item name="engine" label="短信引擎">
 						<a-select
 							v-model:value="searchFormState.engine"
@@ -13,20 +13,28 @@
 						></a-select>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
-					<a-form-item name="searchKey" label="手机号关键词">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item name="searchKey" label="关键词">
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入手机号关键词"></a-input>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
-					<a-button type="primary" @click="tableRef.refresh(true)">
-						<template #icon><SearchOutlined /></template>
-						查询
-					</a-button>
-					<a-button class="snowy-button-left" @click="reset">
-						<template #icon><redo-outlined /></template>
-						重置
-					</a-button>
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined/>
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined/>
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -41,6 +49,7 @@
 			bordered
 			:row-key="(record) => record.id"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -121,6 +130,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: '150px'
 		}
 	]
@@ -171,10 +181,5 @@
 </script>
 
 <style scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
-	}
+
 </style>

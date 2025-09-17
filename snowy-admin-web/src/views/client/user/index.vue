@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<a-card :bordered="false" style="margin-bottom: 10px">
-			<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
+			<a-form ref="searchFormRef" :model="searchFormState">
 				<a-row :gutter="24">
 					<a-col :span="8">
 						<a-form-item name="searchKey" label="用户关键词">
@@ -13,7 +13,7 @@
 							<template #icon><SearchOutlined /></template>
 							查询
 						</a-button>
-						<a-button class="snowy-button-left" @click="reset">
+						<a-button @click="reset">
 							<template #icon><redo-outlined /></template>
 							重置
 						</a-button>
