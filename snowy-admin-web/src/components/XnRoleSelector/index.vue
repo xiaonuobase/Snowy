@@ -42,7 +42,7 @@
 			</a-col>
 			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
 				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
+					<a-form ref="searchFormRef" :model="searchFormState">
 						<a-row :gutter="24">
 							<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
 								<a-form-item label="组织：" name="categoryOrOrgId">
@@ -471,7 +471,6 @@
 			searchFormState.value.orgId = selectedId
 			delete searchFormState.value.category
 		}
-		delete searchFormState.value.categoryOrOrgId
 	}
 	const dataArray = ref([])
 	// 确定
@@ -499,6 +498,9 @@
 	// 重置
 	const reset = () => {
 		searchFormRef.value.resetFields()
+		delete searchFormState.value.categoryOrOrgId
+		delete searchFormState.value.orgId
+		delete searchFormState.value.category
 		loadData()
 	}
 	const handleClose = () => {

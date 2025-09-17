@@ -23,7 +23,7 @@
 			</a-col>
 			<a-col :span="11">
 				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
+					<a-form ref="searchFormRef" :model="searchFormState">
 						<a-row :gutter="24">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
@@ -32,7 +32,7 @@
 							</a-col>
 							<a-col :span="12">
 								<a-button type="primary" class="primarySele" @click="loadData()"> 查询 </a-button>
-								<a-button class="snowy-button-left" @click="() => reset()"> 重置 </a-button>
+								<a-button @click="() => reset()"> 重置 </a-button>
 							</a-col>
 						</a-row>
 					</a-form>

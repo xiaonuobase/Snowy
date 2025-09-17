@@ -10,8 +10,18 @@
 				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
 					<a-form-item>
 						<a-space>
-							<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
-							<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined/>
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined/>
+								</template>
+								重置
+							</a-button>
 						</a-space>
 					</a-form-item>
 				</a-col>

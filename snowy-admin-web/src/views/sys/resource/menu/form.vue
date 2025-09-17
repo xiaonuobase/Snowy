@@ -9,12 +9,12 @@
 		<a-alert class="mb-3" message="温馨提示：排序第一为首页！若有多个模块根据授权可见情况而变化。" type="warning" />
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="显示名称：" name="title">
 						<a-input v-model:value="formData.title" placeholder="请输入显示名称" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="菜单类型：" name="menuType">
 						<a-radio-group
 							v-model:value="formData.menuType"
@@ -24,7 +24,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="上级菜单：" name="parentId">
 						<a-tree-select
 							v-model:value="formData.parentId"
@@ -46,7 +46,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType !== 'CATALOG'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType !== 'CATALOG'">
 					<a-form-item name="path">
 						<template #label>
 							<a-tooltip>
@@ -61,7 +61,7 @@
 						<a-input v-model:value="formData.path" placeholder="请输入路由地址" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType === 'MENU'">
 					<a-form-item name="component">
 						<template #label>
 							<a-tooltip>
@@ -78,7 +78,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType === 'MENU'">
 					<a-form-item name="name">
 						<template #label>
 							<a-tooltip>
@@ -95,13 +95,13 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="图标：" name="icon">
 						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
 						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="排序:" name="sortCode">
 						<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>
@@ -110,17 +110,17 @@
 			<a-collapse ghost>
 				<a-collapse-panel key="def" header="展开更多">
 					<a-row :gutter="16">
-						<a-col :span="8">
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 							<a-form-item label="是否可见:" name="visible">
 								<a-radio-group optionType="button" v-model:value="formData.visible" :options="visibleOptions" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8" v-if="formData.menuType !== 'CATALOG'">
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-if="formData.menuType !== 'CATALOG'">
 							<a-form-item label="是否缓存:" name="keepLive">
 								<a-radio-group optionType="button" v-model:value="formData.keepLive" :options="keepLiveOptions" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8" v-if="formData.menuType !== 'CATALOG'">
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-if="formData.menuType !== 'CATALOG'">
 							<a-form-item label="布局可见:" name="displayLayout">
 								<a-radio-group
 									optionType="button"

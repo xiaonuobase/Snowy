@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="24">
 				<a-col :span="6">
 					<a-form-item label="关键词" name="searchKey">

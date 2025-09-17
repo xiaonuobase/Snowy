@@ -28,7 +28,7 @@
 		<a-row :gutter="10">
 			<a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
 				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
+					<a-form ref="searchFormRef" :model="searchFormState">
 						<a-row :gutter="24">
 							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 								<a-form-item name="searchKey">

@@ -1,25 +1,33 @@
 <template>
 	<a-card :bordered="false">
-		<a-space>
-			<a-radio-group v-model:value="moduleType" button-style="solid">
-				<a-radio-button
-					v-for="module in moduleTypeList"
-					:key="module.id"
-					:value="module.id"
-					@click="moduleClock(module.id)"
-				>
-					<component :is="module.icon" />
-					{{ module.title }}</a-radio-button
-				>
-			</a-radio-group>
-			<a-input-search
-				v-model:value="searchFormState.searchKey"
-				placeholder="请输入菜单名称关键词"
-				enter-button
-				allowClear
-				@search="onSearch"
-			/>
-		</a-space>
+		<a-form>
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+					<a-form-item>
+						<a-radio-group v-model:value="moduleType" button-style="solid">
+							<a-radio-button v-for="module in moduleTypeList"
+											:key="module.id"
+											:value="module.id"
+											@click="moduleClock(module.id)">
+								<component :is="module.icon" />
+								{{ module.title }}
+							</a-radio-button>
+						</a-radio-group>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item>
+						<a-input-search
+							v-model:value="searchFormState.searchKey"
+							placeholder="请输入菜单名称关键词"
+							enter-button
+							allowClear
+							@search="onSearch"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
+		</a-form>
 	</a-card>
 	<a-card :bordered="false" class="mt-2">
 		<s-table
@@ -180,6 +188,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			width: '200px',
+			fixed: 'right',
 			scopedSlots: { customRender: 'action' }
 		}
 	]

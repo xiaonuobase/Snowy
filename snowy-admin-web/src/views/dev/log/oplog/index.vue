@@ -15,7 +15,7 @@
 	<a-card :bordered="false">
 		<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
 			<template #operator class="table-operator">
-				<a-form ref="formRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+				<a-form ref="formRef" :model="searchFormState">
 					<a-space>
 						<a-radio-group v-model:value="opLogType" button-style="solid">
 							<a-radio-button

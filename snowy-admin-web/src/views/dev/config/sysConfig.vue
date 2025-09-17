@@ -9,8 +9,9 @@
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 			style="width: 90%"
 		>
-			<a-row :gutter="16">
-				<a-col :span="4">
+			<a-alert message="系统基础配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="系统LOGO：" name="SNOWY_SYS_LOGO">
 						<a-upload
 							v-model:file-list="formData.SNOWY_SYS_LOGO"
@@ -28,149 +29,143 @@
 						</a-upload>
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="8">
-					<a-form-item label="系统名称：" name="SNOWY_SYS_NAME">
-						<a-input v-model:value="formData.SNOWY_SYS_NAME" placeholder="请输入系统名称" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="14">
-					<a-row :gutter="8">
-						<a-col :span="12">
-							<a-form-item label="后台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B">
-								<a-switch
-									v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B"
-									checked-children="开"
-									un-checked-children="关"
-									placeholder="请选择后台验证码开关"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item label="前台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C">
-								<a-switch
-									v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C"
-									checked-children="开"
-									un-checked-children="关"
-									placeholder="请选择前台验证码开关"
-								/>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="8">
-					<a-form-item label="系统版本：" name="SNOWY_SYS_VERSION">
-						<a-input v-model:value="formData.SNOWY_SYS_VERSION" placeholder="请输入系统版本" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="14">
-					<a-row :gutter="8">
-						<a-col :span="12">
-							<a-form-item label="全局后台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B">
-								<a-input-number
-									v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B"
-									placeholder="分钟"
-								>
-									<template #addonAfter> 分钟 </template>
-								</a-input-number>
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item label="全局前台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C">
-								<a-input-number
-									v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C"
-									placeholder="分钟"
-								>
-									<template #addonAfter> 分钟 </template>
-								</a-input-number>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="8">
-					<a-form-item label="版权信息：" name="SNOWY_SYS_COPYRIGHT">
-						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT" placeholder="请输入版权信息" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="14">
-					<a-row :gutter="8">
-						<a-col :span="12">
-							<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
-								<a-radio-group
-									v-model:value="formData.SNOWY_SYS_DEFAULT_FILE_ENGINE"
-									:options="fileEngineOptions"
-									placeholder="请选择系统默认文件引擎"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item label="默认短信引擎：" name="SNOWY_SYS_DEFAULT_SMS_ENGINE">
-								<a-radio-group
-									v-model:value="formData.SNOWY_SYS_DEFAULT_SMS_ENGINE"
-									:options="smsEngineOptions"
-									placeholder="请选择系统默认短信引擎"
-								/>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="8">
-					<a-form-item label="版权链接URL：" name="SNOWY_SYS_COPYRIGHT_URL">
-						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT_URL" placeholder="请输入版权链接URL" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="14">
-					<a-row :gutter="8">
-						<a-col :span="12">
-							<a-form-item label="默认邮件引擎：" name="SNOWY_SYS_DEFAULT_EMAIL_ENGINE">
-								<a-radio-group
-									v-model:value="formData.SNOWY_SYS_DEFAULT_EMAIL_ENGINE"
-									:options="emailEngineOptions"
-									placeholder="请选择系统默认邮件引擎"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :span="12">
-							<a-form-item label="默认消息推送引擎：" name="SNOWY_SYS_DEFAULT_PUSH_ENGINE">
-								<a-radio-group
-									v-model:value="formData.SNOWY_SYS_DEFAULT_PUSH_ENGINE"
-									:options="pushEngineOptions"
-									placeholder="请选择系统默认消息推送引擎"
-								/>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-col>
-			</a-row>
-
-			<a-row :gutter="16">
-				<a-col :span="8">
-					<a-form-item label="默认快捷方式：" name="SNOWY_SYS_DEFAULT_WORKBENCH_DATA">
-						<menuTreeSelect ref="menuTreeSelectRef" :resultData="true" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="14">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="系统描述：" name="SNOWY_SYS_DEFAULT_DESCRRIPTION">
 						<a-textarea
 							v-model:value="formData.SNOWY_SYS_DEFAULT_DESCRRIPTION"
 							placeholder="请输入系统描述"
-							:auto-size="{ minRows: 3, maxRows: 6 }"
+							:auto-size="{ minRows: 3, maxRows: 8 }"
 						/>
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-row :gutter="14">
-				<a-col :span="12">
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="系统名称：" name="SNOWY_SYS_NAME">
+						<a-input v-model:value="formData.SNOWY_SYS_NAME" placeholder="请输入系统名称" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="系统版本：" name="SNOWY_SYS_VERSION">
+						<a-input v-model:value="formData.SNOWY_SYS_VERSION" placeholder="请输入系统版本" />
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="默认快捷方式：" name="SNOWY_SYS_DEFAULT_WORKBENCH_DATA">
+						<menuTreeSelect ref="menuTreeSelectRef" :resultData="true" />
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-alert message="验证码配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="后台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B">
+						<a-switch
+							v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B"
+							checked-children="开"
+							un-checked-children="关"
+							placeholder="请选择后台验证码开关"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="前台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C">
+						<a-switch
+							v-model:checked="formData.SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C"
+							checked-children="开"
+							un-checked-children="关"
+							placeholder="请选择前台验证码开关"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="后台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B">
+						<a-input-number
+							v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_B"
+							placeholder="分钟"
+						>
+							<template #addonAfter> 分钟 </template>
+						</a-input-number>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="前台验证码失效时间：" name="SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C">
+						<a-input-number
+							v-model:value="formData.SNOWY_SYS_DEFAULT_CAPTCHA_EXPIRED_DURATION_FOR_C"
+							placeholder="分钟"
+						>
+							<template #addonAfter> 分钟 </template>
+						</a-input-number>
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-alert message="默认引擎配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_FILE_ENGINE"
+							:options="fileEngineOptions"
+							placeholder="请选择系统默认文件引擎"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="默认邮件引擎：" name="SNOWY_SYS_DEFAULT_EMAIL_ENGINE">
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_EMAIL_ENGINE"
+							:options="emailEngineOptions"
+							placeholder="请选择系统默认邮件引擎"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="默认短信引擎：" name="SNOWY_SYS_DEFAULT_SMS_ENGINE">
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_SMS_ENGINE"
+							:options="smsEngineOptions"
+							placeholder="请选择系统默认短信引擎"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+					<a-form-item label="默认消息推送引擎：" name="SNOWY_SYS_DEFAULT_PUSH_ENGINE">
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_PUSH_ENGINE"
+							:options="pushEngineOptions"
+							placeholder="请选择系统默认消息推送引擎"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-alert message="版权信息配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="版权信息：" name="SNOWY_SYS_COPYRIGHT">
+						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT" placeholder="请输入版权信息" />
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="版权链接URL：" name="SNOWY_SYS_COPYRIGHT_URL">
+						<a-input v-model:value="formData.SNOWY_SYS_COPYRIGHT_URL" placeholder="请输入版权链接URL" />
+					</a-form-item>
+				</a-col>
+			</a-row>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item>
-						<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-						<a-button class="xn-ml10" @click="resetForm">重置</a-button>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button class="xn-ml10" @click="resetForm">重置</a-button>
+						</a-space>
 					</a-form-item>
 				</a-col>
 			</a-row>
