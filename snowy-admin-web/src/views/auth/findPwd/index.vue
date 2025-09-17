@@ -227,12 +227,7 @@
 		text-align: center;
 		margin-bottom: 6px;
 	}
-	@media (max-width: 1200px) {
-		.login-form {
-			width: 340px;
-		}
-	}
-	@media (max-width: 1000px) {
+	@media (max-width: 768px) {
 		.login_main {
 			width: 100%;
 			position: absolute;
@@ -244,8 +239,6 @@
 		}
 		.login-form {
 			width: 100%;
-			padding: 20px 40px;
-			top: 15%;
 		}
 		.login_background .version {
 			padding: 0 20px;
