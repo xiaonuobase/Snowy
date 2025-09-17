@@ -150,20 +150,20 @@
 			</Form.Item>
 			<Form.Item name="validCode">
 				<a-row :gutter="8">
-					<a-col :span="16">
+					<a-col :span="14">
 						<Input v-model:value="formState.validCode" placeholder="请输入图片验证码" />
 					</a-col>
-					<a-col :span="8">
+					<a-col :span="10">
 						<img v-if="captchaImage" :src="captchaImage" class="captcha-image" @click="getCaptcha" />
 					</a-col>
 				</a-row>
 			</Form.Item>
 			<Form.Item name="emailValidCode">
 				<a-row :gutter="8">
-					<a-col :span="16">
+					<a-col :span="14">
 						<Input v-model:value="formState.emailValidCode" placeholder="请输入邮箱验证码" />
 					</a-col>
-					<a-col :span="8">
+					<a-col :span="10">
 						<Button :loading="captchaLoading" @click="getEmailValidCode" style="width: 100%" :disabled="state.sendBtn">
 							{{ (!state.sendBtn && '获取验证码') || state.time + ' s' }}
 						</Button>

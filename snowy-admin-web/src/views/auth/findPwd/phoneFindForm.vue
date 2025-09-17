@@ -9,7 +9,7 @@
 		</a-form-item>
 		<a-form-item name="phoneValidCode">
 			<a-row :gutter="8">
-				<a-col :span="17">
+				<a-col :span="14">
 					<a-input
 						v-model:value="phoneFormData.phoneValidCode"
 						:placeholder="$t('login.smsCodePlaceholder')"
@@ -20,7 +20,7 @@
 						</template>
 					</a-input>
 				</a-col>
-				<a-col :span="7">
+				<a-col :span="10">
 					<a-button size="large" class="xn-wd" @click="getPhoneValidCode" :disabled="state.smsSendBtn">{{
 						(!state.smsSendBtn && $t('login.getSmsCode')) || state.time + ' s'
 					}}</a-button>
@@ -42,10 +42,10 @@
 
 		<a-form-item>
 			<a-row :gutter="8">
-				<a-col :span="7">
+				<a-col :span="12">
 					<a-button class="xn-wd" round size="large" href="/login">{{ $t('login.backLogin') }}</a-button>
 				</a-col>
-				<a-col :span="17">
+				<a-col :span="12">
 					<a-button type="primary" class="xn-wd" :loading="islogin" round size="large" @click="submitReset">{{
 						$t('login.restPassword')
 					}}</a-button>
