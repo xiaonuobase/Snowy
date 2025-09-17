@@ -8,7 +8,7 @@
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
-				<a-col :span="19">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="标题：" name="title">
 						<a-input v-model:value="formData.title" placeholder="请输入标题" allow-clear />
 					</a-form-item>
@@ -23,17 +23,17 @@
 						<a-radio-group v-model:value="formData.type" placeholder="请选择类型" :options="typeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="5">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="封面图：" name="image">
 						<xn-upload v-model:value="formData.image" uploadMode="image" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="内容：" name="content">
 						<xn-editor v-model:value="formData.content" placeholder="请输入内容" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="摘要：" name="digest">
 						<a-textarea
 							v-model:value="formData.digest"
@@ -44,12 +44,12 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="18">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="发布位置：" name="place">
 						<a-checkbox-group v-model:value="formData.place" placeholder="请选择发布位置" :options="placeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="排序：" name="sortCode">
 						<a-input-number
 							v-model:value="formData.sortCode"
@@ -59,7 +59,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="备注：" name="remark">
 						<a-textarea
 							v-model:value="formData.remark"

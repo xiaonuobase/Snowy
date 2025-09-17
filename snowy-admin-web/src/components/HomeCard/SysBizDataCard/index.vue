@@ -1,7 +1,7 @@
 <template>
 	<a-card :title="title" :bordered="false" :loading="apiLoading">
 		<a-row>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="12" :lg="6" :xl="6">
 				<a-statistic :value="dataSource.userCount">
 					<template #title>
 						<user-outlined style="color: #1890ff" />
@@ -9,7 +9,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="12" :lg="6" :xl="6">
 				<a-statistic :value="dataSource.orgCount">
 					<template #title>
 						<cluster-outlined style="color: rgba(229, 159, 18, 0.35)" />
@@ -17,7 +17,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="12" :lg="6" :xl="6">
 				<a-statistic :value="dataSource.positionCount">
 					<template #title>
 						<apartment-outlined style="color: rgba(245, 6, 6, 0.2)" />
@@ -25,7 +25,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="12" :lg="6" :xl="6">
 				<a-statistic :value="dataSource.roleCount">
 					<template #title>
 						<deployment-unit-outlined style="color: #09c755" />

@@ -21,7 +21,7 @@
 			</a-descriptions-item>
 			<a-descriptions-item label="内容"><div v-html="formData.content"></div></a-descriptions-item>
 		</a-descriptions>
-		<a-descriptions bordered :column="2" class="mt-2">
+		<a-descriptions bordered :column="1" class="mt-2">
 			<a-descriptions-item label="摘要">{{ formData.digest }}</a-descriptions-item>
 			<a-descriptions-item label="备注"
 				><span>{{ formData.remark }}</span></a-descriptions-item

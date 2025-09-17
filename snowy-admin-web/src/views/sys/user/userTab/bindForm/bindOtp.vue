@@ -11,10 +11,10 @@
 					</template>
 				</a-alert>
 				<a-row :gutter="8">
-					<a-col :span="8">
+					<a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
 						<img style="width: 100%;vertical-align: middle" :src="otpInfo.otpInfoBase64" />
 					</a-col>
-					<a-col :span="16">
+					<a-col :xs="24" :sm="24" :md="24" :lg="16" :xl="16">
 						<a-descriptions :column="1" size="middle" bordered class="mb-2">
 							<a-descriptions-item label="发行者">{{otpInfo.otpInfo.issuer}}</a-descriptions-item>
 							<a-descriptions-item label="账号">{{otpInfo.otpInfo.account}}</a-descriptions-item>
@@ -56,21 +56,21 @@
 	// 表单数据
 	const formState = ref({})
 	const submitLoading = ref(false)
-	const otpInfo = ref()
+	const otpInfo = ref({otpInfo: {}, otpInfoBase64: ''})
 	const bindType = ref()
 	// 打开抽屉
-	const onOpen = (type) => {
+	const onOpen = async (type) => {
 		visible.value = true
 		bindType.value = type
 		// 获得动态口令信息
-		userCenterApi.userCenterGetOtpInfo().then((data) => {
+		await userCenterApi.userCenterGetOtpInfo().then((data) => {
 			otpInfo.value = data
 		})
 	}
 	// 关闭抽屉
 	const onClose = () => {
 		visible.value = false
-		otpInfo.value = {}
+		otpInfo.value = {otpInfo: {}, otpInfoBase64: ''}
 		formState.value = {}
 		formRef.value.resetFields()
 	}

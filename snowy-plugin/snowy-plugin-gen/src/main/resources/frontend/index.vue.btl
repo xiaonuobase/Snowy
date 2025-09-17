@@ -8,12 +8,12 @@
 	<% } %>
 	<a-card :bordered="false" style="width: 100%">
 		<% if (searchCount > 0) { %>
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
+		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="24">
 				<% for(var i = 0; i < configList.~size; i++) { %>
 				<% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
 				<% if(row <= 3) { %>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 				<% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
 					<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
 						<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
@@ -37,7 +37,7 @@
 				<% } %>
 				</a-col>
 				<% } else { %>
-				<a-col :span="6" v-show="advanced">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6" v-show="advanced">
 				<% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
 					<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
 						<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
@@ -63,17 +63,27 @@
 				<% } %>
 				<% } %>
 				<% } %>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
-					<% if(searchCount > 3) { %>
-					<a @click="toggleAdvanced" style="margin-left: 8px">
-						{{ advanced ? '收起' : '展开' }}
-						<component :is="advanced ? 'up-outlined' : 'down-outlined'"/>
-					</a>
-					<% }%>
-				</a-col>
-			</a-row>
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
+				    <a-form-item>
+				        <a-space>
+				            <a-button type="primary" @click="tableRef.refresh(true)">
+				                <template #icon><SearchOutlined /></template>
+				                查询
+				            </a-button>
+				            <a-button @click="reset">
+				                <template #icon><redo-outlined /></template>
+				                 重置
+				            </a-button>
+                            <% if(searchCount > 3) { %>
+                            <a @click="toggleAdvanced" style="margin-left: 8px">
+                                {{ advanced ? '收起' : '展开' }}
+                                <component :is="advanced ? 'up-outlined' : 'down-outlined'"/>
+                            </a>
+                            <% }%>
+                        </a-space>
+                    </a-form-item>
+                </a-col>
+            </a-row>
 		</a-form>
 		<% } %>
 		<s-table
@@ -85,6 +95,7 @@
 			:row-key="(record) => record.${dbTableKeyCamelCase}"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -167,7 +178,7 @@
 	import { cloneDeep } from 'lodash-es'
 	import Form from './form.vue'
 	import ImportModel from './importModel.vue'
-    import downloadUtil from '@/utils/downloadUtil'
+	import downloadUtil from '@/utils/downloadUtil'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
 	<% if (searchCount > 0) { %>
 	const searchFormState = ref({})
@@ -203,6 +214,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: 150
 		})
 	}

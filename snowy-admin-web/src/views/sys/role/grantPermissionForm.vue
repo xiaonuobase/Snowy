@@ -21,6 +21,7 @@
 				:row-key="(record) => record.api"
 				:pagination="pagination"
 				@change="handleTableChange"
+				:scroll="{ x: 'max-content' }"
 				bordered
 			>
 				<template #headerCell="{ column }">
@@ -167,6 +168,7 @@
 			key: 'prefix',
 			title: '接口前缀',
 			dataIndex: 'prefix',
+			fixed: 'left',
 			width: 140,
 			customCell: (row, index) => {
 				const indexArr = firstShowMap.value[row.prefix]
