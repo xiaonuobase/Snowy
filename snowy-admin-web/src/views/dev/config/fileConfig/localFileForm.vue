@@ -8,16 +8,26 @@
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 		>
-			<a-form-item label="WINDOWS存储位置：" name="SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS">
-				<a-input v-model:value="formData.SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS" placeholder="请输入WINDOWS存储位置" />
-			</a-form-item>
-			<a-form-item label="LINUX存储位置：" name="SNOWY_FILE_LOCAL_FOLDER_FOR_UNIX">
-				<a-input v-model:value="formData.SNOWY_FILE_LOCAL_FOLDER_FOR_UNIX" placeholder="请输入LINUX存储位置" />
-			</a-form-item>
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="WINDOWS存储位置：" name="SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS">
+						<a-input v-model:value="formData.SNOWY_FILE_LOCAL_FOLDER_FOR_WINDOWS" placeholder="请输入WINDOWS存储位置" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="LINUX存储位置：" name="SNOWY_FILE_LOCAL_FOLDER_FOR_UNIX">
+						<a-input v-model:value="formData.SNOWY_FILE_LOCAL_FOLDER_FOR_UNIX" placeholder="请输入LINUX存储位置" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-spin>
 </template>
@@ -77,7 +87,7 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 4
+			span: 24
 		},
 		wrapperCol: {
 			span: 12

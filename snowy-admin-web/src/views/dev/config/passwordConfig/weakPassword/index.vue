@@ -9,6 +9,7 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -63,6 +64,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: '150px'
 		}
 	]

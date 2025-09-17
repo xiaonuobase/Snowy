@@ -8,19 +8,31 @@
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 		>
-			<a-form-item label="GITEE客户端ID：" name="SNOWY_THIRD_GITEE_CLIENT_ID">
-				<a-input v-model:value="formData.SNOWY_THIRD_GITEE_CLIENT_ID" placeholder="请输入GITEE客户端ID" />
-			</a-form-item>
-			<a-form-item label="GITEE客户端SECRET：" name="SNOWY_THIRD_GITEE_CLIENT_SECRET">
-				<a-input v-model:value="formData.SNOWY_THIRD_GITEE_CLIENT_SECRET" placeholder="请输入GITEE客户端SECRET" />
-			</a-form-item>
-			<a-form-item label="重定向URL：" name="SNOWY_THIRD_GITEE_REDIRECT_URL">
-				<a-input v-model:value="formData.SNOWY_THIRD_GITEE_REDIRECT_URL" placeholder="请输入重定向URL" />
-			</a-form-item>
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="GITEE客户端ID：" name="SNOWY_THIRD_GITEE_CLIENT_ID">
+						<a-input v-model:value="formData.SNOWY_THIRD_GITEE_CLIENT_ID" placeholder="请输入GITEE客户端ID" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="GITEE客户端SECRET：" name="SNOWY_THIRD_GITEE_CLIENT_SECRET">
+						<a-input v-model:value="formData.SNOWY_THIRD_GITEE_CLIENT_SECRET" placeholder="请输入GITEE客户端SECRET" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="重定向URL：" name="SNOWY_THIRD_GITEE_REDIRECT_URL">
+						<a-input v-model:value="formData.SNOWY_THIRD_GITEE_REDIRECT_URL" placeholder="请输入重定向URL" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-spin>
 </template>
@@ -81,7 +93,7 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 4
+			span: 24
 		},
 		wrapperCol: {
 			span: 12

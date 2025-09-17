@@ -8,95 +8,114 @@
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 		>
-			<a-form-item label="连续登录失败持续时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_B">
-				<a-input-number
-					v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_B"
-					placeholder="分钟"
-					style="width: 50%"
-				>
-					<template #addonAfter> 分钟 </template>
-				</a-input-number>
-			</a-form-item>
-			<a-form-item label="连续登录失败次数：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_B">
-				<a-input-number
-					v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_B"
-					placeholder="分钟"
-					style="width: 50%"
-				>
-					<template #addonAfter> 次 </template>
-				</a-input-number>
-			</a-form-item>
-			<a-form-item label="连续登录失败锁定时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B">
-				<a-input-number
-					v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B"
-					placeholder="分钟"
-					style="width: 50%"
-				>
-					<template #addonAfter> 分钟 </template>
-				</a-input-number>
-			</a-form-item>
-			<a-form-item label="是否允许手机号登录：" name="SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B">
-				<a-switch
-					v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否允许手机号登录"
-				/>
-			</a-form-item>
-			<a-form-item
-				v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B"
-				name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B"
-			>
-				<template #label>
-					<a-tooltip>
-						<template #title>是否能配置自动创建用户，取决于注册策略是否开启注册</template>
-						<QuestionCircleOutlined /> 手机号无对应用户时策略：
-					</a-tooltip>
-				</template>
-				<a-radio-group
-					v-model:value="formData.SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B"
-					:options="strategyWhenNoUserOptions"
-					:disabled="loginNoUserPhoneDisabled"
-					placeholder="请选择手机号无对应用户时策略"
-				/>
-			</a-form-item>
-			<a-form-item label="是否允许邮箱登录：" name="SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B">
-				<a-switch
-					v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否允许邮箱登录"
-				/>
-			</a-form-item>
-			<a-form-item
-				v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B"
-				name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B"
-			>
-				<template #label>
-					<a-tooltip>
-						<template #title>是否能配置自动创建用户，取决于注册策略是否开启注册</template>
-						<QuestionCircleOutlined /> 邮箱无对应用户时策略：
-					</a-tooltip>
-				</template>
-				<a-radio-group
-					v-model:value="formData.SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B"
-					:options="strategyWhenNoUserOptions"
-					:disabled="loginNoUserEmailDisabled"
-					placeholder="请选择邮箱无对应用户时策略"
-				/>
-			</a-form-item>
-			<a-form-item label="是否允许动态口令登录：" name="SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B">
-				<a-switch
-					v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否允许动态口令登录"
-				/>
-			</a-form-item>
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="连续登录失败持续时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_B">
+						<a-input-number
+							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_B"
+							placeholder="分钟"
+						>
+							<template #addonAfter> 分钟 </template>
+						</a-input-number>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="连续登录失败次数：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_B">
+						<a-input-number
+							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_B"
+							placeholder="分钟"
+						>
+							<template #addonAfter> 次 </template>
+						</a-input-number>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="连续登录失败锁定时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B">
+						<a-input-number
+							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B"
+							placeholder="分钟"
+						>
+							<template #addonAfter> 分钟 </template>
+						</a-input-number>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否允许手机号登录：" name="SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B">
+						<a-switch
+							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否允许手机号登录"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item
+						v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_B"
+						name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B"
+					>
+						<template #label>
+							<a-tooltip>
+								<template #title>是否能配置自动创建用户，取决于注册策略是否开启注册</template>
+								<QuestionCircleOutlined /> 手机号无对应用户时策略：
+							</a-tooltip>
+						</template>
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B"
+							:options="strategyWhenNoUserOptions"
+							:disabled="loginNoUserPhoneDisabled"
+							placeholder="请选择手机号无对应用户时策略"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否允许邮箱登录：" name="SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B">
+						<a-switch
+							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否允许邮箱登录"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item
+						v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_B"
+						name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B"
+					>
+						<template #label>
+							<a-tooltip>
+								<template #title>是否能配置自动创建用户，取决于注册策略是否开启注册</template>
+								<QuestionCircleOutlined /> 邮箱无对应用户时策略：
+							</a-tooltip>
+						</template>
+						<a-radio-group
+							v-model:value="formData.SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B"
+							:options="strategyWhenNoUserOptions"
+							:disabled="loginNoUserEmailDisabled"
+							placeholder="请选择邮箱无对应用户时策略"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否允许动态口令登录：" name="SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B">
+						<a-switch
+							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_B"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否允许动态口令登录"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-spin>
 </template>
@@ -200,10 +219,10 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 4
+			span: 24
 		},
 		wrapperCol: {
-			span: 12
+			span: 24
 		}
 	}
 </script>
