@@ -134,8 +134,7 @@ const columns = [
 		title: '操作',
 		dataIndex: 'action',
 		align: 'center',
-		fixed: 'right',
-		width: '150px'
+		fixed: 'right'
 	}
 ]
 const selectedRowKeys = ref([])

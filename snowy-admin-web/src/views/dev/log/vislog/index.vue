@@ -118,8 +118,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: '100px'
+			fixed: 'right'
 		}
 	]
 	// 切换应用标签查询

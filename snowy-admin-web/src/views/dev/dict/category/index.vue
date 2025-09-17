@@ -129,7 +129,6 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
 			width: '150px'
 		}
 	]
@@ -139,6 +138,7 @@
 	// 定义tableDOM
 	const tableRef = ref(null)
 	const formRef = ref()
+	const cardLoading = ref(true)
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -189,6 +189,8 @@
 			if (res) {
 				treeData.value = res
 			}
+		}).finally(() => {
+			cardLoading.value = false
 		})
 	}
 	// 点击树查询

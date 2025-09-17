@@ -153,8 +153,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: '220px'
+			fixed: 'right'
 		}
 	]
 	let selectedRowKeys = ref([])

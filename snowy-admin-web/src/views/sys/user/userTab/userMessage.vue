@@ -61,8 +61,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			fixed: 'right',
-			width: '100px'
+			fixed: 'right'
 		}
 	]
 	const loadData = (parameter) => {

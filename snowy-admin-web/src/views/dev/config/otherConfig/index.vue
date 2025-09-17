@@ -73,7 +73,6 @@
 			title: '操作',
 			key: 'action',
 			fixed: 'right',
-			width: '150px',
 			scopedSlots: { customRender: 'action' }
 		}
 	]
