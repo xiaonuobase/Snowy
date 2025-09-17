@@ -1,6 +1,6 @@
 <template>
 	<a-card :bordered="false">
-		<a-form>
+		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="10">
 				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
 					<a-form-item>
@@ -8,7 +8,7 @@
 							<a-radio-button v-for="module in moduleTypeList"
 											:key="module.id"
 											:value="module.id"
-											@click="moduleClock(module.id)">
+											@click="moduleClick(module.id)">
 								<component :is="module.icon" />
 								{{ module.title }}
 							</a-radio-button>
@@ -232,7 +232,7 @@
 		}
 	}
 	// 切换应用标签查询菜单列表
-	const moduleClock = (value) => {
+	const moduleClick = (value) => {
 		searchFormState.value.module = value
 		tableRef.value.refresh(true)
 	}

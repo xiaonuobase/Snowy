@@ -130,7 +130,7 @@
 							</a-col>
 						</a-row>
 						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
-							<a-row :gutter="10">
+							<a-row :gutter="16">
 								<a-col :span="7">
 									<a-form-item
 										:name="['positionJson', index, 'orgId']"
