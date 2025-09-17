@@ -1,5 +1,5 @@
 <template>
-	<s-table ref="tableRef" :columns="columns" :data="loadDataB" :alert="false" bordered :row-key="(record) => record.id">
+	<s-table ref="tableRef" :columns="columns" :data="loadDataB" :alert="false" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.dataIndex === 'avatar'">
 				<a-avatar :src="record.avatar" class="xn-wh25" />
@@ -66,6 +66,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			width: '150px',
+			fixed: 'right',
 			scopedSlots: { customRender: 'action' }
 		}
 	]

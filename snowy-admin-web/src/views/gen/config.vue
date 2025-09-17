@@ -6,6 +6,7 @@
 			:data="loadDate"
 			:expand-row-by-click="true"
 			:showPagination="false"
+			:scroll="{ x: 'max-content' }"
 			bordered
 		>
 			<template #headerCell="{ title, column }">

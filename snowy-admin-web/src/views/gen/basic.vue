@@ -2,7 +2,7 @@
 	<a-card :bordered="false">
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="选择主表或表名称搜索：" name="dbTable">
 						<a-select
 							v-model:value="formData.dbTable"
@@ -14,7 +14,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="选择主键：" name="dbTableKey">
 						<a-select
 							v-model:value="formData.dbTableKey"
@@ -24,7 +24,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="表前缀移除：" name="tablePrefix">
 						<a-radio-group
 							v-model:value="formData.tablePrefix"
@@ -33,7 +33,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="generateType">
 						<template #label>
 							<a-tooltip>
@@ -45,7 +45,7 @@
 						<a-radio-group v-model:value="formData.generateType" :options="generateTypeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="所属模块：" name="module">
 						<a-select
 							v-model:value="formData.module"
@@ -56,7 +56,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="上级目录：" name="menuPid">
 						<a-tree-select
 							v-model:value="formData.menuPid"
@@ -76,7 +76,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="移动端所属模块：" name="mobileModule">
 						<a-select
 							v-model:value="formData.mobileModule"
@@ -87,7 +87,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="pluginName">
 						<template #label>
 							<a-tooltip>
@@ -101,12 +101,12 @@
 						<a-input v-model:value="formData.pluginName" placeholder="请输入插件名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="包名：" name="packageName">
 						<a-input v-model:value="formData.packageName" placeholder="请输入包名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="moduleName">
 						<template #label>
 							<a-tooltip>
@@ -118,12 +118,12 @@
 						<a-input v-model:value="formData.moduleName" placeholder="请输入模块名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="功能名：" name="functionName">
 						<a-input v-model:value="formData.functionName" placeholder="请输入功能名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="busName">
 						<template #label>
 							<a-tooltip>
@@ -135,17 +135,17 @@
 						<a-input v-model:value="formData.busName" placeholder="请输入业务名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="类名：" name="className">
 						<a-input v-model:value="formData.className" placeholder="请输入类名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="作者：" name="authorName">
 						<a-input v-model:value="formData.authorName" placeholder="请输入作者名" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="formLayout">
 						<template #label>
 							<a-tooltip>
@@ -157,7 +157,7 @@
 						<a-radio-group v-model:value="formData.formLayout" :options="formLayoutOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item name="gridWhether">
 						<template #label>
 							<a-tooltip>
@@ -169,7 +169,7 @@
 						<a-radio-group v-model:value="formData.gridWhether" :options="gridWhetherOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="排序：" name="sortCode">
 						<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>

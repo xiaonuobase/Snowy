@@ -2,6 +2,11 @@
 	<a-form :model="formData" ref="formRef" name="basic" autocomplete="off">
 		<a-table :columns="columns" :dataSource="formData" size="middle">
 			<template #bodyCell="{ text, record, index, column }">
+				<template v-if="column.dataIndex === 'label'">
+					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
+						{{record.label}}
+					</a-form-item>
+				</template>
 				<template v-if="column.dataIndex === 'whetherToClick'">
 					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
 						<a-radio-group
@@ -164,7 +169,5 @@
 	})
 </script>
 <style lang="less" scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
+
 </style>

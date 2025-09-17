@@ -1,29 +1,35 @@
 <template>
-	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
+	<a-card :bordered="false">
 		<a-form ref="searchFormRef" :model="searchFormState">
-			<a-space style="align-items: normal">
-				<a-radio-group v-model:value="module" button-style="solid">
-					<a-radio-button
-						v-for="module in moduleList"
-						:key="module.id"
-						:value="module.id"
-						@click="moduleClock(module.id)"
-					>
-						<component :is="module.icon" />
-						{{ module.title }}</a-radio-button
-					>
-				</a-radio-group>
-				<a-form-item name="searchKey">
-					<a-space>
-						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入模块名称关键词"></a-input>
-						<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-						<a-button class="xn-mg08" @click="reset">重置</a-button>
-					</a-space>
-				</a-form-item>
-			</a-space>
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+					<a-form-item>
+						<a-radio-group v-model:value="module" button-style="solid">
+							<a-radio-button v-for="module in moduleList"
+											:key="module.id"
+											:value="module.id"
+											@click="moduleClick(module.id)">
+								<component :is="module.icon" />
+								{{ module.title }}
+							</a-radio-button>
+						</a-radio-group>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item>
+						<a-input-search
+							v-model:value="searchFormState.searchKey"
+							placeholder="请输入菜单名称关键词"
+							enter-button
+							allowClear
+							@search="tableRef.refresh(true)"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-card>
-	<a-card :bordered="false">
+	<a-card :bordered="false" class="mt-2">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -34,6 +40,7 @@
 			:tool-config="toolConfig"
 			:show-pagination="false"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -148,6 +155,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: 200
 		}
 	]
@@ -194,7 +202,7 @@
 		tableRef.value.refresh(true)
 	}
 	// 切换模块标签查询菜单列表
-	const moduleClock = (value) => {
+	const moduleClick = (value) => {
 		searchFormState.value.module = value
 		tableRef.value.refresh(true)
 	}

@@ -1,43 +1,52 @@
 <template>
-	<a-row :gutter="10" class="mb-2">
-		<a-col :span="16">
+	<a-row :gutter="10">
+		<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 			<a-card :bordered="false" title="周统计">
 				<columnChart />
 			</a-card>
 		</a-col>
-		<a-col :span="8">
+		<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 			<a-card :bordered="false" title="总比例">
 				<pieChart />
 			</a-card>
 		</a-col>
 	</a-row>
-
 	<a-card :bordered="false">
-		<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id">
+		<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
 			<template #operator class="table-operator">
 				<a-form ref="formRef" :model="searchFormState">
-					<a-space>
-						<a-radio-group v-model:value="opLogType" button-style="solid">
-							<a-radio-button
-								v-for="opLog in opLogTypeList"
-								:key="opLog.value"
-								:value="opLog.value"
-								@click="opLogTypeClock(opLog.value)"
-							>
-								{{ opLog.label }}
-							</a-radio-button>
-						</a-radio-group>
-						<a-input-search
-							v-model:value="searchFormState.searchKey"
-							placeholder="请输入名称关键词"
-							enter-button
-							allowClear
-							@search="onSearch"
-						/>
-						<a-popconfirm title="确定清空操作与异常日志吗？" @confirm="deleteBatchOpLog()">
-							<a-button danger>清空</a-button>
-						</a-popconfirm>
-					</a-space>
+					<a-row :gutter="10">
+						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+							<a-form-item>
+								<a-radio-group v-model:value="opLogType" button-style="solid">
+									<a-radio-button
+										v-for="opLog in opLogTypeList"
+										:key="opLog.value"
+										:value="opLog.value"
+										@click="opLogTypeClock(opLog.value)"
+									>
+										{{ opLog.label }}
+									</a-radio-button>
+								</a-radio-group>
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+							<a-form-item>
+								<a-space>
+									<a-input-search
+										v-model:value="searchFormState.searchKey"
+										placeholder="请输入名称关键词"
+										enter-button
+										allowClear
+										@search="onSearch"
+									/>
+									<a-popconfirm title="确定清空操作与异常日志吗？" @confirm="deleteBatchOpLog()">
+										<a-button danger>清空</a-button>
+									</a-popconfirm>
+								</a-space>
+							</a-form-item>
+						</a-col>
+					</a-row>
 				</a-form>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -116,6 +125,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: '100px'
 		}
 	]

@@ -1,13 +1,13 @@
 <template>
 	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
 		<a-form ref="searchFormRef" :model="searchFormState">
-			<a-row :gutter="24">
-				<a-col :span="6">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="关键词" name="searchKey">
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入关键词" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="分类" name="category">
 						<a-select
 							v-model:value="searchFormState.category"
@@ -17,7 +17,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="状态" name="jobStatus">
 						<a-select
 							v-model:value="searchFormState.jobStatus"
@@ -27,9 +27,23 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button class="xn-mg08" @click="reset">重置</a-button>
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined/>
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined/>
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -44,6 +58,7 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #operator class="table-operator">
 				<a-space>
@@ -138,6 +153,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
+			fixed: 'right',
 			width: '220px'
 		}
 	]
