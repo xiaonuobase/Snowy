@@ -7,6 +7,7 @@
 		bordered
 		:row-key="(record) => record.id"
 		:tool-config="toolConfig"
+		:scroll="{ x: 'max-content' }"
 	>
 		<template #operator class="table-operator">
 			<a-space>
@@ -71,7 +72,8 @@
 		{
 			title: '操作',
 			key: 'action',
-			width: '200px',
+			fixed: 'right',
+			width: '150px',
 			scopedSlots: { customRender: 'action' }
 		}
 	]

@@ -52,7 +52,7 @@
 	})
 
 	// 响应式抽屉宽度
-	const isSmallScreen = ref(window.innerWidth <= 576)
+	const isSmallScreen = ref(window.innerWidth <= 768)
 	const drawerWidth = computed(() => {
 		return isSmallScreen.value ? '100%' : attrs.width // 小屏幕100%宽度，其他情况使用默认值
 	})
@@ -64,7 +64,7 @@
 
 	// 监听窗口大小变化
 	const handleResize = () => {
-		isSmallScreen.value = window.innerWidth <= 576
+		isSmallScreen.value = window.innerWidth <= 768
 	}
 
 	onMounted(() => {

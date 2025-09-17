@@ -164,7 +164,7 @@
 					<a-form-item>
 						<a-space>
 							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-							<a-button class="xn-ml10" @click="resetForm">重置</a-button>
+							<a-button @click="resetForm">重置</a-button>
 						</a-space>
 					</a-form-item>
 				</a-col>
@@ -327,10 +327,10 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 16
+			span: 24
 		},
 		wrapperCol: {
-			span: 22
+			span: 24
 		}
 	}
 </script>

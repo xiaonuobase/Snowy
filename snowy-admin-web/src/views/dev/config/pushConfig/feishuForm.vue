@@ -8,13 +8,21 @@
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 		>
-			<a-form-item label="消息推送TOKENID：" name="SNOWY_PUSH_FEISHU_TOKEN_ID">
-				<a-input v-model:value="formData.SNOWY_PUSH_FEISHU_TOKEN_ID" placeholder="请输入消息推送TOKENID" />
-			</a-form-item>
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="消息推送TOKENID：" name="SNOWY_PUSH_FEISHU_TOKEN_ID">
+						<a-input v-model:value="formData.SNOWY_PUSH_FEISHU_TOKEN_ID" placeholder="请输入消息推送TOKENID" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-spin>
 </template>
@@ -73,7 +81,7 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 4
+			span: 24
 		},
 		wrapperCol: {
 			span: 12

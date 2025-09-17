@@ -1,6 +1,6 @@
 <template>
 	<a-spin :spinning="loadSpinning">
-		<a-table :dataSource="dataSource" :columns="columns" :pagination="false" bordered size="middle">
+		<a-table :dataSource="dataSource" :columns="columns" :pagination="false" bordered size="middle" :scroll="{ x: 'max-content' }">
 			<template #bodyCell="{ record, column }">
 				<template v-if="column.dataIndex === 'subject'">
 					<a-tag :bordered="false" color="processing">{{ JSON.parse(record.configValue).subject }}</a-tag>
@@ -51,7 +51,7 @@
 			title: '配置',
 			dataIndex: 'action',
 			key: 'action',
-			width: 200
+			width: 150
 		}
 	]
 	onMounted(() => {

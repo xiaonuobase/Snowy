@@ -1,6 +1,6 @@
 <template>
 	<a-spin :spinning="loadSpinning">
-		<a-table :dataSource="dataSource" :columns="columns" :pagination="false" bordered size="middle">
+		<a-table :dataSource="dataSource" :columns="columns" :pagination="false" bordered size="middle" :scroll="{ x: 'max-content' }">
 			<template #bodyCell="{ text, record, column }">
 				<template v-if="column.dataIndex === 'templateCode'">
 					<a-input
@@ -20,8 +20,10 @@
 			</template>
 		</a-table>
 		<div class="pt-3">
-			<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-			<a-button class="xn-ml10" @click="() => resetCode()">重置</a-button>
+			<a-space>
+				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+				<a-button @click="() => resetCode()">重置</a-button>
+			</a-space>
 		</div>
 	</a-spin>
 </template>
