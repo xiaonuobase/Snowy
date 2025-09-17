@@ -125,8 +125,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: '100px'
+			fixed: 'right'
 		}
 	]
 	// 获取日志详情

@@ -186,8 +186,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: '200px'
+			fixed: 'right'
 		})
 	}
 	const selectedRowKeys = ref([])

@@ -106,8 +106,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: '220px'
+			fixed: 'right'
 		}
 	]
 	// 表格查询 返回 Promise 对象
