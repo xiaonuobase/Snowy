@@ -13,6 +13,7 @@
 package vip.xiaonuo.auth.modular.third.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -45,6 +46,7 @@ import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
+import vip.xiaonuo.auth.modular.third.request.AuthThirdIamRequest;
 import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -52,6 +54,8 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.api.DevConfigApi;
+
+import java.util.Map;
 
 /**
  * 第三方登录Service接口实现类
@@ -64,6 +68,13 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
 
     /** 缓存前缀 */
     private static final String CONFIG_CACHE_KEY = "auth-third-state:";
+
+    private static final String SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY = "SNOWY_THIRD_IAM_AUTHORIZE_URL";
+    private static final String SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY = "SNOWY_THIRD_IAM_ACCESS_TOKEN_URL";
+    private static final String SNOWY_THIRD_IAM_USER_INFO_URL_KEY = "SNOWY_THIRD_IAM_USER_INFO_URL";
+    private static final String SNOWY_THIRD_IAM_CLIENT_ID_KEY = "SNOWY_THIRD_IAM_CLIENT_ID";
+    private static final String SNOWY_THIRD_IAM_CLIENT_SECRET_KEY = "SNOWY_THIRD_IAM_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_IAM_REDIRECT_URL_KEY = "SNOWY_THIRD_IAM_REDIRECT_URL";
 
     private static final String SNOWY_THIRD_GITEE_CLIENT_ID_KEY = "SNOWY_THIRD_GITEE_CLIENT_ID";
     private static final String SNOWY_THIRD_GITEE_CLIENT_SECRET_KEY = "SNOWY_THIRD_GITEE_CLIENT_SECRET";
@@ -120,16 +131,23 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         AuthRequest authRequest = this.getAuthRequest(authThirdCallbackParam.getPlatform());
         // 获取state
         String state = authThirdCallbackParam.getState();
-        // 获取缓存值
-        Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
-        // 判断是否为空
-        if(ObjectUtil.isEmpty(stateCacheValueObj)){
-            throw new CommonException("state已失效");
+        // 定义登录端类型
+        String clientType;
+        if(ObjectUtil.isNotEmpty(state)) {
+            // 获取缓存值
+            Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
+            // 判断是否为空
+            if(ObjectUtil.isEmpty(stateCacheValueObj)){
+                throw new CommonException("state已失效");
+            }
+            // 获取登录端类型
+            clientType = JSONUtil.parseObj(stateCacheValueObj).getStr("clientType");
+            // 移除缓存
+            commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
+        } else {
+            // 默认B端登录
+            clientType = SaClientTypeEnum.B.getValue();
         }
-        // 获取登录端类型
-        String clientType = JSONUtil.parseObj(stateCacheValueObj).getStr("clientType");
-        // 移除缓存
-        commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
         // 执行请求
         AuthResponse<AuthUser> authResponse = authRequest.login(authCallback);
         if (authResponse.ok()) {
@@ -240,12 +258,26 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         source = source.toUpperCase();
         HttpUtil.setHttp(new HutoolImpl());
         AuthThirdPlatformEnum.validate(source);
+        if (source.equals(AuthThirdPlatformEnum.IAM.getValue())) {
+            // 山信通登录
+            authRequest = new AuthThirdIamRequest(AuthConfig.builder()
+                    .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_ID_KEY))
+                    .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_SECRET_KEY))
+                    .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_REDIRECT_URL_KEY))
+                    .ignoreCheckState(true)
+                    .scopes(CollectionUtil.newArrayList("profile", "account", "email", "phone"))
+                    .build(), Map.of(
+                    "authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY),
+                    "accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY),
+                    "userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_USER_INFO_URL_KEY)));
+        }
         if (source.equals(AuthThirdPlatformEnum.GITEE.getValue())) {
             // GITEE登录
             authRequest = new AuthGiteeRequest(AuthConfig.builder()
                     .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_CLIENT_ID_KEY))
                     .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_CLIENT_SECRET_KEY))
                     .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_REDIRECT_URL_KEY))
+                    .ignoreCheckState(true)
                     .build());
         }
         if(source.equals(AuthThirdPlatformEnum.WECHAT.getValue())){
@@ -254,6 +286,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_ID_KEY))
                     .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY))
                     .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY))
+                    .ignoreCheckState(true)
                     .build());
         }
         return authRequest;

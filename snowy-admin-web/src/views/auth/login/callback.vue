@@ -146,8 +146,8 @@
 			argLength += 1
 			params[key] = value
 		})
-		// 当然了，不可能只有一个参数
-		if (argLength < 2) {
+		// 参数不能为空
+		if (argLength === 0) {
 			showError(proxy.$t('login.paramError'), true)
 			return
 		}

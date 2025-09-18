@@ -2,6 +2,9 @@
 	<a-divider>{{ $t('login.signInOther') }}</a-divider>
 	<div class="login-oauth layout-center">
 		<a-space align="start">
+			<a @click="getLoginRenderUrl('iam')">
+				<img style="width: 32px; height: 32px;" src="/src/assets/images/snowy-iam.png" alt="" />
+			</a>
 			<a @click="getLoginRenderUrl('gitee')">
 				<GiteeIcon />
 			</a>

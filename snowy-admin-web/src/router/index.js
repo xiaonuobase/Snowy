@@ -23,6 +23,7 @@ import { NextLoading } from '@/utils/loading'
 import { useMenuStore } from '@/store/menu'
 import { useUserStore } from '@/store/user'
 import { useDictStore } from '@/store/dict'
+import { pathToRegexp } from 'path-to-regexp'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
@@ -51,7 +52,14 @@ const isGetRouter = ref(false)
 // 白名单校验
 const exportWhiteListFromRouter = (router) => {
 	const res = []
-	for (const item of router) res.push(item.path)
+	for (const item of router) {
+		// 生成路由的路径正则表达式（解构出正则表达式对象）
+		const { regexp } = pathToRegexp(item.path)
+		res.push({
+			path: item.path,
+			regex: regexp  // 使用解构后的正则表达式
+		})
+	}
 	return res
 }
 const whiteList = exportWhiteListFromRouter(whiteListRouters)
@@ -66,7 +74,7 @@ router.beforeEach(async (to, from, next) => {
 		: `${sysBaseConfig.SNOWY_SYS_NAME}`
 
 	// 过滤白名单
-	if (whiteList.includes(to.path)) {
+	if (whiteList.some(currentRoute => currentRoute.regex.test(to.path))) {
 		next()
 		// NProgress.done()
 		return false
