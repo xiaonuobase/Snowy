@@ -16,6 +16,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;
@@ -27,6 +28,7 @@ import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.index.service.BizIndexService;
 import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
 import vip.xiaonuo.biz.modular.notice.enums.BizNoticeStatusEnum;
+import vip.xiaonuo.biz.modular.notice.param.BizNoticePageParam;
 import vip.xiaonuo.biz.modular.notice.service.BizNoticeService;
 import vip.xiaonuo.dev.api.DevSlideshowApi;
 
@@ -53,6 +55,13 @@ public class BizIndexServiceImpl implements BizIndexService {
     public List<BizIndexSlideshowListResult> slideshowListByPlace(BizIndexSlideshowListParam bizIndexSlideshowListParam) {
         return devSlideshowApi.getListByPlace(bizIndexSlideshowListParam.getPlace()).stream()
                 .map(jsonObject -> JSONUtil.toBean(jsonObject, BizIndexSlideshowListResult.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<BizNotice> noticePage(BizIndexNoticeListParam bizIndexNoticeListParam) {
+        BizNoticePageParam bizNoticePageParam = new BizNoticePageParam();
+        bizNoticePageParam.setType(bizIndexNoticeListParam.getType());
+        return bizNoticeService.page(bizNoticePageParam);
     }
 
     @Override

@@ -29,4 +29,8 @@ public class BizIndexNoticeListParam {
     /** 条数" */
     @Schema(description = "条数")
     private Integer limit;
+
+    /** 类型" */
+    @Schema(description = "类型")
+    private String type;
 }

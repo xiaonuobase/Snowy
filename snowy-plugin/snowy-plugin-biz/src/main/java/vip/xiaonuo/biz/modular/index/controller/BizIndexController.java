@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.biz.modular.index.controller;
 
+import cn.hutool.db.PageResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +30,7 @@ import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.index.service.BizIndexService;
+import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
 import vip.xiaonuo.common.pojo.CommonResult;
 
 import java.util.List;
@@ -61,12 +64,25 @@ public class BizIndexController {
     }
 
     /**
-     * 获取通知公告列表
+     * 获取通知公告分页
      *
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
     @ApiOperationSupport(order = 2)
+    @Operation(summary = "获取通知公告分页")
+    @GetMapping("/biz/index/notice/page")
+    public CommonResult<Page<BizNotice>> noticePage(BizIndexNoticeListParam bizIndexNoticeListParam) {
+        return CommonResult.data(bizIndexService.noticePage(bizIndexNoticeListParam));
+    }
+
+    /**
+     * 获取通知公告列表
+     *
+     * @author yubaoshan
+     * @date 2024/7/13 21:02
+     */
+    @ApiOperationSupport(order = 3)
     @Operation(summary = "获取通知公告列表")
     @GetMapping("/biz/index/notice/list")
     public CommonResult<List<BizIndexNoticeListResult>> noticeListByLimit(BizIndexNoticeListParam bizIndexNoticeListParam) {
@@ -79,7 +95,7 @@ public class BizIndexController {
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
-    @ApiOperationSupport(order = 3)
+    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取通知公告详情")
     @GetMapping("/biz/index/notice/detail")
     public CommonResult<BizIndexSlideshowDetailResult> noticeDetailById(@Valid BizIndexNoticeIdParam bizIndexNoticeIdParam) {

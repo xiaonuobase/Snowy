@@ -13,6 +13,10 @@ export default {
 	bizIndexSlideshowList(data) {
 		return request('slideshow/list', data, 'get')
 	},
+	// 获取通知公告分页
+	bizIndexNoticePage(data) {
+		return request('notice/page', data, 'get')
+	},
 	// 获取通知公告列表
 	bizIndexNoticeList(data) {
 		return request('notice/list', data, 'get')
