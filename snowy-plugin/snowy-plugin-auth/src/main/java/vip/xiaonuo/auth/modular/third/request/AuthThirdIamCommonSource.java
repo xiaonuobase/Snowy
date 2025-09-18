@@ -10,45 +10,36 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.enums;
+package vip.xiaonuo.auth.modular.third.request;
 
-import lombok.Getter;
-import vip.xiaonuo.common.exception.CommonException;
+import me.zhyd.oauth.config.AuthSource;
+import me.zhyd.oauth.request.AuthDefaultRequest;
 
 /**
- * 第三方登录平台枚举
+ * 山信通认证源通用源
  *
  * @author xuyuxiang
- * @date 2021/10/11 14:02
+ * @date 2025/2/6 17:07
  **/
-@Getter
-public enum AuthThirdPlatformEnum {
+public record AuthThirdIamCommonSource(String authorizeUrl, String accessTokenUrl, String userInfoUrl) implements AuthSource {
 
-    /**
-     * IAM
-     */
-    IAM("IAM"),
-
-    /**
-     * GITEE
-     */
-    GITEE("GITEE"),
-
-    /**
-     * WECHAT
-     */
-    WECHAT("WECHAT");
-
-    private final String value;
-
-    AuthThirdPlatformEnum(String value) {
-        this.value = value;
+    @Override
+    public String authorize() {
+        return this.authorizeUrl;
     }
 
-    public static void validate(String value) {
-        boolean flag = IAM.getValue().equals(value) || GITEE.getValue().equals(value) || WECHAT.getValue().equals(value);
-        if(!flag) {
-            throw new CommonException("不支持的第三方平台：{}", value);
-        }
+    @Override
+    public String accessToken() {
+        return this.accessTokenUrl;
+    }
+
+    @Override
+    public String userInfo() {
+        return this.userInfoUrl;
+    }
+
+    @Override
+    public Class<? extends AuthDefaultRequest> getTargetClass() {
+        return AuthThirdIamRequest.class;
     }
 }
