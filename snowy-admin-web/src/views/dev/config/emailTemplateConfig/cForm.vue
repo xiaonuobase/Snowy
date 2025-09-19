@@ -50,8 +50,7 @@
 		{
 			title: '配置',
 			dataIndex: 'action',
-			key: 'action',
-			width: 150
+			key: 'action'
 		}
 	]
 	onMounted(() => {

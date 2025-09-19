@@ -82,14 +82,12 @@
 					return { rowSpan: indexArr.length }
 				}
 				return { rowSpan: 0 }
-			},
-			width: 150
+			}
 		},
 		{
 			key: 'title',
 			title: '菜单',
-			dataIndex: 'title',
-			width: 200
+			dataIndex: 'title'
 		},
 		{
 			key: 'button',
