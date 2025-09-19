@@ -94,7 +94,7 @@
 								v-if="hasPerm('bizUserAdd')"
 							>
 								<template #icon><plus-outlined /></template>
-								<span>增加人员</span>
+								<span>增加</span>
 							</a-button>
 							<a-button @click="exportBatchUserVerify" v-if="hasPerm('bizUserBatchExport')">
 								<template #icon><export-outlined /></template>
