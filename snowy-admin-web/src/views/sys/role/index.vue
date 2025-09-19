@@ -159,8 +159,7 @@
 	const columns = [
 		{
 			title: '角色名称',
-			dataIndex: 'name',
-			width: 150
+			dataIndex: 'name'
 		},
 		{
 			title: '分类',
