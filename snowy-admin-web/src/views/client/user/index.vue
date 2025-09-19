@@ -2,7 +2,7 @@
 	<div>
 		<a-card :bordered="false" style="margin-bottom: 10px">
 			<a-form ref="searchFormRef" :model="searchFormState">
-				<a-row :gutter="24">
+				<a-row :gutter="10">
 					<a-col :span="8">
 						<a-form-item name="searchKey" label="用户关键词">
 							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户关键词" />

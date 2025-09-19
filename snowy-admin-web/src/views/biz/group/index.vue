@@ -1,7 +1,7 @@
 <template>
 	<a-card :bordered="false" class="xn-mb10">
 		<a-form ref="searchFormRef" :model="searchFormState">
-			<a-row :gutter="24">
+			<a-row :gutter="10">
 				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 					<a-form-item label="关键词" name="name">
 						<a-input v-model:value="searchFormState.name" placeholder="请输入名称关键词" />

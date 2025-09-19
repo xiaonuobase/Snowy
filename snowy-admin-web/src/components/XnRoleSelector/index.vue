@@ -43,7 +43,7 @@
 			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
 				<div class="table-operator xn-mb10">
 					<a-form ref="searchFormRef" :model="searchFormState">
-						<a-row :gutter="24">
+						<a-row :gutter="10">
 							<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
 								<a-form-item label="组织：" name="categoryOrOrgId">
 									<a-tree-select

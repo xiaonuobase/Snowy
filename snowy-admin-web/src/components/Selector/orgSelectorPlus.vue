@@ -24,7 +24,7 @@
 			<a-col :span="11">
 				<div class="table-operator xn-mb10">
 					<a-form ref="searchFormRef" :model="searchFormState">
-						<a-row :gutter="24">
+						<a-row :gutter="10">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
 									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入机构名" />
