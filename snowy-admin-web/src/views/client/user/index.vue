@@ -32,6 +32,7 @@
 				:tool-config="toolConfig"
 				:row-key="(record) => record.id"
 				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
 			>
 				<template #operator class="table-operator">
 					<a-space>
