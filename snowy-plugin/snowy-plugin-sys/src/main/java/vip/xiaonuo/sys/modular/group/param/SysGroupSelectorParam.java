@@ -26,7 +26,7 @@ import lombok.Setter;
 @Setter
 public class SysGroupSelectorParam {
 
-    /** 姓名关键词 */
-    @Schema(description = "姓名关键词")
+    /** 名称关键词 */
+    @Schema(description = "名称关键词")
     private String searchKey;
 }

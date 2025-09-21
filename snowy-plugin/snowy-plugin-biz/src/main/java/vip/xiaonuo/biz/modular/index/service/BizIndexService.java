@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.biz.modular.index.service;
 
-import cn.hutool.db.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.Valid;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;

@@ -26,15 +26,7 @@ import lombok.Setter;
 @Setter
 public class BizGroupSelectorParam {
 
-    /** 当前页 */
-    @Schema(description = "当前页码")
-    private Integer current;
-
-    /** 每页条数 */
-    @Schema(description = "每页条数")
-    private Integer size;
-
-    /** 姓名关键词 */
-    @Schema(description = "姓名关键词")
+    /** 名称关键词 */
+    @Schema(description = "名称关键词")
     private String searchKey;
 }
