@@ -177,4 +177,19 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
     public void grantUser(BizGroupGrantUserParam bizGroupGrantUserParam) {
         sysGroupApi.grantUser(bizGroupGrantUserParam.getId(), bizGroupGrantUserParam.getGrantInfoList());
     }
+
+    @Override
+    public Page<BizGroup> groupSelector(BizGroupSelectorParam bizGroupSelectorParam) {
+        QueryWrapper<BizGroup> queryWrapper = new QueryWrapper<BizGroup>().checkSqlInjection();
+        // 只查询部分字段，排掉extJson
+        queryWrapper.lambda().select(BizGroup::getId, BizGroup::getName, BizGroup::getSortCode, BizGroup::getRemark);
+        queryWrapper.lambda().orderByAsc(BizGroup::getSortCode);
+        // 如果查询条件为空，则直接查询
+        if (!ObjectUtil.isAllEmpty(bizGroupSelectorParam.getSearchKey())) {
+            if (ObjectUtil.isNotEmpty(bizGroupSelectorParam.getSearchKey())) {
+                queryWrapper.lambda().like(BizGroup::getName, bizGroupSelectorParam.getSearchKey());
+            }
+        }
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
+    }
 }

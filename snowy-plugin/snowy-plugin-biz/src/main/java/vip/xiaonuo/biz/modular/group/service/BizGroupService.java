@@ -108,4 +108,12 @@ public interface BizGroupService extends IService<BizGroup> {
      * @date 2024/12/21 01:25
      */
     void grantUser(BizGroupGrantUserParam bizGroupGrantUserParam);
+
+    /**
+     * 获取用户组选择器
+     *
+     * @author yubaoshan
+     * @date 2024/12/21 01:25
+     */
+    Page<BizGroup> groupSelector(BizGroupSelectorParam bizGroupSelectorParam);
 }
