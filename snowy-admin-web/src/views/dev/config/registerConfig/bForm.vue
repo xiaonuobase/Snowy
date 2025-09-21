@@ -56,7 +56,7 @@
 						<xn-org-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
 							:org-page-api="selectApiFunction.orgPageApi"
-							:radioModel="true"
+							:radio-model="true"
 							dataType="string"
 							v-model:value="formData.SNOWY_SYS_DEFAULT_NEW_USER_ORG_FOR_B"
 						/>
@@ -71,7 +71,7 @@
 						<xn-position-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
 							:position-page-api="selectApiFunction.positionPageApi"
-							:radioModel="true"
+							:radio-model="true"
 							dataType="string"
 							v-model:value="formData.SNOWY_SYS_DEFAULT_NEW_USER_POSITION_FOR_B"
 						/>
@@ -86,7 +86,7 @@
 						<xn-role-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
 							:role-page-api="selectApiFunction.rolePageApi"
-							:radioModel="true"
+							:radio-model="true"
 							dataType="string"
 							v-model:value="formData.SNOWY_SYS_DEFAULT_NEW_USER_ROLE_FOR_B"
 						/>
