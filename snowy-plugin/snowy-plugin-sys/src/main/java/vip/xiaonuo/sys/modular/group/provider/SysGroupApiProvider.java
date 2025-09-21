@@ -54,10 +54,8 @@ public class SysGroupApiProvider implements SysGroupApi {
 
     @SuppressWarnings("ALL")
     @Override
-    public Page<JSONObject> groupSelector(String searchKey, int current, int size) {
+    public Page<JSONObject> groupSelector(String searchKey) {
         SysGroupSelectorParam sysGroupSelectorParam = new SysGroupSelectorParam();
-        sysGroupSelectorParam.setCurrent(current);
-        sysGroupSelectorParam.setSize(size);
         sysGroupSelectorParam.setSearchKey(searchKey);
         return BeanUtil.toBean(sysGroupService.groupSelector(sysGroupSelectorParam), Page.class);
     }

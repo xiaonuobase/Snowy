@@ -10,42 +10,24 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.api;
+package vip.xiaonuo.biz.api;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
-import java.util.List;
-
 /**
  * 用户组Api
  *
- * @author xuyuxiang
- * @date 2022/6/6 11:33
+ * @author yubaoshan
+ * @date 2024/11/1 18:27:51
  **/
-public interface SysGroupApi {
-
-    /**
-     * 获取用户组拥有人员
-     *
-     * @author xuyuxiang
-     * @date 2022/5/13 21:00
-     */
-    List<String> ownUser(String groupId);
-
-    /**
-     * 给用户组授权用户
-     *
-     * @author xuyuxiang
-     * @date 2022/8/1 18:28
-     */
-    void grantUser(String groupId, List<String> userIdList);
+public interface BizGroupApi {
 
     /**
      * 获取用户组选择器
      *
      * @author yubaoshan
-     * @date 2025/1/12 02:36
+     * @date 2024/11/1 18:27:51
      */
     Page<JSONObject> groupSelector(String searchKey);
 }
