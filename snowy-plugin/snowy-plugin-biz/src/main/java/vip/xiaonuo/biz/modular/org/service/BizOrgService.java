@@ -163,7 +163,7 @@ public interface BizOrgService extends IService<BizOrg> {
      * @author xuyuxiang
      * @date 2022/7/22 13:34
      **/
-    List<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam);
+    Page<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam);
 
     /**
      * 获取人员选择器

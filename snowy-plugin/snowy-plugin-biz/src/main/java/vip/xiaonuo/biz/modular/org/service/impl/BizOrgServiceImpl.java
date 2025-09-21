@@ -343,14 +343,14 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     @Override
-    public List<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {
+    public Page<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {
         QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
         } else {
-            return CollectionUtil.newArrayList();
+            return new Page<>();
         }
         // 查询部分字段
         queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
@@ -362,7 +362,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             queryWrapper.lambda().like(BizOrg::getName, bizOrgSelectorOrgListParam.getSearchKey());
         }
         queryWrapper.lambda().orderByAsc(BizOrg::getSortCode);
-        return this.list(queryWrapper.lambda());
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
