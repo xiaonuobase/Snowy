@@ -177,8 +177,10 @@ public class GlobalConfigure implements WebMvcConfigurer {
             /* 可视化大屏插件放行 */
             "/screen/project/releaseDetail",
             "/screen/project/verifyAccessPassword",
-            "/dbs/application/getAuth",
-            "/dbs/dataSet/invoke",
+
+            /* 数据集插件放行 */
+            "/dataset/application/getAuth",
+            "/dataset/dataSet/invoke",
 
             /* 知识库插件放行 */
             "/wiki/wikidocumentshare/getInfoByCode",
