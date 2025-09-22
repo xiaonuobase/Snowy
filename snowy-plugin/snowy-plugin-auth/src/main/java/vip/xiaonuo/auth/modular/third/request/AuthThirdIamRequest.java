@@ -56,7 +56,13 @@ public class AuthThirdIamRequest extends AuthDefaultRequest {
         String response = this.doPostAuthorizationCode(authCallback.getCode());
         com.alibaba.fastjson.JSONObject accessTokenObject = com.alibaba.fastjson.JSONObject.parseObject(response);
         this.checkResponse(accessTokenObject);
-        return AuthToken.builder().accessToken(accessTokenObject.getString("access_token")).refreshToken(accessTokenObject.getString("refresh_token")).scope(accessTokenObject.getString("scope")).tokenType(accessTokenObject.getString("token_type")).expireIn(accessTokenObject.getIntValue("expires_in")).build();
+        return AuthToken.builder()
+                .accessToken(accessTokenObject.getString("access_token"))
+                .refreshToken(accessTokenObject.getString("refresh_token"))
+                .scope(accessTokenObject.getString("scope"))
+                .tokenType(accessTokenObject.getString("token_type"))
+                .expireIn(accessTokenObject.getIntValue("expires_in"))
+                .build();
     }
 
     @Override
@@ -64,7 +70,15 @@ public class AuthThirdIamRequest extends AuthDefaultRequest {
         String userInfo = this.doGetUserInfo(authToken);
         com.alibaba.fastjson.JSONObject userInfoObject = com.alibaba.fastjson.JSONObject.parseObject(userInfo);
         this.checkResponse(userInfoObject);
-        return AuthUser.builder().rawUserInfo(userInfoObject).uuid(userInfoObject.getString("sub")).nickname(userInfoObject.getString("name")).username(userInfoObject.getString("account")).avatar(userInfoObject.getString("picture")).email(userInfoObject.getString("email")).gender(AuthUserGender.UNKNOWN).token(authToken).source(this.source.toString()).build();
+        return AuthUser.builder().rawUserInfo(userInfoObject)
+                .uuid(userInfoObject.getString("sub"))
+                .nickname(userInfoObject.getString("name"))
+                .username(userInfoObject.getString("account"))
+                .avatar(userInfoObject.getString("picture"))
+                .email(userInfoObject.getString("email"))
+                .gender(AuthUserGender.UNKNOWN)
+                .token(authToken)
+                .source(this.source.toString()).build();
     }
 
     private void checkResponse(JSONObject object) {
