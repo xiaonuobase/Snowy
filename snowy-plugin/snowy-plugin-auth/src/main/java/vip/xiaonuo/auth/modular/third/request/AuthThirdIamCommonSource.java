@@ -42,4 +42,10 @@ public record AuthThirdIamCommonSource(String authorizeUrl, String accessTokenUr
     public Class<? extends AuthDefaultRequest> getTargetClass() {
         return AuthThirdIamRequest.class;
     }
+
+
+    @Override
+    public String toString() {
+        return "COMMON_THIRD";
+    }
 }
