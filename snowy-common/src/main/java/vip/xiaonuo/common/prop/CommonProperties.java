@@ -17,6 +17,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 通用基础配置
  *
@@ -29,9 +32,19 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "snowy.config.common")
 public class CommonProperties {
 
-    /** 前端地址 */
+    /**
+     * 前端地址
+     */
     private String frontUrl;
 
-    /** 后端地址 */
+    /**
+     * 后端地址
+     */
     private String backendUrl;
+
+    /**
+     * 后端路由
+     */
+    private List<Map<String, String>> backendPaths;
+
 }
