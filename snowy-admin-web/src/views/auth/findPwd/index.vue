@@ -136,10 +136,10 @@
 		height: 100%;
 		display: flex;
 		justify-content: center;
+		align-items: center;
 	}
 	.login-form {
 		width: 450px;
-		margin-top: 110px;
 	}
 	.login-header {
 		margin-bottom: 20px;
