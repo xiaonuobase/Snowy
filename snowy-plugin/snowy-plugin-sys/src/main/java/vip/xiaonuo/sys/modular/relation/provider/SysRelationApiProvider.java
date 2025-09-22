@@ -75,6 +75,12 @@ public class SysRelationApiProvider implements SysRelationApi {
     }
 
     @Override
+    public List<String> getGroupIdListByUserIdList(List<String> userIdList) {
+        return sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(userIdList,
+                SysRelationCategoryEnum.SYS_USER_HAS_GROUP.getValue());
+    }
+
+    @Override
     public void removeRoleHasMobileMenuRelation(List<String> targetIdList) {
         sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().in(SysRelation::getTargetId, targetIdList)
                 .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue()));
