@@ -21,6 +21,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.sms4j.api.SmsBlend;
+import org.dromara.sms4j.api.dao.SmsDaoDefaultImpl;
 import org.dromara.sms4j.api.entity.SmsResponse;
 import org.dromara.sms4j.core.factory.SmsFactory;
 import org.dromara.sms4j.javase.config.SEInitializer;
@@ -83,7 +84,7 @@ public class DevSmsTencentUtil {
         tencentConfig.setAccessKeySecret(secretKey);
         tencentConfig.setSignature(signName);
         tencentConfig.setSdkAppId(sdkAppId);
-        SEInitializer.initializer().fromConfig(new SmsConfig(), CollectionUtil.newArrayList(tencentConfig));
+        SEInitializer.initializer().registerSmsDao(SmsDaoDefaultImpl.getInstance()).fromConfig(new SmsConfig(), CollectionUtil.newArrayList(tencentConfig));
         smsBlend = SmsFactory.getSmsBlend(tencentConfig.getConfigId());
     }
 
