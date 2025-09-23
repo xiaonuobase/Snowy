@@ -122,7 +122,6 @@ const columns = [
 const selectedRowKeys = ref([])
 // 列表选择配置
 const options = {
-	// columns数字类型字段加入 needTotal: true 可以勾选自动算账
 	alert: {
 		show: false,
 		clear: () => {
