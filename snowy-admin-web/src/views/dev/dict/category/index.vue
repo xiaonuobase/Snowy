@@ -126,7 +126,8 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center'
+			align: 'center',
+			fixed: 'right'
 		}
 	]
 	const categoryType = computed(() => {
