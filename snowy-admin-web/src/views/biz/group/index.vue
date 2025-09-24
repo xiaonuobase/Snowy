@@ -11,7 +11,7 @@
 					<a-form-item>
 						<a-space>
 							<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
-							<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+							<a-button @click="reset">重置</a-button>
 						</a-space>
 					</a-form-item>
 				</a-col>
