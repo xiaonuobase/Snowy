@@ -29,8 +29,7 @@
 	const columns = [
 		{
 			title: '头像',
-			dataIndex: 'avatar',
-			width: 60
+			dataIndex: 'avatar'
 		},
 		{
 			title: '账号',
@@ -54,13 +53,11 @@
 		{
 			title: '登录IP',
 			dataIndex: 'latestLoginIp',
-			width: 120,
 			ellipsis: true
 		},
 		{
 			title: '令牌数',
-			dataIndex: 'tokenNumber',
-			width: 70
+			dataIndex: 'tokenNumber'
 		},
 		{
 			title: '操作',

@@ -157,13 +157,11 @@
 		{
 			title: '显示名称',
 			dataIndex: 'title',
-			ellipsis: true,
-			width: 300
+			ellipsis: true
 		},
 		{
 			title: '类型',
-			dataIndex: 'menuType',
-			width: 100
+			dataIndex: 'menuType'
 		},
 		{
 			title: '路由地址',
@@ -175,14 +173,12 @@
 		},
 		{
 			title: '是否可见',
-			dataIndex: 'visible',
-			width: 120
+			dataIndex: 'visible'
 		},
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			sorter: true,
-			width: 100
+			sorter: true
 		},
 		{
 			title: '操作',

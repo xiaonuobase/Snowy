@@ -169,7 +169,6 @@
 			title: '接口前缀',
 			dataIndex: 'prefix',
 			fixed: 'left',
-			width: 140,
 			customCell: (row, index) => {
 				const indexArr = firstShowMap.value[row.prefix]
 				if (index === indexArr[0]) {
@@ -182,7 +181,6 @@
 			key: 'suffix',
 			title: '接口',
 			dataIndex: 'suffix',
-			width: 290,
 			customFilterDropdown: true,
 			onFilter: (value, record) => record.api.includes(value),
 			onFilterDropdownOpenChange: (visible) => {

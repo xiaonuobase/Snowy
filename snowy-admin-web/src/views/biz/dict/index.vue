@@ -96,13 +96,11 @@
 	const columns = [
 		{
 			title: '字典名称',
-			dataIndex: 'dictLabel',
-			width: 350
+			dataIndex: 'dictLabel'
 		},
 		{
 			title: '字典值',
-			dataIndex: 'dictValue',
-			width: 350
+			dataIndex: 'dictValue'
 		},
 		{
 			title: '排序',

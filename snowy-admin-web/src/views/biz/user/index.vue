@@ -192,8 +192,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '账号',
@@ -206,8 +205,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
-			width: '50px'
+			dataIndex: 'gender'
 		},
 		{
 			title: '手机',
@@ -226,8 +224,7 @@
 		},
 		{
 			title: '状态',
-			dataIndex: 'userStatus',
-			width: '80px'
+			dataIndex: 'userStatus'
 		}
 	]
 	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserDelete'])) {

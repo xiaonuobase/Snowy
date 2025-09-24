@@ -80,8 +80,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '账号',
@@ -94,8 +93,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
-			width: 100
+			dataIndex: 'gender'
 		},
 		{
 			title: '手机',
@@ -104,14 +102,12 @@
 		},
 		{
 			title: '状态',
-			dataIndex: 'userStatus',
-			width: 100
+			dataIndex: 'userStatus'
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: '220px'
+			align: 'center'
 		}
 	]
 	const toolConfig = { refresh: true, height: true, columnSetting: true }

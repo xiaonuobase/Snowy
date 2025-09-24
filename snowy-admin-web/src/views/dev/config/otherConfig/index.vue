@@ -66,7 +66,6 @@
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			width: 100,
 			sorter: true
 		},
 		{

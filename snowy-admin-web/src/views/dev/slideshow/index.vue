@@ -165,8 +165,7 @@
 	const detailsColumns = [
 		{
 			title: '位置',
-			dataIndex: 'label',
-			width: '200px'
+			dataIndex: 'label'
 		},
 		{
 			title: '点击事件',

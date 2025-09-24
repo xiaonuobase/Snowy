@@ -211,8 +211,7 @@ const columns = [
 	{
 		title: '头像',
 		dataIndex: 'avatar',
-		align: 'center',
-		width: '80px'
+		align: 'center'
 	},
 	{
 		title: '账号',
@@ -225,8 +224,7 @@ const columns = [
 	},
 	{
 		title: '性别',
-		dataIndex: 'genderName',
-		width: '50px'
+		dataIndex: 'genderName'
 	},
 	{
 		title: '手机',
@@ -245,8 +243,7 @@ const columns = [
 	},
 	{
 		title: '状态',
-		dataIndex: 'userStatus',
-		width: '80px'
+		dataIndex: 'userStatus'
 	},
 	{
 		title: '操作',

@@ -161,8 +161,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '名称',
@@ -175,8 +174,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '名称',

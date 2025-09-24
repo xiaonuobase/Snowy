@@ -55,8 +55,7 @@
 		},
 		{
 			title: '是否已读',
-			dataIndex: 'read',
-			width: '100px'
+			dataIndex: 'read'
 		},
 		{
 			title: '操作',

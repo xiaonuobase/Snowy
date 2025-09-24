@@ -151,26 +151,22 @@
 		{
 			title: '缩略图',
 			dataIndex: 'thumbnail',
-			ellipsis: true,
-			width: 80
+			ellipsis: true
 		},
 		{
 			title: '文件大小',
 			dataIndex: 'sizeInfo',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '文件后缀',
 			dataIndex: 'suffix',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '储存引擎',
 			dataIndex: 'engine',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '操作',

@@ -87,8 +87,7 @@
 			title: '发送时间',
 			dataIndex: 'createTime',
 			ellipsis: true,
-			sorter: true,
-			width: '150px'
+			sorter: true
 		},
 		{
 			title: '操作',

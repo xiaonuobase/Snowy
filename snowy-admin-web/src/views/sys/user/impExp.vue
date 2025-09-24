@@ -89,8 +89,7 @@
 	const impErrorColumns = [
 		{
 			title: '索引',
-			dataIndex: 'index',
-			width: '80px'
+			dataIndex: 'index'
 		},
 		{
 			title: '原因',
