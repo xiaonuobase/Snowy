@@ -42,7 +42,7 @@
 								</template>
 								重置
 							</a-button>
-							<a @click="toggleAdvanced" style="margin-left: 8px">
+							<a @click="toggleAdvanced">
 								{{ advanced ? '收起' : '展开' }}
 								<component :is="advanced ? 'up-outlined' : 'down-outlined'" />
 							</a>
