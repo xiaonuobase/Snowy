@@ -135,19 +135,16 @@
 		},
 		{
 			title: '状态',
-			dataIndex: 'jobStatus',
-			width: '100px'
+			dataIndex: 'jobStatus'
 		},
 		{
 			title: '启停',
-			dataIndex: 'jobStatusUpdate',
-			width: '120px'
+			dataIndex: 'jobStatusUpdate'
 		},
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			sorter: true,
-			width: '80px'
+			sorter: true
 		},
 		{
 			title: '操作',

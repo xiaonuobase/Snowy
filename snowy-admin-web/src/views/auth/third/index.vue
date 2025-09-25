@@ -73,8 +73,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '姓名',
@@ -88,8 +87,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
-			width: '100px'
+			dataIndex: 'gender'
 		},
 		{
 			title: '分类',

@@ -48,8 +48,7 @@
 		},
 		{
 			title: '是否已读',
-			dataIndex: 'read',
-			width: 120
+			dataIndex: 'read'
 		}
 	]
 	// 打开抽屉

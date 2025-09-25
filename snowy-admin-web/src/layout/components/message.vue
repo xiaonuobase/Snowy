@@ -170,8 +170,7 @@
 		},
 		{
 			title: '是否已读',
-			dataIndex: 'read',
-			width: 120
+			dataIndex: 'read'
 		}
 	]
 	// 关闭抽屉

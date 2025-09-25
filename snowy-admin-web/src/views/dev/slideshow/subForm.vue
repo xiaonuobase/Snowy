@@ -60,18 +60,15 @@
 	const columns = ref([
 		{
 			title: '位置',
-			dataIndex: 'label',
-			width: '20%'
+			dataIndex: 'label'
 		},
 		{
 			title: '点击事件',
-			dataIndex: 'whetherToClick',
-			width: '25%'
+			dataIndex: 'whetherToClick'
 		},
 		{
 			title: '跳转方式',
-			dataIndex: 'skipMode',
-			width: '20%'
+			dataIndex: 'skipMode'
 		},
 		{
 			title: 'URL',

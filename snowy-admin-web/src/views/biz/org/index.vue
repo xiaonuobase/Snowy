@@ -126,8 +126,7 @@
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode',
-			width: 100
+			dataIndex: 'sortCode'
 		}
 	]
 	if (hasPerm(['bizOrgEdit', 'bizOrgDelete'])) {

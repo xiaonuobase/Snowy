@@ -170,13 +170,11 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '头像',
-			dataIndex: 'avatar',
-			width: 50
+			dataIndex: 'avatar'
 		},
 		{
 			title: '用户名',
@@ -193,8 +191,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '用户名',

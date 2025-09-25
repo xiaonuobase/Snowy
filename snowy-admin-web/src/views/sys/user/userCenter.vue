@@ -1,64 +1,71 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="mb-3">
-			<a-card :bordered="false">
-				<div class="account-center-avatarHolder">
-					<div class="avatar">
-						<a-spin size="small" :spinning="avatarLoading">
-							<img :src="userInfo.avatar" />
-						</a-spin>
-						<a @click="uploadLogo">
-							<div v-if="userInfo" :class="userInfo.avatar ? 'mask' : 'mask-notImg'"><upload-outlined /></div>
-						</a>
+	<div class="h-dvh mb-3">
+		<a-row :gutter="10" class="h-full">
+			<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
+				<a-card :bordered="false" class="h-full">
+					<div class="account-center-avatarHolder">
+						<div class="avatar">
+							<a-spin size="small" :spinning="avatarLoading">
+								<img :src="userInfo.avatar" />
+							</a-spin>
+							<a @click="uploadLogo">
+								<div v-if="userInfo" :class="userInfo.avatar ? 'mask' : 'mask-notImg'"><upload-outlined /></div>
+							</a>
+						</div>
+						<div class="username">{{ userInfo.name }}</div>
+						<div class="bio">{{ userInfo.nickname }}</div>
 					</div>
-					<div class="username">{{ userInfo.name }}</div>
-					<div class="bio">{{ userInfo.nickname }}</div>
-				</div>
-				<div class="account-center-detail">
-					<p><i class="title"></i>{{ userInfo.positionName }}</p>
-					<p><i class="group"></i>{{ userInfo.orgName }}</p>
-					<p>
-						<i class="address"></i>
-						<span>{{ userInfo.homeAddress ? userInfo.homeAddress : '暂无地址' }}</span>
+					<div class="account-center-detail">
+						<p><i class="title"></i>{{ userInfo.positionName }}</p>
+						<p><i class="group"></i>{{ userInfo.orgName }}</p>
+						<p>
+							<i class="address"></i>
+							<span>{{ userInfo.homeAddress ? userInfo.homeAddress : '暂无地址' }}</span>
+						</p>
+					</div>
+					<a-divider />
+					<div class="account-center-team">
+						<div class="mb-2 xn-wd" v-if="userInfo.signature">
+							<a-image :src="userInfo.signature" width="100%" class="xn-bdr236 xn-ht120" />
+						</div>
+						<a-button @click="xnSignNameRef.show()">打开签名板</a-button>
+						<XnSignName ref="xnSignNameRef" :image="userInfo.signature" @successful="signSuccess" />
+					</div>
+				</a-card>
+			</a-col>
+			<a-col :xs="24" :sm="24" :md="17" :lg="17" :xl="17">
+				<a-card
+					:bordered="false"
+					class="xn-wd h-full"
+					:tab-list="tabList"
+					:active-tab-key="noTitleKey"
+					@tabChange="(key) => onTabChange(key, 'key')"
+				>
+					<p v-if="noTitleKey === 'accountBasic'">
+						<accountBasic />
 					</p>
-				</div>
-				<a-divider />
-				<div class="account-center-team">
-					<div class="mb-2 xn-wd" v-if="userInfo.signature">
-						<a-image :src="userInfo.signature" width="100%" class="xn-bdr236 xn-ht120" />
-					</div>
-					<a-button @click="xnSignNameRef.show()">打开签名板</a-button>
-					<XnSignName ref="xnSignNameRef" :image="userInfo.signature" @successful="signSuccess" />
-				</div>
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="17" :lg="17" :xl="17">
-			<a-card
-				:bordered="false"
-				class="xn-wd"
-				:tab-list="tabList"
-				:active-tab-key="noTitleKey"
-				@tabChange="(key) => onTabChange(key, 'key')"
-			>
-				<p v-if="noTitleKey === 'accountBasic'">
-					<accountBasic />
-				</p>
-				<p v-if="noTitleKey === 'organizationChart'">
-					<organizationChart />
-				</p>
-				<p v-if="noTitleKey === 'accountBind'">
-					<accountBind />
-				</p>
-				<p v-if="noTitleKey === 'shortcutSetting'">
-					<shortcutSetting />
-				</p>
-				<p v-if="noTitleKey === 'userMessage'">
-					<userMessage />
-				</p>
-			</a-card>
-		</a-col>
-	</a-row>
-	<CropUpload ref="cropUploadRef" :img-src="userInfo ? userInfo.avatar : undefined" @successful="cropUploadSuccess" :z-index="2000" />
+					<p v-if="noTitleKey === 'organizationChart'">
+						<organizationChart />
+					</p>
+					<p v-if="noTitleKey === 'accountBind'">
+						<accountBind />
+					</p>
+					<p v-if="noTitleKey === 'shortcutSetting'">
+						<shortcutSetting />
+					</p>
+					<p v-if="noTitleKey === 'userMessage'">
+						<userMessage />
+					</p>
+				</a-card>
+			</a-col>
+		</a-row>
+		<CropUpload
+			ref="cropUploadRef"
+			:img-src="userInfo ? userInfo.avatar : undefined"
+			@successful="cropUploadSuccess"
+			:z-index="2000"
+		/>
+	</div>
 </template>
 
 <script setup name="userCenter">

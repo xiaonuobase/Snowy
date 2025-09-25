@@ -126,8 +126,7 @@ const columns = [
 	},
 	{
 		title: '排序',
-		dataIndex: 'sortCode',
-		width: 100
+		dataIndex: 'sortCode'
 	},
 	{
 		title: '操作',

@@ -73,8 +73,7 @@
 	const columns = [
 		{
 			title: '登录设备',
-			dataIndex: 'tokenDevice',
-			width: 90
+			dataIndex: 'tokenDevice'
 		},
 		{
 			title: '有效期',
@@ -83,8 +82,7 @@
 		{
 			title: '令牌',
 			dataIndex: 'tokenValue',
-			ellipsis: true,
-			width: 80
+			ellipsis: true
 		}
 	]
 	if (hasPerm('authForceQuit')) {
@@ -92,7 +90,6 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '100px',
 			scopedSlots: { customRender: 'action' }
 		})
 	}

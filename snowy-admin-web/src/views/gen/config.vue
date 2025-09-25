@@ -144,44 +144,37 @@
 		{
 			title: '字典',
 			align: 'center',
-			dataIndex: 'dictTypeCode',
-			width: 140
+			dataIndex: 'dictTypeCode'
 		},
 		{
 			title: '列表显示',
 			align: 'center',
-			dataIndex: 'whetherTable',
-			width: 80
+			dataIndex: 'whetherTable'
 		},
 		{
 			title: '列省略',
 			align: 'center',
-			dataIndex: 'whetherRetract',
-			width: 80
+			dataIndex: 'whetherRetract'
 		},
 		{
 			title: '增改',
 			align: 'center',
-			dataIndex: 'whetherAddUpdate',
-			width: 80
+			dataIndex: 'whetherAddUpdate'
 		},
 		{
 			title: '必填',
 			align: 'center',
-			dataIndex: 'whetherRequired',
-			width: 80
+			dataIndex: 'whetherRequired'
 		},
 		{
 			title: '唯一',
 			align: 'center',
-			dataIndex: 'whetherUnique',
-			width: 80
+			dataIndex: 'whetherUnique'
 		},
 		{
 			title: '查询',
 			align: 'center',
-			dataIndex: 'queryWhether',
-			width: 80
+			dataIndex: 'queryWhether'
 		},
 		{
 			title: '查询方式',

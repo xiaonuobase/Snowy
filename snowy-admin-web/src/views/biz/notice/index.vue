@@ -154,8 +154,7 @@
 		},
 		{
 			title: '封面图',
-			dataIndex: 'image',
-			width: '100px'
+			dataIndex: 'image'
 		},
 		{
 			title: '类型',
@@ -176,8 +175,7 @@
 		},
 		{
 			title: '创建时间',
-			dataIndex: 'createTime',
-			width: '150px'
+			dataIndex: 'createTime'
 		}
 	]
 	// 操作栏通过权限判断是否显示

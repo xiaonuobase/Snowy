@@ -135,8 +135,7 @@
 		},
 		{
 			title: '图标',
-			dataIndex: 'icon',
-			width: 80
+			dataIndex: 'icon'
 		},
 		{
 			title: '正规则',
