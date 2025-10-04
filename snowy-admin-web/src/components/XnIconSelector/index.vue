@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-	import { ref } from 'vue'
+	import { ref, watch, defineModel } from 'vue'
 	import config from '@/config/iconSelect'
 	import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 
@@ -95,11 +95,14 @@
 	const activeKey = ref(iconData.value[0]?.key || '')
 	const currentCategory = ref('default')
 
+	// 初始化时同步一次，且后续保持与外部 v-model 一致
+	selectedIcon.value = props.value
 	watch(
 		() => props.value,
 		(newVal) => {
 			selectedIcon.value = newVal
-		}
+		},
+		{ immediate: true }
 	)
 
 	const handleOpenChange = (isOpen) => {
@@ -113,6 +116,7 @@
 	}
 
 	const handleIconSelect = (icon) => {
+		selectedIcon.value = icon
 		emit('update:value', icon)
 		formRef.value?.validateFields('icon')
 		visible.value = false

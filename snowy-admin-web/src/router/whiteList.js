@@ -22,6 +22,10 @@ const constRouters = [
 		path: '/callback/:platform'
 	},
 	{
+		// 如果插件要放开前端，那么不需要再添加到白名单，直接用这个，例如/share/dashboard
+		path: '/share/:plugin'
+	},
+	{
 		path: '/other',
 		name: 'other',
 		component: () => import('@/views/other/index.vue'),

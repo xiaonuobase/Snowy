@@ -11,10 +11,10 @@ import './tailwind.css'
 
 const app = createApp(App)
 app.use(createPinia())
-app.use(router)
 app.use(Antd)
 app.use(i18n)
 app.use(snowy)
+app.use(router)
 
 // 挂载app
 app.mount('#app')

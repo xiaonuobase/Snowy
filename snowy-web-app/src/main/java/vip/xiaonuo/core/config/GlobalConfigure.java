@@ -193,6 +193,9 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/iam/auth/source/render",
             "/iam/auth/source/callback/**",
             "/iam/id/source/eventCallback/**",
+
+            /* 仪表盘放行 */
+            "/dashboard/dashboardList/shareDetail",
     };
 
     /**
