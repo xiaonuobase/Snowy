@@ -137,4 +137,14 @@ public interface SysMenuService extends IService<SysMenu> {
      * @date 2022/4/24 20:08
      */
     List<Tree<String>> menuTreeSelector(SysMenuSelectorMenuParam sysMenuSelectorMenuParam);
+
+    /**
+     * 增加资源并授权于超管
+     *
+     * @author yubaoshan
+     * @date 2025/5/5 04:30
+     */
+    void addResourceGrantSuperAdmin(String moduleId, String id, String title, String parentId, String name, String code,  String category,
+                                    String menuType, String path, String component, String icon, String visible,  Integer sortCode);
+
 }

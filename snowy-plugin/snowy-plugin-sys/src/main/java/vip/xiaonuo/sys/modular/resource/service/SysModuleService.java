@@ -86,4 +86,12 @@ public interface SysModuleService extends IService<SysModule> {
      * @date 2022/4/24 21:18
      */
     SysModule queryEntity(String id);
+
+    /**
+     * 删除模块以及所有的资源
+     *
+     * @author yubaoshan
+     * @date 2025/5/5 04:30
+     */
+    void deleteModuleByCode(String moduleCode, List<String> resourceIdList);
 }
