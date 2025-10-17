@@ -16,15 +16,16 @@
 
 #### props
 
-| 参数           | 说明                                                    | 类型    | 默认值     |
-| -------------- | ------------------------------------------------------- | ------- | ---------- |
-| value(v-model) | 指定当前选中的条目                                      | string  | -          |
-| dictType       | 字典名称                                                | string  | -          |
-| optionType     | 组件形式：下拉框或按钮组('dropdown'\|'radio'\|'button') | string  | 'dropdown' |
-| disabled       | 禁用组件                                                | boolean | false      |
-| size           | 组件尺寸（'small'\|'middle'\|'large'）                  | string  | 'middle'   |
-| allowClear     | 支持清除(仅支持'dropdown'组件)                          | boolean | false      |
-| placeholder    | 选择框默认文字(仅支持'dropdown'组件)                    | string  | -          |
+| 参数           | 说明                                                         | 类型    | 默认值     |
+| -------------- | ------------------------------------------------------------ | ------- | ---------- |
+| value(v-model) | 指定当前选中的条目                                           | string  | -          |
+| dictType       | 字典名称                                                     | string  | -          |
+| optionType     | 组件形式：下拉框或按钮组('dropdown'\|'radio'\|'button'\|'checkbox') | string  | 'dropdown' |
+| disabled       | 禁用组件                                                     | boolean | false      |
+| size           | 组件尺寸（'small'\|'middle'\|'large'）仅限于dropdown和button有效 | string  | 'middle'   |
+| allowClear     | 支持清除(仅支持'dropdown'组件)                               | boolean | false      |
+| placeholder    | 选择框默认文字(仅支持'dropdown'组件)                         | string  | -          |
+| name           | radio/button/checkbox Group的name属性(仅限radio\|dropdown\|checkbox组件有效) | string  | -          |
 
 #### 事件
 

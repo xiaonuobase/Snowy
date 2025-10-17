@@ -1,7 +1,7 @@
 <template>
   <a-select 
     v-if="props.optionType === 'dropdown'"
-    :model-value="props.value" 
+    v-model:value="modelValue" 
     :placeholder="props.placeholder" 
     :options="dictOptions" 
     :disabled="props.disabled"
@@ -12,11 +12,21 @@
 
   <a-radio-group 
     v-if="props.optionType === 'radio' || props.optionType === 'button'"
-    :model-value="props.value" 
+    v-model:value="modelValue"
+    :name="props.name" 
     :optionType="props.optionType" 
     :options="dictOptions" 
     :disabled="props.disabled"
     :size="props.size"
+    @change="handleChange"
+  />
+
+  <a-checkbox-group
+    v-if="props.optionType === 'checkbox'"
+    v-model:value="modelValue"
+    :name="props.name"
+    :options="dictOptions" 
+    :disabled="props.disabled"
     @change="handleChange"
   />
 </template>
@@ -24,6 +34,12 @@
 <script setup>
 import tool from '@/utils/tool'
 
+// 定义双向数据绑定模型
+const modelValue = defineModel({
+  required: true,
+  default: null || [],
+  type: [String, Array, null],
+})
 
 const props = defineProps({
   optionType: {
@@ -31,7 +47,7 @@ const props = defineProps({
     default: 'dropdown',
     required: false,
     validator(value) {
-        return ['dropdown', 'button', 'radio'].includes(value)
+      return ['dropdown', 'button', 'radio', 'checkbox'].includes(value)
     }
   },
   dictType: {
@@ -39,37 +55,37 @@ const props = defineProps({
     default: '',
     required: true
   },
-  allowClear: {        // 仅限于下拉框有效
+  allowClear: {        // 仅限于dropdown有效
     type: Boolean,
     default: true,
     required: false
   },
-  placeholder: {      // 仅限于下拉框有效
+  placeholder: {      // 仅限于dropdown有效
     type: String,
     default: '',
     required: false
   },
-  size: {
+  size: {             // 仅限于dropdown和button有效
     type: String,
     default: 'middle',
     required: false,
     validator(value) {
-        return ['small', 'middle', 'large'].includes(value)
+      return ['small', 'middle', 'large'].includes(value)
     }
   },
-  value: {
-    type: [String, null],
-    default: null,
-    required: true,
+  name: {             // 仅限于checkbox、button、radio有效
+    type: String,
+    default: '',
+    required: false
   },
   disabled: {
     type: Boolean,
     default: false,
     required: false
-  },
+  }
 })
 
-const emit = defineEmits(['update:value', 'change'])
+const emit = defineEmits(['change'])
 
 const dictOptions = ref([])
 
@@ -79,12 +95,10 @@ onMounted(() => {
 
 
 const handleChange = (e) => {
-  if (props.optionType === 'dropdown') {
-    emit('update:value', e)
+  if (props.optionType === 'dropdown'||props.optionType === 'checkbox') {
     emit('change', e)
   }
   else{
-    emit('update:value', e.target.value)
     emit('change', e.target.value)
   } 
 }
