@@ -7,7 +7,7 @@
 ### 使用示例
 
 ```vue
-<xn-dict-select v-model:value="formData.category" dict-type="ORG_CATEGORY" option-type="dropdown" allow-clear />
+<dict-select v-model:value="formData.category" dict-type="ORG_CATEGORY" />
 ```
 
 
