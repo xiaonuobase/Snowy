@@ -7,9 +7,10 @@
 ### 使用示例
 
 ```vue
-<dict-select v-model:value="formData.category" dict-type="ORG_CATEGORY" />
+<dict-select v-model="formData.category" dict-type="ORG_CATEGORY" />
 ```
 
+> 注意：使用v-model，而不是v-model:value
 
 
 ### API
