@@ -36,6 +36,13 @@
 					:disabled="formData.parentId === '0'"
 				/>
 			</a-form-item>
+			<a-form-item label="字典颜色：" name="dictColor">
+				<a-select v-model:value="formData.dictColor" placeholder="请选择字典颜色" allow-clear>
+					<a-select-option v-for="item in dictColorList" :key="item" :value="item">
+						<a-tag :color="item">{{ item }}</a-tag>
+					</a-select-option>
+				</a-select>
+			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
 				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="1000" />
 			</a-form-item>
@@ -62,6 +69,9 @@
 	const treeData = ref([])
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
+
+	// 定义字典颜色
+	const dictColorList = ['default','pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple','gold','geekblue','volcano','magenta','processing','success','error','warning']
 
 	// 打开抽屉
 	const onOpen = (record, type, parentId) => {
@@ -100,6 +110,7 @@
 	const formRules = {
 		dictLabel: [required('请输入字典名称')],
 		dictValue: [required('请选择字典值')],
+		dictColor: [required('请选择字典颜色')],
 		sortCode: [required('请选择排序')]
 	}
 	// 表单固定label实现

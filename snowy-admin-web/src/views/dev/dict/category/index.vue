@@ -27,10 +27,10 @@
 									allow-clear
 									:tree-data="treeData"
 									:field-names="{
-												children: 'children',
-												label: 'name',
-												value: 'id'
-											}"
+											children: 'children',
+											label: 'name',
+											value: 'id'
+										}"
 									selectable="false"
 									tree-line
 								/>
@@ -83,6 +83,9 @@
 						<template v-if="column.dataIndex === 'level'">
 							<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
 							<a-tag color="green" v-else>子级</a-tag>
+						</template>
+						<template v-if="column.dataIndex === 'dictLabel'">
+							<a-tag :color="record.dictColor">{{ record.dictLabel }}</a-tag>
 						</template>
 						<template v-if="column.dataIndex === 'action'">
 							<a @click="formRef.onOpen(record, categoryType)">编辑</a>
