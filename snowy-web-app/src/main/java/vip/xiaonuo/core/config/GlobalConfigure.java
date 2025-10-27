@@ -153,6 +153,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
 
             /* 系统基础配置 */
             "/dev/config/sysBaseList",
+            /* 系统三方登录开关配置 */
+            "/dev/config/sysThirdAllowFlagList",
 
             /* 系统字典树 */
             "/dev/dict/tree",

@@ -89,6 +89,19 @@ public class DevConfigController {
     }
 
     /**
+     * 获取系统三方登录开关配置
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 2)
+    @Operation(summary = "获取系统三方登录开关配置")
+    @GetMapping("/dev/config/sysThirdAllowFlagList")
+    public CommonResult<List<DevConfig>> sysThirdAllowFlagList() {
+        return CommonResult.data(devConfigService.sysThirdAllowFlagList());
+    }
+
+    /**
      * 获取配置列表
      *
      * @author xuyuxiang

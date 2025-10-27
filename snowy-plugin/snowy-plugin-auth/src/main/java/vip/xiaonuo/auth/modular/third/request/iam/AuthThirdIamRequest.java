@@ -10,7 +10,7 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.request;
+package vip.xiaonuo.auth.modular.third.request.iam;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
@@ -38,8 +38,6 @@ import java.util.Map;
 @Getter
 public class AuthThirdIamRequest extends AuthDefaultRequest {
 
-    private final Map<String, String> authSourceOidcBaseJson;
-
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -48,7 +46,6 @@ public class AuthThirdIamRequest extends AuthDefaultRequest {
         super(config, new AuthThirdIamCommonSource(authSourceOidcBaseJson.get("authorizeUrl"),
                 authSourceOidcBaseJson.get("accessTokenUrl"),
                 authSourceOidcBaseJson.get("userInfoUrl")));
-        this.authSourceOidcBaseJson = authSourceOidcBaseJson;
     }
 
     @Override

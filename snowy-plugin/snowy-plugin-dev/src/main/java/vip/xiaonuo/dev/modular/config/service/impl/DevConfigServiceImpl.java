@@ -136,6 +136,19 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
     }
 
     @Override
+    public List<DevConfig> sysThirdAllowFlagList() {
+        LambdaQueryWrapper<DevConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        // 查询部分字段
+        lambdaQueryWrapper.select(DevConfig::getId, DevConfig::getConfigKey, DevConfig::getConfigValue,
+                DevConfig::getCategory, DevConfig::getSortCode, DevConfig::getRemark);
+        // key以SNOWY_THIRD开头
+        lambdaQueryWrapper.like(DevConfig::getConfigKey, "SNOWY_THIRD");
+        // key以ALLOW_LOGIN_FLAG结尾
+        lambdaQueryWrapper.like(DevConfig::getConfigKey, "ALLOW_LOGIN_FLAG");
+        return this.list(lambdaQueryWrapper);
+    }
+
+    @Override
     public List<DevConfig> list(DevConfigListParam devConfigListParam) {
         LambdaQueryWrapper<DevConfig> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段

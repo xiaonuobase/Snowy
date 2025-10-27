@@ -10,12 +10,10 @@
 						<span class="security-list-value">{{ item.value }}</span>
 					</template>
 					<template #avatar>
-						<wechat-outlined v-if="item.type === 'weChat'" class="bind-icon" :style="{ color: '#1AAD19' }" />
+						<verified-outlined v-if="item.type === 'password'" class="bind-icon" :style="{ color: '#a059e8' }" />
 						<mail-outlined v-if="item.type === 'email'" class="bind-icon" :style="{ color: '#fcab43' }" />
 						<mobile-outlined v-if="item.type === 'phone'" class="bind-icon" :style="{ color: '#43a0fc' }" />
-						<verified-outlined v-if="item.type === 'password'" class="bind-icon" :style="{ color: '#a059e8' }" />
 						<usb-outlined v-if="item.type === 'otp'" class="bind-icon" :style="{ color: '#1AAD19' }" />
-						<GiteeIcon v-if="item.type === 'Gitee'" class="bind-icon xn-wd40" />
 					</template>
 				</a-list-item-meta>
 				<template #actions>
@@ -78,8 +76,7 @@
 			type: 'phone',
 			bindStatus: userInfo && userInfo.value.phone
 		},
-		{ title: '绑定微信', description: '未绑定', value: '', type: 'weChat', bindStatus: 0 },
-		{ title: '绑定Gitee', description: '未绑定', value: '', type: 'Gitee', bindStatus: 0 }
+		{ title: '动态口令', description: '未绑定动态口令', value: '', type: 'otp', bindStatus: 0 }
 	])
 	const bindCommon = (item) => {
 		let key = item.type

@@ -65,7 +65,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         QueryWrapper<DevDict> queryWrapper = new QueryWrapper<DevDict>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
-                DevDict::getDictValue, DevDict::getSortCode);
+                DevDict::getDictValue, DevDict::getDictColor, DevDict::getSortCode);
         if (ObjectUtil.isNotEmpty(devDictPageParam.getParentId())) {
             queryWrapper.lambda().and(q -> q.eq(DevDict::getParentId, devDictPageParam.getParentId())
                     .or().eq(DevDict::getId, devDictPageParam.getParentId()));
@@ -103,7 +103,7 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         LambdaQueryWrapper<DevDict> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         // 查询部分字段
         lambdaQueryWrapper.select(DevDict::getId, DevDict::getParentId, DevDict::getCategory, DevDict::getDictLabel,
-                DevDict::getDictValue, DevDict::getSortCode);
+                DevDict::getDictValue, DevDict::getDictColor, DevDict::getSortCode);
         lambdaQueryWrapper.orderByAsc(DevDict::getSortCode);
         if (ObjectUtil.isNotEmpty(devDictTreeParam.getCategory())) {
             lambdaQueryWrapper.eq(DevDict::getCategory, devDictTreeParam.getCategory());

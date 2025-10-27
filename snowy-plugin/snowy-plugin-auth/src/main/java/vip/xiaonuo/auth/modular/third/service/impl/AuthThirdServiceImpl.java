@@ -28,9 +28,7 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
-import me.zhyd.oauth.request.AuthGiteeRequest;
-import me.zhyd.oauth.request.AuthRequest;
-import me.zhyd.oauth.request.AuthWeChatOpenRequest;
+import me.zhyd.oauth.request.*;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +44,7 @@ import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
-import vip.xiaonuo.auth.modular.third.request.AuthThirdIamRequest;
+import vip.xiaonuo.auth.modular.third.request.iam.AuthThirdIamRequest;
 import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -69,6 +67,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     /** 缓存前缀 */
     private static final String CONFIG_CACHE_KEY = "auth-third-state:";
 
+    private static final String SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG";
     private static final String SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY = "SNOWY_THIRD_IAM_AUTHORIZE_URL";
     private static final String SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY = "SNOWY_THIRD_IAM_ACCESS_TOKEN_URL";
     private static final String SNOWY_THIRD_IAM_USER_INFO_URL_KEY = "SNOWY_THIRD_IAM_USER_INFO_URL";
@@ -76,10 +75,8 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     private static final String SNOWY_THIRD_IAM_CLIENT_SECRET_KEY = "SNOWY_THIRD_IAM_CLIENT_SECRET";
     private static final String SNOWY_THIRD_IAM_REDIRECT_URL_KEY = "SNOWY_THIRD_IAM_REDIRECT_URL";
 
-    private static final String SNOWY_THIRD_GITEE_CLIENT_ID_KEY = "SNOWY_THIRD_GITEE_CLIENT_ID";
-    private static final String SNOWY_THIRD_GITEE_CLIENT_SECRET_KEY = "SNOWY_THIRD_GITEE_CLIENT_SECRET";
-    private static final String SNOWY_THIRD_GITEE_REDIRECT_URL_KEY = "SNOWY_THIRD_GITEE_REDIRECT_URL";
-
+    // 微信
+    private static final String SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG";
     private static final String SNOWY_THIRD_WECHAT_CLIENT_ID_KEY = "SNOWY_THIRD_WECHAT_CLIENT_ID";
     private static final String SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY = "SNOWY_THIRD_WECHAT_CLIENT_SECRET";
     private static final String SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY = "SNOWY_THIRD_WECHAT_REDIRECT_URL";
@@ -258,8 +255,15 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         source = source.toUpperCase();
         HttpUtil.setHttp(new HutoolImpl());
         AuthThirdPlatformEnum.validate(source);
-        if (source.equals(AuthThirdPlatformEnum.IAM.getValue())) {
-            // 山信通登录
+        if(source.equals(AuthThirdPlatformEnum.IAM.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("IAM登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_IAM_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // IAM登录
             authRequest = new AuthThirdIamRequest(AuthConfig.builder()
                     .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_ID_KEY))
                     .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_SECRET_KEY))
@@ -271,16 +275,14 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     "accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY),
                     "userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_USER_INFO_URL_KEY)));
         }
-        if (source.equals(AuthThirdPlatformEnum.GITEE.getValue())) {
-            // GITEE登录
-            authRequest = new AuthGiteeRequest(AuthConfig.builder()
-                    .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_CLIENT_ID_KEY))
-                    .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_CLIENT_SECRET_KEY))
-                    .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_GITEE_REDIRECT_URL_KEY))
-                    .ignoreCheckState(true)
-                    .build());
-        }
         if(source.equals(AuthThirdPlatformEnum.WECHAT.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("微信登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
             // 微信登录
             authRequest = new AuthWeChatOpenRequest(AuthConfig.builder()
                     .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_ID_KEY))
