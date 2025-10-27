@@ -388,6 +388,28 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return TreeUtil.build(treeNodeList, "0");
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void addResourceGrantSuperAdmin(String moduleId, String id, String title, String parentId, String name, String code,  String category,
+                                           String menuType, String path, String component, String icon, String visible,  Integer sortCode) {
+        SysMenu menu = new SysMenu();
+        menu.setModule(moduleId);
+        menu.setId(id);
+        menu.setTitle(title);
+        menu.setParentId(parentId);
+        menu.setName(name);
+        menu.setCode(code);
+        menu.setCategory(category);
+        menu.setMenuType(menuType);
+        menu.setPath(path);
+        menu.setComponent(component);
+        menu.setIcon(icon);
+        menu.setVisible(visible);
+        menu.setSortCode(sortCode);
+        this.save(menu);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(menu));
+    }
     /* ====以下为各种递归方法==== */
 
     @Override
