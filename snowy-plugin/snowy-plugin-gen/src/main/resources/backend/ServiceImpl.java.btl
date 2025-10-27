@@ -50,6 +50,7 @@ import vip.xiaonuo.common.util.CommonDownloadUtil;
 import vip.xiaonuo.common.util.CommonResponseUtil;
 
 import java.io.File;
+import java.io.Serializable;
 import java.io.IOException;
 import java.util.List;
 
@@ -134,7 +135,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     }
 
     @Override
-    public ${className} queryEntity(String ${dbTableKeyCamelCase}) {
+    public ${className} queryEntity(Serializable ${dbTableKeyCamelCase}) {
         ${className} ${classNameFirstLower} = this.getById(${dbTableKeyCamelCase});
         if(ObjectUtil.isEmpty(${classNameFirstLower})) {
             throw new CommonException("${functionName}不存在，${dbTableKeyCamelCase}值为：{}", ${dbTableKeyCamelCase});
@@ -256,7 +257,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
        try {
          List<${className}EditParam> dataList;
          if(ObjectUtil.isNotEmpty(${classNameFirstLower}IdParamList)) {
-            List<String> ${dbTableKeyCamelCase}List = CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${dbTableKeyFirstUpper});
+            List<Serializable> ${dbTableKeyCamelCase}List = CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${dbTableKeyFirstUpper});
             dataList = BeanUtil.copyToList(this.listByIds(${dbTableKeyCamelCase}List), ${className}EditParam.class);
          } else {
             dataList = BeanUtil.copyToList(this.list(), ${className}EditParam.class);
