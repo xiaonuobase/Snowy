@@ -1,137 +1,130 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="0" :sm="0" :md="0" :lg="4" :xl="4">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
-				<a-tree
-					v-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					@select="treeSelect"
-				>
-				</a-tree>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
-			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" :model="searchFormState">
-					<a-row :gutter="10">
-						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
-							<a-form-item label="组织：" name="categoryOrOrgId">
-								<a-tree-select
-									v-model:value="searchFormState.categoryOrOrgId"
-									class="xn-wd"
-									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择组织"
-									allow-clear
-									:tree-data="treeData"
-									:field-names="{
-											children: 'children',
-											label: 'name',
-											value: 'id'
-										}"
-									selectable="false"
-									tree-line
-									@change="onCategoryOrOrgIdSelect"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="searchKey" label="关键词">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名称关键词"></a-input>
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item>
-								<a-space>
-									<a-button type="primary" @click="tableRef.refresh(true)">
-										<template #icon>
-											<SearchOutlined/>
-										</template>
-										查询
-									</a-button>
-									<a-button @click="reset">
-										<template #icon>
-											<redo-outlined/>
-										</template>
-										重置
-									</a-button>
-								</a-space>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-form>
-			</a-card>
-			<a-card :bordered="false">
-				<s-table
-					ref="tableRef"
-					:columns="columns"
-					:data="loadData"
-					:expand-row-by-click="true"
-					:alert="options.alert.show"
-					bordered
-					:row-key="(record) => record.id"
-					:row-selection="options.rowSelection"
-					:scroll="{ x: 'max-content' }"
-				>
-					<template #operator class="table-operator">
-						<a-space>
-							<a-button
-								type="primary"
-								@click="formRef.onOpen(undefined, searchFormState.category, searchFormState.orgId)"
-							>
-								<template #icon><plus-outlined /></template>
-								新增角色
-							</a-button>
-							<xn-batch-button
-								buttonName="批量删除"
-								icon="DeleteOutlined"
-								buttonDanger
-								:selectedRowKeys="selectedRowKeys"
-								@batchCallBack="deleteBatchRole"
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<a-tree
+				v-if="treeData.length > 0"
+				v-model:expandedKeys="defaultExpandedKeys"
+				:tree-data="treeData"
+				:field-names="treeFieldNames"
+				@select="treeSelect"
+			/>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+		</template>
+		<template #right>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+						<a-form-item label="组织：" name="categoryOrOrgId">
+							<a-tree-select
+								v-model:value="searchFormState.categoryOrOrgId"
+								class="xn-wd"
+								:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+								placeholder="请选择组织"
+								allow-clear
+								:tree-data="treeData"
+								:field-names="{
+									children: 'children',
+									label: 'name',
+									value: 'id'
+								}"
+								selectable="false"
+								tree-line
+								@change="onCategoryOrOrgIdSelect"
 							/>
-						</a-space>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" label="关键词">
+							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名称关键词"></a-input>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon>
+										<SearchOutlined />
+									</template>
+									查询
+								</a-button>
+								<a-button @click="reset">
+									<template #icon>
+										<redo-outlined />
+									</template>
+									重置
+								</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				:alert="options.alert.show"
+				bordered
+				:row-key="(record) => record.id"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #operator>
+					<a-space>
+						<a-button
+							type="primary"
+							@click="formRef.onOpen(undefined, searchFormState.category, searchFormState.orgId)"
+						>
+							<template #icon><plus-outlined /></template>
+							新增角色
+						</a-button>
+						<xn-batch-button
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchRole"
+						/>
+					</a-space>
+				</template>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'category'">
+						{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
 					</template>
-					<template #bodyCell="{ column, record }">
-						<template v-if="column.dataIndex === 'category'">
-							{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
-						</template>
-						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)">编辑</a>
-							<a-divider type="vertical" />
-							<a-popconfirm title="确定删除此角色？" @confirm="removeOrg(record)">
-								<a-button type="link" danger size="small">删除</a-button>
-							</a-popconfirm>
-							<a-divider type="vertical" />
-							<a-dropdown>
-								<a class="ant-dropdown-link">
-									授权
-									<DownOutlined />
-								</a>
-								<template #overlay>
-									<a-menu>
-										<a-menu-item>
-											<a @click="grantResourceFormRef.onOpen(record)">授权资源</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="grantMobileResourceFormRef.onOpen(record)">授权移动端资源</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="grantPermissionFormRef.onOpen(record)">授权权限</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="openRoleUserSelector(record)">授权用户</a>
-										</a-menu-item>
-									</a-menu>
-								</template>
-							</a-dropdown>
-						</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a @click="formRef.onOpen(record)">编辑</a>
+						<a-divider type="vertical" />
+						<a-popconfirm title="确定删除此角色？" @confirm="removeOrg(record)">
+							<a-button type="link" danger size="small">删除</a-button>
+						</a-popconfirm>
+						<a-divider type="vertical" />
+						<a-dropdown>
+							<a class="ant-dropdown-link">
+								授权
+								<DownOutlined />
+							</a>
+							<template #overlay>
+								<a-menu>
+									<a-menu-item>
+										<a @click="grantResourceFormRef.onOpen(record)">授权资源</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="grantMobileResourceFormRef.onOpen(record)">授权移动端资源</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="grantPermissionFormRef.onOpen(record)">授权权限</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="openRoleUserSelector(record)">授权用户</a>
+									</a-menu-item>
+								</a-menu>
+							</template>
+						</a-dropdown>
 					</template>
-				</s-table>
-			</a-card>
-		</a-col>
-	</a-row>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
 	<grantResourceForm ref="grantResourceFormRef" @successful="tableRef.refresh()" />
 	<grantMobileResourceForm ref="grantMobileResourceFormRef" @successful="tableRef.refresh()" />
 	<grantPermissionForm ref="grantPermissionFormRef" @successful="tableRef.refresh()" />
@@ -205,7 +198,6 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
-	const cardLoading = ref(true)
 	// 记录数据
 	const recordCacheData = ref({})
 
@@ -226,7 +218,6 @@
 	}
 	// 加载左侧的树
 	orgApi.orgTree().then((res) => {
-		cardLoading.value = false
 		if (res !== null) {
 			// 树中插入全局角色类型
 			const globalRoleType = [
@@ -281,10 +272,6 @@
 			delete searchFormState.value.category
 		}
 	}
-	// 可伸缩列
-	const handleResizeColumn = (w, col) => {
-		col.width = w
-	}
 	// 删除
 	const removeOrg = (record) => {
 		let params = [
@@ -336,7 +323,3 @@
 		}
 	}
 </script>
-
-<style scoped>
-
-</style>

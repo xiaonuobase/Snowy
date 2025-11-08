@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
+	<a-card :bordered="false">
 		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="10">
 				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
@@ -32,13 +32,13 @@
 						<a-space>
 							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon>
-									<SearchOutlined/>
+									<SearchOutlined />
 								</template>
 								查询
 							</a-button>
 							<a-button @click="reset">
 								<template #icon>
-									<redo-outlined/>
+									<redo-outlined />
 								</template>
 								重置
 							</a-button>
@@ -47,8 +47,6 @@
 				</a-col>
 			</a-row>
 		</a-form>
-	</a-card>
-	<a-card :bordered="false">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -60,7 +58,7 @@
 			:row-selection="options.rowSelection"
 			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>

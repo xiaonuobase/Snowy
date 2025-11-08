@@ -23,7 +23,7 @@
 					}"
 					selectable="false"
 					treeLine
-				></a-tree-select>
+				/>
 			</a-form-item>
 			<a-form-item label="字典名称：" name="dictLabel">
 				<a-input v-model:value="formData.dictLabel" placeholder="请输入字典名称" allow-clear />
@@ -69,9 +69,25 @@
 	const treeData = ref([])
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
-
 	// 定义字典颜色
-	const dictColorList = ['default','pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple','gold','geekblue','volcano','magenta','processing','success','error','warning']
+	const dictColorList = [
+		'default',
+		'pink',
+		'red',
+		'orange',
+		'green',
+		'cyan',
+		'blue',
+		'purple',
+		'gold',
+		'geekblue',
+		'volcano',
+		'magenta',
+		'processing',
+		'success',
+		'error',
+		'warning'
+	]
 
 	// 打开抽屉
 	const onOpen = (record, type, parentId) => {

@@ -119,62 +119,62 @@
 							</a-col>
 						</a-row>
 						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
-								<a-row :gutter="10">
-									<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-										<a-form-item
-											:name="['positionJson', index, 'orgId']"
-											:rules="{ required: true, message: '请选择组织' }"
-										>
-											<a-tree-select
-												v-model:value="positionInfo.orgId"
-												class="xn-wd"
-												:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-												placeholder="请选择组织"
-												allow-clear
-												tree-default-expand-all
-												:tree-data="treeData"
-												:tree-default-expanded-keys="treeDefaultExpandedKeys"
-												:field-names="{ children: 'children', label: 'name', value: 'id' }"
-												@select="childOrgSelect(positionInfo, 0, index)"
-											/>
-										</a-form-item>
-									</a-col>
-									<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-										<a-form-item
-											:name="['positionJson', index, 'positionId']"
-											:rules="{ required: true, message: '请选择职位' }"
-										>
-											<xn-page-select
-												ref="xnChildPositionPageSelectRef"
-												v-model:value="positionInfo.positionId"
-												placeholder="请选择职位"
-												allow-clear
-												:page-function="selectApiFunction.childPositionSelector"
-												:echo-function="selectApiFunction.echoPosition"
-											/>
-										</a-form-item>
-									</a-col>
-									<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-										<a-form-item :name="['positionJson', index, 'directorId']">
-											<xn-page-select
-												ref="xnChildUserPageSelectRef"
-												v-model:value="positionInfo.directorId"
-												placeholder="请选择主管"
-												allow-clear
-												:page-function="selectApiFunction.childUserSelector"
-												:echo-function="selectApiFunction.echoUser"
-											/>
-										</a-form-item>
-									</a-col>
-									<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
-										<a-form-item>
-											<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
-												<DeleteOutlined />
-												移除
-											</a-button>
-										</a-form-item>
-									</a-col>
-								</a-row>
+							<a-row :gutter="10">
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
+									<a-form-item
+										:name="['positionJson', index, 'orgId']"
+										:rules="{ required: true, message: '请选择组织' }"
+									>
+										<a-tree-select
+											v-model:value="positionInfo.orgId"
+											class="xn-wd"
+											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+											placeholder="请选择组织"
+											allow-clear
+											tree-default-expand-all
+											:tree-data="treeData"
+											:tree-default-expanded-keys="treeDefaultExpandedKeys"
+											:field-names="treeFieldNames"
+											@select="childOrgSelect(positionInfo, 0, index)"
+										/>
+									</a-form-item>
+								</a-col>
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
+									<a-form-item
+										:name="['positionJson', index, 'positionId']"
+										:rules="{ required: true, message: '请选择职位' }"
+									>
+										<xn-page-select
+											ref="xnChildPositionPageSelectRef"
+											v-model:value="positionInfo.positionId"
+											placeholder="请选择职位"
+											allow-clear
+											:page-function="selectApiFunction.childPositionSelector"
+											:echo-function="selectApiFunction.echoPosition"
+										/>
+									</a-form-item>
+								</a-col>
+								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
+									<a-form-item :name="['positionJson', index, 'directorId']">
+										<xn-page-select
+											ref="xnChildUserPageSelectRef"
+											v-model:value="positionInfo.directorId"
+											placeholder="请选择主管"
+											allow-clear
+											:page-function="selectApiFunction.childUserSelector"
+											:echo-function="selectApiFunction.echoUser"
+										/>
+									</a-form-item>
+								</a-col>
+								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
+									<a-form-item>
+										<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
+											<DeleteOutlined />
+											移除
+										</a-button>
+									</a-form-item>
+								</a-col>
+							</a-row>
 						</div>
 					</a-form-item>
 				</a-tab-pane>
@@ -210,7 +210,7 @@
 								/>
 							</a-form-item>
 						</a-col>
-<!--						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+						<!--						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="通信地址：" name="mailingAddress">
 								<a-textarea
 									v-model:value="formData.mailingAddress"
@@ -319,6 +319,7 @@
 	const xnChildUserPageSelectRef = ref()
 	// 表单数据
 	const formData = ref({})
+	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 
 	// 打开抽屉
 	const onOpen = (record, orgId) => {

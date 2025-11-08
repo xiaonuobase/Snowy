@@ -182,6 +182,8 @@
 <script setup name="genBasic">
 	import { required } from '@/utils/formRules'
 	import genBasicApi from '@/api/gen/genBasicApi'
+	// 声明组件自定义事件
+	const emit = defineEmits(['successful'])
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
@@ -437,6 +439,8 @@
 					genBasicApi
 						.submitForm(formData.value, formData.value.id)
 						.then((data) => {
+							// 提交成功后触发成功事件，供父组件监听
+							emit('successful', data)
 							resolve(data)
 						})
 						.finally(() => {
@@ -455,9 +459,6 @@
 	})
 </script>
 <style scoped>
-	.childAddButton {
-		margin-bottom: 10px;
-	}
 	.form-row {
 		background-color: var(--item-hover-bg);
 		margin-left: 0px !important;
@@ -466,8 +467,5 @@
 		padding-bottom: 5px;
 		padding-top: 5px;
 		padding-left: 15px;
-	}
-	.form-div {
-		padding-top: 10px;
 	}
 </style>

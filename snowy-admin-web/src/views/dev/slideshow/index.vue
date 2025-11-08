@@ -22,13 +22,13 @@
 						<a-space>
 							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon>
-									<SearchOutlined/>
+									<SearchOutlined />
 								</template>
 								查询
 							</a-button>
 							<a-button @click="reset">
 								<template #icon>
-									<redo-outlined/>
+									<redo-outlined />
 								</template>
 								重置
 							</a-button>
@@ -75,7 +75,7 @@
 					</template>
 				</a-table>
 			</template>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>

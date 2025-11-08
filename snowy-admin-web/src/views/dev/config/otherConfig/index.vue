@@ -9,7 +9,7 @@
 		:tool-config="toolConfig"
 		:scroll="{ x: 'max-content' }"
 	>
-		<template #operator class="table-operator">
+		<template #operator>
 			<a-space>
 				<a-button type="primary" @click="formRef.onOpen()">
 					<template #icon>

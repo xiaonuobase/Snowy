@@ -1,6 +1,6 @@
 <template>
 	<div v-if="indexShow">
-		<a-card :bordered="false" class="xn-mb10">
+		<a-card :bordered="false">
 			<a-form ref="searchFormRef" :model="searchFormState">
 				<a-row :gutter="10">
 					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
@@ -23,13 +23,13 @@
 							<a-space>
 								<a-button type="primary" @click="tableRef.refresh(true)">
 									<template #icon>
-										<SearchOutlined/>
+										<SearchOutlined />
 									</template>
 									查询
 								</a-button>
 								<a-button @click="reset">
 									<template #icon>
-										<redo-outlined/>
+										<redo-outlined />
 									</template>
 									重置
 								</a-button>
@@ -38,8 +38,6 @@
 					</a-col>
 				</a-row>
 			</a-form>
-		</a-card>
-		<a-card :bordered="false">
 			<s-table
 				ref="tableRef"
 				:columns="columns"
@@ -51,7 +49,7 @@
 				:row-selection="options.rowSelection"
 				:scroll="{ x: 'max-content' }"
 			>
-				<template #operator class="table-operator">
+				<template #operator>
 					<a-space>
 						<a-button type="primary" @click="() => uploadFormRef.openUpload()">
 							<UploadOutlined />

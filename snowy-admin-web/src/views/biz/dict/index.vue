@@ -1,90 +1,84 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="0" :sm="0" :md="0" :lg="4" :xl="4">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
-				<a-tree
-					v-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					@select="treeSelect"
-				/>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
-			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" :model="searchFormState">
-					<a-row :gutter="10">
-						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
-							<a-form-item label="请选择上级字典：" name="parentId">
-								<a-tree-select
-									v-model:value="searchFormState.parentId"
-									class="xn-wd"
-									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择上级字典"
-									allow-clear
-									:tree-data="treeData"
-									:field-names="{
-												children: 'children',
-												label: 'name',
-												value: 'id'
-											}"
-									selectable="false"
-									tree-line
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="searchKey" label="字典名称关键词">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入字典名称关键词" />
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item>
-								<a-space>
-									<a-button type="primary" @click="tableRef.refresh(true)">
-										<template #icon>
-											<SearchOutlined/>
-										</template>
-										查询
-									</a-button>
-									<a-button @click="reset">
-										<template #icon>
-											<redo-outlined/>
-										</template>
-										重置
-									</a-button>
-								</a-space>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-form>
-			</a-card>
-			<a-card :bordered="false" class="xn-mb10">
-				<s-table
-					ref="tableRef"
-					:columns="columns"
-					:data="loadData"
-					:expand-row-by-click="true"
-					bordered
-					:tool-config="toolConfig"
-					:row-key="(record) => record.id"
-					:scroll="{ x: 'max-content' }"
-				>
-					<template #bodyCell="{ column, record }">
-						<template v-if="column.dataIndex === 'level'">
-							<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
-							<a-tag color="green" v-else>子级</a-tag>
-						</template>
-						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
-						</template>
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<a-tree
+				v-if="treeData.length > 0"
+				v-model:expandedKeys="defaultExpandedKeys"
+				:tree-data="treeData"
+				:field-names="treeFieldNames"
+				@select="treeSelect"
+			/>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+		</template>
+		<template #right>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+						<a-form-item label="请选择上级字典：" name="parentId">
+							<a-tree-select
+								v-model:value="searchFormState.parentId"
+								class="xn-wd"
+								:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+								placeholder="请选择上级字典"
+								allow-clear
+								:tree-data="treeData"
+								:field-names="{
+									children: 'children',
+									label: 'name',
+									value: 'id'
+								}"
+								selectable="false"
+								tree-line
+							/>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" label="字典名称关键词">
+							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入字典名称关键词" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon>
+										<SearchOutlined />
+									</template>
+									查询
+								</a-button>
+								<a-button @click="reset">
+									<template #icon>
+										<redo-outlined />
+									</template>
+									重置
+								</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				bordered
+				:tool-config="toolConfig"
+				:row-key="(record) => record.id"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'level'">
+						<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
+						<a-tag color="green" v-else>子级</a-tag>
 					</template>
-				</s-table>
-			</a-card>
-		</a-col>
-	</a-row>
+					<template v-if="column.dataIndex === 'action'">
+						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
+					</template>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
 	<Form ref="formRef" @successful="formSuccessful()" />
 </template>
 
@@ -118,7 +112,6 @@
 	// 定义tableDOM
 	const tableRef = ref(null)
 	const formRef = ref()
-	const cardLoading = ref(true)
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -161,16 +154,11 @@
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
-		bizDictApi
-			.dictTree()
-			.then((res) => {
-				if (res) {
-					treeData.value = res
-				}
-			})
-			.finally(() => {
-				cardLoading.value = false
-			})
+		bizDictApi.dictTree().then((res) => {
+			if (res) {
+				treeData.value = res
+			}
+		})
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
@@ -203,7 +191,3 @@
 		})
 	}
 </script>
-
-<style lang="less" scoped>
-
-</style>

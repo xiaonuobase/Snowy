@@ -34,7 +34,7 @@
 				:row-selection="options.rowSelection"
 				:scroll="{ x: 'max-content' }"
 			>
-				<template #operator class="table-operator">
+				<template #operator>
 					<a-space>
 						<a-button type="primary" @click="clientUserFormRef.onOpen()">
 							<template #icon><plus-outlined /></template>

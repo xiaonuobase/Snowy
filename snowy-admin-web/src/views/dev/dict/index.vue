@@ -1,5 +1,5 @@
 <template>
-	<a-card>
+	<a-card :bordered="false">
 		<a-tabs size="large" v-model:activeKey="activeKey">
 			<a-tab-pane v-for="item in tabListNoTitle" :key="item.key" :tab="item.tab">
 				<category :type="item.key" />

@@ -12,7 +12,7 @@
 			:toolConfig="{ refresh: true, height: true, columnSetting: true, striped: false }"
 			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="openConfig()">
 						<template #icon><plus-outlined /></template>
@@ -60,7 +60,6 @@
 	import Steps from './steps.vue'
 	import GenPreview from './preview.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
-
 	const tableRef = ref()
 	const indexShow = ref(true)
 	const stepsRef = ref()

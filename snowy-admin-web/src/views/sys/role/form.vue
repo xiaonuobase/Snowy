@@ -65,7 +65,7 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
-
+	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	// 打开抽屉
 	const onOpen = (record, category, orgId) => {
 		visible.value = true

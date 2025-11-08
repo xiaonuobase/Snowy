@@ -1,13 +1,14 @@
 <template>
-	<a-card :bordered="false"  class="mb-2">
+	<div class="steps-card mb-2">
 		<a-row :gutter="10">
+			<a-col :xs="0" :sm="0" :md="6" :lg="6" :xl="6"></a-col>
 			<a-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
 				<a-steps :current="current">
 					<a-step v-for="item in steps" :key="item.title" :title="item.title" />
 				</a-steps>
 			</a-col>
-			<a-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8" :offset="4">
-				<a-space>
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+				<a-space class="xn-fdr">
 					<a-form>
 						<a-row :gutter="10">
 							<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
@@ -17,21 +18,24 @@
 							</a-col>
 							<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 								<a-form-item>
-									<a-button :disabled="current === 2" type="primary" @click="next"> 继&nbsp;&nbsp;&nbsp;&nbsp;续 </a-button>
+									<a-button :disabled="current === 2" type="primary" @click="next">
+										继&nbsp;&nbsp;&nbsp;&nbsp;续
+									</a-button>
 								</a-form-item>
 							</a-col>
 							<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 								<a-form-item>
-									<a-button type="primary" danger ghost @click="emit('closed')"> 关&nbsp;&nbsp;&nbsp;&nbsp;闭 </a-button>
+									<a-button type="primary" danger ghost @click="emit('closed')">
+										关&nbsp;&nbsp;&nbsp;&nbsp;闭
+									</a-button>
 								</a-form-item>
 							</a-col>
 						</a-row>
 					</a-form>
-
 				</a-space>
 			</a-col>
 		</a-row>
-	</a-card>
+	</div>
 
 	<div v-if="current === 0">
 		<basic ref="basicRef" />
@@ -45,11 +49,7 @@
 				<template #extra>
 					<a-space size="middle">
 						<a-button v-if="current > 0" @click="genPreviewRef.onOpen(recordData)">预览</a-button>
-						<a-button
-							v-if="current === steps.length - 1"
-							type="primary"
-							:loading="submitLoading"
-							@click="seveGenerate"
+						<a-button v-if="current === steps.length - 1" type="primary" :loading="submitLoading" @click="seveGenerate"
 							>生成并关闭</a-button
 						>
 					</a-space>
@@ -67,7 +67,7 @@
 	import genPreview from './preview.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
 
-	const emit = defineEmits({ closed: null })
+    const emit = defineEmits({ closed: null, successful: null })
 	const current = ref(0)
 	const recordData = ref()
 	const submitLoading = ref(false)
@@ -95,17 +95,19 @@
 				.catch(() => {})
 			current.value--
 		}
-		if (current.value === 2) {
-			configRef.value
-				.onSubmit(recordData.value)
-				.then((data) => {
-					current.value++
-				})
-				.catch((err) => {
-					message.warning(err)
-				})
-			current.value--
-		}
+        if (current.value === 2) {
+            configRef.value
+                .onSubmit(recordData.value)
+                .then((data) => {
+                    // 配置保存成功后，通知父组件刷新列表
+                    emit('successful', data)
+                    current.value++
+                })
+                .catch((err) => {
+                    message.warning(err)
+                })
+            current.value--
+        }
 	}
 	// 上一步
 	const prev = () => {
@@ -160,5 +162,10 @@
 	})
 </script>
 <style scoped>
-
+	.steps-card {
+		padding-top: 24px;
+		padding-left: 24px;
+		padding-right: 24px;
+		background: var(--snowy-background-color);
+	}
 </style>

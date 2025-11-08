@@ -1,111 +1,105 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="0" :sm="0" :md="0" :lg="4" :xl="4">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
-				<a-tree
-					v-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					@select="treeSelect"
-				/>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="20" :xl="20">
-			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" :model="searchFormState">
-					<a-row :gutter="10">
-						<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
-							<a-form-item label="上级机构：" name="parentId">
-								<a-tree-select
-									v-model:value="searchFormState.parentId"
-									class="xn-wd"
-									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择上级机构"
-									allow-clear
-									:tree-data="treeData"
-									:field-names="{
-											children: 'children',
-											label: 'name',
-											value: 'id'
-										}"
-									selectable="false"
-									tree-line
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-							<a-form-item name="searchKey" label="名称">
-								<a-input v-model:value="searchFormState.searchKey" placeholder="请输入名称关键词" />
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
-							<a-form-item>
-								<a-space>
-									<a-button type="primary" @click="tableRef.refresh(true)">
-										<template #icon><SearchOutlined /></template>
-										查询
-									</a-button>
-									<a-button @click="reset">
-										<template #icon><redo-outlined /></template>
-										重置
-									</a-button>
-								</a-space>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-form>
-			</a-card>
-			<a-card :bordered="false">
-				<s-table
-					ref="tableRef"
-					:columns="columns"
-					:data="loadData"
-					:expand-row-by-click="true"
-					:alert="options.alert.show"
-					bordered
-					:row-key="(record) => record.id"
-					:tool-config="toolConfig"
-					:row-selection="options.rowSelection"
-					:scroll="{ x: 'max-content' }"
-				>
-					<template #operator class="table-operator">
-						<a-space>
-							<a-button
-								type="primary"
-								@click="formRef.onOpen(undefined, searchFormState.parentId)"
-								v-if="hasPerm('bizOrgAdd')"
-							>
-								<template #icon><plus-outlined /></template>
-								新增
-							</a-button>
-							<xn-batch-button
-								v-if="hasPerm('bizOrgBatchDelete')"
-								buttonName="批量删除"
-								icon="DeleteOutlined"
-								buttonDanger
-								:selectedRowKeys="selectedRowKeys"
-								@batchCallBack="deleteBatchOrg"
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<a-tree
+				v-if="treeData.length > 0"
+				v-model:expandedKeys="defaultExpandedKeys"
+				:tree-data="treeData"
+				:field-names="treeFieldNames"
+				@select="treeSelect"
+			/>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+		</template>
+		<template #right>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+						<a-form-item label="上级机构：" name="parentId">
+							<a-tree-select
+								v-model:value="searchFormState.parentId"
+								class="xn-wd"
+								:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+								placeholder="请选择上级机构"
+								allow-clear
+								:tree-data="treeData"
+								:field-names="{
+									children: 'children',
+									label: 'name',
+									value: 'id'
+								}"
+								selectable="false"
+								tree-line
 							/>
-						</a-space>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" label="名称">
+							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入名称关键词" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon><SearchOutlined /></template>
+									查询
+								</a-button>
+								<a-button @click="reset">
+									<template #icon><redo-outlined /></template>
+									重置
+								</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				:alert="options.alert.show"
+				bordered
+				:row-key="(record) => record.id"
+				:tool-config="toolConfig"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #operator>
+					<a-space>
+						<a-button
+							type="primary"
+							@click="formRef.onOpen(undefined, searchFormState.parentId)"
+							v-if="hasPerm('bizOrgAdd')"
+						>
+							<template #icon><plus-outlined /></template>
+							新增
+						</a-button>
+						<xn-batch-button
+							v-if="hasPerm('bizOrgBatchDelete')"
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchOrg"
+						/>
+					</a-space>
+				</template>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'category'">
+						{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
 					</template>
-					<template #bodyCell="{ column, record }">
-						<template v-if="column.dataIndex === 'category'">
-							{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
-						</template>
-						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizOrgEdit')">编辑</a>
-							<a-divider type="vertical" v-if="hasPerm(['bizOrgEdit', 'bizOrgDelete'], 'and')" />
-							<a-popconfirm title="删除此机构与下级机构吗？" @confirm="removeOrg(record)">
-								<a-button type="link" danger size="small" v-if="hasPerm('bizOrgDelete')">删除</a-button>
-							</a-popconfirm>
-						</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizOrgEdit')">编辑</a>
+						<a-divider type="vertical" v-if="hasPerm(['bizOrgEdit', 'bizOrgDelete'], 'and')" />
+						<a-popconfirm title="删除此机构与下级机构吗？" @confirm="removeOrg(record)">
+							<a-button type="link" danger size="small" v-if="hasPerm('bizOrgDelete')">删除</a-button>
+						</a-popconfirm>
 					</template>
-				</s-table>
-			</a-card>
-		</a-col>
-	</a-row>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
@@ -163,7 +157,6 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
-	const cardLoading = ref(true)
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
@@ -179,32 +172,26 @@
 	}
 	// 加载左侧的树
 	const loadTreeData = () => {
-		bizOrgApi
-			.orgTree()
-			.then((res) => {
-				cardLoading.value = false
-				if (res !== null) {
-					treeData.value = res
-					if (isEmpty(defaultExpandedKeys.value)) {
-						// 默认展开2级
-						treeData.value.forEach((item) => {
-							// 因为0的顶级
-							if (item.parentId === '0') {
-								defaultExpandedKeys.value.push(item.id)
-								// 取到下级ID
-								if (item.children) {
-									item.children.forEach((items) => {
-										defaultExpandedKeys.value.push(items.id)
-									})
-								}
+		bizOrgApi.orgTree().then((res) => {
+			if (res !== null) {
+				treeData.value = res
+				if (isEmpty(defaultExpandedKeys.value)) {
+					// 默认展开2级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+							// 取到下级ID
+							if (item.children) {
+								item.children.forEach((items) => {
+									defaultExpandedKeys.value.push(items.id)
+								})
 							}
-						})
-					}
+						}
+					})
 				}
-			})
-			.finally(() => {
-				cardLoading.value = false
-			})
+			}
+		})
 	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
@@ -233,7 +220,3 @@
 		})
 	}
 </script>
-
-<style scoped>
-
-</style>

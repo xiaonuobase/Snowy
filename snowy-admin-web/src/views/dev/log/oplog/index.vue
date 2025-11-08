@@ -1,5 +1,5 @@
 <template>
-	<a-row :gutter="10">
+	<a-row :gutter="[10, 10]">
 		<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 			<a-card :bordered="false" title="周统计">
 				<columnChart />
@@ -11,12 +11,19 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<a-card :bordered="false">
-		<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
-			<template #operator class="table-operator">
+	<a-card :bordered="false" class="mt-2">
+		<s-table
+			ref="tableRef"
+			:columns="columns"
+			:data="loadData"
+			bordered
+			:row-key="(record) => record.id"
+			:scroll="{ x: 'max-content' }"
+		>
+			<template #operator>
 				<a-form ref="formRef" :model="searchFormState">
 					<a-row :gutter="10">
-						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+						<a-col :xs="24" :sm="16" :md="4" :lg="4" :xl="4">
 							<a-form-item>
 								<a-radio-group v-model:value="opLogType" button-style="solid">
 									<a-radio-button
@@ -30,7 +37,7 @@
 								</a-radio-group>
 							</a-form-item>
 						</a-col>
-						<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+						<a-col :xs="24" :sm="16" :md="6" :lg="6" :xl="6">
 							<a-form-item>
 								<a-space>
 									<a-input-search

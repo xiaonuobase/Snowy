@@ -32,13 +32,13 @@
 						<a-space>
 							<a-button type="primary" @click="tableRef.refresh(true)">
 								<template #icon>
-									<SearchOutlined/>
+									<SearchOutlined />
 								</template>
 								查询
 							</a-button>
 							<a-button @click="reset">
 								<template #icon>
-									<redo-outlined/>
+									<redo-outlined />
 								</template>
 								重置
 							</a-button>
@@ -62,7 +62,7 @@
 			:row-selection="options.rowSelection"
 			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()" v-if="hasPerm('bizNoticeAdd')">
 						<template #icon><plus-outlined /></template>

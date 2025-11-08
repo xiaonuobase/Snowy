@@ -35,11 +35,7 @@
 							allow-clear
 							tree-default-expand-all
 							:tree-data="treeData"
-							:field-names="{
-								children: 'children',
-								label: 'title',
-								value: 'id'
-							}"
+							:field-names="treeFieldNames"
 							selectable="false"
 							tree-line
 							@change="parentChange(formData.parentId)"
@@ -159,6 +155,7 @@
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
 	const submitLoading = ref(false)
+	const treeFieldNames = { children: 'children', label: 'title', value: 'id' }
 	// 模块ID
 	const moduleId = ref('')
 	// 打开抽屉

@@ -101,7 +101,7 @@ export default {
 <template>
   <s-table ref="tableRef" :columns="columns" :data="loadData" :alert="false" bordered :row-key="(record) => record.id">
   <!-- #operator 插槽可以放入一些关于表格的操作，比如新增数据。 -->
-  <template #operator class="table-operator">
+  <template #operator>
       <a-space>
         <a-button type="primary" @click="">
           <template #icon><plus-outlined /></template>

@@ -319,6 +319,7 @@
 	const xnChildUserPageSelectRef = ref()
 	// 表单数据
 	const formData = ref({})
+	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
 
 	// 打开抽屉
 	const onOpen = (record, orgId) => {

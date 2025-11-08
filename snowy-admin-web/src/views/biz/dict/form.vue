@@ -52,7 +52,7 @@
 	const treeData = ref([])
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
-
+	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
 		visible.value = true
