@@ -1,6 +1,6 @@
 <template>
 	<div className="table-wrapper">
-		<div className="s-table-tool">
+		<div className="s-table-tool" v-if="hasToolbar">
 			<div className="s-table-tool-left">
 				<!-- 插槽操作按钮 -->
 				<slot name="operator"></slot>
@@ -116,7 +116,7 @@
 <script setup>
 	import { tableProps } from 'ant-design-vue/es/table/Table.js'
 	import columnSetting from './columnSetting.vue'
-	import { useSlots } from 'vue'
+	import { useSlots, Comment, Fragment, Text } from 'vue'
 	import { useRoute } from 'vue-router'
 	import { cloneDeep, get } from 'lodash-es'
 
@@ -124,6 +124,45 @@
 	const route = useRoute()
 	const emit = defineEmits(['onExpand', 'onSelectionChange'])
 	const renderSlots = Object.keys(slots)
+
+	// 是否存在 operator 插槽内容（过滤掉空白、注释、空 Fragment）
+	const hasOperatorContent = computed(() => {
+		const s = slots.operator
+		if (!s) return false
+		const vnodes = s() || []
+		const hasMeaningful = (nodes) => {
+			if (!Array.isArray(nodes)) return false
+			for (const v of nodes) {
+				if (v == null) continue
+				// 注释节点跳过
+				if (v.type === Comment) continue
+				// 文本节点：仅当非空白文本才算有效
+				if (v.type === Text) {
+					if (typeof v.children === 'string' && v.children.trim() !== '') return true
+					continue
+				}
+				// Fragment：递归检查子节点
+				if (v.type === Fragment) {
+					if (hasMeaningful(v.children)) return true
+					continue
+				}
+				// 其他元素/组件节点视为有效内容
+				return true
+			}
+			return false
+		}
+		return hasMeaningful(vnodes)
+	})
+	// 工具栏显示：有 operator 内容 或 开启任一工具按钮
+	const hasToolbar = computed(() => {
+		return (
+			hasOperatorContent.value ||
+			props.toolConfig.striped ||
+			props.toolConfig.refresh ||
+			props.toolConfig.height ||
+			props.toolConfig.columnSetting
+		)
+	})
 
 	const props = defineProps(
 		Object.assign({}, tableProps(), {
