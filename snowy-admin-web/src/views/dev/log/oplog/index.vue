@@ -12,6 +12,40 @@
 		</a-col>
 	</a-row>
 	<a-card :bordered="false" class="mt-2">
+		<a-form ref="formRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="16" :md="4" :lg="4" :xl="4">
+					<a-form-item>
+						<a-radio-group v-model:value="opLogType" button-style="solid">
+							<a-radio-button
+								v-for="opLog in opLogTypeList"
+								:key="opLog.value"
+								:value="opLog.value"
+								@click="opLogTypeClock(opLog.value)"
+							>
+								{{ opLog.label }}
+							</a-radio-button>
+						</a-radio-group>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="16" :md="6" :lg="6" :xl="6">
+					<a-form-item>
+						<a-space>
+							<a-input-search
+								v-model:value="searchFormState.searchKey"
+								placeholder="请输入名称关键词"
+								enter-button
+								allowClear
+								@search="onSearch"
+							/>
+							<a-popconfirm title="确定清空操作与异常日志吗？" @confirm="deleteBatchOpLog()">
+								<a-button danger>清空</a-button>
+							</a-popconfirm>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
+		</a-form>
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -20,42 +54,6 @@
 			:row-key="(record) => record.id"
 			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator>
-				<a-form ref="formRef" :model="searchFormState">
-					<a-row :gutter="10">
-						<a-col :xs="24" :sm="16" :md="4" :lg="4" :xl="4">
-							<a-form-item>
-								<a-radio-group v-model:value="opLogType" button-style="solid">
-									<a-radio-button
-										v-for="opLog in opLogTypeList"
-										:key="opLog.value"
-										:value="opLog.value"
-										@click="opLogTypeClock(opLog.value)"
-									>
-										{{ opLog.label }}
-									</a-radio-button>
-								</a-radio-group>
-							</a-form-item>
-						</a-col>
-						<a-col :xs="24" :sm="16" :md="6" :lg="6" :xl="6">
-							<a-form-item>
-								<a-space>
-									<a-input-search
-										v-model:value="searchFormState.searchKey"
-										placeholder="请输入名称关键词"
-										enter-button
-										allowClear
-										@search="onSearch"
-									/>
-									<a-popconfirm title="确定清空操作与异常日志吗？" @confirm="deleteBatchOpLog()">
-										<a-button danger>清空</a-button>
-									</a-popconfirm>
-								</a-space>
-							</a-form-item>
-						</a-col>
-					</a-row>
-				</a-form>
-			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'className'">
 					<ellipsis :length="70" tooltip>
