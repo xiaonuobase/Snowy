@@ -1,76 +1,72 @@
 <template>
-	<div>
-		<a-card :bordered="false" style="margin-bottom: 10px">
-			<a-form ref="searchFormRef" :model="searchFormState">
-				<a-row :gutter="10">
-					<a-col :span="8">
-						<a-form-item name="searchKey" label="用户关键词">
-							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户关键词" />
-						</a-form-item>
-					</a-col>
-					<a-col :span="8">
-						<a-button type="primary" @click="tableRef.refresh(true)">
-							<template #icon><SearchOutlined /></template>
-							查询
-						</a-button>
-						<a-button @click="reset">
-							<template #icon><redo-outlined /></template>
-							重置
-						</a-button>
-					</a-col>
-				</a-row>
-			</a-form>
-		</a-card>
-		<a-card :bordered="false">
-			<s-table
-				ref="tableRef"
-				:columns="columns"
-				:data="loadData"
-				:expand-row-by-click="true"
-				bordered
-				:alert="options.alert.show"
-				:tool-config="toolConfig"
-				:row-key="(record) => record.id"
-				:row-selection="options.rowSelection"
-				:scroll="{ x: 'max-content' }"
-			>
-				<template #operator>
-					<a-space>
-						<a-button type="primary" @click="clientUserFormRef.onOpen()">
-							<template #icon><plus-outlined /></template>
-							<span>新增用户</span>
-						</a-button>
-						<xn-batch-button
-							buttonName="批量删除"
-							icon="DeleteOutlined"
-							buttonDanger
-							:selectedRowKeys="selectedRowKeys"
-							@batchCallBack="deleteBatchUser"
-						/>
-					</a-space>
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :span="8">
+					<a-form-item name="searchKey" label="用户关键词">
+						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户关键词" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="8">
+					<a-button type="primary" @click="tableRef.refresh(true)">
+						<template #icon><SearchOutlined /></template>
+						查询
+					</a-button>
+					<a-button @click="reset">
+						<template #icon><redo-outlined /></template>
+						重置
+					</a-button>
+				</a-col>
+			</a-row>
+		</a-form>
+		<s-table
+			ref="tableRef"
+			:columns="columns"
+			:data="loadData"
+			:expand-row-by-click="true"
+			bordered
+			:alert="options.alert.show"
+			:tool-config="toolConfig"
+			:row-key="(record) => record.id"
+			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
+		>
+			<template #operator>
+				<a-space>
+					<a-button type="primary" @click="clientUserFormRef.onOpen()">
+						<template #icon><plus-outlined /></template>
+						<span>新增用户</span>
+					</a-button>
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchUser"
+					/>
+				</a-space>
+			</template>
+			<template #bodyCell="{ column, record }">
+				<template v-if="column.dataIndex === 'avatar'">
+					<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 				</template>
-				<template #bodyCell="{ column, record }">
-					<template v-if="column.dataIndex === 'avatar'">
-						<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
-					</template>
-					<template v-if="column.dataIndex === 'gender'">
-						{{ $TOOL.dictTypeData('GENDER', record.gender) }}
-					</template>
-					<template v-if="column.dataIndex === 'userStatus'">
-						{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}
-					</template>
-					<template v-if="column.dataIndex === 'action'">
-						<a @click="clientUserFormRef.onOpen(record)">编辑</a>
-						<a-divider type="vertical" />
-						<a-popconfirm title="确定要删除此用户吗" @confirm="removeUser(record)">
-							<a-button type="link" danger size="small"> 删除 </a-button>
-						</a-popconfirm>
-					</template>
+				<template v-if="column.dataIndex === 'gender'">
+					{{ $TOOL.dictTypeData('GENDER', record.gender) }}
 				</template>
-			</s-table>
-		</a-card>
-		<client-user-form ref="clientUserFormRef" @successful="tableRef.refresh()" />
-	</div>
+				<template v-if="column.dataIndex === 'userStatus'">
+					{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}
+				</template>
+				<template v-if="column.dataIndex === 'action'">
+					<a @click="clientUserFormRef.onOpen(record)">编辑</a>
+					<a-divider type="vertical" />
+					<a-popconfirm title="确定要删除此用户吗" @confirm="removeUser(record)">
+						<a-button type="link" danger size="small"> 删除 </a-button>
+					</a-popconfirm>
+				</template>
+			</template>
+		</s-table>
+	</xn-panel>
+	<client-user-form ref="clientUserFormRef" @successful="tableRef.refresh()" />
 </template>
 <script setup name="clientUser">
 	import clientUserApi from '@/api/client/clientUserApi'

@@ -1,6 +1,6 @@
 <template>
-	<div v-if="indexShow">
-		<a-card :bordered="false">
+	<div v-if="indexShow" style="height: 100%">
+		<xn-panel>
 			<a-form ref="searchFormRef" :model="searchFormState">
 				<a-row :gutter="10">
 					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
@@ -116,7 +116,7 @@
 					</template>
 				</template>
 			</s-table>
-		</a-card>
+		</xn-panel>
 		<uploadForm ref="uploadFormRef" @successful="tableRef.refresh()" />
 		<detail ref="detailRef" />
 	</div>

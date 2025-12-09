@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false" v-if="indexShow">
+	<xn-panel v-if="indexShow" style="height: 100%">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -49,7 +49,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<steps v-else ref="stepsRef" @successful="tableRef.refresh(true)" @closed="closeConfig()" />
 	<genPreview ref="genPreviewRef" />
 </template>

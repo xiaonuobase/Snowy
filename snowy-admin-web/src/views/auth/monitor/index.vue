@@ -1,6 +1,6 @@
 <template>
 	<analyse />
-	<a-card :bordered="false" :body-style="{ 'padding-top': '10px' }">
+	<xn-panel>
 		<a-tabs v-model:activeKey="activeKey">
 			<a-tab-pane key="1" tab="B端会话">
 				<monitor-b-tab />
@@ -9,7 +9,7 @@
 				<monitor-c-tab />
 			</a-tab-pane>
 		</a-tabs>
-	</a-card>
+	</xn-panel>
 </template>
 
 <script setup name="authMonitor">

@@ -1,5 +1,5 @@
 <template>
-	<a-card :bordered="false">
+	<xn-panel>
 		<a-form ref="searchFormRef" :model="searchFormState">
 			<a-row :gutter="10">
 				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
@@ -69,7 +69,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-user-selector
 		ref="userSelectorRef"

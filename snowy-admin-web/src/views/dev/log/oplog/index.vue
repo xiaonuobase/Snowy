@@ -11,7 +11,7 @@
 			</a-card>
 		</a-col>
 	</a-row>
-	<a-card :bordered="false" class="mt-2">
+	<xn-panel class="mt-2">
 		<a-form ref="formRef" :model="searchFormState">
 			<a-row :gutter="10">
 				<a-col :xs="24" :sm="16" :md="4" :lg="4" :xl="4">
@@ -72,7 +72,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<detail ref="detailRef" />
 </template>
 
