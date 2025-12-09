@@ -1,11 +1,12 @@
 <template>
-	<div class="resizable-panel" :style="{ display: 'flex', flexDirection: direction }">
+	<div class="resizable-panel" :style="wrapperStyle" ref="rootRef">
 		<div
 			class="panel-left"
 			:style="{
 				[sizeProperty]: leftSize + 'px',
 				minWidth: direction === 'row' ? minSize + 'px' : 'auto',
-				minHeight: direction === 'column' ? minSize + 'px' : 'auto'
+				minHeight: direction === 'column' ? minSize + 'px' : 'auto',
+				padding: toPx(leftPadding)
 			}"
 			v-if="!shouldHideLeft"
 		>
@@ -19,7 +20,7 @@
 		>
 			<div class="resizer-handle"></div>
 		</div>
-		<div class="panel-right" :style="{ flex: 1 }">
+		<div class="panel-right" :style="{ flex: 1, padding: toPx(rightPadding) }">
 			<slot name="right"></slot>
 		</div>
 	</div>
@@ -27,6 +28,7 @@
 
 <script setup>
 	import { ref, computed, onMounted, onUnmounted } from 'vue'
+	import { globalStore } from '@/store'
 
 	const props = defineProps({
 		// 初始左侧面板大小
@@ -54,20 +56,33 @@
 		md: {
 			type: Number,
 			default: null
-		}
+		},
+		bottomGap: {
+			type: [Number, String],
+			default: 10
+		},
+		// 是否显示阴影（默认关闭）
+		shadow: { type: Boolean, default: true },
+		// 圆角（支持 Number/px）
+		radius: { type: [Number, String], default: 'system' },
+		// 直接隐藏左侧与分隔条
+		hideLeft: { type: Boolean, default: false },
+		leftPadding: { type: [Number, String], default: 24 },
+		rightPadding: { type: [Number, String], default: 24 }
 	})
 
 	const emit = defineEmits(['resize'])
 
 	const leftSize = ref(props.initialSize)
 	const isResizing = ref(false)
+	const rootRef = ref(null)
+	let activeContainer = null
 
 	// 监听窗口宽度，用于判断是否在小屏隐藏
 	const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 	const shouldHideLeft = computed(() => {
-		// 当 md 为 0 时，在 <768 的视口隐藏左侧与拖拽条
-		return props.md === 0 && windowWidth.value < 768
+		return props.hideLeft || (props.md === 0 && windowWidth.value < 768)
 	})
 
 	// 根据方向确定使用的CSS属性
@@ -78,6 +93,7 @@
 	const startResize = (e) => {
 		if (shouldHideLeft.value) return
 		isResizing.value = true
+		activeContainer = rootRef.value || e.target.closest('.resizable-panel')
 		document.addEventListener('mousemove', handleResize)
 		document.addEventListener('mouseup', stopResize)
 		e.preventDefault()
@@ -86,7 +102,7 @@
 	const handleResize = (e) => {
 		if (!isResizing.value) return
 
-		const container = e.currentTarget?.closest?.('.resizable-panel') || document.querySelector('.resizable-panel')
+		const container = activeContainer
 		if (!container) return
 
 		const rect = container.getBoundingClientRect()
@@ -107,6 +123,7 @@
 
 	const stopResize = () => {
 		isResizing.value = false
+		activeContainer = null
 		document.removeEventListener('mousemove', handleResize)
 		document.removeEventListener('mouseup', stopResize)
 	}
@@ -125,6 +142,24 @@
 		document.removeEventListener('mousemove', handleResize)
 		document.removeEventListener('mouseup', stopResize)
 		if (resizeHandler) window.removeEventListener('resize', resizeHandler)
+	})
+
+	const store = globalStore()
+	const systemRadius = computed(() => (store.roundedCornerStyleOpen ? 8 : 2))
+	// 将数字统一转为 px 字符串
+	const toPx = (val) => (typeof val === 'number' ? `${val}px` : val)
+	const wrapperStyle = computed(() => {
+		const gap = toPx(props.bottomGap)
+		return {
+			display: 'flex',
+			flexDirection: props.direction,
+			borderRadius: toPx(props.radius === 'system' ? systemRadius.value : props.radius),
+			boxShadow: props.shadow ? 'var(--card-shadow-soft, 0 1px 6px rgba(0, 0, 0, 0.06))' : 'none',
+			// 在容器外部留白，避免卡片贴到页面底部
+			marginBottom: gap,
+			// 同步减少容器高度，确保不超出父容器
+			height: `calc(100% - ${gap})`
+		}
 	})
 
 	// 暴露方法供外部调用
