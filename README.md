@@ -249,6 +249,10 @@ QQ技术群：732230670（已满）、685395081
     </tr>
 </table>
 
+## 示例代码
+
+从 v3.6.0，我们把前端示例的一些界面文件拿到了另外一个仓库，使用时可以自行下载：[https://gitee.com/xiaonuoadmin/snowy-exm](https://gitee.com/xiaonuoadmin/snowy-exm)
+
 ## 代码贡献
 
 近期有很多热心开源的小伙伴陆续为咱们Snowy框架提交PR或者提出好的建议，基本合格的PR我们都接受，这样您的头像就列入到咱们Snowy仓库的贡献者列表啦！
