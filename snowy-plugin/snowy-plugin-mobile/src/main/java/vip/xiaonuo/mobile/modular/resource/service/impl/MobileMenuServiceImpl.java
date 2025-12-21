@@ -33,6 +33,7 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileMenu;
 import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
 import vip.xiaonuo.mobile.modular.resource.enums.MobileResourceCategoryEnum;
+import vip.xiaonuo.mobile.modular.resource.enums.MobileResourceMenuStatusEnum;
 import vip.xiaonuo.mobile.modular.resource.mapper.MobileMenuMapper;
 import vip.xiaonuo.mobile.modular.resource.param.menu.*;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
@@ -296,6 +297,7 @@ public class MobileMenuServiceImpl extends ServiceImpl<MobileMenuMapper, MobileM
         // 获取所有的菜单和模块列表，并按分类和排序码排序
         List<MobileMenu> allModuleAndMenuAndSpaList = this.list(new LambdaQueryWrapper<MobileMenu>()
                 .in(MobileMenu::getCategory, MobileResourceCategoryEnum.MODULE.getValue(), MobileResourceCategoryEnum.MENU.getValue())
+                .eq(MobileMenu::getStatus, MobileResourceMenuStatusEnum.ENABLE.getValue())
                 .orderByAsc(CollectionUtil.newArrayList(MobileMenu::getCategory, MobileMenu::getSortCode)));
         // 全部以菜单承载
         List<MobileMenu> allModuleList = CollectionUtil.newArrayList();

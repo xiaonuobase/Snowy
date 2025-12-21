@@ -67,7 +67,7 @@
 	import genPreview from './preview.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
 
-    const emit = defineEmits({ closed: null, successful: null })
+	const emit = defineEmits({ closed: null, successful: null })
 	const current = ref(0)
 	const recordData = ref()
 	const submitLoading = ref(false)
@@ -95,19 +95,19 @@
 				.catch(() => {})
 			current.value--
 		}
-        if (current.value === 2) {
-            configRef.value
-                .onSubmit(recordData.value)
-                .then((data) => {
-                    // 配置保存成功后，通知父组件刷新列表
-                    emit('successful', data)
-                    current.value++
-                })
-                .catch((err) => {
-                    message.warning(err)
-                })
-            current.value--
-        }
+		if (current.value === 2) {
+			configRef.value
+				.onSubmit(recordData.value)
+				.then((data) => {
+					// 配置保存成功后，通知父组件刷新列表
+					emit('successful', data)
+					current.value++
+				})
+				.catch((err) => {
+					message.warning(err)
+				})
+			current.value--
+		}
 	}
 	// 上一步
 	const prev = () => {
