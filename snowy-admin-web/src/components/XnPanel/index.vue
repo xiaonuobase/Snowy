@@ -61,7 +61,7 @@
 
 	const headerStyle = computed(() => ({
 		padding: toPx(props.headerPadding),
-		borderBottom: props.headerDivider ? '1px solid var(--border-color-base)' : 'none'
+		borderBottom: props.headerDivider ? '1px solid var(--background-border)' : 'none'
 	}))
 
 	const footerStyle = computed(() => ({
@@ -112,7 +112,7 @@
 		min-height: 48px;
 		padding: 0;
 		/* 分割线受 headerDivider 控制，默认展示 */
-		border-bottom: 1px solid var(--border-color-base);
+		border-bottom: 1px solid var(--background-border);
 	}
 
 	.xn-panel-title {
