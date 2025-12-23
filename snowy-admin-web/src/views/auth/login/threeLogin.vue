@@ -3,17 +3,17 @@
 	<div class="login-oauth layout-center">
 		<a-space align="start">
 			<a v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('IAM')">
-				<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/iam.png" alt="" />
+				<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/iam.png" alt="" />
 			</a>
 			<a v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT')">
-				<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/wechat.png" alt="" />
+				<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechat.png" alt="" />
 			</a>
 		</a-space>
 	</div>
 </template>
 
 <script setup name="threeLogin">
-	import configApi from "@/api/dev/configApi";
+	import configApi from '@/api/dev/configApi'
 	import thirdApi from '@/api/auth/thirdApi'
 	const formData = ref({})
 	const getConfigSysThirdAllowFlagList = () => {
@@ -40,7 +40,7 @@
 			window.location.href = data.authorizeUrl
 		})
 	}
-	getConfigSysThirdAllowFlagList();
+	getConfigSysThirdAllowFlagList()
 </script>
 <style scoped>
 	.bind-icon {

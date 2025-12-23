@@ -3,7 +3,7 @@
 	<div class="login-oauth layout-center">
 		<a-space align="start">
 			<a @click="renderAuthSource(record)" v-for="record in appAuthSourceList" :key="record.authSourceId">
-				<img :src="record.authSourceLogo" class="record-img"/>
+				<img :src="record.authSourceLogo" class="record-img" />
 			</a>
 		</a-space>
 	</div>
@@ -59,8 +59,8 @@
 	})
 </script>
 <style scoped>
-.record-img {
-	width: 32px;
-	height: 32px;
-}
+	.record-img {
+		width: 32px;
+		height: 32px;
+	}
 </style>

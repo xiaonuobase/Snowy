@@ -93,6 +93,7 @@
 			v-bind="{ ...renderTableProps }"
 			:loading="data.localLoading"
 			@change="loadData"
+			@resizeColumn="handleResize"
 			@expand="
 				(expanded, record) => {
 					emit('onExpand', expanded, record)
@@ -102,6 +103,10 @@
 				(record, index) => (data.localSettings.rowClassNameSwitch ? ((index + 1) % 2 == 0 ? 'odd' : '') : null)
 			"
 		>
+			<template #headerCell="{ title, column }">
+				<slot v-if="slots.headerCell" name="headerCell" :column="column" :title="title"></slot>
+				<template v-else>{{ title }}</template>
+			</template>
 			<template #[item]="scope" v-for="item in renderSlots">
 				<slot
 					v-if="item && renderTableProps.columns && renderTableProps.columns.length > 0"
@@ -123,7 +128,8 @@
 	const slots = useSlots()
 	const route = useRoute()
 	const emit = defineEmits(['onExpand', 'onSelectionChange'])
-	const renderSlots = Object.keys(slots)
+	// 过滤掉headerCell插槽，因为我们显式定义了它
+	const renderSlots = computed(() => Object.keys(slots).filter((key) => key !== 'headerCell'))
 
 	// 是否存在 operator 插槽内容（过滤掉空白、注释、空 Fragment）
 	const hasOperatorContent = computed(() => {
@@ -237,6 +243,7 @@
 	const data = reactive({
 		needTotalList: [],
 		localDataSource: [],
+		localColumns: null,
 		localPagination: Object.assign({}, props.pagination),
 		isFullscreen: false,
 		customSize: props.compSize,
@@ -312,6 +319,7 @@
 				...col,
 				checked: col.checked === undefined ? true : col.checked
 			}))
+			data.localColumns = data.columnsSetting.filter((value) => value.checked === undefined || value.checked)
 		},
 		{ deep: true, immediate: true }
 	)
@@ -452,6 +460,14 @@
 		data.columnsSetting = v
 		data.localColumns = v.filter((value) => value.checked === undefined || value.checked)
 		getTableProps() // 调用getTableProps以确保表格重新渲染
+	}
+	// 列拖拽
+	const handleResize = (width, column) => {
+		column.width = width
+		// 强制更新列数组引用，触发表格重渲染
+		if (data.localColumns) {
+			data.localColumns = [...data.localColumns]
+		}
 	}
 	const init = () => {
 		const { current } = route.params

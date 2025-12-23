@@ -12,6 +12,7 @@ import { resolve } from 'path'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Components from 'unplugin-vue-components/vite'
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import VueJSX from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import vueSetupExtend from 'vite-plugin-vue-setup-extend'
@@ -87,7 +88,6 @@ export default defineConfig(({ command, mode }) => {
 						// 第三方库分包配置保持不变
 						'vue-vendor': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
 						'ant-design-vendor': ['ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'axios', 'dayjs'],
-						'echarts-vendor': ['echarts', 'echarts-stat'],
 						'office-vendor': ['@vue-office/docx', 'vue-pdf-embed', '@vue-office/excel']
 					}
 				}
@@ -110,18 +110,15 @@ export default defineConfig(({ command, mode }) => {
 				dts: r('src/auto-imports.d.ts')
 			}),
 			// 组件按需引入
-			Components(
-				{
-					dirs: [r('src/components')],
-					dts: false,
-					resolvers: []
-				},
-				{
-					dirs: [r('src/components/HomeCard')],
-					dts: false,
-					resolvers: []
-				}
-			),
+			Components({
+				dirs: [r('src/components'), r('src/components/HomeCard')],
+				dts: false,
+				resolvers: [
+					AntDesignVueResolver({
+						importStyle: false // css in js
+					})
+				]
+			}),
 			visualizer()
 		],
 		css: {

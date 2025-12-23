@@ -10,7 +10,11 @@
 		<a-form-item name="emailValidCode">
 			<a-row :gutter="8">
 				<a-col :span="16">
-					<a-input v-model:value="emailFormData.emailValidCode" :placeholder="$t('login.emailCodePlaceholder')" size="large">
+					<a-input
+						v-model:value="emailFormData.emailValidCode"
+						:placeholder="$t('login.emailCodePlaceholder')"
+						size="large"
+					>
 						<template #prefix>
 							<mail-outlined class="text-black text-opacity-25" />
 						</template>

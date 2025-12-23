@@ -20,90 +20,90 @@
 </template>
 
 <script setup name="ssoLogin">
-	import { useRoute } from "vue-router";
-	import ssoApi from "@/api/auth/ssoApi";
-	import { afterLogin } from "@/views/auth/login/util";
-	import { ref, onMounted } from 'vue';
-	import tool from "@/utils/tool";
-	import loginApi from "@/api/auth/loginApi";
+	import { useRoute } from 'vue-router'
+	import ssoApi from '@/api/auth/ssoApi'
+	import { afterLogin } from '@/views/auth/login/util'
+	import { ref, onMounted } from 'vue'
+	import tool from '@/utils/tool'
+	import loginApi from '@/api/auth/loginApi'
 
-	const route = useRoute();
-	const tipText = ref('加载中...');
-	const loading = ref(true);  // 新增加载状态控制
+	const route = useRoute()
+	const tipText = ref('加载中...')
+	const loading = ref(true) // 新增加载状态控制
 
 	// 从url中查询到指定名称的参数值
 	const getParam = (name, defaultValue) => {
-		const query = window.location.search.substring(1);
-		const vars = query.split("&");
+		const query = window.location.search.substring(1)
+		const vars = query.split('&')
 		for (let i = 0; i < vars.length; i++) {
-			const pair = vars[i].split("=");
+			const pair = vars[i].split('=')
 			if (pair[0] === name) {
-				return pair[1];
+				return pair[1]
 			}
 		}
-		return defaultValue === undefined ? null : defaultValue;
-	};
+		return defaultValue === undefined ? null : defaultValue
+	}
 
-	const ticket = getParam('ticket') || route.query.ticket;
+	const ticket = getParam('ticket') || route.query.ticket
 
 	// 生命周期
 	onMounted(async () => {
-		await tryJump();
-	});
+		await tryJump()
+	})
 
 	// 跳转
 	const tryJump = async () => {
 		// 重置加载状态
-		loading.value = true;
-		tipText.value = '加载中...';
+		loading.value = true
+		tipText.value = '加载中...'
 
 		try {
-			let existToken = tool.data.get('TOKEN');
+			let existToken = tool.data.get('TOKEN')
 			if (existToken) {
-				const isLogin = await loginApi.isLogin();
+				const isLogin = await loginApi.isLogin()
 				if (isLogin) {
-					await goHome(existToken);
+					await goHome(existToken)
 				} else {
-					await redirectSsoAuthUrl(window.location.href);
+					await redirectSsoAuthUrl(window.location.href)
 				}
 			} else {
 				if (ticket) {
-					await doLoginByTicket(ticket);
+					await doLoginByTicket(ticket)
 				} else {
-					await redirectSsoAuthUrl(window.location.href);
+					await redirectSsoAuthUrl(window.location.href)
 				}
 			}
 		} catch (error) {
-			loading.value = false;
-			tipText.value = '处理失败，请重试';
-			console.error('SSO登录失败:', error);
+			loading.value = false
+			tipText.value = '处理失败，请重试'
+			console.error('SSO登录失败:', error)
 		}
 	}
 
 	// 跳转首页
 	const goHome = async (loginToken) => {
-		tipText.value = '验证成功，即将跳转...';
+		tipText.value = '验证成功，即将跳转...'
 		setTimeout(async () => {
-			await afterLogin(loginToken);
-		}, 500);
+			await afterLogin(loginToken)
+		}, 500)
 	}
 
 	// 处理SSO登录回调
 	const doLoginByTicket = async (ticket) => {
-		const loginToken = await ssoApi.doLoginByTicket({ ticket: ticket });
-		tipText.value = '验证成功，即将跳转...';
+		const loginToken = await ssoApi.doLoginByTicket({ ticket: ticket })
+		tipText.value = '验证成功，即将跳转...'
 		setTimeout(async () => {
-			await afterLogin(loginToken);
-		}, 500);
+			await afterLogin(loginToken)
+		}, 500)
 	}
 
 	// 重定向到SSO登录页
 	const redirectSsoAuthUrl = async (redirectUrl) => {
-		const authUrl = await ssoApi.getSsoAuthUrl({ redirectUrl: redirectUrl });
-		tipText.value = '即将跳转至SSO登录页...';
+		const authUrl = await ssoApi.getSsoAuthUrl({ redirectUrl: redirectUrl })
+		tipText.value = '即将跳转至SSO登录页...'
 		setTimeout(() => {
-			window.location.href = authUrl;
-		}, 500);
+			window.location.href = authUrl
+		}, 500)
 	}
 </script>
 
@@ -199,6 +199,8 @@
 
 	/* 旋转动画 */
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

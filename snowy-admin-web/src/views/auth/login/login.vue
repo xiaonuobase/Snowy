@@ -104,10 +104,20 @@
 								</a-form-item>
 							</a-form>
 						</a-tab-pane>
-						<a-tab-pane key="userSms" :tab="$t('login.phoneLogin')" force-render v-if="loginTypes.phoneLogin === 'true'">
+						<a-tab-pane
+							key="userSms"
+							:tab="$t('login.phoneLogin')"
+							force-render
+							v-if="loginTypes.phoneLogin === 'true'"
+						>
 							<phone-login-form />
 						</a-tab-pane>
-						<a-tab-pane key="userEmail" :tab="$t('login.emailLogin')" force-render v-if="loginTypes.emailLogin === 'true'">
+						<a-tab-pane
+							key="userEmail"
+							:tab="$t('login.emailLogin')"
+							force-render
+							v-if="loginTypes.emailLogin === 'true'"
+						>
 							<email-login-form />
 						</a-tab-pane>
 						<a-tab-pane key="userOtp" :tab="$t('login.otpLogin')" force-render v-if="loginTypes.otpLogin === 'true'">
@@ -118,12 +128,14 @@
 						<a href="/front/client/index" class="xn-color-0d84ff">{{ $t('login.frontLogin') }}</a>
 					</div>
 					<three-login v-if="configData.THREE_LOGIN_SHOW && !appId" />
-					<three-login-for-app ref="threeLoginForAppRef"
-										 v-if="configData.THREE_LOGIN_SHOW && appId"
-										 :appId="appId"
-										 :loginTypes="loginTypes"
-										 @updateLoginTypes="updateLoginTypes"
-										 @updateSystemName="updateSystemName"/>
+					<three-login-for-app
+						ref="threeLoginForAppRef"
+						v-if="configData.THREE_LOGIN_SHOW && appId"
+						:appId="appId"
+						:loginTypes="loginTypes"
+						@updateLoginTypes="updateLoginTypes"
+						@updateSystemName="updateSystemName"
+					/>
 				</a-card>
 			</div>
 		</div>
@@ -297,8 +309,8 @@
 				loading.value = false
 				if (captchaOpen.value === 'true') {
 					loginCaptcha()
-				}}
-			)
+				}
+			})
 	}
 	const configLang = (key) => {
 		config.value.lang = key

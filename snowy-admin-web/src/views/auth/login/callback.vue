@@ -21,7 +21,7 @@
 			<div class="login-form">
 				<a-card>
 					<div class="login-header">
-						<h2>{{tipText}}</h2>
+						<h2>{{ tipText }}</h2>
 					</div>
 					<a-spin :tip="tipText" v-if="showLoading">
 						<div class="h-[300px]">
@@ -79,7 +79,7 @@
 						</a-form-item>
 						<a-form-item>
 							<a-button type="primary" class="w-full" :loading="loading" round size="large" @click="bindAccount"
-							>{{ $t('login.bindAccount') }}
+								>{{ $t('login.bindAccount') }}
 							</a-button>
 						</a-form-item>
 					</a-form>
@@ -93,11 +93,11 @@
 	import { message } from 'ant-design-vue'
 	import thirdApi from '@/api/auth/thirdApi'
 	import { globalStore } from '@/store'
-	import {afterLogin} from "@/views/auth/login/util";
+	import { afterLogin } from '@/views/auth/login/util'
 	import router from '@/router'
-	import {required} from "@/utils/formRules";
-	import tool from "@/utils/tool";
-	import loginApi from "@/api/auth/loginApi";
+	import { required } from '@/utils/formRules'
+	import tool from '@/utils/tool'
+	import loginApi from '@/api/auth/loginApi'
 	import smCrypto from '@/utils/smCrypto'
 	const { proxy } = getCurrentInstance()
 	const route = router.currentRoute.value
@@ -126,7 +126,7 @@
 	})
 
 	const showError = (msg, alert) => {
-		if(alert) {
+		if (alert) {
 			message.error(msg)
 		}
 		tipText.value = msg
@@ -134,7 +134,7 @@
 	}
 
 	onMounted(() => {
-		if(!route.params.platform) {
+		if (!route.params.platform) {
 			showError(proxy.$t('login.paramError'), true)
 			return
 		}
@@ -158,7 +158,7 @@
 			.then(async (data) => {
 				if (data.startsWith('needBind')) {
 					showError(proxy.$t('login.bindAccount'), true)
-					thirdId.value = data.split(":")[1];
+					thirdId.value = data.split(':')[1]
 					showBind.value = true
 					refreshSwitch()
 				} else {
@@ -210,8 +210,8 @@
 				loading.value = false
 				if (captchaOpen.value === 'true') {
 					loginCaptcha()
-				}}
-			)
+				}
+			})
 	}
 	// logo链接
 	const handleLink = (e) => {

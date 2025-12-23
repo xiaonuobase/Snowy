@@ -17,11 +17,7 @@
 		<a-form-item name="validCodeForOtp" v-if="captchaOpen === 'true'">
 			<a-row :gutter="8">
 				<a-col :span="17">
-					<a-input
-						v-model:value="ruleForm.validCodeForOtp"
-						:placeholder="$t('login.validPlaceholder')"
-						size="large"
-					>
+					<a-input v-model:value="ruleForm.validCodeForOtp" :placeholder="$t('login.validPlaceholder')" size="large">
 						<template #prefix>
 							<verified-outlined class="login-icon-gray" />
 						</template>
@@ -43,7 +39,7 @@
 <script setup name="otpLoginForm">
 	import loginApi from '@/api/auth/loginApi'
 	import { afterLogin } from './util'
-	import {required} from "@/utils/formRules";
+	import { required } from '@/utils/formRules'
 	const { proxy } = getCurrentInstance()
 	const props = defineProps({
 		captchaOpen: {
@@ -105,7 +101,8 @@
 			.loginByOtp(loginData)
 			.then(async (loginToken) => {
 				await afterLogin(loginToken)
-			}).catch(() => {
+			})
+			.catch(() => {
 				loading.value = false
 				if (props.captchaOpen === 'true') {
 					loginCaptcha()
