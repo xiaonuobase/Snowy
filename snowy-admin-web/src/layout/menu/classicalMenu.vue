@@ -23,6 +23,7 @@
 						:openKeys="openKeys"
 						:selectedKeys="selectedKeys"
 						:theme="sideTheme"
+						:class="[!roundedCornerStyleOpen ? 'no-radius-menu' : '']"
 						mode="inline"
 						@select="onSelect"
 						@openChange="onOpenChange"
@@ -82,6 +83,12 @@
 	import ModuleMenu from '@/layout/components/moduleMenu.vue'
 	import IframeView from '@/layout/components/iframeView.vue'
 	import Breadcrumb from '@/layout/components/breadcrumb.vue'
+	import { globalStore } from '@/store'
+
+	const store = globalStore()
+	const roundedCornerStyleOpen = computed(() => {
+		return store.roundedCornerStyleOpen
+	})
 
 	const props = defineProps({
 		layout: { type: String }, // 布局信息
@@ -104,10 +111,10 @@
 	watch(route, () => {
 		nextTick(() => {
 			displayLayout.value = displayLayoutResult()
+			if (displayLayout.value) {
+				emit('displayLayoutChange')
+			}
 		})
-		if (displayLayout.value) {
-			emit('displayLayoutChange')
-		}
 	})
 	onMounted(() => {
 		nextTick(() => {
@@ -186,5 +193,16 @@
 	}
 	.main-content-wrapper-max {
 		padding: 0;
+	}
+	.no-radius-menu :deep(.ant-menu-item),
+	.no-radius-menu :deep(.ant-menu-submenu-title) {
+		border-radius: 0 !important;
+		margin-inline: 0 !important;
+		width: 100% !important;
+		border-left: 4px solid transparent !important;
+		border-right: 4px solid transparent !important;
+		transition:
+			background 0.3s,
+			color 0.3s !important;
 	}
 </style>
