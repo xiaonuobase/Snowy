@@ -14,8 +14,9 @@
 	import '@wangeditor/editor/dist/css/style.css' // 引入 css
 	import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 	import fileApi from '@/api/dev/fileApi'
+	import { Form } from 'ant-design-vue'
 
-	const emit = defineEmits(['update:value'])
+	const emit = defineEmits(['update:value', 'change', 'blur'])
 
 	const props = defineProps({
 		value: {
@@ -40,6 +41,8 @@
 			default: undefined
 		}
 	})
+
+	const formItemContext = Form.useInjectFormItemContext()
 
 	// 编辑器实例，必须用 shallowRef
 	const editorRef = shallowRef()
@@ -105,7 +108,18 @@
 	)
 	// 监听输入
 	watch(contentValue, (newValue) => {
-		emit('update:value', newValue)
+		let value = newValue
+		// 校验是否为空，如果为空则设置为''，否则表单校验会认为有值
+		if (editorRef.value && editorRef.value.isEmpty()) {
+			value = ''
+		} else if (newValue === '<p><br></p>') {
+			value = ''
+		}
+		emit('update:value', value)
+		emit('change', value)
+		nextTick(() => {
+			formItemContext.onFieldChange()
+		})
 	})
 	// 记录 editor 实例，重要！
 	const handleCreated = (editor) => {

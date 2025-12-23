@@ -434,14 +434,16 @@
 
 	// 刷新
 	const refresh = (bool = false) => {
-		bool &&
-			(data.localPagination = Object.assign(
+		if (bool) {
+			data.localPagination = Object.assign(
 				{},
 				{
 					current: 1,
 					pageSize: data.localPagination.pageSize
 				}
-			))
+			)
+			clearSelected()
+		}
 		loadData()
 		getTableProps()
 	}
