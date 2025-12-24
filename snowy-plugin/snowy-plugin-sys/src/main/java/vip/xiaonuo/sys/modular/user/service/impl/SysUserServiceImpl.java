@@ -428,6 +428,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (containsSuperAdminAccount) {
                 throw new CommonException("不可删除系统内置超管用户");
             }
+            // 不能删除自己
+            if (sysUserIdList.contains(StpUtil.getLoginIdAsString())) {
+                throw new CommonException("不可删除自己");
+            }
 
             // 清除【将这些用户作为主管】的信息
             this.update(new LambdaUpdateWrapper<SysUser>().in(SysUser::getDirectorId, sysUserIdList).set(SysUser::getDirectorId, null));

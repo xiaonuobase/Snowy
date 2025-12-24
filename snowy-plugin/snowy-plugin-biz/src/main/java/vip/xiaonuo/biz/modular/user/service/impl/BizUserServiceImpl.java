@@ -270,6 +270,10 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             if(containsSuperAdminAccount) {
                 throw new CommonException("不可删除系统内置超管人员");
             }
+            // 不能删除自己
+            if (bizUserIdList.contains(StpUtil.getLoginIdAsString())) {
+                throw new CommonException("不可删除自己");
+            }
             // 获取这些人员的的机构id集合
             Set<String> userOrgIdList = this.listByIds(bizUserIdList).stream().map(BizUser::getOrgId).collect(Collectors.toSet());
             // 校验数据范围

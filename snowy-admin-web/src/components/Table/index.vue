@@ -576,7 +576,7 @@
 					}
 					// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
 					if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
-						data.localPagination.current--
+						data.localPagination.current = r.pages === 0 ? 1 : r.pages
 						loadData()
 						return
 					}
