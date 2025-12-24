@@ -77,6 +77,13 @@
 							新增
 						</a-button>
 						<xn-batch-button
+							buttonName="批量复制"
+							icon="CopyOutlined"
+							:isPopconFirm="false"
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="copyBatchOrg"
+						/>
+						<xn-batch-button
 							buttonName="批量删除"
 							icon="DeleteOutlined"
 							buttonDanger
@@ -101,6 +108,7 @@
 		</template>
 	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
+	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected()" />
 </template>
 
 <script setup name="sysOrg">
@@ -108,6 +116,7 @@
 	import { isEmpty } from 'lodash-es'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
+	import CopyForm from './copyForm.vue'
 
 	const columns = [
 		{
@@ -147,6 +156,7 @@
 	// 定义tableDOM
 	const tableRef = ref(null)
 	const formRef = ref()
+	const copyFormRef = ref()
 	const searchFormRef = ref()
 	const searchFormState = ref({})
 	// 默认展开的节点
@@ -215,5 +225,9 @@
 		orgApi.orgDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
+	}
+	// 批量复制
+	const copyBatchOrg = (params) => {
+		copyFormRef.value.onOpen(params)
 	}
 </script>

@@ -72,7 +72,6 @@
 						:expand-row-by-click="true"
 						:loading="selectedTableListLoading"
 						bordered
-
 					>
 						<template #title>
 							<span>已选择: {{ selectedData.length }}</span>

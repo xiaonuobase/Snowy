@@ -76,6 +76,14 @@
 							新增
 						</a-button>
 						<xn-batch-button
+							v-if="hasPerm('bizOrgCopy')"
+							buttonName="批量复制"
+							icon="CopyOutlined"
+							:isPopconFirm="false"
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="copyBatchOrg"
+						/>
+						<xn-batch-button
 							v-if="hasPerm('bizOrgBatchDelete')"
 							buttonName="批量删除"
 							icon="DeleteOutlined"
@@ -101,6 +109,7 @@
 		</template>
 	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
+	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected()" />
 </template>
 
 <script setup name="bizOrg">
@@ -108,6 +117,7 @@
 	import { isEmpty } from 'lodash-es'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
+	import CopyForm from './copyForm.vue'
 
 	const columns = [
 		{
@@ -218,5 +228,10 @@
 		bizOrgApi.orgDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
+	}
+	// 批量复制
+	const copyFormRef = ref()
+	const copyBatchOrg = (params) => {
+		copyFormRef.value.onOpen(params)
 	}
 </script>

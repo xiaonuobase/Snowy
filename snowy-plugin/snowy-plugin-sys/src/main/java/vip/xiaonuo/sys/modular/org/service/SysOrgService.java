@@ -78,6 +78,14 @@ public interface SysOrgService extends IService<SysOrg> {
     SysOrg detail(SysOrgIdParam sysOrgIdParam);
 
     /**
+     * 复制组织
+     *
+     * @author yubaoshan
+     * @date 2025/12/24 01:10
+     */
+    void copy(SysOrgCopyParam sysOrgCopyParam);
+
+    /**
      * 获取组织详情
      *
      * @author xuyuxiang

@@ -172,4 +172,12 @@ public interface BizOrgService extends IService<BizOrg> {
      * @date 2022/4/24 20:08
      */
     Page<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam);
+
+    /**
+     * 复制机构
+     *
+     * @author yubaoshan
+     * @date 2025/12/24 01:30
+     */
+    void copy(BizOrgCopyParam bizOrgCopyParam);
 }
