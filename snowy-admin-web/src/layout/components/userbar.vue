@@ -5,7 +5,7 @@
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
 			<fullscreen-outlined />
 		</div>
-		<!--		<dev-user-message />-->
+		<dev-user-message />
 		<a-dropdown class="user panel-item">
 			<div class="user-avatar">
 				<a-avatar :src="userInfo ? userInfo.avatar : undefined" />
@@ -130,7 +130,7 @@
 							router.replace({ path: '/login' })
 							nextTick(() => {
 								// 清理缓存内的个人信息
-								store.userInfo = undefined
+								store.setUserInfo(undefined)
 							})
 						})
 						.catch(() => {

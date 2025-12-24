@@ -159,19 +159,6 @@ public class SysIndexController {
     }
 
     /**
-     * 创建sse连接
-     *
-     * @author diantu
-     * @date 2023/7/10
-     **/
-    @ApiOperationSupport(order = 9)
-    @Operation(summary = "创建sse连接")
-    @GetMapping("/dev/message/createSseConnect")
-    public SseEmitter createSseConnect(String clientId){
-        return sysIndexService.createSseConnect(clientId);
-    }
-
-    /**
      * 获取基础系统业务数据
      *
      * @author xuyuxiang、yubaoshan
