@@ -75,9 +75,9 @@ public interface ClientUserService extends IService<ClientUser> {
      * 添加用户
      *
      * @author xuyuxiang
-     * @date 2022/4/24 20:48
+     * @date 2022/4/24 20:47
      */
-    void add(ClientUserAddParam clientUserAddParam, String sourceFromType);
+    ClientUser add(ClientUserAddParam clientUserAddParam, String sourceFromType);
 
     /**
      * 编辑用户

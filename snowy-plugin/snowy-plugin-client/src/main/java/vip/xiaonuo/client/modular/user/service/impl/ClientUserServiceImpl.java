@@ -212,7 +212,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(ClientUserAddParam clientUserAddParam, String sourceFromType) {
+    public ClientUser add(ClientUserAddParam clientUserAddParam, String sourceFromType) {
         checkParam(clientUserAddParam);
         ClientUser clientUser = BeanUtil.toBean(clientUserAddParam, ClientUser.class);
         if(ObjectUtil.isEmpty(clientUser.getAvatar())) {
@@ -232,6 +232,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         this.save(clientUser);
         // 插入扩展信息
         clientUserExtService.createExtInfo(clientUser.getId(), sourceFromType);
+        return clientUser;
     }
 
     private void checkParam(ClientUserAddParam clientUserAddParam) {
@@ -946,9 +947,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setPhone(phone);
         clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 获取用户信息
-        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        ClientUser clientUser = this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 发送注册成功短信
         String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_C_KEY);
         // 不为空才发送
@@ -975,9 +974,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setEmail(email);
         clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 获取用户信息
-        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getEmail, email));
+        ClientUser clientUser = this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 发送注册成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_C_KEY);
         // 不为空才发送
@@ -1006,9 +1003,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setPassword(password);
         clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 返回用户
-        return this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getAccount, account));
+        return this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
     }
 
     @Override

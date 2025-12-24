@@ -33,7 +33,7 @@
 		"axios": "1.7.7",
 		"codemirror": "5.65.19",
 		"cropperjs": "1.6.2",
-		"dayjs": "1.11.13",
+		"dayjs": "1.11.19",
 		"echarts": "5.5.1",
 		"echarts-stat": "1.2.0",
 		"enquire.js": "2.1.6",
