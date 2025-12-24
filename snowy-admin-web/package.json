@@ -67,6 +67,7 @@
 		"@vue/eslint-config-standard": "8.0.1",
 		"antd-less-to-css-variable": "1.0.5",
 		"autoprefixer": "10.4.20",
+		"baseline-browser-mapping": "2.9.11",
 		"eslint": "8.57.1",
 		"eslint-config-prettier": "9.1.0",
 		"eslint-plugin-prettier": "5.2.1",
