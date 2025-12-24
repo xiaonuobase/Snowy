@@ -11,12 +11,11 @@ import { globalStore } from '@/store'
 export const afterLogin = async (loginToken) => {
 	const route = router.currentRoute.value
 	const menuStore = useMenuStore()
+	const userStore = useUserStore()
 	tool.data.set('TOKEN', loginToken)
-	// 初始化用户信息
-	await useUserStore().initUserInfo()
 
-	// 获取用户的菜单
-	await menuStore.fetchMenu()
+	// 并行初始化用户信息和获取用户的菜单
+	await Promise.all([userStore.initUserInfo(), menuStore.fetchMenu()])
 	const menu = tool.data.get('MENU')
 	let indexMenu = routerUtil.getIndexMenu(menu).path
 

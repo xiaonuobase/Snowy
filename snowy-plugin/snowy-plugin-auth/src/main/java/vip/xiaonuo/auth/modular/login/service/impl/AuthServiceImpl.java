@@ -48,6 +48,7 @@ import vip.xiaonuo.common.consts.CacheConstant;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
 import vip.xiaonuo.common.util.CommonEmailUtil;
+import java.util.concurrent.CompletableFuture;
 import vip.xiaonuo.common.util.CommonOtpUtil;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -703,13 +704,27 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseLoginUser.getId()));
-        // 获取按钮码
-        saBaseLoginUser.setButtonCodeList(loginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
-        // 获取移动端按钮码
-        saBaseLoginUser.setMobileButtonCodeList(loginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
-        // 获取数据范围
-        saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class,
-                loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId())));
+
+        // 并行获取信息
+        CompletableFuture<List<String>> buttonCodeListFuture = CompletableFuture.supplyAsync(() ->
+                loginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<String>> mobileButtonCodeListFuture = CompletableFuture.supplyAsync(() ->
+                loginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<JSONObject>> permissionListFuture = CompletableFuture.supplyAsync(() ->
+                loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId()));
+        try {
+            // 等待所有任务完成
+            CompletableFuture.allOf(buttonCodeListFuture, mobileButtonCodeListFuture, permissionListFuture).join();
+            // 获取按钮码
+            saBaseLoginUser.setButtonCodeList(buttonCodeListFuture.get());
+            // 获取移动端按钮码
+            saBaseLoginUser.setMobileButtonCodeList(mobileButtonCodeListFuture.get());
+            // 获取数据范围
+            saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class, permissionListFuture.get()));
+        } catch (Exception e) {
+            throw new CommonException("获取登录配置信息失败", e);
+        }
+
         // 获取权限码
         List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
                 .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
@@ -757,13 +772,28 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseClientLoginUser.getId()));
-        // 获取按钮码
-        saBaseClientLoginUser.setButtonCodeList(clientLoginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
-        // 获取移动端按钮码
-        saBaseClientLoginUser.setMobileButtonCodeList(clientLoginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
-        // 获取数据范围
-        saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class,
-                clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null)));
+
+        // 并行获取信息
+        CompletableFuture<List<String>> buttonCodeListFuture = CompletableFuture.supplyAsync(() ->
+                clientLoginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<String>> mobileButtonCodeListFuture = CompletableFuture.supplyAsync(() ->
+                clientLoginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<JSONObject>> permissionListFuture = CompletableFuture.supplyAsync(() ->
+                clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null));
+
+        try {
+            // 等待所有任务完成
+            CompletableFuture.allOf(buttonCodeListFuture, mobileButtonCodeListFuture, permissionListFuture).join();
+            // 获取按钮码
+            saBaseClientLoginUser.setButtonCodeList(buttonCodeListFuture.get());
+            // 获取移动端按钮码
+            saBaseClientLoginUser.setMobileButtonCodeList(mobileButtonCodeListFuture.get());
+            // 获取数据范围
+            saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class, permissionListFuture.get()));
+        } catch (Exception e) {
+            throw new CommonException("获取登录配置信息失败", e);
+        }
+
         // 获取权限码
         List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
