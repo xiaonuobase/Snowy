@@ -13,14 +13,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.5.9</version>
     </parent>
 
     <properties>
         <java.version>17</java.version>
         <snowy.version>3.0.0</snowy.version>
-        <spring-boot.version>3.4.6</spring-boot.version>
-        <spring-framework.version>6.2.7</spring-framework.version>
+        <spring-boot.version>3.5.9</spring-boot.version>
+        <spring-framework.version>6.2.15</spring-framework.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -219,9 +219,9 @@
 
             <!-- knife4j -->
             <dependency>
-                <groupId>com.github.xiaoymin</groupId>
+                <groupId>com.github.xingfudeshi</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>4.5.0</version>
+                <version>4.6.0</version>
             </dependency>
 
             <!-- easy-poi -->
