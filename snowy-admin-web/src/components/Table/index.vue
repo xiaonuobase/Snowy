@@ -103,10 +103,6 @@
 				(record, index) => (data.localSettings.rowClassNameSwitch ? ((index + 1) % 2 == 0 ? 'odd' : '') : null)
 			"
 		>
-			<template #headerCell="{ title, column }">
-				<slot v-if="slots.headerCell" name="headerCell" :column="column" :title="title"></slot>
-				<template v-else>{{ title }}</template>
-			</template>
 			<template #[item]="scope" v-for="item in renderSlots">
 				<slot
 					v-if="item && renderTableProps.columns && renderTableProps.columns.length > 0"
@@ -128,9 +124,7 @@
 	const slots = useSlots()
 	const route = useRoute()
 	const emit = defineEmits(['onExpand', 'onSelectionChange'])
-	// 过滤掉headerCell插槽，因为我们显式定义了它
-	const renderSlots = computed(() => Object.keys(slots).filter((key) => key !== 'headerCell'))
-
+	const renderSlots = Object.keys(slots)
 	// 是否存在 operator 插槽内容（过滤掉空白、注释、空 Fragment）
 	const hasOperatorContent = computed(() => {
 		const s = slots.operator
