@@ -12,7 +12,7 @@
 				</a-statistic>
 			</a-col>
 			-->
-			<a-col :span="5">
+			<a-col :xs="12" :sm="12" :md="12" :lg="4" :xl="4">
 				<a-statistic :value="dataSource.sysDictCount">
 					<template #title>
 						<read-outlined style="color: #4b4b4b" />
@@ -20,7 +20,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="5">
+			<a-col :xs="12" :sm="12" :md="12" :lg="4" :xl="4">
 				<a-statistic :value="dataSource.bizDictCount">
 					<template #title>
 						<read-outlined style="color: #353779" />
@@ -28,7 +28,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="5">
+			<a-col :xs="12" :sm="12" :md="12" :lg="4" :xl="4">
 				<a-statistic :value="dataSource.backUserSessionCount">
 					<template #title>
 						<usergroup-delete-outlined style="color: #3ceecd" />
@@ -36,7 +36,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="5">
+			<a-col :xs="12" :sm="12" :md="12" :lg="4" :xl="4">
 				<a-statistic :value="dataSource.clientUserSessionCount">
 					<template #title>
 						<UserSwitchOutlined style="color: rgba(229, 159, 18, 0.35)" />
@@ -44,7 +44,7 @@
 					</template>
 				</a-statistic>
 			</a-col>
-			<a-col :span="4">
+			<a-col :xs="12" :sm="12" :md="12" :lg="4" :xl="4">
 				<a-statistic :value="dataSource.thirdUserCount">
 					<template #title>
 						<team-outlined style="color: #1890ff" />

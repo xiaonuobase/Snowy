@@ -13,14 +13,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.1</version>
+        <version>3.5.9</version>
     </parent>
 
     <properties>
         <java.version>17</java.version>
         <snowy.version>3.0.0</snowy.version>
-        <spring-boot.version>3.2.1</spring-boot.version>
-        <spring-framework.version>6.1.2</spring-framework.version>
+        <spring-boot.version>3.5.9</spring-boot.version>
+        <spring-framework.version>6.2.15</spring-framework.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -98,13 +98,6 @@
                 <version>${snowy.version}</version>
             </dependency>
 
-            <!-- snowy-plugin-im-api -->
-            <dependency>
-                <groupId>vip.xiaonuo</groupId>
-                <artifactId>snowy-plugin-im-api</artifactId>
-                <version>${snowy.version}</version>
-            </dependency>
-
             <!-- snowy-plugin-auth -->
             <dependency>
                 <groupId>vip.xiaonuo</groupId>
@@ -153,14 +146,6 @@
                 <artifactId>snowy-plugin-sys</artifactId>
                 <version>${snowy.version}</version>
             </dependency>
-
-            <!-- snowy-plugin-im -->
-            <dependency>
-                <groupId>vip.xiaonuo</groupId>
-                <artifactId>snowy-plugin-im</artifactId>
-                <version>${snowy.version}</version>
-            </dependency>
-
 
             <!-- nashorn-core -->
             <dependency>
@@ -234,9 +219,9 @@
 
             <!-- knife4j -->
             <dependency>
-                <groupId>com.github.xiaoymin</groupId>
+                <groupId>com.github.xingfudeshi</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>4.5.0</version>
+                <version>4.6.0</version>
             </dependency>
 
             <!-- easy-poi -->
@@ -267,46 +252,74 @@
                 <version>0.16.4</version>
             </dependency>
 
+            <!-- zxing -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.3</version>
+            </dependency>
+
+            <!-- bouncycastle -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
+            <!-- bouncycastle -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+
             <!-- sa-token-core -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-core</artifactId>
-                <version>1.37.0</version>
+                <version>1.44.0</version>
             </dependency>
 
             <!-- sa-token -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
-                <version>1.37.0</version>
+                <version>1.44.0</version>
             </dependency>
 
             <!-- sa-token 整合 redis （使用jackson序列化方式） -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-jackson</artifactId>
-                <version>1.37.0</version>
+                <version>1.44.0</version>
             </dependency>
 
             <!-- Sa-Token插件：权限缓存与业务缓存分离 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-alone-redis</artifactId>
-                <version>1.37.0</version>
+                <version>1.44.0</version>
             </dependency>
 
             <!-- Sa-Token 插件：整合SSO -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-sso</artifactId>
-                <version>1.37.0</version>
+                <version>1.44.0</version>
+            </dependency>
+
+            <!-- Sa-Token 插件：整合 Forest 请求工具 -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-forest</artifactId>
+                <version>1.44.0</version>
             </dependency>
 
             <!-- JustAuth 第三方登录 -->
             <dependency>
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
-                <version>1.16.6</version>
+                <version>1.16.7</version>
             </dependency>
 
             <!-- beetl模板引擎 -->

@@ -26,18 +26,22 @@
 		@cancel="handleClose"
 	>
 		<a-row :gutter="10">
-			<a-col :span="14">
+			<a-col :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
 				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-						<a-row :gutter="24">
-							<a-col :span="12">
+					<a-form ref="searchFormRef" :model="searchFormState">
+						<a-row :gutter="10">
+							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 								<a-form-item name="searchKey">
 									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入名称" />
 								</a-form-item>
 							</a-col>
-							<a-col :span="12">
-								<a-button type="primary" class="xn-mr-10" @click="loadData()"> 查询 </a-button>
-								<a-button @click="reset()"> 重置 </a-button>
+							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+								<a-form-item>
+									<a-space>
+										<a-button type="primary" class="xn-mr-10" @click="loadData()"> 查询 </a-button>
+										<a-button @click="reset()"> 重置 </a-button>
+									</a-space>
+								</a-form-item>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -58,7 +62,7 @@
 					</a-table>
 				</div>
 			</a-col>
-			<a-col :span="10">
+			<a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
 				<div class="selector-table">
 					<a-table
 						ref="selectedTable"
@@ -156,8 +160,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '名称',
@@ -170,8 +173,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '名称',
@@ -475,9 +477,6 @@
 	.selectorTreeDiv {
 		max-height: 500px;
 		overflow: auto;
-	}
-	.ant-form-item {
-		margin-bottom: 0 !important;
 	}
 	.selector-table {
 		overflow: auto;

@@ -26,6 +26,11 @@ public class CacheConstant {
     public static final String PERMISSION_RESOURCE_CACHE_KEY = "permission-resource";
 
     /**
+     * 权限资源Method
+     */
+    public static final String PERMISSION_RESOURCE_METHOD_CACHE_KEY = "permission-resource-method";
+
+    /**
      * B端权限列表
      */
     public static final String AUTH_B_PERMISSION_LIST_CACHE_KEY = "auth-b-permission-list:";

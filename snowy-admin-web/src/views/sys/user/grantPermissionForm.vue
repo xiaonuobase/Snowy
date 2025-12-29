@@ -22,6 +22,7 @@
 				:row-key="(record) => record.api"
 				:pagination="pagination"
 				@change="handleTableChange"
+				:scroll="{ x: 'max-content' }"
 			>
 				<template #headerCell="{ column }">
 					<template v-if="column.key === 'prefix'">
@@ -168,7 +169,7 @@
 			key: 'prefix',
 			title: '接口前缀',
 			dataIndex: 'prefix',
-			width: 140,
+			fixed: 'left',
 			customCell: (row, index) => {
 				const indexArr = firstShowMap.value[row.prefix]
 				if (index === indexArr[0]) {
@@ -181,7 +182,6 @@
 			key: 'suffix',
 			title: '接口',
 			dataIndex: 'suffix',
-			width: 290,
 			customFilterDropdown: true,
 			onFilter: (value, record) => record.api.includes(value),
 			onFilterDropdownOpenChange: (visible) => {
@@ -474,7 +474,10 @@
 	}
 	// 截取api串中的中文及括号
 	const subStrApi = (api) => {
-		return api.substring(0, api.indexOf('['))
+		if (api.indexOf('[') > -1) {
+			return api.substring(0, api.indexOf('['))
+		}
+		return api
 	}
 	// 验证并提交数据
 	const onSubmit = () => {

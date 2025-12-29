@@ -8,7 +8,7 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-button type="primary" @click="fieldForm.onOpen(recordData)">
 					<template #icon>
 						<plus-outlined />

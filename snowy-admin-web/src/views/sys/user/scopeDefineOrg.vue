@@ -8,6 +8,12 @@
 		@ok="handleOk"
 		@cancel="onClose"
 	>
+		<div class="scopeDefineOrgActions">
+			<a-space size="small">
+				<a-button size="small" @click="checkAll">全选</a-button>
+				<a-button size="small" @click="invertCheck">反选</a-button>
+			</a-space>
+		</div>
 		<div class="scopeDefineOrgTreeDiv">
 			<a-tree
 				v-model:expandedKeys="defaultExpandedKeys"
@@ -26,11 +32,25 @@
 
 <script setup="props, context" name="userScopeDefineOrg">
 	import userApi from '@/api/sys/userApi'
-	import { checkOrUnCheckChildren } from '@/utils/treeHandler'
 	const visible = ref(false)
 	let defaultExpandedKeys = ref([])
 	let checkedKeys = ref([])
 	const treeData = ref([])
+
+	const getAllIds = (nodes) => {
+		const ids = []
+		const stack = [...nodes]
+		while (stack.length) {
+			const n = stack.pop()
+			if (n && n.id) ids.push(n.id)
+			if (n && n.children && n.children.length) {
+				for (let i = 0; i < n.children.length; i++) {
+					stack.push(n.children[i])
+				}
+			}
+		}
+		return ids
+	}
 
 	const resultDataModel = {
 		dataScopeId: '',
@@ -80,13 +100,35 @@
 					checkedKeys.value.push(key)
 				})
 		}
+		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = checkedKeys.value
 	}
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 
-	// 选中触发
-	const treeCheck = (checkedKeys, { checked, node }) => {
-		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = checkOrUnCheckChildren(checked, node, checkedKeys)
+	const treeCheck = (keysObj) => {
+		checkedKeys.value = keysObj.checked
+		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = keysObj.checked
+	}
+
+	const getCurrentCheckedIds = () => {
+		if (Array.isArray(checkedKeys.value)) return checkedKeys.value
+		if (checkedKeys.value && Array.isArray(checkedKeys.value.checked)) return checkedKeys.value.checked
+		return []
+	}
+
+	const checkAll = () => {
+		const all = getAllIds(treeData.value)
+		checkedKeys.value = all
+		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = all
+	}
+
+	const invertCheck = () => {
+		const all = getAllIds(treeData.value)
+		const current = getCurrentCheckedIds()
+		const set = new Set(current)
+		const next = all.filter((id) => !set.has(id))
+		checkedKeys.value = next
+		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = next
 	}
 	// 定义emit事件
 	const emit = defineEmits({
@@ -110,5 +152,8 @@
 	.scopeDefineOrgTreeDiv {
 		max-height: 450px;
 		overflow: auto;
+	}
+	.scopeDefineOrgActions {
+		margin-bottom: 8px;
 	}
 </style>

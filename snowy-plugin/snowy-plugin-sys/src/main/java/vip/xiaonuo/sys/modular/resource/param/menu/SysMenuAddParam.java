@@ -74,6 +74,14 @@ public class SysMenuAddParam {
     @Schema(description = "是否可见")
     private String visible;
 
+    /** 显示布局 */
+    @Schema(description = "显示布局")
+    private String displayLayout;
+
+    /** 缓存 */
+    @Schema(description = "缓存")
+    private String keepLive;
+
     /** 扩展信息 */
     @Schema(description = "扩展信息")
     private String extJson;

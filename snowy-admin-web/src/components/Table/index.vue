@@ -1,6 +1,6 @@
 <template>
 	<div className="table-wrapper">
-		<div className="s-table-tool">
+		<div className="s-table-tool" v-if="hasToolbar">
 			<div className="s-table-tool-left">
 				<!-- 插槽操作按钮 -->
 				<slot name="operator"></slot>
@@ -93,6 +93,7 @@
 			v-bind="{ ...renderTableProps }"
 			:loading="data.localLoading"
 			@change="loadData"
+			@resizeColumn="handleResize"
 			@expand="
 				(expanded, record) => {
 					emit('onExpand', expanded, record)
@@ -116,7 +117,7 @@
 <script setup>
 	import { tableProps } from 'ant-design-vue/es/table/Table.js'
 	import columnSetting from './columnSetting.vue'
-	import { useSlots } from 'vue'
+	import { useSlots, Comment, Fragment, Text } from 'vue'
 	import { useRoute } from 'vue-router'
 	import { cloneDeep, get } from 'lodash-es'
 
@@ -124,6 +125,44 @@
 	const route = useRoute()
 	const emit = defineEmits(['onExpand', 'onSelectionChange'])
 	const renderSlots = Object.keys(slots)
+	// 是否存在 operator 插槽内容（过滤掉空白、注释、空 Fragment）
+	const hasOperatorContent = computed(() => {
+		const s = slots.operator
+		if (!s) return false
+		const vnodes = s() || []
+		const hasMeaningful = (nodes) => {
+			if (!Array.isArray(nodes)) return false
+			for (const v of nodes) {
+				if (v == null) continue
+				// 注释节点跳过
+				if (v.type === Comment) continue
+				// 文本节点：仅当非空白文本才算有效
+				if (v.type === Text) {
+					if (typeof v.children === 'string' && v.children.trim() !== '') return true
+					continue
+				}
+				// Fragment：递归检查子节点
+				if (v.type === Fragment) {
+					if (hasMeaningful(v.children)) return true
+					continue
+				}
+				// 其他元素/组件节点视为有效内容
+				return true
+			}
+			return false
+		}
+		return hasMeaningful(vnodes)
+	})
+	// 工具栏显示：有 operator 内容 或 开启任一工具按钮
+	const hasToolbar = computed(() => {
+		return (
+			hasOperatorContent.value ||
+			props.toolConfig.striped ||
+			props.toolConfig.refresh ||
+			props.toolConfig.height ||
+			props.toolConfig.columnSetting
+		)
+	})
 
 	const props = defineProps(
 		Object.assign({}, tableProps(), {
@@ -198,6 +237,7 @@
 	const data = reactive({
 		needTotalList: [],
 		localDataSource: [],
+		localColumns: null,
 		localPagination: Object.assign({}, props.pagination),
 		isFullscreen: false,
 		customSize: props.compSize,
@@ -273,6 +313,7 @@
 				...col,
 				checked: col.checked === undefined ? true : col.checked
 			}))
+			data.localColumns = data.columnsSetting.filter((value) => value.checked === undefined || value.checked)
 		},
 		{ deep: true, immediate: true }
 	)
@@ -387,14 +428,16 @@
 
 	// 刷新
 	const refresh = (bool = false) => {
-		bool &&
-			(data.localPagination = Object.assign(
+		if (bool) {
+			data.localPagination = Object.assign(
 				{},
 				{
 					current: 1,
 					pageSize: data.localPagination.pageSize
 				}
-			))
+			)
+			clearSelected()
+		}
 		loadData()
 		getTableProps()
 	}
@@ -413,6 +456,14 @@
 		data.columnsSetting = v
 		data.localColumns = v.filter((value) => value.checked === undefined || value.checked)
 		getTableProps() // 调用getTableProps以确保表格重新渲染
+	}
+	// 列拖拽
+	const handleResize = (width, column) => {
+		column.width = width
+		// 强制更新列数组引用，触发表格重渲染
+		if (data.localColumns) {
+			data.localColumns = [...data.localColumns]
+		}
 	}
 	const init = () => {
 		const { current } = route.params
@@ -519,7 +570,7 @@
 					}
 					// 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
 					if (r.records.length === 0 && props.showPagination && data.localPagination.current > 1) {
-						data.localPagination.current--
+						data.localPagination.current = r.pages === 0 ? 1 : r.pages
 						loadData()
 						return
 					}

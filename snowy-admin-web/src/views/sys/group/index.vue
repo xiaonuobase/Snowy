@@ -1,15 +1,29 @@
 <template>
-	<a-card :bordered="false">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
-			<a-row :gutter="24">
-				<a-col :span="6">
-					<a-form-item label="名称" name="name">
-						<a-input v-model:value="searchFormState.name" placeholder="请输入名称" />
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item label="关键词" name="name">
+						<a-input v-model:value="searchFormState.name" placeholder="请输入名称关键词" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh()">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined />
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined />
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -22,11 +36,14 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()">
-						<template #icon><plus-outlined /></template>
+						<template #icon>
+							<plus-outlined />
+						</template>
 						新增
 					</a-button>
 					<xn-batch-button
@@ -52,7 +69,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-user-selector
 		ref="userSelectorRef"
@@ -68,6 +85,7 @@
 	import { cloneDeep } from 'lodash-es'
 	import Form from './form.vue'
 	import sysGroupApi from '@/api/sys/groupApi'
+
 	const searchFormState = ref({})
 	const searchFormRef = ref()
 	const tableRef = ref()
@@ -96,13 +114,12 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: 220
+			fixed: 'right'
 		}
 	]
 	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
-		// columns数字类型字段加入 needTotal: true 可以勾选自动算账
 		alert: {
 			show: false,
 			clear: () => {
@@ -117,7 +134,7 @@
 	}
 	const loadData = (parameter) => {
 		const searchFormParam = cloneDeep(searchFormState.value)
-		return sysGroupApi.sysGroupPage(Object.assign(parameter, searchFormParam)).then((data) => {
+		return sysGroupApi.groupPage(Object.assign(parameter, searchFormParam)).then((data) => {
 			return data
 		})
 	}
@@ -133,13 +150,13 @@
 				id: record.id
 			}
 		]
-		sysGroupApi.sysGroupDelete(params).then(() => {
+		sysGroupApi.groupDelete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchSysGroup = (params) => {
-		sysGroupApi.sysGroupDelete(params).then(() => {
+		sysGroupApi.groupDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
 	}
@@ -151,7 +168,7 @@
 		const param = {
 			id: record.id
 		}
-		sysGroupApi.sysGroupOwnUser(param).then((data) => {
+		sysGroupApi.groupOwnUser(param).then((data) => {
 			userSelectorRef.value.showUserPlusModal(data)
 		})
 	}
@@ -161,17 +178,17 @@
 			id: recordCacheData.value.id,
 			grantInfoList: value
 		}
-		sysGroupApi.sysGroupGrantUser(param).then(() => {})
+		sysGroupApi.groupGrantUser(param).then(() => {})
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return sysGroupApi.sysGroupOrgTreeSelector(param).then((data) => {
+			return sysGroupApi.groupOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
 		userPageApi: (param) => {
-			return sysGroupApi.sysGroupUserSelector(param).then((data) => {
+			return sysGroupApi.groupUserSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		}

@@ -66,6 +66,9 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     @Override
     public Page<SysGroup> page(SysGroupPageParam sysGroupPageParam) {
         QueryWrapper<SysGroup> queryWrapper = new QueryWrapper<SysGroup>().checkSqlInjection();
+        if(ObjectUtil.isNotEmpty(sysGroupPageParam.getSearchKey())) {
+            queryWrapper.lambda().like(SysGroup::getName, sysGroupPageParam.getSearchKey());
+        }
         if(ObjectUtil.isNotEmpty(sysGroupPageParam.getName())) {
             queryWrapper.lambda().like(SysGroup::getName, sysGroupPageParam.getName());
         }
@@ -182,10 +185,8 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         queryWrapper.lambda().select(SysGroup::getId, SysGroup::getName, SysGroup::getSortCode, SysGroup::getRemark);
         queryWrapper.lambda().orderByAsc(SysGroup::getSortCode);
         // 如果查询条件为空，则直接查询
-        if (!ObjectUtil.isAllEmpty(sysGroupSelectorParam.getSearchKey())) {
-            if (ObjectUtil.isNotEmpty(sysGroupSelectorParam.getSearchKey())) {
-                queryWrapper.lambda().like(SysGroup::getName, sysGroupSelectorParam.getSearchKey());
-            }
+        if (ObjectUtil.isNotEmpty(sysGroupSelectorParam.getSearchKey())) {
+            queryWrapper.lambda().like(SysGroup::getName, sysGroupSelectorParam.getSearchKey());
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }

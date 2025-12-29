@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.client.core.enums.ClientYesOrNoEnum;
 import vip.xiaonuo.client.core.util.ClientEmailFormatUtl;
 import vip.xiaonuo.client.core.util.ClientPasswordUtl;
 import vip.xiaonuo.client.modular.user.entity.ClientUser;
@@ -54,6 +55,7 @@ import vip.xiaonuo.client.modular.user.service.ClientUserExtService;
 import vip.xiaonuo.client.modular.user.service.ClientUserPasswordService;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.enums.CommonGenderEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
@@ -210,7 +212,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void add(ClientUserAddParam clientUserAddParam, String sourceFromType) {
+    public ClientUser add(ClientUserAddParam clientUserAddParam, String sourceFromType) {
         checkParam(clientUserAddParam);
         ClientUser clientUser = BeanUtil.toBean(clientUserAddParam, ClientUser.class);
         if(ObjectUtil.isEmpty(clientUser.getAvatar())) {
@@ -230,6 +232,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         this.save(clientUser);
         // 插入扩展信息
         clientUserExtService.createExtInfo(clientUser.getId(), sourceFromType);
+        return clientUser;
     }
 
     private void checkParam(ClientUserAddParam clientUserAddParam) {
@@ -942,10 +945,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(phone);
         clientUserAddParam.setName(phone);
         clientUserAddParam.setPhone(phone);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 获取用户信息
-        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        ClientUser clientUser = this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 发送注册成功短信
         String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_C_KEY);
         // 不为空才发送
@@ -970,10 +972,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(email);
         clientUserAddParam.setName(email);
         clientUserAddParam.setEmail(email);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 获取用户信息
-        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getEmail, email));
+        ClientUser clientUser = this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 发送注册成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_C_KEY);
         // 不为空才发送
@@ -1000,10 +1001,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserAddParam.setAccount(account);
         clientUserAddParam.setName(account);
         clientUserAddParam.setPassword(password);
+        clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
-        this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
-        // 返回用户
-        return this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getAccount, account));
+        return this.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
     }
 
     @Override
@@ -1013,52 +1013,36 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Override
     public Boolean isUserNeedBindPhone() {
+        // 获取当前用户id
+        String loginId = StpClientUtil.getLoginIdAsString();
         // 获取当前用户
-        ClientUser clientUser = this.queryEntity(StpClientUtil.getLoginIdAsString());
+        ClientUser clientUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, StpClientUtil.getLoginIdAsString())
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>()
+                .eq(ClientUserExt::getUserId, loginId)
                 .eq(ClientUserExt::getSourceFromType, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断手机号是否为空
-        if(ObjectUtil.isNotEmpty(clientUserExt)){
-            // 手机号为空，判断系统注册后是否需要绑定手机号
-            if(ObjectUtil.isEmpty(clientUser.getPhone())) {
-                String registerNeedBindPhone = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_C_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindPhone)){
-                    return Convert.toBool(registerNeedBindPhone);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定手机号
+        return ObjectUtil.isNotEmpty(clientUserExt)
+                && ObjectUtil.isEmpty(clientUser.getPhone())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_C_KEY), false)
+                : false;
     }
 
     @Override
     public Boolean isUserNeedBindEmail() {
+        // 获取当前用户id
+        String loginId = StpClientUtil.getLoginIdAsString();
         // 获取当前用户
-        ClientUser clientUser = this.queryEntity(StpClientUtil.getLoginIdAsString());
+        ClientUser clientUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, StpClientUtil.getLoginIdAsString())
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>()
+                .eq(ClientUserExt::getUserId,loginId)
                 .eq(ClientUserExt::getSourceFromType, ClientUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断邮箱是否为空
-        if(ObjectUtil.isNotEmpty(clientUserExt)){
-            // 邮箱为空，判断系统注册后是否需要绑定邮箱
-            if(ObjectUtil.isEmpty(clientUser.getEmail())) {
-                String registerNeedBindEmail = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_C_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindEmail)){
-                    return Convert.toBool(registerNeedBindEmail);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定邮箱
+        return ObjectUtil.isNotEmpty(clientUserExt)
+                && ObjectUtil.isEmpty(clientUser.getEmail())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_C_KEY), false)
+                : false;
     }
 
     @Override
@@ -1123,6 +1107,22 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         ClientPasswordUtl.validNewPassword(password);
         // 根据账号密码创建用户
         this.createUserWithAccount(account, password);
+    }
+
+    @Override
+    public ClientUserExt getOrCreateClientUserExt(String userId) {
+        ClientUserExt clientUserExt = clientUserExtService.getOne(new LambdaQueryWrapper<ClientUserExt>().eq(ClientUserExt::getUserId, userId));
+        if(ObjectUtil.isEmpty(clientUserExt)){
+            clientUserExt = clientUserExtService.createExtInfo(userId, ClientUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
+        } else {
+            if(ObjectUtil.isEmpty(clientUserExt.getOtpSecretKey())){
+                String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+                clientUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
+                clientUserExt.setHasBindOtp(ClientYesOrNoEnum.NO.getValue());
+                clientUserExtService.updateById(clientUserExt);
+            }
+        }
+        return clientUserExt;
     }
 
     /**

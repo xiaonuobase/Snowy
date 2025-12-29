@@ -7,8 +7,9 @@
 		bordered
 		:row-key="(record) => record.id"
 		:tool-config="toolConfig"
+		:scroll="{ x: 'max-content' }"
 	>
-		<template #operator class="table-operator">
+		<template #operator>
 			<a-space>
 				<a-button type="primary" @click="formRef.onOpen()">
 					<template #icon>
@@ -65,13 +66,12 @@
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			width: 100,
 			sorter: true
 		},
 		{
 			title: '操作',
 			key: 'action',
-			width: '200px',
+			fixed: 'right',
 			scopedSlots: { customRender: 'action' }
 		}
 	]

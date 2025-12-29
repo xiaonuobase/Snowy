@@ -23,8 +23,8 @@
 			</a-col>
 			<a-col :span="11">
 				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-						<a-row :gutter="24">
+					<a-form ref="searchFormRef" :model="searchFormState">
+						<a-row :gutter="10">
 							<a-col :span="12">
 								<a-form-item name="searchKey">
 									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名" />
@@ -32,7 +32,7 @@
 							</a-col>
 							<a-col :span="12">
 								<a-button type="primary" class="primarySele" @click="loadData()"> 查询 </a-button>
-								<a-button class="snowy-button-left" @click="() => reset()"> 重置 </a-button>
+								<a-button @click="() => reset()"> 重置 </a-button>
 							</a-col>
 						</a-row>
 					</a-form>
@@ -115,8 +115,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '角色名',
@@ -133,8 +132,7 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center',
-			width: 50
+			align: 'center'
 		},
 		{
 			title: '角色名',

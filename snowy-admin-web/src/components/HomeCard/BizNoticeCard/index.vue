@@ -57,8 +57,7 @@
 		{
 			title: '时间',
 			dataIndex: 'createTime',
-			align: 'right',
-			width: '150px'
+			align: 'right'
 		}
 	]
 	const title = ref('通知公告')

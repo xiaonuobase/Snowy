@@ -1,150 +1,159 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container">
-				<a-tree
-					v-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					@select="treeSelect"
-				/>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
-			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-					<a-row :gutter="24">
-						<a-col :span="8">
-							<a-form-item name="searchKey" :label="$t('common.searchKey')">
-								<a-input
-									v-model:value="searchFormState.searchKey"
-									:placeholder="$t('user.placeholderNameAndSearchKey')"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :span="8">
-							<a-form-item name="userStatus" :label="$t('user.userStatus')">
-								<a-select
-									v-model:value="searchFormState.userStatus"
-									:placeholder="$t('user.placeholderUserStatus')"
-									:getPopupContainer="(trigger) => trigger.parentNode"
-								>
-									<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
-										item.label
-									}}</a-select-option>
-								</a-select>
-							</a-form-item>
-						</a-col>
-						<a-col :span="8">
-							<a-button type="primary" @click="tableRef.refresh(true)">
-								<template #icon><SearchOutlined /></template>
-								{{ $t('common.searchButton') }}
-							</a-button>
-							<a-button class="snowy-button-left" @click="reset">
-								<template #icon><redo-outlined /></template>
-								{{ $t('common.resetButton') }}
-							</a-button>
-						</a-col>
-					</a-row>
-				</a-form>
-			</a-card>
-			<a-card :bordered="false">
-				<s-table
-					ref="tableRef"
-					:columns="columns"
-					:data="loadData"
-					:expand-row-by-click="true"
-					bordered
-					:alert="options.alert.show"
-					:tool-config="toolConfig"
-					:row-key="(record) => record.id"
-					:row-selection="options.rowSelection"
-				>
-					<template #operator class="table-operator">
-						<a-space>
-							<a-button
-								type="primary"
-								@click="formRef.onOpen(undefined, searchFormState.orgId)"
-								v-if="hasPerm('bizUserAdd')"
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<a-tree
+				v-if="treeData.length > 0"
+				v-model:expandedKeys="defaultExpandedKeys"
+				:tree-data="treeData"
+				:field-names="treeFieldNames"
+				@select="treeSelect"
+			/>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+		</template>
+		<template #right>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+						<a-form-item label="所属机构" name="orgId">
+							<a-tree-select
+								v-model:value="searchFormState.orgId"
+								class="xn-wd"
+								:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+								placeholder="请选择所属机构"
+								allow-clear
+								:tree-data="treeData"
+								:field-names="{
+									children: 'children',
+									label: 'name',
+									value: 'id'
+								}"
+								selectable="false"
+								tree-line
+							/>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" label="关键词">
+							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入姓名或关键词" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="userStatus" label="人员状态">
+							<a-select
+								v-model:value="searchFormState.userStatus"
+								placeholder="请选择人员状态"
+								:getPopupContainer="(trigger) => trigger.parentNode"
 							>
-								<template #icon><plus-outlined /></template>
-								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
-							</a-button>
-							<a-button @click="exportBatchUserVerify" v-if="hasPerm('bizUserBatchExport')">
-								<template #icon><export-outlined /></template>
-								{{ $t('user.batchExportButton') }}
-							</a-button>
-							<xn-batch-button
-								v-if="hasPerm('bizUserBatchDelete')"
-								:buttonName="$t('common.batchRemoveButton')"
-								icon="DeleteOutlined"
-								buttonDanger
-								:selectedRowKeys="selectedRowKeys"
-								@batchCallBack="deleteBatchUser"
-							/>
-						</a-space>
+								<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
+									item.label
+								}}</a-select-option>
+							</a-select>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon><SearchOutlined /></template>
+									查询
+								</a-button>
+								<a-button @click="reset">
+									<template #icon><redo-outlined /></template>
+									重置
+								</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				bordered
+				:alert="options.alert.show"
+				:tool-config="toolConfig"
+				:row-key="(record) => record.id"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #operator>
+					<a-space>
+						<a-button
+							type="primary"
+							@click="formRef.onOpen(undefined, searchFormState.orgId)"
+							v-if="hasPerm('bizUserAdd')"
+						>
+							<template #icon><plus-outlined /></template>
+							<span>增加</span>
+						</a-button>
+						<a-button @click="exportBatchUserVerify" v-if="hasPerm('bizUserBatchExport')">
+							<template #icon><export-outlined /></template>
+							批量导出
+						</a-button>
+						<xn-batch-button
+							v-if="hasPerm('bizUserBatchDelete')"
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchUser"
+						/>
+					</a-space>
+				</template>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'avatar'">
+						<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 					</template>
-					<template #bodyCell="{ column, record }">
-						<template v-if="column.dataIndex === 'avatar'">
-							<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
-						</template>
-						<template v-if="column.dataIndex === 'gender'">
-							{{ $TOOL.dictTypeData('GENDER', record.gender) }}
-						</template>
-						<template v-if="column.dataIndex === 'userStatus'">
-							<a-switch
-								:loading="loading"
-								:checked="record.userStatus === 'ENABLE'"
-								@change="editStatus(record)"
-								v-if="hasPerm('bizUserUpdataStatus')"
-							/>
-							<span v-else>{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</span>
-						</template>
-						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">{{ $t('common.editButton') }}</a>
-							<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
-							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" @confirm="removeUser(record)">
-								<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')">{{
-									$t('common.removeButton')
-								}}</a-button>
-							</a-popconfirm>
-							<a-divider
-								type="vertical"
-								v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])"
-							/>
-							<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])">
-								<a class="ant-dropdown-link">
-									{{ $t('common.more') }}
-									<DownOutlined />
-								</a>
-								<template #overlay>
-									<a-menu>
-										<a-menu-item v-if="hasPerm('bizUserPwdReset')">
-											<a-popconfirm
-												:title="$t('user.popconfirmResatUserPwd')"
-												placement="topRight"
-												@confirm="resetPassword(record)"
-											>
-												<a>{{ $t('user.resetPassword') }}</a>
-											</a-popconfirm>
-										</a-menu-item>
-										<a-menu-item v-if="hasPerm('bizUserGrantRole')">
-											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
-										</a-menu-item>
-										<a-menu-item v-if="hasPerm('bizUserExportUserInfo')">
-											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
-										</a-menu-item>
-									</a-menu>
-								</template>
-							</a-dropdown>
-						</template>
+					<template v-if="column.dataIndex === 'gender'">
+						{{ $TOOL.dictTypeData('GENDER', record.gender) }}
 					</template>
-				</s-table>
-			</a-card>
-		</a-col>
-	</a-row>
+					<template v-if="column.dataIndex === 'userStatus'">
+						<a-switch
+							:loading="loading"
+							:checked="record.userStatus === 'ENABLE'"
+							@change="editStatus(record)"
+							v-if="hasPerm('bizUserUpdataStatus')"
+						/>
+						<span v-else>{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</span>
+					</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">编辑</a>
+						<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
+						<a-popconfirm title="确定要删除吗？" @confirm="removeUser(record)">
+							<a-button type="link" danger size="small" v-if="hasPerm('bizUserDelete')"> 删除 </a-button>
+						</a-popconfirm>
+						<a-divider
+							type="vertical"
+							v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])"
+						/>
+						<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])">
+							<a class="ant-dropdown-link">
+								更多
+								<DownOutlined />
+							</a>
+							<template #overlay>
+								<a-menu>
+									<a-menu-item v-if="hasPerm('bizUserPwdReset')">
+										<a-popconfirm title="确定要重置吗？" placement="topRight" @confirm="resetPassword(record)">
+											<a>重置密码</a>
+										</a-popconfirm>
+									</a-menu-item>
+									<a-menu-item v-if="hasPerm('bizUserGrantRole')">
+										<a @click="selectRole(record)">授权角色</a>
+									</a-menu-item>
+									<a-menu-item v-if="hasPerm('bizUserExportUserInfo')">
+										<a @click="exportUserInfo(record)">导出信息</a>
+									</a-menu-item>
+								</a-menu>
+							</template>
+						</a-dropdown>
+					</template>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-role-selector
 		ref="RoleSelectorPlusRef"
@@ -168,8 +177,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '账号',
@@ -182,8 +190,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
-			width: '50px'
+			dataIndex: 'gender'
 		},
 		{
 			title: '手机',
@@ -202,8 +209,7 @@
 		},
 		{
 			title: '状态',
-			dataIndex: 'userStatus',
-			width: '80px'
+			dataIndex: 'userStatus'
 		}
 	]
 	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserDelete'])) {
@@ -211,7 +217,7 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '220px'
+			fixed: 'right'
 		})
 	}
 	const toolConfig = { refresh: true, height: true, columnSetting: true }
@@ -227,7 +233,6 @@
 	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
-	const cardLoading = ref(true)
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return bizUserApi.userPage(Object.assign(parameter, searchFormState.value)).then((res) => {
@@ -240,32 +245,26 @@
 		tableRef.value.refresh(true)
 	}
 	// 左侧树查询
-	bizOrgApi
-		.orgTree()
-		.then((res) => {
-			cardLoading.value = false
-			if (res !== null) {
-				treeData.value = res
-				if (isEmpty(defaultExpandedKeys.value)) {
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
-							}
+	bizOrgApi.orgTree().then((res) => {
+		if (res !== null) {
+			treeData.value = res
+			if (isEmpty(defaultExpandedKeys.value)) {
+				// 默认展开2级
+				treeData.value.forEach((item) => {
+					// 因为0的顶级
+					if (item.parentId === '0') {
+						defaultExpandedKeys.value.push(item.id)
+						// 取到下级ID
+						if (item.children) {
+							item.children.forEach((items) => {
+								defaultExpandedKeys.value.push(items.id)
+							})
 						}
-					})
-				}
+					}
+				})
 			}
-		})
-		.finally(() => {
-			cardLoading.value = false
-		})
+		}
+	})
 	// 列表选择配置
 	const options = {
 		alert: {
@@ -411,16 +410,3 @@
 		}
 	}
 </script>
-
-<style scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-table-avatar {
-		margin-top: -10px;
-		margin-bottom: -10px;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
-	}
-</style>

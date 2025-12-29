@@ -49,5 +49,9 @@ export default {
 	// 获取人员选择器
 	orgUserSelector(data) {
 		return request('userSelector', data, 'get')
+	},
+	// 复制机构
+	orgCopy(data) {
+		return request('copy', data)
 	}
 }

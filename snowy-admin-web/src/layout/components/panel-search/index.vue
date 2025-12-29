@@ -10,7 +10,7 @@
 		:width="600"
 		destroyOnClose
 		dialogClass="searchModal"
-		:bodyStyle="{ maxHeight: '520px', overflow: 'auto', padding: '14px' }"
+		:bodyStyle="{ overflow: 'auto', padding: '14px' }"
 		@close="searchPanelClose"
 	>
 		<div
@@ -307,7 +307,7 @@
 		}
 	}
 	.search-card {
-		height: 380px;
+		height: 580px;
 		overflow: hidden;
 		overflow-y: scroll;
 	}

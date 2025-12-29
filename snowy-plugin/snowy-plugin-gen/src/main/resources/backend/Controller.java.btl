@@ -13,14 +13,15 @@
 package ${packageName}.${moduleName}.modular.${busName}.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ${packageName}.common.annotation.CommonLog;
 import ${packageName}.common.pojo.CommonResult;
 import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
@@ -33,6 +34,7 @@ import ${packageName}.${moduleName}.modular.${busName}.service.${className}Servi
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -119,5 +121,44 @@ public class ${className}Controller {
     @GetMapping("/${moduleName}/${busName}/detail")
     public CommonResult<${className}> detail(@Valid ${className}IdParam ${classNameFirstLower}IdParam) {
         return CommonResult.data(${classNameFirstLower}Service.detail(${classNameFirstLower}IdParam));
+    }
+
+    /**
+     * 下载${functionName}导入模板
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "下载${functionName}导入模板")
+    @GetMapping(value = "/${moduleName}/${busName}/downloadImportTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        ${classNameFirstLower}Service.downloadImportTemplate(response);
+    }
+
+    /**
+     * 导入${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导入${functionName}")
+    @CommonLog("导入${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/importData")
+    @PostMapping("/${moduleName}/${busName}/importData")
+    public CommonResult<JSONObject> importData(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(${classNameFirstLower}Service.importData(file));
+    }
+
+    /**
+     * 导出${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导出${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/exportData")
+    @PostMapping(value = "/${moduleName}/${busName}/exportData", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void exportData(@RequestBody List<${className}IdParam> ${classNameFirstLower}IdParamList, HttpServletResponse response) throws IOException {
+        ${classNameFirstLower}Service.exportData(${classNameFirstLower}IdParamList, response);
     }
 }

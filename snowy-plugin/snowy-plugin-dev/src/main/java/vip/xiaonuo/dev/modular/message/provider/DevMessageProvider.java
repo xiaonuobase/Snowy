@@ -25,6 +25,7 @@ import vip.xiaonuo.dev.modular.message.param.DevMessageIdParam;
 import vip.xiaonuo.dev.modular.message.param.DevMessageListParam;
 import vip.xiaonuo.dev.modular.message.param.DevMessageSendParam;
 import vip.xiaonuo.dev.modular.message.service.DevMessageService;
+import vip.xiaonuo.dev.modular.message.websocket.DevMessageWebSocket;
 import vip.xiaonuo.dev.modular.relation.entity.DevRelation;
 import vip.xiaonuo.dev.modular.relation.enums.DevRelationCategoryEnum;
 import vip.xiaonuo.dev.modular.relation.service.DevRelationService;
@@ -105,5 +106,7 @@ public class DevMessageProvider implements DevMessageApi {
                 .eq(DevRelation::getTargetId, StpUtil.getLoginIdAsString())
                 .eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue())
                 .set(DevRelation::getExtJson, myMessageExtJson));
+        // 发送WebSocket消息
+        DevMessageWebSocket.sendMessage(StpUtil.getLoginIdAsString());
     }
 }

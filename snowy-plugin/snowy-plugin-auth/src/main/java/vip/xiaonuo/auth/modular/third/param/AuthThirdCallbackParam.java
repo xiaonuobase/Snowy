@@ -38,7 +38,6 @@ public class AuthThirdCallbackParam {
     private String code;
 
     /** 第三方回调state */
-    @Schema(description = "第三方回调state", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "state不能为空")
+    @Schema(description = "第三方回调state")
     private String state;
 }

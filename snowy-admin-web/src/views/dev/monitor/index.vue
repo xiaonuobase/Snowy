@@ -1,8 +1,8 @@
 <template>
 	<a-spin :spinning="spinning">
-		<a-row :gutter="[10, 10]" class="mb-2">
-			<a-col :span="6">
-				<a-card title="CPU监控" :bordered="false" class="monitor-center-row-col-card">
+		<a-row :gutter="10">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+				<a-card title="CPU监控" :bordered="false" class="monitor-center-row-col-card mb-2">
 					<a-tooltip>
 						<template #title>
 							<div>CPU系统使用率：{{ devMonitorCpuInfo.cpuSysUseRate }}</div>
@@ -20,8 +20,8 @@
 					<div>CPU当前总使用率</div>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
-				<a-card title="内存信息" :bordered="false" class="monitor-center-row-col-card">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+				<a-card title="内存信息" :bordered="false" class="monitor-center-row-col-card mb-2">
 					<a-tooltip>
 						<template #title>
 							<div>内存总量：{{ devMonitorMemoryInfo.memoryTotal }}</div>
@@ -38,8 +38,8 @@
 					<div>内存使用率</div>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
-				<a-card title="存储信息" :bordered="false" class="monitor-center-row-col-card">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+				<a-card title="存储信息" :bordered="false" class="monitor-center-row-col-card mb-2">
 					<a-tooltip>
 						<template #title>
 							<div>存储总量：{{ devMonitorStorageInfo.storageTotal }}</div>
@@ -56,8 +56,8 @@
 					<div>存储使用率</div>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
-				<a-card title="网络信息" :bordered="false" class="monitor-center-row-col-card">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
+				<a-card title="网络信息" :bordered="false" class="monitor-center-row-col-card mb-2">
 					<template #extra>
 						<a-button title="测速" :loading="networkSpinning" @click="getMonitorNetworkInfo">
 							<template #icon><UiwDashboard /></template>
@@ -97,9 +97,8 @@
 				<a-descriptions-item label="CPU逻辑核心数">{{ devMonitorCpuInfo.cpuLogicalCoreNum }}</a-descriptions-item>
 			</a-descriptions>
 		</a-card>
-
 		<a-row :gutter="10" class="mb-2">
-			<a-col :span="18">
+			<a-col :xs="24" :sm="24" :md="18" :lg="18" :xl="18">
 				<a-card title="JVM信息" :bordered="false">
 					<a-descriptions size="middle" :column="2" bordered>
 						<a-descriptions-item label="JVM名称">{{ devMonitorJvmInfo.jvmName }}</a-descriptions-item>
@@ -111,7 +110,7 @@
 					</a-descriptions>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="24" :sm="24" :md="6" :lg="6" :xl="6">
 				<a-card title="JVM监控" :bordered="false" class="monitor-center-row-col-card">
 					<a-tooltip>
 						<template #title>
@@ -130,7 +129,6 @@
 				</a-card>
 			</a-col>
 		</a-row>
-
 		<a-card title="服务器信息" :bordered="false" class="mb-2">
 			<a-descriptions size="middle" :column="2" bordered>
 				<a-descriptions-item label="服务器名称">{{ devMonitorServerInfo.serverName }}</a-descriptions-item>

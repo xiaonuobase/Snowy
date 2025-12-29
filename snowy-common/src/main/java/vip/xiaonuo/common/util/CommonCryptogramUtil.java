@@ -12,8 +12,12 @@
  */
 package vip.xiaonuo.common.util;
 
+import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SmUtil;
+import cn.hutool.crypto.asymmetric.KeyType;
+import cn.hutool.crypto.asymmetric.SM2;
 import com.antherd.smcrypto.sm2.Sm2;
-import com.antherd.smcrypto.sm3.Sm3;
 import com.antherd.smcrypto.sm4.Sm4;
 import com.antherd.smcrypto.sm4.Sm4Options;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +42,9 @@ public class CommonCryptogramUtil {
     /** SM4的对称秘钥（生产环境需要改成自己使用的） 16 进制字符串，要求为 128 比特 */
     private static final String KEY = "0123456789abcdeffedcba9876543210";
 
+    /** Hutool SM2 对象 */
+    private static final SM2 sm2 = SmUtil.sm2(HexUtil.decodeHex(PRIVATE_KEY), HexUtil.decodeHex(PUBLIC_KEY));
+
     /**
      * 加密方法（Sm2 的专门针对前后端分离，非对称秘钥对的方式，暴露出去的公钥，对传输过程中的密码加个密）
      *
@@ -47,7 +54,7 @@ public class CommonCryptogramUtil {
      * @return 加密后的密文
      */
     public static String doSm2Encrypt(String str) {
-        return Sm2.doEncrypt(str, PUBLIC_KEY);
+        return sm2.encryptHex(str, KeyType.PublicKey);
     }
 
     /**
@@ -60,8 +67,17 @@ public class CommonCryptogramUtil {
      * @return 解密后的明文
      */
     public static String doSm2Decrypt(String str) {
-        // 解密
-        return Sm2.doDecrypt(str, PRIVATE_KEY);
+        try {
+            // 兼容性处理：Hutool要求密文以04开头（Uncompressed），如果前端传来的是不带04的（虽然sm-crypto默认带），则补上
+            String text = str;
+            if (StrUtil.isNotBlank(text) && !text.startsWith("04")) {
+                text = "04" + text;
+            }
+            return sm2.decryptStr(text, KeyType.PrivateKey);
+        } catch (Exception e) {
+            // 降级处理：使用原版 antherd sm-crypto 解密（兼容性好但性能稍差）
+            return Sm2.doDecrypt(str, PRIVATE_KEY);
+        }
     }
 
     /**
@@ -112,7 +128,7 @@ public class CommonCryptogramUtil {
      * @return 签名结果
      */
     public static String doSignature(String str) {
-        return Sm2.doSignature(str, PRIVATE_KEY);
+        return HexUtil.encodeHexStr(sm2.sign(StrUtil.utf8Bytes(str)));
     }
 
     /**
@@ -125,7 +141,7 @@ public class CommonCryptogramUtil {
      * @return 是否通过
      */
     public static boolean doVerifySignature(String originalStr, String str) {
-        return Sm2.doVerifySignature(originalStr, str, PUBLIC_KEY);
+        return sm2.verify(StrUtil.utf8Bytes(originalStr), HexUtil.decodeHex(str));
     }
 
     /**
@@ -137,6 +153,6 @@ public class CommonCryptogramUtil {
      * @return hash 值
      */
     public static String doHashValue(String str) {
-        return Sm3.sm3(str);
+        return SmUtil.sm3(str);
     }
 }

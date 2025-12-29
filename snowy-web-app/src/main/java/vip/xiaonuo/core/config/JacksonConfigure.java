@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,7 +38,7 @@ public class JacksonConfigure {
     public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
 
-        objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+        objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
                 // 若是APP端请求，则处理响应结果字段默认值
@@ -128,6 +129,22 @@ public class JacksonConfigure {
                 }
             }
         });
+
+        JsonSerializer<Long> longSerializer = new JsonSerializer<>() {
+            @Override
+            public void serialize(Long value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+                //Long类型值过大到前端造成精度丢失，需转换成String
+                if (Math.abs(value) > 9007199254740991L) {
+                    gen.writeString(value.toString());
+                } else {
+                    gen.writeNumber(value);
+                }
+            }
+        };
+        objectMapper.registerModule(new SimpleModule() {{
+            addSerializer(Long.class, longSerializer);
+            addSerializer(Long.TYPE, longSerializer);
+        }});
 
         return objectMapper;
     }

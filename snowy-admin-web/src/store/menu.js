@@ -115,7 +115,8 @@ export const useMenuStore = defineStore('menuStore', () => {
 			// 过滤白名单
 			if (
 				whiteList.filter((e) => e.path === route.path).length > 0 ||
-				routesData.filter((e) => e.path === route.path).length > 0
+				routesData.filter((e) => e.path === route.path).length > 0 ||
+				route.meta.routeType === 'plugin'
 			) {
 				return
 			}

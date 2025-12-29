@@ -8,7 +8,7 @@
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
-				<a-col :span="18">
+				<a-col :xs="24" :sm="24" :md="24" :lg="18" :xl="18">
 					<a-form-item label="标题：" name="title">
 						<a-input v-model:value="formData.title" placeholder="请输入标题" allow-clear />
 					</a-form-item>
@@ -16,17 +16,17 @@
 						<a-input v-model:value="formData.sortCode" placeholder="请输入排序" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<a-form-item label="图片：" name="image">
 						<xn-upload v-model:value="formData.image" uploadMode="image" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="展示位置：" name="place">
 						<a-checkbox-group v-model:value="formData.place" placeholder="请选择展示位置" :options="placeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<sub-form ref="sumFormRef" :data-array="formData.pathDetails" :place="formData.place" />
 				</a-col>
 			</a-row>

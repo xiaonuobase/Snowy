@@ -128,4 +128,12 @@ public interface SysUserApi {
      * @date 2022/6/20 18:19
      **/
     List<JSONObject> getPositionListByUserId(String userId);
+
+    /**
+     * 获取用户扩展信息，没有则创建
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    JSONObject getOrCreateSysUserExt(String userId);
 }

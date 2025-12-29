@@ -25,14 +25,59 @@ import vip.xiaonuo.common.exception.CommonException;
 public enum AuthThirdPlatformEnum {
 
     /**
-     * GITEE
+     * IAM
      */
-    GITEE("GITEE"),
+    IAM("IAM"),
 
     /**
-     * WECHAT
+     * 钉钉
      */
-    WECHAT("WECHAT");
+    DINGTALK("DINGTALK"),
+
+    /**
+     * 企业微信
+     */
+    WORKWECHAT("WORKWECHAT"),
+
+    /**
+     * 飞书
+     */
+    FEISHU("FEISHU"),
+
+    /**
+     * WeLink
+     */
+    WELINK("WELINK"),
+
+    /**
+     * 云之家
+     */
+    YUNZHIJIA("YUNZHIJIA"),
+
+    /**
+     * QQ
+     */
+    QQ("QQ"),
+
+    /**
+     * 微信
+     */
+    WECHAT("WECHAT"),
+
+    /**
+     * 微博
+     */
+    WEIBO("WEIBO"),
+
+    /**
+     * 抖音
+     */
+    DOUYIN("DOUYIN"),
+
+    /**
+     * 支付宝
+     */
+    ALIPAY("ALIPAY");
 
     private final String value;
 
@@ -41,7 +86,17 @@ public enum AuthThirdPlatformEnum {
     }
 
     public static void validate(String value) {
-        boolean flag = GITEE.getValue().equals(value) || WECHAT.getValue().equals(value);
+        boolean flag = IAM.getValue().equals(value) ||
+                DINGTALK.getValue().equals(value) ||
+                WORKWECHAT.getValue().equals(value) ||
+                FEISHU.getValue().equals(value) ||
+                WELINK.getValue().equals(value) ||
+                YUNZHIJIA.getValue().equals(value) ||
+                QQ.getValue().equals(value) ||
+                WECHAT.getValue().equals(value) ||
+                WEIBO.getValue().equals(value) ||
+                DOUYIN.getValue().equals(value) ||
+                ALIPAY.getValue().equals(value);
         if(!flag) {
             throw new CommonException("不支持的第三方平台：{}", value);
         }

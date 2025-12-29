@@ -31,7 +31,6 @@
 			<xn-editor
 				v-model="formData.content"
 				placeholder="请输入邮件正文"
-				:height="200"
 				:file-upload-function="apiFunction.fileUploadApi"
 			/>
 		</a-form-item>
@@ -49,7 +48,7 @@
 
 <script setup name="tencentEmailSend">
 	import { message } from 'ant-design-vue'
-	import XnEditor from '@/components/Editor/index.vue'
+	import XnEditor from '@/components/XnEditor/index.vue'
 	import { required } from '@/utils/formRules'
 	import emailApi from '@/api/dev/emailApi'
 	import fileApi from '@/api/dev/fileApi'

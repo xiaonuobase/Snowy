@@ -29,5 +29,9 @@ export default {
 	// 第三方登录授权回调
 	thirdCallback(data) {
 		return request('callback', data, 'get')
+	},
+	// 第三方登录绑定账号
+	thirdBindAccount(data) {
+		return request('bindAccount', data)
 	}
 }

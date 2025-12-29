@@ -69,7 +69,7 @@
 				submitLoading.value = true
 				const formDataParam = cloneDeep(formData.value)
 				bizGroupApi
-					.bizGroupSubmitForm(formDataParam, formDataParam.id)
+					.groupSubmitForm(formDataParam, formDataParam.id)
 					.then(() => {
 						onClose()
 						emit('successful')

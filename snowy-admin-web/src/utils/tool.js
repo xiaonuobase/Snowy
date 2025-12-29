@@ -96,14 +96,14 @@ tool.dictTypeData = (dictValue, value) => {
 	}
 	const tree = dictTypeTree.find((item) => item.dictValue === dictValue)
 	if (!tree) {
-		return '无此字典'
+		return ''
 	}
 	const children = tree.children
 	if (!tree.children) {
-		return '无此字典'
+		return ''
 	}
 	const dict = children.find((item) => item.dictValue === value)
-	return dict ? dict.dictLabel : '无此字典项'
+	return dict ? dict.dictLabel : ''
 }
 
 // 获取某个code下字典的列表，多用于字典下拉框

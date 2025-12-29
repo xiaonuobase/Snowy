@@ -52,6 +52,14 @@ public interface DevConfigService extends IService<DevConfig> {
     List<DevConfig> sysBaseList();
 
     /**
+     * 获取系统三方登录开关配置
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<DevConfig> sysThirdAllowFlagList();
+
+    /**
      * 获取配置列表
      *
      * @author xuyuxiang

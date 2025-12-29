@@ -46,6 +46,10 @@ export default {
 	configSysBaseList(data) {
 		return request('sysBaseList', data, 'get')
 	},
+	// 获取系统三方登录开关配置
+	configSysThirdAllowFlagList(data) {
+		return request('sysThirdAllowFlagList', data, 'get')
+	},
 	// 获取机构树
 	configOrgTree(data) {
 		return request('orgTree', data, 'get')

@@ -14,6 +14,7 @@ package vip.xiaonuo.common.pojo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import vip.xiaonuo.common.util.CommonTraceIdUtil;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -47,6 +48,9 @@ public class CommonResult<T> implements Serializable{
     @Schema(description = "返回数据")
     private T data;
 
+    @Schema(description = "跟踪ID")
+    private String traceId;
+
     public CommonResult() {
     }
 
@@ -54,6 +58,7 @@ public class CommonResult<T> implements Serializable{
         this.setCode(code);
         this.setMsg(msg);
         this.setData(data);
+        this.setTraceId(CommonTraceIdUtil.getTraceId());
     }
 
     /**
@@ -62,6 +67,14 @@ public class CommonResult<T> implements Serializable{
      */
     public Integer getCode() {
         return this.code;
+    }
+
+    /**
+     * 获取traceId
+     * @return traceId
+     */
+    public String getTraceId() {
+        return this.traceId;
     }
 
     /**
@@ -91,6 +104,16 @@ public class CommonResult<T> implements Serializable{
      */
     public CommonResult<T> setData(T data) {
         this.data = data;
+        return this;
+    }
+
+    /**
+     * 给traceId赋值，连缀风格
+     * @param traceId traceId
+     * @return 对象自身
+     */
+    public CommonResult<T> setTraceId(String traceId) {
+        this.traceId = traceId;
         return this;
     }
 

@@ -55,7 +55,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -66,6 +65,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
@@ -74,6 +74,7 @@ import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.interceptor.CommonTraceInterceptor;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -90,10 +91,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Snowy配置
@@ -105,7 +103,7 @@ import java.util.Map;
 @MapperScan(basePackages = {"vip.xiaonuo.**.mapper"})
 public class GlobalConfigure implements WebMvcConfigurer {
 
-    @Autowired
+    @Resource
     private SaTokenConfig saTokenConfig;
 
     private static final String COMMON_REPEAT_SUBMIT_CACHE_KEY = "common-repeatSubmit:";
@@ -116,7 +114,6 @@ public class GlobalConfigure implements WebMvcConfigurer {
     public static final String[] NO_LOGIN_PATH_ARR = {
             /* 主入口 */
             "/",
-
             /* 静态资源 */
             "/favicon.ico",
             "/doc.html",
@@ -131,28 +128,75 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/c/getPhoneValidCode",
             "/auth/c/doLogin",
             "/auth/c/doLoginByPhone",
+            "/auth/c/register",
+            "/auth/c/getEmailValidCode",
+            "/auth/c/doLoginByEmail",
+            "/auth/c/doLoginByOtp",
+            "/auth/c/isLogin",
 
             "/auth/b/getPicCaptcha",
             "/auth/b/getPhoneValidCode",
             "/auth/b/doLogin",
             "/auth/b/doLoginByPhone",
+            "/auth/b/register",
+            "/auth/b/getEmailValidCode",
+            "/auth/b/doLoginByEmail",
+            "/auth/b/doLoginByOtp",
+            "/auth/b/isLogin",
+            "/auth/sso/b/**",
 
             /* 三方登录相关 */
             "/auth/third/render",
             "/auth/third/callback",
+            "/auth/third/bindAccount",
 
             /* 系统基础配置 */
             "/dev/config/sysBaseList",
+            /* 系统三方登录开关配置 */
+            "/dev/config/sysThirdAllowFlagList",
 
             /* 系统字典树 */
             "/dev/dict/tree",
 
-            /* 用户个人中心相关 */
+            /* B端用户个人中心相关 */
             "/sys/userCenter/getPicCaptcha",
             "/sys/userCenter/findPasswordGetPhoneValidCode",
             "/sys/userCenter/findPasswordGetEmailValidCode",
             "/sys/userCenter/findPasswordByPhone",
-            "/sys/userCenter/findPasswordByEmail"
+            "/sys/userCenter/findPasswordByEmail",
+
+            /* C端用户个人中心相关 */
+            "/client/userCenter/getPicCaptcha",
+            "/client/userCenter/findPasswordGetPhoneValidCode",
+            "/client/userCenter/findPasswordGetEmailValidCode",
+            "/client/userCenter/findPasswordByPhone",
+            "/client/userCenter/findPasswordByEmail",
+
+            /* 文件下载 */
+            "/dev/file/download",
+
+            /* 可视化大屏插件放行 */
+            "/screen/project/releaseDetail",
+            "/screen/project/verifyAccessPassword",
+
+            /* 数据集插件放行 */
+            "/dataset/application/getAuth",
+            "/dataset/dataSet/invoke",
+
+            /* 知识库插件放行 */
+            "/wiki/wikidocumentshare/getInfoByCode",
+            "/wiki/wikidocument/getInfoById",
+            "/wiki/wikidocumentfile/pdfProxy",
+
+            /* 统一认证插件放行 */
+            "/iam/auth/login/**",
+            "/iam/auth/protocol/**",
+            "/iam/auth/source/render",
+            "/iam/auth/source/callback/**",
+            "/iam/id/source/eventCallback/**",
+
+            /* 仪表盘放行 */
+            "/dashboard/dashboardList/shareDetail",
     };
 
     /**
@@ -301,7 +345,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
     @SuppressWarnings("ALL")
     @Primary
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(@Autowired(required = false) RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
@@ -701,5 +745,15 @@ public class GlobalConfigure implements WebMvcConfigurer {
     @Resource
     public void registerListenerList(List<CommonDataChangeListener> dataChangeListenerList) {
         CommonDataChangeEventCenter.registerListenerList(dataChangeListenerList);
+    }
+
+    /**
+     * 添加应用拦截器
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册注解拦截器，并排除不需要注解鉴权的接口地址 (与登录拦截器无关，只是说明哪些接口不需要被拦截器拦截，此处都拦截)
+        registry.addInterceptor(new CommonTraceInterceptor()).addPathPatterns("/**");
     }
 }

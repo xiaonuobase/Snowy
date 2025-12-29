@@ -12,8 +12,8 @@
  */
 package vip.xiaonuo.sys.modular.index.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -156,19 +156,6 @@ public class SysIndexController {
     @GetMapping("/sys/index/opLog/list")
     public CommonResult<List<SysIndexOpLogListResult>> opLogList() {
         return CommonResult.data(sysIndexService.opLogList());
-    }
-
-    /**
-     * 创建sse连接
-     *
-     * @author diantu
-     * @date 2023/7/10
-     **/
-    @ApiOperationSupport(order = 9)
-    @Operation(summary = "创建sse连接")
-    @GetMapping("/dev/message/createSseConnect")
-    public SseEmitter createSseConnect(String clientId){
-        return sysIndexService.createSseConnect(clientId);
     }
 
     /**

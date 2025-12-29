@@ -1,25 +1,39 @@
 <template>
-	<a-card :bordered="false">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
-			<a-row :gutter="24">
-				<a-col :span="6">
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="标题" name="title">
 						<a-input v-model:value="searchFormState.title" placeholder="请输入标题" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="展示位置" name="place">
 						<a-select v-model:value="searchFormState.place" placeholder="请选择展示位置" :options="placeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
 					<a-form-item label="状态" name="status">
 						<a-select v-model:value="searchFormState.status" placeholder="请选择状态" :options="statusOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
+				<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined />
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined />
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -32,6 +46,7 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #expandColumnTitle>
 				<span>更多</span>
@@ -42,6 +57,7 @@
 					:dataSource="JSON.parse(record.pathDetails)"
 					:columns="detailsColumns"
 					:pagination="false"
+					:scroll="{ x: 'max-content' }"
 					bordered
 				>
 					<template #bodyCell="{ column, record }">
@@ -59,7 +75,7 @@
 					</template>
 				</a-table>
 			</template>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()">
 						<template #icon><plus-outlined /></template>
@@ -102,7 +118,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
@@ -143,14 +159,13 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '150px'
+			fixed: 'right'
 		}
 	]
 	const detailsColumns = [
 		{
 			title: '位置',
-			dataIndex: 'label',
-			width: '200px'
+			dataIndex: 'label'
 		},
 		{
 			title: '点击事件',
@@ -168,7 +183,6 @@
 	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
-		// columns数字类型字段加入 needTotal: true 可以勾选自动算账
 		alert: {
 			show: false,
 			clear: () => {

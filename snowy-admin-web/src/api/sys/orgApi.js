@@ -22,10 +22,6 @@ export default {
 	orgPage(data) {
 		return request('page', data, 'get')
 	},
-	// 获取组织列表
-	orgList(data) {
-		return request('list', data, 'get')
-	},
 	// 获取组织树
 	orgTree(data) {
 		return request('tree', data, 'get')
@@ -49,5 +45,9 @@ export default {
 	// 获取用户选择器
 	orgUserSelector(data) {
 		return request('userSelector', data, 'get')
+	},
+	// 复制组织
+	orgCopy(params) {
+		return request('copy', params)
 	}
 }

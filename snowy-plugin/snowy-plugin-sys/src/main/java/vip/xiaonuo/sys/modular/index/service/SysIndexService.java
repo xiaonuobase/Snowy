@@ -91,14 +91,6 @@ public interface SysIndexService {
     List<SysIndexOpLogListResult> opLogList();
 
     /**
-     * 创建连接
-     *
-     * @author diantu
-     * @date 2023/7/10
-     **/
-    SseEmitter createSseConnect(String clientId);
-
-    /**
      * 获取基础系统业务数据
      *
      * @author yubaoshan

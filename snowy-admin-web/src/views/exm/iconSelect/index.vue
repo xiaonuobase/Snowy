@@ -1,13 +1,21 @@
 <template>
 	<a-card :bordered="false" title="图标选择">
-		<a-input-group compact style="width: 30%">
-			<a-input v-model:value="iconValue" style="width: calc(100% - 100px)" placeholder="请选择图标" />
-			<a-button type="primary" @click="openIcon(iconValue)">选择</a-button>
-		</a-input-group>
-
-		<icon-selector ref="iconselectorRef" @iconCallBack="iconCallBack" />
+		<a-form
+			layout="vertical"
+			:label-col="{ ...layout.labelCol, offset: 0 }"
+			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
+		>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+					<a-input-group compact>
+						<a-input v-model:value="iconValue" style="width: calc(100% - 100px)" placeholder="请选择图标" />
+						<a-button type="primary" @click="openIcon(iconValue)">选择</a-button>
+					</a-input-group>
+					<icon-selector ref="iconselectorRef" @iconCallBack="iconCallBack" />
+				</a-col>
+			</a-row>
+		</a-form>
 	</a-card>
-
 	<a-card :bordered="false" title="图标展示" class="mt-3">
 		<a-tabs v-model:activeKey="activeKey" tab-position="left" size="small" @change="paneChange">
 			<a-tab-pane v-for="item in iconData" :key="item.key" :tab="item.name">
@@ -69,6 +77,14 @@
 	// 选择图标后
 	const selectIcon = (value) => {
 		message.success('<' + value + ' />')
+	}
+	const layout = {
+		labelCol: {
+			span: 24
+		},
+		wrapperCol: {
+			span: 24
+		}
 	}
 </script>
 

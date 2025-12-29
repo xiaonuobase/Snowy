@@ -9,12 +9,12 @@
 		<a-alert class="mb-3" message="温馨提示：排序第一为首页！若有多个模块根据授权可见情况而变化。" type="warning" />
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="显示名称：" name="title">
 						<a-input v-model:value="formData.title" placeholder="请输入显示名称" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="菜单类型：" name="menuType">
 						<a-radio-group
 							v-model:value="formData.menuType"
@@ -24,7 +24,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="上级菜单：" name="parentId">
 						<a-tree-select
 							v-model:value="formData.parentId"
@@ -35,18 +35,14 @@
 							allow-clear
 							tree-default-expand-all
 							:tree-data="treeData"
-							:field-names="{
-								children: 'children',
-								label: 'title',
-								value: 'id'
-							}"
+							:field-names="treeFieldNames"
 							selectable="false"
 							tree-line
 							@change="parentChange(formData.parentId)"
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType !== 'CATALOG'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType !== 'CATALOG'">
 					<a-form-item name="path">
 						<template #label>
 							<a-tooltip>
@@ -61,7 +57,7 @@
 						<a-input v-model:value="formData.path" placeholder="请输入路由地址" allow-clear />
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType === 'MENU'">
 					<a-form-item name="component">
 						<template #label>
 							<a-tooltip>
@@ -78,7 +74,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12" v-if="formData.menuType === 'MENU'">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12" v-if="formData.menuType === 'MENU'">
 					<a-form-item name="name">
 						<template #label>
 							<a-tooltip>
@@ -95,23 +91,43 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="图标：" name="icon">
 						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
 						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
-					<a-form-item label="是否可见:" name="visible">
-						<a-radio-group v-model:value="formData.visible" button-style="solid" :options="visibleOptions" />
-					</a-form-item>
-				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="排序:" name="sortCode">
 						<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
 					</a-form-item>
 				</a-col>
 			</a-row>
+			<a-collapse ghost>
+				<a-collapse-panel key="def" header="展开更多">
+					<a-row :gutter="16">
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+							<a-form-item label="是否可见:" name="visible">
+								<a-radio-group optionType="button" v-model:value="formData.visible" :options="visibleOptions" />
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-if="formData.menuType !== 'CATALOG'">
+							<a-form-item label="是否缓存:" name="keepLive">
+								<a-radio-group optionType="button" v-model:value="formData.keepLive" :options="keepLiveOptions" />
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8" v-if="formData.menuType !== 'CATALOG'">
+							<a-form-item label="布局可见:" name="displayLayout">
+								<a-radio-group
+									optionType="button"
+									v-model:value="formData.displayLayout"
+									:options="displayLayoutOptions"
+								/>
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-collapse-panel>
+			</a-collapse>
 		</a-form>
 		<template #footer>
 			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
@@ -139,6 +155,7 @@
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
 	const submitLoading = ref(false)
+	const treeFieldNames = { children: 'children', label: 'title', value: 'id' }
 	// 模块ID
 	const moduleId = ref('')
 	// 打开抽屉
@@ -152,10 +169,18 @@
 			if (!record.visible) {
 				formData.value.visible = 'TRUE'
 			}
+			if (!record.keepLive) {
+				formData.value.keepLive = 'YES'
+			}
+			if (!record.displayLayout) {
+				formData.value.displayLayout = 'YES'
+			}
 		} else {
 			formData.value = {
 				menuType: 'MENU',
 				visible: 'TRUE',
+				keepLive: 'YES',
+				displayLayout: 'YES',
 				sortCode: 99
 			}
 			formData.value = Object.assign(formData.value, record)
@@ -211,11 +236,15 @@
 		name: [required('请输入组件中name属性')],
 		module: [required('请选择模块')],
 		component: [required('请输入组件地址'), rules.initialNotBackslashChart],
-		visible: [required('请选择是否可见')]
+		visible: [required('请选择是否可见')],
+		keepLive: [required('请选择标签页下是否缓存')],
+		displayLayout: [required('请选择布局是否可见')]
 	}
 
 	const categoryOptions = tool.dictList('MENU_TYPE')
 	const visibleOptions = tool.dictList('MENU_VISIBLE')
+	const keepLiveOptions = tool.dictList('COMMON_WHETHER')
+	const displayLayoutOptions = tool.dictList('COMMON_WHETHER')
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
@@ -263,3 +292,11 @@
 		onOpen
 	})
 </script>
+<style lang="less" scoped>
+	:deep(.ant-collapse-header) {
+		padding: 0 !important;
+	}
+	:deep(.ant-collapse-content-box) {
+		padding: 15px 0 !important;
+	}
+</style>

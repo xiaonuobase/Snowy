@@ -43,6 +43,11 @@ public class DevDictAddParam {
     @NotBlank(message = "dictValue不能为空")
     private String dictValue;
 
+    /** 字典颜色 */
+    @Schema(description = "字典颜色")
+    @NotBlank(message = "dictColor不能为空")
+    private String dictColor;
+
     /** 分类 */
     @Schema(description = "分类")
     @NotBlank(message = "category不能为空")

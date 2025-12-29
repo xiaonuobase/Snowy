@@ -232,10 +232,10 @@ public class SysUserApiProvider implements SysUserApi {
 
     @Override
     public List<JSONObject> listUserWithoutCurrent() {
-        LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<>();
-        lqw.notIn(SysUser::getId, StpUtil.getLoginId());
-        lqw.select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar);
-        return BeanUtil.copyToList(sysUserService.list(lqw), JSONObject.class);
+        return sysUserService.list(new LambdaQueryWrapper<SysUser>()
+                .select(SysUser::getId, SysUser::getAccount, SysUser::getName, SysUser::getAvatar)
+                .ne(SysUser::getId, StpUtil.getLoginId()))
+                .stream().map(JSONUtil::parseObj).collect(Collectors.toList());
     }
 
     @Override
@@ -252,5 +252,10 @@ public class SysUserApiProvider implements SysUserApi {
             obj.set("type", sysUserPosition.getType());
             return obj;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public JSONObject getOrCreateSysUserExt(String userId) {
+        return JSONUtil.parseObj(sysUserService.getOrCreateSysUserExt(userId));
     }
 }

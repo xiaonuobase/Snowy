@@ -23,6 +23,7 @@ import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
 import vip.xiaonuo.sys.modular.user.param.*;
 import vip.xiaonuo.sys.modular.user.result.*;
 
@@ -646,4 +647,44 @@ public interface SysUserService extends IService<SysUser> {
      * @date 2022/8/25 15:16
      **/
     JSONObject getUpdatePasswordValidConfig();
+
+    /**
+     * 获取用户扩展信息，没有则创建
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    SysUserExt getOrCreateSysUserExt(String userId);
+
+    /**
+     * 获取绑定动态口令状态
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    Boolean getOtpInfoBindStatus();
+
+    /**
+     * 获取动态口令信息
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 9:26
+     **/
+    SysUserOtpInfoResult getOtpInfo();
+
+    /**
+     * 绑定动态口令
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    void bindOtp(SysUserOtpParam sysUserOtpParam);
+
+    /**
+     * 解绑动态口令
+     *
+     * @author xuyuxiang
+     * @date 2021/10/13 14:01
+     **/
+    void unBindOtp(SysUserOtpParam sysUserOtpParam);
 }

@@ -12,8 +12,11 @@
  */
 package vip.xiaonuo.dev.api;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 文件API接口，可参考vip.xiaonuo.dev.core.util.file包下的工具类扩展更多需要的方法
@@ -58,14 +61,6 @@ public interface DevFileApi {
      * @date 2022/6/22 17:44
      **/
     String storageFileWithReturnIdLocal(MultipartFile file);
-
-    /**
-     * 通过文件id查询文件详情
-     *
-     * @author chengchuanyao
-     * @date 2024/7/26 16:10
-     */
-    JSONObject getFileInfoById(String id);
 
     /* =========阿里云文件========= */
 
@@ -143,4 +138,20 @@ public interface DevFileApi {
      * @date 2022/8/4 10:36
      **/
     void deleteAbsoluteById(String id);
+
+    /**
+     * 根据文件ids获得文件列表
+     *
+     * @author yubaoshan
+     * @date 2025/8/25 21:18
+     */
+    JSONArray getFileListByIds(List<String> ids);
+
+    /**
+     * 根据配置的存储类型，返回不同的URL
+     *
+     * @author yubaoshan
+     * @date 2025/8/25 21:18
+     */
+    String storageFileWithReturnUrlOss(MultipartFile file);
 }

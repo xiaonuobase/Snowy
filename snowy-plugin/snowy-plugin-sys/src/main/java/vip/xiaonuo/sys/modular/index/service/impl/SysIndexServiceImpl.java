@@ -21,15 +21,12 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
-import vip.xiaonuo.common.sse.CommonSseParam;
 import vip.xiaonuo.dev.api.DevApi;
 import vip.xiaonuo.dev.api.DevLogApi;
 import vip.xiaonuo.dev.api.DevMessageApi;
-import vip.xiaonuo.dev.api.DevSseApi;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 import vip.xiaonuo.sys.modular.index.service.SysIndexService;
@@ -62,9 +59,6 @@ public class SysIndexServiceImpl implements SysIndexService {
 
     @Resource
     private DevLogApi devLogApi;
-
-    @Resource
-    private DevSseApi devSseApi;
 
     @Resource
     private SysUserService sysUserService;
@@ -141,17 +135,6 @@ public class SysIndexServiceImpl implements SysIndexService {
     public List<SysIndexOpLogListResult> opLogList() {
         return devLogApi.currentUserOpLogList().stream()
                 .map(jsonObject -> JSONUtil.toBean(jsonObject, SysIndexOpLogListResult.class)).collect(Collectors.toList());
-    }
-
-    @Override
-    public SseEmitter createSseConnect(String clientId){
-        Consumer<CommonSseParam> consumer = m -> {
-            //获取用户未读消息
-            long unreadMessageNum = devMessageApi.unreadCount(m.getLoginId());
-            //发送消息
-            devSseApi.sendMessageToOneClient(m.getClientId(), String.valueOf(unreadMessageNum));
-        };
-        return devSseApi.createSseConnect(clientId,true,false,consumer);
     }
 
     @Override

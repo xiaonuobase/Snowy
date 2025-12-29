@@ -1,27 +1,35 @@
 <template>
-	<a-card :bordered="false">
-		<a-space>
-			<a-radio-group v-model:value="moduleType" button-style="solid">
-				<a-radio-button
-					v-for="module in moduleTypeList"
-					:key="module.id"
-					:value="module.id"
-					@click="moduleClock(module.id)"
-				>
-					<component :is="module.icon" />
-					{{ module.title }}</a-radio-button
-				>
-			</a-radio-group>
-			<a-input-search
-				v-model:value="searchFormState.searchKey"
-				placeholder="请输入菜单名称关键词"
-				enter-button
-				allowClear
-				@search="onSearch"
-			/>
-		</a-space>
-	</a-card>
-	<a-card :bordered="false" class="mt-2">
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+					<a-form-item>
+						<a-radio-group v-model:value="moduleType" button-style="solid">
+							<a-radio-button
+								v-for="module in moduleTypeList"
+								:key="module.id"
+								:value="module.id"
+								@click="moduleClick(module.id)"
+							>
+								<component :is="module.icon" />
+								{{ module.title }}
+							</a-radio-button>
+						</a-radio-group>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item>
+						<a-input-search
+							v-model:value="searchFormState.searchKey"
+							placeholder="请输入菜单名称关键词"
+							enter-button
+							allowClear
+							@search="onSearch"
+						/>
+					</a-form-item>
+				</a-col>
+			</a-row>
+		</a-form>
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -34,7 +42,7 @@
 			:row-selection="options.rowSelection"
 			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen(undefined, moduleType)">
 						<template #icon><plus-outlined /></template>
@@ -58,6 +66,10 @@
 				</template>
 			</template>
 			<template #bodyCell="{ column, record }">
+				<template v-if="column.dataIndex === 'title'">
+					<component :is="record.icon" />
+					{{ record.title }}
+				</template>
 				<template v-if="column.dataIndex === 'path'">
 					<span v-if="record.menuType === 'MENU'">{{ record.path }}</span>
 					<span v-else>-</span>
@@ -65,9 +77,6 @@
 				<template v-if="column.dataIndex === 'component'">
 					<span v-if="record.menuType === 'MENU'">{{ record.component }}</span>
 					<span v-else>-</span>
-				</template>
-				<template v-if="column.dataIndex === 'icon'">
-					<component :is="record.icon" />
 				</template>
 				<template v-if="column.dataIndex === 'menuType'">
 					<a-tag v-if="record.menuType === 'CATALOG'" color="cyan">
@@ -124,7 +133,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="handleSuccess" />
 	<changeModuleForm ref="changeModuleFormRef" @successful="handleSuccess" />
 	<Button ref="buttonRef" />
@@ -147,45 +156,34 @@
 	const columns = [
 		{
 			title: '显示名称',
-			dataIndex: 'title'
-		},
-		{
-			title: '图标',
-			dataIndex: 'icon',
-			width: 100
+			dataIndex: 'title',
+			ellipsis: true
 		},
 		{
 			title: '类型',
-			dataIndex: 'menuType',
-			width: 100
+			dataIndex: 'menuType'
 		},
 		{
 			title: '路由地址',
-			dataIndex: 'path',
-			ellipsis: true,
-			width: 220
+			dataIndex: 'path'
 		},
 		{
 			title: '组件',
-			dataIndex: 'component',
-			ellipsis: true,
-			width: 220
+			dataIndex: 'component'
 		},
 		{
 			title: '是否可见',
-			dataIndex: 'visible',
-			width: 120
+			dataIndex: 'visible'
 		},
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			sorter: true,
-			width: 100
+			sorter: true
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
-			width: '200px',
+			fixed: 'right',
 			scopedSlots: { customRender: 'action' }
 		}
 	]
@@ -229,7 +227,7 @@
 		}
 	}
 	// 切换应用标签查询菜单列表
-	const moduleClock = (value) => {
+	const moduleClick = (value) => {
 		searchFormState.value.module = value
 		tableRef.value.refresh(true)
 	}

@@ -37,5 +37,5 @@ public interface ClientUserExtService extends IService<ClientUserExt> {
      * @author xuyuxiang
      * @date 2022/4/27 21:38
      */
-    void createExtInfo(String userId, String sourceFromType);
+    ClientUserExt createExtInfo(String userId, String sourceFromType);
 }

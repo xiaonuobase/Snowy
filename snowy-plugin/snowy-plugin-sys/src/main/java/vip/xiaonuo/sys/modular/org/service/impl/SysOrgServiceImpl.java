@@ -50,6 +50,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,6 +101,9 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<Tree<String>> tree() {
         List<SysOrg> sysOrgList = this.getAllOrgList();
+        // 使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
+        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
+                .thenComparing(SysOrg::getId)); // 添加ID作为次级排序条件
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
                         sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
@@ -192,13 +196,56 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             this.removeByIds(toDeleteOrgIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
 
     @Override
     public SysOrg detail(SysOrgIdParam sysOrgIdParam) {
         return this.queryEntity(sysOrgIdParam.getId());
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void copy(SysOrgCopyParam sysOrgCopyParam) {
+        // 获取目标父id
+        String targetParentId = sysOrgCopyParam.getTargetParentId();
+        // 获取组织id集合
+        List<String> orgIdList = sysOrgCopyParam.getIds();
+        if(ObjectUtil.isNotEmpty(orgIdList)) {
+            // 遍历复制
+            orgIdList.forEach(orgId -> {
+                SysOrg sysOrg = this.getById(orgId);
+                if(ObjectUtil.isNotEmpty(sysOrg)) {
+                    // 查询是否有重复名称
+                    boolean repeatName = this.count(new LambdaQueryWrapper<SysOrg>()
+                            .eq(SysOrg::getParentId, targetParentId)
+                            .eq(SysOrg::getName, sysOrg.getName())) > 0;
+                    // 如果有重复名称则跳过
+                    if(!repeatName) {
+                        SysOrg copySysOrg = new SysOrg();
+                        // 复制部分字段
+                        copySysOrg.setName(sysOrg.getName());
+                        copySysOrg.setCategory(sysOrg.getCategory());
+                        copySysOrg.setSortCode(sysOrg.getSortCode());
+                        copySysOrg.setExtJson(sysOrg.getExtJson());
+                        // 设置父id
+                        copySysOrg.setParentId(targetParentId);
+                        // 重新生成code
+                        copySysOrg.setCode(RandomUtil.randomString(10));
+                        // 主管置空
+                        copySysOrg.setDirectorId(null);
+                        // 保存
+                        this.save(copySysOrg);
+                        // 插入扩展信息
+                        sysOrgExtService.createExtInfo(copySysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
+                        // 发布增加事件
+                        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(copySysOrg));
+                    }
+                }
+            });
+        }
     }
 
     @Override

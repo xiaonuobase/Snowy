@@ -1,6 +1,6 @@
 <template>
 	<a-layout>
-		<a-layout-sider v-if="!isMobile" width="80" :theme="sideTheme" :trigger="null" collapsible>
+		<a-layout-sider v-if="!isMobile" width="80" :theme="sideTheme" :trigger="null" collapsible v-show="displayLayout">
 			<header id="snowyHeaderLogo" class="snowy-header-logo">
 				<div class="snowy-header-left">
 					<div class="logo-bar">
@@ -43,9 +43,9 @@
 			</a-menu>
 		</a-layout-sider>
 		<!-- 手机端情况下的左侧菜单 -->
-		<Side-m v-if="isMobile" />
+		<Side-m v-if="isMobile" v-show="displayLayout" />
 		<a-layout>
-			<div id="snowyHeader" class="snowy-header">
+			<div id="snowyHeader" class="snowy-header" v-show="displayLayout">
 				<div class="snowy-header-left xn-pl0">
 					<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" />
 				</div>
@@ -54,9 +54,10 @@
 				</div>
 			</div>
 			<a-layout>
+				<div v-show="displayLayout"></div>
 				<a-layout-sider
 					v-if="!isMobile"
-					v-show="layoutSiderDowbleMenu"
+					v-show="displayLayout && layoutSiderDowbleMenu"
 					:collapsed="menuIsCollapse"
 					:trigger="null"
 					width="170"
@@ -75,10 +76,10 @@
 					</a-menu>
 				</a-layout-sider>
 				<a-layout-content>
-					<breadcrumb v-if="!isMobile && breadcrumbOpen" />
+					<breadcrumb v-if="!isMobile && breadcrumbOpen" v-show="displayLayout" />
 					<!-- 多标签 -->
-					<Tags v-if="!isMobile && layoutTagsOpen" />
-					<div class="main-content-wrapper">
+					<Tags v-if="!isMobile && layoutTagsOpen" v-show="displayLayout" />
+					<div :class="displayLayout ? 'main-content-wrapper' : 'main-content-wrapper main-content-wrapper-max'">
 						<div id="admin-ui-main" class="admin-ui-main">
 							<router-view v-slot="{ Component }">
 								<keep-alive :include="kStore.keepLiveRoute">
@@ -101,8 +102,6 @@
 
 <script setup>
 	import { useRoute } from 'vue-router'
-	const route = useRoute()
-
 	import UserBar from '@/layout/components/userbar.vue'
 	import Tags from '@/layout/components/tags.vue'
 	import SideM from '@/layout/components/sideM.vue'
@@ -130,8 +129,39 @@
 		moduleMenuShow: { type: Boolean },
 		secondMenuSideTheme: {}
 	})
-
-	const emit = defineEmits(['onSelect', 'switchModule', 'showMenu'])
+	const emit = defineEmits(['onSelect', 'switchModule', 'showMenu', 'displayLayoutChange'])
+	const displayLayout = ref(true)
+	const route = useRoute()
+	watch(route, () => {
+		nextTick(() => {
+			displayLayout.value = displayLayoutResult()
+		})
+		if (displayLayout.value) {
+			emit('displayLayoutChange')
+		}
+	})
+	onMounted(() => {
+		nextTick(() => {
+			displayLayout.value = displayLayoutResult()
+		})
+	})
+	const displayLayoutResult = () => {
+		// 根据route.meta.keepLive动态管理keepLiveRoute
+		if (route.meta.keepLive === true) {
+			props.kStore.pushKeepLive(route.name)
+		} else {
+			props.kStore.removeKeepLive(route.name)
+		}
+		if (
+			route.meta.displayLayout === undefined ||
+			route.meta.displayLayout === null ||
+			route.meta.displayLayout === 'null'
+		) {
+			return true
+		} else {
+			return route.meta.displayLayout
+		}
+	}
 	const onSelect = (obj) => {
 		emit('onSelect', obj)
 	}
@@ -181,5 +211,8 @@
 	}
 	.xn-mg050 {
 		margin: 0px 150px;
+	}
+	.main-content-wrapper-max {
+		padding: 0;
 	}
 </style>

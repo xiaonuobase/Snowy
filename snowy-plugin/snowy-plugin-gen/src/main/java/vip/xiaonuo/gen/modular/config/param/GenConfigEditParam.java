@@ -91,6 +91,11 @@ public class GenConfigEditParam {
     @NotBlank(message = "whetherRequired不能为空")
     private String whetherRequired;
 
+    /** 唯一 */
+    @Schema(description = "唯一")
+    @NotBlank(message = "whetherUnique不能为空")
+    private String whetherUnique;
+
     /** 查询 */
     @Schema(description = "查询", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "queryWhether不能为空")

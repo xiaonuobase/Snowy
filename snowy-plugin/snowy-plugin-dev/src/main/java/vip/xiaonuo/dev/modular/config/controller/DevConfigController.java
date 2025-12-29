@@ -15,8 +15,8 @@ package vip.xiaonuo.dev.modular.config.controller;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -86,6 +86,19 @@ public class DevConfigController {
     @GetMapping("/dev/config/sysBaseList")
     public CommonResult<List<DevConfig>> sysBaseList() {
         return CommonResult.data(devConfigService.sysBaseList());
+    }
+
+    /**
+     * 获取系统三方登录开关配置
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 2)
+    @Operation(summary = "获取系统三方登录开关配置")
+    @GetMapping("/dev/config/sysThirdAllowFlagList")
+    public CommonResult<List<DevConfig>> sysThirdAllowFlagList() {
+        return CommonResult.data(devConfigService.sysThirdAllowFlagList());
     }
 
     /**

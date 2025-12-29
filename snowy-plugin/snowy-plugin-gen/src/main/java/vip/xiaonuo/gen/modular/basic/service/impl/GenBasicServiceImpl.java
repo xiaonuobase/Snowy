@@ -98,7 +98,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     private static final List<JSONObject> GEN_FRONT_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
             JSONUtil.createObj().set("name", "form.vue.btl").set("path",  "views"),
-            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "views"));
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path",  "views"),
+            JSONUtil.createObj().set("name", "importModel.vue.btl").set("path",  "views"));
 
     private static final List<JSONObject> GEN_MOBILE_FILE_LIST = CollectionUtil.newArrayList(
             JSONUtil.createObj().set("name", "page.json.btl"),
@@ -242,6 +243,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             }
             addParam.setWhetherRetract(GenYesNoEnum.N.getValue());
             addParam.setWhetherRequired(GenYesNoEnum.N.getValue());
+            addParam.setWhetherUnique(GenYesNoEnum.N.getValue());
             addParam.setQueryWhether(GenYesNoEnum.N.getValue());
             addParam.setSortCode(i);
             GenConfig genConfig = BeanUtil.toBean(addParam, GenConfig.class);
@@ -330,27 +332,30 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 schema = metaData.getUserName();
             }
             List<GenBasicTableColumnResult> columns = new ArrayList<>();
-            rs = metaData.getColumns(null, schema, genBasicTableColumnParam.getTableName(), "%");
+            rs = metaData.getColumns(conn.getCatalog(), schema, genBasicTableColumnParam.getTableName(), "%");
             if(!rs.isBeforeFirst()) {
-                rs = metaData.getColumns(null, schema, genBasicTableColumnParam.getTableName().toLowerCase(), "%");
+                rs = metaData.getColumns(conn.getCatalog(), schema, genBasicTableColumnParam.getTableName().toLowerCase(), "%");
             }
             while (rs.next()) {
                 String columnName = rs.getString("COLUMN_NAME").toUpperCase();
-                GenBasicTableColumnResult genBasicTableColumnResult = new GenBasicTableColumnResult();
-                genBasicTableColumnResult.setColumnName(columnName);
-                String remarks = rs.getString("REMARKS");
-                if(ObjectUtil.isEmpty(remarks)) {
-                    genBasicTableColumnResult.setColumnRemark(columnName);
-                } else {
-                    genBasicTableColumnResult.setColumnRemark(remarks);
+                boolean exist = columns.stream().anyMatch(dbsTableColumnResult -> dbsTableColumnResult.getColumnName().equals(columnName));
+                if(!exist) {
+                    GenBasicTableColumnResult genBasicTableColumnResult = new GenBasicTableColumnResult();
+                    genBasicTableColumnResult.setColumnName(columnName);
+                    String remarks = rs.getString("REMARKS");
+                    if(ObjectUtil.isEmpty(remarks)) {
+                        genBasicTableColumnResult.setColumnRemark(columnName);
+                    } else {
+                        genBasicTableColumnResult.setColumnRemark(remarks);
+                    }
+                    String typeName = rs.getString("TYPE_NAME").toUpperCase();
+                    if(ObjectUtil.isEmpty(typeName)) {
+                        genBasicTableColumnResult.setTypeName("NONE");
+                    } else {
+                        genBasicTableColumnResult.setTypeName(typeName);
+                    }
+                    columns.add(genBasicTableColumnResult);
                 }
-                String typeName = rs.getString("TYPE_NAME").toUpperCase();
-                if(ObjectUtil.isEmpty(typeName)) {
-                    genBasicTableColumnResult.setTypeName("NONE");
-                } else {
-                    genBasicTableColumnResult.setTypeName(typeName);
-                }
-                columns.add(genBasicTableColumnResult);
             }
             return columns;
         } catch (SQLException sqlException) {
@@ -675,6 +680,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("deleteButtonId", IdWorker.getIdStr());
         // 批量删除按钮ID
         bindingJsonObject.set("batchDeleteButtonId", IdWorker.getIdStr());
+        // 导入按钮ID
+        bindingJsonObject.set("importButtonId", IdWorker.getIdStr());
+        // 导出按钮ID
+        bindingJsonObject.set("exportButtonId", IdWorker.getIdStr());
         // 作者
         bindingJsonObject.set("authorName", genBasic.getAuthorName());
         // 生成时间
@@ -697,6 +706,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                         configItem.set("needPage", false);
                         configItem.set("needPageType", "none");
                         configItem.set("required", true);
+                        configItem.set("unique", true);
                         configItem.set("needTableId", true);
                         bindingJsonObject.set("dbTableKeyJavaType", genConfig.getFieldJavaType());
                         bindingJsonObject.set("dbTableKeyRemark", genConfig.getFieldRemark());
@@ -712,6 +722,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                             configItem.set("needPage", false);
                             configItem.set("needPageType", "none");
                             configItem.set("required", false);
+                            configItem.set("unique", false);
                             configItem.set("needTableId", false);
                         } else {
                             boolean needAddAndUpdate = genConfig.getWhetherAddUpdate().equalsIgnoreCase(GenYesNoEnum.Y.getValue());
@@ -720,6 +731,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                             configItem.set("needPage", genConfig.getQueryWhether().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
                             configItem.set("needPageType", genConfig.getQueryType());
                             configItem.set("required", genConfig.getWhetherRequired().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                            configItem.set("unique", ObjectUtil.isNotEmpty(genConfig.getWhetherUnique()) && genConfig.getWhetherUnique().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
                             configItem.set("needTableId", false);
                         }
                     }
@@ -754,6 +766,20 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 });
         // 配置信息
         bindingJsonObject.set("configList", configList);
+        // 获取必填字段
+        List<JSONObject> requiredFieldList = configList.stream().filter(configItem -> configItem.getBool("required")).toList();
+        // 必填字段列表
+        bindingJsonObject.set("requiredFieldList", requiredFieldList);
+        // 必填字段字符串
+        bindingJsonObject.set("requiredFieldStr", StrUtil.join(StrUtil.COMMA + " ", requiredFieldList.stream().map(configItem ->
+                configItem.getStr("fieldNameCamelCase")).collect(Collectors.toList())));
+        // 获取唯一字段
+        List<JSONObject> uniqueFieldList = configList.stream().filter(configItem -> configItem.getBool("unique")).toList();
+        // 唯一字段列表
+        bindingJsonObject.set("uniqueFieldList", uniqueFieldList);
+        // 唯一字段字符串
+        bindingJsonObject.set("uniqueFieldStr", StrUtil.join(StrUtil.COMMA + " ", uniqueFieldList.stream().map(configItem ->
+                configItem.getStr("fieldNameCamelCase")).collect(Collectors.toList())));
         // 有排序字段
         bindingJsonObject.set("hasSortCodeField", hasSortCodeField.get());
         return bindingJsonObject;

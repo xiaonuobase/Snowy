@@ -13,9 +13,13 @@
 package vip.xiaonuo.sys.modular.resource.provider;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysMenuApi;
+import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.resource.param.menu.SysMenuSelectorMenuParam;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 
@@ -43,5 +47,20 @@ public class SysMenuApiProvider implements SysMenuApi {
         SysMenuSelectorMenuParam param = new SysMenuSelectorMenuParam();
         param.setModule(module);
         return sysMenuService.menuTreeSelector(param);
+    }
+
+    @Override
+    public JSONObject queryEntity(String id) {
+        SysMenu sysMenu = sysMenuService.getById(id);
+        if(ObjectUtil.isNotEmpty(sysMenu)) {
+            return JSONUtil.parseObj(sysMenu);
+        }
+        return null;
+    }
+
+    @Override
+    public void addResourceGrantSuperAdmin(String moduleId, String id, String title, String parentId, String name, String code,  String category,
+                                           String menuType, String path, String component, String icon, String visible,  Integer sortCode) {
+        sysMenuService.addResourceGrantSuperAdmin(moduleId, id, title, parentId, name, code, category, menuType, path, component, icon, visible, sortCode);
     }
 }

@@ -115,7 +115,9 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
         CollectionUtil.newArrayList(JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "Add").set("sortCode", 1),
                 JSONUtil.createObj().set("title", "编辑" + functionName).set("code", classNameFirstLower + "Edit").set("sortCode", 2),
                 JSONUtil.createObj().set("title", "删除" + functionName).set("code", classNameFirstLower + "Delete").set("sortCode", 3),
-                JSONUtil.createObj().set("title", "批量删除").set("code", classNameFirstLower + "BatchDelete").set("sortCode", 4)).forEach(jsonObject -> {
+                JSONUtil.createObj().set("title", "批量删除").set("code", classNameFirstLower + "BatchDelete").set("sortCode", 4),
+                JSONUtil.createObj().set("title", "导入" + functionName).set("code", classNameFirstLower + "Import").set("sortCode", 5),
+                JSONUtil.createObj().set("title", "导出" + functionName).set("code", classNameFirstLower + "Export").set("sortCode", 6)).forEach(jsonObject -> {
                     SysButtonAddParam sysButtonAddParam = new SysButtonAddParam();
                     BeanUtil.copyProperties(jsonObject, sysButtonAddParam);
                     sysButtonAddParam.setParentId(sysMenu.getId());
@@ -171,7 +173,7 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
                 this.removeByIds(buttonIdList);
 
                 // 发布删除事件
-                CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.RESOURCE.getValue(), buttonIdList);
+                CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.RESOURCE.getValue(), buttonIdList);
             }
         }
     }

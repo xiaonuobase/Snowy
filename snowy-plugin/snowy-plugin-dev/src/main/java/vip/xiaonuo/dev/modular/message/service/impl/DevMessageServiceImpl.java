@@ -41,6 +41,7 @@ import vip.xiaonuo.dev.modular.message.param.DevMessagePageParam;
 import vip.xiaonuo.dev.modular.message.param.DevMessageSendParam;
 import vip.xiaonuo.dev.modular.message.result.DevMessageResult;
 import vip.xiaonuo.dev.modular.message.service.DevMessageService;
+import vip.xiaonuo.dev.modular.message.websocket.DevMessageWebSocket;
 import vip.xiaonuo.dev.modular.relation.entity.DevRelation;
 import vip.xiaonuo.dev.modular.relation.enums.DevRelationCategoryEnum;
 import vip.xiaonuo.dev.modular.relation.service.DevRelationService;
@@ -81,6 +82,8 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
                     .set("read", false))).collect(Collectors.toList());
             devRelationService.saveRelationBatchWithAppend(devMessage.getId(), receiverIdList,
                     DevRelationCategoryEnum.MSG_TO_USER.getValue(), extJsonList);
+            // 发送WebSocket消息
+            DevMessageWebSocket.sendMessage(receiverIdList);
         }
     }
 
@@ -155,9 +158,10 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
 
     @Override
     public Long unreadCount(String loginId){
-        return devRelationService.getRelationListByTargetIdAndCategory(loginId,
-                DevRelationCategoryEnum.MSG_TO_USER.getValue()).stream().filter(devRelation -> JSONUtil
-                .parseObj(devRelation.getExtJson()).getBool("read").equals(false)).count();
+        return devRelationService.count(new LambdaQueryWrapper<DevRelation>()
+                .eq(DevRelation::getTargetId, loginId)
+                .eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue())
+                .like(DevRelation::getExtJson, "\"read\":false"));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -188,6 +192,8 @@ public class DevMessageServiceImpl extends ServiceImpl<DevMessageMapper, DevMess
             devRelationService.update(new LambdaUpdateWrapper<DevRelation>()
                     .eq(DevRelation::getObjectId, devMessage.getId()).eq(DevRelation::getTargetId, StpUtil.getLoginIdAsString())
                     .eq(DevRelation::getCategory, DevRelationCategoryEnum.MSG_TO_USER.getValue()).set(DevRelation::getExtJson, myMessageExtJson));
+            // 发送WebSocket消息
+            DevMessageWebSocket.sendMessage(StpUtil.getLoginIdAsString());
         }
         List<DevMessageResult.DevReceiveInfo> receiveInfoList = devRelationService.getRelationListByObjectIdAndCategory(devMessage.getId(),
                 DevRelationCategoryEnum.MSG_TO_USER.getValue()).stream().map(devRelation -> {

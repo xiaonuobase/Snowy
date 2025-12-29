@@ -34,6 +34,7 @@ import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.enums.BizOrgCategoryEnum;
+import vip.xiaonuo.biz.modular.org.enums.BizOrgSourceFromTypeEnum;
 import vip.xiaonuo.biz.modular.org.mapper.BizOrgMapper;
 import vip.xiaonuo.biz.modular.org.param.*;
 import vip.xiaonuo.biz.modular.org.service.BizOrgExtService;
@@ -114,16 +115,18 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         } else {
             return CollectionUtil.newArrayList();
         }
-        // 先根据排序码排序
-        List<BizOrg> bizOrgArrayList = CollectionUtil.sort(bizOrgSet, Comparator.comparingInt(BizOrg::getSortCode));
-        // 再重置排序码，解决每次相同排序码顺序不一致的问题
-        for (int i = 0; i < bizOrgArrayList.size(); i++) {
-            bizOrgArrayList.get(i).setSortCode(i);
-        }
+
+        // 修复：使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
+        List<BizOrg> bizOrgArrayList = new ArrayList<>(bizOrgSet);
+        bizOrgArrayList.sort(Comparator.comparingInt(BizOrg::getSortCode)
+                .thenComparing(BizOrg::getId)); // 添加ID作为次级排序条件
+
+        // 转换为TreeNode并构建树
         List<TreeNode<String>> treeNodeList = bizOrgArrayList.stream().map(bizOrg ->
-                new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
-                        bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
+                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
+                                bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
                 .collect(Collectors.toList());
+
         return TreeUtil.build(treeNodeList, "0");
     }
 
@@ -242,7 +245,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             this.removeByIds(toDeleteOrgIdList);
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
 
@@ -341,14 +344,14 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     @Override
-    public List<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {
+    public Page<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {
         QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
         } else {
-            return CollectionUtil.newArrayList();
+            return new Page<>();
         }
         // 查询部分字段
         queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
@@ -360,7 +363,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             queryWrapper.lambda().like(BizOrg::getName, bizOrgSelectorOrgListParam.getSearchKey());
         }
         queryWrapper.lambda().orderByAsc(BizOrg::getSortCode);
-        return this.list(queryWrapper.lambda());
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
     }
 
     @Override
@@ -391,6 +394,63 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         }
         queryWrapper.lambda().orderByAsc(BizUser::getSortCode);
         return bizUserService.page(CommonPageRequest.defaultPage(), queryWrapper.lambda());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void copy(BizOrgCopyParam bizOrgCopyParam) {
+        // 获取目标父id
+        String targetParentId = bizOrgCopyParam.getTargetParentId();
+        // 获取机构id集合
+        List<String> orgIdList = bizOrgCopyParam.getIds();
+        if(ObjectUtil.isNotEmpty(orgIdList)) {
+            // 校验数据范围
+            List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+                // 如果有数据范围限制，则校验目标父id是否有权限
+                if(!loginUserDataScope.contains(targetParentId)) {
+                    throw new CommonException("您没有权限在该机构下增加机构，机构id：{}", targetParentId);
+                }
+                // 再校验源ID权限
+                if(!new HashSet<>(loginUserDataScope).containsAll(orgIdList)) {
+                    throw new CommonException("您没有权限复制这些机构，机构id：{}", orgIdList);
+                }
+            } else {
+                throw new CommonException("您没有权限复制机构");
+            }
+
+            // 遍历复制
+            orgIdList.forEach(orgId -> {
+                BizOrg bizOrg = this.getById(orgId);
+                if(ObjectUtil.isNotEmpty(bizOrg)) {
+                    // 查询是否有重复名称
+                    boolean repeatName = this.count(new LambdaQueryWrapper<BizOrg>()
+                            .eq(BizOrg::getParentId, targetParentId)
+                            .eq(BizOrg::getName, bizOrg.getName())) > 0;
+                    // 如果有重复名称则跳过
+                    if(!repeatName) {
+                        BizOrg copyBizOrg = new BizOrg();
+                        // 复制部分字段
+                        copyBizOrg.setName(bizOrg.getName());
+                        copyBizOrg.setCategory(bizOrg.getCategory());
+                        copyBizOrg.setSortCode(bizOrg.getSortCode());
+                        copyBizOrg.setExtJson(bizOrg.getExtJson());
+                        // 设置父id
+                        copyBizOrg.setParentId(targetParentId);
+                        // 重新生成code
+                        copyBizOrg.setCode(RandomUtil.randomString(10));
+                        // 主管置空
+                        copyBizOrg.setDirectorId(null);
+                        // 保存
+                        this.save(copyBizOrg);
+                        // 插入扩展信息
+                        bizOrgExtService.createExtInfo(copyBizOrg.getId(), BizOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
+                        // 发布增加事件
+                        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(copyBizOrg));
+                    }
+                }
+            });
+        }
     }
 
     /* ====以下为各种递归方法==== */

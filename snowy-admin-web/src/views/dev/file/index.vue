@@ -1,14 +1,14 @@
 <template>
-	<div v-if="indexShow">
-		<a-card :bordered="false" class="xn-mb10">
-			<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-				<a-row :gutter="24">
-					<a-col :span="8">
-						<a-form-item name="searchKey" label="名称关键词">
+	<div v-if="indexShow" style="height: 100%">
+		<xn-panel>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" label="关键词">
 							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入文件名称关键词" />
 						</a-form-item>
 					</a-col>
-					<a-col :span="8">
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 						<a-form-item name="engine" label="存储位置">
 							<a-select
 								v-model:value="searchFormState.engine"
@@ -18,20 +18,26 @@
 							/>
 						</a-form-item>
 					</a-col>
-					<a-col :span="8">
-						<a-button type="primary" @click="tableRef.refresh(true)">
-							<template #icon><SearchOutlined /></template>
-							查询
-						</a-button>
-						<a-button class="snowy-button-left" @click="reset">
-							<template #icon><redo-outlined /></template>
-							重置
-						</a-button>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon>
+										<SearchOutlined />
+									</template>
+									查询
+								</a-button>
+								<a-button @click="reset">
+									<template #icon>
+										<redo-outlined />
+									</template>
+									重置
+								</a-button>
+							</a-space>
+						</a-form-item>
 					</a-col>
 				</a-row>
 			</a-form>
-		</a-card>
-		<a-card :bordered="false">
 			<s-table
 				ref="tableRef"
 				:columns="columns"
@@ -41,8 +47,9 @@
 				bordered
 				:row-key="(record) => record.id"
 				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
 			>
-				<template #operator class="table-operator">
+				<template #operator>
 					<a-space>
 						<a-button type="primary" @click="() => uploadFormRef.openUpload()">
 							<UploadOutlined />
@@ -109,8 +116,8 @@
 					</template>
 				</template>
 			</s-table>
-		</a-card>
-		<uploadForm ref="uploadFormRef" @successful="tableRef.refresh(true)" />
+		</xn-panel>
+		<uploadForm ref="uploadFormRef" @successful="tableRef.refresh()" />
 		<detail ref="detailRef" />
 	</div>
 	<preview v-if="!indexShow" ref="previewRef" @goBack="previewBack" />
@@ -142,32 +149,28 @@
 		{
 			title: '缩略图',
 			dataIndex: 'thumbnail',
-			ellipsis: true,
-			width: 80
+			ellipsis: true
 		},
 		{
 			title: '文件大小',
 			dataIndex: 'sizeInfo',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '文件后缀',
 			dataIndex: 'suffix',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '储存引擎',
 			dataIndex: 'engine',
-			ellipsis: true,
-			width: 120
+			ellipsis: true
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: 220
+			fixed: 'right'
 		}
 	]
 	const selectedRowKeys = ref([])
@@ -238,7 +241,7 @@
 			}
 		]
 		fileApi.fileDelete(params).then(() => {
-			tableRef.value.refresh(true)
+			tableRef.value.refresh()
 		})
 	}
 	// 批量删除
@@ -255,11 +258,5 @@
 	.record-img {
 		width: 40px;
 		height: 40px;
-	}
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
 	}
 </style>

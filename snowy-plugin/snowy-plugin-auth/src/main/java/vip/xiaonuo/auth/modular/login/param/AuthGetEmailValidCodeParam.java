@@ -29,16 +29,16 @@ public class AuthGetEmailValidCodeParam {
 
     /** 邮箱 */
     @Schema(description = "邮箱", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "邮箱不能为空")
+    @NotBlank(message = "email不能为空")
     private String email;
 
     /** 验证码 */
     @Schema(description = "验证码", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "验证码不能为空")
+    @NotBlank(message = "validCode不能为空")
     private String validCode;
 
     /** 验证码请求号 */
     @Schema(description = "验证码请求号", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "验证码请求号不能为空")
+    @NotBlank(message = "validCodeReqNo不能为空")
     private String validCodeReqNo;
 }

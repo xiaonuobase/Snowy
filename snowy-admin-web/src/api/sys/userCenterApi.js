@@ -59,24 +59,18 @@ export default {
 		return request('updatePasswordByEmail', data)
 	},
 	// 绑定手机号获取手机验证码
-	userBindPhoneGetPhoneValidCode(data) {
-		return request('bindPhoneGetPhoneValidCode', data)
+	userBindPhoneGetPhoneValidCode(data, phone) {
+		// 如果有手机号，则修改获取、否则首次绑定
+		return request(phone ? 'updateBindPhoneGetPhoneValidCode' : 'bindPhoneGetPhoneValidCode', data, 'get')
 	},
-	// 修改绑定手机号获取手机验证码
-	userUpdateBindPhoneGetPhoneValidCode(data) {
-		return request('updateBindPhoneGetPhoneValidCode', data)
-	},
-	// 修改绑定手机号获取手机验证码
+	// 绑定手机号
 	userBindPhone(data) {
 		return request('bindPhone', data)
 	},
 	// 绑定邮箱获取邮箱验证码
-	userBindEmailGetEmailValidCode(data) {
-		return request('bindEmailGetEmailValidCode', data)
-	},
-	// 修改绑定邮箱获取邮箱验证码
-	userUpdateBindEmailGetEmailValidCode(data) {
-		return request('updateBindEmailGetEmailValidCode', data)
+	userBindEmailGetEmailValidCode(data, email) {
+		// 如果有邮箱号，则修改获取、否则首次绑定
+		return request(email ? 'updateBindEmailGetEmailValidCode' : 'bindEmailGetEmailValidCode', data, 'get')
 	},
 	// 绑定邮箱
 	userBindEmail(data) {
@@ -161,5 +155,21 @@ export default {
 	// 获取修改密码验证方式及配置
 	userGetUpdatePasswordValidConfig(data) {
 		return request('getUpdatePasswordValidConfig', data, 'get')
-	}
+	},
+	// 获取动态口令绑定状态
+	userCenterGetOtpInfoBindStatus(data) {
+		return request('getOtpInfoBindStatus', data, 'get')
+	},
+	// 获取动态口令信息
+	userCenterGetOtpInfo(data) {
+		return request('getOtpInfo', data, 'get')
+	},
+	// 绑定动态口令
+	userCenterBindOtp(data) {
+		return request('bindOtp', data)
+	},
+	// 解绑动态口令
+	userCenterUnBindOtp(data) {
+		return request('unBindOtp', data)
+	},
 }

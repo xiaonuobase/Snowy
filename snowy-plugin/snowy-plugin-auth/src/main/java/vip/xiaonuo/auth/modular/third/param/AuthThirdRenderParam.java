@@ -31,4 +31,9 @@ public class AuthThirdRenderParam {
     @Schema(description = "第三方平台标识", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "platform不能为空")
     private String platform;
+
+    /** 登录端类型 */
+    @Schema(description = "登录端类型", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "clientType不能为空")
+    private String clientType;
 }

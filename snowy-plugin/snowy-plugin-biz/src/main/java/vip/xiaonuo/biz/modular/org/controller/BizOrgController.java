@@ -15,8 +15,8 @@ package vip.xiaonuo.biz.modular.org.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -143,6 +143,22 @@ public class BizOrgController {
         return CommonResult.data(bizOrgService.detail(bizOrgIdParam));
     }
 
+    /**
+     * 复制机构
+     *
+     * @author yubaoshan
+     * @date 2025/12/24 01:30
+     */
+    @ApiOperationSupport(order = 7)
+    @Operation(summary = "复制机构")
+    @CommonLog("复制机构")
+    @SaCheckPermission("/biz/org/copy")
+    @PostMapping("/biz/org/copy")
+    public CommonResult<String> copy(@RequestBody @Valid BizOrgCopyParam bizOrgCopyParam) {
+        bizOrgService.copy(bizOrgCopyParam);
+        return CommonResult.ok();
+    }
+
     /* ====机构部分所需要用到的选择器==== */
 
     /**
@@ -151,7 +167,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 8)
     @Operation(summary = "获取机构树选择器")
     @SaCheckPermission("/biz/org/orgTreeSelector")
     @GetMapping("/biz/org/orgTreeSelector")
@@ -165,7 +181,7 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
+    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/org/userSelector")
     @GetMapping("/biz/org/userSelector")

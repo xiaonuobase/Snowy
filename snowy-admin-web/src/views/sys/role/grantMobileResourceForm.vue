@@ -20,7 +20,7 @@
 				>
 			</a-radio-group>
 
-			<a-table size="middle" :columns="columns" :data-source="loadDatas" :pagination="false" bordered>
+			<a-table size="middle" :columns="columns" :data-source="loadDatas" :pagination="false" bordered :scroll="{ x: 'max-content' }">
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'parentName'">
 						<a-checkbox :checked="record.parentCheck" @update:checked="(val) => changeParent(record, val)">
@@ -70,6 +70,7 @@
 			key: 'parentName',
 			title: '一级目录',
 			dataIndex: 'parentName',
+			fixed: 'left',
 			customCell: (row, index) => {
 				const parentName = row.parentName
 				const indexArr = firstShowMap.value[parentName]
@@ -77,14 +78,12 @@
 					return { rowSpan: indexArr.length }
 				}
 				return { rowSpan: 0 }
-			},
-			width: 150
+			}
 		},
 		{
 			key: 'title',
 			title: '菜单',
-			dataIndex: 'title',
-			width: 240
+			dataIndex: 'title'
 		},
 		{
 			key: 'button',

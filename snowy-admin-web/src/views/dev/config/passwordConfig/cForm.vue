@@ -10,7 +10,7 @@
 			style="width: 60%"
 		>
 			<a-row :gutter="8">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="默认用户密码：" name="SNOWY_SYS_DEFAULT_PASSWORD_FOR_C">
 						<a-input
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_FOR_C"
@@ -19,7 +19,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码修改验证方式：" name="SNOWY_SYS_DEFAULT_PASSWORD_UPDATE_VALID_TYPE_FOR_C">
 						<a-radio-group
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_UPDATE_VALID_TYPE_FOR_C"
@@ -28,10 +28,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-			</a-row>
-
-			<a-row :gutter="8">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码最小长度：" name="SNOWY_SYS_DEFAULT_PASSWORD_MIN_LENGTH_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_MIN_LENGTH_FOR_C"
@@ -42,7 +39,7 @@
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码最大长度：" name="SNOWY_SYS_DEFAULT_PASSWORD_MAX_LENGTH_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_MAX_LENGTH_FOR_C"
@@ -53,10 +50,7 @@
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-			</a-row>
-
-			<a-row :gutter="8">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码复杂度：" name="SNOWY_SYS_DEFAULT_PASSWORD_COMPLEXITY_FOR_C">
 						<a-radio-group
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_COMPLEXITY_FOR_C"
@@ -67,7 +61,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						label="密码不能连续存在相同字符个数："
 						name="SNOWY_SYS_DEFAULT_PASSWORD_NOT_ALLOW_CONTINUOUS_SAME_CHARACTER_LENGTH_FOR_C"
@@ -103,9 +97,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						label="密码不能使用历史密码范围个数："
 						name="SNOWY_SYS_DEFAULT_PASSWORD_NOT_ALLOW_USE_HISTORY_COUNT_FOR_C"
@@ -119,7 +111,7 @@
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						label="密码不能使用弱密码库中密码："
 						name="SNOWY_SYS_DEFAULT_PASSWORD_NOT_ALLOW_USE_WEAK_FLAG_FOR_C"
@@ -132,9 +124,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-			</a-row>
-			<a-row :gutter="8">
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码有效期天数：" name="SNOWY_SYS_DEFAULT_PASSWORD_EXPIRED_DAYS_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_EXPIRED_DAYS_FOR_C"
@@ -145,7 +135,7 @@
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :span="12">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="密码过期提前提醒天数：" name="SNOWY_SYS_DEFAULT_PASSWORD_EXPIRED_NOTICE_DAYS_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_EXPIRED_NOTICE_DAYS_FOR_C"
@@ -156,21 +146,24 @@
 						</a-input-number>
 					</a-form-item>
 				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+					<a-form-item label="自定义额外弱密码库：" name="SNOWY_SYS_DEFAULT_PASSWORD_DEFINE_WEAK_DATABASE_FOR_C">
+						<a-input
+							v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_DEFINE_WEAK_DATABASE_FOR_C"
+							placeholder="请输入自定义额外弱密码库"
+							style="width: 100%"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
 			</a-row>
-			<a-col :span="12">
-				<a-form-item label="自定义额外弱密码库：" name="SNOWY_SYS_DEFAULT_PASSWORD_DEFINE_WEAK_DATABASE_FOR_C">
-					<a-input
-						v-model:value="formData.SNOWY_SYS_DEFAULT_PASSWORD_DEFINE_WEAK_DATABASE_FOR_C"
-						placeholder="请输入自定义额外弱密码库"
-						style="width: 100%"
-					/>
-				</a-form-item>
-			</a-col>
-
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
 		</a-form>
 	</a-spin>
 </template>
@@ -252,10 +245,10 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 16
+			span: 24
 		},
 		wrapperCol: {
-			span: 22
+			span: 24
 		}
 	}
 </script>

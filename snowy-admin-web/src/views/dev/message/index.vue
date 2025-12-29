@@ -1,26 +1,32 @@
 <template>
-	<a-card :bordered="false" class="xn-mb10">
-		<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-			<a-row :gutter="24">
-				<a-col :span="8">
-					<a-form-item name="searchKey" label="主题关键词">
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item name="searchKey" label="关键词">
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入站内信主题关键词" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
-					<a-button type="primary" @click="tableRef.refresh(true)">
-						<template #icon><SearchOutlined /></template>
-						查询
-					</a-button>
-					<a-button class="snowy-button-left" @click="reset">
-						<template #icon><redo-outlined /></template>
-						重置
-					</a-button>
+				<a-col :xs="24" :sm="16" :md="16" :lg="16" :xl="16">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined />
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined />
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
-	</a-card>
-	<a-card :bordered="false">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -30,8 +36,9 @@
 			bordered
 			:row-key="(record) => record.id"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()"> 发送站内信 </a-button>
 					<xn-batch-button
@@ -53,7 +60,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<detail ref="detailRef" />
 </template>
@@ -78,14 +85,13 @@
 			title: '发送时间',
 			dataIndex: 'createTime',
 			ellipsis: true,
-			sorter: true,
-			width: '150px'
+			sorter: true
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '150px'
+			fixed: 'right'
 		}
 	]
 	const selectedRowKeys = ref([])
@@ -138,12 +144,3 @@
 		})
 	}
 </script>
-
-<style lang="less" scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
-	}
-</style>

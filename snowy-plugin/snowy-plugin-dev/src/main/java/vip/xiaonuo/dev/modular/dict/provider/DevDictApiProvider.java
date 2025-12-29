@@ -12,8 +12,10 @@
  */
 package vip.xiaonuo.dev.modular.dict.provider;
 
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevDictApi;
+import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
 /**
  * 字典API接口实现类
@@ -23,4 +25,17 @@ import vip.xiaonuo.dev.api.DevDictApi;
  */
 @Service
 public class DevDictApiProvider implements DevDictApi {
+
+    @Resource
+    private DevDictService devDictService;
+
+    /**
+     * 根据类型跟子类型获得翻译后的label
+     *
+     * @author yubaoshan
+     * @date 2025/6/6 13:04
+     */
+    public String getDictLabel(String typeCode, String value) {
+        return devDictService.getDictLabel(typeCode, value);
+    }
 }

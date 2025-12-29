@@ -2,6 +2,11 @@
 	<a-form :model="formData" ref="formRef" name="basic" autocomplete="off">
 		<a-table :columns="columns" :dataSource="formData" size="middle">
 			<template #bodyCell="{ text, record, index, column }">
+				<template v-if="column.dataIndex === 'label'">
+					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
+						{{record.label}}
+					</a-form-item>
+				</template>
 				<template v-if="column.dataIndex === 'whetherToClick'">
 					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
 						<a-radio-group
@@ -55,18 +60,15 @@
 	const columns = ref([
 		{
 			title: '位置',
-			dataIndex: 'label',
-			width: '20%'
+			dataIndex: 'label'
 		},
 		{
 			title: '点击事件',
-			dataIndex: 'whetherToClick',
-			width: '25%'
+			dataIndex: 'whetherToClick'
 		},
 		{
 			title: '跳转方式',
-			dataIndex: 'skipMode',
-			width: '20%'
+			dataIndex: 'skipMode'
 		},
 		{
 			title: 'URL',
@@ -164,7 +166,5 @@
 	})
 </script>
 <style lang="less" scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
+
 </style>

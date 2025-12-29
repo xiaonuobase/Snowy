@@ -16,6 +16,7 @@ import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysModuleApi;
+import vip.xiaonuo.sys.modular.resource.param.module.SysModuleAddParam;
 import vip.xiaonuo.sys.modular.resource.service.SysModuleService;
 
 import java.util.List;
@@ -35,5 +36,21 @@ public class SysModuleApiProvider implements SysModuleApi {
     @Override
     public List<JSONObject> moduleSelector() {
         return sysModuleService.moduleSelector();
+    }
+
+    @Override
+    public void addModule(String id, String title, String code, String icon, String color) {
+        SysModuleAddParam param = new SysModuleAddParam();
+        param.setId(id);
+        param.setTitle(title);
+        param.setCode(code);
+        param.setIcon(icon);
+        param.setColor(color);
+        sysModuleService.add(param);
+    }
+
+    @Override
+    public void deleteModuleByCode(String moduleCode, List<String> resourceIdList) {
+        sysModuleService.deleteModuleByCode(moduleCode, resourceIdList);
     }
 }

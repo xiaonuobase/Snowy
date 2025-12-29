@@ -85,7 +85,15 @@
 		circle: {
 			type: Boolean,
 			default: () => false
-		}
+		},
+		autoCropWidth: {
+			type: Number,
+			default: () => 100
+		},
+		autoCropHeight: {
+			type: Number,
+			default: () => 100
+		},
 	})
 	const emit = defineEmits({ successful: null })
 	const visible = ref(false)
@@ -99,8 +107,8 @@
 		original: false,
 		canMoveBox: true,
 		autoCrop: true,
-		autoCropWidth: 200,
-		autoCropHeight: 200,
+		autoCropWidth: props.autoCropWidth,
+		autoCropHeight: props.autoCropHeight,
 		centerBox: false,
 		high: false,
 		cropData: {},

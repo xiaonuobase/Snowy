@@ -10,27 +10,27 @@ const request = (url, ...arg) => baseRequest(`/biz/notice/` + url, ...arg)
  **/
 export default {
 	// 获取通知公告分页
-	bizNoticePage(data) {
+	noticePage(data) {
 		return request('page', data, 'get')
 	},
 	// 提交通知公告表单 edit为true时为编辑，默认为新增
-	bizNoticeSubmitForm(data, edit = false) {
+	noticeSubmitForm(data, edit = false) {
 		return request(edit ? 'edit' : 'add', data)
 	},
 	// 删除通知公告
-	bizNoticeDelete(data) {
+	noticeDelete(data) {
 		return request('delete', data)
 	},
 	// 获取通知公告详情
-	bizNoticeDetail(data) {
+	noticeDetail(data) {
 		return request('detail', data, 'get')
 	},
 	// 禁用通知公告
-	bizNoticeDisableStatus(data) {
+	noticeDisableStatus(data) {
 		return request('disableStatus', data)
 	},
 	// 启用通知公告
-	bizNoticeEnableStatus(data) {
+	noticeEnableStatus(data) {
 		return request('enableStatus', data)
 	}
 }

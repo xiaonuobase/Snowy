@@ -13,10 +13,11 @@ import tool from '@/utils/tool'
 import routerUtil from '@/utils/routerUtil'
 
 const Layout = () => import('@/layout/index.vue')
+const Sso = () => import('@/views/auth/sso/index.vue')
 const Login = () => import('@/views/auth/login/login.vue')
-const Findpwd = () => import('@/views/auth/findPwd/index.vue')
+const FindPwd = () => import('@/views/auth/findPwd/index.vue')
 const Callback = () => import('@/views/auth/login/callback.vue')
-
+const Register = () => import('@/views/auth/login/register.vue')
 // 系统路由
 const routes = [
 	{
@@ -27,6 +28,13 @@ const routes = [
 		children: []
 	},
 	{
+		path: '/sso',
+		component: Sso,
+		meta: {
+			title: '单点登录'
+		}
+	},
+	{
 		path: '/login',
 		component: Login,
 		meta: {
@@ -34,19 +42,26 @@ const routes = [
 		}
 	},
 	{
+		path: '/register',
+		component: Register,
+		meta: {
+			title: '注册'
+		}
+	},
+	{
 		path: '/findpwd',
-		component: Findpwd,
+		component: FindPwd,
 		meta: {
 			title: '找回密码'
 		}
 	},
 	{
-		path: '/callback',
+		path: '/callback/:platform',
 		component: Callback,
 		meta: {
-			title: '三方登录'
+			title: '三方登录回调'
 		}
-	}
+	},
 ]
 
 export default routes

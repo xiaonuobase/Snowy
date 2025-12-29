@@ -1,146 +1,173 @@
 <template>
-	<a-row :gutter="10">
-		<a-col :xs="24" :sm="24" :md="24" :lg="5" :xl="5">
-			<a-card :bordered="false" :loading="cardLoading" class="left-tree-container mb-3">
-				<a-tree
-					v-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					@select="treeSelect"
-				>
-				</a-tree>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
-			</a-card>
-		</a-col>
-		<a-col :xs="24" :sm="24" :md="24" :lg="19" :xl="19">
-			<a-card :bordered="false" class="xn-mb10">
-				<a-form ref="searchFormRef" name="advanced_search" class="ant-advanced-search-form" :model="searchFormState">
-					<a-row :gutter="24">
-						<a-col :span="8">
-							<a-form-item name="searchKey" :label="$t('common.searchKey')">
-								<a-input
-									v-model:value="searchFormState.searchKey"
-									:placeholder="$t('user.placeholderNameAndSearchKey')"
-								/>
-							</a-form-item>
-						</a-col>
-						<a-col :span="8">
-							<a-form-item name="userStatus" :label="$t('user.userStatus')">
-								<a-select
-									v-model:value="searchFormState.userStatus"
-									:placeholder="$t('user.placeholderUserStatus')"
-									:getPopupContainer="(trigger) => trigger.parentNode"
-								>
-									<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">{{
-										item.label
-									}}</a-select-option>
-								</a-select>
-							</a-form-item>
-						</a-col>
-						<a-col :span="8">
-							<a-button type="primary" @click="tableRef.refresh(true)">
-								<template #icon><SearchOutlined /></template>
-								{{ $t('common.searchButton') }}
-							</a-button>
-							<a-button class="snowy-button-left" @click="reset">
-								<template #icon><redo-outlined /></template>
-								{{ $t('common.resetButton') }}
-							</a-button>
-						</a-col>
-					</a-row>
-				</a-form>
-			</a-card>
-			<a-card :bordered="false">
-				<s-table
-					ref="tableRef"
-					:columns="columns"
-					:data="loadData"
-					:expand-row-by-click="true"
-					bordered
-					:alert="options.alert.show"
-					:row-key="(record) => record.id"
-					:row-selection="options.rowSelection"
-				>
-					<template #operator class="table-operator">
-						<a-space>
-							<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.orgId)">
-								<template #icon><plus-outlined /></template>
-								<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
-							</a-button>
-							<a-button @click="ImpExpRef.onOpen()">
-								<template #icon><import-outlined /></template>
-								<span>{{ $t('common.imports') }}</span>
-							</a-button>
-							<a-button @click="exportBatchUserVerify">
-								<template #icon><export-outlined /></template>
-								{{ $t('user.batchExportButton') }}
-							</a-button>
-							<xn-batch-button
-								:buttonName="$t('common.batchRemoveButton')"
-								icon="DeleteOutlined"
-								buttonDanger
-								:selectedRowKeys="selectedRowKeys"
-								@batchCallBack="deleteBatchUser"
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<a-tree
+				v-if="treeData.length > 0"
+				v-model:expandedKeys="defaultExpandedKeys"
+				:tree-data="treeData"
+				:field-names="treeFieldNames"
+				@select="treeSelect"
+			/>
+			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+		</template>
+		<template #right>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
+						<a-form-item :label="$t('user.userOrg')" name="orgId">
+							<a-tree-select
+								v-model:value="searchFormState.orgId"
+								class="xn-wd"
+								:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+								:placeholder="$t('user.placeholderUserOrg')"
+								allow-clear
+								:tree-data="treeData"
+								:field-names="{
+									children: 'children',
+									label: 'name',
+									value: 'id'
+								}"
+								selectable="false"
+								tree-line
 							/>
-						</a-space>
-					</template>
-					<template #bodyCell="{ column, record }">
-						<template v-if="column.dataIndex === 'avatar'">
-							<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
-						</template>
-						<template v-if="column.dataIndex === 'gender'">
-							{{ $TOOL.dictTypeData('GENDER', record.gender) }}
-						</template>
-						<template v-if="column.dataIndex === 'userStatus'">
-							<a-switch :loading="loading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
-						</template>
-						<template v-if="column.dataIndex === 'action'">
-							<a @click="formRef.onOpen(record)">{{ $t('common.editButton') }}</a>
-							<a-divider type="vertical" />
-							<a-popconfirm :title="$t('user.popconfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
-								<a-button type="link" danger size="small">
-									{{ $t('common.removeButton') }}
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="searchKey" :label="$t('common.searchKey')">
+							<a-input
+								v-model:value="searchFormState.searchKey"
+								:placeholder="$t('user.placeholderNameAndSearchKey')"
+							/>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item name="userStatus" :label="$t('user.userStatus')">
+							<a-select
+								v-model:value="searchFormState.userStatus"
+								:placeholder="$t('user.placeholderUserStatus')"
+								:getPopupContainer="(trigger) => trigger.parentNode"
+							>
+								<a-select-option v-for="item in statusData" :key="item.value" :value="item.value">
+									{{ item.label }}
+								</a-select-option>
+							</a-select>
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+						<a-form-item>
+							<a-space>
+								<a-button type="primary" @click="tableRef.refresh(true)">
+									<template #icon>
+										<SearchOutlined />
+									</template>
+									{{ $t('common.searchButton') }}
 								</a-button>
-							</a-popconfirm>
-							<a-divider type="vertical" />
-							<a-dropdown>
-								<a class="ant-dropdown-link">
-									{{ $t('common.more') }}
-									<DownOutlined />
-								</a>
-								<template #overlay>
-									<a-menu>
-										<a-menu-item>
-											<a-popconfirm
-												:title="$t('user.popconfirmResatUserPwd')"
-												placement="topRight"
-												@confirm="resetPassword(record)"
-											>
-												<a>{{ $t('user.resetPassword') }}</a>
-											</a-popconfirm>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="grantResourceFormRef.onOpen(record)">{{ $t('user.grantResource') }}</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="grantPermissionFormRef.onOpen(record)">{{ $t('user.grantPermission') }}</a>
-										</a-menu-item>
-										<a-menu-item>
-											<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
-										</a-menu-item>
-									</a-menu>
-								</template>
-							</a-dropdown>
-						</template>
+								<a-button @click="reset">
+									<template #icon>
+										<redo-outlined />
+									</template>
+									{{ $t('common.resetButton') }}
+								</a-button>
+							</a-space>
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</a-form>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				bordered
+				:alert="options.alert.show"
+				:row-key="(record) => record.id"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #operator>
+					<a-space>
+						<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.orgId)">
+							<template #icon>
+								<plus-outlined />
+							</template>
+							<span>{{ $t('common.addButton') }}{{ $t('model.user') }}</span>
+						</a-button>
+						<a-button @click="ImpExpRef.onOpen()">
+							<template #icon>
+								<import-outlined />
+							</template>
+							<span>{{ $t('common.imports') }}</span>
+						</a-button>
+						<a-button @click="exportBatchUserVerify">
+							<template #icon>
+								<export-outlined />
+							</template>
+							{{ $t('user.batchExportButton') }}
+						</a-button>
+						<xn-batch-button
+							:buttonName="$t('common.batchRemoveButton')"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchUser"
+						/>
+					</a-space>
+				</template>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'avatar'">
+						<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 					</template>
-				</s-table>
-			</a-card>
-		</a-col>
-	</a-row>
+					<template v-if="column.dataIndex === 'gender'">
+						{{ $TOOL.dictTypeData('GENDER', record.gender) }}
+					</template>
+					<template v-if="column.dataIndex === 'userStatus'">
+						<a-switch :loading="loading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
+					</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a @click="formRef.onOpen(record)">{{ $t('common.editButton') }}</a>
+						<a-divider type="vertical" />
+						<a-popconfirm :title="$t('user.popConfirmDeleteUser')" placement="topRight" @confirm="removeUser(record)">
+							<a-button type="link" danger size="small">
+								{{ $t('common.removeButton') }}
+							</a-button>
+						</a-popconfirm>
+						<a-divider type="vertical" />
+						<a-dropdown>
+							<a class="ant-dropdown-link">
+								{{ $t('common.more') }}
+								<DownOutlined />
+							</a>
+							<template #overlay>
+								<a-menu>
+									<a-menu-item>
+										<a-popconfirm
+											:title="$t('user.popConfirmResatUserPwd')"
+											placement="topRight"
+											@confirm="resetPassword(record)"
+										>
+											<a>{{ $t('user.resetPassword') }}</a>
+										</a-popconfirm>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="selectRole(record)">{{ $t('user.grantRole') }}</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="grantResourceFormRef.onOpen(record)">{{ $t('user.grantResource') }}</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="grantPermissionFormRef.onOpen(record)">{{ $t('user.grantPermission') }}</a>
+									</a-menu-item>
+									<a-menu-item>
+										<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
+									</a-menu-item>
+								</a-menu>
+							</template>
+						</a-dropdown>
+					</template>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-role-selector
 		ref="RoleSelectorPlusRef"
@@ -172,8 +199,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '账号',
@@ -186,8 +212,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'genderName',
-			width: '50px'
+			dataIndex: 'genderName'
 		},
 		{
 			title: '手机',
@@ -206,14 +231,13 @@
 		},
 		{
 			title: '状态',
-			dataIndex: 'userStatus',
-			width: '80px'
+			dataIndex: 'userStatus'
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '220px'
+			fixed: 'right'
 		}
 	]
 	const statusData = tool.dictList('COMMON_STATUS')
@@ -228,7 +252,6 @@
 	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
-	const cardLoading = ref(true)
 	const ImpExpRef = ref()
 	const grantResourceFormRef = ref()
 	const grantPermissionFormRef = ref()
@@ -240,7 +263,6 @@
 	}
 	// 左侧树查询
 	orgApi.orgTree().then((res) => {
-		cardLoading.value = false
 		if (res !== null) {
 			treeData.value = res
 			if (isEmpty(defaultExpandedKeys.value)) {
@@ -410,16 +432,3 @@
 		}
 	}
 </script>
-
-<style scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
-	.snowy-table-avatar {
-		margin-top: -10px;
-		margin-bottom: -10px;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
-	}
-</style>

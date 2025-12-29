@@ -1,39 +1,53 @@
 <template>
-	<a-card :bordered="false">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
-			<a-row :gutter="24">
-				<a-col :span="6">
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<a-form-item label="标题" name="title">
 						<a-input v-model:value="searchFormState.title" placeholder="请输入标题" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<a-form-item label="类型" name="type">
 						<a-select v-model:value="searchFormState.type" placeholder="请选择类型" :options="typeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-form-item label="发布位置" name="place">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+					<a-form-item label="位置" name="place">
 						<a-select v-model:value="searchFormState.place" placeholder="请选择发布位置" :options="placeOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6" v-show="advanced">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6" v-show="advanced">
 					<a-form-item label="状态" name="status">
 						<a-select v-model:value="searchFormState.status" placeholder="请选择状态" :options="statusOptions" />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6" v-show="advanced">
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6" v-show="advanced">
 					<a-form-item label="创建时间" name="createTime">
 						<a-range-picker v-model:value="searchFormState.createTime" value-format="YYYY-MM-DD HH:mm:ss" show-time />
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button style="margin: 0 8px" @click="reset">重置</a-button>
-					<a @click="toggleAdvanced" style="margin-left: 8px">
-						{{ advanced ? '收起' : '展开' }}
-						<component :is="advanced ? 'up-outlined' : 'down-outlined'" />
-					</a>
+				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined />
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined />
+								</template>
+								重置
+							</a-button>
+							<a @click="toggleAdvanced">
+								{{ advanced ? '收起' : '展开' }}
+								<component :is="advanced ? 'up-outlined' : 'down-outlined'" />
+							</a>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -46,8 +60,9 @@
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
 			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
 		>
-			<template #operator class="table-operator">
+			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()" v-if="hasPerm('bizNoticeAdd')">
 						<template #icon><plus-outlined /></template>
@@ -109,7 +124,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<detail ref="detailRef" />
 </template>
@@ -139,8 +154,7 @@
 		},
 		{
 			title: '封面图',
-			dataIndex: 'image',
-			width: '100px'
+			dataIndex: 'image'
 		},
 		{
 			title: '类型',
@@ -161,8 +175,7 @@
 		},
 		{
 			title: '创建时间',
-			dataIndex: 'createTime',
-			width: '150px'
+			dataIndex: 'createTime'
 		}
 	]
 	// 操作栏通过权限判断是否显示
@@ -171,13 +184,12 @@
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			width: '200px'
+			fixed: 'right'
 		})
 	}
 	const selectedRowKeys = ref([])
 	// 列表选择配置
 	const options = {
-		// columns数字类型字段加入 needTotal: true 可以勾选自动算账
 		alert: {
 			show: false,
 			clear: () => {
@@ -198,7 +210,7 @@
 			searchFormParam.endCreateTime = searchFormParam.createTime[1]
 			delete searchFormParam.createTime
 		}
-		return bizNoticeApi.bizNoticePage(Object.assign(parameter, searchFormParam)).then((data) => {
+		return bizNoticeApi.noticePage(Object.assign(parameter, searchFormParam)).then((data) => {
 			return data
 		})
 	}
@@ -214,13 +226,13 @@
 				id: record.id
 			}
 		]
-		bizNoticeApi.bizNoticeDelete(params).then(() => {
+		bizNoticeApi.noticeDelete(params).then(() => {
 			tableRef.value.refresh(true)
 		})
 	}
 	// 批量删除
 	const deleteBatchBizNotice = (params) => {
-		bizNoticeApi.bizNoticeDelete(params).then(() => {
+		bizNoticeApi.noticeDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
 		})
 	}
@@ -229,7 +241,7 @@
 		loading.value = true
 		if (record.status === 'ENABLE') {
 			bizNoticeApi
-				.bizNoticeDisableStatus(record)
+				.noticeDisableStatus(record)
 				.then(() => {
 					tableRef.value.refresh()
 				})
@@ -238,7 +250,7 @@
 				})
 		} else {
 			bizNoticeApi
-				.bizNoticeEnableStatus(record)
+				.noticeEnableStatus(record)
 				.then(() => {
 					tableRef.value.refresh()
 				})

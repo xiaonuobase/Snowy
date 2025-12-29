@@ -438,6 +438,7 @@ public class DevFileMinIoUtil {
      */
     public static void deleteFile(String bucketName, String key) {
         try {
+            initClient();
             RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder().bucket(bucketName).object(key).build();
             client.removeObject(removeObjectArgs);
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 <template>
 	<div class="xn-pb10">
-		<a-row :gutter="16">
-			<a-col :span="6">
+		<a-row :gutter="10">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
 						<team-outlined style="color: #69c0ff" class="snowy-monitor-card-icon" />
@@ -12,7 +12,7 @@
 					</template>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
 						<verified-outlined class="snowy-monitor-card-icon xn-color-ff9c6e" />
@@ -23,7 +23,7 @@
 					</template>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
 						<rise-outlined class="snowy-monitor-card-icon xn-color-ff85c0" />
@@ -34,7 +34,7 @@
 					</template>
 				</a-card>
 			</a-col>
-			<a-col :span="6">
+			<a-col :xs="12" :sm="12" :md="6" :lg="6" :xl="6">
 				<a-card class="snowy-monitor-card" :bordered="false">
 					<template #cover>
 						<pie-chart-outlined class="snowy-monitor-card-icon xn-color-5cdbd3" />
@@ -67,6 +67,7 @@
 <style scoped>
 	.snowy-monitor-card {
 		height: 100px;
+		margin-bottom: 4px;
 	}
 	.snowy-monitor-card-icon {
 		font-size: 30px;

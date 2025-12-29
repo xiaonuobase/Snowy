@@ -14,8 +14,8 @@ package vip.xiaonuo.sys.modular.org.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -136,6 +136,21 @@ public class SysOrgController {
         return CommonResult.data(sysOrgService.detail(sysOrgIdParam));
     }
 
+    /**
+     * 复制组织
+     *
+     * @author yubaoshan
+     * @date 2025/12/24 01:10
+     */
+    @ApiOperationSupport(order = 7)
+    @Operation(summary = "复制组织")
+    @CommonLog("复制组织")
+    @PostMapping("/sys/org/copy")
+    public CommonResult<String> copy(@RequestBody @Valid SysOrgCopyParam sysOrgCopyParam) {
+        sysOrgService.copy(sysOrgCopyParam);
+        return CommonResult.ok();
+    }
+
     /* ====组织部分所需要用到的选择器==== */
 
     /**
@@ -144,7 +159,7 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
+    @ApiOperationSupport(order = 8)
     @Operation(summary = "获取组织树选择器")
     @GetMapping("/sys/org/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
@@ -157,7 +172,7 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
+    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取用户选择器")
     @GetMapping("/sys/org/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {

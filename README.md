@@ -16,6 +16,9 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
 
 <p align="center">     
     <p align="center">
+        <a href="https://gitcode.com/xiaonuobase/Snowy">
+            <img src="https://gitcode.com/xiaonuobase/Snowy/star/badge.svg" alt="bootstrap">
+        </a>
         <a href="https://gitee.com/xiaonuobase/snowy">
             <img src="https://gitee.com/xiaonuobase/snowy/badge/star.svg?theme=dark" alt="Gitee star">
         </a>
@@ -235,7 +238,9 @@ snowy
 
 QQ技术群：732230670（已满）、685395081
 
-微信技术群：因群达到200人以上，需加微信拉群
+微信技术群：
+
+因群达到200人以上，需加微信拉群，禁止群内艾特群主及管理员，私信提问技术问题无时间精力回答（免开尊口），请群内互动互助才是建群的意义，否则我认为你没有加群的必要
 
 <table>
     <tr>
@@ -243,6 +248,10 @@ QQ技术群：732230670（已满）、685395081
         <td><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mUnPEw%7D%2F&_etag=1730699307-193261&shareID=-9mUnPEw" width="120"/></td>
     </tr>
 </table>
+
+## 示例代码
+
+从 v3.6.0，我们把前端示例的一些界面文件拿到了另外一个仓库，使用时可以自行下载：[https://gitee.com/xiaonuoadmin/snowy-exm](https://gitee.com/xiaonuoadmin/snowy-exm)
 
 ## 代码贡献
 

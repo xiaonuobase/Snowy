@@ -1,13 +1,13 @@
 <template>
-	<a-card :bordered="false" :body-style="{ 'padding-bottom': '0px' }" class="mb-2">
-		<a-form ref="searchFormRef" name="advanced_search" :model="searchFormState" class="ant-advanced-search-form">
-			<a-row :gutter="24">
-				<a-col :span="8">
+	<xn-panel>
+		<a-form ref="searchFormRef" :model="searchFormState">
+			<a-row :gutter="10">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 					<a-form-item label="关键词" name="searchKey">
 						<a-input v-model:value="searchFormState.searchKey" placeholder="请输入用户名或昵称关键词"></a-input>
 					</a-form-item>
 				</a-col>
-				<a-col :span="8">
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
 					<a-form-item label="分类" name="category">
 						<a-select
 							v-model:value="searchFormState.category"
@@ -18,14 +18,26 @@
 						</a-select>
 					</a-form-item>
 				</a-col>
-				<a-col :span="6">
-					<a-button type="primary" @click="tableRef.refresh(true)">查询</a-button>
-					<a-button class="xn-mg08" @click="reset">重置</a-button>
+				<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" @click="tableRef.refresh(true)">
+								<template #icon>
+									<SearchOutlined />
+								</template>
+								查询
+							</a-button>
+							<a-button @click="reset">
+								<template #icon>
+									<redo-outlined />
+								</template>
+								重置
+							</a-button>
+						</a-space>
+					</a-form-item>
 				</a-col>
 			</a-row>
 		</a-form>
-	</a-card>
-	<a-card :bordered="false">
 		<s-table
 			ref="tableRef"
 			:columns="columns"
@@ -34,6 +46,7 @@
 			bordered
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
+			:scroll="{ x: 'max-content' }"
 		>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'avatar'">
@@ -44,7 +57,7 @@
 				</template>
 			</template>
 		</s-table>
-	</a-card>
+	</xn-panel>
 </template>
 
 <script setup name="authThird">
@@ -58,8 +71,7 @@
 		{
 			title: '头像',
 			dataIndex: 'avatar',
-			align: 'center',
-			width: '80px'
+			align: 'center'
 		},
 		{
 			title: '姓名',
@@ -73,8 +85,7 @@
 		},
 		{
 			title: '性别',
-			dataIndex: 'gender',
-			width: '100px'
+			dataIndex: 'gender'
 		},
 		{
 			title: '分类',

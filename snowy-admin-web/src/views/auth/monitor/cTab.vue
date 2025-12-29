@@ -1,5 +1,5 @@
 <template>
-	<s-table ref="tableRef" :columns="columns" :data="loadDataC" :alert="false" bordered :row-key="(record) => record.id">
+	<s-table ref="tableRef" :columns="columns" :data="loadDataC" :alert="false" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.dataIndex === 'avatar'">
 				<a-avatar :src="record.avatar" class="xn-wh25" />
@@ -29,8 +29,7 @@
 	const columns = [
 		{
 			title: '头像',
-			dataIndex: 'avatar',
-			width: 60
+			dataIndex: 'avatar'
 		},
 		{
 			title: '账号',
@@ -54,18 +53,16 @@
 		{
 			title: '登录IP',
 			dataIndex: 'latestLoginIp',
-			width: 120,
 			ellipsis: true
 		},
 		{
 			title: '令牌数',
-			dataIndex: 'tokenNumber',
-			width: 70
+			dataIndex: 'tokenNumber'
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
-			width: '150px',
+			fixed: 'right',
 			scopedSlots: { customRender: 'action' }
 		}
 	]

@@ -14,8 +14,8 @@ package vip.xiaonuo.sys.modular.role.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -231,6 +231,7 @@ public class SysRoleController {
     @CommonLog("给角色授权用户")
     @PostMapping("/sys/role/grantUser")
     public CommonResult<String> grantUser(@RequestBody @Valid SysRoleGrantUserParam sysRoleGrantUserParam) {
+        sysRoleGrantUserParam.setRemoveFirst(true);
         sysRoleService.grantUser(sysRoleGrantUserParam);
         return CommonResult.ok();
     }

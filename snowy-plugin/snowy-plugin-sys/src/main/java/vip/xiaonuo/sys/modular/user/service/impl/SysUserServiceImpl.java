@@ -37,6 +37,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -65,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.enums.CommonGenderEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.excel.CommonExcelCustomMergeStrategy;
 import vip.xiaonuo.common.exception.CommonException;
@@ -79,6 +82,7 @@ import vip.xiaonuo.mobile.api.MobileButtonApi;
 import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
+import vip.xiaonuo.sys.core.enums.SysYesOrNoEnum;
 import vip.xiaonuo.sys.core.util.SysEmailFormatUtl;
 import vip.xiaonuo.sys.core.util.SysPasswordUtl;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
@@ -93,6 +97,7 @@ import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
 import vip.xiaonuo.sys.modular.resource.entity.SysButton;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.resource.entity.SysModule;
+import vip.xiaonuo.sys.modular.resource.enums.SysMenuWhetherEnum;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.enums.SysResourceMenuTypeEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
@@ -193,6 +198,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /** 工作台默认快捷方式 */
     private static final String SNOWY_SYS_DEFAULT_WORKBENCH_DATA_KEY = "SNOWY_SYS_DEFAULT_WORKBENCH_DATA";
+
+    /** 系统名称 */
+    private static final String SNOWY_SYS_NAME_KEY = "SNOWY_SYS_NAME";
 
     /** 验证码缓存前缀 */
     private static final String USER_VALID_CODE_CACHE_KEY = "user-validCode:";
@@ -420,6 +428,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             if (containsSuperAdminAccount) {
                 throw new CommonException("不可删除系统内置超管用户");
             }
+            // 不能删除自己
+            if (sysUserIdList.contains(StpUtil.getLoginIdAsString())) {
+                throw new CommonException("不可删除自己");
+            }
 
             // 清除【将这些用户作为主管】的信息
             this.update(new LambdaUpdateWrapper<SysUser>().in(SysUser::getDirectorId, sysUserIdList).set(SysUser::getDirectorId, null));
@@ -447,7 +459,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserExtService.remove(new LambdaQueryWrapper<SysUserExt>().in(SysUserExt::getUserId, sysUserIdList));
 
             // 发布删除事件
-            CommonDataChangeEventCenter.doDeleteWithDataId(SysDataTypeEnum.USER.getValue(), sysUserIdList);
+            CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.USER.getValue(), sysUserIdList);
         }
     }
 
@@ -992,7 +1004,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 执行校验验证码
         validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 生成邮箱验证码的值，随机6为数字
@@ -1034,7 +1046,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 执行校验验证码
         validValidCode(null, sysUserGetEmailValidCodeParam.getValidCode(), sysUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 生成邮箱验证码的值，随机6为数字
@@ -1074,7 +1086,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 执行校验验证码
@@ -1253,6 +1265,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     // 如果是首页，则设置affix
                     metaJsonObject.set("affix", true);
                 }
+                String menuMetaKeepLiveKey = "keepLive";
+                String menuMetaDisplayLayoutKey = "displayLayout";
+                // 设置缓存
+                if (ObjectUtil.isEmpty(sysMenu.getKeepLive()) || sysMenu.getKeepLive().equals(SysMenuWhetherEnum.NO.getValue())) {
+                    metaJsonObject.set(menuMetaKeepLiveKey, false);
+                } else if (sysMenu.getKeepLive().equals(SysMenuWhetherEnum.YES.getValue())) {
+                    metaJsonObject.set(menuMetaKeepLiveKey, true);
+                }
+                // 设置显示布局
+                if (ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.YES.getValue())) {
+                    metaJsonObject.set(menuMetaDisplayLayoutKey, true);
+                } else if (sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.NO.getValue())) {
+                    metaJsonObject.set(menuMetaDisplayLayoutKey, false);
+                }
             }
             // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
             if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
@@ -1347,10 +1373,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                 }
             }
-            List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
-                    .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-            sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
         }
+        List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
+                .map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
     }
 
     @Override
@@ -1551,7 +1577,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     FileUtil.FILE_SEPARATOR + "userImportTemplate.xlsx"));
             // 读取excel
             List<SysUserImportParam> sysUserImportParamList =  EasyExcel.read(tempFile).head(SysUserImportParam.class).sheet()
-                    .headRowNumber(2).doReadSync();
+                    .headRowNumber(3).doReadSync();
             List<SysUser> allUserList = this.list();
             for (int i = 0; i < sysUserImportParamList.size(); i++) {
                 JSONObject jsonObject = this.doImport(allUserList, sysUserImportParamList.get(i), i);
@@ -2147,6 +2173,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setPhone(phone);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -2182,6 +2209,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setEmail(email);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -2219,6 +2247,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserAddParam.setPassword(password);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
+        sysUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
@@ -2234,52 +2263,36 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public Boolean isUserNeedBindPhone() {
+        // 获取当前用户id
+        String loginId = StpUtil.getLoginIdAsString();
         // 获取当前用户
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        SysUser sysUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>()
+                .eq(SysUserExt::getUserId, loginId)
                 .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断手机号是否为空
-        if(ObjectUtil.isNotEmpty(sysUserExt)){
-            // 手机号为空，判断系统注册后是否需要绑定手机号
-            if(ObjectUtil.isEmpty(sysUser.getPhone())) {
-                String registerNeedBindPhone = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindPhone)){
-                    return Convert.toBool(registerNeedBindPhone);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定手机号
+        return ObjectUtil.isNotEmpty(sysUserExt)
+                && ObjectUtil.isEmpty(sysUser.getPhone())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_PHONE_FOR_B_KEY), false)
+                : false;
     }
 
     @Override
     public Boolean isUserNeedBindEmail() {
+        // 获取当前用户id
+        String loginId = StpUtil.getLoginIdAsString();
         // 获取当前用户
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        SysUser sysUser = this.queryEntity(loginId);
         // 查询当前用户是否注册的
-        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, StpUtil.getLoginIdAsString())
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>()
+                .eq(SysUserExt::getUserId, loginId)
                 .eq(SysUserExt::getSourceFromType, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue()));
-        // 不为空，则判断邮箱是否为空
-        if(ObjectUtil.isNotEmpty(sysUserExt)){
-            // 邮箱为空，判断系统注册后是否需要绑定邮箱
-            if(ObjectUtil.isEmpty(sysUser.getEmail())) {
-                String registerNeedBindEmail = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY);
-                if(ObjectUtil.isNotEmpty(registerNeedBindEmail)){
-                    return Convert.toBool(registerNeedBindEmail);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        // 判断是否需要绑定邮箱
+        return ObjectUtil.isNotEmpty(sysUserExt)
+                && ObjectUtil.isEmpty(sysUser.getEmail())
+                ? Convert.toBool(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_REGISTER_NEED_BIND_EMAIL_FOR_B_KEY), false)
+                : false;
     }
 
     /**
@@ -2396,6 +2409,84 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public JSONObject getUpdatePasswordValidConfig() {
         return SysPasswordUtl.getUpdatePasswordValidConfig();
+    }
+
+    @Override
+    public SysUserExt getOrCreateSysUserExt(String userId) {
+        SysUserExt sysUserExt = sysUserExtService.getOne(new LambdaQueryWrapper<SysUserExt>().eq(SysUserExt::getUserId, userId));
+        if(ObjectUtil.isEmpty(sysUserExt)){
+            sysUserExt = sysUserExtService.createExtInfo(userId, SysUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
+        } else {
+            if(ObjectUtil.isEmpty(sysUserExt.getOtpSecretKey())){
+                String otpSecretKeyEncrypt = CommonCryptogramUtil.doSm4CbcEncrypt(CommonOtpUtil.generateSecretKey());
+                sysUserExt.setOtpSecretKey(otpSecretKeyEncrypt);
+                sysUserExt.setHasBindOtp(SysYesOrNoEnum.NO.getValue());
+                sysUserExtService.updateById(sysUserExt);
+            }
+        }
+        return sysUserExt;
+    }
+
+    @Override
+    public Boolean getOtpInfoBindStatus() {
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        return sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.YES.getValue());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public SysUserOtpInfoResult getOtpInfo() {
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUser sysUser = this.queryEntity(loginIdAsString);
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        String otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(sysUserExt.getOtpSecretKey());
+        String account = sysUser.getAccount();
+        String issuer = devConfigApi.getValueByKey(SNOWY_SYS_NAME_KEY);
+        String uri = CommonOtpUtil.getTotUri(otpSecretKey, issuer, account);
+        String qrCodeBase64 = QrCodeUtil.generateAsBase64(uri, new QrConfig(200, 200), ImgUtil.IMAGE_TYPE_PNG);
+        return SysUserOtpInfoResult.builder().otpInfoBase64(qrCodeBase64)
+                .otpInfo(SysUserOtpInfoResult.OtpInfo.builder()
+                        .issuer(issuer)
+                        .account(account)
+                        .secretKey(otpSecretKey)
+                        .algorithm("HmacSHA1")
+                        .digits("6位")
+                        .period("30秒")
+                        .build()).build();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void bindOtp(SysUserOtpParam sysUserOtpParam) {
+        doCheckAndUpdate(sysUserOtpParam, SysYesOrNoEnum.YES.getValue());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void unBindOtp(SysUserOtpParam sysUserOtpParam) {
+        doCheckAndUpdate(sysUserOtpParam, SysYesOrNoEnum.NO.getValue());
+    }
+
+    public void doCheckAndUpdate(SysUserOtpParam sysUserOtpParam, String binOtpStatus) {
+        String otpCode = sysUserOtpParam.getOtpCode();
+        String loginIdAsString = StpUtil.getLoginIdAsString();
+        SysUserExt sysUserExt = this.getOrCreateSysUserExt(loginIdAsString);
+        if(binOtpStatus.equals(SysYesOrNoEnum.YES.getValue()) && sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.YES.getValue())){
+            throw new CommonException("该账户已绑定动态口令，不可重复绑定");
+        }
+        if(binOtpStatus.equals(SysYesOrNoEnum.NO.getValue()) && sysUserExt.getHasBindOtp().equals(SysYesOrNoEnum.NO.getValue())){
+            throw new CommonException("该账户未绑定动态口令，无需解绑");
+        }
+        // 解密密钥
+        String otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(sysUserExt.getOtpSecretKey());
+        // 校验动态口令
+        boolean isValid = CommonOtpUtil.validateCode(otpSecretKey, otpCode, 1);
+        if(!isValid){
+            throw new CommonException("动态口令错误");
+        }
+        sysUserExt.setHasBindOtp(binOtpStatus);
+        sysUserExtService.updateById(sysUserExt);
     }
 
     /**

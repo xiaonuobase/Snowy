@@ -66,36 +66,36 @@ public class AuthSessionServiceImpl implements AuthSessionService {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTokenSignList().size();
+            int tokenCount = saSession.getTerminalList().size();
             long createTime = saSession.getCreateTime();
             jsonObject.set("userId", userId);
             jsonObject.set("tokenCount", tokenCount);
             jsonObject.set("createTime", DateTime.of(createTime));
             return jsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
 
         List<JSONObject> sessionListC = StpClientUtil.searchSessionId("", -1, -1, true).stream().map(sessionId -> {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpClientUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTokenSignList().size();
+            int tokenCount = saSession.getTerminalList().size();
             long createTime = saSession.getCreateTime();
             jsonObject.set("userId", userId);
             jsonObject.set("tokenCount", tokenCount);
             jsonObject.set("createTime", DateTime.of(createTime));
             return jsonObject;
-        }).collect(Collectors.toList());
+        }).toList();
 
         List<Integer> tokenCountList = CollectionUtil.newArrayList();
-        tokenCountList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getInt("tokenCount")).collect(Collectors.toList()));
-        tokenCountList.addAll(sessionListC.stream().map(jsonObject -> jsonObject.getInt("tokenCount")).collect(Collectors.toList()));
+        tokenCountList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getInt("tokenCount")).toList());
+        tokenCountList.addAll(sessionListC.stream().map(jsonObject -> jsonObject.getInt("tokenCount")).toList());
         CollectionUtil.sort(tokenCountList, Comparator.comparingInt(Integer::intValue));
         int currentSessionTotalCount = sessionListB.size() + sessionListC.size();
         authSessionAnalysisResult.setCurrentSessionTotalCount(Convert.toStr(currentSessionTotalCount));
         authSessionAnalysisResult.setMaxTokenCount(Convert.toStr(tokenCountList.get(tokenCountList.size() - 1)));
         List<Date> sessionCreateTimeList = CollectionUtil.newArrayList();
-        sessionCreateTimeList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getDate("createTime")).collect(Collectors.toList()));
-        sessionCreateTimeList.addAll(sessionListC.stream().map(jsonObject -> jsonObject.getDate("createTime")).collect(Collectors.toList()));
+        sessionCreateTimeList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getDate("createTime")).toList());
+        sessionCreateTimeList.addAll(sessionListC.stream().map(jsonObject -> jsonObject.getDate("createTime")).toList());
         DateTime oneHourAgo = DateUtil.offset(DateTime.now(), DateField.HOUR, -1);
         authSessionAnalysisResult.setOneHourNewlyAdded(Convert.toStr(sessionCreateTimeList.stream().filter(date -> DateUtil.compare(oneHourAgo, date) <= 0).count()));
         authSessionAnalysisResult.setProportionOfBAndC(sessionListB.size() + StrUtil.SLASH + sessionListC.size());
@@ -123,36 +123,36 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     AuthSessionPageResult authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
-                    long sessionTimeOut = saSession.getTimeout();
+                    long sessionTimeOut = saSession.timeout();
                     if (sessionTimeOut == -1) {
                         authSessionPageResult.setSessionTimeout("永久");
                     } else {
-                        authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(saSession.getTimeout()));
+                        authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(sessionTimeOut));
                     }
-                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream()
-                            .filter(tokenSign -> {
-                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTerminalList().stream()
+                            .filter(terminalInfo -> {
+                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()));
                                 return tokenTimeout != -2;  // 过滤掉tokenTimeout为-2的元素
                             })
-                            .map(tokenSign -> {
-                                AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
-                                tokenSignInfo.setTokenValue(tokenSign.getValue());
-                                tokenSignInfo.setTokenDevice(tokenSign.getDevice());
-                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                            .map(terminalInfo -> {
+                                AuthSessionPageResult.TokenSignInfo terminalInfoInfo = new AuthSessionPageResult.TokenSignInfo();
+                                terminalInfoInfo.setTokenValue(terminalInfo.getTokenValue());
+                                terminalInfoInfo.setTokenDevice(terminalInfo.getDeviceType());
+                                long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()));
                                 long tokenTimeoutConfig = StpUtil.stpLogic.getConfigOrGlobal().getTimeout();
                                 if (tokenTimeout == -1) {
-                                    tokenSignInfo.setTokenTimeout("永久");
-                                    tokenSignInfo.setTokenTimeoutPercent(100d);
+                                    terminalInfoInfo.setTokenTimeout("永久");
+                                    terminalInfoInfo.setTokenTimeoutPercent(100d);
                                 } else {
-                                    tokenSignInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
-                                            .getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()))));
+                                    terminalInfoInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
+                                            .getTimeout(StpUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()))));
                                     if (tokenTimeoutConfig == -1) {
-                                        tokenSignInfo.setTokenTimeoutPercent(0d);
+                                        terminalInfoInfo.setTokenTimeoutPercent(0d);
                                     } else {
-                                        tokenSignInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
+                                        terminalInfoInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
                                     }
                                 }
-                                return tokenSignInfo;
+                                return terminalInfoInfo;
                             })
                             .collect(Collectors.toList());
                     authSessionPageResult.setTokenCount(tokenInfoList.size());
@@ -186,34 +186,34 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     AuthSessionPageResult authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
-                    long sessionTimeOut = saSession.getTimeout();
+                    long sessionTimeOut = saSession.timeout();
                     if (sessionTimeOut == -1) {
                         authSessionPageResult.setSessionTimeout("永久");
                     } else {
-                        authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(saSession.getTimeout()));
+                        authSessionPageResult.setSessionTimeout(CommonTimeFormatUtil.formatSeconds(sessionTimeOut));
                     }
-                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTokenSignList().stream().filter(tokenSign -> {
-                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                    List<AuthSessionPageResult.TokenSignInfo> tokenInfoList = saSession.getTerminalList().stream().filter(terminalInfo -> {
+                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()));
                         return tokenTimeout != -2;  // 过滤掉tokenTimeout为-2的元素
-                    }).map(tokenSign -> {
-                        AuthSessionPageResult.TokenSignInfo tokenSignInfo = new AuthSessionPageResult.TokenSignInfo();
-                        tokenSignInfo.setTokenValue(tokenSign.getValue());
-                        tokenSignInfo.setTokenDevice(tokenSign.getDevice());
-                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()));
+                    }).map(terminalInfo -> {
+                        AuthSessionPageResult.TokenSignInfo terminalInfoInfo = new AuthSessionPageResult.TokenSignInfo();
+                        terminalInfoInfo.setTokenValue(terminalInfo.getTokenValue());
+                        terminalInfoInfo.setTokenDevice(terminalInfo.getDeviceType());
+                        long tokenTimeout = SaManager.getSaTokenDao().getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()));
                         long tokenTimeoutConfig = StpClientUtil.stpLogic.getConfigOrGlobal().getTimeout();
                         if (tokenTimeout == -1) {
-                            tokenSignInfo.setTokenTimeout("永久");
-                            tokenSignInfo.setTokenTimeoutPercent(100d);
+                            terminalInfoInfo.setTokenTimeout("永久");
+                            terminalInfoInfo.setTokenTimeoutPercent(100d);
                         } else {
-                            tokenSignInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
-                                    .getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(tokenSign.getValue()))));
+                            terminalInfoInfo.setTokenTimeout(CommonTimeFormatUtil.formatSeconds(SaManager.getSaTokenDao()
+                                    .getTimeout(StpClientUtil.stpLogic.splicingKeyTokenValue(terminalInfo.getTokenValue()))));
                             if (tokenTimeoutConfig == -1) {
-                                tokenSignInfo.setTokenTimeoutPercent(0d);
+                                terminalInfoInfo.setTokenTimeoutPercent(0d);
                             } else {
-                                tokenSignInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
+                                terminalInfoInfo.setTokenTimeoutPercent(NumberUtil.div(tokenTimeout, tokenTimeoutConfig));
                             }
                         }
-                        return tokenSignInfo;
+                        return terminalInfoInfo;
                     }).collect(Collectors.toList());
                     authSessionPageResult.setTokenCount(tokenInfoList.size());
                     authSessionPageResult.setTokenSignList(tokenInfoList);

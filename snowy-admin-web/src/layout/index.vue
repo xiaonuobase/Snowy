@@ -19,6 +19,7 @@
 		@onOpenChange="onOpenChange"
 		@switchModule="switchModule"
 		@menuIsCollapseClick="menuIsCollapseClick"
+		@displayLayoutChange="exitMaximize"
 	/>
 	<!-- 双排菜单布局 -->
 	<DoubleRowMenu
@@ -43,6 +44,7 @@
 		@onSelect="onSelect"
 		@switchModule="switchModule"
 		@showMenu="showMenu"
+		@displayLayoutChange="exitMaximize"
 	/>
 	<!-- 顶部菜单布局 -->
 	<TopMenu
@@ -63,12 +65,15 @@
 		@switchModule="switchModule"
 		@onOpenChange="onOpenChange"
 		@onSelect="onSelect"
+		@displayLayoutChange="exitMaximize"
 	/>
 
 	<!-- 退出最大化 -->
 	<div class="main-maximize-exit" @click="exitMaximize">
 		<fullscreen-exit-outlined class="xn-color-fff" />
 	</div>
+	<bind-phone ref="bindPhoneRef" />
+	<bind-email ref="bindEmailRef" />
 </template>
 
 <script setup>
@@ -85,6 +90,8 @@
 	import { NextLoading } from '@/utils/loading'
 	import { useMenuStore } from '@/store/menu'
 	import { getLocalHash, checkHash } from '@/utils/version'
+	import BindPhone from '@/layout/components/bindPhone.vue'
+	import BindEmail from '@/layout/components/bindEmail.vue'
 
 	const store = globalStore()
 	const kStore = keepAliveStore()
@@ -101,6 +108,8 @@
 	const doublerowSelectedKey = ref([])
 	const layoutSiderDowbleMenu = ref(true)
 	const menuList = ref([])
+	const bindPhoneRef = ref()
+	const bindEmailRef = ref()
 	// computed计算方法 - start
 	const layout = computed(() => {
 		return store.layout
@@ -159,23 +168,38 @@
 	})
 	// 路由监听高亮
 	const showThis = () => {
-		// route是一个只读路由对象。需要使用 useRouter 函数来获取路由实例
-		router.getRoutes().filter((item) => {
-			if (item.path === route.path) {
-				pMenu.value = item.meta.breadcrumb ? item.meta.breadcrumb[0] : {}
-			}
-		})
-		// pMenu.value = route.meta.breadcrumb ? route.meta.breadcrumb[0] : {}
 		// 展开的
 		nextTick(() => {
 			// 取得默认路由地址并设置展开
 			let active = route.meta.active || route.path
+			// 通过moduleMenu获取当前路由所属的模块，替代原有的router.getRoutes()遍历
+			const fullKeys = getParentKeys(moduleMenu.value, active)
+			if (fullKeys && fullKeys.length > 0) {
+				const rootPath = fullKeys[fullKeys.length - 1]
+				const module = moduleMenu.value.find((item) => item.path === rootPath)
+				if (module) {
+					pMenu.value = module
+					// 如果模块不同，切换模块
+					const currentModuleId = tool.data.get('SNOWY_MENU_MODULE_ID')
+					if (module.id !== currentModuleId) {
+						tagSwitchModule(module.id)
+					}
+				}
+			}
+
 			// 如果是目录，必须往下找
 			if (route.meta.type === 'catalog') {
-				active = traverseChild(pMenu.value.children, active).path
+				if (pMenu.value.children) {
+					active = traverseChild(pMenu.value.children, active).path
+				}
 			}
 			selectedKeys.value = new Array(active)
-			const pidKey = getParentKeys(pMenu.value.children, active)
+			let pidKey
+			if (pMenu.value.children) {
+				pidKey = getParentKeys(pMenu.value.children, active)
+			} else {
+				pidKey = getParentKeys(menu.value, active)
+			}
 			// 判断是隐藏的路由，找其上级
 			if (route.meta.hidden && pidKey) {
 				if (pidKey.length > 1) {
@@ -240,7 +264,7 @@
 	onMounted(() => {
 		// 取消loading
 		NextLoading.done()
-		showThis()
+		// showThis()
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)
@@ -250,6 +274,8 @@
 		updateVersion()
 		nextTick(() => {
 			getNav()
+			bindPhoneRef.value.checkNeedBindPhone()
+			bindEmailRef.value.checkNeedBindEmail()
 		})
 	})
 	onBeforeUnmount(() => {
@@ -364,8 +390,6 @@
 	}
 
 	watch(route, () => {
-		// 清理选中的
-		selectedKeys.value = []
 		showThis()
 	})
 	// 监听是否开启了顶栏颜色
@@ -646,11 +670,14 @@
 	}
 	// 退出最大化
 	const exitMaximize = () => {
-		document.getElementById('app').classList.remove('main-maximize')
-		moduleMenuShow.value = false
-		nextTick(() => {
-			moduleMenuShow.value = true
-		})
+		const app = document.getElementById('app')
+		if (app.classList.contains('main-maximize')) {
+			app.classList.remove('main-maximize')
+			moduleMenuShow.value = false
+			nextTick(() => {
+				moduleMenuShow.value = true
+			})
+		}
 	}
 </script>
 

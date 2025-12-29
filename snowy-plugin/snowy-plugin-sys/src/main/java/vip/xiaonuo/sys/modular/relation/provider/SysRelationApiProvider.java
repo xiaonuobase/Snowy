@@ -24,10 +24,14 @@ import vip.xiaonuo.sys.api.SysRelationApi;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
+import vip.xiaonuo.sys.modular.user.entity.SysUser;
+import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
+import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 关系API接口实现类
@@ -41,10 +45,39 @@ public class SysRelationApiProvider implements SysRelationApi {
     @Resource
     private SysRelationService sysRelationService;
 
+    @Resource
+    private SysUserService sysUserService;
+
     @Override
     public List<String> getUserIdListByRoleIdList(List<String> roleIdList) {
-        return sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(roleIdList,
+        List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(roleIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+        if(ObjectUtil.isNotEmpty(userIdList)){
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList)
+                            .eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()))
+                    .stream().map(SysUser::getId).collect(Collectors.toList());
+        } else {
+            return CollectionUtil.newArrayList();
+        }
+    }
+
+    @Override
+    public List<String> getUserIdListByGroupIdList(List<String> groupIdList) {
+        List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(groupIdList,
+                SysRelationCategoryEnum.SYS_USER_HAS_GROUP.getValue());
+        if(ObjectUtil.isNotEmpty(userIdList)){
+            return sysUserService.list(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, userIdList)
+                            .eq(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()))
+                    .stream().map(SysUser::getId).collect(Collectors.toList());
+        } else {
+            return CollectionUtil.newArrayList();
+        }
+    }
+
+    @Override
+    public List<String> getGroupIdListByUserIdList(List<String> userIdList) {
+        return sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(userIdList,
+                SysRelationCategoryEnum.SYS_USER_HAS_GROUP.getValue());
     }
 
     @Override

@@ -28,6 +28,14 @@ import lombok.Setter;
 @Setter
 public class SysModuleAddParam {
 
+    /** 新增时可以自设id */
+    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String id;
+
+    /** 新增时可以自设code */
+    @Schema(description = "code")
+    private String code;
+
     /** 标题 */
     @Schema(description = "标题")
     @NotBlank(message = "title不能为空")

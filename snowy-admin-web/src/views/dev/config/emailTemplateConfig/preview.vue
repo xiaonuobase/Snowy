@@ -1,6 +1,6 @@
 <template>
 	<a-modal title="预览" :width="700" :open="open" :destroy-on-close="true" :footer="null" @cancel="onClose">
-		<div v-html="previewHtml"></div>
+		<div class="preview-container" v-html="previewHtml"></div>
 	</a-modal>
 </template>
 
@@ -24,3 +24,16 @@
 		onOpen
 	})
 </script>
+<style scoped>
+	.preview-container {
+		overflow: auto;
+		max-height: 600px;
+	}
+	.preview-container::-webkit-scrollbar {
+		display: none;
+	}
+	.preview-container {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>

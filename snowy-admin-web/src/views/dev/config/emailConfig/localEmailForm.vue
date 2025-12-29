@@ -8,50 +8,70 @@
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 		>
-			<a-form-item label="发送邮箱号：" name="SNOWY_EMAIL_LOCAL_FROM">
-				<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_FROM" placeholder="请输入发送邮箱号" />
-			</a-form-item>
-			<a-form-item label="邮箱密钥：" name="SNOWY_EMAIL_LOCAL_PASSWORD">
-				<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_PASSWORD" placeholder="请输入邮箱密钥" />
-			</a-form-item>
-			<a-form-item label="SMTP服务器域名：" name="SNOWY_EMAIL_LOCAL_SMTP_HOST">
-				<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_SMTP_HOST" placeholder="请输入SMTP服务器域名" />
-			</a-form-item>
-			<a-form-item label="SMTP服务端口：" name="SNOWY_EMAIL_LOCAL_SMTP_PORT">
-				<a-input-number
-					v-model:value="formData.SNOWY_EMAIL_LOCAL_SMTP_PORT"
-					placeholder="请输入SMTP服务端口"
-					style="width: 100%"
-				/>
-			</a-form-item>
-			<a-form-item label="是否需要用户名密码验证：" name="SNOWY_EMAIL_LOCAL_AUTH">
-				<a-switch
-					v-model:checked="formData.SNOWY_EMAIL_LOCAL_AUTH"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否需要用户名密码验证"
-				/>
-			</a-form-item>
-			<a-form-item label="是否使用SSL安全连接：" name="SNOWY_EMAIL_LOCAL_SSL_ENABLE">
-				<a-switch
-					v-model:checked="formData.SNOWY_EMAIL_LOCAL_SSL_ENABLE"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否使用SSL安全连接"
-				/>
-			</a-form-item>
-			<a-form-item label="是否使用STARTTLS安全连接：" name="SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE">
-				<a-switch
-					v-model:checked="formData.SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE"
-					checked-children="是"
-					un-checked-children="否"
-					placeholder="请选择是否使用STARTTLS安全连接"
-				/>
-			</a-form-item>
-			<a-form-item>
-				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button class="xn-ml10" @click="() => formRef.resetFields()">重置</a-button>
-			</a-form-item>
+			<a-row :gutter="8">
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="发送邮箱号：" name="SNOWY_EMAIL_LOCAL_FROM">
+						<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_FROM" placeholder="请输入发送邮箱号" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="邮箱密钥：" name="SNOWY_EMAIL_LOCAL_PASSWORD">
+						<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_PASSWORD" placeholder="请输入邮箱密钥" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="SMTP服务器域名：" name="SNOWY_EMAIL_LOCAL_SMTP_HOST">
+						<a-input v-model:value="formData.SNOWY_EMAIL_LOCAL_SMTP_HOST" placeholder="请输入SMTP服务器域名" />
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="SMTP服务端口：" name="SNOWY_EMAIL_LOCAL_SMTP_PORT">
+						<a-input-number
+							v-model:value="formData.SNOWY_EMAIL_LOCAL_SMTP_PORT"
+							placeholder="请输入SMTP服务端口"
+							style="width: 100%"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否需要用户名密码验证：" name="SNOWY_EMAIL_LOCAL_AUTH">
+						<a-switch
+							v-model:checked="formData.SNOWY_EMAIL_LOCAL_AUTH"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否需要用户名密码验证"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否使用SSL安全连接：" name="SNOWY_EMAIL_LOCAL_SSL_ENABLE">
+						<a-switch
+							v-model:checked="formData.SNOWY_EMAIL_LOCAL_SSL_ENABLE"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否使用SSL安全连接"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item label="是否使用STARTTLS安全连接：" name="SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE">
+						<a-switch
+							v-model:checked="formData.SNOWY_EMAIL_LOCAL_STARTTLS_ENABLE"
+							checked-children="是"
+							un-checked-children="否"
+							placeholder="请选择是否使用STARTTLS安全连接"
+						/>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+					<a-form-item>
+						<a-space>
+							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
+							<a-button @click="() => formRef.resetFields()">重置</a-button>
+						</a-space>
+					</a-form-item>
+				</a-col>
+			</a-row>
 		</a-form>
 	</a-spin>
 </template>
@@ -121,7 +141,7 @@
 	}
 	const layout = {
 		labelCol: {
-			span: 4
+			span: 24
 		},
 		wrapperCol: {
 			span: 12

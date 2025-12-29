@@ -13,7 +13,7 @@
 package vip.xiaonuo.auth.modular.login.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
-import cn.dev33.satoken.stp.SaLoginModel;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.annotation.Resource;
@@ -43,10 +43,10 @@ public class AuthListener implements SaTokenListener {
 
     /** 每次登录时触发 */
     @Override
-    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel)  {
+    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginParameter loginModel)  {
         // 更新用户的登录时间和登录ip等信息
         if(SaClientTypeEnum.B.getValue().equals(loginType)) {
-            loginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDevice());
+            loginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDeviceType());
             // 记录B端登录日志
             Object name = loginModel.getExtra("name");
             if(ObjectUtil.isNotEmpty(name)) {
@@ -55,7 +55,7 @@ public class AuthListener implements SaTokenListener {
                 devLogApi.executeLoginLog(null);
             }
         } else {
-            clientLoginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDevice());
+            clientLoginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDeviceType());
         }
     }
 
@@ -123,7 +123,7 @@ public class AuthListener implements SaTokenListener {
 
     /** 每次Token续期时触发 */
     @Override
-    public void doRenewTimeout(String tokenValue, Object loginId, long timeout) {
+    public void doRenewTimeout(String loginType, Object loginId, String tokenValue, long timeout) {
         // ...
     }
 }

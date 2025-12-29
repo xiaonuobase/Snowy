@@ -163,7 +163,7 @@ public interface BizOrgService extends IService<BizOrg> {
      * @author xuyuxiang
      * @date 2022/7/22 13:34
      **/
-    List<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam);
+    Page<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam);
 
     /**
      * 获取人员选择器
@@ -172,4 +172,12 @@ public interface BizOrgService extends IService<BizOrg> {
      * @date 2022/4/24 20:08
      */
     Page<BizUser> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam);
+
+    /**
+     * 复制机构
+     *
+     * @author yubaoshan
+     * @date 2025/12/24 01:30
+     */
+    void copy(BizOrgCopyParam bizOrgCopyParam);
 }

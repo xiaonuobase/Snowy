@@ -37,5 +37,5 @@ public interface SysUserExtService extends IService<SysUserExt> {
      * @author xuyuxiang
      * @date 2022/4/27 21:38
      */
-    void createExtInfo(String userId, String sourceFromType);
+    SysUserExt createExtInfo(String userId, String sourceFromType);
 }

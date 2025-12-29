@@ -14,8 +14,8 @@ package vip.xiaonuo.auth.modular.login.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -167,5 +167,31 @@ public class AuthController {
     public CommonResult<String> register(@RequestBody @Valid AuthRegisterParam authRegisterParam) {
         authService.register(authRegisterParam, SaClientTypeEnum.B.getValue());
         return CommonResult.ok();
+    }
+
+    /**
+     * B端动态口令登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    @ApiOperationSupport(order = 10)
+    @Operation(summary = "B端动态口令登录")
+    @PostMapping("/auth/b/doLoginByOtp")
+    public CommonResult<String> doLoginByOtp(@RequestBody @Valid AuthOtpLoginParam authOtpLoginParam) {
+        return CommonResult.data(authService.doLoginByOtp(authOtpLoginParam, SaClientTypeEnum.B.getValue()));
+    }
+
+    /**
+     * B端判断是否登录
+     *
+     * @author xuyuxiang
+     * @date 2021/10/15 13:12
+     **/
+    @ApiOperationSupport(order = 11)
+    @Operation(summary = "B端判断是否登录")
+    @GetMapping("/auth/b/isLogin")
+    public CommonResult<Boolean> isLogin() {
+        return CommonResult.data(StpUtil.isLogin());
     }
 }

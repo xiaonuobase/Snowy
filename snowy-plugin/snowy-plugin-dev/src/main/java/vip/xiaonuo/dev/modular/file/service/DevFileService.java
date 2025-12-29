@@ -73,6 +73,16 @@ public interface DevFileService extends IService<DevFile> {
      **/
     void download(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException;
 
+
+    /**
+     * 授权下载文件
+     *
+     * @author xuyuxiang
+     * @date 2022/6/21 15:44
+     **/
+    void authDownload(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException;
+
+
     /**
      * 删除文件
      *
@@ -112,4 +122,12 @@ public interface DevFileService extends IService<DevFile> {
      * @date 2022/4/24 21:18
      */
     DevFile queryEntity(String id);
+
+    /**
+     * 根据文件ids获得文件列表
+     *
+     * @author yubaoshan
+     * @date 2025/8/25 21:18
+     */
+    List<DevFile> getFileListByIds(List<String> ids);
 }
