@@ -147,6 +147,20 @@
                 <version>${snowy.version}</version>
             </dependency>
 
+            <!-- snowy-plugin-im -->
+            <dependency>
+                <groupId>vip.xiaonuo</groupId>
+                <artifactId>snowy-plugin-im</artifactId>
+                <version>${snowy.version}</version>
+            </dependency>
+
+            <!-- snowy-plugin-im-api -->
+            <dependency>
+                <groupId>vip.xiaonuo</groupId>
+                <artifactId>snowy-plugin-im-api</artifactId>
+                <version>${snowy.version}</version>
+            </dependency>
+
             <!-- nashorn-core -->
             <dependency>
                 <groupId>org.openjdk.nashorn</groupId>
