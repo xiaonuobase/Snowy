@@ -91,6 +91,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		visible.value = false
+		formData.value = {}
 	}
 	// 默认要校验的
 	const formRules = {
@@ -111,7 +112,7 @@
 				roleApi
 					.submitForm(formData.value, formData.value.id)
 					.then(() => {
-						visible.value = false
+						onClose()
 						emit('successful')
 					})
 					.finally(() => {
