@@ -51,7 +51,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
         if (ObjectUtil.isEmpty(webSocketConfig) || ObjectUtil.isEmpty(webSocketConfig.getPath())) {
             webSocketConfig.setPath(List.of("/ws/im"));
         }
-        ALLATORIxDEMO();
+        // ALLATORIxDEMO();
         registry.addHandler(new ImWebSocketHandler(), webSocketConfig.getPath().toArray(String[]::new))
                 .addInterceptors(new WebSocketInterceptor())
                 .setAllowedOrigins(Optional.ofNullable(webSocketConfig.getAllowedOrigins()).orElse("*"));
