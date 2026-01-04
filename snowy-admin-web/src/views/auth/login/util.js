@@ -19,10 +19,14 @@ export const afterLogin = async (loginToken) => {
 	const menu = tool.data.get('MENU')
 	let indexMenu = routerUtil.getIndexMenu(menu).path
 
-	// 重置系统默认应用
-	tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
-	globalStore().setModule(menu[0].id)
-
+	if (menu[0] && menu[0].id) {
+		// 重置系统默认应用
+		tool.data.set('SNOWY_MENU_MODULE_ID', menu[0].id)
+		globalStore().setModule(menu[0].id)
+	} else {
+		// 清理掉系统默认应用
+		tool.data.remove('SNOWY_MENU_MODULE_ID')
+	}
 	if (tool.data.get('LAST_VIEWS_PATH')) {
 		// 如果有缓存，将其登录跳转到最后访问的路由
 		indexMenu = tool.data.get('LAST_VIEWS_PATH')
