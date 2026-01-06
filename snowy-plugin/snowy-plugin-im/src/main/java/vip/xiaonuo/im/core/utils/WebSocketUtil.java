@@ -78,7 +78,6 @@ public class WebSocketUtil {
             sendMessage(session, errorMsg.toString());
             return;
         }
-
         // 处理音频相关的信令消息
         if (type.startsWith("call_")) {
             // 添加音频配置
@@ -98,7 +97,6 @@ public class WebSocketUtil {
                 }
             }
         }
-        
         // 转发信令消息给接收方
         sendMessage(toSession, jsonObject.toString());
     }
@@ -111,17 +109,24 @@ public class WebSocketUtil {
             // 获取消息
             String payload = message.getPayload();
             // 解析消息
-            JSONObject jsonObject = JSONUtil.parseObj(payload);
-            String messageType = jsonObject.getStr("type");
-            
+            ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
+            String type = imMessage.getType();
+            if (null == type){
+                return;
+            }
+
             // 处理WebRTC信令消息
-            if(messageType != null && messageType.startsWith("call_")) {
-                handleWebRTCSignaling(session, jsonObject);
+            if( type.startsWith("call_")) {
+                handleWebRTCSignaling(session, JSONUtil.parseObj(message.getPayload()));
+                return;
+            }
+            // 发送用户在线列表
+            if (type.equals("online_user")) {
+                sendOnlineUserList(session);
                 return;
             }
             
             // 处理普通IM消息
-            ImMessage imMessage = JSONUtil.toBean(payload, ImMessage.class);
             if (imMessage.getType().equals("5")||imMessage.getType().equals("6")) {
                 imMessage.setIsRead("1");
             }else{

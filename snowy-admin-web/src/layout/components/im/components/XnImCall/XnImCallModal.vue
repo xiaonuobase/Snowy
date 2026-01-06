@@ -176,8 +176,8 @@ const sendCallMessage = (status: string, duration?: number) => {
 };
 
 // 开始通话计时
-const startCallTimer = () => {
-  callStartTime.value = Date.now();
+const startCallTimer = (startAt?: number) => {
+  callStartTime.value = startAt || Date.now();
 };
 
 // 处理通话超时
@@ -199,8 +199,8 @@ watch(() => props.callState.callStatus, (newStatus, oldStatus) => {
       clearTimeout(callTimeoutTimer.value);
       callTimeoutTimer.value = null;
     }
-    // 开始通话计时
-    startCallTimer();
+    // 使用通话服务中记录的起始时间，确保双方时间一致
+    startCallTimer(props.callState.callStartTime || undefined);
   }
 }, { immediate: true });
 
@@ -238,7 +238,7 @@ const onRejectCall = () => {
 
 // 结束通话
 const onEndCall = () => {
-  const duration = Math.floor((Date.now() - callStartTime.value) / 1000);
+  const duration = callStartTime.value ? Math.floor((Date.now() - callStartTime.value) / 1000) : 0;
   let status = '通话结束';
   
   // 根据不同的通话状态设置不同的状态信息
@@ -308,6 +308,13 @@ const switchVideo = (type: 'local' | 'remote') => {
   });
 };
 
+// 同步服务端记录的通话开始时间，确保双方显示一致
+watch(() => props.callState.callStartTime, (startAt) => {
+  if (startAt) {
+    callStartTime.value = startAt;
+  }
+});
+
 const handleMouseDown = (e: MouseEvent) => {
   isDragging = true;
   startX = e.clientX;
@@ -361,7 +368,7 @@ onUnmounted(() => {
   }
   
   // 根据不同的通话状态发送相应的消息
-  const duration = Math.floor((Date.now() - callStartTime.value) / 1000);
+  const duration = callStartTime.value ? Math.floor((Date.now() - callStartTime.value) / 1000) : 0;
   if (props.callState.callStatus === 'connected') {
     sendCallMessage('通话结束', duration);
   } else if (props.callState.callStatus === 'incoming') {

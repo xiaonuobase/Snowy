@@ -74,7 +74,7 @@
 </template>
 
 <script setup name="uploadIndex">
-	import { watch, defineEmits, defineProps, defineExpose } from 'vue'
+	import { watch, ref } from 'vue'
 	import tool from '@/utils/tool'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'

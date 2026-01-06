@@ -37,6 +37,7 @@ export interface WebRTCState {
   peerConnection: RTCPeerConnection | null;
   callDuration: string;
   callTimer: NodeJS.Timer | null;
+  callStartTime?: number | null;
   incomingCall: IncomingCall;
   callModalVisible: boolean;
   callType: CallType;

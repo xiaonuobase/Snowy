@@ -16,7 +16,7 @@ const request = (prop, url, ...arg) => {
 /**
  * 用户接口api
  *
- * @author yubaoshan
+ * @author chengchuanyao
  * @date 2022-09-22 22:33:20
  */
 export default {

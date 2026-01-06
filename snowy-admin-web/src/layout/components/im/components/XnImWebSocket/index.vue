@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted, onUnmounted, defineProps, defineEmits, defineExpose } from 'vue'
+	import { ref, onMounted, onUnmounted } from 'vue'
 	import { notification } from 'ant-design-vue'
 	import tool from '@/utils/tool'
 	import { convertUrl } from '@/utils/apiAdaptive'

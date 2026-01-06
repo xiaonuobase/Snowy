@@ -69,7 +69,7 @@
 	import 'vue-cropper/dist/index.css'
 	// eslint-disable-next-line no-unused-vars
 	import { VueCropper } from 'vue-cropper'
-	import { ref, defineProps, defineEmits, defineExpose } from 'vue'
+	import { ref } from 'vue'
 
 	const cropper = ref()
 	const getBase64 = (img, callback) => {

@@ -28,6 +28,7 @@ export function useCallService(
     peerConnection: null,
     callDuration: '00:00',
     callTimer: null,
+    callStartTime: null,
     incomingCall: { fromUserId: '' },
     callModalVisible: false,
     callType: 'voice',
@@ -182,6 +183,13 @@ export function useCallService(
         if (state.peerConnection?.connectionState === 'connected') {
           console.log('连接成功建立!');
           state.callStatus = 'connected';
+          // 仅在真正建立媒体连接后记录起始时间并启动计时，避免双方计时不一致
+          if (!state.callStartTime) {
+            state.callStartTime = Date.now();
+          }
+          if (!state.callTimer) {
+            startCallTimer();
+          }
         } else if (state.peerConnection?.connectionState === 'failed') {
           console.error('连接失败');
           notification.error({
@@ -482,6 +490,12 @@ export function useCallService(
         console.log('接听通话: 连接状态:', state.peerConnection?.connectionState);
         if (state.peerConnection?.connectionState === 'connected') {
           state.callStatus = 'connected';
+          if (!state.callStartTime) {
+            state.callStartTime = Date.now();
+          }
+          if (!state.callTimer) {
+            startCallTimer();
+          }
         }
       };
       
@@ -529,8 +543,6 @@ export function useCallService(
       
       // 更新UI状态
       state.callStatus = 'connected';
-      // 仅当状态为connected时才开始计时
-      startCallTimer();
       
     } catch (error) {
       console.error('接听通话失败:', error);
@@ -640,6 +652,7 @@ export function useCallService(
     state.callStatus = null;
     state.callModalVisible = false;
     state.callDuration = '00:00';
+    state.callStartTime = null;
     state.incomingCall = { fromUserId: '' };
     
     console.log('通话已完全终止');
@@ -746,13 +759,22 @@ export function useCallService(
    * 开始计时器
    */
   const startCallTimer = () => {
-    let seconds = 0;
-    state.callTimer = setInterval(() => {
-      seconds++;
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
+    if (state.callTimer) return;
+    if (!state.callStartTime) {
+      state.callStartTime = Date.now();
+    }
+
+    const updateDuration = () => {
+      const start = state.callStartTime || Date.now();
+      const elapsedSeconds = Math.max(0, Math.floor((Date.now() - start) / 1000));
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const remainingSeconds = elapsedSeconds % 60;
       state.callDuration = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }, 1000);
+    };
+
+    // 立即计算一次，避免等待1秒
+    updateDuration();
+    state.callTimer = setInterval(updateDuration, 1000);
   };
 
   /**
@@ -801,8 +823,6 @@ export function useCallService(
               .then(() => {
                 console.log('成功设置远程描述');
                 state.callStatus = 'connected';
-                // 在接收到对方应答后开始计时
-                startCallTimer();
               })
               .catch(error => {
                 console.error('设置远程描述失败:', error);
@@ -834,8 +854,6 @@ export function useCallService(
                     .then(() => {
                       console.log('延迟后成功设置远程描述');
                       state.callStatus = 'connected';
-                      // 在这种情况下也要开始计时
-                      startCallTimer();
                     })
                     .catch(error => {
                       console.error('延迟后设置远程描述仍然失败:', error);

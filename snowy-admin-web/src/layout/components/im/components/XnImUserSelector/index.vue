@@ -145,7 +145,7 @@
 <script setup name="userSelector">
 	import { message } from 'ant-design-vue'
 	import { remove, isEmpty, cloneDeep } from 'lodash-es'
-	import { watch, ref, defineExpose } from 'vue'
+	import { watch, ref } from 'vue'
 	// 弹窗是否打开
 	const visible = ref(false)
 	const deleteShow = ref('')
