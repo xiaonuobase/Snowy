@@ -88,7 +88,7 @@ export default defineConfig(({ command, mode }) => {
 						// 第三方库分包配置保持不变
 						'vue-vendor': ['vue', 'vue-router', 'pinia', 'vue-i18n'],
 						'ant-design-vendor': ['ant-design-vue', '@ant-design/icons-vue', 'lodash-es', 'axios', 'dayjs'],
-						'office-vendor': ['@vue-office/docx', 'vue-pdf-embed', '@vue-office/excel']
+						'office-vendor': ['@vue-office/docx', 'vue-pdf-embed', '@vue-office/excel', 'vue-pdf-embed']
 					}
 				}
 			},

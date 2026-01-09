@@ -24,10 +24,34 @@
 			default: ''
 		}
 	})
+
 	declare global {
-    interface WebSocket {
-        sendWebSocketMessage: (data: any) => void;
-				setMessageCallback: (callback: (data: string) => void) => void;
+		interface WebSocket {
+			sendWebSocketMessage: (data: any) => void
+			setMessageCallback: (callback: (data: string) => void) => void
+		}
+	}
+
+	// Keep connection warm to reduce call init latency
+	const heartbeatTimer = ref<NodeJS.Timeout | null>(null)
+
+	const startHeartbeat = () => {
+		if (heartbeatTimer.value) return
+		heartbeatTimer.value = setInterval(() => {
+			if (websocketInstance.value && websocketInstance.value.readyState === WebSocket.OPEN) {
+				try {
+					websocketInstance.value.send('ping')
+				} catch (e) {
+					stopHeartbeat()
+					reconnect()
+				}
+			}
+		}, 25000)
+	}
+	const stopHeartbeat = () => {
+		if (heartbeatTimer.value) {
+			clearInterval(heartbeatTimer.value)
+			heartbeatTimer.value = null
 		}
 	}
 
@@ -38,6 +62,7 @@
 		if (isReconnecting.value) {
 			return
 		}
+		isReconnecting.value = true
 		// 重连定时器-每次WebSocket错误方法onerror触发它都会触发
 		reconnectTimer.value && clearTimeout(reconnectTimer.value)
 		isReconnectingRun.value = true
@@ -47,7 +72,7 @@
 			initWebSocket()
 			isReconnecting.value = false
 			isReconnectingRun.value = false
-		}, 4000)
+		}, 1500)
 	}
 	const initWebSocket = () => {
 		let url = props.uri.replace('https', 'wss').replace('http', 'ws') + convertUrl('/ws/im') + '?token=' + tool.data.get('TOKEN')
@@ -58,7 +83,10 @@
 			})
 			return
 		}
-		if (websocketInstance.value) {
+		if (websocketInstance.value && websocketInstance.value.readyState === WebSocket.OPEN) {
+			return
+		}
+		if (websocketInstance.value && websocketInstance.value.readyState === WebSocket.CONNECTING) {
 			return
 		}
 		websocketInstance.value = new WebSocket(url)
@@ -72,6 +100,7 @@
 			isReconnecting.value = false
 			isReconnectingRun.value = false
 			reconnectTimer.value && clearTimeout(reconnectTimer.value)
+			startHeartbeat()
 			emit('setWebSocket', websocketInstance.value)
 		}
 		websocketInstance.value.onerror = (e) => {
@@ -85,15 +114,17 @@
 				})
 			}
 			emit('setWebSocket', null)
-			isReconnectingRun.value && reconnect()
+			stopHeartbeat()
+			reconnect()
 		}
 		websocketInstance.value.onmessage = (e) => {
-			if (e.data === 'ok') return
+			if (e.data === 'ok' || e.data === 'pong') return
 			if (onMessageCallback.value) {
 				onMessageCallback.value(e.data)
 			}
 		}
 		websocketInstance.value.onclose = (e) => {
+			stopHeartbeat()
 			if (e.code === 1000) {
 				notification.success({
 					message: 'IM连接关闭'
@@ -124,6 +155,7 @@
 	const closeWebSocket = () => {
 		//主动关闭连接
 		isReconnecting.value = true
+		stopHeartbeat()
 		if (websocketInstance.value) {
 			websocketInstance.value.close()
 		}
@@ -139,6 +171,7 @@
 			return
 		}
 		closeWebSocketAsync.value = true
+		stopHeartbeat()
 		closeWebSocket()
 	})
 

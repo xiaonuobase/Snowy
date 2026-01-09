@@ -1372,7 +1372,7 @@
 		})
 		// 保存当前聊天对象信息，以便通话结束后恢复
 		savePriorChatUser()
-		callService.startVideoCall(currentUser.id, chatUser.id)
+		callService.startVideoCall(currentUser.id, chatUser.id, userClient.value)
 	}
 
 	// 开始语音通话
@@ -1382,7 +1382,7 @@
 		})
 		// 保存当前聊天对象信息，以便通话结束后恢复
 		savePriorChatUser()
-		callService.startVoiceCall(currentUser.id, chatUser.id)
+		callService.startVoiceCall(currentUser.id, chatUser.id, userClient.value)
 	}
 
 	// 保存通话前的聊天对象信息
