@@ -250,7 +250,7 @@
 												>
 													<a-image
 														:width="80"
-														:src="key.downloadPath"
+														:src="key.downloadPath + tool.data.get('TOKEN')"
 														:fallback="downIcon"
 														v-if="imageSuffix.indexOf(key.suffix) > -1"
 													/>
