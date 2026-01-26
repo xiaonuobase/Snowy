@@ -28,6 +28,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.group.entity.BizGroup;
 import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
 import vip.xiaonuo.biz.modular.group.param.*;
@@ -39,6 +40,7 @@ import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysGroupApi;
 
@@ -85,6 +87,8 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
     public void add(BizGroupAddParam bizGroupAddParam) {
         BizGroup bizGroup = BeanUtil.toBean(bizGroupAddParam, BizGroup.class);
         this.save(bizGroup);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(bizGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -93,13 +97,18 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
         BizGroup bizGroup = this.queryEntity(bizGroupEditParam.getId());
         BeanUtil.copyProperties(bizGroupEditParam, bizGroup);
         this.updateById(bizGroup);
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(bizGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<BizGroupIdParam> bizGroupIdParamList) {
+        List<String> groupIdList = CollStreamUtil.toList(bizGroupIdParamList, BizGroupIdParam::getId);
         // 执行删除
-        this.removeByIds(CollStreamUtil.toList(bizGroupIdParamList, BizGroupIdParam::getId));
+        this.removeByIds(groupIdList);
+        // 发布删除事件
+        CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.GROUP.getValue(), groupIdList);
     }
 
     @Override

@@ -1469,6 +1469,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isEmpty(sysUser)) {
             throw new CommonException("用户不存在，id值为：{}", id);
         }
+        transService.transOne(sysUser);
         return sysUser;
     }
 

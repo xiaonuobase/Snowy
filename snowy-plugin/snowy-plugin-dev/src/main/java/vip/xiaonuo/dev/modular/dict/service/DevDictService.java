@@ -13,6 +13,7 @@
 package vip.xiaonuo.dev.modular.dict.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.dev.modular.dict.entity.DevDict;
@@ -99,4 +100,12 @@ public interface DevDictService extends IService<DevDict> {
      * @date 2025/6/6 13:04
      */
     String getDictLabel(String typeCode, String value);
+
+    /**
+     * 根据父类型获取字典列表
+     *
+     * @author yubaoshan
+     * @date 2025/6/6 13:04
+     */
+    List<JSONObject> getDictListByParentDictValue(String typeCode);
 }

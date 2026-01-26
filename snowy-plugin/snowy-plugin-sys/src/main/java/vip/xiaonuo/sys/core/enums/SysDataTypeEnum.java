@@ -46,7 +46,12 @@ public enum SysDataTypeEnum {
     /**
      * 用户
      */
-    USER("USER");
+    USER("USER"),
+
+    /**
+     * 用户组
+     */
+    GROUP("GROUP");
 
     private final String value;
 
