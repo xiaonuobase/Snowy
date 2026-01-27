@@ -106,6 +106,24 @@ tool.dictTypeData = (dictValue, value) => {
 	return dict ? dict.dictLabel : ''
 }
 
+// 字典颜色翻译方法，界面插槽使用方法 {{ $TOOL.dictTypeColor('AI_CHANNEL_STATUS', record.status) }}
+tool.dictTypeColor = (dictValue, value) => {
+	const dictTypeTree = tool.dictDataAll()
+	if (!dictTypeTree) {
+		return 'default'
+	}
+	const tree = dictTypeTree.find((item) => item.dictValue === dictValue)
+	if (!tree) {
+		return 'default'
+	}
+	const children = tree.children
+	if (!tree.children) {
+		return 'default'
+	}
+	const dict = children.find((item) => item.dictValue === value)
+	return dict ? dict.dictColor : 'default'
+}
+
 // 获取某个code下字典的列表，多用于字典下拉框
 tool.dictTypeList = (dictValue) => {
 	const dictTypeTree = tool.dictDataAll()

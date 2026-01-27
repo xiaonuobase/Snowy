@@ -62,10 +62,7 @@
 				>
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'whetherToClick'">
-							<a-tag color="blue" v-if="record.whetherToClick === 'ENABLE'">
-								{{ $TOOL.dictTypeData('WHETHER_TO_CLICK', record.whetherToClick) }}
-							</a-tag>
-							<a-tag color="red" v-if="record.whetherToClick === 'DISABLE'">
+							<a-tag :color="$TOOL.dictTypeColor('WHETHER_TO_CLICK', record.whetherToClick)">
 								{{ $TOOL.dictTypeData('WHETHER_TO_CLICK', record.whetherToClick) }}
 							</a-tag>
 						</template>
@@ -92,7 +89,7 @@
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'place'">
-					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" color="green">{{
+					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" :color="$TOOL.dictTypeColor('DEV_SLIDESHOW_PLACE', textValue)">{{
 						$TOOL.dictTypeData('DEV_SLIDESHOW_PLACE', textValue)
 					}}</a-tag>
 				</template>

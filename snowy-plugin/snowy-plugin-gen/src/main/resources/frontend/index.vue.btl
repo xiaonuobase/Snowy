@@ -130,7 +130,7 @@
 				</template>
 				<% } else if (configList[i].effectType == 'checkbox') { %>
 				<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
-					<a-tag v-for="textValue in JSON.parse(record.${configList[i].fieldNameCamelCase})" :key="textValue" color="green">{{ $TOOL.dictTypeData('${configList[i].dictTypeCode}', textValue) }}</a-tag>
+					<a-tag v-for="textValue in JSON.parse(record.${configList[i].fieldNameCamelCase})" :key="textValue" :color="$TOOL.dictTypeColor('${configList[i].dictTypeCode}', textValue)">{{ $TOOL.dictTypeData('${configList[i].dictTypeCode}', textValue) }}</a-tag>
 				</template>
 				<% } else if (configList[i].effectType == 'imageUpload') { %>
 				<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">

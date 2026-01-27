@@ -79,28 +79,13 @@
 					<span v-else>-</span>
 				</template>
 				<template v-if="column.dataIndex === 'menuType'">
-					<a-tag v-if="record.menuType === 'CATALOG'" color="cyan">
-						{{ $TOOL.dictTypeData('MENU_TYPE', record.menuType) }}
-					</a-tag>
-					<a-tag v-if="record.menuType === 'MENU'" color="blue">
-						{{ $TOOL.dictTypeData('MENU_TYPE', record.menuType) }}
-					</a-tag>
-					<a-tag v-if="record.menuType === 'IFRAME'" color="purple">
-						{{ $TOOL.dictTypeData('MENU_TYPE', record.menuType) }}
-					</a-tag>
-					<a-tag v-if="record.menuType === 'LINK'" color="orange">
+					<a-tag :color="$TOOL.dictTypeColor('MENU_TYPE', record.menuType)">
 						{{ $TOOL.dictTypeData('MENU_TYPE', record.menuType) }}
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'visible'">
-					<a-tag v-if="record.visible === 'FALSE'">
+					<a-tag :color="$TOOL.dictTypeColor('MENU_VISIBLE', record.visible)">
 						{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
-					</a-tag>
-					<a-tag v-else color="green">
-						<span v-if="record.visible === 'TRUE'">
-							{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
-						</span>
-						<span v-else> 显示 </span>
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'action'">

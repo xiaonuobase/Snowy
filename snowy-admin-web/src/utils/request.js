@@ -127,7 +127,8 @@ service.interceptors.response.use(
 				'turn',
 				'adjust',
 				'reject',
-				'saveDraft'
+				'saveDraft',
+				'setDefault'
 			]
 			apiNameArray.forEach((apiName) => {
 				// 上面去掉接口路径后，方法内包含内置的进行统一提示成功

@@ -86,19 +86,12 @@
 					<span v-else>未上传</span>
 				</template>
 				<template v-if="column.dataIndex === 'type'">
-					<a-tag :bordered="false" color="success" v-if="record.type === 'NOTICE'">
+					<a-tag :bordered="false" :color="$TOOL.dictTypeColor('BIZ_NOTICE_TYPE', record.type)">
 						{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', record.type) }}
 					</a-tag>
-					<a-tag :bordered="false" color="processing" v-else-if="record.type === 'ANNOUNCEMENT'">
-						{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', record.type) }}
-					</a-tag>
-					<a-tag :bordered="false" color="warning" v-else-if="record.type === 'WARNING'">
-						{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', record.type) }}
-					</a-tag>
-					<span v-else>无</span>
 				</template>
 				<template v-if="column.dataIndex === 'place'">
-					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" color="processing">
+					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" :color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)">
 						{{ $TOOL.dictTypeData('BIZ_NOTICE_PLACE', textValue) }}
 					</a-tag>
 				</template>
