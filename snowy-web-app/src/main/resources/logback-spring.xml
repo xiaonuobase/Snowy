@@ -5,7 +5,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
     <!-- 注册自定义转换器 -->
-    <conversionRule conversionWord="tid" converterClass="vip.xiaonuo.common.aspect.CustomTraceIdConverter" />
+    <conversionRule conversionWord="tid" class="vip.xiaonuo.common.aspect.CustomTraceIdConverter" />
 
     <!-- 定义自定义日志格式 -->
     <property  name="CUSTOM_LOG_PATTERN"
