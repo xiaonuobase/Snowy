@@ -32,8 +32,8 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
-import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.enums.BizPositionCategoryEnum;
@@ -42,6 +42,7 @@ import vip.xiaonuo.biz.modular.position.param.*;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -237,6 +238,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
     }
 
     @Override

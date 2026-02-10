@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.modular.role.controller;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
 import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
 import vip.xiaonuo.sys.modular.role.result.*;
@@ -249,6 +251,19 @@ public class SysRoleController {
     @GetMapping("/sys/role/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
         return CommonResult.data(sysRoleService.orgTreeSelector());
+    }
+
+    /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 15)
+    @Operation(summary = "获取组织树选择器（懒加载）")
+    @GetMapping("/sys/role/orgTreeLazySelector")
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return CommonResult.data(sysRoleService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }
 
     /**

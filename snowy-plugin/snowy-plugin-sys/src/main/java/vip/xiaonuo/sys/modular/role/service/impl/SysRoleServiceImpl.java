@@ -41,6 +41,7 @@ import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
@@ -355,6 +356,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
     }
 
     @Override

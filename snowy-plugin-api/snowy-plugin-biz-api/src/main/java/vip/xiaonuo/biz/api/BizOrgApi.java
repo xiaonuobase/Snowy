@@ -35,6 +35,14 @@ public interface BizOrgApi {
     List<Tree<String>> orgTreeSelector();
 
     /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2024/11/1 18:27:51
+     **/
+    List<JSONObject> orgTreeLazySelector(String parentId);
+
+    /**
      * 获取组织列表选择器
      *
      * @author yubaoshan

@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.modular.org.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -44,6 +45,14 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/4/24 20:08
      */
     List<Tree<String>> tree();
+
+    /**
+     * 获取机构树（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/21 16:13
+     **/
+    List<JSONObject> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam);
 
     /**
      * 添加组织

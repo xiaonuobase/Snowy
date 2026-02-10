@@ -51,6 +51,14 @@ public interface SysOrgApi {
     List<Tree<String>> orgTreeSelector();
 
     /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/7/22 14:46
+     **/
+    List<JSONObject> orgTreeLazySelector(String parentId);
+
+    /**
      * 获取组织列表选择器
      *
      * @author xuyuxiang

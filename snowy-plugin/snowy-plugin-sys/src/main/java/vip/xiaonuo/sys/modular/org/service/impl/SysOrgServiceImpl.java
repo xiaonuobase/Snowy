@@ -30,6 +30,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -53,6 +55,7 @@ import vip.xiaonuo.sys.modular.user.service.SysUserService;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +66,11 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
+
+    private static final String ORG_ALL_LIST_CACHE_KEY = "sys-org:all-list";
+
+    @Resource
+    private CommonCacheOperator commonCacheOperator;
 
     @Resource
     private SysOrgExtService sysOrgExtService;
@@ -111,6 +119,58 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return TreeUtil.build(treeNodeList, "0");
     }
 
+    @Override
+    public List<JSONObject> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        String parentId = ObjectUtil.isNotEmpty(sysOrgTreeLazyParam.getParentId()) ? sysOrgTreeLazyParam.getParentId() : "0";
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+
+        // 获取所有机构
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        Set<String> visibleOrgIds = null;
+
+        // 如果数据范围不为空，则计算可见机构ID集合（包含自身及其所有父级）
+        if (ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            Set<SysOrg> sysOrgSet = CollectionUtil.newHashSet();
+            loginUserDataScope.forEach(orgId -> sysOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
+            visibleOrgIds = sysOrgSet.stream().map(SysOrg::getId).collect(Collectors.toSet());
+        }
+
+        // 过滤出当前父级下的可见子级
+        final Set<String> finalVisibleOrgIds = visibleOrgIds;
+        List<SysOrg> sysOrgList = allOrgList.stream()
+                .filter(sysOrg -> sysOrg.getParentId().equals(parentId))
+                .filter(sysOrg -> finalVisibleOrgIds == null || finalVisibleOrgIds.contains(sysOrg.getId()))
+                .sorted(Comparator.comparingInt(SysOrg::getSortCode).thenComparing(SysOrg::getId))
+                .collect(Collectors.toList());
+
+        if (CollectionUtil.isEmpty(sysOrgList)) {
+            return CollectionUtil.newArrayList();
+        }
+
+        // 判断这些机构是否还有可见子机构
+        return sysOrgList.stream().map(sysOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
+            // 计算是否有可见的子节点
+            boolean hasChildren = allOrgList.stream()
+                .anyMatch(item -> item.getParentId().equals(sysOrg.getId()) && (finalVisibleOrgIds == null || finalVisibleOrgIds.contains(item.getId())));
+
+            jsonObject.set("isLeaf", !hasChildren);
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取机构树（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/21 16:13
+     **/
+    public List<JSONObject> treeLazy(String parentId) {
+        SysOrgTreeLazyParam sysOrgTreeLazyParam = new SysOrgTreeLazyParam();
+        sysOrgTreeLazyParam.setParentId(parentId);
+        return this.treeLazy(sysOrgTreeLazyParam);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysOrgAddParam sysOrgAddParam, String sourceFromType) {
@@ -129,6 +189,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         sysOrgExtService.createExtInfo(sysOrg.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -152,6 +214,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.updateById(sysOrg);
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -197,6 +261,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            // 清除缓存
+            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         }
     }
 
@@ -245,6 +311,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                     }
                 }
             });
+            // 清除缓存
+            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         }
     }
 
@@ -259,7 +327,13 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<SysOrg> getAllOrgList() {
-        return this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
+        Object cached = commonCacheOperator.get(ORG_ALL_LIST_CACHE_KEY);
+        if (cached != null) {
+            return JSONUtil.toList(JSONUtil.parseArray(cached), SysOrg.class);
+        }
+        List<SysOrg> list = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
+        commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
+        return list;
     }
 
     @Override
@@ -311,6 +385,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         sysOrgExtService.createExtInfo(sysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         return sysOrg.getId();
     }
 

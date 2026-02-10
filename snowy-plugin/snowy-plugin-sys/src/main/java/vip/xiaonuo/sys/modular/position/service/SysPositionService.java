@@ -13,8 +13,10 @@
 package vip.xiaonuo.sys.modular.position.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 
@@ -101,6 +103,14 @@ public interface SysPositionService extends IService<SysPosition> {
      * @date 2022/4/24 20:08
      */
     List<Tree<String>> orgTreeSelector();
+
+    /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/22 15:53
+     **/
+    List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam);
 
     /**
      * 获取职位选择器

@@ -6,6 +6,7 @@
 				v-model:expandedKeys="defaultExpandedKeys"
 				:tree-data="treeData"
 				:field-names="treeFieldNames"
+				:load-data="onLoadData"
 				@select="treeSelect"
 			/>
 			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
@@ -27,8 +28,8 @@
 									label: 'name',
 									value: 'id'
 								}"
-								selectable="false"
 								tree-line
+								:load-data="onLoadData"
 							/>
 						</a-form-item>
 					</a-col>
@@ -262,26 +263,45 @@
 		})
 	}
 	// 左侧树查询
-	orgApi.orgTree().then((res) => {
+	orgApi.orgTreeLazy().then((res) => {
 		if (res !== null) {
-			treeData.value = res
+			treeData.value = res.map((item) => {
+				return {
+					...item,
+					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+				}
+			})
 			if (isEmpty(defaultExpandedKeys.value)) {
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
-					}
-				})
+				// 默认展开第一级
+				if (treeData.value.length > 0) {
+					defaultExpandedKeys.value.push(treeData.value[0].id)
+				}
 			}
 		}
 	})
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			orgApi
+				.orgTreeLazy({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
+		})
+	}
 	// 列表选择配置
 	const options = {
 		alert: {

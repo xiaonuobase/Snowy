@@ -23,6 +23,7 @@
 				checkable
 				check-strictly
 				:selectable="false"
+				:load-data="onLoadData"
 				@check="treeCheck"
 			>
 			</a-tree>
@@ -65,9 +66,14 @@
 		visible.value = true
 		resultDataModel.dataScopeId = id
 		// const treeData = data.data;
-		userApi.userOrgTreeSelector().then((res) => {
+		userApi.userOrgTreeLazySelector().then((res) => {
 			if (res !== null) {
-				treeData.value = res
+				treeData.value = res.map((item) => {
+					return {
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}
+				})
 				// 赋值选中项
 				echoOrgSelectKeys(checkKeys)
 				// 默认展开2级
@@ -75,15 +81,31 @@
 					// 因为0的顶级
 					if (item.parentId === '0') {
 						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
 					}
 				})
 			}
+		})
+	}
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			userApi
+				.userOrgTreeLazySelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	const onClose = () => {

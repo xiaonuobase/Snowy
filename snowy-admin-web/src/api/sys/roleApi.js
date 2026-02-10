@@ -70,6 +70,10 @@ export default {
 	roleOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
+	// 获取机构树（懒加载）
+	roleOrgTreeLazySelector(data) {
+		return request('orgTreeLazySelector', data, 'get')
+	},
 	// 获取资源授权树
 	roleResourceTreeSelector(data) {
 		return request('resourceTreeSelector', data, 'get')

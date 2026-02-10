@@ -57,6 +57,7 @@ import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizBuildInEnum;
 import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
@@ -638,6 +639,11 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
     }
 
     @Override

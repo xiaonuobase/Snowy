@@ -13,6 +13,7 @@
 package vip.xiaonuo.sys.modular.org.controller;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
 import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
@@ -75,6 +76,19 @@ public class SysOrgController {
     @GetMapping("/sys/org/tree")
     public CommonResult<List<Tree<String>>> tree() {
         return CommonResult.data(sysOrgService.tree());
+    }
+
+    /**
+     * 获取组织树（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 2)
+    @Operation(summary = "获取组织树（懒加载）")
+    @GetMapping("/sys/org/treeLazy")
+    public CommonResult<List<JSONObject>> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
     }
 
     /**
@@ -164,6 +178,19 @@ public class SysOrgController {
     @GetMapping("/sys/org/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
         return CommonResult.data(sysOrgService.orgTreeSelector());
+    }
+
+    /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 8)
+    @Operation(summary = "获取组织树选择器（懒加载）")
+    @GetMapping("/sys/org/orgTreeLazySelector")
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
     }
 
     /**

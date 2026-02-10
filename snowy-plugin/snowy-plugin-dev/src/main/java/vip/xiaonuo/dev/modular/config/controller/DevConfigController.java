@@ -202,6 +202,18 @@ public class DevConfigController {
     }
 
     /**
+     * 获取机构选树（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2025/4/23 20:00
+     */
+    @Operation(summary = "获取机构选树（懒加载）")
+    @GetMapping("/dev/config/orgTreeLazy")
+    public CommonResult<List<JSONObject>> orgTreeLazy(String parentId) {
+        return CommonResult.data(sysOrgApi.orgTreeLazySelector(parentId));
+    }
+
+    /**
      * 获取角色选择器
      *
      * @author yubaoshan

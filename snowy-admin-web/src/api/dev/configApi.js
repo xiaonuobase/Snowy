@@ -54,6 +54,10 @@ export default {
 	configOrgTree(data) {
 		return request('orgTree', data, 'get')
 	},
+	// 获取机构树（懒加载）
+	configOrgTreeLazy(data) {
+		return request('orgTreeLazy', data, 'get')
+	},
 	// 获取机构选择器
 	configOrgSelector(data) {
 		return request('orgSelector', data, 'get')

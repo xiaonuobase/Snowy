@@ -31,6 +31,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.enums.SysUserSourceFromTypeEnum;
 import vip.xiaonuo.sys.modular.user.param.*;
@@ -327,6 +328,19 @@ public class SysUserController {
     @GetMapping("/sys/user/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
         return CommonResult.data(sysUserService.orgTreeSelector());
+    }
+
+    /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 19)
+    @Operation(summary = "获取组织树选择器（懒加载）")
+    @GetMapping("/sys/user/orgTreeLazySelector")
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return CommonResult.data(sysUserService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }
 
     /**

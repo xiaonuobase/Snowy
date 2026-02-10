@@ -16,6 +16,7 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.resource.entity.SysMenu;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
@@ -153,6 +154,14 @@ public interface SysRoleService extends IService<SysRole> {
      * @date 2022/4/24 20:08
      */
     List<Tree<String>> orgTreeSelector();
+
+    /**
+     * 获取组织树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam);
 
     /**
      * 获取资源授权树

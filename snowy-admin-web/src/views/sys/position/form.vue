@@ -14,15 +14,14 @@
 					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 					placeholder="请选择组织"
 					allow-clear
-					tree-default-expand-all
 					:tree-data="treeData"
 					:field-names="{
 						children: 'children',
 						label: 'name',
 						value: 'id'
 					}"
-					selectable="false"
 					tree-line
+					:load-data="onLoadData"
 				></a-tree-select>
 			</a-form-item>
 			<a-form-item label="职位名称：" name="name">
@@ -76,8 +75,36 @@
 			formData.value = Object.assign({}, record)
 		}
 		// 获取机构树
-		positionApi.positionOrgTreeSelector().then((res) => {
-			treeData.value = res
+		positionApi.positionOrgTreeLazySelector().then((res) => {
+			treeData.value = res.map((item) => {
+				return {
+					...item,
+					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+				}
+			})
+		})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			positionApi
+				.positionOrgTreeLazySelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	// 关闭抽屉

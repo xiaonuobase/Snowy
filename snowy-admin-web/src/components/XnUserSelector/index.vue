@@ -42,6 +42,7 @@
 						v-model:expandedKeys="defaultExpandedKeys"
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
+						:load-data="onLoadData"
 						@select="treeSelect"
 					>
 					</a-tree>
@@ -211,6 +212,9 @@
 		orgTreeApi: {
 			type: Function
 		},
+		orgTreeLazyApi: {
+			type: Function
+		},
 		userPageApi: {
 			type: Function
 		},
@@ -255,7 +259,7 @@
 	const recordIds = ref([])
 	// 分页相关
 	const current = ref(0) // 当前页数
-	const pageSize = ref(20) // 每页条数
+	const pageSize = ref(10) // 每页条数
 	const total = ref(0) // 数据总数
 	// 获取选中列表的api
 	const userListByIdList = (param) => {
@@ -280,40 +284,83 @@
 	const onMouseLeave = (index) => {
 		deleteShow.value = ''
 	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (typeof props.orgTreeLazyApi !== 'function' || treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			props
+				.orgTreeLazyApi({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
+		})
+	}
+
+	// 打开弹框
 	const openModal = () => {
-		if (typeof props.orgTreeApi !== 'function') {
-			message.warning('未配置选择器需要的orgTreeApi接口')
-			return
-		}
-		if (typeof props.userPageApi !== 'function') {
-			message.warning('未配置选择器需要的userPageApi接口')
+		if (typeof props.orgTreeApi !== 'function' || typeof props.userPageApi !== 'function') {
+			message.warning('未配置用户选择器API')
 			return
 		}
 		visible.value = true
 		// 获取机构树
-		props
-			.orgTreeApi()
-			.then((data) => {
-				if (data !== null) {
-					treeData.value = data
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
+		if (typeof props.orgTreeLazyApi === 'function') {
+			props
+				.orgTreeLazyApi()
+				.then((data) => {
+					if (!isEmpty(data)) {
+						treeData.value = data.map((item) => {
+							return {
+								...item,
+								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 							}
+						})
+						// 默认展开第一级
+						if (treeData.value.length > 0) {
+							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
-					})
-				}
-			})
-			.finally(() => {
-				cardLoading.value = false
-			})
+					}
+				})
+				.finally(() => {
+					cardLoading.value = false
+				})
+		} else {
+			props
+				.orgTreeApi()
+				.then((data) => {
+					if (data !== null) {
+						treeData.value = data
+						// 默认展开2级
+						treeData.value.forEach((item) => {
+							// 因为0的顶级
+							if (item.parentId === '0') {
+								defaultExpandedKeys.value.push(item.id)
+								// 取到下级ID
+								if (item.children) {
+									item.children.forEach((items) => {
+										defaultExpandedKeys.value.push(items.id)
+									})
+								}
+							}
+						})
+					}
+				})
+				.finally(() => {
+					cardLoading.value = false
+				})
+		}
 		searchFormState.value.size = pageSize.value
 		loadData()
 		if (isEmpty(recordIds.value)) {
@@ -326,6 +373,7 @@
 		userListByIdList(param)
 			.then((data) => {
 				selectedData.value = data
+				userObj.value = data
 			})
 			.finally(() => {
 				selectedTableListLoading.value = false

@@ -6,6 +6,7 @@
 				v-model:expandedKeys="defaultExpandedKeys"
 				:tree-data="treeData"
 				:field-names="treeFieldNames"
+				:load-data="onLoadData"
 				@select="treeSelect"
 			/>
 			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
@@ -27,8 +28,8 @@
 									label: 'name',
 									value: 'id'
 								}"
-								selectable="false"
 								tree-line
+								:load-data="onLoadData"
 							/>
 						</a-form-item>
 					</a-col>
@@ -171,26 +172,52 @@
 		tableRef.value.refresh(true)
 	}
 	// 加载左侧的树
-	bizOrgApi.orgTree().then((res) => {
-		if (res !== null) {
-			treeData.value = res
-			if (isEmpty(defaultExpandedKeys.value)) {
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
+	const loadTreeData = () => {
+		bizOrgApi.orgTreeLazy().then((res) => {
+			if (res !== null) {
+				treeData.value = res.map((item) => {
+					return {
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 					}
 				})
+				if (isEmpty(defaultExpandedKeys.value)) {
+					// 默认展开顶级
+					treeData.value.forEach((item) => {
+						// 因为0的顶级
+						if (item.parentId === '0') {
+							defaultExpandedKeys.value.push(item.id)
+						}
+					})
+				}
 			}
-		}
-	})
+		})
+	}
+	loadTreeData()
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
+			}
+			bizOrgApi
+				.orgTreeLazy({ parentId: treeNode.dataRef.id })
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
+				.catch(() => {
+					resolve()
+				})
+		})
+	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {

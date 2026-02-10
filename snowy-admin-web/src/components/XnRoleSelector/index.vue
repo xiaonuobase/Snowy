@@ -35,6 +35,7 @@
 						v-model:expandedKeys="defaultExpandedKeys"
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
+						:load-data="onLoadData"
 						@select="treeSelect"
 					>
 					</a-tree>
@@ -198,6 +199,9 @@
 		orgTreeApi: {
 			type: Function
 		},
+		orgTreeLazyApi: {
+			type: Function
+		},
 		rolePageApi: {
 			type: Function
 		},
@@ -251,6 +255,31 @@
 	const current = ref(0) // 当前页数
 	const pageSize = ref(10) // 每页条数
 	const total = ref(0) // 数据总数
+
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (typeof props.orgTreeLazyApi !== 'function' || treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			props
+				.orgTreeLazyApi({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
+		})
+	}
+
 	const hasContent = (slotName) => {
 		return !!(slots[slotName] && slots[slotName]().length > 0)
 	}
@@ -296,39 +325,61 @@
 		}
 		visible.value = true
 		// 获取机构树
-		orgTree()
-			.then((data) => {
-				if (!isEmpty(data)) {
-					treeData.value = data
-					// 树中插入全局角色类型
-					if (props.roleGlobal) {
-						const globalRoleType = [
-							{
-								id: 'GLOBAL',
-								parentId: '-1',
-								name: '全局'
+		if (typeof props.orgTreeLazyApi === 'function') {
+			props
+				.orgTreeLazyApi()
+				.then((data) => {
+					if (!isEmpty(data)) {
+						treeData.value = data.map((item) => {
+							return {
+								...item,
+								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 							}
-						]
-						treeData.value = globalRoleType.concat(data)
-					}
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
-							}
+						})
+						// 默认展开第一级
+						if (treeData.value.length > 0) {
+							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
-					})
-				}
-			})
-			.finally(() => {
-				cardLoading.value = false
-			})
+					}
+				})
+				.finally(() => {
+					cardLoading.value = false
+				})
+		} else {
+			orgTree()
+				.then((data) => {
+					if (!isEmpty(data)) {
+						treeData.value = data
+						// 树中插入全局角色类型
+						if (props.roleGlobal) {
+							const globalRoleType = [
+								{
+									id: 'GLOBAL',
+									parentId: '-1',
+									name: '全局'
+								}
+							]
+							treeData.value = globalRoleType.concat(data)
+						}
+						// 默认展开2级
+						treeData.value.forEach((item) => {
+							// 因为0的顶级
+							if (item.parentId === '0') {
+								defaultExpandedKeys.value.push(item.id)
+								// 取到下级ID
+								if (item.children) {
+									item.children.forEach((items) => {
+										defaultExpandedKeys.value.push(items.id)
+									})
+								}
+							}
+						})
+					}
+				})
+				.finally(() => {
+					cardLoading.value = false
+				})
+		}
 		searchFormState.value.size = pageSize.value
 		loadData()
 		if (isEmpty(recordIds.value)) {

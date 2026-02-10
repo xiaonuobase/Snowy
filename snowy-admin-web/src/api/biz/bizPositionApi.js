@@ -42,6 +42,10 @@ export default {
 	positionOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
+	// 获取机构树选择器（懒加载）
+	positionOrgTreeLazySelector(data) {
+		return request('orgTreeLazySelector', data, 'get')
+	},
 	// 获取岗位选择器
 	positionPositionSelector(data) {
 		return request('positionSelector', data, 'get')

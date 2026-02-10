@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysOrgApi;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorOrgListParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 
 import java.util.List;
@@ -57,6 +58,13 @@ public class SysOrgApiProvider implements SysOrgApi {
     @Override
     public List<Tree<String>> orgTreeSelector() {
         return sysOrgService.orgTreeSelector();
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(String parentId) {
+        SysOrgTreeLazyParam sysOrgTreeLazyParam = new SysOrgTreeLazyParam();
+        sysOrgTreeLazyParam.setParentId(parentId);
+        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
     }
 
     @SuppressWarnings("ALL")

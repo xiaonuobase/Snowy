@@ -43,6 +43,7 @@ import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -60,6 +61,11 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> implements BizOrgService {
+
+    private static final String ORG_ALL_LIST_CACHE_KEY = "biz-org:all-list";
+
+    @Resource
+    private CommonCacheOperator commonCacheOperator;
 
     @Resource
     private SysRoleApi sysRoleApi;
@@ -105,7 +111,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     @Override
     public List<Tree<String>> tree() {
         // 获取所有机构
-        List<BizOrg> allOrgList = this.list();
+        List<BizOrg> allOrgList = this.getAllOrgList();
         // 定义机构集合
         Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
         // 校验数据范围
@@ -128,6 +134,58 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 .collect(Collectors.toList());
 
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> treeLazy(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        String parentId = ObjectUtil.isNotEmpty(bizOrgTreeLazyParam.getParentId()) ? bizOrgTreeLazyParam.getParentId() : "0";
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+
+        // 获取所有机构
+        List<BizOrg> allOrgList = this.getAllOrgList();
+        Set<String> visibleOrgIds = null;
+
+        // 如果数据范围不为空，则计算可见机构ID集合（包含自身及其所有父级）
+        if (ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
+            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
+            visibleOrgIds = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toSet());
+        }
+
+        // 过滤出当前父级下的可见子级
+        final Set<String> finalVisibleOrgIds = visibleOrgIds;
+        List<BizOrg> sysOrgList = allOrgList.stream()
+                .filter(bizOrg -> bizOrg.getParentId().equals(parentId))
+                .filter(bizOrg -> finalVisibleOrgIds == null || finalVisibleOrgIds.contains(bizOrg.getId()))
+                .sorted(Comparator.comparingInt(BizOrg::getSortCode).thenComparing(BizOrg::getId))
+                .collect(Collectors.toList());
+
+        if (ObjectUtil.isEmpty(sysOrgList)) {
+            return CollectionUtil.newArrayList();
+        }
+
+        // 判断这些机构是否还有可见子机构
+        return sysOrgList.stream().map(bizOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
+            // 计算是否有可见的子节点
+            boolean hasChildren = allOrgList.stream()
+                .anyMatch(item -> item.getParentId().equals(bizOrg.getId()) && (finalVisibleOrgIds == null || finalVisibleOrgIds.contains(item.getId())));
+            
+            jsonObject.set("isLeaf", !hasChildren);
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取机构树（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    public List<JSONObject> treeLazy(String parentId) {
+        BizOrgTreeLazyParam bizOrgTreeLazyParam = new BizOrgTreeLazyParam();
+        bizOrgTreeLazyParam.setParentId(parentId);
+        return this.treeLazy(bizOrgTreeLazyParam);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -158,6 +216,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         bizOrgExtService.createExtInfo(bizOrg.getId(), sourceFromType);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -183,7 +243,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if(repeatName) {
             throw new CommonException("存在重复的同级机构，名称为：{}", bizOrg.getName());
         }
-        List<BizOrg> originDataList = this.list();
+        List<BizOrg> originDataList = this.getAllOrgList();
         boolean errorLevel = this.getChildListById(originDataList, bizOrg.getId(), true).stream()
                 .map(BizOrg::getId).collect(Collectors.toList()).contains(bizOrg.getParentId());
         if(errorLevel) {
@@ -193,6 +253,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         this.updateById(bizOrg);
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -209,7 +271,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             } else {
                 throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
             }
-            List<BizOrg> allOrgList = this.list();
+            List<BizOrg> allOrgList = this.getAllOrgList();
             // 获取所有子机构
             List<String> toDeleteOrgIdList = CollectionUtil.newArrayList();
             orgIdList.forEach(orgId -> toDeleteOrgIdList.addAll(this.getChildListById(allOrgList, orgId, true).stream()
@@ -246,6 +308,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
+            // 清除缓存
+            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         }
     }
 
@@ -265,7 +329,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public List<BizOrg> getAllOrgList() {
-        return this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
+        Object cached = commonCacheOperator.get(ORG_ALL_LIST_CACHE_KEY);
+        if (cached != null) {
+            return JSONUtil.toList(JSONUtil.parseArray(cached), BizOrg.class);
+        }
+        List<BizOrg> list = this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
+        commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
+        return list;
     }
 
     @Override
@@ -314,6 +384,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         this.save(bizOrg);
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
+        // 清除缓存
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         return bizOrg.getId();
     }
 
@@ -328,7 +400,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             // 获取所有机构
-            List<BizOrg> allOrgList = this.list();
+            List<BizOrg> allOrgList = this.getAllOrgList();
             loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
             List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
             lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScopeFullList);

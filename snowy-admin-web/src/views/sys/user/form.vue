@@ -51,7 +51,6 @@
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 									placeholder="请选择组织"
 									allow-clear
-									tree-default-expand-all
 									:tree-data="treeData"
 									:tree-default-expanded-keys="treeDefaultExpandedKeys"
 									:field-names="{
@@ -59,6 +58,7 @@
 										label: 'name',
 										value: 'id'
 									}"
+									:load-data="onLoadData"
 									@change="selePositionData(formData.orgId, 0)"
 								/>
 							</a-form-item>
@@ -135,6 +135,7 @@
 											:tree-data="treeData"
 											:tree-default-expanded-keys="treeDefaultExpandedKeys"
 											:field-names="treeFieldNames"
+											:load-data="onLoadData"
 											@select="childOrgSelect(positionInfo, 0, index)"
 										/>
 									</a-form-item>
@@ -340,24 +341,43 @@
 		}
 		nextTick(() => {
 			// 机构选择器数据
-			userApi.userOrgTreeSelector().then((res) => {
+			userApi.userOrgTreeLazySelector().then((res) => {
 				if (res !== null) {
-					treeData.value = res
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							treeDefaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									treeDefaultExpandedKeys.value.push(items.id)
-								})
-							}
+					treeData.value = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
+					// 默认展开第一级
+					if (treeData.value.length > 0) {
+						treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+					}
 				}
 			})
+		})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			userApi
+				.userOrgTreeLazySelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	// 关闭抽屉

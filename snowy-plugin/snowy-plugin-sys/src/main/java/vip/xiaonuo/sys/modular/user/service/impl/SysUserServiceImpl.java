@@ -88,6 +88,7 @@ import vip.xiaonuo.sys.core.util.SysPasswordUtl;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
@@ -2002,6 +2003,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
     }
 
     @Override

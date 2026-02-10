@@ -14,15 +14,14 @@
 					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 					placeholder="请选择上级机构"
 					allow-clear
-					tree-default-expand-all
 					:tree-data="treeData"
 					:field-names="{
 						children: 'children',
 						label: 'name',
 						value: 'id'
 					}"
-					selectable="false"
 					tree-line
+					:load-data="onLoadData"
 				/>
 			</a-form-item>
 			<a-form-item label="机构名称：" name="name">
@@ -42,6 +41,7 @@
 			<a-form-item label="指定主管：" name="directorId">
 				<xn-user-selector
 					:org-tree-api="selectorApiFunction.orgTreeApi"
+					:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
 					:user-page-api="selectorApiFunction.userPageApi"
 					:radio-model="true"
 					v-model:value="formData.directorId"
@@ -90,15 +90,44 @@
 			})
 		}
 		// 获取机构树并加入顶级
-		bizOrgApi.orgTreeSelector().then((res) => {
+		bizOrgApi.orgTreeLazySelector().then((res) => {
 			treeData.value = [
 				{
-					id: 0,
+					id: '0',
 					parentId: '-1',
 					name: '顶级',
-					children: res
+					children: res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					}),
+					isLeaf: false
 				}
 			]
+		})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			bizOrgApi
+				.orgTreeLazySelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	// 关闭抽屉
@@ -136,6 +165,11 @@
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
 			return bizOrgApi.orgTreeSelector(param).then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		orgTreeLazyApi: (param) => {
+			return bizOrgApi.orgTreeLazySelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

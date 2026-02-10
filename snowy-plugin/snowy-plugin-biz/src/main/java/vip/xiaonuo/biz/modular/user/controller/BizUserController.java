@@ -14,6 +14,7 @@ package vip.xiaonuo.biz.modular.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
 import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
+import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserSourceFromTypeEnum;
 import vip.xiaonuo.biz.modular.user.param.*;
@@ -256,6 +258,20 @@ public class BizUserController {
     @GetMapping("/biz/user/orgTreeSelector")
     public CommonResult<List<Tree<String>>> orgTreeSelector() {
         return CommonResult.data(bizUserService.orgTreeSelector());
+    }
+
+    /**
+     * 获取机构树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:00
+     */
+    @ApiOperationSupport(order = 13)
+    @Operation(summary = "获取机构树选择器（懒加载）")
+    @SaCheckPermission("/biz/user/orgTreeLazySelector")
+    @GetMapping("/biz/user/orgTreeLazySelector")
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        return CommonResult.data(bizUserService.orgTreeLazySelector(bizOrgTreeLazyParam));
     }
 
     /**

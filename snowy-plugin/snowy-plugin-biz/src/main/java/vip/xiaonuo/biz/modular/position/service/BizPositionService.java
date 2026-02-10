@@ -13,10 +13,12 @@
 package vip.xiaonuo.biz.modular.position.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.param.*;
+import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
 
 import java.util.List;
 
@@ -93,6 +95,14 @@ public interface BizPositionService extends IService<BizPosition> {
      * @date 2022/4/24 20:08
      */
     List<Tree<String>> orgTreeSelector();
+
+    /**
+     * 获取机构树选择器（懒加载）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam);
 
     /**
      * 获取岗位选择器

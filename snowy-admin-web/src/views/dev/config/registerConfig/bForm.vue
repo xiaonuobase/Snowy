@@ -55,6 +55,7 @@
 					>
 						<xn-org-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
+							:org-tree-lazy-api="selectApiFunction.orgTreeLazyApi"
 							:org-page-api="selectApiFunction.orgPageApi"
 							:radio-model="true"
 							dataType="string"
@@ -70,6 +71,7 @@
 					>
 						<xn-position-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
+							:org-tree-lazy-api="selectApiFunction.orgTreeLazyApi"
 							:position-page-api="selectApiFunction.positionPageApi"
 							:radio-model="true"
 							dataType="string"
@@ -85,6 +87,7 @@
 					>
 						<xn-role-selector
 							:org-tree-api="selectApiFunction.orgTreeApi"
+							:org-tree-lazy-api="selectApiFunction.orgTreeLazyApi"
 							:role-page-api="selectApiFunction.rolePageApi"
 							:radio-model="true"
 							dataType="string"
@@ -141,6 +144,11 @@
 	const selectApiFunction = {
 		orgTreeApi: () => {
 			return configApi.configOrgTree().then((data) => {
+				return Promise.resolve(data)
+			})
+		},
+		orgTreeLazyApi: (param) => {
+			return configApi.configOrgTreeLazy(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
