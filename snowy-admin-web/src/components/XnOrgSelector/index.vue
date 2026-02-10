@@ -36,6 +36,7 @@
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
 						:load-data="onLoadData"
+						:height="treeHeight"
 						@select="treeSelect"
 					>
 					</a-tree>
@@ -153,7 +154,7 @@
 	import { message } from 'ant-design-vue'
 	import { remove, isEmpty, cloneDeep } from 'lodash-es'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import { useSlots } from 'vue'
+	import { useSlots, triggerRef } from 'vue'
 	// 弹窗是否打开
 	const visible = ref(false)
 	// 主表格common
@@ -252,11 +253,12 @@
 	const current = ref(0) // 当前页数
 	const pageSize = ref(10) // 每页条数
 	const total = ref(0) // 数据总数
+	const treeHeight = ref(400)
 
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {
 		return new Promise((resolve) => {
-			if (typeof props.orgTreeLazyApi !== 'function' || treeNode.dataRef.children) {
+			if (typeof props.orgTreeLazyApi !== 'function' || treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
 				resolve()
 				return
 			}
@@ -271,7 +273,7 @@
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
-					treeData.value = [...treeData.value]
+					triggerRef(treeData)
 					resolve()
 				})
 		})
@@ -321,6 +323,8 @@
 			return
 		}
 		visible.value = true
+		// 动态计算树高度，适配不同屏幕
+		treeHeight.value = Math.min(Math.max(window.innerHeight - 350, 250), 460)
 		// 获取机构树
 		if (typeof props.orgTreeLazyApi === 'function') {
 			props

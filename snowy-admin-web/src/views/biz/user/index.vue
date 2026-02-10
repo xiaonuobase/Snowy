@@ -2,8 +2,14 @@
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
 			<div ref="treeContainerRef" style="height: 100%">
+				<div
+					v-if="treeLoading && treeData.length === 0"
+					style="display: flex; height: 100%; align-items: center; justify-content: center"
+				>
+					<a-spin />
+				</div>
 				<a-tree
-					v-if="treeData.length > 0"
+					v-else-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
 					:tree-data="treeData"
 					:field-names="treeFieldNames"
@@ -272,27 +278,30 @@
 		searchFormRef.value.resetFields()
 		tableRef.value.refresh(true)
 	}
+	const treeLoading = ref(true)
 	// 加载左侧树
 	const loadTreeData = () => {
-		bizOrgApi.orgTreeLazy().then((res) => {
-			if (res !== null) {
-				treeData.value = res.map((item) => {
-					return {
-						...item,
-						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-					}
-				})
-				if (isEmpty(defaultExpandedKeys.value)) {
-					// 默认展开顶级
-				treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
+		treeLoading.value = true
+		bizOrgApi
+			.orgTreeLazy()
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
+					if (isEmpty(defaultExpandedKeys.value)) {
+						if (treeData.value.length > 0) {
+							defaultExpandedKeys.value.push(treeData.value[0].id)
+						}
+					}
 				}
-			}
-		})
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
 	}
 	loadTreeData()
 	// 懒加载子节点

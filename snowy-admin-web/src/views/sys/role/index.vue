@@ -2,8 +2,14 @@
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
 			<div ref="treeContainerRef" style="height: 100%">
+				<div
+					v-if="treeLoading && treeData.length === 0"
+					style="display: flex; height: 100%; align-items: center; justify-content: center"
+				>
+					<a-spin />
+				</div>
 				<a-tree
-					v-if="treeData.length > 0"
+					v-else-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
 					:tree-data="treeData"
 					:field-names="treeFieldNames"
@@ -244,38 +250,41 @@
 		delete searchFormState.value.category
 		tableRef.value.refresh(true)
 	}
+	const treeLoading = ref(true)
 	// 加载左侧的树
 	const loadTreeData = () => {
-		orgApi.orgTreeLazy().then((res) => {
-			if (res !== null) {
-				// 树中插入全局角色类型
-				const globalRoleType = [
-					{
-						id: 'GLOBAL',
-						parentId: '-1',
-						name: '全局',
-						isLeaf: true
+		treeLoading.value = true
+		orgApi
+			.orgTreeLazy()
+			.then((res) => {
+				if (res !== null) {
+					// 树中插入全局角色类型
+					const globalRoleType = [
+						{
+							id: 'GLOBAL',
+							parentId: '-1',
+							name: '全局',
+							isLeaf: true
+						}
+					]
+					treeData.value = globalRoleType.concat(
+						res.map((item) => {
+							return {
+								...item,
+								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+							}
+						})
+					)
+					if (isEmpty(defaultExpandedKeys.value)) {
+						if (treeData.value.length > 0) {
+							defaultExpandedKeys.value.push(treeData.value[0].id)
+						}
 					}
-				]
-				treeData.value = globalRoleType.concat(
-					res.map((item) => {
-						return {
-							...item,
-							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-						}
-					})
-				)
-				if (isEmpty(defaultExpandedKeys.value)) {
-					// 默认展开顶级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-						}
-					})
 				}
-			}
-		})
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
 	}
 	loadTreeData()
 	// 懒加载子节点

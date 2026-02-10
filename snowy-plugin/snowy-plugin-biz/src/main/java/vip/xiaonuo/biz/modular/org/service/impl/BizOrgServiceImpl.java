@@ -64,6 +64,15 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     private static final String ORG_ALL_LIST_CACHE_KEY = "biz-org:all-list";
 
+    /** 机构数据版本号缓存key，机构增删改时递增，用于使 visibleOrgIds 缓存自动失效 */
+    private static final String ORG_CACHE_VERSION_KEY = "biz-org:cache-version";
+
+    /** 可见机构ID集合缓存key前缀，完整key = 前缀 + 版本号 + : + 数据范围hash */
+    private static final String VISIBLE_ORG_IDS_CACHE_KEY_PREFIX = "biz-org:visible-ids:";
+
+    /** visibleOrgIds 缓存TTL（秒），用于自动清理旧版本的缓存条目 */
+    private static final long VISIBLE_ORG_IDS_CACHE_TTL = 300;
+
     @Resource
     private CommonCacheOperator commonCacheOperator;
 
@@ -145,47 +154,33 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             return CollectionUtil.newArrayList();
         }
 
-        // 获取所有机构
-        List<BizOrg> allOrgList = this.getAllOrgList();
-
-        // 构建索引，避免重复线性遍历（O(N) 一次性构建）
-        Map<String, BizOrg> orgById = allOrgList.stream()
-                .collect(Collectors.toMap(BizOrg::getId, org -> org, (a, b) -> a));
-        Map<String, List<BizOrg>> childrenByParentId = allOrgList.stream()
-                .collect(Collectors.groupingBy(BizOrg::getParentId));
-
-        // 计算可见机构ID集合（包含自身及其所有父级），使用索引将复杂度从 O(M*N*D) 降至 O(M*D)
-        Set<String> visibleOrgIds = new HashSet<>();
-        for (String orgId : loginUserDataScope) {
-            if (orgById.containsKey(orgId)) {
-                visibleOrgIds.add(orgId);
-                // 向上遍历添加所有父级
-                String currentId = orgById.get(orgId).getParentId();
-                while (ObjectUtil.isNotEmpty(currentId) && !"0".equals(currentId) && orgById.containsKey(currentId)) {
-                    if (!visibleOrgIds.add(currentId)) {
-                        break; // 已经添加过，停止遍历
-                    }
-                    currentId = orgById.get(currentId).getParentId();
-                }
-            }
+        // 从版本化缓存获取可见机构ID集合（命中时无需加载全量数据）
+        Set<String> visibleOrgIds = this.getVisibleOrgIds(loginUserDataScope);
+        if (ObjectUtil.isEmpty(visibleOrgIds)) {
+            return CollectionUtil.newArrayList();
         }
 
-        // 过滤出当前父级下的可见子级（使用 parentId 索引，O(K) 而非 O(N)）
-        List<BizOrg> childList = childrenByParentId.getOrDefault(parentId, Collections.emptyList()).stream()
-                .filter(bizOrg -> visibleOrgIds.contains(bizOrg.getId()))
-                .sorted(Comparator.comparingInt(BizOrg::getSortCode).thenComparing(BizOrg::getId))
-                .collect(Collectors.toList());
+        // SQL直查：获取当前父级下的可见子机构（替代内存过滤2万条记录）
+        List<BizOrg> childList = this.list(new LambdaQueryWrapper<BizOrg>()
+                .eq(BizOrg::getParentId, parentId)
+                .in(BizOrg::getId, visibleOrgIds)
+                .orderByAsc(BizOrg::getSortCode));
 
         if (ObjectUtil.isEmpty(childList)) {
             return CollectionUtil.newArrayList();
         }
 
-        // 判断这些机构是否还有可见子机构（使用 parentId 索引，O(1) 查找子节点列表）
+        // SQL批量查询：判断哪些子机构还有可见的下级（单次SQL替代N次遍历）
+        List<String> childIds = childList.stream().map(BizOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<BizOrg>()
+                .select(BizOrg::getParentId)
+                .in(BizOrg::getParentId, childIds)
+                .in(BizOrg::getId, visibleOrgIds))
+                .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
+
         return childList.stream().map(bizOrg -> {
             JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
-            List<BizOrg> subChildren = childrenByParentId.getOrDefault(bizOrg.getId(), Collections.emptyList());
-            boolean hasChildren = subChildren.stream().anyMatch(item -> visibleOrgIds.contains(item.getId()));
-            jsonObject.set("isLeaf", !hasChildren);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(bizOrg.getId()));
             return jsonObject;
         }).collect(Collectors.toList());
     }
@@ -231,7 +226,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        this.invalidateOrgCaches();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -268,7 +263,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        this.invalidateOrgCaches();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -323,7 +318,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
             // 清除缓存
-            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+            this.invalidateOrgCaches();
         }
     }
 
@@ -350,6 +345,65 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         List<BizOrg> list = this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
         commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
         return list;
+    }
+
+    /**
+     * 使机构相关缓存失效（版本号递增 + 清除全量列表缓存）
+     * 机构增删改时调用，visibleOrgIds 缓存通过版本号自动失效，旧条目由 TTL 自动清理
+     */
+    private void invalidateOrgCaches() {
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        commonCacheOperator.put(ORG_CACHE_VERSION_KEY, String.valueOf(System.currentTimeMillis()));
+    }
+
+    /**
+     * 获取当前用户可见的机构ID集合（带版本化缓存）
+     * 缓存命中时直接返回，无需加载全量机构数据；缓存未命中时计算并缓存
+     *
+     * @param loginUserDataScope 当前用户的数据范围（直接授权的机构ID列表）
+     * @return 可见机构ID集合（包含授权机构及其所有父级）
+     */
+    private Set<String> getVisibleOrgIds(List<String> loginUserDataScope) {
+        if (ObjectUtil.isEmpty(loginUserDataScope)) {
+            return Collections.emptySet();
+        }
+        // 获取当前缓存版本号
+        Object versionObj = commonCacheOperator.get(ORG_CACHE_VERSION_KEY);
+        String version = versionObj != null ? versionObj.toString() : "0";
+
+        // 构建缓存key：前缀 + 版本号 + : + 数据范围hash
+        int scopeHash = loginUserDataScope.stream().sorted().collect(Collectors.joining(",")).hashCode();
+        String cacheKey = VISIBLE_ORG_IDS_CACHE_KEY_PREFIX + version + ":" + scopeHash;
+
+        // 尝试从缓存获取
+        Object cached = commonCacheOperator.get(cacheKey);
+        if (cached != null) {
+            return new HashSet<>(JSONUtil.toList(JSONUtil.parseArray(cached), String.class));
+        }
+
+        // 缓存未命中，计算可见机构ID集合
+        List<BizOrg> allOrgList = this.getAllOrgList();
+        Map<String, BizOrg> orgById = allOrgList.stream()
+                .collect(Collectors.toMap(BizOrg::getId, org -> org, (a, b) -> a));
+
+        Set<String> visibleOrgIds = new HashSet<>();
+        for (String orgId : loginUserDataScope) {
+            if (orgById.containsKey(orgId)) {
+                visibleOrgIds.add(orgId);
+                // 向上遍历添加所有父级
+                String currentId = orgById.get(orgId).getParentId();
+                while (ObjectUtil.isNotEmpty(currentId) && !"0".equals(currentId) && orgById.containsKey(currentId)) {
+                    if (!visibleOrgIds.add(currentId)) {
+                        break; // 已经添加过，停止遍历
+                    }
+                    currentId = orgById.get(currentId).getParentId();
+                }
+            }
+        }
+
+        // 写入缓存（带TTL，旧版本条目自动过期）
+        commonCacheOperator.put(cacheKey, JSONUtil.toJsonStr(visibleOrgIds), VISIBLE_ORG_IDS_CACHE_TTL);
+        return visibleOrgIds;
     }
 
     @Override
@@ -399,7 +453,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        this.invalidateOrgCaches();
         return bizOrg.getId();
     }
 
@@ -536,6 +590,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                     }
                 }
             });
+            // 清除缓存
+            this.invalidateOrgCaches();
         }
     }
 
