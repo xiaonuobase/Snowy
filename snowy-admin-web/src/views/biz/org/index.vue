@@ -1,15 +1,18 @@
 <template>
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
-			<a-tree
-				v-if="treeData.length > 0"
-				v-model:expandedKeys="defaultExpandedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				:load-data="onLoadData"
-				@select="treeSelect"
-			/>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<div ref="treeContainerRef" style="height: 100%">
+				<a-tree
+					v-if="treeData.length > 0"
+					v-model:expandedKeys="defaultExpandedKeys"
+					:tree-data="treeData"
+					:field-names="treeFieldNames"
+					:load-data="onLoadData"
+					:height="treeHeight"
+					@select="treeSelect"
+				/>
+				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			</div>
 		</template>
 		<template #right>
 			<a-form ref="searchFormRef" :model="searchFormState">
@@ -116,6 +119,7 @@
 <script setup name="bizOrg">
 	import { Empty } from 'ant-design-vue'
 	import { isEmpty } from 'lodash-es'
+	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
 	import CopyForm from './copyForm.vue'
@@ -168,10 +172,31 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	// 树容器高度自适应
+	const treeContainerRef = ref(null)
+	const treeHeight = ref(0)
+	let resizeObserver = null
+	const calcTreeHeight = () => {
+		if (treeContainerRef.value) {
+			treeHeight.value = treeContainerRef.value.clientHeight
+		}
+	}
+	onMounted(() => {
+		calcTreeHeight()
+		if (treeContainerRef.value) {
+			resizeObserver = new ResizeObserver(calcTreeHeight)
+			resizeObserver.observe(treeContainerRef.value)
+		}
+	})
+	onActivated(calcTreeHeight)
+	onUnmounted(() => {
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+	})
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		loadTreeData()
 		return bizOrgApi.orgPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
@@ -200,10 +225,11 @@
 			}
 		})
 	}
+	loadTreeData()
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {
 		return new Promise((resolve) => {
-			if (treeNode.dataRef.children) {
+			if (treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
 				resolve()
 				return
 			}
@@ -218,7 +244,7 @@
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
-					treeData.value = [...treeData.value]
+					triggerRef(treeData)
 					resolve()
 				})
 		})

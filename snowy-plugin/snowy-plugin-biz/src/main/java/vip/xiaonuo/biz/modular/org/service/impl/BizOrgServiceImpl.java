@@ -139,38 +139,52 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     @Override
     public List<JSONObject> treeLazy(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
         String parentId = ObjectUtil.isNotEmpty(bizOrgTreeLazyParam.getParentId()) ? bizOrgTreeLazyParam.getParentId() : "0";
+        // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-
-        // 获取所有机构
-        List<BizOrg> allOrgList = this.getAllOrgList();
-        Set<String> visibleOrgIds = null;
-
-        // 如果数据范围不为空，则计算可见机构ID集合（包含自身及其所有父级）
-        if (ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
-            visibleOrgIds = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toSet());
-        }
-
-        // 过滤出当前父级下的可见子级
-        final Set<String> finalVisibleOrgIds = visibleOrgIds;
-        List<BizOrg> sysOrgList = allOrgList.stream()
-                .filter(bizOrg -> bizOrg.getParentId().equals(parentId))
-                .filter(bizOrg -> finalVisibleOrgIds == null || finalVisibleOrgIds.contains(bizOrg.getId()))
-                .sorted(Comparator.comparingInt(BizOrg::getSortCode).thenComparing(BizOrg::getId))
-                .collect(Collectors.toList());
-
-        if (ObjectUtil.isEmpty(sysOrgList)) {
+        if (ObjectUtil.isEmpty(loginUserDataScope)) {
             return CollectionUtil.newArrayList();
         }
 
-        // 判断这些机构是否还有可见子机构
-        return sysOrgList.stream().map(bizOrg -> {
+        // 获取所有机构
+        List<BizOrg> allOrgList = this.getAllOrgList();
+
+        // 构建索引，避免重复线性遍历（O(N) 一次性构建）
+        Map<String, BizOrg> orgById = allOrgList.stream()
+                .collect(Collectors.toMap(BizOrg::getId, org -> org, (a, b) -> a));
+        Map<String, List<BizOrg>> childrenByParentId = allOrgList.stream()
+                .collect(Collectors.groupingBy(BizOrg::getParentId));
+
+        // 计算可见机构ID集合（包含自身及其所有父级），使用索引将复杂度从 O(M*N*D) 降至 O(M*D)
+        Set<String> visibleOrgIds = new HashSet<>();
+        for (String orgId : loginUserDataScope) {
+            if (orgById.containsKey(orgId)) {
+                visibleOrgIds.add(orgId);
+                // 向上遍历添加所有父级
+                String currentId = orgById.get(orgId).getParentId();
+                while (ObjectUtil.isNotEmpty(currentId) && !"0".equals(currentId) && orgById.containsKey(currentId)) {
+                    if (!visibleOrgIds.add(currentId)) {
+                        break; // 已经添加过，停止遍历
+                    }
+                    currentId = orgById.get(currentId).getParentId();
+                }
+            }
+        }
+
+        // 过滤出当前父级下的可见子级（使用 parentId 索引，O(K) 而非 O(N)）
+        List<BizOrg> childList = childrenByParentId.getOrDefault(parentId, Collections.emptyList()).stream()
+                .filter(bizOrg -> visibleOrgIds.contains(bizOrg.getId()))
+                .sorted(Comparator.comparingInt(BizOrg::getSortCode).thenComparing(BizOrg::getId))
+                .collect(Collectors.toList());
+
+        if (ObjectUtil.isEmpty(childList)) {
+            return CollectionUtil.newArrayList();
+        }
+
+        // 判断这些机构是否还有可见子机构（使用 parentId 索引，O(1) 查找子节点列表）
+        return childList.stream().map(bizOrg -> {
             JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
-            // 计算是否有可见的子节点
-            boolean hasChildren = allOrgList.stream()
-                .anyMatch(item -> item.getParentId().equals(bizOrg.getId()) && (finalVisibleOrgIds == null || finalVisibleOrgIds.contains(item.getId())));
-            
+            List<BizOrg> subChildren = childrenByParentId.getOrDefault(bizOrg.getId(), Collections.emptyList());
+            boolean hasChildren = subChildren.stream().anyMatch(item -> visibleOrgIds.contains(item.getId()));
             jsonObject.set("isLeaf", !hasChildren);
             return jsonObject;
         }).collect(Collectors.toList());

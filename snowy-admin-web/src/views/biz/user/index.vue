@@ -1,15 +1,18 @@
 <template>
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
-			<a-tree
-				v-if="treeData.length > 0"
-				v-model:expandedKeys="defaultExpandedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				:load-data="onLoadData"
-				@select="treeSelect"
-			/>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<div ref="treeContainerRef" style="height: 100%">
+				<a-tree
+					v-if="treeData.length > 0"
+					v-model:expandedKeys="defaultExpandedKeys"
+					:tree-data="treeData"
+					:field-names="treeFieldNames"
+					:load-data="onLoadData"
+					:height="treeHeight"
+					@select="treeSelect"
+				/>
+				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			</div>
 		</template>
 		<template #right>
 			<a-form ref="searchFormRef" :model="searchFormState">
@@ -169,6 +172,7 @@
 <script setup name="bizUser">
 	import { message, Empty } from 'ant-design-vue'
 	import { isEmpty } from 'lodash-es'
+	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
 	import bizUserApi from '@/api/biz/bizUserApi'
@@ -235,6 +239,28 @@
 	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
+	// 树容器高度自适应
+	const treeContainerRef = ref(null)
+	const treeHeight = ref(0)
+	let resizeObserver = null
+	const calcTreeHeight = () => {
+		if (treeContainerRef.value) {
+			treeHeight.value = treeContainerRef.value.clientHeight
+		}
+	}
+	onMounted(() => {
+		calcTreeHeight()
+		if (treeContainerRef.value) {
+			resizeObserver = new ResizeObserver(calcTreeHeight)
+			resizeObserver.observe(treeContainerRef.value)
+		}
+	})
+	onActivated(calcTreeHeight)
+	onUnmounted(() => {
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+	})
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return bizUserApi.userPage(Object.assign(parameter, searchFormState.value)).then((res) => {
@@ -285,7 +311,7 @@
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
-					treeData.value = [...treeData.value]
+					triggerRef(treeData)
 					resolve()
 				})
 				.catch(() => {
