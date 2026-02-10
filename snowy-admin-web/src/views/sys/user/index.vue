@@ -2,12 +2,7 @@
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
 			<div ref="treeContainerRef" style="height: 100%">
-				<div
-					v-if="treeLoading && treeData.length === 0"
-					style="display: flex; height: 100%; align-items: center; justify-content: center"
-				>
-					<a-spin />
-				</div>
+				<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
 				<a-tree
 					v-else-if="treeData.length > 0"
 					v-model:expandedKeys="defaultExpandedKeys"
