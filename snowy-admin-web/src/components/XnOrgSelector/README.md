@@ -2,7 +2,7 @@
 
 ### 说明
 
-改组件为小诺机构选择器，可返回id用逗号隔离的字符串或id数组类型的数据格式
+该组件为小诺机构选择器，可返回id用逗号隔离的字符串或id数组类型的数据格式。支持同步全量树和异步懒加载树两种模式。
 
 @author yubaoshan
 
@@ -10,17 +10,19 @@
 
 ### props定义
 
-| 序号  | 编码                      | 类型            | 说明                           | 默认     |
-|-----|-------------------------|---------------|------------------------------|--------|
-| 1   | radioModel              | Boolean       | 是否单选；与addShow隐藏同时可用          | false  |
-| 2   | dataIsConverterFlw      | Boolean       | 是否为工作流格式                     | false  |
-| 3   | orgTreeApi              | function      | 机构树接口                        | -      |
-| 4   | orgPageApi              | function      | 机构分页接口                       | -      |
-| 5   | orgListByIdListApi | function      | 通过id数组查询list数据接口             | 已配置    |
-| 6   | value                   | object或string | 通过v-model:value绑定数据          | -      |
-| 7   | dataType                | string        | 数据类型object或string            | string |
-| 8   | show                    | Boolean       | 是否显示已选择机构（非表单内、单纯的选择机构需要隐藏）  | true   |
-| 9   | addShow                 | Boolean       | 是否默认的增加人员按钮，与radioModel为或的关系 | true   |
+| 序号  | 编码                      | 类型            | 说明                                          | 默认     |
+|-----|-------------------------|---------------|---------------------------------------------|--------|
+| 1   | radioModel              | Boolean       | 是否单选；与addShow隐藏同时可用                         | false  |
+| 2   | dataIsConverterFlw      | Boolean       | 是否为工作流格式                                    | false  |
+| 3   | selectorConverterKey    | String        | 工作流转换器key                                   | ORG    |
+| 4   | orgTreeApi              | Function      | 机构树接口（同步全量加载）                               | -      |
+| 5   | orgTreeLazyApi          | Function      | 机构树懒加载接口（配置后优先使用异步模式，不配则走同步全量）              | -      |
+| 6   | orgPageApi              | Function      | 机构分页接口                                      | -      |
+| 7   | orgListByIdListApi      | Function      | 通过id数组查询list数据接口                            | 已配置    |
+| 8   | value                   | Object或String | 通过v-model:value绑定数据                         | -      |
+| 9   | dataType                | String        | 数据类型array或string                            | array  |
+| 10  | show                    | Boolean       | 是否显示已选择机构（非表单内、单纯的选择机构需要隐藏）                 | true   |
+| 11  | addShow                 | Boolean       | 是否默认的增加人员按钮，与radioModel为或的关系                | true   |
 
 ### emits定义
 

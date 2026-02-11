@@ -29,17 +29,19 @@
 	>
 		<a-row :gutter="10">
 			<a-col :xs="0" :sm="0" :md="0" :lg="7" :xl="7">
-				<a-card size="small" :loading="cardLoading" class="selectorTreeDiv">
-					<a-tree
-						v-if="treeData"
-						v-model:expandedKeys="defaultExpandedKeys"
-						:tree-data="treeData"
-						:field-names="treeFieldNames"
-						:load-data="onLoadData"
-						:height="treeHeight"
-						@select="treeSelect"
-					>
-					</a-tree>
+				<a-card size="small" class="selectorTreeDiv">
+					<a-spin :spinning="cardLoading">
+						<a-tree
+							v-if="treeData"
+							v-model:expandedKeys="defaultExpandedKeys"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						>
+						</a-tree>
+					</a-spin>
 				</a-card>
 			</a-col>
 			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
