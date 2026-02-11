@@ -142,6 +142,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/b/getEmailValidCode",
             "/auth/b/doLoginByEmail",
             "/auth/b/doLoginByOtp",
+            "/auth/b/doLoginByThirdToken",
             "/auth/b/isLogin",
             "/auth/sso/b/**",
 
