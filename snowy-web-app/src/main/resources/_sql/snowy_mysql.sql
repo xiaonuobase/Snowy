@@ -1186,6 +1186,9 @@ INSERT INTO `SYS_RELATION` VALUES ('2003522704174505994', '1570687866138206208',
 INSERT INTO `SYS_RELATION` VALUES ('2003522704174505995', '1570687866138206208', '/biz/group/page', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/group/page\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
 INSERT INTO `SYS_RELATION` VALUES ('2003522704174505996', '1570687866138206208', '/biz/group/userSelector', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/group/userSelector\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
 INSERT INTO `SYS_RELATION` VALUES ('2003522704178700296', '1570687866138206208', '/biz/org/copy', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/org/copy\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
+INSERT INTO `SYS_RELATION` VALUES ('2021255924295004183', '1570687866138206208', '/biz/org/orgTreeLazySelector', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/org/orgTreeLazySelector\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
+INSERT INTO `SYS_RELATION` VALUES ('2021255924295004193', '1570687866138206208', '/biz/position/orgTreeLazySelector', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/position/orgTreeLazySelector\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
+INSERT INTO `SYS_RELATION` VALUES ('2021255924303392775', '1570687866138206208', '/biz/user/orgTreeLazySelector', 'SYS_ROLE_HAS_PERMISSION', '{\"apiUrl\":\"/biz/user/orgTreeLazySelector\",\"scopeCategory\":\"SCOPE_ALL\",\"scopeDefineOrgIdList\":[]}');
 
 -- ----------------------------
 -- Table structure for SYS_RESOURCE
