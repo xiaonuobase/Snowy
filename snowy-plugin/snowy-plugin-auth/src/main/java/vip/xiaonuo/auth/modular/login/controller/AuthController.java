@@ -183,12 +183,25 @@ public class AuthController {
     }
 
     /**
+     * B端第三方Token交换登录（用于iframe嵌入免登）
+     *
+     * @author yubaoshan
+     * @date 2026/2/11
+     **/
+    @ApiOperationSupport(order = 11)
+    @Operation(summary = "B端第三方Token交换登录（iframe嵌入免登）")
+    @PostMapping("/auth/b/doLoginByThirdToken")
+    public CommonResult<String> doLoginByThirdToken(@RequestBody @Valid AuthThirdTokenLoginParam authThirdTokenLoginParam) {
+        return CommonResult.data(authService.doLoginByThirdToken(authThirdTokenLoginParam));
+    }
+
+    /**
      * B端判断是否登录
      *
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 11)
+    @ApiOperationSupport(order = 12)
     @Operation(summary = "B端判断是否登录")
     @GetMapping("/auth/b/isLogin")
     public CommonResult<Boolean> isLogin() {

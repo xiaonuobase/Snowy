@@ -8,7 +8,7 @@ import { useMenuStore } from '@/store/menu'
 import { useUserStore } from '@/store/user'
 import { globalStore } from '@/store'
 
-export const afterLogin = async (loginToken) => {
+export const afterLogin = async (loginToken, targetPath) => {
 	const route = router.currentRoute.value
 	const menuStore = useMenuStore()
 	const userStore = useUserStore()
@@ -50,6 +50,12 @@ export const afterLogin = async (loginToken) => {
 		// 设置字典到store中
 		tool.data.set('DICT_TYPE_TREE_DATA', data)
 	})
+
+	// 第三方Token登录：直接跳转到指定目标路径
+	if (targetPath) {
+		router.replace({ path: targetPath }).then(() => {})
+		return
+	}
 
 	// 此处判断是否存在跳转页面，如存在则跳转，否则走原来逻辑
 	if (route.query.redirect_uri) {

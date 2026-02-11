@@ -22,6 +22,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -54,6 +56,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.sys.api.SysUserApi;
+import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -174,6 +177,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Resource
     private ClientUserApi clientUserApi;
+
+    @Resource
+    private AuthThirdClientProperties authThirdClientProperties;
 
     @Override
     public AuthPicValidCodeResult getPicCaptcha(String type) {
@@ -1176,6 +1182,92 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new CommonException("管理员未开启动态口令登录");
         }
+    }
+
+    @Override
+    public String doLoginByThirdToken(AuthThirdTokenLoginParam authThirdTokenLoginParam) {
+        // 校验是否配置了第三方用户信息接口地址（配置了即开启）
+        String userInfoUrl = authThirdClientProperties.getUserInfoUrl();
+        if(ObjectUtil.isEmpty(userInfoUrl)) {
+            throw new CommonException("未配置第三方用户信息接口地址，无法使用Token交换登录");
+        }
+        // 用accessToken调用第三方用户信息接口
+        JSONObject thirdUserInfo = requestThirdUserInfo(userInfoUrl, authThirdTokenLoginParam.getAccessToken());
+        // 从第三方返回中解析用户信息（固定字段：account、email、phone）
+        String thirdAccount = thirdUserInfo.getStr("account");
+        String thirdEmail = thirdUserInfo.getStr("email");
+        String thirdPhone = thirdUserInfo.getStr("phone");
+        // 三级降级匹配本地用户：account → email → phone
+        SaBaseLoginUser saBaseLoginUser = matchLocalUser(thirdAccount, thirdEmail, thirdPhone);
+        // 执行B端登录
+        return execLoginB(saBaseLoginUser, AuthDeviceTypeEnum.PC.getValue());
+    }
+
+    /**
+     * 调用第三方用户信息接口
+     * 规范：GET请求，Header传Authorization: Bearer xxx
+     * 返回格式：{code:200, data:{account,email,phone}}
+     */
+    private JSONObject requestThirdUserInfo(String userInfoUrl, String accessToken) {
+        try {
+            HttpResponse response = HttpRequest.get(userInfoUrl)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .timeout(10000)
+                    .execute();
+            if(!response.isOk()) {
+                throw new CommonException("调用第三方用户信息接口失败，HTTP状态码：{}", response.getStatus());
+            }
+            String body = response.body();
+            if(ObjectUtil.isEmpty(body)) {
+                throw new CommonException("第三方用户信息接口返回为空");
+            }
+            JSONObject resultJson = JSONUtil.parseObj(body);
+            // 校验code
+            Integer code = resultJson.getInt("code");
+            if(code == null || code != 200) {
+                throw new CommonException("第三方用户信息接口返回业务异常，code={}", code);
+            }
+            // 提取data
+            JSONObject dataJson = resultJson.getJSONObject("data");
+            if(ObjectUtil.isEmpty(dataJson)) {
+                throw new CommonException("第三方用户信息接口返回数据中未找到data字段");
+            }
+            return dataJson;
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("调用第三方用户信息接口异常：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 三级降级匹配本地用户：account → email → phone
+     */
+    private SaBaseLoginUser matchLocalUser(String thirdAccount, String thirdEmail, String thirdPhone) {
+        // 优先通过account查找
+        if(StrUtil.isNotBlank(thirdAccount)) {
+            SaBaseLoginUser user = loginUserApi.getUserByAccount(thirdAccount);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 其次通过email查找
+        if(StrUtil.isNotBlank(thirdEmail)) {
+            SaBaseLoginUser user = loginUserApi.getUserByEmail(thirdEmail);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 最后通过phone查找
+        if(StrUtil.isNotBlank(thirdPhone)) {
+            SaBaseLoginUser user = loginUserApi.getUserByPhone(thirdPhone);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 三种方式都找不到
+        throw new CommonException("第三方用户（account={}, email={}, phone={}）在本系统中未找到对应用户，请联系管理员同步用户",
+                thirdAccount, thirdEmail, thirdPhone);
     }
 
     /**

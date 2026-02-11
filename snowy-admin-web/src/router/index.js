@@ -24,6 +24,8 @@ import { useMenuStore } from '@/store/menu'
 import { useUserStore } from '@/store/user'
 import { useDictStore } from '@/store/dict'
 import { pathToRegexp } from 'path-to-regexp'
+import loginApi from '@/api/auth/loginApi'
+import { afterLogin } from '@/views/auth/login/util'
 
 // 进度条配置
 NProgress.configure({ showSpinner: false, speed: 500 })
@@ -57,7 +59,7 @@ const exportWhiteListFromRouter = (router) => {
 		const { regexp } = pathToRegexp(item.path)
 		res.push({
 			path: item.path,
-			regex: regexp  // 使用解构后的正则表达式
+			regex: regexp // 使用解构后的正则表达式
 		})
 	}
 	return res
@@ -74,11 +76,35 @@ router.beforeEach(async (to, from, next) => {
 		: `${sysBaseConfig.SNOWY_SYS_NAME}`
 
 	// 过滤白名单
-	if (whiteList.some(currentRoute => currentRoute.regex.test(to.path))) {
+	if (whiteList.some((currentRoute) => currentRoute.regex.test(to.path))) {
 		next()
 		// NProgress.done()
 		return false
 	}
+
+	// ========== iframe嵌入免登：检测URL中的第三方accessToken ==========
+	const thirdAccessToken = to.query.accessToken
+	if (thirdAccessToken && !tool.data.get('TOKEN')) {
+		// 调用第三方Token交换登录接口
+		loginApi
+			.doLoginByThirdToken({
+				accessToken: thirdAccessToken
+			})
+			.then(async (loginToken) => {
+				// 复用登录后流程，传入目标路径
+				await afterLogin(loginToken, to.path)
+			})
+		return false
+	}
+	// 如果已有TOKEN且URL带accessToken，直接放行（避免重复登录）
+	if (thirdAccessToken && tool.data.get('TOKEN')) {
+		// 去掉URL中的accessToken参数，保持路由干净
+		const query = { ...to.query }
+		delete query.accessToken
+		next({ path: to.path, query, replace: true })
+		return false
+	}
+
 	// C端检验逻辑
 	if (to.path.includes('/front/client/')) {
 		return validateClientAccess(to.path).valid ? next() : next({ path: validateClientAccess(to.path).redirectPath })
