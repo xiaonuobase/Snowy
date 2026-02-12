@@ -1527,30 +1527,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
         List<JSONObject> resultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).toList();
         List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
-        List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
-                .stream().map(SysOrg::getId).toList();
+        // 懒加载子机构列表：局部缓存，避免重复计算，线程安全
+        final List<String>[] orgChildListHolder = new List[]{null};
         groupMap.forEach((key, value) -> {
             JSONObject jsonObject = JSONUtil.createObj().set("apiUrl", key);
+            boolean hasScopeAll = false;
             Set<String> scopeSet = CollectionUtil.newHashSet();
-            value.forEach(sysRelation -> {
+            for (SysRelation sysRelation : value) {
                 JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());
                 String scopeCategory = extJsonObject.getStr("scopeCategory");
-                if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
-                    if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
-                        scopeSet.addAll(scopeAllList);
-                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
-                        scopeSet.addAll(scopeOrgList);
-                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
-                        scopeSet.addAll(scopeOrgChildList);
-                    } else {
-                        scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
+                if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
+                    hasScopeAll = true;
+                    break;
+                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
+                    scopeSet.addAll(scopeOrgList);
+                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
+                    if (orgChildListHolder[0] == null) {
+                        orgChildListHolder[0] = sysOrgService.getChildListById(sysOrgService.getAllOrgList(), orgId, true)
+                                .stream().map(SysOrg::getId).toList();
                     }
+                    scopeSet.addAll(orgChildListHolder[0]);
+                } else if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
+                    scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
                 }
-            });
-            resultList.add(jsonObject.set("dataScope", CollectionUtil.newArrayList(scopeSet)));
+            }
+            jsonObject.set("scopeAll", hasScopeAll);
+            jsonObject.set("dataScope", hasScopeAll ? CollectionUtil.newArrayList() : CollectionUtil.newArrayList(scopeSet));
+            resultList.add(jsonObject);
         });
         return resultList;
     }

@@ -322,6 +322,30 @@
 	const formData = ref({})
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 
+	// 在树中递归查找节点
+	const findNodeInTree = (nodes, id) => {
+		if (!nodes) return false
+		for (const node of nodes) {
+			if (node.id === id) return true
+			if (node.children && findNodeInTree(node.children, id)) return true
+		}
+		return false
+	}
+	// 确保选中的机构节点在树中可回显名称
+	const ensureOrgsInTree = (orgIds) => {
+		const missingIds = orgIds.filter((id) => id && !findNodeInTree(treeData.value, id))
+		if (missingIds.length === 0) return
+		userCenterApi.userCenterGetOrgListByIdList({ idList: missingIds }).then((data) => {
+			if (data && data.length > 0) {
+				data.forEach((org) => {
+					treeData.value.push({ ...org, isLeaf: true })
+				})
+				treeData.value = [...treeData.value]
+			}
+		})
+	}
+	// 树加载Promise，用于协调回显时序
+	let treeLoadPromise = null
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
@@ -341,7 +365,7 @@
 		}
 		nextTick(() => {
 			// 机构选择器数据
-			userApi.userOrgTreeLazySelector().then((res) => {
+			treeLoadPromise = userApi.userOrgTreeLazySelector().then((res) => {
 				if (res !== null) {
 					treeData.value = res.map((item) => {
 						return {
@@ -392,7 +416,7 @@
 			id: record.id
 		}
 		// 查询详情
-		userApi.userDetail(param).then((data) => {
+		const detailPromise = userApi.userDetail(param).then((data) => {
 			if (data.positionJson) {
 				// 替换表单中的格式与后端查到的
 				data.positionJson = JSON.parse(data.positionJson)
@@ -407,6 +431,24 @@
 				})
 			}
 			selePositionData(formData.value.orgId)
+			return data
+		})
+		// 等待树和详情都加载完成后，确保机构节点可回显
+		nextTick(() => {
+			if (treeLoadPromise) {
+				Promise.all([treeLoadPromise, detailPromise]).then(([_, detail]) => {
+					const orgIds = [detail.orgId]
+					if (detail.positionJson) {
+						const positions = typeof detail.positionJson === 'string'
+							? JSON.parse(detail.positionJson)
+							: detail.positionJson
+						positions.forEach((item) => {
+							if (item.orgId) orgIds.push(item.orgId)
+						})
+					}
+					ensureOrgsInTree(orgIds)
+				})
+			}
 		})
 	}
 

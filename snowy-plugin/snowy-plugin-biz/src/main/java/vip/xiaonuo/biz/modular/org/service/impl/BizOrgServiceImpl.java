@@ -44,6 +44,7 @@ import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
+import vip.xiaonuo.common.util.CommonSqlUtil;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -109,30 +110,51 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         }
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizOrg::getId, loginUserDataScope);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
     @Override
     public List<Tree<String>> tree() {
+        return this.tree(null);
+    }
+
+    @Override
+    public List<Tree<String>> tree(String searchKey) {
         // 获取所有机构
         List<BizOrg> allOrgList = this.getAllOrgList();
         // 定义机构集合
         Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return CollectionUtil.newArrayList();
+        }
+        if(loginUserDataScope == null) {
+            bizOrgSet.addAll(allOrgList);
+        } else {
+            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
+        }
+
+        List<BizOrg> bizOrgArrayList = new ArrayList<>(bizOrgSet);
+
+        // 如果有搜索关键字，过滤匹配的机构及其所有父级
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<BizOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            bizOrgArrayList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            // 取交集：既在数据范围内，又匹配搜索条件
+            bizOrgArrayList = new ArrayList<>(filteredSet);
+            bizOrgArrayList.retainAll(bizOrgSet);
         }
 
         // 修复：使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
-        List<BizOrg> bizOrgArrayList = new ArrayList<>(bizOrgSet);
         bizOrgArrayList.sort(Comparator.comparingInt(BizOrg::getSortCode)
                 .thenComparing(BizOrg::getId)); // 添加ID作为次级排序条件
 
@@ -150,8 +172,29 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         String parentId = ObjectUtil.isNotEmpty(bizOrgTreeLazyParam.getParentId()) ? bizOrgTreeLazyParam.getParentId() : "0";
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if (ObjectUtil.isEmpty(loginUserDataScope)) {
+        if (loginUserDataScope != null && ObjectUtil.isEmpty(loginUserDataScope)) {
             return CollectionUtil.newArrayList();
+        }
+
+        // loginUserDataScope == null 时为 SCOPE_ALL，不做数据范围过滤
+        if (loginUserDataScope == null) {
+            // SCOPE_ALL：直接查询当前父级下的所有子机构
+            List<BizOrg> childList = this.list(new LambdaQueryWrapper<BizOrg>()
+                    .eq(BizOrg::getParentId, parentId)
+                    .orderByAsc(BizOrg::getSortCode));
+            if (ObjectUtil.isEmpty(childList)) {
+                return CollectionUtil.newArrayList();
+            }
+            List<String> childIds = childList.stream().map(BizOrg::getId).collect(Collectors.toList());
+            Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<BizOrg>()
+                    .select(BizOrg::getParentId)
+                    .in(BizOrg::getParentId, childIds))
+                    .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
+            return childList.stream().map(bizOrg -> {
+                JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
+                jsonObject.set("isLeaf", !hasChildrenParentIds.contains(bizOrg.getId()));
+                return jsonObject;
+            }).collect(Collectors.toList());
         }
 
         // 从版本化缓存获取可见机构ID集合（命中时无需加载全量数据）
@@ -161,10 +204,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         }
 
         // SQL直查：获取当前父级下的可见子机构（替代内存过滤2万条记录）
-        List<BizOrg> childList = this.list(new LambdaQueryWrapper<BizOrg>()
-                .eq(BizOrg::getParentId, parentId)
-                .in(BizOrg::getId, visibleOrgIds)
-                .orderByAsc(BizOrg::getSortCode));
+        LambdaQueryWrapper<BizOrg> childQueryWrapper = new LambdaQueryWrapper<BizOrg>()
+                .eq(BizOrg::getParentId, parentId);
+        CommonSqlUtil.safeIn(childQueryWrapper, BizOrg::getId, visibleOrgIds);
+        childQueryWrapper.orderByAsc(BizOrg::getSortCode);
+        List<BizOrg> childList = this.list(childQueryWrapper);
 
         if (ObjectUtil.isEmpty(childList)) {
             return CollectionUtil.newArrayList();
@@ -172,10 +216,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
         // SQL批量查询：判断哪些子机构还有可见的下级（单次SQL替代N次遍历）
         List<String> childIds = childList.stream().map(BizOrg::getId).collect(Collectors.toList());
-        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<BizOrg>()
+        LambdaQueryWrapper<BizOrg> hasChildrenWrapper = new LambdaQueryWrapper<BizOrg>()
                 .select(BizOrg::getParentId)
-                .in(BizOrg::getParentId, childIds)
-                .in(BizOrg::getId, visibleOrgIds))
+                .in(BizOrg::getParentId, childIds);
+        CommonSqlUtil.safeIn(hasChildrenWrapper, BizOrg::getId, visibleOrgIds);
+        Set<String> hasChildrenParentIds = this.list(hasChildrenWrapper)
                 .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
 
         return childList.stream().map(bizOrg -> {
@@ -203,12 +248,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         BizOrgCategoryEnum.validate(bizOrgAddParam.getCategory());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限增加机构");
+        }
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             if(!loginUserDataScope.contains(bizOrgAddParam.getParentId())) {
                 throw new CommonException("您没有权限在该机构下增加机构，机构id：{}", bizOrgAddParam.getParentId());
             }
-        } else {
-            throw new CommonException("您没有权限增加机构");
         }
         BizOrg bizOrg = BeanUtil.toBean(bizOrgAddParam, BizOrg.class);
 
@@ -236,6 +282,9 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         BizOrg bizOrg = this.queryEntity(bizOrgEditParam.getId());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限编辑该机构，机构id：{}", bizOrg.getId());
+        }
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             if(!loginUserDataScope.contains(bizOrg.getId())) {
                 throw new CommonException("您没有权限编辑该机构，机构id：{}", bizOrg.getId());
@@ -243,8 +292,6 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             if(!loginUserDataScope.contains(bizOrg.getParentId())) {
                 throw new CommonException("您没有权限编辑该机构下的机构，机构id：{}", bizOrg.getParentId());
             }
-        } else {
-            throw new CommonException("您没有权限编辑该机构，机构id：{}", bizOrg.getId());
         }
         BeanUtil.copyProperties(bizOrgEditParam, bizOrg);
         boolean repeatName = this.count(new LambdaQueryWrapper<BizOrg>().eq(BizOrg::getParentId, bizOrg.getParentId())
@@ -273,12 +320,13 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if(ObjectUtil.isNotEmpty(orgIdList)) {
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+                throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
+            }
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
                 if(!new HashSet<>(loginUserDataScope).containsAll(orgIdList)) {
                     throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
                 }
-            } else {
-                throw new CommonException("您没有权限删除这些机构，机构id：{}", orgIdList);
             }
             List<BizOrg> allOrgList = this.getAllOrgList();
             // 获取所有子机构
@@ -466,14 +514,17 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         // 定义机构集合
         Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            return CollectionUtil.newArrayList();
+        }
+        if(loginUserDataScope == null) {
+            // SCOPE_ALL：不做过滤，查询全部机构
+        } else {
             // 获取所有机构
             List<BizOrg> allOrgList = this.getAllOrgList();
             loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
             List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScopeFullList);
-        } else {
-            return CollectionUtil.newArrayList();
+            CommonSqlUtil.safeIn(lambdaQueryWrapper, BizOrg::getId, loginUserDataScopeFullList);
         }
         lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
         List<BizOrg> bizOrgList = this.list(lambdaQueryWrapper);
@@ -488,10 +539,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizOrg::getId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizOrg::getId, loginUserDataScope);
         }
         // 查询部分字段
         queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
@@ -511,10 +563,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         QueryWrapper<BizUser> queryWrapper = new QueryWrapper<BizUser>().checkSqlInjection();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizUser::getOrgId, loginUserDataScope);
         }
         // 只查询部分字段
         queryWrapper.lambda().select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,
@@ -546,6 +599,9 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if(ObjectUtil.isNotEmpty(orgIdList)) {
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+                throw new CommonException("您没有权限复制机构");
+            }
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
                 // 如果有数据范围限制，则校验目标父id是否有权限
                 if(!loginUserDataScope.contains(targetParentId)) {
@@ -555,8 +611,6 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 if(!new HashSet<>(loginUserDataScope).containsAll(orgIdList)) {
                     throw new CommonException("您没有权限复制这些机构，机构id：{}", orgIdList);
                 }
-            } else {
-                throw new CommonException("您没有权限复制机构");
             }
 
             // 遍历复制

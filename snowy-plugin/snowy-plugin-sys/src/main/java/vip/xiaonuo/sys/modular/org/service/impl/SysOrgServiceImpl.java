@@ -52,10 +52,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +65,15 @@ import java.util.stream.Collectors;
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
 
     private static final String ORG_ALL_LIST_CACHE_KEY = "sys-org:all-list";
+
+    /** 本地内存缓存，避免每次从Redis取出后JSON反序列化2万+条记录 */
+    private volatile List<SysOrg> localOrgListCache;
+
+    /** 本地内存缓存：parentId -> 直接子机构列表，用于快速查找子机构 */
+    private volatile Map<String, List<SysOrg>> localParentChildrenMap;
+
+    /** 本地内存缓存：所有机构ID列表，避免每次stream().map().toList() */
+    private volatile List<String> localAllOrgIdList;
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
@@ -108,7 +114,23 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<Tree<String>> tree() {
-        List<SysOrg> sysOrgList = this.getAllOrgList();
+        return this.tree(null);
+    }
+
+    @Override
+    public List<Tree<String>> tree(String searchKey) {
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        List<SysOrg> sysOrgList;
+        // 如果有搜索关键字，过滤匹配的组织及其所有父级
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            allOrgList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            sysOrgList = new ArrayList<>(filteredSet);
+        } else {
+            sysOrgList = allOrgList;
+        }
         // 使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
         sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
                 .thenComparing(SysOrg::getId)); // 添加ID作为次级排序条件
@@ -190,7 +212,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -215,7 +237,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -262,7 +284,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
             // 清除缓存
-            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+            clearOrgCache();
         }
     }
 
@@ -312,7 +334,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 }
             });
             // 清除缓存
-            commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+            clearOrgCache();
         }
     }
 
@@ -327,13 +349,63 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<SysOrg> getAllOrgList() {
+        // 优先从本地内存缓存获取，避免每次JSON反序列化
+        List<SysOrg> localCache = localOrgListCache;
+        if (localCache != null) {
+            return localCache;
+        }
+        // 其次从Redis缓存获取
         Object cached = commonCacheOperator.get(ORG_ALL_LIST_CACHE_KEY);
         if (cached != null) {
-            return JSONUtil.toList(JSONUtil.parseArray(cached), SysOrg.class);
+            List<SysOrg> list = JSONUtil.toList(JSONUtil.parseArray(cached), SysOrg.class);
+            localOrgListCache = list;
+            buildParentChildrenMap(list);
+            return list;
         }
+        // 最后从数据库查询
         List<SysOrg> list = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
         commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
+        localOrgListCache = list;
+        buildParentChildrenMap(list);
         return list;
+    }
+
+    /**
+     * 构建parentId -> 子机构列表的索引Map，同时构建所有机构ID列表
+     */
+    private void buildParentChildrenMap(List<SysOrg> orgList) {
+        Map<String, List<SysOrg>> map = new HashMap<>();
+        List<String> allIdList = new ArrayList<>(orgList.size());
+        for (SysOrg org : orgList) {
+            map.computeIfAbsent(org.getParentId(), k -> new ArrayList<>()).add(org);
+            allIdList.add(org.getId());
+        }
+        localParentChildrenMap = map;
+        localAllOrgIdList = allIdList;
+    }
+
+    /**
+     * 获取所有机构ID列表（从缓存获取，避免每次stream转换）
+     */
+    @Override
+    public List<String> getAllOrgIdList() {
+        List<String> cached = localAllOrgIdList;
+        if (cached != null) {
+            return cached;
+        }
+        // 触发缓存构建
+        getAllOrgList();
+        return localAllOrgIdList;
+    }
+
+    /**
+     * 清除本地内存缓存和Redis缓存
+     */
+    private void clearOrgCache() {
+        localOrgListCache = null;
+        localParentChildrenMap = null;
+        localAllOrgIdList = null;
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Override
@@ -386,7 +458,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         // 发布增加事件
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
         // 清除缓存
-        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
+        clearOrgCache();
         return sysOrg.getId();
     }
 
@@ -479,7 +551,25 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<SysOrg> getChildListById(List<SysOrg> originDataList, String id, boolean includeSelf) {
         List<SysOrg> resultList = CollectionUtil.newArrayList();
-        execRecursionFindChild(originDataList, id, resultList);
+        // 优先使用预构建的parentId索引Map，O(n)复杂度；否则降级为原始递归
+        Map<String, List<SysOrg>> parentMap = localParentChildrenMap;
+        if (parentMap != null) {
+            // BFS方式查找所有子机构
+            Deque<String> queue = new ArrayDeque<>();
+            queue.add(id);
+            while (!queue.isEmpty()) {
+                String parentId = queue.poll();
+                List<SysOrg> children = parentMap.get(parentId);
+                if (children != null) {
+                    for (SysOrg child : children) {
+                        resultList.add(child);
+                        queue.add(child.getId());
+                    }
+                }
+            }
+        } else {
+            execRecursionFindChild(originDataList, id, resultList);
+        }
         if(includeSelf) {
             SysOrg self = this.getById(originDataList, id);
             if(ObjectUtil.isNotEmpty(self)) {

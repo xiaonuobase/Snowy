@@ -58,6 +58,7 @@
 <script setup name="orgForm">
 	import { required } from '@/utils/formRules'
 	import orgApi from '@/api/sys/orgApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
@@ -71,6 +72,30 @@
 	const treeData = ref([])
 	const submitLoading = ref(false)
 
+	// 在树中递归查找节点
+	const findNodeInTree = (nodes, id) => {
+		if (!nodes) return false
+		for (const node of nodes) {
+			if (node.id === id) return true
+			if (node.children && findNodeInTree(node.children, id)) return true
+		}
+		return false
+	}
+	// 确保选中的机构节点在树中可回显名称
+	const ensureOrgInTree = (orgId) => {
+		if (!orgId || orgId === '0' || findNodeInTree(treeData.value, orgId)) return
+		userCenterApi.userCenterGetOrgListByIdList({ idList: [orgId] }).then((data) => {
+			if (data && data.length > 0 && treeData.value.length > 0) {
+				const topNode = treeData.value[0]
+				if (topNode.children) {
+					topNode.children.push({ ...data[0], isLeaf: true })
+				} else {
+					topNode.children = [{ ...data[0], isLeaf: true }]
+				}
+				treeData.value = [...treeData.value]
+			}
+		})
+	}
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
 		visible.value = true
@@ -80,16 +105,8 @@
 		if (parentId) {
 			formData.value.parentId = parentId
 		}
-		if (record) {
-			const param = {
-				id: record.id
-			}
-			orgApi.orgDetail(param).then((data) => {
-				formData.value = Object.assign({}, data)
-			})
-		}
 		// 获取机构树并加入顶级
-		orgApi.orgOrgTreeLazySelector().then((res) => {
+		const treePromise = orgApi.orgOrgTreeLazySelector().then((res) => {
 			treeData.value = [
 				{
 					id: '0',
@@ -105,6 +122,18 @@
 				}
 			]
 		})
+		if (record) {
+			const detailPromise = orgApi.orgDetail({ id: record.id }).then((data) => {
+				formData.value = Object.assign({}, data)
+				return data
+			})
+			// 等待树和详情都加载完成后，确保父节点可回显
+			Promise.all([treePromise, detailPromise]).then(([_, detail]) => {
+				if (detail.parentId) {
+					ensureOrgInTree(detail.parentId)
+				}
+			})
+		}
 	}
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {

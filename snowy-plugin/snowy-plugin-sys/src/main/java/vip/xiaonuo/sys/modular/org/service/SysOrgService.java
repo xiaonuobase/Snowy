@@ -47,6 +47,14 @@ public interface SysOrgService extends IService<SysOrg> {
     List<Tree<String>> tree();
 
     /**
+     * 获取组织树（带搜索关键字）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<Tree<String>> tree(String searchKey);
+
+    /**
      * 获取机构树（懒加载）
      *
      * @author xuyuxiang
@@ -109,6 +117,14 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/7/25 19:42
      **/
     List<SysOrg> getAllOrgList();
+
+    /**
+     * 获取所有组织ID列表（从缓存获取，避免每次stream转换）
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     **/
+    List<String> getAllOrgIdList();
 
     /**
      * 根据组织全名称获取组织id，有则返回，无则创建

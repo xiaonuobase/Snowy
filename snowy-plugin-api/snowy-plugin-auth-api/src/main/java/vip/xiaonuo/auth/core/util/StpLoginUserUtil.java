@@ -39,17 +39,25 @@ public class StpLoginUserUtil {
 
     /**
      * 获取当前B端登录用户的当前请求接口的数据范围
+     * 返回null表示SCOPE_ALL（全部数据权限，无需过滤）
+     * 返回空列表表示无数据权限（需限制）
+     * 返回非空列表表示按机构ID过滤
      *
      * @author xuyuxiang
      * @date 2022/7/8 10:41
      **/
     public static List<String> getLoginUserDataScope() {
         List<String> resultList = CollectionUtil.newArrayList();
-        getLoginUser().getDataScopeList().forEach(dataScope -> {
-            if(dataScope.getApiUrl().equals(CommonServletUtil.getRequest().getServletPath())) {
+        String servletPath = CommonServletUtil.getRequest().getServletPath();
+        for (SaBaseLoginUser.DataScope dataScope : getLoginUser().getDataScopeList()) {
+            if (dataScope.getApiUrl().equals(servletPath)) {
+                if (dataScope.isScopeAll()) {
+                    // SCOPE_ALL：返回null表示全部数据权限，无需过滤
+                    return null;
+                }
                 resultList.addAll(dataScope.getDataScope());
             }
-        });
+        }
         return resultList;
     }
 }

@@ -50,6 +50,7 @@
 <script setup name="bizPositionForm">
 	import { required } from '@/utils/formRules'
 	import bizPositionApi from '@/api/biz/bizPositionApi'
+	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
@@ -63,6 +64,25 @@
 	const treeData = ref([])
 	const submitLoading = ref(false)
 
+	// 在树中递归查找节点
+	const findNodeInTree = (nodes, id) => {
+		if (!nodes) return false
+		for (const node of nodes) {
+			if (node.id === id) return true
+			if (node.children && findNodeInTree(node.children, id)) return true
+		}
+		return false
+	}
+	// 确保选中的机构节点在树中可回显名称
+	const ensureOrgInTree = (orgId) => {
+		if (!orgId || findNodeInTree(treeData.value, orgId)) return
+		userCenterApi.userCenterGetOrgListByIdList({ idList: [orgId] }).then((data) => {
+			if (data && data.length > 0) {
+				treeData.value.push({ ...data[0], isLeaf: true })
+				treeData.value = [...treeData.value]
+			}
+		})
+	}
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
@@ -83,6 +103,10 @@
 					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 				}
 			})
+			// 编辑时确保选中的机构可回显
+			if (record && formData.value.orgId) {
+				ensureOrgInTree(formData.value.orgId)
+			}
 		})
 	}
 	// 懒加载子节点

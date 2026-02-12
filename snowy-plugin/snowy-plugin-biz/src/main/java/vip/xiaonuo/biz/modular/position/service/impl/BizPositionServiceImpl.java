@@ -47,6 +47,7 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.common.util.CommonSqlUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -92,10 +93,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         }
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizPosition::getOrgId, loginUserDataScope);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
@@ -106,12 +108,13 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         BizPositionCategoryEnum.validate(bizPositionAddParam.getCategory());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
+        }
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             if(!loginUserDataScope.contains(bizPositionAddParam.getOrgId())) {
                 throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
             }
-        } else {
-            throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
         }
         BizPosition bizPosition = BeanUtil.toBean(bizPositionAddParam, BizPosition.class);
         boolean repeatName = this.count(new LambdaQueryWrapper<BizPosition>().eq(BizPosition::getOrgId, bizPosition.getOrgId())
@@ -133,12 +136,12 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         BizPosition bizPosition = this.queryEntity(bizPositionEditParam.getId());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            if(!loginUserDataScope.contains(bizPositionEditParam.getOrgId())) {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            if(!bizPositionEditParam.getId().equals(StpUtil.getLoginIdAsString())) {
                 throw new CommonException("您没有权限编辑该机构下的岗位，机构id：{}", bizPositionEditParam.getOrgId());
             }
-        } else {
-            if(!bizPositionEditParam.getId().equals(StpUtil.getLoginIdAsString())) {
+        } else if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            if(!loginUserDataScope.contains(bizPositionEditParam.getOrgId())) {
                 throw new CommonException("您没有权限编辑该机构下的岗位，机构id：{}", bizPositionEditParam.getOrgId());
             }
         }
@@ -163,12 +166,13 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             Set<String> positionOrgIdList = this.listByIds(positionIdList).stream().map(BizPosition::getOrgId).collect(Collectors.toSet());
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+                throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
+            }
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
                 if(!new HashSet<>(loginUserDataScope).containsAll(positionOrgIdList)) {
                     throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
                 }
-            } else {
-                throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
             }
             // 岗位下有人不能删除（直属岗位）
             boolean hasOrgUser = bizUserService.count(new LambdaQueryWrapper<BizUser>().in(BizUser::getPositionId, positionIdList)) > 0;
@@ -223,14 +227,15 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
         // 定义机构集合
         Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            return CollectionUtil.newArrayList();
+        }
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             // 获取所有机构
             List<BizOrg> allOrgList = bizOrgService.list();
             loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
             List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScopeFullList);
-        } else {
-            return CollectionUtil.newArrayList();
+            CommonSqlUtil.safeIn(lambdaQueryWrapper, BizOrg::getId, loginUserDataScopeFullList);
         }
         lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
         List<BizOrg> bizOrgList = bizOrgService.list(lambdaQueryWrapper);
@@ -250,10 +255,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizPosition::getOrgId, loginUserDataScope);
         }
         // 查询部分字段
         queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,

@@ -1,18 +1,28 @@
 <template>
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
-			<div ref="treeContainerRef" style="height: 100%">
-				<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
-				<a-tree
-					v-else-if="treeData.length > 0"
-					v-model:expandedKeys="defaultExpandedKeys"
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					:load-data="onLoadData"
-					:height="treeHeight"
-					@select="treeSelect"
+			<div ref="treeContainerRef" style="height: 100%; display: flex; flex-direction: column">
+				<a-input-search
+					v-model:value="treeSearchKey"
+					placeholder="搜索机构"
+					allow-clear
+					size="small"
+					style="margin-bottom: 8px; flex-shrink: 0"
+					@search="onTreeSearch"
 				/>
-				<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+				<div style="flex: 1; overflow: hidden">
+					<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
+					<a-tree
+						v-else-if="treeData.length > 0"
+						v-model:expandedKeys="defaultExpandedKeys"
+						:tree-data="treeData"
+						:field-names="treeFieldNames"
+						:load-data="searchMode ? undefined : onLoadData"
+						:height="treeHeight"
+						@select="treeSelect"
+					/>
+					<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+				</div>
 			</div>
 		</template>
 		<template #right>
@@ -246,7 +256,7 @@
 	let resizeObserver = null
 	const calcTreeHeight = () => {
 		if (treeContainerRef.value) {
-			treeHeight.value = treeContainerRef.value.clientHeight
+			treeHeight.value = treeContainerRef.value.clientHeight - 40
 		}
 	}
 	onMounted(() => {
@@ -274,6 +284,42 @@
 		tableRef.value.refresh(true)
 	}
 	const treeLoading = ref(true)
+	const treeSearchKey = ref('')
+	const searchMode = ref(false)
+	const collectTreeKeys = (nodes) => {
+		const keys = []
+		const traverse = (list) => {
+			if (!list) return
+			list.forEach((node) => {
+				keys.push(node.id)
+				if (node.children) traverse(node.children)
+			})
+		}
+		traverse(nodes)
+		return keys
+	}
+	const onTreeSearch = (value) => {
+		if (!value || !value.trim()) {
+			searchMode.value = false
+			loadTreeData()
+			return
+		}
+		treeLoading.value = true
+		searchMode.value = true
+		bizOrgApi
+			.orgTree({ searchKey: value.trim() })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+					defaultExpandedKeys.value = collectTreeKeys(res)
+				} else {
+					treeData.value = []
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
 	// 加载左侧树
 	const loadTreeData = () => {
 		treeLoading.value = true
