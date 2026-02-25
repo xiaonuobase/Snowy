@@ -177,4 +177,14 @@ public interface SaBaseLoginUserApi {
      * @date 2022/3/10 16:14
      **/
     void doRegister(String account, String password);
+
+    /**
+     * 刷新用户数据范围预计算表
+     *
+     * @param userId 用户ID
+     * @param dataScopeList 用户的数据范围集合（per-API维度）
+     * @author yubaoshan
+     * @date 2026/2/12
+     */
+    void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList);
 }

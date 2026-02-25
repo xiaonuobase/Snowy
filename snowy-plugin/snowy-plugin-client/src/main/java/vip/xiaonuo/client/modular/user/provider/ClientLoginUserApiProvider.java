@@ -212,4 +212,15 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     public void doRegister(String account, String password) {
         clientUserService.doRegister(account, password);
     }
+
+    /**
+     * C端用户无数据范围，不实现
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     **/
+    @Override
+    public void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList) {
+        // C端用户无数据范围，无需刷新预计算表
+    }
 }

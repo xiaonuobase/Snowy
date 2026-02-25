@@ -1413,4 +1413,37 @@ CREATE TABLE `SYS_USER_PASSWORD`  (
 -- Records of SYS_USER_PASSWORD
 -- ----------------------------
 
+-- ----------------------------
+-- Table structure for SYS_USER_DATA_SCOPE
+-- ----------------------------
+DROP TABLE IF EXISTS `SYS_USER_DATA_SCOPE`;
+CREATE TABLE `SYS_USER_DATA_SCOPE`  (
+  `USER_ID` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户ID',
+  `SCOPE_KEY` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '作用域KEY（orgId集合的MD5摘要）',
+  `ORG_ID` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '机构ID',
+  PRIMARY KEY (`USER_ID`, `SCOPE_KEY`, `ORG_ID`) USING BTREE,
+  INDEX `IDX_USER_SCOPE`(`USER_ID`, `SCOPE_KEY`) USING BTREE,
+  INDEX `IDX_ORG_ID`(`ORG_ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户数据范围预计算' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of SYS_USER_DATA_SCOPE
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for SYS_USER_DATA_SCOPE_MAP
+-- ----------------------------
+DROP TABLE IF EXISTS `SYS_USER_DATA_SCOPE_MAP`;
+CREATE TABLE `SYS_USER_DATA_SCOPE_MAP`  (
+  `USER_ID` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户ID',
+  `API_URL` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'API接口地址',
+  `SCOPE_KEY` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '作用域KEY（orgId集合的MD5摘要）',
+  PRIMARY KEY (`USER_ID`, `API_URL`) USING BTREE,
+  INDEX `IDX_USER_SCOPE_KEY`(`USER_ID`, `SCOPE_KEY`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户数据范围API映射' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of SYS_USER_DATA_SCOPE_MAP
+-- ----------------------------
+
 SET FOREIGN_KEY_CHECKS = 1;

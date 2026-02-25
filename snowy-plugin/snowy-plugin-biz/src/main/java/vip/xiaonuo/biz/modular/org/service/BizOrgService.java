@@ -197,4 +197,13 @@ public interface BizOrgService extends IService<BizOrg> {
      * @date 2025/12/24 01:30
      */
     void copy(BizOrgCopyParam bizOrgCopyParam);
+
+    /**
+     * 清除机构缓存（Redis缓存 + 版本号递增）
+     * 当其他模块修改了SYS_ORG表数据时，需要调用此方法同步清除缓存
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     */
+    void clearOrgCache();
 }

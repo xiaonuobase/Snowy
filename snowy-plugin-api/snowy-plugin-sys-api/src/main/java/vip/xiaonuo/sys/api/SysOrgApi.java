@@ -81,4 +81,12 @@ public interface SysOrgApi {
      * @date 2025/01/10 14:45
      **/
     List<JSONObject> getOrgListByIdListWithoutException(List<String> orgIdList);
+
+    /**
+     * 清除组织缓存
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     **/
+    void clearOrgCache();
 }

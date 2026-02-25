@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.sys.modular.org.service.SysUserDataScopeService;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.result.SysLoginUser;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
@@ -38,6 +39,9 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private SysUserDataScopeService sysUserDataScopeService;
 
     /**
      * 根据id获取B端用户信息，查不到则返回null
@@ -206,5 +210,10 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public void doRegister(String account, String password) {
         sysUserService.doRegister(account, password);
+    }
+
+    @Override
+    public void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList) {
+        sysUserDataScopeService.refreshByUserId(userId, dataScopeList);
     }
 }

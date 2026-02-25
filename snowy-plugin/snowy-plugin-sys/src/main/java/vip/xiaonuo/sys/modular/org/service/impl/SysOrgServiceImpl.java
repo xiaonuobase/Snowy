@@ -401,7 +401,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     /**
      * 清除本地内存缓存和Redis缓存
      */
-    private void clearOrgCache() {
+    @Override
+    public void clearOrgCache() {
         localOrgListCache = null;
         localParentChildrenMap = null;
         localAllOrgIdList = null;

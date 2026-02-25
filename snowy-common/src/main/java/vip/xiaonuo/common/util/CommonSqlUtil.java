@@ -62,4 +62,29 @@ public class CommonSqlUtil {
             }
         });
     }
+
+    /**
+     * 使用预计算表的子查询替代IN查询，适用于大数据量场景
+     * 通过MAP表查找SCOPE_KEY，再从SCOPE表获取orgId列表：
+     * column IN (SELECT ORG_ID FROM SYS_USER_DATA_SCOPE WHERE USER_ID = '{userId}'
+     *   AND SCOPE_KEY = (SELECT SCOPE_KEY FROM SYS_USER_DATA_SCOPE_MAP WHERE USER_ID = '{userId}' AND API_URL = '{apiUrl}'))
+     * <p>
+     * 按API维度精确过滤，相同orgId集合的API共享SCOPE_KEY，大幅减少预计算表数据量。
+     * SQL固定长度，不受数据量影响，数据库可缓存执行计划，走索引高效查询。
+     * </p>
+     *
+     * @param wrapper MyBatis-Plus LambdaQueryWrapper
+     * @param column  查询列
+     * @param userId  当前登录用户ID
+     * @param apiUrl  当前请求的API地址
+     * @param <T>     实体类型
+     */
+    public static <T> void scopeIn(LambdaQueryWrapper<T> wrapper, SFunction<T, ?> column, String userId, String apiUrl) {
+        // 防御性处理：移除单引号防止SQL注入
+        String safeUserId = userId.replace("'", "");
+        String safeApiUrl = apiUrl.replace("'", "");
+        wrapper.inSql(column, "SELECT ORG_ID FROM SYS_USER_DATA_SCOPE WHERE USER_ID = '" + safeUserId
+                + "' AND SCOPE_KEY = (SELECT SCOPE_KEY FROM SYS_USER_DATA_SCOPE_MAP WHERE USER_ID = '"
+                + safeUserId + "' AND API_URL = '" + safeApiUrl + "')");
+    }
 }

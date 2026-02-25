@@ -123,8 +123,8 @@
 			</s-table>
 		</template>
 	</XnResizablePanel>
-	<Form ref="formRef" @successful="tableRef.refresh()" />
-	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected()" />
+	<Form ref="formRef" @successful="tableRef.refresh(); refreshTreeData()" />
+	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected(); refreshTreeData()" />
 </template>
 
 <script setup name="bizOrg">
@@ -282,6 +282,21 @@
 			})
 	}
 	loadTreeData()
+	// 刷新树数据（增删改后调用，使用全量树接口保留展开状态）
+	const refreshTreeData = () => {
+		treeLoading.value = true
+		treeData.value = []
+		bizOrgApi
+			.orgTree()
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {
 		return new Promise((resolve) => {
@@ -323,12 +338,14 @@
 		]
 		bizOrgApi.orgDelete(params).then(() => {
 			tableRef.value.refresh(true)
+			refreshTreeData()
 		})
 	}
 	// 批量删除
 	const deleteBatchOrg = (params) => {
 		bizOrgApi.orgDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
+			refreshTreeData()
 		})
 	}
 	// 批量复制

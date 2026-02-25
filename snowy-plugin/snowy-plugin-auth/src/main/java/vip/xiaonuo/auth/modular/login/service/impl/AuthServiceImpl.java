@@ -727,6 +727,8 @@ public class AuthServiceImpl implements AuthService {
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
         StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
+        // 刷新用户数据范围预计算表
+        loginUserApi.refreshUserDataScope(saBaseLoginUser.getId(), saBaseLoginUser.getDataScopeList());
     }
 
     /**

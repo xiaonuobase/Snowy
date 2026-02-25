@@ -84,4 +84,9 @@ public class SysOrgApiProvider implements SysOrgApi {
     public List<JSONObject> getOrgListByIdListWithoutException(List<String> orgIdList) {
         return sysOrgService.listByIds(orgIdList).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
     }
+
+    @Override
+    public void clearOrgCache() {
+        sysOrgService.clearOrgCache();
+    }
 }

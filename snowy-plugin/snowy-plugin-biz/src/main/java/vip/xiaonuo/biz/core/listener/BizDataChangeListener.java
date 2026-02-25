@@ -10,92 +10,77 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.core.listener;
+package vip.xiaonuo.biz.core.listener;
 
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
-import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
-import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
+import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.common.listener.CommonDataChangeListener;
-import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
-import vip.xiaonuo.sys.modular.org.service.SysUserDataScopeService;
 
 import java.util.List;
 
 /**
- * 系统模块数据变化侦听器
+ * 业务模块数据变化侦听器
+ * 监听其他模块（如sys）对共享表的变更，同步清除biz模块缓存
  *
- * @author xuyuxiang
- * @date 2023/3/3 10:44
+ * @author yubaoshan
+ * @date 2026/2/12
  **/
 @Component
-public class SysDataChangeListener implements CommonDataChangeListener {
+public class BizDataChangeListener implements CommonDataChangeListener {
 
     @Resource
-    private SysUserDataScopeService sysUserDataScopeService;
+    private BizOrgService bizOrgService;
 
     @Override
     public void doAddWithDataId(String dataType, String dataId) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doAddWithDataIdList(String dataType, List<String> dataIdList) {
-        // 如果检测到机构增加，则将该机构加入到当前登录用户的数据范围缓存
-        if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
-            SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
-            saBaseLoginUser.getDataScopeList().forEach(dataScope -> dataScope.getDataScope().addAll(dataIdList));
-            saBaseLoginUser.setDataScopeList(saBaseLoginUser.getDataScopeList());
-            // 重新缓存当前登录用户信息
-            StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
-            // 同步更新预计算表：为当前用户的所有API追加新机构
-            sysUserDataScopeService.appendOrgIdsForUser(saBaseLoginUser.getId(), dataIdList);
+        if(dataType.equals(BizDataTypeEnum.ORG.getValue())) {
+            bizOrgService.clearOrgCache();
         }
     }
 
     @Override
     public void doAddWithData(String dataType, JSONObject jsonObject) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doAddWithDataList(String dataType, JSONArray jsonArray) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doUpdateWithDataId(String dataType, String dataId) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doUpdateWithDataIdList(String dataType, List<String> dataIdList) {
-        // 此处可做额外处理
+        if(dataType.equals(BizDataTypeEnum.ORG.getValue())) {
+            bizOrgService.clearOrgCache();
+        }
     }
 
     @Override
     public void doUpdateWithData(String dataType, JSONObject jsonObject) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doUpdateWithDataList(String dataType, JSONArray jsonArray) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doDeleteWithDataId(String dataType, String dataId) {
-        // 此处可做额外处理
     }
 
     @Override
     public void doDeleteWithDataIdList(String dataType, List<String> dataIdList) {
-        // 组织删除时，精准删除预计算表中对应的机构记录
-        if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
-            sysUserDataScopeService.deleteByOrgIds(dataIdList);
+        if(dataType.equals(BizDataTypeEnum.ORG.getValue())) {
+            bizOrgService.clearOrgCache();
         }
     }
 }

@@ -213,4 +213,13 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2025/5/10 12:13
      */
     List<String> getParentIdListByOrgId(String orgId);
+
+    /**
+     * 清除组织缓存（本地内存缓存 + Redis缓存）
+     * 当其他模块修改了SYS_ORG表数据时，需要调用此方法同步清除缓存
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     */
+    void clearOrgCache();
 }
