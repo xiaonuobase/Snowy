@@ -113,70 +113,29 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public List<Tree<String>> tree() {
-        return this.tree(null);
-    }
-
-    @Override
-    public List<Tree<String>> tree(String searchKey) {
-        List<SysOrg> allOrgList = this.getAllOrgList();
-        List<SysOrg> sysOrgList;
-        // 如果有搜索关键字，过滤匹配的组织及其所有父级
-        if (ObjectUtil.isNotEmpty(searchKey)) {
-            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
-            allOrgList.stream()
-                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
-                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
-            sysOrgList = new ArrayList<>(filteredSet);
-        } else {
-            sysOrgList = allOrgList;
-        }
-        // 使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
-        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
-                .thenComparing(SysOrg::getId)); // 添加ID作为次级排序条件
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
-                        sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
     public List<JSONObject> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        String parentId = ObjectUtil.isNotEmpty(sysOrgTreeLazyParam.getParentId()) ? sysOrgTreeLazyParam.getParentId() : "0";
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-
-        // 获取所有机构
-        List<SysOrg> allOrgList = this.getAllOrgList();
-        Set<String> visibleOrgIds = null;
-
-        // 如果数据范围不为空，则计算可见机构ID集合（包含自身及其所有父级）
-        if (ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            Set<SysOrg> sysOrgSet = CollectionUtil.newHashSet();
-            loginUserDataScope.forEach(orgId -> sysOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
-            visibleOrgIds = sysOrgSet.stream().map(SysOrg::getId).collect(Collectors.toSet());
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (sysOrgTreeLazyParam.getSearchKey() != null) {
+            return this.treeSearch(sysOrgTreeLazyParam.getSearchKey());
         }
-
-        // 过滤出当前父级下的可见子级
-        final Set<String> finalVisibleOrgIds = visibleOrgIds;
-        List<SysOrg> sysOrgList = allOrgList.stream()
-                .filter(sysOrg -> sysOrg.getParentId().equals(parentId))
-                .filter(sysOrg -> finalVisibleOrgIds == null || finalVisibleOrgIds.contains(sysOrg.getId()))
-                .sorted(Comparator.comparingInt(SysOrg::getSortCode).thenComparing(SysOrg::getId))
-                .collect(Collectors.toList());
-
-        if (CollectionUtil.isEmpty(sysOrgList)) {
+        String parentId = ObjectUtil.isNotEmpty(sysOrgTreeLazyParam.getParentId()) ? sysOrgTreeLazyParam.getParentId() : "0";
+        // 超管接口，无需数据范围过滤，直接SQL查询当前父级下的子机构
+        List<SysOrg> childList = this.list(new LambdaQueryWrapper<SysOrg>()
+                .eq(SysOrg::getParentId, parentId)
+                .orderByAsc(SysOrg::getSortCode)
+                .orderByAsc(SysOrg::getId));
+        if (ObjectUtil.isEmpty(childList)) {
             return CollectionUtil.newArrayList();
         }
-
-        // 判断这些机构是否还有可见子机构
-        return sysOrgList.stream().map(sysOrg -> {
+        // 批量判断哪些子机构还有下级
+        List<String> childIds = childList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
+                .select(SysOrg::getParentId)
+                .in(SysOrg::getParentId, childIds))
+                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
+        return childList.stream().map(sysOrg -> {
             JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
-            // 计算是否有可见的子节点
-            boolean hasChildren = allOrgList.stream()
-                .anyMatch(item -> item.getParentId().equals(sysOrg.getId()) && (finalVisibleOrgIds == null || finalVisibleOrgIds.contains(item.getId())));
-
-            jsonObject.set("isLeaf", !hasChildren);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
             return jsonObject;
         }).collect(Collectors.toList());
     }
@@ -191,6 +150,32 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         SysOrgTreeLazyParam sysOrgTreeLazyParam = new SysOrgTreeLazyParam();
         sysOrgTreeLazyParam.setParentId(parentId);
         return this.treeLazy(sysOrgTreeLazyParam);
+    }
+
+    /**
+     * 全量搜索模式，返回嵌套树结构的JSONObject列表
+     * searchKey为空字符串时返回全量树，非空时按关键字过滤
+     */
+    private List<JSONObject> treeSearch(String searchKey) {
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        List<SysOrg> sysOrgList;
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            allOrgList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            sysOrgList = new ArrayList<>(filteredSet);
+        } else {
+            sysOrgList = allOrgList;
+        }
+        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
+                .thenComparing(SysOrg::getId));
+        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
+                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
+                        sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
+                .collect(Collectors.toList());
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
+        return JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
     }
 
     @Transactional(rollbackFor = Exception.class)

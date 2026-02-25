@@ -26,7 +26,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.org.enums.BizOrgSourceFromTypeEnum;
@@ -66,20 +65,6 @@ public class BizOrgController {
     @GetMapping("/biz/org/page")
     public CommonResult<Page<BizOrg>> page(BizOrgPageParam bizOrgPageParam) {
         return CommonResult.data(bizOrgService.page(bizOrgPageParam));
-    }
-
-    /**
-     * 获取机构树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "获取机构树")
-    @SaCheckPermission("/biz/org/tree")
-    @GetMapping("/biz/org/tree")
-    public CommonResult<List<Tree<String>>> tree(@RequestParam(required = false) String searchKey) {
-        return CommonResult.data(bizOrgService.tree(searchKey));
     }
 
     /**

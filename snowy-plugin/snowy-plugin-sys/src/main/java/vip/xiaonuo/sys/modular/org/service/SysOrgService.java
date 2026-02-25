@@ -39,23 +39,7 @@ public interface SysOrgService extends IService<SysOrg> {
     Page<SysOrg> page(SysOrgPageParam sysOrgPageParam);
 
     /**
-     * 获取组织树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree();
-
-    /**
-     * 获取组织树（带搜索关键字）
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree(String searchKey);
-
-    /**
-     * 获取机构树（懒加载）
+     * 获取机构树（懒加载），支持搜索
      *
      * @author xuyuxiang
      * @date 2022/4/21 16:13

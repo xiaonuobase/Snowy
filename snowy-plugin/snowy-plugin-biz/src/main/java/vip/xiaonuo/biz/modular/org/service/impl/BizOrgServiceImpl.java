@@ -126,55 +126,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     @Override
-    public List<Tree<String>> tree() {
-        return this.tree(null);
-    }
-
-    @Override
-    public List<Tree<String>> tree(String searchKey) {
-        // 获取所有机构
-        List<BizOrg> allOrgList = this.getAllOrgList();
-        // 定义机构集合
-        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
-            return CollectionUtil.newArrayList();
-        }
-        if(loginUserDataScope == null) {
-            bizOrgSet.addAll(allOrgList);
-        } else {
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
-        }
-
-        List<BizOrg> bizOrgArrayList = new ArrayList<>(bizOrgSet);
-
-        // 如果有搜索关键字，过滤匹配的机构及其所有父级
-        if (ObjectUtil.isNotEmpty(searchKey)) {
-            Set<BizOrg> filteredSet = CollectionUtil.newLinkedHashSet();
-            bizOrgArrayList.stream()
-                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
-                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
-            // 取交集：既在数据范围内，又匹配搜索条件
-            bizOrgArrayList = new ArrayList<>(filteredSet);
-            bizOrgArrayList.retainAll(bizOrgSet);
-        }
-
-        // 修复：使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
-        bizOrgArrayList.sort(Comparator.comparingInt(BizOrg::getSortCode)
-                .thenComparing(BizOrg::getId)); // 添加ID作为次级排序条件
-
-        // 转换为TreeNode并构建树
-        List<TreeNode<String>> treeNodeList = bizOrgArrayList.stream().map(bizOrg ->
-                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
-                                bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
-                .collect(Collectors.toList());
-
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
     public List<JSONObject> treeLazy(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (bizOrgTreeLazyParam.getSearchKey() != null) {
+            return this.treeSearch(bizOrgTreeLazyParam.getSearchKey());
+        }
         String parentId = ObjectUtil.isNotEmpty(bizOrgTreeLazyParam.getParentId()) ? bizOrgTreeLazyParam.getParentId() : "0";
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
@@ -246,6 +202,42 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         BizOrgTreeLazyParam bizOrgTreeLazyParam = new BizOrgTreeLazyParam();
         bizOrgTreeLazyParam.setParentId(parentId);
         return this.treeLazy(bizOrgTreeLazyParam);
+    }
+
+    /**
+     * 全量搜索模式，返回嵌套树结构的JSONObject列表
+     * searchKey为空字符串时返回全量树，非空时按关键字过滤
+     * 保留数据范围过滤逻辑
+     */
+    private List<JSONObject> treeSearch(String searchKey) {
+        List<BizOrg> allOrgList = this.getAllOrgList();
+        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if (loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            return CollectionUtil.newArrayList();
+        }
+        if (loginUserDataScope == null) {
+            bizOrgSet.addAll(allOrgList);
+        } else {
+            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
+        }
+        List<BizOrg> bizOrgArrayList = new ArrayList<>(bizOrgSet);
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<BizOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            bizOrgArrayList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            bizOrgArrayList = new ArrayList<>(filteredSet);
+            bizOrgArrayList.retainAll(bizOrgSet);
+        }
+        bizOrgArrayList.sort(Comparator.comparingInt(BizOrg::getSortCode)
+                .thenComparing(BizOrg::getId));
+        List<TreeNode<String>> treeNodeList = bizOrgArrayList.stream().map(bizOrg ->
+                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
+                                bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
+                .collect(Collectors.toList());
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
+        return JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
     }
 
     @Transactional(rollbackFor = Exception.class)

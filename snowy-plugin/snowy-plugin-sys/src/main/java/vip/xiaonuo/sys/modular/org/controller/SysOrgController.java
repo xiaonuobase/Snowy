@@ -25,7 +25,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -64,19 +63,6 @@ public class SysOrgController {
     @GetMapping("/sys/org/page")
     public CommonResult<Page<SysOrg>> page(SysOrgPageParam sysOrgPageParam) {
         return CommonResult.data(sysOrgService.page(sysOrgPageParam));
-    }
-
-    /**
-     * 获取组织树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "获取组织树")
-    @GetMapping("/sys/org/tree")
-    public CommonResult<List<Tree<String>>> tree(@RequestParam(required = false) String searchKey) {
-        return CommonResult.data(sysOrgService.tree(searchKey));
     }
 
     /**

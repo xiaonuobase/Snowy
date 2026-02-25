@@ -243,7 +243,7 @@
 		treeLoading.value = true
 		searchMode.value = true
 		bizOrgApi
-			.orgTree({ searchKey: value.trim() })
+			.orgTreeLazy({ searchKey: value.trim() })
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res
@@ -270,8 +270,8 @@
 						}
 					})
 					if (isEmpty(defaultExpandedKeys.value)) {
-						// 默认展开第一级
-						if (treeData.value.length > 0) {
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
 							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
 					}
@@ -287,7 +287,7 @@
 		treeLoading.value = true
 		treeData.value = []
 		bizOrgApi
-			.orgTree()
+			.orgTreeLazy({ searchKey: '' })
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res
