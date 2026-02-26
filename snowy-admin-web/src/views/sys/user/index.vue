@@ -350,8 +350,8 @@
 						}
 					})
 					if (isEmpty(defaultExpandedKeys.value)) {
-						// 默认展开第一级
-						if (treeData.value.length > 0) {
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
 							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
 					}
@@ -523,8 +523,8 @@
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
-		orgTreeApi: (param) => {
-			return userApi.userOrgTreeSelector(param).then((data) => {
+		orgTreeLazyApi: (param) => {
+			return userApi.userOrgTreeLazySelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

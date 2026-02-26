@@ -247,20 +247,6 @@ public class BizUserController {
     /* ====人员部分所需要用到的选择器==== */
 
     /**
-     * 获取机构树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 13)
-    @Operation(summary = "获取机构树选择器")
-    @SaCheckPermission("/biz/user/orgTreeSelector")
-    @GetMapping("/biz/user/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(bizUserService.orgTreeSelector());
-    }
-
-    /**
      * 获取机构树选择器（懒加载）
      *
      * @author xuyuxiang
@@ -268,8 +254,8 @@ public class BizUserController {
      */
     @ApiOperationSupport(order = 13)
     @Operation(summary = "获取机构树选择器（懒加载）")
-    @SaCheckPermission("/biz/user/orgTreeLazySelector")
-    @GetMapping("/biz/user/orgTreeLazySelector")
+    @SaCheckPermission("/biz/user/orgTreeSelector")
+    @GetMapping("/biz/user/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
         return CommonResult.data(bizUserService.orgTreeLazySelector(bizOrgTreeLazyParam));
     }

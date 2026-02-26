@@ -39,22 +39,6 @@ public interface BizOrgService extends IService<BizOrg> {
     Page<BizOrg> page(BizOrgPageParam bizOrgPageParam);
 
     /**
-     * 获取机构树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree();
-
-    /**
-     * 获取机构树（带搜索关键字）
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree(String searchKey);
-
-    /**
      * 获取机构树（懒加载）
      *
      * @author xuyuxiang

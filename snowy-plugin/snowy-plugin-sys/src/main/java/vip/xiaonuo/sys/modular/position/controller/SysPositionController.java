@@ -126,19 +126,6 @@ public class SysPositionController {
     /* ====职位部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 6)
-    @Operation(summary = "获取组织树选择器")
-    @GetMapping("/sys/position/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysPositionService.orgTreeSelector());
-    }
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
@@ -146,7 +133,7 @@ public class SysPositionController {
      */
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取组织树选择器（懒加载）")
-    @GetMapping("/sys/position/orgTreeLazySelector")
+    @GetMapping("/sys/position/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
         return CommonResult.data(sysPositionService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }

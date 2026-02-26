@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.sys.modular.group.controller;
 
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +29,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.param.*;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 
 import java.util.List;
@@ -134,8 +135,8 @@ public class SysGroupController {
      */
     @Operation(summary = "获取组织树选择器")
     @GetMapping("/sys/group/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysGroupService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return CommonResult.data(sysGroupService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }
 
     /**

@@ -73,7 +73,7 @@ public class SysOrgController {
      */
     @ApiOperationSupport(order = 2)
     @Operation(summary = "获取组织树（懒加载）")
-    @GetMapping("/sys/org/treeLazy")
+    @GetMapping("/sys/org/tree")
     public CommonResult<List<JSONObject>> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
         return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
     }
@@ -155,19 +155,6 @@ public class SysOrgController {
     /* ====组织部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 8)
-    @Operation(summary = "获取组织树选择器")
-    @GetMapping("/sys/org/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysOrgService.orgTreeSelector());
-    }
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
@@ -175,7 +162,7 @@ public class SysOrgController {
      */
     @ApiOperationSupport(order = 8)
     @Operation(summary = "获取组织树选择器（懒加载）")
-    @GetMapping("/sys/org/orgTreeLazySelector")
+    @GetMapping("/sys/org/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
         return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
     }

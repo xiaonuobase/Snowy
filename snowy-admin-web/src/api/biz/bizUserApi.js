@@ -46,13 +46,9 @@ export default {
 	userResetPassword(data) {
 		return request('resetPassword', data)
 	},
-	// 获取组织选择器
-	userOrgTreeSelector(data) {
-		return request('orgTreeSelector', data, 'get')
-	},
 	// 获取组织选择器（懒加载）
 	userOrgTreeLazySelector(data) {
-		return request('orgTreeLazySelector', data, 'get')
+		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取职位选择器
 	userPositionSelector(data) {

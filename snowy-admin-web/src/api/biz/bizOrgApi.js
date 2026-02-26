@@ -32,7 +32,7 @@ export default {
 	},
 	// 获取机构树（懒加载）
 	orgTreeLazy(data) {
-		return request('treeLazy', data, 'get')
+		return request('tree', data, 'get')
 	},
 	// 提交表单 edit为true时为编辑，默认为新增
 	submitForm(data, edit = false) {
@@ -46,13 +46,9 @@ export default {
 	orgDetail(data) {
 		return request('detail', data, 'get')
 	},
-	// 获取机构树选择器
-	orgTreeSelector(data) {
-		return request('orgTreeSelector', data, 'get')
-	},
 	// 获取机构树选择器（懒加载）
 	orgTreeLazySelector(data) {
-		return request('orgTreeLazySelector', data, 'get')
+		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取人员选择器
 	orgUserSelector(data) {

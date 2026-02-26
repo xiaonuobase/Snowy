@@ -66,13 +66,9 @@ export default {
 	roleGrantUser(data) {
 		return request('grantUser', data)
 	},
-	// 获取机构树
-	roleOrgTreeSelector(data) {
-		return request('orgTreeSelector', data, 'get')
-	},
 	// 获取机构树（懒加载）
 	roleOrgTreeLazySelector(data) {
-		return request('orgTreeLazySelector', data, 'get')
+		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取资源授权树
 	roleResourceTreeSelector(data) {

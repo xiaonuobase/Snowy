@@ -137,71 +137,50 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if (loginUserDataScope != null && ObjectUtil.isEmpty(loginUserDataScope)) {
             return CollectionUtil.newArrayList();
         }
-
-        // loginUserDataScope == null 时为 SCOPE_ALL，不做数据范围过滤
-        if (loginUserDataScope == null) {
-            // SCOPE_ALL：直接查询当前父级下的所有子机构
-            List<BizOrg> childList = this.list(new LambdaQueryWrapper<BizOrg>()
-                    .eq(BizOrg::getParentId, parentId)
-                    .orderByAsc(BizOrg::getSortCode));
-            if (ObjectUtil.isEmpty(childList)) {
+        // loginUserDataScope == null 时为 SCOPE_ALL，不做数据范围过滤；否则取可见机构ID集合
+        Set<String> visibleOrgIds = null;
+        if (loginUserDataScope != null) {
+            visibleOrgIds = this.getVisibleOrgIds(loginUserDataScope);
+            if (ObjectUtil.isEmpty(visibleOrgIds)) {
                 return CollectionUtil.newArrayList();
             }
-            List<String> childIds = childList.stream().map(BizOrg::getId).collect(Collectors.toList());
-            Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<BizOrg>()
-                    .select(BizOrg::getParentId)
-                    .in(BizOrg::getParentId, childIds))
-                    .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
-            return childList.stream().map(bizOrg -> {
-                JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
-                jsonObject.set("isLeaf", !hasChildrenParentIds.contains(bizOrg.getId()));
-                return jsonObject;
-            }).collect(Collectors.toList());
         }
+        return this.fetchChildrenWithLeafFlag(parentId, visibleOrgIds);
+    }
 
-        // 从版本化缓存获取可见机构ID集合（命中时无需加载全量数据）
-        Set<String> visibleOrgIds = this.getVisibleOrgIds(loginUserDataScope);
-        if (ObjectUtil.isEmpty(visibleOrgIds)) {
-            return CollectionUtil.newArrayList();
+    /**
+     * 查询指定父节点下的直接子机构列表，并为每个子机构设置 isLeaf 标志。
+     * visibleOrgIds 为 null 时表示 SCOPE_ALL，不做数据范围过滤（与 SysOrg 行为一致）；
+     * 非 null 时仅返回集合内可见的子机构，且 isLeaf 判断也限制在可见范围内。
+     */
+    private List<JSONObject> fetchChildrenWithLeafFlag(String parentId, Set<String> visibleOrgIds) {
+        // 查询当前父级下的（可见）子机构
+        LambdaQueryWrapper<BizOrg> childQuery = new LambdaQueryWrapper<BizOrg>()
+                .eq(BizOrg::getParentId, parentId)
+                .orderByAsc(BizOrg::getSortCode)
+                .orderByAsc(BizOrg::getId);
+        if (visibleOrgIds != null) {
+            CommonSqlUtil.safeIn(childQuery, BizOrg::getId, visibleOrgIds);
         }
-
-        // SQL直查：获取当前父级下的可见子机构（替代内存过滤2万条记录）
-        LambdaQueryWrapper<BizOrg> childQueryWrapper = new LambdaQueryWrapper<BizOrg>()
-                .eq(BizOrg::getParentId, parentId);
-        CommonSqlUtil.safeIn(childQueryWrapper, BizOrg::getId, visibleOrgIds);
-        childQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        List<BizOrg> childList = this.list(childQueryWrapper);
-
+        List<BizOrg> childList = this.list(childQuery);
         if (ObjectUtil.isEmpty(childList)) {
             return CollectionUtil.newArrayList();
         }
-
-        // SQL批量查询：判断哪些子机构还有可见的下级（单次SQL替代N次遍历）
+        // 批量判断哪些子机构还有（可见的）下级
         List<String> childIds = childList.stream().map(BizOrg::getId).collect(Collectors.toList());
-        LambdaQueryWrapper<BizOrg> hasChildrenWrapper = new LambdaQueryWrapper<BizOrg>()
+        LambdaQueryWrapper<BizOrg> hasChildrenQuery = new LambdaQueryWrapper<BizOrg>()
                 .select(BizOrg::getParentId)
                 .in(BizOrg::getParentId, childIds);
-        CommonSqlUtil.safeIn(hasChildrenWrapper, BizOrg::getId, visibleOrgIds);
-        Set<String> hasChildrenParentIds = this.list(hasChildrenWrapper)
+        if (visibleOrgIds != null) {
+            CommonSqlUtil.safeIn(hasChildrenQuery, BizOrg::getId, visibleOrgIds);
+        }
+        Set<String> hasChildrenParentIds = this.list(hasChildrenQuery)
                 .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
-
         return childList.stream().map(bizOrg -> {
             JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
             jsonObject.set("isLeaf", !hasChildrenParentIds.contains(bizOrg.getId()));
             return jsonObject;
         }).collect(Collectors.toList());
-    }
-
-    /**
-     * 获取机构树（懒加载）
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    public List<JSONObject> treeLazy(String parentId) {
-        BizOrgTreeLazyParam bizOrgTreeLazyParam = new BizOrgTreeLazyParam();
-        bizOrgTreeLazyParam.setParentId(parentId);
-        return this.treeLazy(bizOrgTreeLazyParam);
     }
 
     /**

@@ -191,11 +191,6 @@
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
-		orgTreeApi: (param) => {
-			return orgApi.orgOrgTreeSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
 		orgTreeLazyApi: (param) => {
 			return orgApi.orgOrgTreeLazySelector(param).then((data) => {
 				return Promise.resolve(data)

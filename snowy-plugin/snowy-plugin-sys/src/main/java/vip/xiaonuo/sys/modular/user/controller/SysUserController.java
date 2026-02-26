@@ -318,19 +318,6 @@ public class SysUserController {
     /* ====用户部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 19)
-    @Operation(summary = "获取组织树选择器")
-    @GetMapping("/sys/user/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysUserService.orgTreeSelector());
-    }
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
@@ -338,7 +325,7 @@ public class SysUserController {
      */
     @ApiOperationSupport(order = 19)
     @Operation(summary = "获取组织树选择器（懒加载）")
-    @GetMapping("/sys/user/orgTreeLazySelector")
+    @GetMapping("/sys/user/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
         return CommonResult.data(sysUserService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }

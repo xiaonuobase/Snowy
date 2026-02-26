@@ -16,6 +16,7 @@
 						v-model:expandedKeys="defaultExpandedKeys"
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
+						:load-data="onLoadData"
 						@select="treeSelect"
 					>
 					</a-tree>
@@ -160,7 +161,7 @@
 	const tableData = ref([])
 	const selectedData = ref([])
 	const recordIds = ref()
-	const props = defineProps(['orgPageApi', 'orgTreeApi', 'radioModel', 'dataIsConverterFlw', 'checkedOrgListApi'])
+	const props = defineProps(['orgPageApi', 'orgTreeLazyApi', 'radioModel', 'dataIsConverterFlw', 'checkedOrgListApi'])
 	// 是否是单选
 	const radioModel = props.radioModel || false
 	// 数据是否转换成工作流格式
@@ -177,25 +178,19 @@
 			ids = goDataConverter(ids)
 		}
 		recordIds.value = ids
-		if (props.orgTreeApi) {
-			// 获取机构树
-			props.orgTreeApi().then((data) => {
+		if (props.orgTreeLazyApi) {
+			// 加载根节点（不传 parentId）
+			props.orgTreeLazyApi().then((data) => {
 				cardLoading.value = false
 				if (data !== null) {
-					treeData.value = data
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
-							}
-						}
-					})
+					treeData.value = data.map((item) => ({
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}))
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value.push(treeData.value[0].id)
+					}
 				}
 			})
 		}
@@ -322,6 +317,23 @@
 		delete searchFormState.value.searchKey
 		loadData()
 	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (!props.orgTreeLazyApi || treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
+			}
+			props.orgTreeLazyApi({ parentId: treeNode.dataRef.id }).then((data) => {
+				treeNode.dataRef.children = data.map((item) => ({
+					...item,
+					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+				}))
+				treeData.value = [...treeData.value]
+				resolve()
+			})
+		})
+	}
 	const handleClose = () => {
 		searchFormState.value = {}
 		tableRecordNum.value = 0
@@ -330,6 +342,9 @@
 		pageSize.value = 20
 		total.value = 0
 		selectedData.value = []
+		treeData.value = undefined
+		defaultExpandedKeys.value = []
+		cardLoading.value = true
 		visible.value = false
 	}
 

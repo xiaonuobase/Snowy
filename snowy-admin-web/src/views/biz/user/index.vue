@@ -334,7 +334,8 @@
 						}
 					})
 					if (isEmpty(defaultExpandedKeys.value)) {
-						if (treeData.value.length > 0) {
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
 							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
 					}
@@ -502,11 +503,6 @@
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
-		orgTreeApi: (param) => {
-			return bizUserApi.userOrgTreeSelector(param).then((orgTree) => {
-				return Promise.resolve(orgTree)
-			})
-		},
 		orgTreeLazyApi: (param) => {
 			return bizUserApi.userOrgTreeLazySelector(param).then((orgTree) => {
 				return Promise.resolve(orgTree)

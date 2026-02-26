@@ -241,19 +241,6 @@ public class SysRoleController {
     /* ====角色部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:00
-     */
-    @ApiOperationSupport(order = 14)
-    @Operation(summary = "获取组织树选择器")
-    @GetMapping("/sys/role/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysRoleService.orgTreeSelector());
-    }
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
@@ -261,7 +248,7 @@ public class SysRoleController {
      */
     @ApiOperationSupport(order = 15)
     @Operation(summary = "获取组织树选择器（懒加载）")
-    @GetMapping("/sys/role/orgTreeLazySelector")
+    @GetMapping("/sys/role/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
         return CommonResult.data(sysRoleService.orgTreeLazySelector(sysOrgTreeLazyParam));
     }

@@ -339,8 +339,8 @@
 								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 							}
 						})
-						// 默认展开第一级
-						if (treeData.value.length > 0) {
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
 							defaultExpandedKeys.value.push(treeData.value[0].id)
 						}
 					}

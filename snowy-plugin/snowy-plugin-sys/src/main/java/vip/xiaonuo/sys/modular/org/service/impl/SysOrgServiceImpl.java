@@ -141,18 +141,6 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     /**
-     * 获取机构树（懒加载）
-     *
-     * @author xuyuxiang
-     * @date 2022/4/21 16:13
-     **/
-    public List<JSONObject> treeLazy(String parentId) {
-        SysOrgTreeLazyParam sysOrgTreeLazyParam = new SysOrgTreeLazyParam();
-        sysOrgTreeLazyParam.setParentId(parentId);
-        return this.treeLazy(sysOrgTreeLazyParam);
-    }
-
-    /**
      * 全量搜索模式，返回嵌套树结构的JSONObject列表
      * searchKey为空字符串时返回全量树，非空时按关键字过滤
      */

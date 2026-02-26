@@ -182,8 +182,8 @@
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
-		orgTreeApi: (param) => {
-			return sysGroupApi.groupOrgTreeSelector(param).then((data) => {
+		orgTreeLazyApi: (param) => {
+			return sysGroupApi.groupOrgTreeLazySelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

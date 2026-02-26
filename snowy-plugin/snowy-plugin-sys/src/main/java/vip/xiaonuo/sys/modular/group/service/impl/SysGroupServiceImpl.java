@@ -19,6 +19,7 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -37,6 +38,7 @@ import vip.xiaonuo.sys.modular.group.mapper.SysGroupMapper;
 import vip.xiaonuo.sys.modular.group.param.*;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.param.SysPositionIdParam;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
@@ -142,6 +144,11 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
                         new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+        return List.of();
     }
 
     @Override

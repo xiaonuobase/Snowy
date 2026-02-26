@@ -20,6 +20,7 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +35,7 @@ import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
 import vip.xiaonuo.biz.modular.group.param.*;
 import vip.xiaonuo.biz.modular.group.service.BizGroupService;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
@@ -155,6 +157,11 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
                                 bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
                 .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
+        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
     }
 
     @Override
