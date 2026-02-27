@@ -21,8 +21,10 @@ import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.org.service.SysUserDataScopeService;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,17 +37,34 @@ import java.util.List;
 public class SysDataChangeListener implements CommonDataChangeListener {
 
     @Resource
+    private SysOrgService sysOrgService;
+
+    @Resource
     private SysUserDataScopeService sysUserDataScopeService;
 
     @Override
     public void doAddWithDataId(String dataType, String dataId) {
-        // 此处可做额外处理
+        if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
+            List<String> dataIdList = Collections.singletonList(dataId);
+            // 清除机构缓存
+            sysOrgService.clearOrgCache();
+            // 将新机构加入到当前登录用户的数据范围缓存
+            SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
+            saBaseLoginUser.getDataScopeList().forEach(dataScope -> dataScope.getDataScope().addAll(dataIdList));
+            saBaseLoginUser.setDataScopeList(saBaseLoginUser.getDataScopeList());
+            // 重新缓存当前登录用户信息
+            StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
+            // 同步更新预计算表：为当前用户的所有API追加新机构
+            sysUserDataScopeService.appendOrgIdsForUser(saBaseLoginUser.getId(), dataIdList);
+        }
     }
 
     @Override
     public void doAddWithDataIdList(String dataType, List<String> dataIdList) {
-        // 如果检测到机构增加，则将该机构加入到当前登录用户的数据范围缓存
         if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
+            // 清除机构缓存
+            sysOrgService.clearOrgCache();
+            // 将新机构加入到当前登录用户的数据范围缓存
             SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
             saBaseLoginUser.getDataScopeList().forEach(dataScope -> dataScope.getDataScope().addAll(dataIdList));
             saBaseLoginUser.setDataScopeList(saBaseLoginUser.getDataScopeList());
@@ -68,12 +87,16 @@ public class SysDataChangeListener implements CommonDataChangeListener {
 
     @Override
     public void doUpdateWithDataId(String dataType, String dataId) {
-        // 此处可做额外处理
+        if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
+            sysOrgService.clearOrgCache();
+        }
     }
 
     @Override
     public void doUpdateWithDataIdList(String dataType, List<String> dataIdList) {
-        // 此处可做额外处理
+        if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
+            sysOrgService.clearOrgCache();
+        }
     }
 
     @Override
@@ -93,8 +116,9 @@ public class SysDataChangeListener implements CommonDataChangeListener {
 
     @Override
     public void doDeleteWithDataIdList(String dataType, List<String> dataIdList) {
-        // 组织删除时，精准删除预计算表中对应的机构记录
         if(dataType.equals(SysDataTypeEnum.ORG.getValue())) {
+            sysOrgService.clearOrgCache();
+            // 精准删除预计算表中对应的机构记录
             sysUserDataScopeService.deleteByOrgIds(dataIdList);
         }
     }

@@ -37,6 +37,9 @@ public class BizDataChangeListener implements CommonDataChangeListener {
 
     @Override
     public void doAddWithDataId(String dataType, String dataId) {
+        if(dataType.equals(BizDataTypeEnum.ORG.getValue())) {
+            bizOrgService.clearOrgCache();
+        }
     }
 
     @Override
@@ -56,6 +59,9 @@ public class BizDataChangeListener implements CommonDataChangeListener {
 
     @Override
     public void doUpdateWithDataId(String dataType, String dataId) {
+        if(dataType.equals(BizDataTypeEnum.ORG.getValue())) {
+            bizOrgService.clearOrgCache();
+        }
     }
 
     @Override

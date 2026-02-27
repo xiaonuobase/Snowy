@@ -51,13 +51,10 @@
 									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 									placeholder="请选择组织"
 									allow-clear
+									tree-line
 									:tree-data="treeData"
 									:tree-default-expanded-keys="treeDefaultExpandedKeys"
-									:field-names="{
-										children: 'children',
-										label: 'name',
-										value: 'id'
-									}"
+									:field-names="treeFieldNames"
 									:load-data="onLoadData"
 									@change="selePositionData(formData.orgId, 0)"
 								/>
@@ -131,12 +128,12 @@
 											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 											placeholder="请选择组织"
 											allow-clear
-											tree-default-expand-all
+											tree-line
 											:tree-data="treeData"
 											:tree-default-expanded-keys="treeDefaultExpandedKeys"
 											:field-names="treeFieldNames"
 											:load-data="onLoadData"
-											@select="childOrgSelect(positionInfo, 0, index)"
+											@change="childOrgSelect(positionInfo, 0, index)"
 										/>
 									</a-form-item>
 								</a-col>
@@ -320,7 +317,7 @@
 	const xnChildUserPageSelectRef = ref()
 	// 表单数据
 	const formData = ref({})
-	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeFieldNames = { children: 'children', label: 'name', key: 'id', value: 'id' }
 
 	// 在树中递归查找节点
 	const findNodeInTree = (nodes, id) => {

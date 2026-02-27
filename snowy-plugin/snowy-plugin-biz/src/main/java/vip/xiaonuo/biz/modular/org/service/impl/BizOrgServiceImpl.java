@@ -68,6 +68,9 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     private static final String ORG_ALL_LIST_CACHE_KEY = "biz-org:all-list";
 
+    /** 本地内存缓存，避免每次从Redis取出后JSON反序列化大量记录（与SysOrg对齐） */
+    private volatile List<BizOrg> localOrgListCache;
+
     /** 机构数据版本号缓存key，机构增删改时递增，用于使 visibleOrgIds 缓存自动失效 */
     private static final String ORG_CACHE_VERSION_KEY = "biz-org:cache-version";
 
@@ -246,11 +249,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         this.save(bizOrg);
         // 插入扩展信息
         bizOrgExtService.createExtInfo(bizOrg.getId(), sourceFromType);
-        // 发布增加事件
+        // 发布增加事件（BizDataChangeListener 和 SysDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
-        // 清除缓存
-        this.invalidateOrgCaches();
-        sysOrgApi.clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -285,11 +285,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         }
         // 更新机构
         this.updateById(bizOrg);
-        // 发布更新事件
+        // 发布更新事件（BizDataChangeListener 和 SysDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
-        // 清除缓存
-        this.invalidateOrgCaches();
-        sysOrgApi.clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -342,11 +339,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             // 执行删除
             this.removeByIds(toDeleteOrgIdList);
 
-            // 发布删除事件
+            // 发布删除事件（BizDataChangeListener 和 SysDataChangeListener 监听后自动清缓存）
             CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
-            // 清除缓存
-            this.invalidateOrgCaches();
-            sysOrgApi.clearOrgCache();
         }
     }
 
@@ -366,12 +360,22 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
 
     @Override
     public List<BizOrg> getAllOrgList() {
+        // 优先从本地内存缓存获取，避免每次JSON反序列化
+        List<BizOrg> localCache = localOrgListCache;
+        if (localCache != null) {
+            return localCache;
+        }
+        // 其次从Redis缓存获取
         Object cached = commonCacheOperator.get(ORG_ALL_LIST_CACHE_KEY);
         if (cached != null) {
-            return JSONUtil.toList(JSONUtil.parseArray(cached), BizOrg.class);
+            List<BizOrg> list = JSONUtil.toList(JSONUtil.parseArray(cached), BizOrg.class);
+            localOrgListCache = list;
+            return list;
         }
+        // 最后从数据库查询
         List<BizOrg> list = this.list(new LambdaQueryWrapper<BizOrg>().orderByAsc(BizOrg::getSortCode));
         commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
+        localOrgListCache = list;
         return list;
     }
 
@@ -380,6 +384,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
      * 机构增删改时调用，visibleOrgIds 缓存通过版本号自动失效，旧条目由 TTL 自动清理
      */
     private void invalidateOrgCaches() {
+        localOrgListCache = null;
         commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
         commonCacheOperator.put(ORG_CACHE_VERSION_KEY, String.valueOf(System.currentTimeMillis()));
     }
@@ -483,11 +488,8 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         bizOrg.setCategory("0".equals(parentId)?BizOrgCategoryEnum.COMPANY.getValue():BizOrgCategoryEnum.DEPT.getValue());
         bizOrg.setSortCode(99);
         this.save(bizOrg);
-        // 发布增加事件
+        // 发布增加事件（BizDataChangeListener 和 SysDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(bizOrg));
-        // 清除缓存
-        this.invalidateOrgCaches();
-        sysOrgApi.clearOrgCache();
         return bizOrg.getId();
     }
 
@@ -625,14 +627,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                         this.save(copyBizOrg);
                         // 插入扩展信息
                         bizOrgExtService.createExtInfo(copyBizOrg.getId(), BizOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
-                        // 发布增加事件
+                        // 发布增加事件（BizDataChangeListener 和 SysDataChangeListener 监听后自动清缓存）
                         CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(copyBizOrg));
                     }
                 }
             });
-            // 清除缓存
-            this.invalidateOrgCaches();
-            sysOrgApi.clearOrgCache();
         }
     }
 

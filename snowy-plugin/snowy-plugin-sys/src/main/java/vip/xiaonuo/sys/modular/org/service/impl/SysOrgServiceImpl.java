@@ -182,10 +182,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.save(sysOrg);
         // 插入扩展信息
         sysOrgExtService.createExtInfo(sysOrg.getId(), sourceFromType);
-        // 发布增加事件
+        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-        // 清除缓存
-        clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -207,10 +205,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
         // 更新组织
         this.updateById(sysOrg);
-        // 发布更新事件
+        // 发布更新事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-        // 清除缓存
-        clearOrgCache();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -254,10 +250,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             // 执行删除
             this.removeByIds(toDeleteOrgIdList);
 
-            // 发布删除事件
+            // 发布删除事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
-            // 清除缓存
-            clearOrgCache();
         }
     }
 
@@ -302,12 +296,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                         // 插入扩展信息
                         sysOrgExtService.createExtInfo(copySysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
                         // 发布增加事件
+                        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
                         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(copySysOrg));
                     }
                 }
             });
-            // 清除缓存
-            clearOrgCache();
         }
     }
 
@@ -429,10 +422,8 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.save(sysOrg);
         // 插入扩展信息
         sysOrgExtService.createExtInfo(sysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
-        // 发布增加事件
+        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
-        // 清除缓存
-        clearOrgCache();
         return sysOrg.getId();
     }
 

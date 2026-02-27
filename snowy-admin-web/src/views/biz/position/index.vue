@@ -15,6 +15,7 @@
 					<a-tree
 						v-else-if="treeData.length > 0"
 						v-model:expandedKeys="defaultExpandedKeys"
+						:show-line="{ showLeafIcon: false }"
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
 						:load-data="searchMode ? undefined : onLoadData"
