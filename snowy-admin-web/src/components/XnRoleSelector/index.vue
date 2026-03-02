@@ -34,6 +34,7 @@
 						<a-tree
 							v-if="treeData"
 							v-model:expandedKeys="defaultExpandedKeys"
+							:show-line="{ showLeafIcon: false }"
 							:tree-data="treeData"
 							:field-names="treeFieldNames"
 							:load-data="onLoadData"
@@ -57,11 +58,7 @@
 										placeholder="请选择组织"
 										allow-clear
 										:tree-data="treeData"
-										:field-names="{
-											children: 'children',
-											label: 'name',
-											value: 'id'
-										}"
+										:field-names="treeSelectFieldNames"
 										selectable="false"
 										tree-line
 										@change="onCategoryOrOrgIdSelect"
@@ -246,6 +243,7 @@
 	const slots = useSlots()
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 获取机构树数据
 	const treeData = ref()
 	//  默认展开二级树的节点id
@@ -323,7 +321,7 @@
 		}
 	}
 	const openModal = () => {
-		if (typeof props.orgTreeApi !== 'function' || typeof props.rolePageApi !== 'function') {
+		if ((typeof props.orgTreeApi !== 'function' && typeof props.orgTreeLazyApi !== 'function') || typeof props.rolePageApi !== 'function') {
 			message.warning('未配置角色选择器API')
 			return
 		}

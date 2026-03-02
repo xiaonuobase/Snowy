@@ -12,16 +12,17 @@
 				/>
 				<div style="flex: 1; overflow: hidden">
 					<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
-					<a-tree
-						v-else-if="treeData.length > 0"
-						v-model:expandedKeys="defaultExpandedKeys"
-						:show-line="{ showLeafIcon: false }"
-						:tree-data="treeData"
-						:field-names="treeFieldNames"
-						:load-data="searchMode ? undefined : onLoadData"
-						:height="treeHeight"
-						@select="treeSelect"
-					/>
+					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
+						<a-tree
+							v-model:expandedKeys="defaultExpandedKeys"
+							:show-line="{ showLeafIcon: false }"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="searchMode ? undefined : onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						/>
+					</a-spin>
 					<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
 				</div>
 			</div>
@@ -38,11 +39,7 @@
 								:placeholder="$t('user.placeholderUserOrg')"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
+								:field-names="treeSelectFieldNames"
 								tree-line
 								:load-data="onLoadData"
 							/>
@@ -187,7 +184,7 @@
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-role-selector
 		ref="RoleSelectorPlusRef"
-		:org-tree-api="selectorApiFunction.orgTreeApi"
+		:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
 		:add-show="false"
 		:show="false"
@@ -265,6 +262,7 @@
 	const treeData = ref([])
 	const selectedRowKeys = ref([])
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	const formRef = ref(null)
 	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})

@@ -66,11 +66,7 @@
 							allow-clear
 							tree-default-expand-all
 							:tree-data="menuTreeData"
-							:field-names="{
-								children: 'children',
-								label: 'title',
-								value: 'id'
-							}"
+							:field-names="treeFieldNames"
 							selectable="false"
 							tree-line
 						/>
@@ -192,6 +188,7 @@
 	const tableList = ref([])
 	const tableColumns = ref([])
 	const menuTreeData = ref([])
+	const treeFieldNames = { children: 'children', label: 'title', value: 'id' }
 	const submitLoading = ref(false)
 	const moduleOptions = ref()
 	const generateTypeOptions = ref([

@@ -15,11 +15,7 @@
 					placeholder="请选择组织"
 					allow-clear
 					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'name',
-						value: 'id'
-					}"
+					:field-names="treeFieldNames"
 					tree-line
 					:load-data="onLoadData"
 				></a-tree-select>
@@ -62,7 +58,7 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
-
+	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 在树中递归查找节点
 	const findNodeInTree = (nodes, id) => {
 		if (!nodes) return false

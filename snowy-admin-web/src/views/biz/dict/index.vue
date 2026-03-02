@@ -22,11 +22,7 @@
 								placeholder="请选择上级字典"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
+								:field-names="treeSelectFieldNames"
 								selectable="false"
 								tree-line
 							/>
@@ -119,6 +115,7 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 
 	// 表格查询 返回 Promise 对象

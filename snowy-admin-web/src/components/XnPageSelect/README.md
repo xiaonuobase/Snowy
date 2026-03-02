@@ -27,11 +27,7 @@ XnPageSelect 分页下拉选择器
                        tree-default-expand-all
                        :tree-data="treeData"
                        :tree-default-expanded-keys="treeDefaultExpandedKeys"
-                       :field-names="{
-                                     children: 'children',
-                                     label: 'name',
-                                     value: 'id'
-                                     }"
+                       :field-names="treeFieldNames"
                        @change="selePositionData(formData.orgId, 0)"
                        ></a-tree-select>
     </a-form-item>
@@ -56,6 +52,7 @@ import bizUserApi from '@/api/biz/bizUserApi'
 // 表单数据
 const formData = ref({})
 const xnPositionPageSelectRef = ref()
+const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 
 // 机构选择后查询对应的职位
 const selePositionData = (orgId, type) => {

@@ -45,6 +45,7 @@
 					<a-row :gutter="16">
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择组织：" name="orgId">
+								<a-spin :spinning="treeLoading">
 								<a-tree-select
 									v-model:value="formData.orgId"
 									class="xn-wd"
@@ -53,15 +54,17 @@
 									allow-clear
 									tree-line
 									:tree-data="treeData"
-									:tree-default-expanded-keys="treeDefaultExpandedKeys"
+									v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 									:field-names="treeFieldNames"
-									:load-data="onLoadData"
+									:load-data="isEditMode ? undefined : onLoadData"
 									@change="selePositionData(formData.orgId, 0)"
 								/>
+								</a-spin>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择职位：" name="positionId">
+								<a-spin :spinning="treeLoading">
 								<xn-page-select
 									ref="xnPositionPageSelectRef"
 									v-model:value="formData.positionId"
@@ -70,10 +73,12 @@
 									:page-function="selectApiFunction.positionSelector"
 									:echo-function="selectApiFunction.echoPosition"
 								/>
+								</a-spin>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择主管：" name="directorId">
+								<a-spin :spinning="treeLoading">
 								<xn-page-select
 									ref="xnUserPageSelectRef"
 									v-model:value="formData.directorId"
@@ -82,6 +87,7 @@
 									:page-function="selectApiFunction.userSelector"
 									:echo-function="selectApiFunction.echoUser"
 								/>
+								</a-spin>
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -122,6 +128,7 @@
 										:name="['positionJson', index, 'orgId']"
 										:rules="{ required: true, message: '请选择组织' }"
 									>
+									<a-spin :spinning="treeLoading">
 										<a-tree-select
 											v-model:value="positionInfo.orgId"
 											class="xn-wd"
@@ -130,11 +137,12 @@
 											allow-clear
 											tree-line
 											:tree-data="treeData"
-											:tree-default-expanded-keys="treeDefaultExpandedKeys"
+											v-model:treeExpandedKeys="childTreeExpandedKeys[index]"
 											:field-names="treeFieldNames"
-											:load-data="onLoadData"
+											:load-data="isEditMode ? undefined : onLoadData"
 											@change="childOrgSelect(positionInfo, 0, index)"
 										/>
+									</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
@@ -142,6 +150,7 @@
 										:name="['positionJson', index, 'positionId']"
 										:rules="{ required: true, message: '请选择职位' }"
 									>
+									<a-spin :spinning="treeLoading">
 										<xn-page-select
 											ref="xnChildPositionPageSelectRef"
 											v-model:value="positionInfo.positionId"
@@ -150,10 +159,12 @@
 											:page-function="selectApiFunction.childPositionSelector"
 											:echo-function="selectApiFunction.echoPosition"
 										/>
+									</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
 									<a-form-item :name="['positionJson', index, 'directorId']">
+									<a-spin :spinning="treeLoading">
 										<xn-page-select
 											ref="xnChildUserPageSelectRef"
 											v-model:value="positionInfo.directorId"
@@ -162,6 +173,7 @@
 											:page-function="selectApiFunction.childUserSelector"
 											:echo-function="selectApiFunction.echoUser"
 										/>
+									</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
@@ -308,8 +320,10 @@
 	const activeTabsKey = ref('1')
 	const emit = defineEmits({ successful: null })
 	const formLoading = ref(false)
+	const treeLoading = ref(false)
 	const treeData = ref([])
 	const treeDefaultExpandedKeys = ref([])
+	const childTreeExpandedKeys = ref([])
 	// 分页select组件dom定义
 	const xnPositionPageSelectRef = ref()
 	const xnUserPageSelectRef = ref()
@@ -319,33 +333,12 @@
 	const formData = ref({})
 	const treeFieldNames = { children: 'children', label: 'name', key: 'id', value: 'id' }
 
-	// 在树中递归查找节点
-	const findNodeInTree = (nodes, id) => {
-		if (!nodes) return false
-		for (const node of nodes) {
-			if (node.id === id) return true
-			if (node.children && findNodeInTree(node.children, id)) return true
-		}
-		return false
-	}
-	// 确保选中的机构节点在树中可回显名称
-	const ensureOrgsInTree = (orgIds) => {
-		const missingIds = orgIds.filter((id) => id && !findNodeInTree(treeData.value, id))
-		if (missingIds.length === 0) return
-		userCenterApi.userCenterGetOrgListByIdList({ idList: missingIds }).then((data) => {
-			if (data && data.length > 0) {
-				data.forEach((org) => {
-					treeData.value.push({ ...org, isLeaf: true })
-				})
-				treeData.value = [...treeData.value]
-			}
-		})
-	}
-	// 树加载Promise，用于协调回显时序
-	let treeLoadPromise = null
+	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
+	const isEditMode = ref(false)
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
+		isEditMode.value = !!record
 		formData.value = {
 			gender: '男',
 			positionJson: []
@@ -357,25 +350,42 @@
 				selePositionData(orgId)
 			})
 		}
-		if (record) {
-			convertFormData(record)
-		}
 		nextTick(() => {
-			// 机构选择器数据
-			treeLoadPromise = userApi.userOrgTreeLazySelector().then((res) => {
-				if (res !== null) {
-					treeData.value = res.map((item) => {
-						return {
-							...item,
-							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+			if (isEditMode.value) {
+				// 编辑模式：加载全量树 + 详情，等都完成后展开到选中节点
+				treeLoading.value = true
+				const treePromise = userApi.userOrgTreeLazySelector({ searchKey: '' }).then((res) => {
+					if (res !== null) {
+						treeData.value = res
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
+							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
 						}
-					})
-					// 只有一个根节点时才自动展开
-					if (treeData.value.length === 1) {
-						treeDefaultExpandedKeys.value.push(treeData.value[0].id)
 					}
-				}
-			})
+				})
+				const detailPromise = convertFormData(record)
+				Promise.all([treePromise, detailPromise]).then(() => {
+					expandToSelectedOrgs()
+				}).finally(() => {
+					treeLoading.value = false
+				})
+			} else {
+				// 新增模式：懒加载树
+				userApi.userOrgTreeLazySelector().then((res) => {
+					if (res !== null) {
+						treeData.value = res.map((item) => {
+							return {
+								...item,
+								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+							}
+						})
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
+							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+						}
+					}
+				})
+			}
 		})
 	}
 	// 懒加载子节点
@@ -405,7 +415,43 @@
 	const onClose = () => {
 		treeData.value = []
 		treeDefaultExpandedKeys.value = []
+		childTreeExpandedKeys.value = []
 		visible.value = false
+	}
+	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
+	const collectAncestorKeys = (nodes, targetId, path = []) => {
+		if (!nodes) return null
+		for (const node of nodes) {
+			if (node.id === targetId) return path
+			if (node.children) {
+				const found = collectAncestorKeys(node.children, targetId, [...path, node.id])
+				if (found) return found
+			}
+		}
+		return null
+	}
+	// 展开树到所有选中的机构节点
+	const expandToSelectedOrgs = () => {
+		// 主选择组织：只展开主orgId的祖先
+		if (formData.value.orgId) {
+			const ancestors = collectAncestorKeys(treeData.value, formData.value.orgId)
+			if (ancestors) {
+				ancestors.forEach((id) => {
+					if (!treeDefaultExpandedKeys.value.includes(id)) {
+						treeDefaultExpandedKeys.value.push(id)
+					}
+				})
+			}
+		}
+		// 任职信息：每行独立展开
+		if (formData.value.positionJson) {
+			formData.value.positionJson.forEach((item, index) => {
+				if (item.orgId) {
+					const ancestors = collectAncestorKeys(treeData.value, item.orgId)
+					childTreeExpandedKeys.value[index] = ancestors ? [...ancestors] : []
+				}
+			})
+		}
 	}
 	// 回显数据
 	const convertFormData = (record) => {
@@ -413,7 +459,7 @@
 			id: record.id
 		}
 		// 查询详情
-		const detailPromise = userApi.userDetail(param).then((data) => {
+		return userApi.userDetail(param).then((data) => {
 			if (data.positionJson) {
 				// 替换表单中的格式与后端查到的
 				data.positionJson = JSON.parse(data.positionJson)
@@ -428,24 +474,6 @@
 				})
 			}
 			selePositionData(formData.value.orgId)
-			return data
-		})
-		// 等待树和详情都加载完成后，确保机构节点可回显
-		nextTick(() => {
-			if (treeLoadPromise) {
-				Promise.all([treeLoadPromise, detailPromise]).then(([_, detail]) => {
-					const orgIds = [detail.orgId]
-					if (detail.positionJson) {
-						const positions = typeof detail.positionJson === 'string'
-							? JSON.parse(detail.positionJson)
-							: detail.positionJson
-						positions.forEach((item) => {
-							if (item.orgId) orgIds.push(item.orgId)
-						})
-					}
-					ensureOrgsInTree(orgIds)
-				})
-			}
 		})
 	}
 
@@ -519,10 +547,12 @@
 			positionId: undefined,
 			directorId: undefined
 		})
+		childTreeExpandedKeys.value.push([])
 	}
 	// 删减行
 	const delDomains = (index) => {
 		formData.value.positionJson.splice(index, 1)
+		childTreeExpandedKeys.value.splice(index, 1)
 	}
 
 	// 子表行内选择机构

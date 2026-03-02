@@ -10,11 +10,7 @@
 					allow-clear
 					tree-default-expand-all
 					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'name',
-						value: 'id'
-					}"
+					:field-names="treeFieldNames"
 					selectable="false"
 					tree-line
 				/>
@@ -48,6 +44,7 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
+	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 选中的ID列表
 	const ids = ref([])
 

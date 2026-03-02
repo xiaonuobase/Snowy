@@ -38,11 +38,7 @@
 								placeholder="请选择组织"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
+								:field-names="treeSelectFieldNames"
 								tree-line
 								:load-data="onLoadData"
 								@change="onCategoryOrOrgIdSelect"
@@ -216,6 +212,7 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 记录数据
 	const recordCacheData = ref({})
 	// 树容器高度自适应
