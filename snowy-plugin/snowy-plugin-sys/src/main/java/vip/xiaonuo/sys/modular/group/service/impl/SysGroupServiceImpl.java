@@ -148,7 +148,7 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
 
     @Override
     public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return List.of();
+        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
     }
 
     @Override

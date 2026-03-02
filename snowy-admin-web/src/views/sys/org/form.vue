@@ -8,6 +8,7 @@
 	>
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="上级组织：" name="parentId">
+				<a-spin :spinning="treeLoading">
 				<a-tree-select
 					v-model:value="formData.parentId"
 					class="xn-wd"
@@ -15,10 +16,12 @@
 					placeholder="请选择上级组织"
 					allow-clear
 					:tree-data="treeData"
+					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 					:field-names="treeFieldNames"
 					tree-line
-					:load-data="onLoadData"
+					:load-data="isEditMode ? undefined : onLoadData"
 				/>
+				</a-spin>
 			</a-form-item>
 			<a-form-item label="组织名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入组织名称" allow-clear />
@@ -54,7 +57,6 @@
 <script setup name="orgForm">
 	import { required } from '@/utils/formRules'
 	import orgApi from '@/api/sys/orgApi'
-	import userCenterApi from '@/api/sys/userCenterApi'
 	import tool from '@/utils/tool'
 
 	// 定义emit事件
@@ -67,69 +69,94 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
+	const treeLoading = ref(false)
+	const treeDefaultExpandedKeys = ref([])
 	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
-	// 在树中递归查找节点
-	const findNodeInTree = (nodes, id) => {
-		if (!nodes) return false
+	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
+	const isEditMode = ref(false)
+	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
+	const collectAncestorKeys = (nodes, targetId, path = []) => {
+		if (!nodes) return null
 		for (const node of nodes) {
-			if (node.id === id) return true
-			if (node.children && findNodeInTree(node.children, id)) return true
-		}
-		return false
-	}
-	// 确保选中的机构节点在树中可回显名称
-	const ensureOrgInTree = (orgId) => {
-		if (!orgId || orgId === '0' || findNodeInTree(treeData.value, orgId)) return
-		userCenterApi.userCenterGetOrgListByIdList({ idList: [orgId] }).then((data) => {
-			if (data && data.length > 0 && treeData.value.length > 0) {
-				const topNode = treeData.value[0]
-				if (topNode.children) {
-					topNode.children.push({ ...data[0], isLeaf: true })
-				} else {
-					topNode.children = [{ ...data[0], isLeaf: true }]
-				}
-				treeData.value = [...treeData.value]
+			if (node.id === targetId) return path
+			if (node.children) {
+				const found = collectAncestorKeys(node.children, targetId, [...path, node.id])
+				if (found) return found
 			}
-		})
+		}
+		return null
+	}
+	// 展开树到选中的组织节点
+	const expandToSelectedOrgs = () => {
+		if (formData.value.parentId) {
+			const ancestors = collectAncestorKeys(treeData.value, formData.value.parentId)
+			if (ancestors) {
+				ancestors.forEach((id) => {
+					if (!treeDefaultExpandedKeys.value.includes(id)) {
+						treeDefaultExpandedKeys.value.push(id)
+					}
+				})
+			}
+		}
 	}
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
 		visible.value = true
+		isEditMode.value = !!record
 		formData.value = {
 			sortCode: 99
 		}
 		if (parentId) {
 			formData.value.parentId = parentId
 		}
-		// 获取机构树并加入顶级
-		const treePromise = orgApi.orgOrgTreeLazySelector().then((res) => {
-			treeData.value = [
-				{
-					id: '0',
-					parentId: '-1',
-					name: '顶级',
-					children: res.map((item) => {
-						return {
-							...item,
-							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+		nextTick(() => {
+			if (isEditMode.value) {
+				// 编辑模式：加载全量树 + 详情，等都完成后展开到选中节点
+				treeLoading.value = true
+				const treePromise = orgApi.orgOrgTreeLazySelector({ searchKey: '' }).then((res) => {
+					if (res !== null) {
+						treeData.value = [
+							{
+								id: '0',
+								parentId: '-1',
+								name: '顶级',
+								children: res,
+								isLeaf: false
+							}
+						]
+						treeDefaultExpandedKeys.value.push('0')
+					}
+				})
+				const detailPromise = orgApi.orgDetail({ id: record.id }).then((data) => {
+					formData.value = Object.assign({}, data)
+					return data
+				})
+				Promise.all([treePromise, detailPromise]).then(() => {
+					expandToSelectedOrgs()
+				}).finally(() => {
+					treeLoading.value = false
+				})
+			} else {
+				// 新增模式：懒加载树
+				orgApi.orgOrgTreeLazySelector().then((res) => {
+					treeData.value = [
+						{
+							id: '0',
+							parentId: '-1',
+							name: '顶级',
+							children: res.map((item) => {
+								return {
+									...item,
+									isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+								}
+							}),
+							isLeaf: false
 						}
-					}),
-					isLeaf: false
-				}
-			]
+					]
+					treeDefaultExpandedKeys.value.push('0')
+				})
+			}
 		})
-		if (record) {
-			const detailPromise = orgApi.orgDetail({ id: record.id }).then((data) => {
-				formData.value = Object.assign({}, data)
-				return data
-			})
-			// 等待树和详情都加载完成后，确保父节点可回显
-			Promise.all([treePromise, detailPromise]).then(([_, detail]) => {
-				if (detail.parentId) {
-					ensureOrgInTree(detail.parentId)
-				}
-			})
-		}
 	}
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {
@@ -156,6 +183,8 @@
 	}
 	// 关闭抽屉
 	const onClose = () => {
+		treeData.value = []
+		treeDefaultExpandedKeys.value = []
 		visible.value = false
 	}
 	// 默认要校验的

@@ -22,18 +22,20 @@
 				/>
 			</a-form-item>
 			<a-form-item v-if="formData.category === 'ORG'" label="所属机构：" name="orgId">
+				<a-spin :spinning="treeLoading">
 				<a-tree-select
 					v-model:value="formData.orgId"
 					class="xn-wd"
 					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 					placeholder="请选择组织"
 					allow-clear
-					tree-default-expand-all
 					:tree-data="treeData"
+					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 					:field-names="treeFieldNames"
-					selectable="false"
 					tree-line
+					:load-data="isEditMode ? undefined : onLoadData"
 				/>
+				</a-spin>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
 				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="100" />
@@ -61,10 +63,41 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
+	const treeLoading = ref(false)
+	const treeDefaultExpandedKeys = ref([])
 	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
+	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
+	const isEditMode = ref(false)
+	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
+	const collectAncestorKeys = (nodes, targetId, path = []) => {
+		if (!nodes) return null
+		for (const node of nodes) {
+			if (node.id === targetId) return path
+			if (node.children) {
+				const found = collectAncestorKeys(node.children, targetId, [...path, node.id])
+				if (found) return found
+			}
+		}
+		return null
+	}
+	// 展开树到选中的组织节点
+	const expandToSelectedOrgs = () => {
+		if (formData.value.orgId) {
+			const ancestors = collectAncestorKeys(treeData.value, formData.value.orgId)
+			if (ancestors) {
+				ancestors.forEach((id) => {
+					if (!treeDefaultExpandedKeys.value.includes(id)) {
+						treeDefaultExpandedKeys.value.push(id)
+					}
+				})
+			}
+		}
+	}
 	// 打开抽屉
 	const onOpen = (record, category, orgId) => {
 		visible.value = true
+		isEditMode.value = !!record
+		formData.value = {}
 		// 判断角色的类型
 		if (category) {
 			formData.value.category = category
@@ -79,13 +112,68 @@
 			formData.value.sortCode = 99
 			formData.value.code = tool.generateString(10)
 		}
-		// 获取机构树并加入顶级
-		roleApi.roleOrgTreeSelector().then((res) => {
-			treeData.value = res
+		nextTick(() => {
+			if (isEditMode.value) {
+				// 编辑模式：加载全量树，等完成后展开到选中节点
+				treeLoading.value = true
+				roleApi.roleOrgTreeLazySelector({ searchKey: '' }).then((res) => {
+					if (res !== null) {
+						treeData.value = res
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
+							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+						}
+					}
+					expandToSelectedOrgs()
+				}).finally(() => {
+					treeLoading.value = false
+				})
+			} else {
+				// 新增模式：懒加载树
+				roleApi.roleOrgTreeLazySelector().then((res) => {
+					if (res !== null) {
+						treeData.value = res.map((item) => {
+							return {
+								...item,
+								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+							}
+						})
+						// 只有一个根节点时才自动展开
+						if (treeData.value.length === 1) {
+							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+						}
+					}
+				})
+			}
+		})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			roleApi
+				.roleOrgTreeLazySelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	// 关闭抽屉
 	const onClose = () => {
+		treeData.value = []
+		treeDefaultExpandedKeys.value = []
 		visible.value = false
 		formData.value = {}
 	}
