@@ -121,8 +121,20 @@
 			</s-table>
 		</template>
 	</XnResizablePanel>
-	<Form ref="formRef" @successful="tableRef.refresh(); refreshTreeData()" />
-	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected(); refreshTreeData()" />
+	<Form
+		ref="formRef"
+		@successful="
+			tableRef.refresh()
+			refreshTreeData()
+		"
+	/>
+	<CopyForm
+		ref="copyFormRef"
+		@successful="
+			tableRef.clearRefreshSelected()
+			refreshTreeData()
+		"
+	/>
 </template>
 
 <script setup name="bizOrg">

@@ -20,7 +20,14 @@
 				>
 			</a-radio-group>
 
-			<a-table size="middle" :columns="columns" :data-source="loadDatas" :pagination="false" bordered :scroll="{ x: 'max-content' }">
+			<a-table
+				size="middle"
+				:columns="columns"
+				:data-source="loadDatas"
+				:pagination="false"
+				bordered
+				:scroll="{ x: 'max-content' }"
+			>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'parentName'">
 						<a-checkbox :checked="record.parentCheck" @update:checked="(val) => changeParent(record, val)">

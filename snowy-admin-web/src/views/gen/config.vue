@@ -67,7 +67,8 @@
 					<a-checkbox
 						v-model:checked="record.whetherAddUpdate"
 						@change="whetherAddUpdateChange(record)"
-						:disabled="toFieldEstimate(record)" />
+						:disabled="toFieldEstimate(record)"
+					/>
 				</template>
 				<template v-if="column.dataIndex === 'whetherRequired'">
 					<a-checkbox
@@ -416,14 +417,14 @@
 	// 是否增改选择触发
 	const whetherAddUpdateChange = (element) => {
 		if (!element.checked) {
-			element.whetherRequired = false;
-			element.whetherUnique = false;
+			element.whetherRequired = false
+			element.whetherUnique = false
 		}
 	}
 	// 是否必填选择触发
 	const whetherRequiredChange = (element) => {
 		if (!element.checked) {
-			element.whetherUnique = false;
+			element.whetherUnique = false
 		}
 	}
 	// 查询条件是否可用

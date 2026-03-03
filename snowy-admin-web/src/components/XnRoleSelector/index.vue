@@ -321,7 +321,10 @@
 		}
 	}
 	const openModal = () => {
-		if ((typeof props.orgTreeApi !== 'function' && typeof props.orgTreeLazyApi !== 'function') || typeof props.rolePageApi !== 'function') {
+		if (
+			(typeof props.orgTreeApi !== 'function' && typeof props.orgTreeLazyApi !== 'function') ||
+			typeof props.rolePageApi !== 'function'
+		) {
 			message.warning('未配置角色选择器API')
 			return
 		}

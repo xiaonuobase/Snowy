@@ -1,14 +1,14 @@
-[snowy-theme=realdark] {
-  .ant-btn-primary{
-    color: #fff;
-    &:hover, &:focus{
-      color: #fff;
-    }
-  }
-
+[snowy-theme='realdark'] {
+	.ant-btn-primary {
+		color: #fff;
+		&:hover,
+		&:focus {
+			color: #fff;
+		}
+	}
 }
 .fade() {
-  @functions: ~`(function() {
+	@functions: ~`(function() {
     this.fade = function(color, amount) {
       if (String(color).indexOf('var(') === 0) {
         if (color.indexOf('--primary-color') !== -1 ) {
@@ -177,14 +177,13 @@
 	--shadow-color: rgba(0, 0, 0, 0.45);
 	--shadow-color-inverse: @component-background;
 	--box-shadow-base: @shadow-2;
-	--shadow-1-up: 0 -6px 16px -8px rgba(0, 0, 0, 0.32),
-	0 -9px 28px 0 rgba(0, 0, 0, 0.2), 0 -12px 48px 16px rgba(0, 0, 0, 0.12);
-	--shadow-1-down: 0 6px 16px -8px rgba(0, 0, 0, 0.32),
-	0 9px 28px 0 rgba(0, 0, 0, 0.2), 0 12px 48px 16px rgba(0, 0, 0, 0.12);
-	--shadow-1-right: 6px 0 16px -8px rgba(0, 0, 0, 0.32),
-	9px 0 28px 0 rgba(0, 0, 0, 0.2), 12px 0 48px 16px rgba(0, 0, 0, 0.12);
-	--shadow-2: 0 3px 6px -4px rgba(0, 0, 0, 0.48),
-	0 6px 16px 0 rgba(0, 0, 0, 0.32), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
+	--shadow-1-up: 0 -6px 16px -8px rgba(0, 0, 0, 0.32), 0 -9px 28px 0 rgba(0, 0, 0, 0.2),
+		0 -12px 48px 16px rgba(0, 0, 0, 0.12);
+	--shadow-1-down: 0 6px 16px -8px rgba(0, 0, 0, 0.32), 0 9px 28px 0 rgba(0, 0, 0, 0.2),
+		0 12px 48px 16px rgba(0, 0, 0, 0.12);
+	--shadow-1-right: 6px 0 16px -8px rgba(0, 0, 0, 0.32), 9px 0 28px 0 rgba(0, 0, 0, 0.2),
+		12px 0 48px 16px rgba(0, 0, 0, 0.12);
+	--shadow-2: 0 3px 6px -4px rgba(0, 0, 0, 0.48), 0 6px 16px 0 rgba(0, 0, 0, 0.32), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
 
 	// Buttons
 	--btn-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
@@ -306,8 +305,7 @@
 	// Card
 	--card-actions-background: @component-background;
 	--card-skeleton-bg: #303030;
-	--card-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.64),
-	0 3px 6px 0 rgba(0, 0, 0, 0.48), 0 5px 12px 4px rgba(0, 0, 0, 0.36);
+	--card-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.64), 0 3px 6px 0 rgba(0, 0, 0, 0.48), 0 5px 12px 4px rgba(0, 0, 0, 0.36);
 
 	// Comment
 	--comment-bg: transparent;
@@ -391,7 +389,7 @@
 	--gradient-max: fade(#303030, 40%);
 
 	// font
-	--font-color: #FFFFFF;
+	--font-color: #ffffff;
 	// header-bottom
 	--header-bottom: rgba(54, 54, 54, 0.6);
 	// breadcrumb-background

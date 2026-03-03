@@ -46,47 +46,47 @@
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择组织：" name="orgId">
 								<a-spin :spinning="treeLoading">
-								<a-tree-select
-									v-model:value="formData.orgId"
-									class="xn-wd"
-									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-									placeholder="请选择组织"
-									allow-clear
-									tree-line
-									:tree-data="treeData"
-									v-model:treeExpandedKeys="treeDefaultExpandedKeys"
-									:field-names="treeFieldNames"
-									:load-data="isEditMode ? undefined : onLoadData"
-									@change="selePositionData(formData.orgId, 0)"
-								/>
+									<a-tree-select
+										v-model:value="formData.orgId"
+										class="xn-wd"
+										:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+										placeholder="请选择组织"
+										allow-clear
+										tree-line
+										:tree-data="treeData"
+										v-model:treeExpandedKeys="treeDefaultExpandedKeys"
+										:field-names="treeFieldNames"
+										:load-data="isEditMode ? undefined : onLoadData"
+										@change="selePositionData(formData.orgId, 0)"
+									/>
 								</a-spin>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择职位：" name="positionId">
 								<a-spin :spinning="treeLoading">
-								<xn-page-select
-									ref="xnPositionPageSelectRef"
-									v-model:value="formData.positionId"
-									placeholder="请选择职位"
-									allow-clear
-									:page-function="selectApiFunction.positionSelector"
-									:echo-function="selectApiFunction.echoPosition"
-								/>
+									<xn-page-select
+										ref="xnPositionPageSelectRef"
+										v-model:value="formData.positionId"
+										placeholder="请选择职位"
+										allow-clear
+										:page-function="selectApiFunction.positionSelector"
+										:echo-function="selectApiFunction.echoPosition"
+									/>
 								</a-spin>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择主管：" name="directorId">
 								<a-spin :spinning="treeLoading">
-								<xn-page-select
-									ref="xnUserPageSelectRef"
-									v-model:value="formData.directorId"
-									placeholder="请选择主管"
-									allow-clear
-									:page-function="selectApiFunction.userSelector"
-									:echo-function="selectApiFunction.echoUser"
-								/>
+									<xn-page-select
+										ref="xnUserPageSelectRef"
+										v-model:value="formData.directorId"
+										placeholder="请选择主管"
+										allow-clear
+										:page-function="selectApiFunction.userSelector"
+										:echo-function="selectApiFunction.echoUser"
+									/>
 								</a-spin>
 							</a-form-item>
 						</a-col>
@@ -128,21 +128,21 @@
 										:name="['positionJson', index, 'orgId']"
 										:rules="{ required: true, message: '请选择组织' }"
 									>
-									<a-spin :spinning="treeLoading">
-										<a-tree-select
-											v-model:value="positionInfo.orgId"
-											class="xn-wd"
-											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-											placeholder="请选择组织"
-											allow-clear
-											tree-line
-											:tree-data="treeData"
-											v-model:treeExpandedKeys="childTreeExpandedKeys[index]"
-											:field-names="treeFieldNames"
-											:load-data="isEditMode ? undefined : onLoadData"
-											@change="childOrgSelect(positionInfo, 0, index)"
-										/>
-									</a-spin>
+										<a-spin :spinning="treeLoading">
+											<a-tree-select
+												v-model:value="positionInfo.orgId"
+												class="xn-wd"
+												:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+												placeholder="请选择组织"
+												allow-clear
+												tree-line
+												:tree-data="treeData"
+												v-model:treeExpandedKeys="childTreeExpandedKeys[index]"
+												:field-names="treeFieldNames"
+												:load-data="isEditMode ? undefined : onLoadData"
+												@change="childOrgSelect(positionInfo, 0, index)"
+											/>
+										</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
@@ -150,30 +150,30 @@
 										:name="['positionJson', index, 'positionId']"
 										:rules="{ required: true, message: '请选择职位' }"
 									>
-									<a-spin :spinning="treeLoading">
-										<xn-page-select
-											ref="xnChildPositionPageSelectRef"
-											v-model:value="positionInfo.positionId"
-											placeholder="请选择职位"
-											allow-clear
-											:page-function="selectApiFunction.childPositionSelector"
-											:echo-function="selectApiFunction.echoPosition"
-										/>
-									</a-spin>
+										<a-spin :spinning="treeLoading">
+											<xn-page-select
+												ref="xnChildPositionPageSelectRef"
+												v-model:value="positionInfo.positionId"
+												placeholder="请选择职位"
+												allow-clear
+												:page-function="selectApiFunction.childPositionSelector"
+												:echo-function="selectApiFunction.echoPosition"
+											/>
+										</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
 									<a-form-item :name="['positionJson', index, 'directorId']">
-									<a-spin :spinning="treeLoading">
-										<xn-page-select
-											ref="xnChildUserPageSelectRef"
-											v-model:value="positionInfo.directorId"
-											placeholder="请选择主管"
-											allow-clear
-											:page-function="selectApiFunction.childUserSelector"
-											:echo-function="selectApiFunction.echoUser"
-										/>
-									</a-spin>
+										<a-spin :spinning="treeLoading">
+											<xn-page-select
+												ref="xnChildUserPageSelectRef"
+												v-model:value="positionInfo.directorId"
+												placeholder="请选择主管"
+												allow-clear
+												:page-function="selectApiFunction.childUserSelector"
+												:echo-function="selectApiFunction.echoUser"
+											/>
+										</a-spin>
 									</a-form-item>
 								</a-col>
 								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
@@ -364,11 +364,13 @@
 					}
 				})
 				const detailPromise = convertFormData(record)
-				Promise.all([treePromise, detailPromise]).then(() => {
-					expandToSelectedOrgs()
-				}).finally(() => {
-					treeLoading.value = false
-				})
+				Promise.all([treePromise, detailPromise])
+					.then(() => {
+						expandToSelectedOrgs()
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
 				// 新增模式：懒加载树
 				userApi.userOrgTreeLazySelector().then((res) => {

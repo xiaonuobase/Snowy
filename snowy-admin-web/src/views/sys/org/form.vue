@@ -9,18 +9,18 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="上级组织：" name="parentId">
 				<a-spin :spinning="treeLoading">
-				<a-tree-select
-					v-model:value="formData.parentId"
-					class="xn-wd"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-					placeholder="请选择上级组织"
-					allow-clear
-					:tree-data="treeData"
-					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
-					:field-names="treeFieldNames"
-					tree-line
-					:load-data="isEditMode ? undefined : onLoadData"
-				/>
+					<a-tree-select
+						v-model:value="formData.parentId"
+						class="xn-wd"
+						:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+						placeholder="请选择上级组织"
+						allow-clear
+						:tree-data="treeData"
+						v-model:treeExpandedKeys="treeDefaultExpandedKeys"
+						:field-names="treeFieldNames"
+						tree-line
+						:load-data="isEditMode ? undefined : onLoadData"
+					/>
 				</a-spin>
 			</a-form-item>
 			<a-form-item label="组织名称：" name="name">
@@ -131,11 +131,13 @@
 					formData.value = Object.assign({}, data)
 					return data
 				})
-				Promise.all([treePromise, detailPromise]).then(() => {
-					expandToSelectedOrgs()
-				}).finally(() => {
-					treeLoading.value = false
-				})
+				Promise.all([treePromise, detailPromise])
+					.then(() => {
+						expandToSelectedOrgs()
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
 				// 新增模式：懒加载树
 				orgApi.orgOrgTreeLazySelector().then((res) => {

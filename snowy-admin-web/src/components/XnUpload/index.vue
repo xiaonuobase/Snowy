@@ -199,7 +199,7 @@
 			type: Boolean,
 			default: false,
 			required: false
-		},
+		}
 	})
 	const action =
 		props.uploadResultType === 'id'

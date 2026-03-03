@@ -91,7 +91,11 @@
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'place'">
-					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" :color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)">
+					<a-tag
+						v-for="textValue in JSON.parse(record.place)"
+						:key="textValue"
+						:color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)"
+					>
 						{{ $TOOL.dictTypeData('BIZ_NOTICE_PLACE', textValue) }}
 					</a-tag>
 				</template>

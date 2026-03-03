@@ -9,18 +9,18 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="所属组织：" name="orgId">
 				<a-spin :spinning="treeLoading">
-				<a-tree-select
-					v-model:value="formData.orgId"
-					class="xn-wd"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-					placeholder="请选择组织"
-					allow-clear
-					:tree-data="treeData"
-					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
-					:field-names="treeFieldNames"
-					tree-line
-					:load-data="isEditMode ? undefined : onLoadData"
-				></a-tree-select>
+					<a-tree-select
+						v-model:value="formData.orgId"
+						class="xn-wd"
+						:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+						placeholder="请选择组织"
+						allow-clear
+						:tree-data="treeData"
+						v-model:treeExpandedKeys="treeDefaultExpandedKeys"
+						:field-names="treeFieldNames"
+						tree-line
+						:load-data="isEditMode ? undefined : onLoadData"
+					></a-tree-select>
 				</a-spin>
 			</a-form-item>
 			<a-form-item label="岗位名称：" name="name">
@@ -108,18 +108,21 @@
 			if (isEditMode.value) {
 				// 编辑模式：加载全量树，等完成后展开到选中节点
 				treeLoading.value = true
-				bizPositionApi.positionOrgTreeLazySelector({ searchKey: '' }).then((res) => {
-					if (res !== null) {
-						treeData.value = res
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+				bizPositionApi
+					.positionOrgTreeLazySelector({ searchKey: '' })
+					.then((res) => {
+						if (res !== null) {
+							treeData.value = res
+							// 只有一个根节点时才自动展开
+							if (treeData.value.length === 1) {
+								treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+							}
 						}
-					}
-					expandToSelectedOrgs()
-				}).finally(() => {
-					treeLoading.value = false
-				})
+						expandToSelectedOrgs()
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
 				// 新增模式：懒加载树
 				bizPositionApi.positionOrgTreeLazySelector().then((res) => {

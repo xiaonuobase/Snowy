@@ -12,26 +12,22 @@
 				</a-alert>
 				<a-row :gutter="8">
 					<a-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
-						<img style="width: 100%;vertical-align: middle" :src="otpInfo.otpInfoBase64" />
+						<img style="width: 100%; vertical-align: middle" :src="otpInfo.otpInfoBase64" />
 					</a-col>
 					<a-col :xs="24" :sm="24" :md="24" :lg="16" :xl="16">
 						<a-descriptions :column="1" size="middle" bordered class="mb-2">
-							<a-descriptions-item label="发行者">{{otpInfo.otpInfo.issuer}}</a-descriptions-item>
-							<a-descriptions-item label="账号">{{otpInfo.otpInfo.account}}</a-descriptions-item>
-							<a-descriptions-item label="密钥">{{otpInfo.otpInfo.secretKey}}</a-descriptions-item>
-							<a-descriptions-item label="算法">{{otpInfo.otpInfo.algorithm}}</a-descriptions-item>
-							<a-descriptions-item label="位数">{{otpInfo.otpInfo.digits}}</a-descriptions-item>
-							<a-descriptions-item label="周期">{{otpInfo.otpInfo.period}}</a-descriptions-item>
+							<a-descriptions-item label="发行者">{{ otpInfo.otpInfo.issuer }}</a-descriptions-item>
+							<a-descriptions-item label="账号">{{ otpInfo.otpInfo.account }}</a-descriptions-item>
+							<a-descriptions-item label="密钥">{{ otpInfo.otpInfo.secretKey }}</a-descriptions-item>
+							<a-descriptions-item label="算法">{{ otpInfo.otpInfo.algorithm }}</a-descriptions-item>
+							<a-descriptions-item label="位数">{{ otpInfo.otpInfo.digits }}</a-descriptions-item>
+							<a-descriptions-item label="周期">{{ otpInfo.otpInfo.period }}</a-descriptions-item>
 						</a-descriptions>
 					</a-col>
 				</a-row>
 				<a-form ref="formRef" :model="formState" :rules="formRules" layout="vertical">
-					<a-form-item
-						label="动态口令"
-						name="otpCode"
-						has-feedback
-					>
-						<a-input v-model:value="formState.otpCode" placeholder="请输入动态口令" allow-clear autocomplete="off"/>
+					<a-form-item label="动态口令" name="otpCode" has-feedback>
+						<a-input v-model:value="formState.otpCode" placeholder="请输入动态口令" allow-clear autocomplete="off" />
 					</a-form-item>
 				</a-form>
 			</div>
@@ -46,7 +42,7 @@
 <script setup name="bindOtp">
 	import { required } from '@/utils/formRules'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	import {message} from "ant-design-vue";
+	import { message } from 'ant-design-vue'
 
 	// 定义emit事件
 	const emit = defineEmits({ successful: null })
@@ -56,7 +52,7 @@
 	// 表单数据
 	const formState = ref({})
 	const submitLoading = ref(false)
-	const otpInfo = ref({otpInfo: {}, otpInfoBase64: ''})
+	const otpInfo = ref({ otpInfo: {}, otpInfoBase64: '' })
 	const bindType = ref()
 	// 打开抽屉
 	const onOpen = async (type) => {
@@ -70,7 +66,7 @@
 	// 关闭抽屉
 	const onClose = () => {
 		visible.value = false
-		otpInfo.value = {otpInfo: {}, otpInfoBase64: ''}
+		otpInfo.value = { otpInfo: {}, otpInfoBase64: '' }
 		formState.value = {}
 		formRef.value.resetFields()
 	}
@@ -85,7 +81,7 @@
 			.validate()
 			.then(() => {
 				submitLoading.value = true
-				if(bindType.value === 'bind') {
+				if (bindType.value === 'bind') {
 					userCenterApi
 						.userCenterBindOtp(formState.value)
 						.then(() => {

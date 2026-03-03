@@ -25,7 +25,11 @@
 			>
 			<a-descriptions-item label="发布位置">
 				<div v-if="formData.place">
-					<a-tag v-for="textValue in JSON.parse(formData.place)" :key="textValue" :color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)">
+					<a-tag
+						v-for="textValue in JSON.parse(formData.place)"
+						:key="textValue"
+						:color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)"
+					>
 						{{ $TOOL.dictTypeData('BIZ_NOTICE_PLACE', textValue) }}
 					</a-tag>
 				</div>

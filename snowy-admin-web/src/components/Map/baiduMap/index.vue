@@ -334,7 +334,7 @@
 <style lang="less">
 	.xn-wh {
 		width: 100%;
-		height: 100%
+		height: 100%;
 	}
 	.baiduMap {
 		padding: 0;

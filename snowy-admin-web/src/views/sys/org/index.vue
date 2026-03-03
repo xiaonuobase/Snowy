@@ -120,8 +120,8 @@
 			</s-table>
 		</template>
 	</XnResizablePanel>
-	<Form ref="formRef" @successful="tableRef.refresh(); refreshTreeData()" />
-	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected(); refreshTreeData()" />
+	<Form ref="formRef" @successful="onFormSuccess" />
+	<CopyForm ref="copyFormRef" @successful="onCopyFormSuccess" />
 </template>
 
 <script setup name="sysOrg">
@@ -345,6 +345,16 @@
 			tableRef.value.clearRefreshSelected()
 			refreshTreeData()
 		})
+	}
+	// Form成功回调
+	const onFormSuccess = () => {
+		tableRef.value.refresh()
+		refreshTreeData()
+	}
+	// CopyForm成功回调
+	const onCopyFormSuccess = () => {
+		tableRef.value.clearRefreshSelected()
+		refreshTreeData()
 	}
 	// 批量复制
 	const copyBatchOrg = (params) => {

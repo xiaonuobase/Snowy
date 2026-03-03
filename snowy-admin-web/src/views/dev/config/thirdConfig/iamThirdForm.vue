@@ -20,32 +20,56 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="IAM认证地址：" name="SNOWY_THIRD_IAM_AUTHORIZE_URL" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="IAM认证地址："
+						name="SNOWY_THIRD_IAM_AUTHORIZE_URL"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_AUTHORIZE_URL" placeholder="请输入IAM认证地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="IAM获取token地址：" name="SNOWY_THIRD_IAM_ACCESS_TOKEN_URL" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="IAM获取token地址："
+						name="SNOWY_THIRD_IAM_ACCESS_TOKEN_URL"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_ACCESS_TOKEN_URL" placeholder="请输入IAM获取token地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="IAM获取用户信息地址：" name="SNOWY_THIRD_IAM_USER_INFO_URL" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="IAM获取用户信息地址："
+						name="SNOWY_THIRD_IAM_USER_INFO_URL"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_USER_INFO_URL" placeholder="请输入IAM获取用户信息地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="IAM客户端ID：" name="SNOWY_THIRD_IAM_CLIENT_ID" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="IAM客户端ID："
+						name="SNOWY_THIRD_IAM_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_CLIENT_ID" placeholder="请输入IAM客户端ID" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="IAM客户端SECRET：" name="SNOWY_THIRD_IAM_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="IAM客户端SECRET："
+						name="SNOWY_THIRD_IAM_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_CLIENT_SECRET" placeholder="请输入IAM客户端SECRET" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="重定向URL：" name="SNOWY_THIRD_IAM_REDIRECT_URL" v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="重定向URL："
+						name="SNOWY_THIRD_IAM_REDIRECT_URL"
+						v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_IAM_REDIRECT_URL" placeholder="请输入重定向URL" />
 					</a-form-item>
 				</a-col>

@@ -171,5 +171,5 @@ export default {
 	// 解绑动态口令
 	userCenterUnBindOtp(data) {
 		return request('unBindOtp', data)
-	},
+	}
 }

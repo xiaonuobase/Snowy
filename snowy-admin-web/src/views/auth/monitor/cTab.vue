@@ -1,5 +1,13 @@
 <template>
-	<s-table ref="tableRef" :columns="columns" :data="loadDataC" :alert="false" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
+	<s-table
+		ref="tableRef"
+		:columns="columns"
+		:data="loadDataC"
+		:alert="false"
+		bordered
+		:row-key="(record) => record.id"
+		:scroll="{ x: 'max-content' }"
+	>
 		<template #bodyCell="{ column, record }">
 			<template v-if="column.dataIndex === 'avatar'">
 				<a-avatar :src="record.avatar" class="xn-wh25" />

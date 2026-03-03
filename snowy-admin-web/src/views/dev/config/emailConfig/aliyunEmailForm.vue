@@ -16,7 +16,10 @@
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="阿里云密钥SECRET：" name="SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET">
-						<a-input v-model:value="formData.SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET" placeholder="请输入阿里云密钥SECRET" />
+						<a-input
+							v-model:value="formData.SNOWY_EMAIL_ALIYUN_ACCESS_KEY_SECRET"
+							placeholder="请输入阿里云密钥SECRET"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">

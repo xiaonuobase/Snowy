@@ -89,9 +89,12 @@
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'place'">
-					<a-tag v-for="textValue in JSON.parse(record.place)" :key="textValue" :color="$TOOL.dictTypeColor('DEV_SLIDESHOW_PLACE', textValue)">{{
-						$TOOL.dictTypeData('DEV_SLIDESHOW_PLACE', textValue)
-					}}</a-tag>
+					<a-tag
+						v-for="textValue in JSON.parse(record.place)"
+						:key="textValue"
+						:color="$TOOL.dictTypeColor('DEV_SLIDESHOW_PLACE', textValue)"
+						>{{ $TOOL.dictTypeData('DEV_SLIDESHOW_PLACE', textValue) }}</a-tag
+					>
 				</template>
 				<template v-if="column.dataIndex === 'image'">
 					<a-image :src="record.image" style="width: 50px; height: 30px" />

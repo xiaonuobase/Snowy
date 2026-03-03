@@ -9,7 +9,7 @@
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 			style="width: 90%"
 		>
-			<a-alert message="系统基础配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="系统基础配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="系统LOGO：" name="SNOWY_SYS_LOGO">
@@ -58,7 +58,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="验证码配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="验证码配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="后台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B">
@@ -103,7 +103,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="默认引擎配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="默认引擎配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
@@ -144,7 +144,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="版权信息配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="版权信息配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="版权信息：" name="SNOWY_SYS_COPYRIGHT">

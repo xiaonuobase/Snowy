@@ -72,7 +72,7 @@ export default {
 		enteredPasswordsDiffer: '两次输入密码不一致',
 		paramError: '参数错误',
 		thirdLoginError: '登录失败',
-		frontLogin: '前台登录',
+		frontLogin: '前台登录'
 	},
 	user: {
 		userOrg: '所属组织',

@@ -17,7 +17,7 @@
 					</template>
 				</a-list-item-meta>
 				<template #actions>
-					<a @click="bindCommon(item)">{{ item.value ? (item.type === 'otp'?'解绑' : '修改') : '去绑定' }}</a>
+					<a @click="bindCommon(item)">{{ item.value ? (item.type === 'otp' ? '解绑' : '修改') : '去绑定' }}</a>
 				</template>
 			</a-list-item>
 		</template>
@@ -25,7 +25,7 @@
 	<updatePassword ref="updatePasswordRef" />
 	<bind-phone ref="bindPhoneRef" />
 	<bind-email ref="bindEmailRef" />
-	<bind-otp ref="bindOtpRef" @successful="getOtpInfoBindStatus()"/>
+	<bind-otp ref="bindOtpRef" @successful="getOtpInfoBindStatus()" />
 </template>
 
 <script setup>
@@ -41,7 +41,7 @@
 	import VerifiedOutlined from '@ant-design/icons-vue/VerifiedOutlined'
 	import UsbOutlined from '@ant-design/icons-vue/UsbOutlined'
 	import { globalStore } from '@/store'
-	import userCenterApi from "@/api/sys/userCenterApi";
+	import userCenterApi from '@/api/sys/userCenterApi'
 
 	const updatePasswordRef = ref()
 	const bindPhoneRef = ref()
@@ -87,7 +87,7 @@
 		} else if (key === 'email') {
 			bindEmailRef.value.open()
 		} else if (key === 'otp') {
-			if(item.value) {
+			if (item.value) {
 				bindOtpRef.value.onOpen('unbind')
 			} else {
 				bindOtpRef.value.onOpen('bind')
