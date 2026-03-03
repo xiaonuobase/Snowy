@@ -43,20 +43,20 @@ public interface SysOrgApi {
     String getSupervisorIdByOrgId(String orgId);
 
     /**
-     * 获取组织树选择器
+     * 获取组织树
      *
      * @author xuyuxiang
      * @date 2022/7/22 14:46
      **/
-    List<Tree<String>> orgTreeSelector();
+    List<Tree<String>> orgTree();
 
     /**
-     * 获取组织树选择器（懒加载）
+     * 获取组织树（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/7/22 14:46
      **/
-    List<JSONObject> orgTreeLazySelector(String parentId);
+    List<JSONObject> orgTreeLazy(String parentId);
 
     /**
      * 获取组织列表选择器

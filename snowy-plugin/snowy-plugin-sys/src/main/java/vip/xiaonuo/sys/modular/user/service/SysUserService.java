@@ -22,7 +22,7 @@ import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
 import vip.xiaonuo.sys.modular.user.param.*;
@@ -487,7 +487,7 @@ public interface SysUserService extends IService<SysUser> {
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam);
+    List<JSONObject> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam);
 
     /**
      * 获取组织列表选择器

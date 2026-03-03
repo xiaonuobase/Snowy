@@ -198,7 +198,7 @@ public class DevConfigController {
     @Operation(summary = "获取机构选树")
     @GetMapping("/dev/config/orgTree")
     public CommonResult<List<Tree<String>>> orgTree() {
-        return CommonResult.data(sysOrgApi.orgTreeSelector());
+        return CommonResult.data(sysOrgApi.orgTree());
     }
 
     /**
@@ -210,7 +210,7 @@ public class DevConfigController {
     @Operation(summary = "获取机构选树（懒加载）")
     @GetMapping("/dev/config/orgTreeLazy")
     public CommonResult<List<JSONObject>> orgTreeLazy(String parentId) {
-        return CommonResult.data(sysOrgApi.orgTreeLazySelector(parentId));
+        return CommonResult.data(sysOrgApi.orgTreeLazy(parentId));
     }
 
     /**

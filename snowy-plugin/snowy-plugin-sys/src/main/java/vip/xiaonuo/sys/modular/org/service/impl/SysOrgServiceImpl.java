@@ -30,7 +30,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
@@ -113,12 +112,21 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     @Override
-    public List<JSONObject> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
+    public List<Tree<String>> tree() {
+        List<SysOrg> sysOrgList = this.getAllOrgList();
+        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
+                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
+                .collect(Collectors.toList());
+        return TreeUtil.build(treeNodeList, "0");
+    }
+
+    @Override
+    public List<JSONObject> treeLazy(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
         // searchKey不为null时，走全量搜索模式，返回嵌套树结构
-        if (sysOrgTreeLazyParam.getSearchKey() != null) {
-            return this.treeSearch(sysOrgTreeLazyParam.getSearchKey());
+        if (sysOrgSelectorTreeLazyParam.getSearchKey() != null) {
+            return this.treeSearch(sysOrgSelectorTreeLazyParam.getSearchKey());
         }
-        String parentId = ObjectUtil.isNotEmpty(sysOrgTreeLazyParam.getParentId()) ? sysOrgTreeLazyParam.getParentId() : "0";
+        String parentId = ObjectUtil.isNotEmpty(sysOrgSelectorTreeLazyParam.getParentId()) ? sysOrgSelectorTreeLazyParam.getParentId() : "0";
         // 超管接口，无需数据范围过滤，直接SQL查询当前父级下的子机构
         List<SysOrg> childList = this.list(new LambdaQueryWrapper<SysOrg>()
                 .eq(SysOrg::getParentId, parentId)
@@ -428,15 +436,6 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     /* ====组织部分所需要用到的选择器==== */
-
-    @Override
-    public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = this.getAllOrgList();
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
 
     @Override
     public Page<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {

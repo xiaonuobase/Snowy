@@ -38,9 +38,8 @@ import vip.xiaonuo.sys.modular.group.mapper.SysGroupMapper;
 import vip.xiaonuo.sys.modular.group.param.*;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
-import vip.xiaonuo.sys.modular.position.param.SysPositionIdParam;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
 import vip.xiaonuo.sys.modular.relation.service.SysRelationService;
@@ -147,8 +146,8 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     }
 
     @Override
-    public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
+    public List<JSONObject> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return sysOrgService.treeLazy(sysOrgSelectorTreeLazyParam);
     }
 
     @Override

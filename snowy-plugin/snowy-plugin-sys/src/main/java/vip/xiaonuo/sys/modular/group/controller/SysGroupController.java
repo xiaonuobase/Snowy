@@ -29,7 +29,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.param.*;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 
 import java.util.List;
@@ -135,8 +135,8 @@ public class SysGroupController {
      */
     @Operation(summary = "获取组织树选择器")
     @GetMapping("/sys/group/orgTreeSelector")
-    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return CommonResult.data(sysGroupService.orgTreeLazySelector(sysOrgTreeLazyParam));
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return CommonResult.data(sysGroupService.orgTreeLazySelector(sysOrgSelectorTreeLazyParam));
     }
 
     /**

@@ -10,7 +10,7 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作.
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.org.param;
+package vip.xiaonuo.dev.modular.config.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -24,13 +24,9 @@ import lombok.Setter;
  **/
 @Getter
 @Setter
-public class SysOrgTreeLazyParam {
+public class DevConfigSelectorOrgTreeLazyParam {
 
     /** 父id */
     @Schema(description = "父id")
     private String parentId;
-
-    /** 搜索关键字 */
-    @Schema(description = "搜索关键字")
-    private String searchKey;
 }

@@ -39,7 +39,7 @@ public class BizOrgApiProvider implements BizOrgApi {
 
     @Override
     public List<Tree<String>> orgTreeSelector() {
-        return bizOrgService.orgTreeSelector();
+        return bizOrgService.tree();
     }
 
     @Override

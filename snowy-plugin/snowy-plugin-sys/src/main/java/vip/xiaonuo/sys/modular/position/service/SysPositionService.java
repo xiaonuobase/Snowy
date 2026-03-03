@@ -16,7 +16,7 @@ import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 
@@ -110,7 +110,7 @@ public interface SysPositionService extends IService<SysPosition> {
      * @author xuyuxiang
      * @date 2022/4/22 15:53
      **/
-    List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam);
+    List<JSONObject> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam);
 
     /**
      * 获取职位选择器

@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.position.controller;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
@@ -28,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
@@ -134,8 +133,8 @@ public class SysPositionController {
     @ApiOperationSupport(order = 6)
     @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/position/orgTreeSelector")
-    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return CommonResult.data(sysPositionService.orgTreeLazySelector(sysOrgTreeLazyParam));
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return CommonResult.data(sysPositionService.orgTreeLazySelector(sysOrgSelectorTreeLazyParam));
     }
 
     /**

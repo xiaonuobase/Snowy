@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.org.controller;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
@@ -74,8 +73,8 @@ public class SysOrgController {
     @ApiOperationSupport(order = 2)
     @Operation(summary = "获取组织树（懒加载）")
     @GetMapping("/sys/org/tree")
-    public CommonResult<List<JSONObject>> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
+    public CommonResult<List<JSONObject>> treeLazy(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return CommonResult.data(sysOrgService.treeLazy(sysOrgSelectorTreeLazyParam));
     }
 
     /**
@@ -163,8 +162,8 @@ public class SysOrgController {
     @ApiOperationSupport(order = 8)
     @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/org/orgTreeSelector")
-    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return CommonResult.data(sysOrgService.treeLazy(sysOrgTreeLazyParam));
+    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return CommonResult.data(sysOrgService.treeLazy(sysOrgSelectorTreeLazyParam));
     }
 
     /**

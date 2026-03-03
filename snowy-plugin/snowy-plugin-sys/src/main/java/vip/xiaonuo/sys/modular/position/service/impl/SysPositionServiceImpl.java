@@ -36,7 +36,7 @@ import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
-import vip.xiaonuo.sys.modular.org.param.SysOrgTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.enums.SysPositionCategoryEnum;
@@ -202,8 +202,8 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     }
 
     @Override
-    public List<JSONObject> orgTreeLazySelector(SysOrgTreeLazyParam sysOrgTreeLazyParam) {
-        return sysOrgService.treeLazy(sysOrgTreeLazyParam);
+    public List<JSONObject> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
+        return sysOrgService.treeLazy(sysOrgSelectorTreeLazyParam);
     }
 
     @Override

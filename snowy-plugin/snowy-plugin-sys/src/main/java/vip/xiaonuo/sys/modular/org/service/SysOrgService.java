@@ -39,12 +39,20 @@ public interface SysOrgService extends IService<SysOrg> {
     Page<SysOrg> page(SysOrgPageParam sysOrgPageParam);
 
     /**
+     * 获取组织树
+     *
+     * @author xuyuxiang
+     * @date 2022/4/24 20:08
+     */
+    List<Tree<String>> tree();
+
+    /**
      * 获取机构树（懒加载），支持搜索
      *
      * @author xuyuxiang
      * @date 2022/4/21 16:13
      **/
-    List<JSONObject> treeLazy(SysOrgTreeLazyParam sysOrgTreeLazyParam);
+    List<JSONObject> treeLazy(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam);
 
     /**
      * 添加组织
@@ -165,14 +173,6 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/8/15 14:55
      **/
     SysOrg getChildById(List<SysOrg> originDataList, String id);
-
-    /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> orgTreeSelector();
 
     /**
      * 获取组织列表选择器
