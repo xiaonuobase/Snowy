@@ -18,7 +18,7 @@ import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.strategy.SaAnnotationStrategy;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ObjectUtil;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +31,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
-import vip.xiaonuo.common.cache.CommonCacheOperator;
-import vip.xiaonuo.common.consts.CacheConstant;
 
 import java.util.List;
 
@@ -93,26 +91,24 @@ public class AuthConfigure implements WebMvcConfigurer {
     @Component
     public static class StpInterfaceImpl implements StpInterface {
 
-        @Resource
-        private CommonCacheOperator commonCacheOperator;
-
         /**
-         * 返回一个账号所拥有的权限码集合
+         * 返回一个账号所拥有的权限码集合，直接从TokenSession读取
          */
         @Override
         public List<String> getPermissionList(Object loginId, String loginType) {
-            Object permissionListObject;
             if (SaClientTypeEnum.B.getValue().equals(loginType)) {
-                permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + loginId);
+                Object loginUser = StpLoginUserUtil.getLoginUser();
+                if(ObjectUtil.isEmpty(loginUser)) {
+                    return CollectionUtil.newArrayList();
+                }
+                return StpLoginUserUtil.getLoginUser().getPermissionCodeList();
             } else {
-                permissionListObject = commonCacheOperator.get(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + loginId);
+                Object clientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
+                if(ObjectUtil.isEmpty(clientLoginUser)) {
+                    return CollectionUtil.newArrayList();
+                }
+                return StpClientLoginUserUtil.getClientLoginUser().getPermissionCodeList();
             }
-            // 转为字符串
-            String permissionListString = permissionListObject.toString();
-            // 去除首尾的方括号
-            String trimmedStr = StrUtil.sub(permissionListString, 1, -1);
-            // 使用逗号和空格分割字符串，并转换为列表
-            return CollectionUtil.newArrayList(StrUtil.split(trimmedStr, ", "));
         }
 
         /**

@@ -66,7 +66,7 @@
 		visible.value = true
 		resultDataModel.dataScopeId = id
 		// const treeData = data.data;
-		roleApi.roleOrgTreeLazySelector().then((res) => {
+		roleApi.roleOrgTreeSelector().then((res) => {
 			if (res !== null) {
 				treeData.value = res.map((item) => {
 					return {
@@ -94,7 +94,7 @@
 				return
 			}
 			roleApi
-				.roleOrgTreeLazySelector({
+				.roleOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

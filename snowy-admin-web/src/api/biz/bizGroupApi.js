@@ -30,7 +30,7 @@ export default {
 		return request('ownUser', data, 'get')
 	},
 	// 获取机构树选择器（懒加载）
-	groupOrgTreeLazySelector(data) {
+	groupOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取用户选择器

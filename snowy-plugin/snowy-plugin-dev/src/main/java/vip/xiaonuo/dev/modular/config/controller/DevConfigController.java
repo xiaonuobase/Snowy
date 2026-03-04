@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.dev.modular.config.controller;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
@@ -190,27 +189,15 @@ public class DevConfigController {
     }
 
     /**
-     * 获取机构选树
+     * 获取组织树选择器（懒加载）
      *
      * @author yubaoshan
      * @date 2025/4/23 20:00
      */
-    @Operation(summary = "获取机构选树")
-    @GetMapping("/dev/config/orgTree")
-    public CommonResult<List<Tree<String>>> orgTree() {
-        return CommonResult.data(sysOrgApi.orgTree());
-    }
-
-    /**
-     * 获取机构选树（懒加载）
-     *
-     * @author yubaoshan
-     * @date 2025/4/23 20:00
-     */
-    @Operation(summary = "获取机构选树（懒加载）")
-    @GetMapping("/dev/config/orgTreeLazy")
-    public CommonResult<List<JSONObject>> orgTreeLazy(String parentId) {
-        return CommonResult.data(sysOrgApi.orgTreeLazy(parentId));
+    @Operation(summary = "获取组织树选择器（懒加载）")
+    @GetMapping("/dev/config/orgTreeSelector")
+    public CommonResult<List<JSONObject>> orgTreeSelector(DevConfigSelectorOrgTreeParam devConfigSelectorOrgTreeParam) {
+        return CommonResult.data(sysOrgApi.orgTreeSelector(devConfigSelectorOrgTreeParam.getParentId()));
     }
 
     /**

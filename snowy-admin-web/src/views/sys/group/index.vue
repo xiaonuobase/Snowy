@@ -74,7 +74,6 @@
 	<xn-user-selector
 		ref="userSelectorRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
-		:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
 		:user-page-api="selectorApiFunction.userPageApi"
 		data-type="object"
 		:user-show="false"
@@ -184,12 +183,7 @@
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return sysGroupApi.groupOrgTreeLazySelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		orgTreeLazyApi: (param) => {
-			return sysGroupApi.groupOrgTreeLazySelector(param).then((data) => {
+			return sysGroupApi.groupOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

@@ -144,7 +144,6 @@
 	<xn-user-selector
 		ref="userSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
-		:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
 		:user-page-api="selectorApiFunction.userPageApi"
 		data-type="object"
 		:user-show="false"
@@ -295,7 +294,7 @@
 	const loadTreeData = () => {
 		treeLoading.value = true
 		orgApi
-			.orgTreeLazy()
+			.orgTree()
 			.then((res) => {
 				if (res !== null) {
 					// 树中插入全局角色类型
@@ -336,7 +335,7 @@
 				return
 			}
 			orgApi
-				.orgTreeLazy({ parentId: treeNode.dataRef.id })
+				.orgTree({ parentId: treeNode.dataRef.id })
 				.then((res) => {
 					treeNode.dataRef.children = res.map((item) => {
 						return {
@@ -419,12 +418,7 @@
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return orgApi.orgOrgTreeLazySelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		orgTreeLazyApi: (param) => {
-			return orgApi.orgOrgTreeLazySelector(param).then((data) => {
+			return orgApi.orgOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

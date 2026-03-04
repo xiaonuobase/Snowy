@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.index.service;
 
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 

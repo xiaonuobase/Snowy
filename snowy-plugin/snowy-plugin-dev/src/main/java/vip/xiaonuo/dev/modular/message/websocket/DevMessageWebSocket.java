@@ -2,8 +2,8 @@ package vip.xiaonuo.dev.modular.message.websocket;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.PreDestroy;
 import jakarta.websocket.*;

@@ -13,7 +13,6 @@
 package vip.xiaonuo.sys.modular.org.provider;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysOrgApi;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorOrgListParam;
-import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 
 import java.util.List;
@@ -56,15 +55,10 @@ public class SysOrgApiProvider implements SysOrgApi {
     }
 
     @Override
-    public List<Tree<String>> orgTree() {
-        return sysOrgService.tree();
-    }
-
-    @Override
-    public List<JSONObject> orgTreeLazy(String parentId) {
-        SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam = new SysOrgSelectorTreeLazyParam();
-        sysOrgSelectorTreeLazyParam.setParentId(parentId);
-        return sysOrgService.treeLazy(sysOrgSelectorTreeLazyParam);
+    public List<JSONObject> orgTreeSelector(String parentId) {
+        SysOrgSelectorTreeParam sysOrgSelectorTreeParam = new SysOrgSelectorTreeParam();
+        sysOrgSelectorTreeParam.setParentId(parentId);
+        return sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam);
     }
 
     @SuppressWarnings("ALL")

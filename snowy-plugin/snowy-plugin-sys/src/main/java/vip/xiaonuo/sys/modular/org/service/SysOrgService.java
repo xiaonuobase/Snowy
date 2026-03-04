@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.org.service;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -37,22 +36,6 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/4/24 20:08
      */
     Page<SysOrg> page(SysOrgPageParam sysOrgPageParam);
-
-    /**
-     * 获取组织树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree();
-
-    /**
-     * 获取机构树（懒加载），支持搜索
-     *
-     * @author xuyuxiang
-     * @date 2022/4/21 16:13
-     **/
-    List<JSONObject> treeLazy(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam);
 
     /**
      * 添加组织
@@ -173,6 +156,14 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2022/8/15 14:55
      **/
     SysOrg getChildById(List<SysOrg> originDataList, String id);
+
+    /**
+     * 获取组织树选择器（懒加载），支持搜索，搜索为空字符串走全量
+     *
+     * @author xuyuxiang
+     * @date 2022/4/21 16:13
+     **/
+    List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam);
 
     /**
      * 获取组织列表选择器

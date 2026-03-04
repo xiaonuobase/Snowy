@@ -66,7 +66,7 @@
 		visible.value = true
 		resultDataModel.dataScopeId = id
 		// const treeData = data.data;
-		userApi.userOrgTreeLazySelector().then((res) => {
+		userApi.userOrgTreeSelector().then((res) => {
 			if (res !== null) {
 				treeData.value = res.map((item) => {
 					return {
@@ -93,7 +93,7 @@
 				return
 			}
 			userApi
-				.userOrgTreeLazySelector({
+				.userOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

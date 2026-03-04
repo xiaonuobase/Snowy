@@ -46,7 +46,6 @@ import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.client.ClientUserApi;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
-import vip.xiaonuo.common.consts.CacheConstant;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
 import vip.xiaonuo.common.util.CommonEmailUtil;
@@ -59,6 +58,7 @@ import vip.xiaonuo.sys.api.SysUserApi;
 import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -701,7 +701,7 @@ public class AuthServiceImpl implements AuthService {
      * @date 2024/7/22 22:00
      */
     private void fillSaBaseLoginUserAndUpdateCache(SaBaseLoginUser saBaseLoginUser) {
-        // 角色集合
+        // 角色集合（后续查询依赖角色ID，必须先执行）
         List<JSONObject> roleList = loginUserApi.getRoleListByUserId(saBaseLoginUser.getId());
         // 角色id集合
         List<String> roleIdList = roleList.stream().map(jsonObject -> jsonObject.getStr("id")).collect(Collectors.toList());
@@ -709,20 +709,27 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseLoginUser.getId()));
+        // 以下三个查询互不依赖，并行执行
+        CompletableFuture<List<String>> buttonCodeFuture = CompletableFuture.supplyAsync(() ->
+                loginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<String>> mobileButtonCodeFuture = CompletableFuture.supplyAsync(() ->
+                loginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<SaBaseLoginUser.DataScope>> dataScopeFuture = CompletableFuture.supplyAsync(() ->
+                Convert.toList(SaBaseLoginUser.DataScope.class,
+                        loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId())));
+        // 等待所有查询完成
+        CompletableFuture.allOf(buttonCodeFuture, mobileButtonCodeFuture, dataScopeFuture).join();
         // 获取按钮码
-        saBaseLoginUser.setButtonCodeList(loginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        saBaseLoginUser.setButtonCodeList(buttonCodeFuture.join());
         // 获取移动端按钮码
-        saBaseLoginUser.setMobileButtonCodeList(loginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        saBaseLoginUser.setMobileButtonCodeList(mobileButtonCodeFuture.join());
         // 获取数据范围
-        saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class,
-                loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId())));
+        saBaseLoginUser.setDataScopeList(dataScopeFuture.join());
         // 获取权限码
         List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
                 .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
         // 设置权限码
         saBaseLoginUser.setPermissionCodeList(permissionCodeList);
-        // 权限码列表存入缓存
-        commonCacheOperator.put(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + saBaseLoginUser.getId(),permissionCodeList);
         // 获取角色码
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
@@ -757,7 +764,7 @@ public class AuthServiceImpl implements AuthService {
      * @date 2024/7/22 22:00
      */
     private void fillSaBaseClientLoginUserAndUpdateCache(SaBaseClientLoginUser saBaseClientLoginUser) {
-        // 角色集合
+        // 角色集合（后续查询依赖角色ID，必须先执行）
         List<JSONObject> roleList = clientLoginUserApi.getRoleListByUserId(saBaseClientLoginUser.getId());
         // 角色id集合
         List<String> roleIdList = roleList.stream().map(jsonObject -> jsonObject.getStr("id")).collect(Collectors.toList());
@@ -765,20 +772,27 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseClientLoginUser.getId()));
+        // 以下三个查询互不依赖，并行执行
+        CompletableFuture<List<String>> buttonCodeFuture = CompletableFuture.supplyAsync(() ->
+                clientLoginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<String>> mobileButtonCodeFuture = CompletableFuture.supplyAsync(() ->
+                clientLoginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        CompletableFuture<List<SaBaseClientLoginUser.DataScope>> dataScopeFuture = CompletableFuture.supplyAsync(() ->
+                Convert.toList(SaBaseClientLoginUser.DataScope.class,
+                        clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null)));
+        // 等待所有查询完成
+        CompletableFuture.allOf(buttonCodeFuture, mobileButtonCodeFuture, dataScopeFuture).join();
         // 获取按钮码
-        saBaseClientLoginUser.setButtonCodeList(clientLoginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
+        saBaseClientLoginUser.setButtonCodeList(buttonCodeFuture.join());
         // 获取移动端按钮码
-        saBaseClientLoginUser.setMobileButtonCodeList(clientLoginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
+        saBaseClientLoginUser.setMobileButtonCodeList(mobileButtonCodeFuture.join());
         // 获取数据范围
-        saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class,
-                clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null)));
+        saBaseClientLoginUser.setDataScopeList(dataScopeFuture.join());
         // 获取权限码
         List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
         // 设置权限码
         saBaseClientLoginUser.setPermissionCodeList(permissionCodeList);
-        // 权限码列表存入缓存
-        commonCacheOperator.put(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + saBaseClientLoginUser.getId(),permissionCodeList);
         // 获取角色码
         saBaseClientLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
@@ -793,20 +807,23 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseLoginUser getLoginUser() {
-        // 获取当前缓存的用户信息
+        // 直接从TokenSession获取缓存的用户信息
         SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
-        // 获取B端用户信息
-        saBaseLoginUser = loginUserApi.getUserById(saBaseLoginUser.getId());
-        // 填充B端用户信息并更新缓存
-        fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        // 如果缓存中没有用户信息（如旧session），回退到查DB+填充缓存
+        if(ObjectUtil.isEmpty(saBaseLoginUser)) {
+            saBaseLoginUser = loginUserApi.getUserById(StpUtil.getLoginIdAsString());
+            fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        }
+        // 通过JSON序列化深拷贝，避免修改缓存中的对象
+        SaBaseLoginUser result = JSONUtil.toBean(JSONUtil.toJsonStr(saBaseLoginUser), saBaseLoginUser.getClass());
         // 去掉密码
-        saBaseLoginUser.setPassword("******");
+        result.setPassword("******");
         // 去掉权限码
-        saBaseLoginUser.setPermissionCodeList(CollectionUtil.newArrayList());
+        result.setPermissionCodeList(CollectionUtil.newArrayList());
         // 去掉数据范围
-        saBaseLoginUser.setDataScopeList(CollectionUtil.newArrayList());
+        result.setDataScopeList(CollectionUtil.newArrayList());
         // 返回
-        return saBaseLoginUser;
+        return result;
     }
 
     /**
@@ -817,20 +834,23 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseClientLoginUser getClientLoginUser() {
-        // 获取当前缓存的用户信息
+        // 直接从TokenSession获取缓存的用户信息
         SaBaseClientLoginUser saBaseClientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
-        // 获取C端用户信息
-        saBaseClientLoginUser = clientLoginUserApi.getClientUserById(saBaseClientLoginUser.getId());
-        // 填充C端用户信息并更新缓存
-        fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        // 如果缓存中没有用户信息（如旧session），回退到查DB+填充缓存
+        if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+            saBaseClientLoginUser = clientLoginUserApi.getClientUserById(StpClientUtil.getLoginIdAsString());
+            fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        }
+        // 通过JSON序列化深拷贝，避免修改缓存中的对象
+        SaBaseClientLoginUser result = JSONUtil.toBean(JSONUtil.toJsonStr(saBaseClientLoginUser), saBaseClientLoginUser.getClass());
         // 去掉密码
-        saBaseClientLoginUser.setPassword("******");
+        result.setPassword("******");
         // 去掉权限码
-        saBaseClientLoginUser.setPermissionCodeList(CollectionUtil.newArrayList());
+        result.setPermissionCodeList(CollectionUtil.newArrayList());
         // 去掉数据范围
-        saBaseClientLoginUser.setDataScopeList(CollectionUtil.newArrayList());
+        result.setDataScopeList(CollectionUtil.newArrayList());
         // 返回
-        return saBaseClientLoginUser;
+        return result;
     }
 
     @Override

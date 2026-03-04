@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
 import vip.xiaonuo.sys.modular.role.result.*;
@@ -248,8 +248,8 @@ public class SysRoleController {
     @ApiOperationSupport(order = 15)
     @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/role/orgTreeSelector")
-    public CommonResult<List<JSONObject>> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
-        return CommonResult.data(sysRoleService.orgTreeLazySelector(sysOrgSelectorTreeLazyParam));
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return CommonResult.data(sysRoleService.orgTreeSelector(sysOrgSelectorTreeParam));
     }
 
     /**

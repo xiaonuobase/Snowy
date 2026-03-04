@@ -128,56 +128,6 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
-    @Override
-    public List<Tree<String>> tree() {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        // 定义机构集合
-        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
-            return CollectionUtil.newArrayList();
-        }
-        if(loginUserDataScope == null) {
-            // SCOPE_ALL：不做过滤，查询全部机构
-        } else {
-            // 获取所有机构
-            List<BizOrg> allOrgList = this.getAllOrgList();
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(this.getParentListById(allOrgList, orgId, true)));
-            List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
-            CommonSqlUtil.safeIn(lambdaQueryWrapper, BizOrg::getId, loginUserDataScopeFullList);
-        }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        List<BizOrg> bizOrgList = this.list(lambdaQueryWrapper);
-        List<TreeNode<String>> treeNodeList = bizOrgList.stream().map(bizOrg ->
-                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
-    public List<JSONObject> treeLazy(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
-        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
-        if (bizOrgTreeLazyParam.getSearchKey() != null) {
-            return this.treeSearch(bizOrgTreeLazyParam.getSearchKey());
-        }
-        String parentId = ObjectUtil.isNotEmpty(bizOrgTreeLazyParam.getParentId()) ? bizOrgTreeLazyParam.getParentId() : "0";
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if (loginUserDataScope != null && ObjectUtil.isEmpty(loginUserDataScope)) {
-            return CollectionUtil.newArrayList();
-        }
-        // loginUserDataScope == null 时为 SCOPE_ALL，不做数据范围过滤；否则取可见机构ID集合
-        Set<String> visibleOrgIds = null;
-        if (loginUserDataScope != null) {
-            visibleOrgIds = this.getVisibleOrgIds(loginUserDataScope);
-            if (ObjectUtil.isEmpty(visibleOrgIds)) {
-                return CollectionUtil.newArrayList();
-            }
-        }
-        return this.fetchChildrenWithLeafFlag(parentId, visibleOrgIds);
-    }
-
     /**
      * 查询指定父节点下的直接子机构列表，并为每个子机构设置 isLeaf 标志。
      * visibleOrgIds 为 null 时表示 SCOPE_ALL，不做数据范围过滤（与 SysOrg 行为一致）；
@@ -521,6 +471,29 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     }
 
     /* ====机构部分所需要用到的选择器==== */
+
+    @Override
+    public List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (bizOrgSelectorTreeParam.getSearchKey() != null) {
+            return this.treeSearch(bizOrgSelectorTreeParam.getSearchKey());
+        }
+        String parentId = ObjectUtil.isNotEmpty(bizOrgSelectorTreeParam.getParentId()) ? bizOrgSelectorTreeParam.getParentId() : "0";
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if (loginUserDataScope != null && ObjectUtil.isEmpty(loginUserDataScope)) {
+            return CollectionUtil.newArrayList();
+        }
+        // loginUserDataScope == null 时为 SCOPE_ALL，不做数据范围过滤；否则取可见机构ID集合
+        Set<String> visibleOrgIds = null;
+        if (loginUserDataScope != null) {
+            visibleOrgIds = this.getVisibleOrgIds(loginUserDataScope);
+            if (ObjectUtil.isEmpty(visibleOrgIds)) {
+                return CollectionUtil.newArrayList();
+            }
+        }
+        return this.fetchChildrenWithLeafFlag(parentId, visibleOrgIds);
+    }
 
     @Override
     public Page<BizOrg> orgListSelector(BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam) {

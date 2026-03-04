@@ -24,9 +24,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.StrUtil;
@@ -57,7 +54,7 @@ import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizBuildInEnum;
 import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
-import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.service.BizPositionService;
@@ -619,33 +616,8 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
     /* ====人员部分所需要用到的选择器==== */
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        // 定义机构集合
-        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
-            return CollectionUtil.newArrayList();
-        }
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            // 获取所有机构
-            List<BizOrg> allOrgList = bizOrgService.list();
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
-            List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
-            CommonSqlUtil.safeIn(lambdaQueryWrapper, BizOrg::getId, loginUserDataScopeFullList);
-        }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        List<BizOrg> bizOrgList = bizOrgService.list(lambdaQueryWrapper);
-        List<TreeNode<String>> treeNodeList = bizOrgList.stream().map(bizOrg ->
-                new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
-    public List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
-        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
+    public List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @Override

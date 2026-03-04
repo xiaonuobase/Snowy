@@ -202,9 +202,6 @@
 		orgTreeApi: {
 			type: Function
 		},
-		orgTreeLazyApi: {
-			type: Function
-		},
 		orgPageApi: {
 			type: Function
 		},
@@ -258,12 +255,12 @@
 	// 懒加载子节点
 	const onLoadData = (treeNode) => {
 		return new Promise((resolve) => {
-			if (typeof props.orgTreeLazyApi !== 'function' || treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+			if (typeof props.orgTreeApi !== 'function' || treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
 				resolve()
 				return
 			}
 			props
-				.orgTreeLazyApi({
+				.orgTreeApi({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {
@@ -288,15 +285,6 @@
 		recordIds.value = data
 		getDataNameById(data)
 		openModal()
-	}
-	// 获取机构树的api
-	const orgTree = (param) => {
-		if (typeof props.orgTreeApi === 'function') {
-			return props.orgTreeApi(param)
-		} else {
-			message.warning('未配置机构树API')
-			return Promise.resolve([])
-		}
 	}
 	// 获取列表的api
 	const orgPage = (param) => {
@@ -326,50 +314,25 @@
 		// 动态计算树高度，适配不同屏幕
 		treeHeight.value = Math.min(Math.max(window.innerHeight - 350, 250), 460)
 		// 获取机构树
-		if (typeof props.orgTreeLazyApi === 'function') {
-			props
-				.orgTreeLazyApi()
-				.then((data) => {
-					if (!isEmpty(data)) {
-						treeData.value = data.map((item) => {
-							return {
-								...item,
-								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-							}
-						})
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							defaultExpandedKeys.value.push(treeData.value[0].id)
+		props
+			.orgTreeApi()
+			.then((data) => {
+				if (!isEmpty(data)) {
+					treeData.value = data.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
+					})
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value.push(treeData.value[0].id)
 					}
-				})
-				.finally(() => {
-					cardLoading.value = false
-				})
-		} else {
-			orgTree()
-				.then((data) => {
-					if (!isEmpty(data)) {
-						treeData.value = data
-						// 默认展开2级
-						treeData.value.forEach((item) => {
-							// 因为0的顶级
-							if (item.parentId === '0') {
-								defaultExpandedKeys.value.push(item.id)
-								// 取到下级ID
-								if (item.children) {
-									item.children.forEach((items) => {
-										defaultExpandedKeys.value.push(items.id)
-									})
-								}
-							}
-						})
-					}
-				})
-				.finally(() => {
-					cardLoading.value = false
-				})
-		}
+				}
+			})
+			.finally(() => {
+				cardLoading.value = false
+			})
 		searchFormState.value.size = pageSize.value
 		loadData()
 		if (isEmpty(recordIds.value)) {

@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.sys.modular.org.entity.SysUserDataScope;
 import vip.xiaonuo.sys.modular.org.entity.SysUserDataScopeMap;
-import vip.xiaonuo.sys.modular.org.mapper.SysUserDataScopeMapper;
 import vip.xiaonuo.sys.modular.org.mapper.SysUserDataScopeMapMapper;
+import vip.xiaonuo.sys.modular.org.mapper.SysUserDataScopeMapper;
 import vip.xiaonuo.sys.modular.org.service.SysUserDataScopeService;
 
 import java.util.*;

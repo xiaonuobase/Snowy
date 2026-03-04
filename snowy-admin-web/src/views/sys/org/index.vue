@@ -241,7 +241,7 @@
 		treeLoading.value = true
 		searchMode.value = true
 		orgApi
-			.orgTreeLazy({ searchKey: value.trim() })
+			.orgTree({ searchKey: value.trim() })
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res
@@ -258,7 +258,7 @@
 	const loadTreeData = () => {
 		treeLoading.value = true
 		orgApi
-			.orgTreeLazy()
+			.orgTree()
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res.map((item) => {
@@ -285,7 +285,7 @@
 		treeLoading.value = true
 		treeData.value = []
 		orgApi
-			.orgTreeLazy({ searchKey: '' })
+			.orgTree({ searchKey: '' })
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res
@@ -303,7 +303,7 @@
 				return
 			}
 			orgApi
-				.orgTreeLazy({
+				.orgTree({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

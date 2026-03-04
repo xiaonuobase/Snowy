@@ -170,7 +170,7 @@
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<xn-role-selector
 		ref="RoleSelectorPlusRef"
-		:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
+		:org-tree-api="selectorApiFunction.orgTreeApi"
 		:role-page-api="selectorApiFunction.rolePageApi"
 		:add-show="false"
 		:role-global="true"
@@ -322,7 +322,7 @@
 	const loadTreeData = () => {
 		treeLoading.value = true
 		bizOrgApi
-			.orgTreeLazy()
+			.orgTree()
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res.map((item) => {
@@ -352,7 +352,7 @@
 				return
 			}
 			bizOrgApi
-				.orgTreeLazy({ parentId: treeNode.dataRef.id })
+				.orgTree({ parentId: treeNode.dataRef.id })
 				.then((res) => {
 					treeNode.dataRef.children = res.map((item) => {
 						return {
@@ -501,8 +501,8 @@
 	}
 	// 传递设计器需要的API
 	const selectorApiFunction = {
-		orgTreeLazyApi: (param) => {
-			return bizUserApi.userOrgTreeLazySelector(param).then((orgTree) => {
+		orgTreeApi: (param) => {
+			return bizUserApi.userOrgTreeSelector(param).then((orgTree) => {
 				return Promise.resolve(orgTree)
 			})
 		},

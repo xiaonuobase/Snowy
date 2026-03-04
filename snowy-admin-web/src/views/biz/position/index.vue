@@ -248,7 +248,7 @@
 	const loadTreeData = () => {
 		treeLoading.value = true
 		bizOrgApi
-			.orgTreeLazy()
+			.orgTree()
 			.then((res) => {
 				if (res !== null) {
 					treeData.value = res.map((item) => {
@@ -278,7 +278,7 @@
 				return
 			}
 			bizOrgApi
-				.orgTreeLazy({ parentId: treeNode.dataRef.id })
+				.orgTree({ parentId: treeNode.dataRef.id })
 				.then((res) => {
 					treeNode.dataRef.children = res.map((item) => {
 						return {

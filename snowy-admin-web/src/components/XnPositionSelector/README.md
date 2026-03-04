@@ -2,7 +2,7 @@
 
 ### 说明
 
-该组件为小诺职位选择器，可返回id用逗号隔离的字符串或id数组类型的数据格式。支持同步全量树和异步懒加载树两种模式。
+该组件为小诺职位选择器，可返回id用逗号隔离的字符串或id数组类型的数据格式。使用异步懒加载树模式。
 
 @author yubaoshan
 
@@ -14,14 +14,13 @@
 |-----|-------------------------|---------------|---------------------------------------------|--------|
 | 1   | radioModel              | Boolean       | 是否单选；与addShow隐藏同时可用                         | false  |
 | 2   | dataIsConverterFlw      | Boolean       | 是否为工作流格式                                    | false  |
-| 3   | orgTreeApi              | Function      | 机构树接口（同步全量加载）                               | -      |
-| 4   | orgTreeLazyApi          | Function      | 机构树懒加载接口（配置后优先使用异步模式，不配则走同步全量）              | -      |
-| 5   | positionPageApi         | Function      | 职位分页接口                                      | -      |
-| 6   | positionListByIdListApi | Function      | 通过id数组查询list数据接口                            | 已配置    |
-| 7   | value                   | Object或String | 通过v-model:value绑定数据                         | -      |
-| 8   | dataType                | String        | 数据类型array或string                            | array  |
-| 9   | show                    | Boolean       | 是否显示已选择职位（非表单内、单纯的选择职位需要隐藏）                 | true   |
-| 10  | addShow                 | Boolean       | 是否默认的增加人员按钮，与radioModel为或的关系                | true   |
+| 3   | orgTreeApi              | Function      | 机构树懒加载接口                                    | -      |
+| 4   | positionPageApi         | Function      | 职位分页接口                                      | -      |
+| 5   | positionListByIdListApi | Function      | 通过id数组查询list数据接口                            | 已配置    |
+| 6   | value                   | Object或String | 通过v-model:value绑定数据                         | -      |
+| 7   | dataType                | String        | 数据类型array或string                            | array  |
+| 8   | show                    | Boolean       | 是否显示已选择职位（非表单内、单纯的选择职位需要隐藏）                 | true   |
+| 9   | addShow                 | Boolean       | 是否默认的增加人员按钮，与radioModel为或的关系                | true   |
 
 ### emits定义
 

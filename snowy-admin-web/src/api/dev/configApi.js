@@ -50,15 +50,11 @@ export default {
 	configSysThirdAllowFlagList(data) {
 		return request('sysThirdAllowFlagList', data, 'get')
 	},
-	// 获取机构树
-	configOrgTree(data) {
-		return request('orgTree', data, 'get')
+	// 获取组织树选择器（懒加载）
+	configOrgTreeSelector(data) {
+		return request('orgTreeSelector', data, 'get')
 	},
-	// 获取机构树（懒加载）
-	configOrgTreeLazy(data) {
-		return request('orgTreeLazy', data, 'get')
-	},
-	// 获取机构选择器
+	// 获取组织选择器
 	configOrgSelector(data) {
 		return request('orgSelector', data, 'get')
 	},

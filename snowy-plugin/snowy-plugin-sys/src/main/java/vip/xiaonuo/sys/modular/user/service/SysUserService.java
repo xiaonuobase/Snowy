@@ -20,9 +20,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
-import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeLazyParam;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.entity.SysUserExt;
 import vip.xiaonuo.sys.modular.user.param.*;
@@ -474,20 +474,12 @@ public interface SysUserService extends IService<SysUser> {
     /* ====用户部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
-     *
-     * @author xuyuxiang
-     * @date 2022/5/13 21:00
-     */
-    List<Tree<String>> orgTreeSelector();
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<JSONObject> orgTreeLazySelector(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam);
+    List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam);
 
     /**
      * 获取组织列表选择器

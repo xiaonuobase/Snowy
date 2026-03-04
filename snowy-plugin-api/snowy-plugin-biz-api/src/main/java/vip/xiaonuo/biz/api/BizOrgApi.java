@@ -27,20 +27,12 @@ import java.util.List;
 public interface BizOrgApi {
 
     /**
-     * 获取组织树选择器
-     *
-     * @author yubaoshan
-     * @date 2024/11/1 18:27:51
-     **/
-    List<Tree<String>> orgTreeSelector();
-
-    /**
      * 获取组织树选择器（懒加载）
      *
      * @author yubaoshan
      * @date 2024/11/1 18:27:51
      **/
-    List<JSONObject> orgTreeLazySelector(String parentId);
+    List<JSONObject> orgTreeSelector(String parentId);
 
     /**
      * 获取组织列表选择器

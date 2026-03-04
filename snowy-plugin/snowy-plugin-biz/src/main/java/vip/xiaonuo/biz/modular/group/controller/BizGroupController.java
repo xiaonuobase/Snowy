@@ -13,7 +13,6 @@
 package vip.xiaonuo.biz.modular.group.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.group.entity.BizGroup;
 import vip.xiaonuo.biz.modular.group.param.*;
 import vip.xiaonuo.biz.modular.group.service.BizGroupService;
-import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -144,8 +143,8 @@ public class BizGroupController {
     @Operation(summary = "获取组织树选择器")
     @SaCheckPermission("/biz/group/orgTreeSelector")
     @GetMapping("/biz/group/orgTreeSelector")
-    public CommonResult<List<JSONObject>> orgTreeSelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
-        return CommonResult.data(bizGroupService.orgTreeLazySelector(bizOrgTreeLazyParam));
+    public CommonResult<List<JSONObject>> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return CommonResult.data(bizGroupService.orgTreeSelector(bizOrgSelectorTreeParam));
     }
 
     /**

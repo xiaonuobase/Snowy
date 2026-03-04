@@ -26,12 +26,8 @@ export default {
 	orgList(data) {
 		return request('list', data, 'get')
 	},
-	// 获取机构树
-	orgTree(data) {
-		return request('tree', data, 'get')
-	},
 	// 获取机构树（懒加载）
-	orgTreeLazy(data) {
+	orgTree(data) {
 		return request('tree', data, 'get')
 	},
 	// 提交表单 edit为true时为编辑，默认为新增
@@ -47,7 +43,7 @@ export default {
 		return request('detail', data, 'get')
 	},
 	// 获取机构树选择器（懒加载）
-	orgTreeLazySelector(data) {
+	orgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取人员选择器

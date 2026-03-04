@@ -24,7 +24,7 @@ import lombok.Setter;
  **/
 @Getter
 @Setter
-public class DevConfigSelectorOrgTreeLazyParam {
+public class DevConfigSelectorOrgTreeParam {
 
     /** 父id */
     @Schema(description = "父id")

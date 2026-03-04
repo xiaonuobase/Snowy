@@ -111,69 +111,6 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
-    @Override
-    public List<Tree<String>> tree() {
-        List<SysOrg> sysOrgList = this.getAllOrgList();
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
-    public List<JSONObject> treeLazy(SysOrgSelectorTreeLazyParam sysOrgSelectorTreeLazyParam) {
-        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
-        if (sysOrgSelectorTreeLazyParam.getSearchKey() != null) {
-            return this.treeSearch(sysOrgSelectorTreeLazyParam.getSearchKey());
-        }
-        String parentId = ObjectUtil.isNotEmpty(sysOrgSelectorTreeLazyParam.getParentId()) ? sysOrgSelectorTreeLazyParam.getParentId() : "0";
-        // 超管接口，无需数据范围过滤，直接SQL查询当前父级下的子机构
-        List<SysOrg> childList = this.list(new LambdaQueryWrapper<SysOrg>()
-                .eq(SysOrg::getParentId, parentId)
-                .orderByAsc(SysOrg::getSortCode)
-                .orderByAsc(SysOrg::getId));
-        if (ObjectUtil.isEmpty(childList)) {
-            return CollectionUtil.newArrayList();
-        }
-        // 批量判断哪些子机构还有下级
-        List<String> childIds = childList.stream().map(SysOrg::getId).collect(Collectors.toList());
-        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
-                .select(SysOrg::getParentId)
-                .in(SysOrg::getParentId, childIds))
-                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
-        return childList.stream().map(sysOrg -> {
-            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
-            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
-            return jsonObject;
-        }).collect(Collectors.toList());
-    }
-
-    /**
-     * 全量搜索模式，返回嵌套树结构的JSONObject列表
-     * searchKey为空字符串时返回全量树，非空时按关键字过滤
-     */
-    private List<JSONObject> treeSearch(String searchKey) {
-        List<SysOrg> allOrgList = this.getAllOrgList();
-        List<SysOrg> sysOrgList;
-        if (ObjectUtil.isNotEmpty(searchKey)) {
-            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
-            allOrgList.stream()
-                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
-                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
-            sysOrgList = new ArrayList<>(filteredSet);
-        } else {
-            sysOrgList = allOrgList;
-        }
-        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
-                .thenComparing(SysOrg::getId));
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
-                        sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
-                .collect(Collectors.toList());
-        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
-        return JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysOrgAddParam sysOrgAddParam, String sourceFromType) {
@@ -436,6 +373,60 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     }
 
     /* ====组织部分所需要用到的选择器==== */
+
+    @Override
+    public List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (sysOrgSelectorTreeParam.getSearchKey() != null) {
+            return this.treeSearch(sysOrgSelectorTreeParam.getSearchKey());
+        }
+        String parentId = ObjectUtil.isNotEmpty(sysOrgSelectorTreeParam.getParentId()) ? sysOrgSelectorTreeParam.getParentId() : "0";
+        // 超管接口，无需数据范围过滤，直接SQL查询当前父级下的子机构
+        List<SysOrg> childList = this.list(new LambdaQueryWrapper<SysOrg>()
+                .eq(SysOrg::getParentId, parentId)
+                .orderByAsc(SysOrg::getSortCode)
+                .orderByAsc(SysOrg::getId));
+        if (ObjectUtil.isEmpty(childList)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 批量判断哪些子机构还有下级
+        List<String> childIds = childList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
+                        .select(SysOrg::getParentId)
+                        .in(SysOrg::getParentId, childIds))
+                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
+        return childList.stream().map(sysOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 全量搜索模式，返回嵌套树结构的JSONObject列表
+     * searchKey为空字符串时返回全量树，非空时按关键字过滤
+     */
+    private List<JSONObject> treeSearch(String searchKey) {
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        List<SysOrg> sysOrgList;
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            allOrgList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            sysOrgList = new ArrayList<>(filteredSet);
+        } else {
+            sysOrgList = allOrgList;
+        }
+        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
+                .thenComparing(SysOrg::getId));
+        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
+                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
+                                sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
+                .collect(Collectors.toList());
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
+        return JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
+    }
 
     @Override
     public Page<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {

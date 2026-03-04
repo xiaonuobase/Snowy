@@ -19,7 +19,7 @@
 						v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 						:field-names="treeFieldNames"
 						tree-line
-						:load-data="isEditMode ? undefined : onLoadData"
+						:load-data="isFullTree ? undefined : onLoadData"
 					/>
 				</a-spin>
 			</a-form-item>
@@ -40,7 +40,6 @@
 			<a-form-item label="指定主管：" name="directorId">
 				<xn-user-selector
 					:org-tree-api="selectorApiFunction.orgTreeApi"
-					:org-tree-lazy-api="selectorApiFunction.orgTreeLazyApi"
 					:user-page-api="selectorApiFunction.userPageApi"
 					:radio-model="true"
 					v-model:value="formData.directorId"
@@ -72,8 +71,8 @@
 	const treeLoading = ref(false)
 	const treeDefaultExpandedKeys = ref([])
 	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
-	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
-	const isEditMode = ref(false)
+	// 是否加载了全量树（有parentId时加载全量树以便展开到选中节点，否则懒加载）
+	const isFullTree = ref(false)
 	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
 	const collectAncestorKeys = (nodes, targetId, path = []) => {
 		if (!nodes) return null
@@ -99,10 +98,46 @@
 			}
 		}
 	}
+	// 加载全量树（用于需要展开到指定节点的场景）
+	const loadFullTree = () => {
+		return orgApi.orgOrgTreeSelector({ searchKey: '' }).then((res) => {
+			if (res !== null) {
+				treeData.value = [
+					{
+						id: '0',
+						parentId: '-1',
+						name: '顶级',
+						children: res,
+						isLeaf: false
+					}
+				]
+				treeDefaultExpandedKeys.value.push('0')
+			}
+		})
+	}
+	// 加载懒加载树（无需展开到指定节点时使用）
+	const loadLazyTree = () => {
+		return orgApi.orgOrgTreeSelector().then((res) => {
+			treeData.value = [
+				{
+					id: '0',
+					parentId: '-1',
+					name: '顶级',
+					children: res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					}),
+					isLeaf: false
+				}
+			]
+			treeDefaultExpandedKeys.value.push('0')
+		})
+	}
 	// 打开抽屉
 	const onOpen = (record, parentId) => {
 		visible.value = true
-		isEditMode.value = !!record
 		formData.value = {
 			sortCode: 99
 		}
@@ -110,23 +145,11 @@
 			formData.value.parentId = parentId
 		}
 		nextTick(() => {
-			if (isEditMode.value) {
-				// 编辑模式：加载全量树 + 详情，等都完成后展开到选中节点
+			if (record) {
+				// 编辑模式：加载全量树 + 详情，展开到选中节点
+				isFullTree.value = true
 				treeLoading.value = true
-				const treePromise = orgApi.orgOrgTreeLazySelector({ searchKey: '' }).then((res) => {
-					if (res !== null) {
-						treeData.value = [
-							{
-								id: '0',
-								parentId: '-1',
-								name: '顶级',
-								children: res,
-								isLeaf: false
-							}
-						]
-						treeDefaultExpandedKeys.value.push('0')
-					}
-				})
+				const treePromise = loadFullTree()
 				const detailPromise = orgApi.orgDetail({ id: record.id }).then((data) => {
 					formData.value = Object.assign({}, data)
 					return data
@@ -138,25 +161,21 @@
 					.finally(() => {
 						treeLoading.value = false
 					})
+			} else if (parentId) {
+				// 新增模式且有parentId：加载全量树，展开到parentId节点
+				isFullTree.value = true
+				treeLoading.value = true
+				loadFullTree()
+					.then(() => {
+						expandToSelectedOrgs()
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
-				// 新增模式：懒加载树
-				orgApi.orgOrgTreeLazySelector().then((res) => {
-					treeData.value = [
-						{
-							id: '0',
-							parentId: '-1',
-							name: '顶级',
-							children: res.map((item) => {
-								return {
-									...item,
-									isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-								}
-							}),
-							isLeaf: false
-						}
-					]
-					treeDefaultExpandedKeys.value.push('0')
-				})
+				// 新增模式无parentId：懒加载树
+				isFullTree.value = false
+				loadLazyTree()
 			}
 		})
 	}
@@ -168,7 +187,7 @@
 				return
 			}
 			orgApi
-				.orgOrgTreeLazySelector({
+				.orgOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {
@@ -219,12 +238,7 @@
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return orgApi.orgOrgTreeLazySelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		orgTreeLazyApi: (param) => {
-			return orgApi.orgOrgTreeLazySelector(param).then((data) => {
+			return orgApi.orgOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

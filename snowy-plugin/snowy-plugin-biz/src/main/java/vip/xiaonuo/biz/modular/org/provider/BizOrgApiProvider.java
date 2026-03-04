@@ -20,7 +20,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.api.BizOrgApi;
 import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorOrgListParam;
-import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 
 import java.util.List;
@@ -38,15 +38,10 @@ public class BizOrgApiProvider implements BizOrgApi {
     private BizOrgService bizOrgService;
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        return bizOrgService.tree();
-    }
-
-    @Override
-    public List<JSONObject> orgTreeLazySelector(String parentId) {
-        BizOrgTreeLazyParam bizOrgTreeLazyParam = new BizOrgTreeLazyParam();
-        bizOrgTreeLazyParam.setParentId(parentId);
-        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
+    public List<JSONObject> orgTreeSelector(String parentId) {
+        BizOrgSelectorTreeParam bizOrgSelectorTreeParam = new BizOrgSelectorTreeParam();
+        bizOrgSelectorTreeParam.setParentId(parentId);
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @SuppressWarnings("ALL")

@@ -14,10 +14,6 @@ package vip.xiaonuo.biz.modular.group.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
@@ -35,7 +31,7 @@ import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
 import vip.xiaonuo.biz.modular.group.param.*;
 import vip.xiaonuo.biz.modular.group.service.BizGroupService;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
-import vip.xiaonuo.biz.modular.org.param.BizOrgTreeLazyParam;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
@@ -48,8 +44,6 @@ import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.sys.api.SysGroupApi;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 用户组Service接口实现类
@@ -134,34 +128,8 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
     }
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        // 获取所有机构
-        List<BizOrg> allOrgList = bizOrgService.list();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        // 确定用于构建树的机构集合
-        List<BizOrg> resultOrgList;
-        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
-            return CollectionUtil.newArrayList();
-        }
-        if(loginUserDataScope == null) {
-            // SCOPE_ALL：使用全部机构
-            resultOrgList = allOrgList;
-        } else {
-            Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
-            resultOrgList = CollectionUtil.newArrayList(bizOrgSet);
-        }
-        List<TreeNode<String>> treeNodeList = resultOrgList.stream().map(bizOrg ->
-                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
-                                bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
-    @Override
-    public List<JSONObject> orgTreeLazySelector(BizOrgTreeLazyParam bizOrgTreeLazyParam) {
-        return bizOrgService.treeLazy(bizOrgTreeLazyParam);
+    public List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @Override

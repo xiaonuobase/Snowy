@@ -117,7 +117,7 @@
 				// 编辑模式：加载全量树，等完成后展开到选中节点
 				treeLoading.value = true
 				roleApi
-					.roleOrgTreeLazySelector({ searchKey: '' })
+					.roleOrgTreeSelector({ searchKey: '' })
 					.then((res) => {
 						if (res !== null) {
 							treeData.value = res
@@ -133,7 +133,7 @@
 					})
 			} else {
 				// 新增模式：懒加载树
-				roleApi.roleOrgTreeLazySelector().then((res) => {
+				roleApi.roleOrgTreeSelector().then((res) => {
 					if (res !== null) {
 						treeData.value = res.map((item) => {
 							return {
@@ -158,7 +158,7 @@
 				return
 			}
 			roleApi
-				.roleOrgTreeLazySelector({
+				.roleOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

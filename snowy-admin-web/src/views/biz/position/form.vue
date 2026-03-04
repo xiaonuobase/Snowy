@@ -109,7 +109,7 @@
 				// 编辑模式：加载全量树，等完成后展开到选中节点
 				treeLoading.value = true
 				bizPositionApi
-					.positionOrgTreeLazySelector({ searchKey: '' })
+					.positionOrgTreeSelector({ searchKey: '' })
 					.then((res) => {
 						if (res !== null) {
 							treeData.value = res
@@ -125,7 +125,7 @@
 					})
 			} else {
 				// 新增模式：懒加载树
-				bizPositionApi.positionOrgTreeLazySelector().then((res) => {
+				bizPositionApi.positionOrgTreeSelector().then((res) => {
 					treeData.value = res.map((item) => {
 						return {
 							...item,
@@ -148,7 +148,7 @@
 				return
 			}
 			bizPositionApi
-				.positionOrgTreeLazySelector({
+				.positionOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

@@ -56,7 +56,7 @@
 										:tree-data="treeData"
 										v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 										:field-names="treeFieldNames"
-										:load-data="isEditMode ? undefined : onLoadData"
+										:load-data="isFullTree ? undefined : onLoadData"
 										@change="selePositionData(formData.orgId, 0)"
 									/>
 								</a-spin>
@@ -139,7 +139,7 @@
 												:tree-data="treeData"
 												v-model:treeExpandedKeys="childTreeExpandedKeys[index]"
 												:field-names="treeFieldNames"
-												:load-data="isEditMode ? undefined : onLoadData"
+												:load-data="isFullTree ? undefined : onLoadData"
 												@change="childOrgSelect(positionInfo, 0, index)"
 											/>
 										</a-spin>
@@ -333,12 +333,40 @@
 	const formData = ref({})
 	const treeFieldNames = { children: 'children', label: 'name', key: 'id', value: 'id' }
 
-	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
-	const isEditMode = ref(false)
+	// 是否加载了全量树（有orgId时加载全量树以便展开到选中节点，否则懒加载）
+	const isFullTree = ref(false)
+	// 加载全量树（用于需要展开到指定节点的场景）
+	const loadFullTree = () => {
+		return userApi.userOrgTreeSelector({ searchKey: '' }).then((res) => {
+			if (res !== null) {
+				treeData.value = res
+				// 只有一个根节点时才自动展开
+				if (treeData.value.length === 1) {
+					treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+				}
+			}
+		})
+	}
+	// 加载懒加载树（无需展开到指定节点时使用）
+	const loadLazyTree = () => {
+		return userApi.userOrgTreeSelector().then((res) => {
+			if (res !== null) {
+				treeData.value = res.map((item) => {
+					return {
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}
+				})
+				// 只有一个根节点时才自动展开
+				if (treeData.value.length === 1) {
+					treeDefaultExpandedKeys.value.push(treeData.value[0].id)
+				}
+			}
+		})
+	}
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
-		isEditMode.value = !!record
 		formData.value = {
 			gender: '男',
 			positionJson: []
@@ -351,18 +379,11 @@
 			})
 		}
 		nextTick(() => {
-			if (isEditMode.value) {
-				// 编辑模式：加载全量树 + 详情，等都完成后展开到选中节点
+			if (record) {
+				// 编辑模式：加载全量树 + 详情，展开到选中节点
+				isFullTree.value = true
 				treeLoading.value = true
-				const treePromise = userApi.userOrgTreeLazySelector({ searchKey: '' }).then((res) => {
-					if (res !== null) {
-						treeData.value = res
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
-						}
-					}
-				})
+				const treePromise = loadFullTree()
 				const detailPromise = convertFormData(record)
 				Promise.all([treePromise, detailPromise])
 					.then(() => {
@@ -371,22 +392,21 @@
 					.finally(() => {
 						treeLoading.value = false
 					})
+			} else if (orgId) {
+				// 新增模式且有orgId：加载全量树，展开到orgId节点
+				isFullTree.value = true
+				treeLoading.value = true
+				loadFullTree()
+					.then(() => {
+						expandToSelectedOrgs()
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
-				// 新增模式：懒加载树
-				userApi.userOrgTreeLazySelector().then((res) => {
-					if (res !== null) {
-						treeData.value = res.map((item) => {
-							return {
-								...item,
-								isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-							}
-						})
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							treeDefaultExpandedKeys.value.push(treeData.value[0].id)
-						}
-					}
-				})
+				// 新增模式无orgId：懒加载树
+				isFullTree.value = false
+				loadLazyTree()
 			}
 		})
 	}
@@ -398,7 +418,7 @@
 				return
 			}
 			userApi
-				.userOrgTreeLazySelector({
+				.userOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {
