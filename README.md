@@ -297,6 +297,10 @@ QQ技术群：732230670（已满）、685395081
 
 🔥 **2024中国互联网发展创新与投资大赛（开源）-优秀奖**
 
+🔥 **2025年度GitCode百大开源项目**
+
+🔥 **2025年度Gitee开源项目Web应用开发赛道Top3**
+
 <table>
     <tr>
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLM-zg%7D%2F&_etag=1730698398-294375&shareID=-9mLM-zg"/></td>
@@ -305,6 +309,14 @@ QQ技术群：732230670（已满）、685395081
     <tr>
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9nmI4yQ%7D%2F&_etag=1730707931-764633&shareID=-9nmI4yQ"/></td>
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A_COsphyQ%7D%2F&_etag=1732688010-447888&shareID=_COsphyQ"/></td>
+    </tr>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=5f35-ed_a3_uGz1INMaJhSNbI6ixk370tTV5JR0whVe5n8ALraGqmEvRQQMoqeV-Gbs"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=f6618VQ6vkSFTY9v8sg-7ahUp0Zj6Q33y2zL6LUL63_yDOa0xN4TW31IRrrBZZ836AE"/></td>
+    </tr>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=6dc31rfG5KA1l0nQukMmUm7gEufv6r5Q98iTgZyHbaPhjvGR-h6h77cvZ1DmBC5D_rY"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=d7cfk0ftuw2tl1bAL42bl2wgk7sgcm-Z4ULwZu5TIjp4zsvmKBkYfGIoY48Buc4H0s0"/></td>
     </tr>
 </table>
 
