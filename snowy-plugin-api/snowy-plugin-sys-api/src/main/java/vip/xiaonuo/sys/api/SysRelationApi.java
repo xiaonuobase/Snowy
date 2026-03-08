@@ -28,7 +28,7 @@ public interface SysRelationApi {
      * @author xuyuxiang
      * @date 2022/6/6 11:43
      **/
-    List<String> getUserIdListByRoleIdList(List<String> roleIdList);
+    List<String> getUserIdListByRoleIdList(String initiator, List<String> roleIdList);
 
     /**
      * 根据用户组id集合获取用户组下用户id集合
@@ -36,7 +36,7 @@ public interface SysRelationApi {
      * @author xuyuxiang
      * @date 2022/6/6 11:43
      **/
-    List<String> getUserIdListByGroupIdList(List<String> groupIdList);
+    List<String> getUserIdListByGroupIdList(String initiator, List<String> groupIdList);
 
     /**
      * 根据用户id集合获取用户授权的用户组id集合

@@ -49,7 +49,7 @@ public class SysRelationApiProvider implements SysRelationApi {
     private SysUserService sysUserService;
 
     @Override
-    public List<String> getUserIdListByRoleIdList(List<String> roleIdList) {
+    public List<String> getUserIdListByRoleIdList(String initiator, List<String> roleIdList) {
         List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(roleIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
         if(ObjectUtil.isNotEmpty(userIdList)){
@@ -62,7 +62,7 @@ public class SysRelationApiProvider implements SysRelationApi {
     }
 
     @Override
-    public List<String> getUserIdListByGroupIdList(List<String> groupIdList) {
+    public List<String> getUserIdListByGroupIdList(String initiator, List<String> groupIdList) {
         List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdListAndCategory(groupIdList,
                 SysRelationCategoryEnum.SYS_USER_HAS_GROUP.getValue());
         if(ObjectUtil.isNotEmpty(userIdList)){
