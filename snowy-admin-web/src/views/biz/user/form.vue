@@ -337,7 +337,7 @@
 	const isFullTree = ref(false)
 	// 加载全量树（用于需要展开到指定节点的场景）
 	const loadFullTree = () => {
-		return bizUserApi.userOrgTreeSelector({ searchKey: '' }).then((res) => {
+		return bizUserApi.orgTreeSelector({ searchKey: '' }).then((res) => {
 			if (res !== null) {
 				treeData.value = res
 				// 只有一个根节点时才自动展开
@@ -349,7 +349,7 @@
 	}
 	// 加载懒加载树（无需展开到指定节点时使用）
 	const loadLazyTree = () => {
-		return bizUserApi.userOrgTreeSelector().then((res) => {
+		return bizUserApi.orgTreeSelector().then((res) => {
 			if (res !== null) {
 				treeData.value = res.map((item) => {
 					return {
@@ -418,7 +418,7 @@
 				return
 			}
 			bizUserApi
-				.userOrgTreeSelector({
+				.orgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {

@@ -12,10 +12,16 @@
  */
 package vip.xiaonuo.sys.modular.user.provider;
 
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
@@ -34,6 +40,7 @@ import java.util.stream.Collectors;
  * @author xuyuxiang
  * @date 2022/4/29 13:36
  **/
+@Slf4j
 @Service("loginUserApi")
 public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
 
@@ -215,5 +222,51 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList) {
         sysUserDataScopeService.refreshByUserId(userId, dataScopeList);
+    }
+
+    @Override
+    public void refreshOnlineUserPermission(String userId) {
+        // 获取该用户所有在线token
+        List<String> tokenList = StpUtil.getTokenValueListByLoginId(userId);
+        if (ObjectUtil.isEmpty(tokenList)) {
+            return;
+        }
+        // 获取用户基本信息
+        SaBaseLoginUser saBaseLoginUser = this.getUserById(userId);
+        if (ObjectUtil.isEmpty(saBaseLoginUser)) {
+            return;
+        }
+        // 获取角色列表
+        List<JSONObject> roleList = this.getRoleListByUserId(userId);
+        List<String> roleIdList = roleList.stream().map(j -> j.getStr("id")).collect(Collectors.toList());
+        List<String> roleCodeList = roleList.stream().map(j -> j.getStr("code")).collect(Collectors.toList());
+        List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(userId));
+        // 重新计算权限数据
+        List<String> buttonCodeList = this.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList);
+        List<String> mobileButtonCodeList = this.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList);
+        List<SaBaseLoginUser.DataScope> dataScopeList = Convert.toList(SaBaseLoginUser.DataScope.class,
+                this.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId()));
+        List<String> permissionCodeList = dataScopeList.stream()
+                .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
+        // 填充到用户对象
+        saBaseLoginUser.setButtonCodeList(buttonCodeList);
+        saBaseLoginUser.setMobileButtonCodeList(mobileButtonCodeList);
+        saBaseLoginUser.setDataScopeList(dataScopeList);
+        saBaseLoginUser.setPermissionCodeList(permissionCodeList);
+        saBaseLoginUser.setRoleCodeList(roleCodeList);
+        // 写入该用户的所有TokenSession
+        for (String token : tokenList) {
+            try {
+                SaSession session = StpUtil.getTokenSessionByToken(token);
+                if (session != null) {
+                    session.set("loginUser", saBaseLoginUser);
+                }
+            } catch (Exception e) {
+                log.warn(">>> 刷新用户权限缓存时跳过无效token，userId：{}，token：{}", userId, token);
+            }
+        }
+        // 刷新预计算表
+        this.refreshUserDataScope(userId, dataScopeList);
+        log.info(">>> 已刷新在线用户权限缓存，userId：{}，token数：{}", userId, tokenList.size());
     }
 }

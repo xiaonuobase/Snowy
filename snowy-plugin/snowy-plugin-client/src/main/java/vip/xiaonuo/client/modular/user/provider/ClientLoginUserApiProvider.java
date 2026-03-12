@@ -223,4 +223,9 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     public void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList) {
         // C端用户无数据范围，无需刷新预计算表
     }
+
+    @Override
+    public void refreshOnlineUserPermission(String userId) {
+        // C端用户暂无数据权限机制，无需刷新
+    }
 }

@@ -187,4 +187,14 @@ public interface SaBaseLoginUserApi {
      * @date 2026/2/12
      */
     void refreshUserDataScope(String userId, List<SaBaseLoginUser.DataScope> dataScopeList);
+
+    /**
+     * 刷新在线用户的权限缓存（Session），权限变更后调用，确保实时生效。
+     * 如果用户不在线则跳过。
+     *
+     * @param userId 用户ID
+     * @author xuyuxiang
+     * @date 2026/3/12
+     */
+    void refreshOnlineUserPermission(String userId);
 }

@@ -22,10 +22,6 @@ export default {
 	orgPage(data) {
 		return request('page', data, 'get')
 	},
-	// 获取机构列表
-	orgList(data) {
-		return request('list', data, 'get')
-	},
 	// 获取机构树（懒加载）
 	orgTree(data) {
 		return request('tree', data, 'get')
