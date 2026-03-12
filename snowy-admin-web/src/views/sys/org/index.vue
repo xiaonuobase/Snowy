@@ -15,6 +15,7 @@
 					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
 						<a-tree
 							v-model:expandedKeys="defaultExpandedKeys"
+							v-model:loadedKeys="treeLoadedKeys"
 							:show-line="{ showLeafIcon: false }"
 							:tree-data="treeData"
 							:field-names="treeFieldNames"
@@ -126,7 +127,6 @@
 
 <script setup name="sysOrg">
 	import { Empty } from 'ant-design-vue'
-	import { isEmpty } from 'lodash-es'
 	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
@@ -217,6 +217,7 @@
 	const treeLoading = ref(true)
 	const treeSearchKey = ref('')
 	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
 	// 收集树所有节点key，用于搜索时全部展开
 	const collectTreeKeys = (nodes) => {
 		const keys = []
@@ -261,17 +262,18 @@
 			.orgTree()
 			.then((res) => {
 				if (res !== null) {
+					// 重置懒加载状态和展开状态，避免树组件缓存导致无法展开
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
 					treeData.value = res.map((item) => {
 						return {
 							...item,
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
-					if (isEmpty(defaultExpandedKeys.value)) {
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							defaultExpandedKeys.value.push(treeData.value[0].id)
-						}
+					// 只有一个根节点时自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].id]
 					}
 				}
 			})

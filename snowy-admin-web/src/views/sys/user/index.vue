@@ -15,6 +15,7 @@
 					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
 						<a-tree
 							v-model:expandedKeys="defaultExpandedKeys"
+							v-model:loadedKeys="treeLoadedKeys"
 							:show-line="{ showLeafIcon: false }"
 							:tree-data="treeData"
 							:field-names="treeFieldNames"
@@ -198,7 +199,6 @@
 
 <script setup name="sysUser">
 	import { message, Empty } from 'ant-design-vue'
-	import { isEmpty } from 'lodash-es'
 	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import tool from '@/utils/tool'
 	import downloadUtil from '@/utils/downloadUtil'
@@ -301,6 +301,7 @@
 	const treeLoading = ref(true)
 	const treeSearchKey = ref('')
 	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
 	const collectTreeKeys = (nodes) => {
 		const keys = []
 		const traverse = (list) => {
@@ -342,17 +343,17 @@
 			.orgTree()
 			.then((res) => {
 				if (res !== null) {
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
 					treeData.value = res.map((item) => {
 						return {
 							...item,
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
-					if (isEmpty(defaultExpandedKeys.value)) {
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							defaultExpandedKeys.value.push(treeData.value[0].id)
-						}
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].id]
 					}
 				}
 			})

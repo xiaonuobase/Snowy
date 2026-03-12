@@ -15,6 +15,7 @@
 					<a-tree
 						v-else-if="treeData.length > 0"
 						v-model:expandedKeys="defaultExpandedKeys"
+						v-model:loadedKeys="treeLoadedKeys"
 						:show-line="{ showLeafIcon: false }"
 						:tree-data="treeData"
 						:field-names="treeFieldNames"
@@ -153,7 +154,6 @@
 
 <script setup name="sysRole">
 	import { Empty } from 'ant-design-vue'
-	import { isEmpty } from 'lodash-es'
 	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import roleApi from '@/api/sys/roleApi'
 	import orgApi from '@/api/sys/orgApi'
@@ -255,6 +255,7 @@
 	const treeLoading = ref(true)
 	const treeSearchKey = ref('')
 	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
 	const collectTreeKeys = (nodes) => {
 		const keys = []
 		const traverse = (list) => {
@@ -306,6 +307,8 @@
 							isLeaf: true
 						}
 					]
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
 					treeData.value = globalRoleType.concat(
 						res.map((item) => {
 							return {
@@ -314,11 +317,9 @@
 							}
 						})
 					)
-					if (isEmpty(defaultExpandedKeys.value)) {
-						// 只有一个根节点时才自动展开
-						if (treeData.value.length === 1) {
-							defaultExpandedKeys.value.push(treeData.value[0].id)
-						}
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].id]
 					}
 				}
 			})
