@@ -8,11 +8,11 @@
 					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
 					placeholder="请选择目标上级组织"
 					allow-clear
-					tree-default-expand-all
 					:tree-data="treeData"
+					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 					:field-names="treeFieldNames"
-					selectable="false"
 					tree-line
+					:load-data="onLoadData"
 				/>
 				<a-alert
 					class="mt-3"
@@ -44,10 +44,30 @@
 	// 定义机构元素
 	const treeData = ref([])
 	const submitLoading = ref(false)
+	const treeDefaultExpandedKeys = ref([])
 	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 选中的ID列表
 	const ids = ref([])
-
+	// 加载懒加载树（无需展开到指定节点时使用）
+	const loadLazyTree = () => {
+		return orgApi.orgTreeSelector().then((res) => {
+			treeData.value = [
+				{
+					id: '0',
+					parentId: '-1',
+					name: '顶级',
+					children: res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					}),
+					isLeaf: false
+				}
+			]
+			treeDefaultExpandedKeys.value.push('0')
+		})
+	}
 	// 打开抽屉
 	const onOpen = (idParam) => {
 		visible.value = true
@@ -55,16 +75,30 @@
 		if (idParam) {
 			ids.value = idParam.map((item) => item.id)
 		}
-		// 获取机构树并加入顶级
-		orgApi.orgOrgTreeSelector().then((res) => {
-			treeData.value = [
-				{
-					id: '0',
-					parentId: '-1',
-					name: '顶级',
-					children: res
-				}
-			]
+		// 懒加载
+		loadLazyTree()
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			orgApi
+				.orgTreeSelector({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					treeData.value = [...treeData.value]
+					resolve()
+				})
 		})
 	}
 	// 关闭抽屉

@@ -39,7 +39,7 @@ export default {
 		return request('detail', data, 'get')
 	},
 	// 获取组织树选择器（懒加载）
-	orgOrgTreeSelector(data) {
+	orgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取用户选择器

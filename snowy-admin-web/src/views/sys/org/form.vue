@@ -100,7 +100,7 @@
 	}
 	// 加载全量树（用于需要展开到指定节点的场景）
 	const loadFullTree = () => {
-		return orgApi.orgOrgTreeSelector({ searchKey: '' }).then((res) => {
+		return orgApi.orgTreeSelector({ searchKey: '' }).then((res) => {
 			if (res !== null) {
 				treeData.value = [
 					{
@@ -117,7 +117,7 @@
 	}
 	// 加载懒加载树（无需展开到指定节点时使用）
 	const loadLazyTree = () => {
-		return orgApi.orgOrgTreeSelector().then((res) => {
+		return orgApi.orgTreeSelector().then((res) => {
 			treeData.value = [
 				{
 					id: '0',
@@ -187,7 +187,7 @@
 				return
 			}
 			orgApi
-				.orgOrgTreeSelector({
+				.orgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {
@@ -238,7 +238,7 @@
 	// 传递设计器需要的API
 	const selectorApiFunction = {
 		orgTreeApi: (param) => {
-			return orgApi.orgOrgTreeSelector(param).then((data) => {
+			return orgApi.orgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},
