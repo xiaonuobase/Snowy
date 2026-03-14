@@ -176,7 +176,7 @@
 </template>
 
 <script setup name="genBasic">
-	import { required } from '@/utils/formRules'
+import {required, rules} from '@/utils/formRules'
 	import genBasicApi from '@/api/gen/genBasicApi'
 	// 声明组件自定义事件
 	const emit = defineEmits(['successful'])
@@ -311,7 +311,7 @@
 		generateType: [required('请选择生成方式')],
 		module: [required('请选择所属模块')],
 		menuPid: [required('请选择上级目录')],
-		functionName: [required('请输入功能名')],
+		functionName: [required('请输入功能名'), rules.horizontalChart],
 		busName: [required('请输入业务名')],
 		className: [required('请输入类名')],
 		packageName: [required('请输入包名')],
