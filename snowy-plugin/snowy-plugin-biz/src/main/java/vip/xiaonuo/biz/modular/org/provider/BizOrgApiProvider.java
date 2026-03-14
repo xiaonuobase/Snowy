@@ -38,17 +38,19 @@ public class BizOrgApiProvider implements BizOrgApi {
     private BizOrgService bizOrgService;
 
     @Override
-    public List<JSONObject> orgTreeSelector(String parentId) {
+    public List<JSONObject> orgTreeSelector(String parentId, String searchKey) {
         BizOrgSelectorTreeParam bizOrgSelectorTreeParam = new BizOrgSelectorTreeParam();
         bizOrgSelectorTreeParam.setParentId(parentId);
+        bizOrgSelectorTreeParam.setSearchKey(searchKey);
         return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @SuppressWarnings("ALL")
     @Override
-    public Page<JSONObject> orgListSelector(String parentId) {
+    public Page<JSONObject> orgListSelector(String parentId, String searchKey) {
         BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam = new BizOrgSelectorOrgListParam();
         bizOrgSelectorOrgListParam.setParentId(parentId);
+        bizOrgSelectorOrgListParam.setSearchKey(searchKey);
         return BeanUtil.toBean(bizOrgService.orgListSelector(bizOrgSelectorOrgListParam), Page.class);
     }
 }

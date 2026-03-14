@@ -55,17 +55,19 @@ public class SysOrgApiProvider implements SysOrgApi {
     }
 
     @Override
-    public List<JSONObject> orgTreeSelector(String parentId) {
+    public List<JSONObject> orgTreeSelector(String parentId, String searchKey) {
         SysOrgSelectorTreeParam sysOrgSelectorTreeParam = new SysOrgSelectorTreeParam();
         sysOrgSelectorTreeParam.setParentId(parentId);
+        sysOrgSelectorTreeParam.setSearchKey(searchKey);
         return sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam);
     }
 
     @SuppressWarnings("ALL")
     @Override
-    public Page<JSONObject> orgListSelector(String parentId) {
+    public Page<JSONObject> orgListSelector(String parentId, String searchKey) {
         SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam = new SysOrgSelectorOrgListParam();
         sysOrgSelectorOrgListParam.setParentId(parentId);
+        sysOrgSelectorOrgListParam.setSearchKey(searchKey);
         return BeanUtil.toBean(sysOrgService.orgListSelector(sysOrgSelectorOrgListParam), Page.class);
     }
 

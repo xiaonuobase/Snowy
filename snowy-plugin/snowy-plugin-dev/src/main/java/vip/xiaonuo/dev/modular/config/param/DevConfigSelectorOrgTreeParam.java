@@ -29,4 +29,8 @@ public class DevConfigSelectorOrgTreeParam {
     /** 父id */
     @Schema(description = "父id")
     private String parentId;
+
+    /** 搜索关键字 */
+    @Schema(description = "搜索关键字")
+    private String searchKey;
 }

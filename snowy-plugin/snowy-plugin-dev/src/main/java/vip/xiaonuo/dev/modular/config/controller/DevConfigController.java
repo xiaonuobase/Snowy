@@ -197,7 +197,7 @@ public class DevConfigController {
     @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/dev/config/orgTreeSelector")
     public CommonResult<List<JSONObject>> orgTreeSelector(DevConfigSelectorOrgTreeParam devConfigSelectorOrgTreeParam) {
-        return CommonResult.data(sysOrgApi.orgTreeSelector(devConfigSelectorOrgTreeParam.getParentId()));
+        return CommonResult.data(sysOrgApi.orgTreeSelector(devConfigSelectorOrgTreeParam.getParentId(), devConfigSelectorOrgTreeParam.getSearchKey()));
     }
 
     /**
@@ -222,7 +222,7 @@ public class DevConfigController {
     @Operation(summary = "获取机构选择器")
     @GetMapping("/dev/config/orgSelector")
     public CommonResult<Page<JSONObject>> orgSelector(DevConfigSelectorOrgListParam devConfigSelectorOrgListParam) {
-        return CommonResult.data(sysOrgApi.orgListSelector(devConfigSelectorOrgListParam.getParentId()));
+        return CommonResult.data(sysOrgApi.orgListSelector(devConfigSelectorOrgListParam.getParentId(), devConfigSelectorOrgListParam.getSearchKey()));
     }
 
     /**
