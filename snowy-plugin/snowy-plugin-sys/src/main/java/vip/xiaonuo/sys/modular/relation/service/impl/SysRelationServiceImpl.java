@@ -62,7 +62,7 @@ public class SysRelationServiceImpl extends ServiceImpl<SysRelationMapper, SysRe
             sysRelation.setObjectId(objectId);
             sysRelation.setTargetId(targetIdList.get(i));
             sysRelation.setCategory(category);
-            if(ObjectUtil.isNotEmpty(extJsonList)) {
+            if(ObjectUtil.isNotEmpty(extJsonList) && extJsonList.size() > i) {
                 sysRelation.setExtJson(extJsonList.get(i));
             }
             sysRelationList.add(sysRelation);

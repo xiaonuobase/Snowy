@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @author xuyuxiang
  * @date 2025/3/21 19:07
  **/
-public class SysPasswordUtl {
+public class SysPasswordUtil {
 
     /** B端系统默认密码 */
     private static final String SNOWY_SYS_DEFAULT_PASSWORD_FOR_B_KEY = "SNOWY_SYS_DEFAULT_PASSWORD_FOR_B";
@@ -129,13 +129,13 @@ public class SysPasswordUtl {
         jsonObject.set(SNOWY_SYS_DEFAULT_PASSWORD_MAX_LENGTH_FOR_B_KEY, passwordUpdateMaxLength);
         // 密码复杂度
         String passwordUpdateComplexity = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_COMPLEXITY_FOR_B_KEY);
-        if(ObjectUtil.isEmpty(passwordUpdateValidType)){
+        if(ObjectUtil.isEmpty(passwordUpdateComplexity)){
             throw new CommonException("请联系管理员配置系统密码修改密码复杂度");
         }
         jsonObject.set(SNOWY_SYS_DEFAULT_PASSWORD_COMPLEXITY_FOR_B_KEY, passwordUpdateComplexity);
         // 不能连续出现相同字符个数
         String passwordUpdateNotAllowContinuousSame = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_NOT_ALLOW_CONTINUOUS_SAME_CHARACTER_LENGTH_FOR_B_KEY);
-        if(ObjectUtil.isEmpty(passwordUpdateValidType)){
+        if(ObjectUtil.isEmpty(passwordUpdateNotAllowContinuousSame)){
             throw new CommonException("请联系管理员配置系统密码修改联系出现相同字符的个数");
         }
         jsonObject.set(SNOWY_SYS_DEFAULT_PASSWORD_NOT_ALLOW_CONTINUOUS_SAME_CHARACTER_LENGTH_FOR_B_KEY, passwordUpdateNotAllowContinuousSame);
@@ -396,7 +396,7 @@ public class SysPasswordUtl {
             // 获取密码过期前提醒天数
             String passwordExpiredNoticeDays = devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_PASSWORD_EXPIRED_NOTICE_DAYS_FOR_B_KEY);
             // 密码过期前提醒天数如果不为空
-            if(ObjectUtil.isNotEmpty(passwordExpiredDays)){
+            if(ObjectUtil.isNotEmpty(passwordExpiredNoticeDays)){
                 // 获取密码修改日期距离提醒日的天数N
                 int noticeOffsetDays = Convert.toInt(passwordExpiredDays) - Convert.toInt(passwordExpiredNoticeDays);
                 // 提前提醒天数必须大于过期天数

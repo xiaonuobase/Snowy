@@ -408,7 +408,7 @@ public class AuthServiceImpl implements AuthService {
             }
         } else {
             if(CommonEmailUtil.isNotEmail(phoneOrEmail)) {
-                throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+                throw new CommonException(AuthExceptionEnum.EMAIL_FORMAT_ERROR.getValue());
             }
         }
         // 先校验验证码

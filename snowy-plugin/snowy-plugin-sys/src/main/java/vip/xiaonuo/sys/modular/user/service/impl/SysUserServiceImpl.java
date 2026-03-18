@@ -84,8 +84,8 @@ import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.core.enums.SysYesOrNoEnum;
-import vip.xiaonuo.sys.core.util.SysEmailFormatUtl;
-import vip.xiaonuo.sys.core.util.SysPasswordUtl;
+import vip.xiaonuo.sys.core.util.SysEmailFormatUtil;
+import vip.xiaonuo.sys.core.util.SysPasswordUtil;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
@@ -338,7 +338,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if(ObjectUtil.isEmpty(sysUser.getPassword())) {
             // 设置默认密码
-            sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
+            sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtil.getDefaultPassword()));
         } else {
             // 设置传入的密码
             sysUser.setPassword(CommonCryptogramUtil.doHashValue(sysUser.getPassword()));
@@ -490,7 +490,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取用户
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         // 获取默认密码
-        String defaultPassword = SysPasswordUtl.getDefaultPassword();
+        String defaultPassword = SysPasswordUtil.getDefaultPassword();
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getPassword,
@@ -533,9 +533,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", defaultPassword);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -690,9 +690,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -719,7 +719,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取新密码
         String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()).trim();
         // 校验新密码
-        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
                 CommonCryptogramUtil.doSm4CbcEncrypt(phone)).set(SysUser::getPassword,
@@ -771,7 +771,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
         // 追加用户历史密码信息
         sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
-        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail, email).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
@@ -784,9 +784,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 定义变量参数
             JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
             // 获取格式化后的主题
-            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
             // 获取格式化后的内容
-            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
             try {
                 // 发送邮件
                 devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -799,21 +799,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public String updatePasswordGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
         return this.getPhoneValidCode(sysUserGetPhoneValidCodeParam, "修改密码验证码短信消息模板编码", SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
     }
 
     @Override
     public String updatePasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
         return this.getEmailValidCode(sysUserGetEmailValidCodeParam, "修改密码验证码邮件消息模板内容", SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
     }
 
     @Override
     public void updatePasswordByOld(SysUserUpdatePwdByOldParam sysUserUpdatePwdByOldParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.OLD.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.OLD.getValue());
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         String password = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getPassword()).trim();
         String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getNewPassword()).trim();
@@ -821,7 +821,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("原密码错误");
         }
         // 校验新密码
-        SysPasswordUtl.validNewPassword(sysUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUser.getId()).set(SysUser::getPassword,
@@ -868,9 +868,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -884,7 +884,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updatePasswordByPhone(SysUserUpdatePwdByPhoneParam sysUserUpdatePwdByPhoneParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
         SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam = new SysUserFindPwdByPhoneParam();
         BeanUtil.copyProperties(sysUserUpdatePwdByPhoneParam, sysUserFindPwdByPhoneParam);
         this.findPasswordByPhone(sysUserFindPwdByPhoneParam);
@@ -893,7 +893,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updatePasswordByEmail(SysUserUpdatePwdByEmailParam sysUserUpdatePwdByEmailParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
         SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam = new SysUserFindPwdByEmailParam();
         BeanUtil.copyProperties(sysUserUpdatePwdByEmailParam, sysUserFindPwdByEmailParam);
         this.findPasswordByEmail(sysUserFindPwdByEmailParam);
@@ -1029,9 +1029,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -1071,9 +1071,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -1712,7 +1712,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     // 设置默认头像
                     sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
                     // 设置默认密码
-                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
+                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtil.getDefaultPassword()));
                     // 设置排序码
                     sysUser.setSortCode(99);
                     // 设置状态
@@ -1977,7 +1977,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                     SysOrg slaveSysOrg = sysOrgService.getById(sysOrgList, slaveOrgId);
                     if (ObjectUtil.isEmpty(slaveSysOrg)) {
-                        throw new CommonException("组织不存在，id值为：{}", slaveSysOrg);
+                        throw new CommonException("组织不存在，id值为：{}", slaveOrgId);
                     }
                     String slaveOrgName = slaveSysOrg.getName();
 
@@ -2240,9 +2240,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 定义变量参数
             JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
             // 获取格式化后的主题
-            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
             // 获取格式化后的内容
-            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
             // 发送邮件
             devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         }
@@ -2351,7 +2351,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public Boolean isUserPasswordExpired() {
-        return SysPasswordUtl.isUserPasswordExpired(StpUtil.getLoginIdAsString());
+        return SysPasswordUtil.isUserPasswordExpired(StpUtil.getLoginIdAsString());
     }
 
     @Override
@@ -2361,7 +2361,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 密码即将到期邮件消息模板
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY);
         // 获取今日需要提醒密码到期的用户集合
-        SysPasswordUtl.thisDayPasswordExpiredNeedNoticeUserIdList().forEach(sysUser -> {
+        SysPasswordUtil.thisDayPasswordExpiredNeedNoticeUserIdList().forEach(sysUser -> {
             // 获取手机号
             String phone = sysUser.getPhone();
             // 不为空才发送
@@ -2391,9 +2391,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -2413,14 +2413,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("账号已存在");
         }
         // 校验密码
-        SysPasswordUtl.validNewPassword(password);
+        SysPasswordUtil.validNewPassword(password);
         // 根据账号密码创建用户
         this.createUserWithAccount(account, password);
     }
 
     @Override
     public JSONObject getUpdatePasswordValidConfig() {
-        return SysPasswordUtl.getUpdatePasswordValidConfig();
+        return SysPasswordUtil.getUpdatePasswordValidConfig();
     }
 
     @Override

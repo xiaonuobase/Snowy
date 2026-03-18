@@ -137,7 +137,7 @@ public class GlobalExceptionUtil {
             commonResult = CommonResult.get(commonException.getCode(), commonException.getMsg(), null);
         }  else {
             // 未知异常打印详情
-            log.error(">>> 服务器未知异常，请求地址：{}，具体信息：", CommonServletUtil.getRequest().getRequestURL(), e);
+            log.error(">>> 服务器未知异常，请求地址：{}，具体信息：{}", CommonServletUtil.getRequest().getRequestURL(), e);
             // 未知异常返回服务器异常
             commonResult = CommonResult.error();
         }

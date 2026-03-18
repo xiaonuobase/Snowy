@@ -155,7 +155,7 @@ public class CommonResult<T> implements Serializable{
         return "{"
                 + "\"code\": " + this.getCode()
                 + ", \"msg\": \"" + this.getMsg() + "\""
-                + ", \"data\": \"" + this.getData() + "\""
+                + ", \"data\": " + (this.getData() != null ? "\"" + this.getData() + "\"" : "null")
                 + "}";
     }
 }
