@@ -234,7 +234,10 @@
 	// 树搜索
 	const onTreeSearch = (value) => {
 		if (!value || !value.trim()) {
-			// 清空搜索，恢复懒加载模式
+			// 先清空树数据和展开状态，再切换模式，避免懒加载风暴导致卡死
+			treeData.value = []
+			defaultExpandedKeys.value = []
+			treeLoadedKeys.value = []
 			searchMode.value = false
 			loadTreeData()
 			return

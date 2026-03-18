@@ -176,7 +176,7 @@
 </template>
 
 <script setup name="genBasic">
-import {required, rules} from '@/utils/formRules'
+	import { required, rules } from '@/utils/formRules'
 	import genBasicApi from '@/api/gen/genBasicApi'
 	// 声明组件自定义事件
 	const emit = defineEmits(['successful'])
