@@ -19,8 +19,8 @@
 						v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 						:field-names="treeFieldNames"
 						tree-line
-						:load-data="isEditMode ? undefined : onLoadData"
-					></a-tree-select>
+						:load-data="onLoadData"
+					/>
 				</a-spin>
 			</a-form-item>
 			<a-form-item label="职位名称：" name="name">
@@ -63,37 +63,48 @@
 	const treeLoading = ref(false)
 	const treeDefaultExpandedKeys = ref([])
 	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
-	// 是否为编辑模式（编辑时加载全量树，新增时懒加载）
-	const isEditMode = ref(false)
-	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
-	const collectAncestorKeys = (nodes, targetId, path = []) => {
-		if (!nodes) return null
-		for (const node of nodes) {
-			if (node.id === targetId) return path
-			if (node.children) {
-				const found = collectAncestorKeys(node.children, targetId, [...path, node.id])
-				if (found) return found
+	// 将祖先扁平节点合并到懒加载根节点中
+	const buildTreeWithAncestors = (rootNodes, ancestorNodes) => {
+		const allNodes = [...rootNodes]
+		const existingIds = new Set(allNodes.map((n) => n.id))
+		ancestorNodes.forEach((node) => {
+			if (!existingIds.has(node.id)) {
+				allNodes.push(node)
+				existingIds.add(node.id)
 			}
+		})
+		const parentChildMap = new Map()
+		allNodes.forEach((node) => {
+			const pid = node.parentId
+			if (!parentChildMap.has(pid)) {
+				parentChildMap.set(pid, [])
+			}
+			const siblings = parentChildMap.get(pid)
+			if (!siblings.find((n) => n.id === node.id)) {
+				siblings.push(node)
+			}
+		})
+		const ancestorIdSet = new Set(ancestorNodes.map((n) => n.id))
+		const buildBranch = (parentId) => {
+			const children = parentChildMap.get(parentId)
+			if (!children) return undefined
+			return children.map((child) => {
+				const node = { ...child, isLeaf: child.isLeaf === undefined ? false : child.isLeaf }
+				if (ancestorIdSet.has(child.id) && parentChildMap.has(child.id)) {
+					node.children = buildBranch(child.id)
+				}
+				return node
+			})
 		}
-		return null
+		return buildBranch('0') || []
 	}
-	// 展开树到选中的组织节点
-	const expandToSelectedOrgs = () => {
-		if (formData.value.orgId) {
-			const ancestors = collectAncestorKeys(treeData.value, formData.value.orgId)
-			if (ancestors) {
-				ancestors.forEach((id) => {
-					if (!treeDefaultExpandedKeys.value.includes(id)) {
-						treeDefaultExpandedKeys.value.push(id)
-					}
-				})
-			}
-		}
+	const collectAncestorKeysFromFlat = (ancestorNodes, selectedIds) => {
+		const selectedSet = new Set(selectedIds)
+		return ancestorNodes.filter((n) => !selectedSet.has(n.id) || !n.isLeaf).map((n) => n.id)
 	}
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
-		isEditMode.value = !!record
 		formData.value = {
 			sortCode: 99
 		}
@@ -104,20 +115,19 @@
 			formData.value = Object.assign({}, record)
 		}
 		nextTick(() => {
-			if (isEditMode.value) {
-				// 编辑模式：加载全量树，等完成后展开到选中节点
+			if (record && record.orgId) {
+				// 编辑模式：懒加载根节点 + 祖先路径
 				treeLoading.value = true
-				positionApi
-					.positionOrgTreeSelector({ searchKey: '' })
-					.then((res) => {
-						if (res !== null) {
-							treeData.value = res
-							// 只有一个根节点时才自动展开
-							if (treeData.value.length === 1) {
-								treeDefaultExpandedKeys.value.push(treeData.value[0].id)
-							}
-						}
-						expandToSelectedOrgs()
+				const rootPromise = positionApi.positionOrgTreeSelector()
+				const ancestorPromise = positionApi.positionGetAncestorNodes([record.orgId])
+				Promise.all([rootPromise, ancestorPromise])
+					.then(([rootNodes, ancestorNodes]) => {
+						const roots = (rootNodes || []).map((item) => ({
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}))
+						treeData.value = buildTreeWithAncestors(roots, ancestorNodes || [])
+						treeDefaultExpandedKeys.value = collectAncestorKeysFromFlat(ancestorNodes || [], [record.orgId])
 					})
 					.finally(() => {
 						treeLoading.value = false

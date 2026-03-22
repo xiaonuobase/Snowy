@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
 import vip.xiaonuo.sys.modular.role.result.*;
@@ -51,6 +52,9 @@ public class SysRoleController {
 
     @Resource
     private SysRoleService sysRoleService;
+
+    @Resource
+    private SysOrgService sysOrgService;
 
     /**
      * 获取角色分页
@@ -315,5 +319,18 @@ public class SysRoleController {
     @GetMapping("/sys/role/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam) {
         return CommonResult.data(sysRoleService.userSelector(sysRoleSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @ApiOperationSupport(order = 20)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/role/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

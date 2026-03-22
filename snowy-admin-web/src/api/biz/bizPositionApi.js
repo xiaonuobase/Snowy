@@ -45,5 +45,9 @@ export default {
 	// 获取岗位选择器
 	positionPositionSelector(data) {
 		return request('positionSelector', data, 'get')
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	positionGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

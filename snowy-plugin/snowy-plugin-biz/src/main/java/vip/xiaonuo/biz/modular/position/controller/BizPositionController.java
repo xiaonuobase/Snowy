@@ -32,6 +32,7 @@ import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
+import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -50,6 +51,9 @@ public class BizPositionController {
 
     @Resource
     private BizPositionService bizPositionService;
+
+    @Resource
+    private BizOrgService bizOrgService;
 
     /**
      * 获取岗位分页
@@ -156,5 +160,18 @@ public class BizPositionController {
     @GetMapping("/biz/position/positionSelector")
     public CommonResult<Page<BizPosition>> positionSelector(BizPositionSelectorPositionParam bizPositionSelectorPositionParam) {
         return CommonResult.data(bizPositionService.positionSelector(bizPositionSelectorPositionParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @ApiOperationSupport(order = 8)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/biz/position/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(bizOrgService.getAncestorNodes(orgIdList));
     }
 }

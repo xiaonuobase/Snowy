@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
+import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserSourceFromTypeEnum;
 import vip.xiaonuo.biz.modular.user.param.*;
@@ -57,6 +58,9 @@ public class BizUserController {
 
     @Resource
     private BizUserService bizUserService;
+
+    @Resource
+    private BizOrgService bizOrgService;
 
     /**
      * 获取人员分页
@@ -313,5 +317,18 @@ public class BizUserController {
     @GetMapping("/biz/user/userSelector")
     public CommonResult<Page<BizUser>> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {
         return CommonResult.data(bizUserService.userSelector(bizUserSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @ApiOperationSupport(order = 18)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/biz/user/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(bizOrgService.getAncestorNodes(orgIdList));
     }
 }

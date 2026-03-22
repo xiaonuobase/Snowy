@@ -40,7 +40,6 @@
 
 <script setup="props, context" name="scopeDefineOrg">
 	import roleApi from '@/api/sys/roleApi'
-	import orgApi from '@/api/sys/orgApi'
 	const visible = ref(false)
 	let defaultExpandedKeys = ref([])
 	let checkedKeys = ref([])
@@ -156,7 +155,7 @@
 			// 有已选中节点：并行请求根节点 + 祖先路径
 			treeLoading.value = true
 			const rootPromise = roleApi.roleOrgTreeSelector({})
-			const ancestorPromise = orgApi.orgGetAncestorNodes(selectedIds)
+			const ancestorPromise = roleApi.roleGetAncestorNodes(selectedIds)
 			Promise.all([rootPromise, ancestorPromise])
 				.then(([rootNodes, ancestorNodes]) => {
 					// 为根节点设置isLeaf

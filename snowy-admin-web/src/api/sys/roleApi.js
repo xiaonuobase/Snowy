@@ -89,5 +89,9 @@ export default {
 	// 获取用户选择器
 	roleUserSelector(data) {
 		return request('userSelector', data, 'get')
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	roleGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

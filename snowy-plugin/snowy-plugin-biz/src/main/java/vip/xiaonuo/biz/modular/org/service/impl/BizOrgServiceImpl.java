@@ -683,4 +683,36 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         int index = CollStreamUtil.toList(originDataList, BizOrg::getParentId).indexOf(id);
         return index == -1?null:originDataList.get(index);
     }
+
+    @Override
+    public List<JSONObject> getAncestorNodes(List<String> orgIdList) {
+        if (ObjectUtil.isEmpty(orgIdList)) {
+            return CollectionUtil.newArrayList();
+        }
+        List<BizOrg> allOrgList = this.getAllOrgList();
+        Set<String> neededIdSet = new LinkedHashSet<>();
+        for (String orgId : orgIdList) {
+            List<BizOrg> ancestorList = this.getParentListById(allOrgList, orgId, true);
+            for (BizOrg org : ancestorList) {
+                neededIdSet.add(org.getId());
+            }
+        }
+        if (ObjectUtil.isEmpty(neededIdSet)) {
+            return CollectionUtil.newArrayList();
+        }
+        List<BizOrg> resultOrgList = allOrgList.stream()
+                .filter(org -> neededIdSet.contains(org.getId()))
+                .sorted(Comparator.comparingInt(BizOrg::getSortCode).thenComparing(BizOrg::getId))
+                .collect(Collectors.toList());
+        List<String> resultIds = resultOrgList.stream().map(BizOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<BizOrg>()
+                        .select(BizOrg::getParentId)
+                        .in(BizOrg::getParentId, resultIds))
+                .stream().map(BizOrg::getParentId).collect(Collectors.toSet());
+        return resultOrgList.stream().map(bizOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(bizOrg);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(bizOrg.getId()));
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
 }

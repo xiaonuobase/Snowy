@@ -29,6 +29,7 @@ import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
 import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
@@ -56,6 +57,9 @@ public class SysUserController {
 
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private SysOrgService sysOrgService;
 
     /**
      * 获取用户分页
@@ -379,5 +383,18 @@ public class SysUserController {
     @GetMapping("/sys/user/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam) {
         return CommonResult.data(sysUserService.userSelector(sysUserSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @ApiOperationSupport(order = 24)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/user/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

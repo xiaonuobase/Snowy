@@ -49,5 +49,9 @@ export default {
 	// 复制机构
 	orgCopy(data) {
 		return request('copy', data)
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	orgGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

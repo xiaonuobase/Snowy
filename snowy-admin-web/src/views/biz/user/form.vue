@@ -56,7 +56,7 @@
 										:tree-data="treeData"
 										v-model:treeExpandedKeys="treeDefaultExpandedKeys"
 										:field-names="treeFieldNames"
-										:load-data="isFullTree ? undefined : onLoadData"
+										:load-data="onLoadData"
 										@change="selePositionData(formData.orgId, 0)"
 									/>
 								</a-spin>
@@ -139,7 +139,7 @@
 												:tree-data="treeData"
 												v-model:treeExpandedKeys="childTreeExpandedKeys[index]"
 												:field-names="treeFieldNames"
-												:load-data="isFullTree ? undefined : onLoadData"
+												:load-data="onLoadData"
 												@change="childOrgSelect(positionInfo, 0, index)"
 											/>
 										</a-spin>
@@ -333,19 +333,44 @@
 	const formData = ref({})
 	const treeFieldNames = { children: 'children', label: 'name', key: 'id', value: 'id' }
 
-	// 是否加载了全量树（有orgId时加载全量树以便展开到选中节点，否则懒加载）
-	const isFullTree = ref(false)
-	// 加载全量树（用于需要展开到指定节点的场景）
-	const loadFullTree = () => {
-		return bizUserApi.userOrgTreeSelector({ searchKey: '' }).then((res) => {
-			if (res !== null) {
-				treeData.value = res
-				// 只有一个根节点时才自动展开
-				if (treeData.value.length === 1) {
-					treeDefaultExpandedKeys.value.push(treeData.value[0].id)
-				}
+	// 将祖先扁平节点合并到懒加载根节点中
+	const buildTreeWithAncestors = (rootNodes, ancestorNodes) => {
+		const allNodes = [...rootNodes]
+		const existingIds = new Set(allNodes.map((n) => n.id))
+		ancestorNodes.forEach((node) => {
+			if (!existingIds.has(node.id)) {
+				allNodes.push(node)
+				existingIds.add(node.id)
 			}
 		})
+		const parentChildMap = new Map()
+		allNodes.forEach((node) => {
+			const pid = node.parentId
+			if (!parentChildMap.has(pid)) {
+				parentChildMap.set(pid, [])
+			}
+			const siblings = parentChildMap.get(pid)
+			if (!siblings.find((n) => n.id === node.id)) {
+				siblings.push(node)
+			}
+		})
+		const ancestorIdSet = new Set(ancestorNodes.map((n) => n.id))
+		const buildBranch = (parentId) => {
+			const children = parentChildMap.get(parentId)
+			if (!children) return undefined
+			return children.map((child) => {
+				const node = { ...child, isLeaf: child.isLeaf === undefined ? false : child.isLeaf }
+				if (ancestorIdSet.has(child.id) && parentChildMap.has(child.id)) {
+					node.children = buildBranch(child.id)
+				}
+				return node
+			})
+		}
+		return buildBranch('0') || []
+	}
+	const collectAncestorKeysFromFlat = (ancestorNodes, selectedIds) => {
+		const selectedSet = new Set(selectedIds)
+		return ancestorNodes.filter((n) => !selectedSet.has(n.id) || !n.isLeaf).map((n) => n.id)
 	}
 	// 加载懒加载树（无需展开到指定节点时使用）
 	const loadLazyTree = () => {
@@ -380,32 +405,71 @@
 		}
 		nextTick(() => {
 			if (record) {
-				// 编辑模式：加载全量树 + 详情，展开到选中节点
-				isFullTree.value = true
+				// 编辑模式：懒加载根节点 + 详情 + 祖先路径
 				treeLoading.value = true
-				const treePromise = loadFullTree()
 				const detailPromise = convertFormData(record)
-				Promise.all([treePromise, detailPromise])
-					.then(() => {
-						expandToSelectedOrgs()
-					})
-					.finally(() => {
-						treeLoading.value = false
-					})
+				detailPromise.then(() => {
+					// 收集所有需要回显的orgId
+					const allOrgIds = []
+					if (formData.value.orgId) {
+						allOrgIds.push(formData.value.orgId)
+					}
+					if (formData.value.positionJson) {
+						formData.value.positionJson.forEach((item) => {
+							if (item.orgId && !allOrgIds.includes(item.orgId)) {
+								allOrgIds.push(item.orgId)
+							}
+						})
+					}
+					if (allOrgIds.length > 0) {
+						const rootPromise = bizUserApi.userOrgTreeSelector()
+						const ancestorPromise = bizUserApi.userGetAncestorNodes(allOrgIds)
+						Promise.all([rootPromise, ancestorPromise])
+							.then(([rootNodes, ancestorNodes]) => {
+								const roots = (rootNodes || []).map((item) => ({
+									...item,
+									isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+								}))
+								treeData.value = buildTreeWithAncestors(roots, ancestorNodes || [])
+								const expandKeys = collectAncestorKeysFromFlat(ancestorNodes || [], allOrgIds)
+								treeDefaultExpandedKeys.value = expandKeys
+								// 任职信息：每行独立展开
+								if (formData.value.positionJson) {
+									formData.value.positionJson.forEach((item, index) => {
+										if (item.orgId) {
+											childTreeExpandedKeys.value[index] = [...expandKeys]
+										}
+									})
+								}
+							})
+							.finally(() => {
+								treeLoading.value = false
+							})
+					} else {
+						loadLazyTree().finally(() => {
+							treeLoading.value = false
+						})
+					}
+				})
 			} else if (orgId) {
-				// 新增模式且有orgId：加载全量树，展开到orgId节点
-				isFullTree.value = true
+				// 新增模式且有orgId：懒加载根节点 + 祖先路径
 				treeLoading.value = true
-				loadFullTree()
-					.then(() => {
-						expandToSelectedOrgs()
+				const rootPromise = bizUserApi.userOrgTreeSelector()
+				const ancestorPromise = bizUserApi.userGetAncestorNodes([orgId])
+				Promise.all([rootPromise, ancestorPromise])
+					.then(([rootNodes, ancestorNodes]) => {
+						const roots = (rootNodes || []).map((item) => ({
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}))
+						treeData.value = buildTreeWithAncestors(roots, ancestorNodes || [])
+						treeDefaultExpandedKeys.value = collectAncestorKeysFromFlat(ancestorNodes || [], [orgId])
 					})
 					.finally(() => {
 						treeLoading.value = false
 					})
 			} else {
 				// 新增模式无orgId：懒加载树
-				isFullTree.value = false
 				loadLazyTree()
 			}
 		})
@@ -418,7 +482,7 @@
 				return
 			}
 			bizUserApi
-				.orgTreeSelector({
+				.userOrgTreeSelector({
 					parentId: treeNode.dataRef.id
 				})
 				.then((res) => {
@@ -439,41 +503,6 @@
 		treeDefaultExpandedKeys.value = []
 		childTreeExpandedKeys.value = []
 		visible.value = false
-	}
-	// 在全量树中查找目标节点的所有祖先ID（用于展开树到选中节点）
-	const collectAncestorKeys = (nodes, targetId, path = []) => {
-		if (!nodes) return null
-		for (const node of nodes) {
-			if (node.id === targetId) return path
-			if (node.children) {
-				const found = collectAncestorKeys(node.children, targetId, [...path, node.id])
-				if (found) return found
-			}
-		}
-		return null
-	}
-	// 展开树到所有选中的机构节点
-	const expandToSelectedOrgs = () => {
-		// 主选择机构：只展开主orgId的祖先
-		if (formData.value.orgId) {
-			const ancestors = collectAncestorKeys(treeData.value, formData.value.orgId)
-			if (ancestors) {
-				ancestors.forEach((id) => {
-					if (!treeDefaultExpandedKeys.value.includes(id)) {
-						treeDefaultExpandedKeys.value.push(id)
-					}
-				})
-			}
-		}
-		// 任职信息：每行独立展开
-		if (formData.value.positionJson) {
-			formData.value.positionJson.forEach((item, index) => {
-				if (item.orgId) {
-					const ancestors = collectAncestorKeys(treeData.value, item.orgId)
-					childTreeExpandedKeys.value[index] = ancestors ? [...ancestors] : []
-				}
-			})
-		}
 	}
 	// 回显数据
 	const convertFormData = (record) => {

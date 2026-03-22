@@ -107,5 +107,9 @@ export default {
 		return request('exportUserInfo', data, 'get', {
 			responseType: 'blob'
 		})
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	userGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

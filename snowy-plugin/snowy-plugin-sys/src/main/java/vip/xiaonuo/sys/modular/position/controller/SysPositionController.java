@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.param.*;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
@@ -49,6 +50,9 @@ public class SysPositionController {
 
     @Resource
     private SysPositionService sysPositionService;
+
+    @Resource
+    private SysOrgService sysOrgService;
 
     /**
      * 获取职位分页
@@ -148,5 +152,18 @@ public class SysPositionController {
     @GetMapping("/sys/position/positionSelector")
     public CommonResult<Page<SysPosition>> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
         return CommonResult.data(sysPositionService.positionSelector(sysPositionSelectorPositionParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @ApiOperationSupport(order = 8)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/position/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

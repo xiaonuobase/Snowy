@@ -40,7 +40,6 @@
 
 <script setup="props, context" name="userScopeDefineOrg">
 	import userApi from '@/api/sys/userApi'
-	import orgApi from '@/api/sys/orgApi'
 	const visible = ref(false)
 	let defaultExpandedKeys = ref([])
 	let checkedKeys = ref([])
@@ -148,7 +147,7 @@
 		if (selectedIds.length > 0) {
 			treeLoading.value = true
 			const rootPromise = userApi.userOrgTreeSelector({})
-			const ancestorPromise = orgApi.orgGetAncestorNodes(selectedIds)
+			const ancestorPromise = userApi.userGetAncestorNodes(selectedIds)
 			Promise.all([rootPromise, ancestorPromise])
 				.then(([rootNodes, ancestorNodes]) => {
 					const roots = (rootNodes || []).map((item) => ({
