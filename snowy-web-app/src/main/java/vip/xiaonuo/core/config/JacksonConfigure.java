@@ -141,9 +141,21 @@ public class JacksonConfigure {
                 }
             }
         };
+        // BigInteger序列化器：BIGINT UNSIGNED等列类型JDBC返回BigInteger，也需要处理精度丢失
+        JsonSerializer<java.math.BigInteger> bigIntSerializer = new JsonSerializer<>() {
+            @Override
+            public void serialize(java.math.BigInteger value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+                if (value.abs().compareTo(java.math.BigInteger.valueOf(9007199254740991L)) > 0) {
+                    gen.writeString(value.toString());
+                } else {
+                    gen.writeNumber(value);
+                }
+            }
+        };
         objectMapper.registerModule(new SimpleModule() {{
             addSerializer(Long.class, longSerializer);
             addSerializer(Long.TYPE, longSerializer);
+            addSerializer(java.math.BigInteger.class, bigIntSerializer);
         }});
 
         return objectMapper;

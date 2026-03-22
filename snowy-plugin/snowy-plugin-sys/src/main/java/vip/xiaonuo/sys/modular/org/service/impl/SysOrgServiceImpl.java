@@ -585,4 +585,39 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         int index = CollStreamUtil.toList(originDataList, SysOrg::getParentId).indexOf(id);
         return index == -1?null:originDataList.get(index);
     }
+
+    @Override
+    public List<JSONObject> getAncestorNodes(List<String> orgIdList) {
+        if (ObjectUtil.isEmpty(orgIdList)) {
+            return CollectionUtil.newArrayList();
+        }
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        // 收集所有需要的节点（已选节点 + 所有祖先），用LinkedHashSet去重保序
+        Set<String> neededIdSet = new LinkedHashSet<>();
+        for (String orgId : orgIdList) {
+            List<SysOrg> ancestorList = this.getParentListById(allOrgList, orgId, true);
+            for (SysOrg org : ancestorList) {
+                neededIdSet.add(org.getId());
+            }
+        }
+        if (ObjectUtil.isEmpty(neededIdSet)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 从缓存中取出这些节点
+        List<SysOrg> resultOrgList = allOrgList.stream()
+                .filter(org -> neededIdSet.contains(org.getId()))
+                .sorted(Comparator.comparingInt(SysOrg::getSortCode).thenComparing(SysOrg::getId))
+                .collect(Collectors.toList());
+        // 批量判断哪些节点还有下级子节点
+        List<String> resultIds = resultOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
+                        .select(SysOrg::getParentId)
+                        .in(SysOrg::getParentId, resultIds))
+                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
+        return resultOrgList.stream().map(sysOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
 }

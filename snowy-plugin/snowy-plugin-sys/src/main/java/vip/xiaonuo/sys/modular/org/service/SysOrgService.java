@@ -197,4 +197,13 @@ public interface SysOrgService extends IService<SysOrg> {
      * @date 2026/2/12
      */
     void clearOrgCache();
+
+    /**
+     * 根据orgId列表获取其祖先路径节点（扁平列表，含节点自身及所有祖先）
+     * 用于懒加载树的回显场景：需要将选中节点的祖先链路全部展开
+     *
+     * @author yubaoshan
+     * @date 2026/3/22
+     */
+    List<JSONObject> getAncestorNodes(List<String> orgIdList);
 }

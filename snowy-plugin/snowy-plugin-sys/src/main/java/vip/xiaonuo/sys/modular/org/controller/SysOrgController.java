@@ -178,4 +178,17 @@ public class SysOrgController {
     public CommonResult<Page<SysUser>> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
         return CommonResult.data(sysOrgService.userSelector(sysOrgSelectorUserParam));
     }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/22
+     */
+    @ApiOperationSupport(order = 10)
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/org/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
+    }
 }

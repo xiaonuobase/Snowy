@@ -8,34 +8,44 @@
 		@ok="handleOk"
 		@cancel="onClose"
 	>
-		<div class="scopeDefineOrgActions">
-			<a-space size="small">
-				<a-button size="small" @click="checkAll">全选</a-button>
-				<a-button size="small" @click="invertCheck">反选</a-button>
-			</a-space>
-		</div>
-		<div class="scopeDefineOrgTreeDiv">
-			<a-tree
-				v-model:expandedKeys="defaultExpandedKeys"
-				v-model:checkedKeys="checkedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				checkable
-				check-strictly
-				:selectable="false"
-				@check="treeCheck"
-			>
-			</a-tree>
-		</div>
+		<a-spin :spinning="treeLoading">
+			<div class="scopeDefineOrgActions">
+				<a-space size="small">
+					<a-tooltip title="仅对已展开加载的节点生效">
+						<a-button size="small" @click="checkAll">全选</a-button>
+					</a-tooltip>
+					<a-tooltip title="仅对已展开加载的节点生效">
+						<a-button size="small" @click="invertCheck">反选</a-button>
+					</a-tooltip>
+				</a-space>
+			</div>
+			<div class="scopeDefineOrgTreeDiv">
+				<a-tree
+					v-model:expandedKeys="defaultExpandedKeys"
+					v-model:checkedKeys="checkedKeys"
+					:tree-data="treeData"
+					:field-names="treeFieldNames"
+					checkable
+					check-strictly
+					:selectable="false"
+					:load-data="onLoadData"
+					:height="400"
+					@check="treeCheck"
+				>
+				</a-tree>
+			</div>
+		</a-spin>
 	</a-modal>
 </template>
 
 <script setup="props, context" name="userScopeDefineOrg">
 	import userApi from '@/api/sys/userApi'
+	import orgApi from '@/api/sys/orgApi'
 	const visible = ref(false)
 	let defaultExpandedKeys = ref([])
 	let checkedKeys = ref([])
 	const treeData = ref([])
+	const treeLoading = ref(false)
 
 	const getAllIds = (nodes) => {
 		const ids = []
@@ -60,31 +70,119 @@
 		}
 	}
 
+	// 懒加载子节点回调
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children) {
+				resolve()
+				return
+			}
+			userApi.userOrgTreeSelector({ parentId: treeNode.dataRef.id }).then((res) => {
+				treeNode.dataRef.children = res.map((item) => ({
+					...item,
+					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+				}))
+				treeData.value = [...treeData.value]
+				resolve()
+			})
+		})
+	}
+
+	// 将祖先扁平节点列表与根节点列表合并，构建出包含祖先链路的部分树
+	const buildTreeWithAncestors = (rootNodes, ancestorNodes) => {
+		const allNodes = [...rootNodes]
+		const existingIds = new Set(allNodes.map((n) => n.id))
+		ancestorNodes.forEach((node) => {
+			if (!existingIds.has(node.id)) {
+				allNodes.push(node)
+				existingIds.add(node.id)
+			}
+		})
+		const parentChildMap = new Map()
+		allNodes.forEach((node) => {
+			const pid = node.parentId
+			if (!parentChildMap.has(pid)) {
+				parentChildMap.set(pid, [])
+			}
+			const siblings = parentChildMap.get(pid)
+			if (!siblings.find((n) => n.id === node.id)) {
+				siblings.push(node)
+			}
+		})
+		const ancestorIdSet = new Set(ancestorNodes.map((n) => n.id))
+		const buildBranch = (parentId) => {
+			const children = parentChildMap.get(parentId)
+			if (!children) return undefined
+			return children.map((child) => {
+				const node = { ...child, isLeaf: child.isLeaf === undefined ? false : child.isLeaf }
+				if (ancestorIdSet.has(child.id) && parentChildMap.has(child.id)) {
+					node.children = buildBranch(child.id)
+				}
+				return node
+			})
+		}
+		return buildBranch('0') || []
+	}
+
+	const collectAncestorKeys = (ancestorNodes, selectedIds) => {
+		const selectedSet = new Set(selectedIds)
+		return ancestorNodes.filter((n) => !selectedSet.has(n.id) || !n.isLeaf).map((n) => n.id)
+	}
+
 	// 打开此界面需要具体某条菜单的id跟选中的
 	const onOpen = (id, checkKeys) => {
 		visible.value = true
 		resultDataModel.dataScopeId = id
-		// const treeData = data.data;
-		userApi.userOrgTreeSelector({ searchKey: '' }).then((res) => {
-			if (res !== null) {
-				treeData.value = res
-				// 赋值选中项
-				echoOrgSelectKeys(checkKeys)
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
+		defaultExpandedKeys.value = []
+		checkedKeys.value = []
+		treeData.value = []
+
+		let selectedIds = []
+		if (checkKeys && checkKeys.length > 0) {
+			selectedIds = checkKeys
+				.toString()
+				.split(',')
+				.filter((k) => k)
+		}
+
+		if (selectedIds.length > 0) {
+			treeLoading.value = true
+			const rootPromise = userApi.userOrgTreeSelector({})
+			const ancestorPromise = orgApi.orgGetAncestorNodes(selectedIds)
+			Promise.all([rootPromise, ancestorPromise])
+				.then(([rootNodes, ancestorNodes]) => {
+					const roots = (rootNodes || []).map((item) => ({
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}))
+					treeData.value = buildTreeWithAncestors(roots, ancestorNodes || [])
+					echoOrgSelectKeys(checkKeys)
+					defaultExpandedKeys.value = collectAncestorKeys(ancestorNodes || [], selectedIds)
+				})
+				.finally(() => {
+					treeLoading.value = false
+				})
+		} else {
+			treeLoading.value = true
+			userApi
+				.userOrgTreeSelector({})
+				.then((res) => {
+					if (res !== null) {
+						treeData.value = res.map((item) => ({
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}))
+						treeData.value.forEach((item) => {
+							if (item.parentId === '0') {
+								defaultExpandedKeys.value.push(item.id)
+							}
+						})
 					}
 				})
-			}
-		})
+				.finally(() => {
+					treeLoading.value = false
+				})
+		}
 	}
 	const onClose = () => {
 		visible.value = false
