@@ -122,4 +122,9 @@
 
     </springProfile>
 
+    <!-- 关闭trans日志输出 -->
+    <logger name="org.dromara.trans" level="OFF"/>
+    <logger name="org.dromara.cache" level="OFF"/>
+    <logger name="org.dromara.common" level="OFF"/>
+
 </configuration>

@@ -66,10 +66,38 @@ gitcode下载地址：[https://gitcode.com/xiaonuobase/Snowy](https://gitcode.co
 
 - 如果开源版本不能满足您的需求，还可以看看我们官方推出的基于开源版开发的商业化产品
 
-| 产品名称        | 演示                                                   | 用途                              |
-|-------------|------------------------------------------------------|---------------------------------|
-| AI智能化零代码开发平台 | [https://alsc.xiaonuo.vip](https://alsc.xiaonuo.vip) | AI智能驱动，拖拉拽即可搭建业务系统，无需编写一行代码         |
-| 国产数据中台      | [https://data.xiaonuo.vip](https://data.xiaonuo.vip) | 覆盖数据采集、存储、治理、安全、资产化、服务全流程的一站式数据管理平台 |
+<table>
+    <colgroup>
+        <col style="width: 25%"/>
+        <col style="width: 20%"/>
+        <col style="width: 55%"/>
+    </colgroup>
+    <thead>
+        <tr><th>产品名称</th><th>演示</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>AI智能化零代码开发平台</td>
+            <td><a href="https://alsc.xiaonuo.vip">https://alsc.xiaonuo.vip</a></td>
+            <td>AI智能驱动，拖拉拽即可搭建业务系统，无需编写一行代码。</td>
+        </tr>
+        <tr>
+            <td>国产数据中台</td>
+            <td><a href="https://data.xiaonuo.vip">https://data.xiaonuo.vip</a></td>
+            <td>覆盖数据采集、存储、治理、安全、资产化、服务全流程的一站式数据管理平台。</td>
+        </tr>
+        <tr>
+            <td>统一身份认证平台</td>
+            <td><a href="https://iam.xnark.com">https://iam.xnark.com</a></td>
+            <td>一款企业级统一身份认证平台，全面支持 OAuth、SAML、JWT、CAS 等主流协议，既可作为 IDP 构建企业统一认证中心，也可作为 SP 对接第三方身份源，一个平台统管身份认证、单点登录与权限体系。</td>
+        </tr>
+        <tr>
+            <td>AI大模型平台</td>
+            <td><a href="https://ai.xnark.com">https://ai.xnark.com</a></td>
+            <td>一站式企业级AI应用平台，覆盖从大模型接入、智能体搭建、知识库管理到应用发布的全链路，让企业零门槛构建和运营自己的AI能力。</td>
+        </tr>
+    </tbody>
+</table>
 
 ## 快速启动
 
@@ -287,13 +315,13 @@ QQ技术群：732230670（已满）、685395081
 
 ## 团队成员
 
-| 成员  | 技术 |  昵称   | 
-|:---:|:--:|:-----:| 
-| 俞宝山 | 全栈 |  俞宝山  | 
-| 徐玉祥 | 全栈 | 就是那个锅 | 
-| 董夏雨 | 全栈 |  阿董   | 
-| 王鹏  | 全栈 | 每天一点  | 
-| 陈心雨 | 前端 |   .   | 
+| 成员  | 技术 |  昵称   |
+|:---:|:--:|:-----:|
+| 俞宝山 | 全栈 |  俞宝山  |
+| 徐玉祥 | 全栈 | 就是那个锅 |
+| 董夏雨 | 全栈 |  阿董   |
+| 王鹏  | 全栈 | 每天一点  |
+| 陈心雨 | 前端 |   .   |
 
 ## 曾获荣誉
 

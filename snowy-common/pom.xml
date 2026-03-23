@@ -72,13 +72,13 @@
 
         <!-- easy-trans -->
         <dependency>
-            <groupId>com.fhs-opensource</groupId>
+            <groupId>org.dromara</groupId>
             <artifactId>easy-trans-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- easy-trans-mybatis-plus-extend -->
         <dependency>
-            <groupId>com.fhs-opensource</groupId>
+            <groupId>org.dromara</groupId>
             <artifactId>easy-trans-mybatis-plus-extend</artifactId>
         </dependency>
 
