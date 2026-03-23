@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.api;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -81,4 +80,12 @@ public interface SysOrgApi {
      * @date 2026/2/12
      **/
     void clearOrgCache();
+
+    /**
+     * 根据组织id获取其及所有下级组织id列表
+     *
+     * @author yubaoshan
+     * @date 2026/3/23 14:00
+     **/
+    List<String> getChildOrgIdListById(String orgId);
 }

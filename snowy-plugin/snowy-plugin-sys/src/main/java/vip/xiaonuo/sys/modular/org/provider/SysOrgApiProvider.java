@@ -85,4 +85,10 @@ public class SysOrgApiProvider implements SysOrgApi {
     public void clearOrgCache() {
         sysOrgService.clearOrgCache();
     }
+
+    @Override
+    public List<String> getChildOrgIdListById(String orgId) {
+        return sysOrgService.getChildListById(sysOrgService.getAllOrgList(), orgId, true)
+                .stream().map(SysOrg::getId).collect(Collectors.toList());
+    }
 }
