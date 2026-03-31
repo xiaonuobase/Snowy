@@ -308,6 +308,20 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     }
 
     @Override
+    public void disableUser(ClientUserIdParam clientUserIdParam) {
+        ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
+        clientUser.setUserStatus(ClientUserStatusEnum.DISABLED.getValue());
+        this.updateById(clientUser);
+    }
+
+    @Override
+    public void enableUser(ClientUserIdParam clientUserIdParam) {
+        ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
+        clientUser.setUserStatus(ClientUserStatusEnum.ENABLE.getValue());
+        this.updateById(clientUser);
+    }
+
+    @Override
     public void updateUserLoginInfo(String userId, String device) {
         ClientUser clientUser = this.queryEntity(userId);
         clientUser.setLastLoginTime(clientUser.getLatestLoginTime());

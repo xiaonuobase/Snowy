@@ -33,5 +33,13 @@ export default {
 	// 获取用户详情
 	userDetail(data) {
 		return request('detail', data, 'get')
+	},
+	// 禁用用户
+	userDisableUser(data) {
+		return request('disableUser', data)
+	},
+	// 启用用户
+	userEnableUser(data) {
+		return request('enableUser', data)
 	}
 }

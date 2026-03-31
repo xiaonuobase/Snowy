@@ -8,14 +8,16 @@
 					</a-form-item>
 				</a-col>
 				<a-col :span="8">
-					<a-button type="primary" @click="tableRef.refresh(true)">
-						<template #icon><SearchOutlined /></template>
-						查询
-					</a-button>
-					<a-button @click="reset">
-						<template #icon><redo-outlined /></template>
-						重置
-					</a-button>
+					<a-space>
+						<a-button type="primary" @click="tableRef.refresh(true)">
+							<template #icon><SearchOutlined /></template>
+							查询
+						</a-button>
+						<a-button @click="reset">
+							<template #icon><redo-outlined /></template>
+							重置
+						</a-button>
+					</a-space>
 				</a-col>
 			</a-row>
 		</a-form>
@@ -54,7 +56,7 @@
 					{{ $TOOL.dictTypeData('GENDER', record.gender) }}
 				</template>
 				<template v-if="column.dataIndex === 'userStatus'">
-					{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}
+					<a-switch :loading="statusLoading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a @click="clientUserFormRef.onOpen(record)">编辑</a>
@@ -112,6 +114,7 @@
 	const tableRef = ref(null)
 	const selectedRowKeys = ref([])
 	const clientUserFormRef = ref(null)
+	const statusLoading = ref(false)
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
 		return clientUserApi.userPage(Object.assign(parameter, searchFormState.value)).then((res) => {
@@ -154,6 +157,29 @@
 			tableRef.value.clearRefreshSelected()
 		})
 	}
+	// 修改状态
+	const editStatus = (record) => {
+		statusLoading.value = true
+		if (record.userStatus === 'ENABLE') {
+			clientUserApi
+				.userDisableUser(record)
+				.then(() => {
+					tableRef.value.refresh()
+				})
+				.finally(() => {
+					statusLoading.value = false
+				})
+		} else {
+			clientUserApi
+				.userEnableUser(record)
+				.then(() => {
+					tableRef.value.refresh()
+				})
+				.finally(() => {
+					statusLoading.value = false
+				})
+		}
+	}
 	// 重置用户密码
 	const resetPassword = (record) => {
 		clientUserApi.userResetPassword(record).then(() => {})
@@ -161,14 +187,8 @@
 </script>
 
 <style lang="less" scoped>
-	.ant-form-item {
-		margin-bottom: 0 !important;
-	}
 	.snowy-table-avatar {
 		margin-top: -10px;
 		margin-bottom: -10px;
-	}
-	.snowy-button-left {
-		margin-left: 8px;
 	}
 </style>

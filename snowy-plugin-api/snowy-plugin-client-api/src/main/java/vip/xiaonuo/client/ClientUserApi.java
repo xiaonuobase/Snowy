@@ -71,4 +71,12 @@ public interface ClientUserApi {
      * @date 2022/7/8 9:26
      **/
     JSONObject getOrCreateClientUserExt(String userId);
+
+    /**
+     * C端用户选择器，返回id和name列表
+     *
+     * @author yubaoshan
+     * @date 2026/3/31
+     **/
+    List<JSONObject> userSelector(String searchKey);
 }

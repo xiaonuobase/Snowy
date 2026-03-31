@@ -123,4 +123,32 @@ public class ClientUserController {
     public CommonResult<ClientUser> detail(@Valid ClientUserIdParam clientUserIdParam) {
         return CommonResult.data(clientUserService.detail(clientUserIdParam));
     }
+
+    /**
+     * 禁用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    @Operation(summary = "禁用用户")
+    @CommonLog("禁用用户")
+    @PostMapping("/client/user/disableUser")
+    public CommonResult<String> disableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
+        clientUserService.disableUser(clientUserIdParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 启用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    @Operation(summary = "启用用户")
+    @CommonLog("启用用户")
+    @PostMapping("/client/user/enableUser")
+    public CommonResult<String> enableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
+        clientUserService.enableUser(clientUserIdParam);
+        return CommonResult.ok();
+    }
 }

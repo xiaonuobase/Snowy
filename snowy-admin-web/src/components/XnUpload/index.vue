@@ -10,7 +10,7 @@
 			:progress="progress"
 			@change="handleChange"
 			:showUploadList="props.showUploadList"
-			:accept="accept"
+			:accept="acceptRef"
 			:disabled="props.disabled"
 		>
 			<a-button>
@@ -32,7 +32,7 @@
 			@preview="handlePreview"
 			:progress="progress"
 			:showUploadList="props.showUploadList"
-			:accept="accept"
+			:accept="acceptRef"
 			:disabled="props.disabled"
 		>
 			<div class="clearfix" v-if="fileList.length < props.uploadNumber">
@@ -54,7 +54,7 @@
 			@preview="handlePreview"
 			:progress="progress"
 			:showUploadList="props.showUploadList"
-			:accept="accept"
+			:accept="acceptRef"
 			:disabled="props.disabled"
 		>
 			<div class="clearfix" v-if="fileList.length < props.uploadNumber">
@@ -91,7 +91,7 @@
 			@change="handleChange"
 			:progress="progress"
 			:showUploadList="props.showUploadList"
-			:accept="accept"
+			:accept="acceptRef"
 			:disabled="props.disabled"
 		>
 			<p class="ant-upload-drag-icon">
@@ -108,7 +108,6 @@
 
 <script setup name="uploadIndex">
 	import tool from '@/utils/tool'
-	import sysConfig from '@/config/index'
 	import { convertUrl } from '@/utils/apiAdaptive'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
@@ -120,7 +119,7 @@
 	const headers = ref({
 		token: tool.data.get('TOKEN')
 	})
-	const accept = ref('')
+	const acceptRef = ref('')
 	const props = defineProps({
 		// 上传返回id
 		uploadReturnIdApi: {
@@ -202,16 +201,14 @@
 		}
 	})
 	const action =
-		props.uploadResultType === 'id'
-			? sysConfig.API_URL + props.uploadReturnIdApi
-			: sysConfig.API_URL + props.uploadDynamicReturnUrlApi
+		props.uploadResultType === 'id' ? '/api' + props.uploadReturnIdApi : '/api' + props.uploadDynamicReturnUrlApi
 
 	// 构造文件对象
 	const buildFileObject = (url, id) => {
 		return {
-			data: url ? url : sysConfig.API_URL + props.uploadIdDownloadUrl + id,
+			data: url ? url : '/api' + props.uploadIdDownloadUrl + id,
 			name: url ? url : id,
-			url: url ? url : sysConfig.API_URL + props.uploadIdDownloadUrl + id,
+			url: url ? url : '/api' + props.uploadIdDownloadUrl + id,
 			status: 'done',
 			response: {
 				data: url ? url : id,
@@ -250,7 +247,7 @@
 						delete e.thumbUrl
 					}
 					if (props.uploadResultType === 'id') {
-						e.url = sysConfig.API_URL + props.uploadIdDownloadUrl + e.response.data
+						e.url = '/api' + props.uploadIdDownloadUrl + e.response.data
 					}
 					if (props.uploadResultType === 'url') {
 						e.url = e.response.data
@@ -290,12 +287,12 @@
 		(newVal) => {
 			if (newVal && newVal === 'image') {
 				if (props.accept) {
-					accept.value = props.accept
+					acceptRef.value = props.accept
 				} else {
-					accept.value = 'image/*'
+					acceptRef.value = 'image/*'
 				}
 			} else {
-				accept.value = props.accept
+				acceptRef.value = props.accept
 			}
 		},
 		{ immediate: true, deep: true }
@@ -327,7 +324,7 @@
 		previewTitle.value = file.name
 		// 如果返回的是id
 		if (props.uploadResultType === 'id') {
-			previewObj.value = sysConfig.API_URL + props.uploadIdDownloadUrl + file.response.data
+			previewObj.value = '/api' + props.uploadIdDownloadUrl + file.response.data
 		} else {
 			previewObj.value = file.response.data
 		}
