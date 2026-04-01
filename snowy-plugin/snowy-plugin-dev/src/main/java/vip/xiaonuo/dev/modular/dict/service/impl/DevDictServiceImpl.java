@@ -234,6 +234,9 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
                 }
             }
             return null;
+        }).exceptionally(e -> {
+            log.error("刷新字典缓存失败", e);
+            throw new CommonException("刷新字典缓存失败");
         });
     }
 
