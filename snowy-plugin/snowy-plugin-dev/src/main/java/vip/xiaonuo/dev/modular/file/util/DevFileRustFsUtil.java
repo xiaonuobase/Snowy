@@ -27,6 +27,9 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileBucketAuthEnum;
@@ -470,15 +473,13 @@ public class DevFileRustFsUtil {
                     .build();
 
             // 使用presigner生成临时URL
-            software.amazon.awssdk.services.s3.presigner.S3Presigner presigner =
-                    software.amazon.awssdk.services.s3.presigner.S3Presigner.builder()
+            S3Presigner presigner = S3Presigner.builder()
                             .endpointOverride(URI.create(endpoint))
                             .credentialsProvider(client.serviceClientConfiguration().credentialsProvider().get())
                             .region(client.serviceClientConfiguration().region())
                             .build();
 
-            software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest presignRequest =
-                    software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest.builder()
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                             .signatureDuration(Duration.ofMillis(timeoutMillis))
                             .getObjectRequest(getObjectRequest)
                             .build();
