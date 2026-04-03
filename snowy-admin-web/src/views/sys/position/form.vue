@@ -132,8 +132,25 @@
 					.finally(() => {
 						treeLoading.value = false
 					})
+			} else if (orgId) {
+				// 新增模式且有orgId：懒加载根节点 + 祖先路径
+				treeLoading.value = true
+				const rootPromise = positionApi.positionOrgTreeSelector()
+				const ancestorPromise = positionApi.positionGetAncestorNodes([orgId])
+				Promise.all([rootPromise, ancestorPromise])
+					.then(([rootNodes, ancestorNodes]) => {
+						const roots = (rootNodes || []).map((item) => ({
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}))
+						treeData.value = buildTreeWithAncestors(roots, ancestorNodes || [])
+						treeDefaultExpandedKeys.value = collectAncestorKeysFromFlat(ancestorNodes || [], [orgId])
+					})
+					.finally(() => {
+						treeLoading.value = false
+					})
 			} else {
-				// 新增模式：懒加载树
+				// 新增模式无orgId：懒加载树
 				positionApi.positionOrgTreeSelector().then((res) => {
 					treeData.value = res.map((item) => {
 						return {

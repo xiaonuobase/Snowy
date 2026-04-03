@@ -393,6 +393,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         this.updateById(sysUser);
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
+        // 刷新该用户的在线缓存信息
+        loginUserApi.refreshOnlineUserPermission(sysUserEditParam.getId());
     }
 
     private void checkParam(SysUserEditParam sysUserEditParam) {
@@ -1415,22 +1417,59 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<SysOrg> originDataList = sysOrgService.getAllOrgList();
+        // 构建parentId -> 直接子组织列表的映射
+        Map<String, List<SysOrg>> parentChildrenMap = originDataList.stream()
+                .collect(Collectors.groupingBy(SysOrg::getParentId));
+        // 收集所有有子节点的parentId集合，用于判断isLeaf
+        Set<String> hasChildrenIds = parentChildrenMap.keySet();
         // 构建一个根组织
         SysOrg rootSysOrg = new SysOrg();
         rootSysOrg.setId("0");
         rootSysOrg.setParentId("-1");
         rootSysOrg.setName("根组织");
-        originDataList.add(rootSysOrg);
-        List<TreeNode<String>> treeNodeList = originDataList.stream().map(sysOrg -> {
+        // 只取前2层的组织构建树（根组织 -> 第1层 -> 第2层），减少前端渲染量
+        List<SysOrg> limitedList = new ArrayList<>();
+        limitedList.add(rootSysOrg);
+        // 第1层：parentId为"0"的组织
+        List<SysOrg> level1List = parentChildrenMap.getOrDefault("0", CollectionUtil.newArrayList());
+        limitedList.addAll(level1List);
+        List<TreeNode<String>> treeNodeList = limitedList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
+            JSONObject extra = JSONUtil.createObj();
             if (sysOrg.getId().equals(sysUser.getOrgId())) {
-                treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
-                        .set("background", "var(--primary-color)")));
+                extra.set("style", JSONUtil.createObj().set("color", "#FFF")
+                        .set("background", "var(--primary-color)"));
             }
+            // 标记叶子节点：如果该节点没有子节点则为叶子
+            extra.set("isLeaf", !hasChildrenIds.contains(sysOrg.getId()));
+            treeNode.setExtra(extra);
             return treeNode;
         }).collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "-1", new TreeNodeConfig().setParentIdKey("pid")
                 .setNameKey("label"), new DefaultNodeParser<>());
+    }
+
+    @Override
+    public List<JSONObject> loginOrgTreeChildren(SysUserIdParam sysUserIdParam, String parentId) {
+        SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+        List<SysOrg> originDataList = sysOrgService.getAllOrgList();
+        // 构建parentId -> 直接子组织列表的映射
+        Map<String, List<SysOrg>> parentChildrenMap = originDataList.stream()
+                .collect(Collectors.groupingBy(SysOrg::getParentId));
+        Set<String> hasChildrenIds = parentChildrenMap.keySet();
+        // 获取指定父组织的直接子组织（已按sortCode排序）
+        List<SysOrg> children = parentChildrenMap.getOrDefault(parentId, CollectionUtil.newArrayList());
+        return children.stream().map(sysOrg -> {
+            JSONObject node = JSONUtil.createObj();
+            node.set("id", sysOrg.getId());
+            node.set("label", sysOrg.getName());
+            node.set("isLeaf", !hasChildrenIds.contains(sysOrg.getId()));
+            if (sysOrg.getId().equals(sysUser.getOrgId())) {
+                node.set("style", JSONUtil.createObj().set("color", "#FFF")
+                        .set("background", "var(--primary-color)"));
+            }
+            return node;
+        }).collect(Collectors.toList());
     }
 
     @Override

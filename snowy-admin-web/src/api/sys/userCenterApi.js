@@ -92,6 +92,10 @@ export default {
 	userLoginOrgTree(data) {
 		return request('loginOrgTree', data, 'get')
 	},
+	// 获取登录用户组织树子节点（懒加载）
+	userLoginOrgTreeChildren(data) {
+		return request('loginOrgTreeChildren', data, 'get')
+	},
 	// 获取登录用户的职位信息
 	userLoginPositionInfo(data) {
 		return request('loginPositionInfo', data, 'get')

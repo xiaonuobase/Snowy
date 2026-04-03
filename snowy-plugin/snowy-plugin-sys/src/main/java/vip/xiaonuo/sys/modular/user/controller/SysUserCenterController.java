@@ -380,6 +380,21 @@ public class SysUserCenterController {
     }
 
     /**
+     * 获取登录用户组织树子节点（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2026/4/3
+     */
+    @ApiOperationSupport(order = 231)
+    @Operation(summary = "获取登录用户组织树子节点")
+    @GetMapping("/sys/userCenter/loginOrgTreeChildren")
+    public CommonResult<List<JSONObject>> loginOrgTreeChildren(@RequestParam String parentId) {
+        SysUserIdParam sysUserIdParam = new SysUserIdParam();
+        sysUserIdParam.setId(StpUtil.getLoginIdAsString());
+        return CommonResult.data(sysUserService.loginOrgTreeChildren(sysUserIdParam, parentId));
+    }
+
+    /**
      * 获取登录用户的职位信息
      *
      * @author xuyuxiang

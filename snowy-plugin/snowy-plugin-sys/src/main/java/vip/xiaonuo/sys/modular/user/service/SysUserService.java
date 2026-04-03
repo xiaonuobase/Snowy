@@ -368,6 +368,14 @@ public interface SysUserService extends IService<SysUser> {
     List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam);
 
     /**
+     * 获取用户组织树子节点（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2026/4/3
+     */
+    List<JSONObject> loginOrgTreeChildren(SysUserIdParam sysUserIdParam, String parentId);
+
+    /**
      * 编辑个人信息
      *
      * @author xuyuxiang
