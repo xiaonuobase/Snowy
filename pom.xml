@@ -357,6 +357,13 @@
                 <version>8.5.2</version>
             </dependency>
 
+            <!--rustfs文件sdk (兼容S3协议)-->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>2.20.0</version>
+            </dependency>
+
             <!--java邮件sdk-->
             <dependency>
                 <groupId>com.sun.mail</groupId>
