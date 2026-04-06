@@ -196,7 +196,26 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                                 bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
                 .collect(Collectors.toList());
         List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
-        return JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
+        List<JSONObject> result = JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
+        markLeafNodes(result);
+        return result;
+    }
+
+    /**
+     * 递归标记叶子节点（没有children的节点设置isLeaf=true）
+     */
+    private void markLeafNodes(List<JSONObject> nodes) {
+        if (nodes == null) return;
+        for (JSONObject node : nodes) {
+            List<JSONObject> children = node.getBeanList("children", JSONObject.class);
+            if (children == null || children.isEmpty()) {
+                node.set("isLeaf", true);
+                node.remove("children");
+            } else {
+                node.set("isLeaf", false);
+                markLeafNodes(children);
+            }
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
