@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@SpringBootApplication
+@SpringBootApplication(exclude = {Knife4jAutoConfiguration.class})
 public class Application {
 
     /* 解决druid 日志报错：discard long time none received connection:xxx */
