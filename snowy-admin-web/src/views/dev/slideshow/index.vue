@@ -67,7 +67,7 @@
 							</a-tag>
 						</template>
 						<template v-if="column.dataIndex === 'skipMode'">
-							{{ $TOOL.dictTypeData('SKIP_MODE', record.skipMode) }}
+							<a-tag :color="$TOOL.dictTypeColor('SKIP_MODE', record.skipMode)">{{ $TOOL.dictTypeData('SKIP_MODE', record.skipMode) }}</a-tag>
 						</template>
 					</template>
 				</a-table>

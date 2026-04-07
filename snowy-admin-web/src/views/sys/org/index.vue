@@ -108,7 +108,7 @@
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'category'">
-						{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
+						<a-tag :color="$TOOL.dictTypeColor('ORG_CATEGORY', record.category)">{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)">编辑</a>

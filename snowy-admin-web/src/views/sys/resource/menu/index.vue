@@ -84,8 +84,8 @@
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'visible'">
-					<a-tag :color="$TOOL.dictTypeColor('MENU_VISIBLE', record.visible)">
-						{{ $TOOL.dictTypeData('MENU_VISIBLE', record.visible) }}
+					<a-tag :color="$TOOL.dictTypeColor('COMMON_WHETHER', record.visible)">
+						{{ $TOOL.dictTypeData('COMMON_WHETHER', record.visible) }}
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'action'">

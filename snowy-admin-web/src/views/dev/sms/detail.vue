@@ -1,9 +1,9 @@
 <template>
 	<xn-form-container title="详情" :width="700" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
-			<a-descriptions-item label="短信引擎">{{
-				$TOOL.dictTypeData('SMS_ENGINE', formData.engine)
-			}}</a-descriptions-item>
+			<a-descriptions-item label="短信引擎">
+				<a-tag :color="$TOOL.dictTypeColor('SMS_ENGINE', formData.engine)">{{ $TOOL.dictTypeData('SMS_ENGINE', formData.engine) }}</a-tag>
+			</a-descriptions-item>
 			<a-descriptions-item label="短信签名">{{ formData.signName }}</a-descriptions-item>
 			<a-descriptions-item label="发送人" v-if="formData.createUserName">{{
 				formData.createUserName

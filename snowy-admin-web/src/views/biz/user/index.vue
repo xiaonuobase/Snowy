@@ -121,7 +121,7 @@
 						<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 					</template>
 					<template v-if="column.dataIndex === 'gender'">
-						{{ $TOOL.dictTypeData('GENDER', record.gender) }}
+						<a-tag :color="$TOOL.dictTypeColor('GENDER', record.gender)">{{ $TOOL.dictTypeData('GENDER', record.gender) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'userStatus'">
 						<a-switch
@@ -130,7 +130,7 @@
 							@change="editStatus(record)"
 							v-if="hasPerm('bizUserUpdataStatus')"
 						/>
-						<span v-else>{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</span>
+						<a-tag v-else :color="$TOOL.dictTypeColor('COMMON_STATUS', record.userStatus)">{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">编辑</a>

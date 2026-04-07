@@ -64,9 +64,12 @@
 				:scroll="{ x: 'max-content' }"
 			>
 				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'dictColor'">
+						<a-tag v-if="record.dictColor" :color="record.dictColor">{{ record.dictColor }}</a-tag>
+					</template>
 					<template v-if="column.dataIndex === 'level'">
-						<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
-						<a-tag color="green" v-else>子级</a-tag>
+						<a-tag color="processing" v-if="record.level">{{ record.level }}</a-tag>
+						<a-tag color="success" v-else>子级</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
@@ -90,11 +93,18 @@
 		},
 		{
 			title: '字典值',
-			dataIndex: 'dictValue'
+			dataIndex: 'dictValue',
+			ellipsis: true
+		},
+		{
+			title: '字典颜色',
+			dataIndex: 'dictColor',
+			align: 'center'
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode'
+			dataIndex: 'sortCode',
+			align: 'center'
 		}
 	]
 	if (hasPerm('bizDictEdit')) {

@@ -113,7 +113,7 @@
 								<a-button type="dashed" size="small" @click="addRecord(record)"><PlusOutlined /></a-button>
 							</template>
 							<template v-if="column.dataIndex === 'category'">
-								{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
+								<a-tag :color="$TOOL.dictTypeColor('ROLE_CATEGORY', record.category)">{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}</a-tag>
 							</template>
 						</template>
 					</a-table>

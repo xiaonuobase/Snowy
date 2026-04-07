@@ -3,13 +3,7 @@
 		<a-descriptions bordered>
 			<a-descriptions-item label="标题">{{ formData.title }}</a-descriptions-item>
 			<a-descriptions-item label="类型">
-				<a-tag :bordered="false" color="success" v-if="formData.type === 'NOTICE'">
-					{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', formData.type) }}
-				</a-tag>
-				<a-tag :bordered="false" color="processing" v-else-if="formData.type === 'ANNOUNCEMENT'">
-					{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', formData.type) }}
-				</a-tag>
-				<a-tag :bordered="false" color="warning" v-else-if="formData.type === 'WARNING'">
+				<a-tag :bordered="false" :color="$TOOL.dictTypeColor('BIZ_NOTICE_TYPE', formData.type)">
 					{{ $TOOL.dictTypeData('BIZ_NOTICE_TYPE', formData.type) }}
 				</a-tag>
 			</a-descriptions-item>
@@ -31,7 +25,7 @@
 			>
 			<a-descriptions-item label="发布位置">
 				<div v-if="formData.place">
-					<a-tag v-for="textValue in JSON.parse(formData.place)" :key="textValue" color="processing">
+					<a-tag v-for="textValue in JSON.parse(formData.place)" :key="textValue" :color="$TOOL.dictTypeColor('BIZ_NOTICE_PLACE', textValue)">
 						{{ $TOOL.dictTypeData('BIZ_NOTICE_PLACE', textValue) }}
 					</a-tag>
 				</div>

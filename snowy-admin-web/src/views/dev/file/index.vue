@@ -101,7 +101,7 @@
 						<img src="/src/assets/images/fileImg/file.png" class="record-img" v-else />
 					</template>
 					<template v-if="column.dataIndex === 'engine'">
-						{{ $TOOL.dictTypeData('FILE_ENGINE', record.engine) }}
+						<a-tag :color="$TOOL.dictTypeColor('FILE_ENGINE', record.engine)">{{ $TOOL.dictTypeData('FILE_ENGINE', record.engine) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a v-if="previewDisplay(record)" @click="onPreview(record)">预览</a>

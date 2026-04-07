@@ -68,10 +68,10 @@
 					</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'regType'">
-					{{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}
+					<a-tag :color="$TOOL.dictTypeColor('MOBILE_REG_TYPE', record.regType)">{{ $TOOL.dictTypeData('MOBILE_REG_TYPE', record.regType) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'status'">
-					{{ $TOOL.dictTypeData('MOBILE_STATUS', record.status) }}
+					<a-tag :color="$TOOL.dictTypeColor('MOBILE_STATUS', record.status)">{{ $TOOL.dictTypeData('MOBILE_STATUS', record.status) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>

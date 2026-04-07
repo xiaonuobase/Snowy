@@ -106,7 +106,7 @@
 						@change="editStatus(record)"
 						v-if="hasPerm('bizNoticerUpdateStatus')"
 					/>
-					<span v-else>{{ $TOOL.dictTypeData('BIZ_NOTICE_STATUS', record.status) }}</span>
+					<a-tag v-else :color="$TOOL.dictTypeColor('BIZ_NOTICE_STATUS', record.status)">{{ $TOOL.dictTypeData('BIZ_NOTICE_STATUS', record.status) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a-space>

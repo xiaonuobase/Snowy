@@ -53,7 +53,7 @@
 					<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 				</template>
 				<template v-if="column.dataIndex === 'gender'">
-					{{ $TOOL.dictTypeData('GENDER', record.gender) }}
+					<a-tag :color="$TOOL.dictTypeColor('GENDER', record.gender)">{{ $TOOL.dictTypeData('GENDER', record.gender) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'userStatus'">
 					<a-switch :loading="statusLoading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />

@@ -242,7 +242,7 @@
 	}
 
 	const categoryOptions = tool.dictList('MENU_TYPE')
-	const visibleOptions = tool.dictList('MENU_VISIBLE')
+	const visibleOptions = tool.dictList('COMMON_WHETHER')
 	const keepLiveOptions = tool.dictList('COMMON_WHETHER')
 	const displayLayoutOptions = tool.dictList('COMMON_WHETHER')
 	// 验证并提交数据
