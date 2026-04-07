@@ -6,7 +6,6 @@
 					v-model:value="treeSearchKey"
 					placeholder="搜索机构"
 					allow-clear
-					size="small"
 					style="margin-bottom: 8px; flex-shrink: 0"
 					@search="onTreeSearch"
 				/>

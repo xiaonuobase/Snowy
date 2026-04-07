@@ -2,25 +2,45 @@
 	<div class="resizable-panel" :style="wrapperStyle" ref="rootRef">
 		<div
 			class="panel-left"
-			:style="{
-				[sizeProperty]: leftSize + 'px',
-				minWidth: direction === 'row' ? minSize + 'px' : 'auto',
-				minHeight: direction === 'column' ? minSize + 'px' : 'auto',
-				padding: toPx(leftPadding)
-			}"
+			:style="leftPanelStyle"
 			v-if="!shouldHideLeft"
 		>
-			<slot name="left"></slot>
+			<div class="panel-left-inner" :style="{ padding: toPx(leftPadding) }" v-show="!collapsed">
+				<slot name="left"></slot>
+			</div>
 		</div>
 		<div
 			class="resizer"
-			:class="{ 'resizer-horizontal': direction === 'row', 'resizer-vertical': direction === 'column' }"
-			@mousedown="startResize"
-			v-if="!shouldHideLeft"
+			:class="{
+				'resizer-horizontal': direction === 'row',
+				'resizer-vertical': direction === 'column',
+				'resizer-collapsed': collapsed
+			}"
+			v-if="!shouldHideLeft && !collapsed"
+			@mousedown="onResizerMouseDown"
 		>
-			<div class="resizer-handle"></div>
+			<div class="resizer-handle">
+				<!-- 默认：三点拖拽图标 -->
+				<div class="handle-dots"></div>
+				<!-- hover：折叠箭头 -->
+				<div class="handle-arrow" v-if="collapsible" @click.stop="toggleCollapse" :title="'折叠面板'">
+					<LeftOutlined v-if="direction === 'row'" />
+					<UpOutlined v-else />
+				</div>
+			</div>
 		</div>
-		<div class="panel-right" :style="{ flex: 1, padding: toPx(rightPadding) }">
+		<div class="panel-right" :style="{ flex: 1, padding: toPx(rightPadding), position: 'relative' }">
+			<!-- 折叠后：展开按钮定位在右侧面板左边缘 -->
+			<div
+				v-if="collapsed && collapsible && !shouldHideLeft"
+				class="resizer-expand"
+				:class="{ 'resizer-expand-vertical': direction === 'column' }"
+				@click="toggleCollapse"
+				:title="'展开面板'"
+			>
+				<RightOutlined v-if="direction === 'row'" />
+				<DownOutlined v-else />
+			</div>
 			<slot name="right"></slot>
 		</div>
 	</div>
@@ -28,70 +48,65 @@
 
 <script setup>
 	import { ref, computed, onMounted, onUnmounted } from 'vue'
+	import { LeftOutlined, RightOutlined, UpOutlined, DownOutlined } from '@ant-design/icons-vue'
 	import { globalStore } from '@/store'
 
 	const props = defineProps({
-		// 初始左侧面板大小
-		initialSize: {
-			type: Number,
-			default: 200
-		},
-		// 最小大小
-		minSize: {
-			type: Number,
-			default: 100
-		},
-		// 最大大小
-		maxSize: {
-			type: Number,
-			default: 500
-		},
-		// 方向：'row' 水平分割，'column' 垂直分割
+		initialSize: { type: Number, default: 200 },
+		minSize: { type: Number, default: 100 },
+		maxSize: { type: Number, default: 500 },
 		direction: {
 			type: String,
 			default: 'row',
 			validator: (value) => ['row', 'column'].includes(value)
 		},
-		// 合并后的响应式开关：当 md 为 0 时，在 <768px 隐藏左侧与拖拽条
-		md: {
-			type: Number,
-			default: null
-		},
-		bottomGap: {
-			type: [Number, String],
-			default: 10
-		},
-		// 是否显示阴影（默认关闭）
+		md: { type: Number, default: null },
+		bottomGap: { type: [Number, String], default: 10 },
 		shadow: { type: Boolean, default: true },
-		// 圆角（支持 Number/px）
 		radius: { type: [Number, String], default: 'system' },
-		// 直接隐藏左侧与分隔条
 		hideLeft: { type: Boolean, default: false },
 		leftPadding: { type: [Number, String], default: 24 },
-		rightPadding: { type: [Number, String], default: 24 }
+		rightPadding: { type: [Number, String], default: 24 },
+		collapsible: { type: Boolean, default: true }
 	})
 
-	const emit = defineEmits(['resize'])
+	const emit = defineEmits(['resize', 'collapse'])
 
 	const leftSize = ref(props.initialSize)
 	const isResizing = ref(false)
+	const collapsed = ref(false)
 	const rootRef = ref(null)
 	let activeContainer = null
 
-	// 监听窗口宽度，用于判断是否在小屏隐藏
 	const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
 
 	const shouldHideLeft = computed(() => {
 		return props.hideLeft || (props.md === 0 && windowWidth.value < 768)
 	})
 
-	// 根据方向确定使用的CSS属性
 	const sizeProperty = computed(() => {
 		return props.direction === 'row' ? 'width' : 'height'
 	})
 
-	const startResize = (e) => {
-		if (shouldHideLeft.value) return
+	const leftPanelStyle = computed(() => {
+		const size = collapsed.value ? '0px' : leftSize.value + 'px'
+		return {
+			[sizeProperty.value]: size,
+			minWidth: collapsed.value ? '0px' : (props.direction === 'row' ? props.minSize + 'px' : 'auto'),
+			minHeight: collapsed.value ? '0px' : (props.direction === 'column' ? props.minSize + 'px' : 'auto'),
+			overflow: 'hidden'
+		}
+	})
+
+	const toggleCollapse = () => {
+		if (!props.collapsible) return
+		collapsed.value = !collapsed.value
+		emit('collapse', collapsed.value)
+	}
+
+	const onResizerMouseDown = (e) => {
+		if (shouldHideLeft.value || collapsed.value) return
+		if (e.target.closest('.handle-arrow')) return
 		isResizing.value = true
 		activeContainer = rootRef.value || e.target.closest('.resizable-panel')
 		document.addEventListener('mousemove', handleResize)
@@ -101,22 +116,16 @@
 
 	const handleResize = (e) => {
 		if (!isResizing.value) return
-
 		const container = activeContainer
 		if (!container) return
-
 		const rect = container.getBoundingClientRect()
 		let newSize
-
 		if (props.direction === 'row') {
 			newSize = e.clientX - rect.left
 		} else {
 			newSize = e.clientY - rect.top
 		}
-
-		// 限制在最小值和最大值之间
 		newSize = Math.max(props.minSize, Math.min(props.maxSize, newSize))
-
 		leftSize.value = newSize
 		emit('resize', newSize)
 	}
@@ -130,11 +139,8 @@
 
 	let resizeHandler = null
 	onMounted(() => {
-		resizeHandler = () => {
-			windowWidth.value = window.innerWidth
-		}
+		resizeHandler = () => { windowWidth.value = window.innerWidth }
 		window.addEventListener('resize', resizeHandler)
-		// 立刻同步一次
 		resizeHandler()
 	})
 
@@ -146,7 +152,6 @@
 
 	const store = globalStore()
 	const systemRadius = computed(() => (store.roundedCornerStyleOpen ? 8 : 2))
-	// 将数字统一转为 px 字符串
 	const toPx = (val) => (typeof val === 'number' ? `${val}px` : val)
 	const wrapperStyle = computed(() => {
 		const gap = toPx(props.bottomGap)
@@ -155,19 +160,18 @@
 			flexDirection: props.direction,
 			borderRadius: toPx(props.radius === 'system' ? systemRadius.value : props.radius),
 			boxShadow: props.shadow ? 'var(--card-shadow-soft, 0 1px 6px rgba(0, 0, 0, 0.06))' : 'none',
-			// 在容器外部留白，避免卡片贴到页面底部
 			marginBottom: gap,
-			// 同步减少容器高度，确保不超出父容器
 			height: `calc(100% - ${gap})`
 		}
 	})
 
-	// 暴露方法供外部调用
 	defineExpose({
 		setSize: (size) => {
 			leftSize.value = Math.max(props.minSize, Math.min(props.maxSize, size))
 		},
-		getSize: () => leftSize.value
+		getSize: () => leftSize.value,
+		toggleCollapse,
+		isCollapsed: () => collapsed.value
 	})
 </script>
 
@@ -177,42 +181,51 @@
 		width: 100%;
 	}
 
+	/* ---- 左侧面板 ---- */
 	.panel-left {
-		padding: 24px;
-		overflow: auto;
+		overflow: hidden;
 		background: var(--snowy-background-color);
-		/* 隐藏滚动条但保持滚动功能 */
-		scrollbar-width: none; /* Firefox */
-		-ms-overflow-style: none; /* IE 和 Edge */
+		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+					height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+					min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+					min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	.panel-left::-webkit-scrollbar {
-		display: none; /* Chrome, Safari 和 Opera */
+	.panel-left-inner {
+		height: 100%;
+		overflow: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 	}
 
+	.panel-left-inner::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* ---- 右侧面板 ---- */
 	.panel-right {
 		padding: 24px;
 		overflow: auto;
 		background: var(--snowy-background-color);
-		/* 隐藏滚动条但保持滚动功能 */
-		scrollbar-width: none; /* Firefox */
-		-ms-overflow-style: none; /* IE 和 Edge */
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 	}
 
 	.panel-right::-webkit-scrollbar {
-		display: none; /* Chrome, Safari 和 Opera */
+		display: none;
 	}
 
+	/* ---- 分隔条 ---- */
 	.resizer {
 		position: relative;
 		background: transparent;
 		user-select: none;
-		transition:
-			background-color 0.2s,
-			box-shadow 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
 	}
 
-	/* 增大可点击区域，居中握把，便于拖拽 */
 	.resizer-horizontal {
 		width: 8px;
 		cursor: col-resize;
@@ -221,76 +234,133 @@
 	.resizer-vertical {
 		height: 8px;
 		cursor: row-resize;
-		box-shadow:
-			inset 0 -1px 0 var(--border-color-base),
-			inset 0 1px 0 var(--border-color-base);
 	}
 
-	/* 中间握把（胶囊形），提升可拖拽直觉性 */
+	/* ---- 拖拽手柄（胶囊） ---- */
 	.resizer-handle {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		background: var(--component-background);
+		background: var(--component-background, #fff);
 		border-radius: 999px;
 		box-shadow:
 			0 2px 10px rgba(0, 0, 0, 0.06),
-			inset 0 0 0 1px var(--border-color-base);
+			inset 0 0 0 1px var(--border-color-base, #d9d9d9);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.25s ease;
+		z-index: 5;
 	}
 
-	/* 横向握把：竖排 3 个点 */
 	.resizer-horizontal .resizer-handle {
-		width: 6px;
-		height: 26px;
+		width: 12px;
+		height: 32px;
 	}
 
-	.resizer-horizontal .resizer-handle::before {
-		content: '';
-		display: block;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 2px;
-		height: 2px;
-		background: var(--border-color-base);
-		border-radius: 50%;
-		box-shadow:
-			0 7px 0 0 var(--border-color-base),
-			0 -7px 0 0 var(--border-color-base);
-	}
-
-	/* 纵向握把：横排 3 个点 */
 	.resizer-vertical .resizer-handle {
-		width: 26px;
-		height: 6px;
+		width: 32px;
+		height: 12px;
 	}
 
-	.resizer-vertical .resizer-handle::before {
-		content: '';
-		display: block;
+	/* ---- 三点图标 ---- */
+	.handle-dots {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		width: 2px;
 		height: 2px;
-		background: var(--border-color-base);
+		background: var(--border-color-base, #d9d9d9);
 		border-radius: 50%;
-		box-shadow:
-			7px 0 0 0 var(--border-color-base),
-			-7px 0 0 0 var(--border-color-base);
+		transition: opacity 0.2s ease;
 	}
 
-	/* 悬停与按下反馈 */
-	.resizer:hover .resizer-handle {
+	.resizer-horizontal .handle-dots {
 		box-shadow:
-			0 4px 14px rgba(0, 0, 0, 0.1),
-			inset 0 0 0 1px var(--primary-color);
+			0 6px 0 0 var(--border-color-base, #d9d9d9),
+			0 -6px 0 0 var(--border-color-base, #d9d9d9);
 	}
 
-	.resizer:active .resizer-handle {
-		transform: translate(-50%, -50%) scale(0.98);
+	.resizer-vertical .handle-dots {
+		box-shadow:
+			6px 0 0 0 var(--border-color-base, #d9d9d9),
+			-6px 0 0 0 var(--border-color-base, #d9d9d9);
+	}
+
+	/* ---- 折叠箭头（hover 时替换三点） ---- */
+	.handle-arrow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		color: var(--primary-color, #1890ff);
+		font-size: 10px;
+		cursor: pointer;
+	}
+
+	.resizer-handle:hover .handle-dots {
+		opacity: 0;
+	}
+
+	.resizer-handle:hover .handle-arrow {
+		opacity: 1;
+	}
+
+	.resizer-handle:hover {
+		background: var(--primary-1, #e6f7ff);
+		box-shadow:
+			0 2px 10px rgba(24, 144, 255, 0.12),
+			inset 0 0 0 1px var(--primary-color, #1890ff);
+	}
+
+	/* ---- 折叠后的展开按钮（定位在右侧面板左边缘垂直居中） ---- */
+	.resizer-expand {
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 12px;
+		height: 32px;
+		background: var(--component-background, #fff);
+		border: 1px solid var(--border-color-base, #d9d9d9);
+		border-left: none;
+		border-radius: 0 4px 4px 0;
+		cursor: pointer;
+		color: var(--text-color-secondary, #999);
+		font-size: 10px;
+		transition: all 0.2s ease;
+	}
+
+	.resizer-expand-vertical {
+		left: 50%;
+		top: 0;
+		transform: translateX(-50%);
+		width: 32px;
+		height: 12px;
+		border: 1px solid var(--border-color-base, #d9d9d9);
+		border-top: none;
+		border-radius: 0 0 4px 4px;
+	}
+
+	.resizer-expand:hover {
+		color: var(--primary-color, #1890ff);
+		border-color: var(--primary-color, #1890ff);
+		background: var(--primary-1, #e6f7ff);
+	}
+
+	.resizer-expand:active {
+		transform: translateY(-50%) scale(0.95);
 	}
 </style>
