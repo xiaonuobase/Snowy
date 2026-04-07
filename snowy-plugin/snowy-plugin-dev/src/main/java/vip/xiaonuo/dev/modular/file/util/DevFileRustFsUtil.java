@@ -471,12 +471,21 @@ public class DevFileRustFsUtil {
                     .bucket(bucketName)
                     .key(key)
                     .build();
-
-            // 使用presigner生成临时URL
+        
+            // 使用client的配置信息创建预签名
+            DevConfigApi devConfigApi = SpringUtil.getBean(DevConfigApi.class);
+            String accessKey = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_ACCESS_KEY_KEY);
+            String secretKey = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_SECRET_KEY_KEY);
+            String regionStr = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_REGION_KEY);
+            if(ObjectUtil.isEmpty(regionStr)) {
+                regionStr = "us-east-1";
+            }
+            
             S3Presigner presigner = S3Presigner.builder()
+                            .credentialsProvider(StaticCredentialsProvider.create(
+                                    AwsBasicCredentials.create(accessKey, secretKey)))
+                            .region(Region.of(regionStr))
                             .endpointOverride(URI.create(endpoint))
-                            .credentialsProvider(client.serviceClientConfiguration().credentialsProvider().get())
-                            .region(client.serviceClientConfiguration().region())
                             .build();
 
             GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
