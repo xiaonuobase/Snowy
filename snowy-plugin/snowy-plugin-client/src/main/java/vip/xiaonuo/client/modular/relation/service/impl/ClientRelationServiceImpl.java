@@ -62,7 +62,7 @@ public class ClientRelationServiceImpl extends ServiceImpl<ClientRelationMapper,
             clientRelation.setObjectId(objectId);
             clientRelation.setTargetId(targetIdList.get(i));
             clientRelation.setCategory(category);
-            if(ObjectUtil.isNotEmpty(extJsonList)) {
+            if(ObjectUtil.isNotEmpty(extJsonList) && extJsonList.size() > i) {
                 clientRelation.setExtJson(extJsonList.get(i));
             }
             clientRelationList.add(clientRelation);
