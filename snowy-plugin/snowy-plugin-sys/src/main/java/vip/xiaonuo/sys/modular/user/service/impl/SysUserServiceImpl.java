@@ -1159,65 +1159,65 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取角色id列表
         List<String> roleIdList = this.ownRole(sysUserIdParam);
 
-        // 获取菜单id列表
-        List<String> menuIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
-                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());
+        // 获取菜单id列表，用Set加速后续contains查找
+        Set<String> menuIdSet = new HashSet<>(sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()));
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
-            menuIdList.addAll(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
+            menuIdSet.addAll(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
                     SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
         }
 
         // 获取所有的菜单和模块列表，并按分类和排序码排序
-        List<SysMenu> allModuleAndMenuAndSpaList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
+        List<SysMenu> allModuleAndMenuList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
                 .in(SysMenu::getCategory, SysResourceCategoryEnum.MODULE.getValue(), SysResourceCategoryEnum.MENU.getValue())
-                .orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory,SysMenu::getSortCode)));
-        // 全部以菜单承载
-        List<SysMenu> allModuleList = CollectionUtil.newArrayList();
-        List<SysMenu> allMenuList = CollectionUtil.newArrayList();
-        // 根据类型抽取
-        allModuleAndMenuAndSpaList.forEach(sysMenu -> {
-            boolean isModule = sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue());
-            if (isModule) {
-                // 抽取所有的模块列表
-                allModuleList.add(sysMenu);
+                .orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory, SysMenu::getSortCode)));
+
+        // 按类型分组：模块和菜单
+        Map<String, List<SysMenu>> categoryMap = allModuleAndMenuList.stream()
+                .collect(Collectors.groupingBy(SysMenu::getCategory));
+        List<SysMenu> allModuleList = categoryMap.getOrDefault(SysResourceCategoryEnum.MODULE.getValue(), CollectionUtil.newArrayList());
+        List<SysMenu> allMenuList = categoryMap.getOrDefault(SysResourceCategoryEnum.MENU.getValue(), CollectionUtil.newArrayList());
+
+        // 构建菜单id->菜单的Map，用于O(1)查找父节点
+        Map<String, SysMenu> menuIdMap = allMenuList.stream().collect(Collectors.toMap(SysMenu::getId, m -> m, (a, b) -> a));
+
+        // 获取用户拥有的菜单列表
+        List<SysMenu> menuList = allMenuList.stream().filter(sysMenu -> menuIdSet.contains(sysMenu.getId())).toList();
+
+        // 收集拥有的菜单及其所有父节点（去重）
+        Set<String> resultIdSet = new LinkedHashSet<>();
+        for (SysMenu menu : menuList) {
+            // 向上追溯所有父节点
+            String parentId = menu.getParentId();
+            while (ObjectUtil.isNotEmpty(parentId) && !"0".equals(parentId) && resultIdSet.add(parentId)) {
+                SysMenu parent = menuIdMap.get(parentId);
+                if (parent == null) {
+                    break;
+                }
+                parentId = parent.getParentId();
             }
-            boolean isMenu = sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue());
-            if (isMenu) {
-                // 抽取所有的菜单列表
-                allMenuList.add(sysMenu);
-            }
-        });
+            resultIdSet.add(menu.getId());
+        }
 
-        // 定义结果
-        List<SysMenu> resultList = CollectionUtil.newArrayList();
-
-        // 获取拥有的菜单列表
-        List<SysMenu> menuList = allMenuList.stream().filter(sysMenu ->
-                menuIdList.contains(sysMenu.getId())).toList();
-
-        // 对获取到的角色对应的菜单列表进行处理，获取父列表
-        menuList.forEach(sysMenu -> execRecursionFindParent(allMenuList, sysMenu.getId(), resultList));
-
-        // 将拥有的菜单列表添加
-        resultList.addAll(menuList);
+        // 按resultIdSet收集结果菜单
+        List<SysMenu> resultList = resultIdSet.stream().map(menuIdMap::get).filter(ObjectUtil::isNotEmpty)
+                .collect(Collectors.toCollection(ArrayList::new));
 
         // 获取模块id集合
         Set<String> moduleIdSet = resultList.stream().map(SysMenu::getModule).collect(Collectors.toSet());
 
         // 抽取拥有的模块列表
         List<SysMenu> moduleList = allModuleList.stream().filter(sysMenu ->
-                moduleIdSet.contains(sysMenu.getId())).collect(Collectors.toList());
+                moduleIdSet.contains(sysMenu.getId())).collect(Collectors.toCollection(ArrayList::new));
 
         // 如果一个模块都没拥有
         if (ObjectUtil.isEmpty(moduleList)) {
-            // 如果系统中无模块（极端情况）
             if (ObjectUtil.isEmpty(allModuleList)) {
-                // 如果系统中无菜单，则返回空列表
                 if (ObjectUtil.isEmpty(allMenuList)) {
                     return CollectionUtil.newArrayList();
                 } else {
-                    // 否则构造一个模块，并添加到拥有模块
+                    // 极端情况：系统无模块但有菜单，构造一个虚拟模块
                     SysMenu sysMenu = new SysMenu();
                     sysMenu.setId(IdWorker.getIdStr());
                     sysMenu.setPath(StrUtil.SLASH + RandomUtil.randomString(10));
@@ -1226,36 +1226,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     moduleList.add(sysMenu);
                 }
             } else {
-                // 否则将系统中第一个模块作为拥有的模块
+                // 将系统中第一个模块作为拥有的模块
                 moduleList.add(allModuleList.get(0));
             }
         }
 
-        // 将拥有的模块放入集合
+        // 将拥有的模块放入结果集合
         resultList.addAll(moduleList);
 
-        // 获取第一个模块
+        // 获取第一个模块下的第一个非目录菜单（用于标记首页affix）
         SysMenu firstModule = moduleList.get(0);
-
-        // 获取第一个模块下的第一个菜单
-        Optional<SysMenu> sysMenus = menuList.stream()
-                .filter(sysMenu -> sysMenu.getModule().equals(firstModule.getId()))
+        String firstMenuId = menuList.stream()
+                .filter(sysMenu -> firstModule.getId().equals(sysMenu.getModule()))
+                .filter(sysMenu -> !SysResourceMenuTypeEnum.CATALOG.getValue().equals(sysMenu.getMenuType()))
                 .findFirst()
-                .filter(sysMenu -> !sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue()));
+                .map(SysMenu::getId)
+                .orElse(null);
 
         // 最终处理，构造meta
-        List<JSONObject> resultJsonObjectList = resultList.stream().map(sysMenu -> {
-
+        List<TreeNode<String>> treeNodeList = resultList.stream().map(sysMenu -> {
             // 将模块的父id设置为0，设置随机path
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) {
+            if (SysResourceCategoryEnum.MODULE.getValue().equals(sysMenu.getCategory())) {
                 sysMenu.setParentId("0");
                 sysMenu.setPath(StrUtil.SLASH + RandomUtil.randomString(10));
             }
             // 将根菜单的父id设置为模块的id
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if ("0".equals(sysMenu.getParentId())) {
-                    sysMenu.setParentId(sysMenu.getModule());
-                }
+            if (SysResourceCategoryEnum.MENU.getValue().equals(sysMenu.getCategory()) && "0".equals(sysMenu.getParentId())) {
+                sysMenu.setParentId(sysMenu.getModule());
             }
             JSONObject menuJsonObject = JSONUtil.parseObj(sysMenu);
             JSONObject metaJsonObject = JSONUtil.createObj();
@@ -1263,43 +1260,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             metaJsonObject.set("title", sysMenu.getTitle());
             metaJsonObject.set("type", ObjectUtil.isEmpty(sysMenu.getMenuType())
                     ? sysMenu.getCategory().toLowerCase() : sysMenu.getMenuType().toLowerCase());
-            // 如果是菜单，则设置type菜单类型为小写
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
+            if (SysResourceCategoryEnum.MENU.getValue().equals(sysMenu.getCategory())) {
+                if (!SysResourceMenuTypeEnum.CATALOG.getValue().equals(sysMenu.getMenuType())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
                 }
-                if (sysMenus.orElse(null) != null && sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
-                    // 如果是首页，则设置affix
+                if (sysMenu.getId().equals(firstMenuId)) {
                     metaJsonObject.set("affix", true);
                 }
-                String menuMetaKeepLiveKey = "keepLive";
-                String menuMetaDisplayLayoutKey = "displayLayout";
                 // 设置缓存
-                if (ObjectUtil.isEmpty(sysMenu.getKeepLive()) || sysMenu.getKeepLive().equals(SysMenuWhetherEnum.NO.getValue())) {
-                    metaJsonObject.set(menuMetaKeepLiveKey, false);
-                } else if (sysMenu.getKeepLive().equals(SysMenuWhetherEnum.YES.getValue())) {
-                    metaJsonObject.set(menuMetaKeepLiveKey, true);
-                }
+                metaJsonObject.set("keepLive",
+                        ObjectUtil.isNotEmpty(sysMenu.getKeepLive()) && SysMenuWhetherEnum.YES.getValue().equals(sysMenu.getKeepLive()));
                 // 设置显示布局
-                if (ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.YES.getValue())) {
-                    metaJsonObject.set(menuMetaDisplayLayoutKey, true);
-                } else if (sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.NO.getValue())) {
-                    metaJsonObject.set(menuMetaDisplayLayoutKey, false);
-                }
+                metaJsonObject.set("displayLayout",
+                        ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || SysMenuWhetherEnum.YES.getValue().equals(sysMenu.getDisplayLayout()));
             }
-            // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false或no的为不显示
-            if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE") || sysMenu.getVisible().equals("NO")) {
+            // 如果设置了不可见
+            if ("FALSE".equals(sysMenu.getVisible()) || "NO".equals(sysMenu.getVisible())) {
                 metaJsonObject.set("hidden", true);
             }
             menuJsonObject.set("meta", metaJsonObject);
-            return menuJsonObject;
-        }).toList();
+            return new TreeNode<>(sysMenu.getId(), sysMenu.getParentId(),
+                    sysMenu.getTitle(), sysMenu.getSortCode()).setExtra(menuJsonObject);
+        }).collect(Collectors.toList());
 
-        // 执行构造树
-        List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->
-                new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
-                        jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
-                .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
 
@@ -1315,26 +1298,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return resultList;
     }
 
-    /**
-     * 递归获取父节点
-     *
-     * @author xuyuxiang
-     * @date 2022/6/27 17:56
-     **/
-    private void execRecursionFindParent(List<SysMenu> originDataList, String id, List<SysMenu> resultList) {
-        originDataList.forEach(item -> {
-            if (item.getId().equals(id)) {
-                int index = CollStreamUtil.toList(originDataList, SysMenu::getId).indexOf(id);
-                SysMenu parent = index == -1 ? null : originDataList.get(index);
-                if (ObjectUtil.isNotEmpty(parent)) {
-                    if (!CollectionUtil.contains(resultList, parent)) {
-                        resultList.add(parent);
-                    }
-                }
-                execRecursionFindParent(originDataList, item.getParentId(), resultList);
-            }
-        });
-    }
 
     @Override
     public List<String> ownRole(SysUserIdParam sysUserIdParam) {
