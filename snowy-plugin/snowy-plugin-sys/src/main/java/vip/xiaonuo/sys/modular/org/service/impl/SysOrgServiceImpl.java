@@ -612,15 +612,29 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
         List<SysOrg> allOrgList = this.getAllOrgList();
         // 收集所有需要的节点（已选节点 + 所有祖先），用LinkedHashSet去重保序
-        Set<String> neededIdSet = new LinkedHashSet<>();
+        Set<String> ancestorIdSet = new LinkedHashSet<>();
         for (String orgId : orgIdList) {
             List<SysOrg> ancestorList = this.getParentListById(allOrgList, orgId, true);
             for (SysOrg org : ancestorList) {
-                neededIdSet.add(org.getId());
+                ancestorIdSet.add(org.getId());
             }
         }
-        if (ObjectUtil.isEmpty(neededIdSet)) {
+        if (ObjectUtil.isEmpty(ancestorIdSet)) {
             return CollectionUtil.newArrayList();
+        }
+        // 收集祖先链上每个节点的parentId，用于补充同级兄弟节点
+        Set<String> ancestorParentIds = new HashSet<>();
+        for (SysOrg org : allOrgList) {
+            if (ancestorIdSet.contains(org.getId())) {
+                ancestorParentIds.add(org.getParentId());
+            }
+        }
+        // 最终需要的节点 = 祖先节点 + 每层祖先的兄弟节点（同parentId的节点）
+        Set<String> neededIdSet = new LinkedHashSet<>(ancestorIdSet);
+        for (SysOrg org : allOrgList) {
+            if (ancestorParentIds.contains(org.getParentId())) {
+                neededIdSet.add(org.getId());
+            }
         }
         // 从缓存中取出这些节点
         List<SysOrg> resultOrgList = allOrgList.stream()

@@ -709,15 +709,30 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             return CollectionUtil.newArrayList();
         }
         List<BizOrg> allOrgList = this.getAllOrgList();
-        Set<String> neededIdSet = new LinkedHashSet<>();
+        // 收集所有需要的节点（已选节点 + 所有祖先），用LinkedHashSet去重保序
+        Set<String> ancestorIdSet = new LinkedHashSet<>();
         for (String orgId : orgIdList) {
             List<BizOrg> ancestorList = this.getParentListById(allOrgList, orgId, true);
             for (BizOrg org : ancestorList) {
-                neededIdSet.add(org.getId());
+                ancestorIdSet.add(org.getId());
             }
         }
-        if (ObjectUtil.isEmpty(neededIdSet)) {
+        if (ObjectUtil.isEmpty(ancestorIdSet)) {
             return CollectionUtil.newArrayList();
+        }
+        // 收集祖先链上每个节点的parentId，用于补充同级兄弟节点
+        Set<String> ancestorParentIds = new HashSet<>();
+        for (BizOrg org : allOrgList) {
+            if (ancestorIdSet.contains(org.getId())) {
+                ancestorParentIds.add(org.getParentId());
+            }
+        }
+        // 最终需要的节点 = 祖先节点 + 每层祖先的兄弟节点（同parentId的节点）
+        Set<String> neededIdSet = new LinkedHashSet<>(ancestorIdSet);
+        for (BizOrg org : allOrgList) {
+            if (ancestorParentIds.contains(org.getParentId())) {
+                neededIdSet.add(org.getId());
+            }
         }
         List<BizOrg> resultOrgList = allOrgList.stream()
                 .filter(org -> neededIdSet.contains(org.getId()))

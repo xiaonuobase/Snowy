@@ -2,17 +2,12 @@
 	<xn-form-container title="批量复制机构" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-form-item label="目标上级机构：" name="targetParentId">
-				<a-tree-select
+				<xn-tree-select
+					ref="orgTreeSelectRef"
 					v-model:value="formData.targetParentId"
-					class="xn-wd"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+					:tree-api="bizOrgApi.orgTreeSelector"
+					:top-node="{ id: '0', parentId: '-1', name: '顶级' }"
 					placeholder="请选择目标上级机构"
-					allow-clear
-					:tree-data="treeData"
-					v-model:treeExpandedKeys="treeDefaultExpandedKeys"
-					:field-names="treeFieldNames"
-					tree-line
-					:load-data="onLoadData"
 				/>
 				<a-alert
 					class="mt-3"
@@ -34,94 +29,40 @@
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import { message } from 'ant-design-vue'
 
-	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	// 默认是关闭状态
 	const visible = ref(false)
 	const formRef = ref()
-	// 表单数据
 	const formData = ref({})
-	// 定义机构元素
-	const treeData = ref([])
 	const submitLoading = ref(false)
-	const treeDefaultExpandedKeys = ref([])
-	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
-	// 选中的ID列表
+	const orgTreeSelectRef = ref()
 	const ids = ref([])
-	// 加载懒加载树（无需展开到指定节点时使用）
-	const loadLazyTree = () => {
-		return bizOrgApi.orgTreeSelector().then((res) => {
-			treeData.value = [
-				{
-					id: '0',
-					parentId: '-1',
-					name: '顶级',
-					children: res.map((item) => {
-						return {
-							...item,
-							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-						}
-					}),
-					isLeaf: false
-				}
-			]
-			treeDefaultExpandedKeys.value.push('0')
-		})
-	}
-	// 打开抽屉
+
 	const onOpen = (idParam) => {
 		visible.value = true
 		formData.value = {}
 		if (idParam) {
 			ids.value = idParam.map((item) => item.id)
 		}
-		// 懒加载
-		loadLazyTree()
-	}
-	// 懒加载子节点
-	const onLoadData = (treeNode) => {
-		return new Promise((resolve) => {
-			if (treeNode.dataRef.children) {
-				resolve()
-				return
-			}
-			bizOrgApi
-				.orgTreeSelector({
-					parentId: treeNode.dataRef.id
-				})
-				.then((res) => {
-					treeNode.dataRef.children = res.map((item) => {
-						return {
-							...item,
-							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-						}
-					})
-					treeData.value = [...treeData.value]
-					resolve()
-				})
+		nextTick(() => {
+			orgTreeSelectRef.value.init()
 		})
 	}
-	// 关闭抽屉
+
 	const onClose = () => {
 		visible.value = false
 	}
-	// 默认要校验的
+
 	const formRules = {
 		targetParentId: [required('请选择目标上级机构')]
 	}
 
-	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
 			.validate()
 			.then(() => {
 				submitLoading.value = true
-				const param = {
-					ids: ids.value,
-					targetParentId: formData.value.targetParentId
-				}
 				bizOrgApi
-					.orgCopy(param)
+					.orgCopy({ ids: ids.value, targetParentId: formData.value.targetParentId })
 					.then(() => {
 						visible.value = false
 						message.success('复制成功')
@@ -133,8 +74,6 @@
 			})
 			.catch(() => {})
 	}
-	// 调用这个函数将子组件的一些数据和方法暴露出去
-	defineExpose({
-		onOpen
-	})
+
+	defineExpose({ onOpen })
 </script>
