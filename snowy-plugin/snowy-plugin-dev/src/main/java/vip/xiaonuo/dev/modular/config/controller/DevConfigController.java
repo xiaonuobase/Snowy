@@ -234,8 +234,7 @@ public class DevConfigController {
     @Operation(summary = "获取职位选择器")
     @GetMapping("/dev/config/positionSelector")
     public CommonResult<Page<JSONObject>> positionSelector(@Valid DevConfigSelectorPositionParam devConfigSelectorPositionParam) {
-        return CommonResult.data(sysPositionApi.positionSelector(devConfigSelectorPositionParam.getOrgId(), devConfigSelectorPositionParam.getSearchKey(),
-                devConfigSelectorPositionParam.getCurrent(), devConfigSelectorPositionParam.getSize()));
+        return CommonResult.data(sysPositionApi.positionSelector(devConfigSelectorPositionParam.getOrgId(), devConfigSelectorPositionParam.getSearchKey()));
     }
 
 }

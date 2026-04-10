@@ -10,16 +10,16 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.sys.modular.position.provider;
+package vip.xiaonuo.biz.modular.position.provider;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import vip.xiaonuo.sys.api.SysPositionApi;
-import vip.xiaonuo.sys.modular.position.param.SysPositionSelectorPositionParam;
-import vip.xiaonuo.sys.modular.position.service.SysPositionService;
+import vip.xiaonuo.biz.api.BizPositionApi;
+import vip.xiaonuo.biz.modular.position.param.BizPositionSelectorPositionParam;
+import vip.xiaonuo.biz.modular.position.service.BizPositionService;
 
 /**
  * 职位API接口提供者
@@ -28,22 +28,17 @@ import vip.xiaonuo.sys.modular.position.service.SysPositionService;
  * @date 2022/7/22 14:56
  **/
 @Service
-public class SysPositionApiProvider implements SysPositionApi {
+public class BizPositionApiProvider implements BizPositionApi {
 
     @Resource
-    private SysPositionService sysPositionService;
-
-    @Override
-    public String getNameById(String positionId) {
-        return sysPositionService.queryEntity(positionId).getName();
-    }
+    private BizPositionService bizPositionService;
 
     @SuppressWarnings("ALL")
     @Override
     public Page<JSONObject> positionSelector(String orgId, String searchKey) {
-        SysPositionSelectorPositionParam sysPositionSelectorPositionParam = new SysPositionSelectorPositionParam();
-        sysPositionSelectorPositionParam.setOrgId(orgId);
-        sysPositionSelectorPositionParam.setSearchKey(searchKey);
-        return BeanUtil.toBean(sysPositionService.positionSelector(sysPositionSelectorPositionParam), Page.class);
+        BizPositionSelectorPositionParam bizPositionSelectorPositionParam = new BizPositionSelectorPositionParam();
+        bizPositionSelectorPositionParam.setOrgId(orgId);
+        bizPositionSelectorPositionParam.setSearchKey(searchKey);
+        return BeanUtil.toBean(bizPositionService.positionSelector(bizPositionSelectorPositionParam), Page.class);
     }
 }
