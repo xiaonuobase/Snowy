@@ -13,7 +13,6 @@
 package vip.xiaonuo.sys.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +56,6 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取按钮分页")
     @GetMapping("/sys/button/page")
     public CommonResult<Page<SysButton>> page(SysButtonPageParam sysButtonPageParam) {
@@ -70,7 +68,6 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加按钮")
     @CommonLog("添加按钮")
     @PostMapping("/sys/button/add")
@@ -85,7 +82,6 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑按钮")
     @CommonLog("编辑按钮")
     @PostMapping("/sys/button/edit")
@@ -100,7 +96,6 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除按钮")
     @CommonLog("删除按钮")
     @PostMapping("/sys/button/delete")
@@ -115,7 +110,6 @@ public class SysButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取按钮详情")
     @GetMapping("/sys/button/detail")
     public CommonResult<SysButton> detail(@Valid SysButtonIdParam sysButtonIdParam) {

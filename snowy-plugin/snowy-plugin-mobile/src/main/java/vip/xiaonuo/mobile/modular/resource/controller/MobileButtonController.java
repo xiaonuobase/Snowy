@@ -13,7 +13,6 @@
 package vip.xiaonuo.mobile.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +56,6 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取移动端按钮分页")
     @GetMapping("/mobile/button/page")
     public CommonResult<Page<MobileButton>> page(MobileButtonPageParam mobileButtonPageParam) {
@@ -70,7 +68,6 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加移动端按钮")
     @CommonLog("添加移动端按钮")
     @PostMapping("/mobile/button/add")
@@ -85,7 +82,6 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑移动端按钮")
     @CommonLog("编辑移动端按钮")
     @PostMapping("/mobile/button/edit")
@@ -100,7 +96,6 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除移动端按钮")
     @CommonLog("删除移动端按钮")
     @PostMapping("/mobile/button/delete")
@@ -115,7 +110,6 @@ public class MobileButtonController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取移动端按钮详情")
     @GetMapping("/mobile/button/detail")
     public CommonResult<MobileButton> detail(@Valid MobileButtonIdParam mobileButtonIdParam) {

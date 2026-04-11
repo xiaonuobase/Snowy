@@ -13,7 +13,6 @@
 package vip.xiaonuo.biz.modular.index.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,7 +54,6 @@ public class BizIndexController {
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取轮播图列表")
     @GetMapping("/biz/index/slideshow/list")
     public CommonResult<List<BizIndexSlideshowListResult>> slideshowListByPlace(@Valid BizIndexSlideshowListParam bizIndexSlideshowListParam) {
@@ -68,7 +66,6 @@ public class BizIndexController {
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取通知公告分页")
     @GetMapping("/biz/index/notice/page")
     public CommonResult<Page<BizNotice>> noticePage(BizIndexNoticeListParam bizIndexNoticeListParam) {
@@ -81,7 +78,6 @@ public class BizIndexController {
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "获取通知公告列表")
     @GetMapping("/biz/index/notice/list")
     public CommonResult<List<BizIndexNoticeListResult>> noticeListByLimit(BizIndexNoticeListParam bizIndexNoticeListParam) {
@@ -94,7 +90,6 @@ public class BizIndexController {
      * @author yubaoshan
      * @date 2024/7/13 21:02
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取通知公告详情")
     @GetMapping("/biz/index/notice/detail")
     public CommonResult<BizIndexSlideshowDetailResult> noticeDetailById(@Valid BizIndexNoticeIdParam bizIndexNoticeIdParam) {

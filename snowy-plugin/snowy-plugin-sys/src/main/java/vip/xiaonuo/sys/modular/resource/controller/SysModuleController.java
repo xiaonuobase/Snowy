@@ -13,7 +13,6 @@
 package vip.xiaonuo.sys.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +56,6 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取模块分页")
     @GetMapping("/sys/module/page")
     public CommonResult<Page<SysModule>> page(SysModulePageParam sysModulePageParam) {
@@ -70,7 +68,6 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加模块")
     @CommonLog("添加模块")
     @PostMapping("/sys/module/add")
@@ -85,7 +82,6 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑模块")
     @CommonLog("编辑模块")
     @PostMapping("/sys/module/edit")
@@ -100,7 +96,6 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除模块")
     @CommonLog("删除模块")
     @PostMapping("/sys/module/delete")
@@ -116,7 +111,6 @@ public class SysModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取模块详情")
     @GetMapping("/sys/module/detail")
     public CommonResult<SysModule> detail(@Valid SysModuleIdParam sysModuleIdParam) {

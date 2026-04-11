@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.push.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +53,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "动态推送TEXT消息")
     @CommonLog("动态推送TEXT消息")
     @PostMapping("/dev/push/pushDynamicText")
@@ -69,7 +67,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "推送飞书TEXT消息")
     @CommonLog("推送飞书TEXT消息")
     @PostMapping("/dev/push/pushFeiShuText")
@@ -84,7 +81,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "推送钉钉TEXT消息")
     @CommonLog("推送钉钉TEXT消息")
     @PostMapping("/dev/push/pushDingTalkText")
@@ -99,7 +95,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "推送钉钉MARKDOWN消息")
     @CommonLog("推送钉钉MARKDOWN消息")
     @PostMapping("/dev/push/pushDingTalkMarkdown")
@@ -114,7 +109,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "推送钉钉LINK消息")
     @CommonLog("推送钉钉LINK消息")
     @PostMapping("/dev/push/pushDingTalkLink")
@@ -129,7 +123,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "推送企业微信TEXT消息")
     @CommonLog("推送企业微信TEXT消息")
     @PostMapping("/dev/push/pushWorkWechatText")
@@ -144,7 +137,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "推送企业微信MARKDOWN消息")
     @CommonLog("推送企业微信MARKDOWN消息")
     @PostMapping("/dev/push/pushWorkWechatMarkdown")
@@ -159,7 +151,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "推送企业微信NEWS消息")
     @CommonLog("推送企业微信NEWS消息")
     @PostMapping("/dev/push/pushWorkWechatNews")
@@ -174,7 +165,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取推送消息分页")
     @GetMapping("/dev/push/page")
     public CommonResult<Page<DevPush>> page(DevPushPageParam devPushPageParam) {
@@ -187,7 +177,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "删除推送消息")
     @CommonLog("删除推送消息")
     @PostMapping("/dev/push/delete")
@@ -203,7 +192,6 @@ public class DevPushController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "获取推送消息详情")
     @GetMapping("/dev/push/detail")
     public CommonResult<DevPush> detail(@Valid DevPushIdParam devPushIdParam) {

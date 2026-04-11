@@ -13,7 +13,6 @@
 package vip.xiaonuo.auth.modular.monitor.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +56,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2022/6/24 22:28
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "会话统计")
     @GetMapping("/auth/session/analysis")
     public CommonResult<AuthSessionAnalysisResult> analysis() {
@@ -70,7 +68,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2022/6/24 22:28
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "查询B端会话")
     @GetMapping("/auth/session/b/page")
     public CommonResult<Page<AuthSessionPageResult>> pageForB(AuthSessionPageParam authSessionPageParam) {
@@ -83,7 +80,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2022/6/24 22:28
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "查询C端会话")
     @GetMapping("/auth/session/c/page")
     public CommonResult<Page<AuthSessionPageResult>> pageForC(AuthSessionPageParam authSessionPageParam) {
@@ -96,7 +92,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2021/10/12 10:25
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "强退B端会话")
     @CommonLog("强退B端会话")
     @PostMapping("/auth/session/b/exit")
@@ -112,7 +107,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2021/10/12 10:25
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "强退C端会话")
     @CommonLog("强退C端会话")
     @PostMapping("/auth/session/c/exit")
@@ -128,7 +122,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2021/10/12 10:25
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "强退B端token")
     @CommonLog("强退B端token")
     @PostMapping("/auth/token/b/exit")
@@ -144,7 +137,6 @@ public class AuthSessionController {
      * @author xuyuxiang
      * @date 2021/10/12 10:25
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "强退C端token")
     @CommonLog("强退C端token")
     @PostMapping("/auth/token/c/exit")

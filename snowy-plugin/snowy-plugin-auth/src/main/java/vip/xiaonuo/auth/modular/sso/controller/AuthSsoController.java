@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.auth.modular.sso.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,7 +47,6 @@ public class AuthSsoController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "B端获取认证中心地址")
     @GetMapping("/auth/sso/b/getSsoAuthUrl")
     public CommonResult<String> getSsoAuthUrl(@Valid AuthGetSsoAuthUrlParam authGetSsoAuthUrlParam) {
@@ -61,7 +59,6 @@ public class AuthSsoController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "B端根据ticket执行单点登录")
     @PostMapping("/auth/sso/b/doLoginByTicket")
     public CommonResult<String> doLoginByTicket(@RequestBody @Valid AuthSsoTicketLoginParam authSsoTicketLoginParam) {
@@ -74,7 +71,6 @@ public class AuthSsoController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "B端单点注销回调")
     @RequestMapping("/auth/sso/b/logoutCall")
     public Object logoutCall() {
@@ -87,7 +83,6 @@ public class AuthSsoController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "推送客户端地址")
     @RequestMapping("/auth/sso/b/pushClient")
     public Object pushClient() {

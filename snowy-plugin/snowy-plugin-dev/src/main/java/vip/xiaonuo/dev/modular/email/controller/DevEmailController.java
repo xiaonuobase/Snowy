@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.email.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +53,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "动态发送TXT邮件")
     @CommonLog("动态发送TXT邮件")
     @PostMapping("/dev/email/sendDynamicTxt")
@@ -69,7 +67,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "动态发送HTML邮件")
     @CommonLog("动态发送HTML邮件")
     @PostMapping("/dev/email/sendDynamicHtml")
@@ -84,7 +81,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "发送本地文本邮件")
     @CommonLog("发送本地文本邮件")
     @PostMapping("/dev/email/sendLocalTxt")
@@ -99,7 +95,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "发送本地HTML邮件")
     @CommonLog("发送本地HTML邮件")
     @PostMapping("/dev/email/sendLocalHtml")
@@ -114,7 +109,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "发送阿里云文本邮件")
     @CommonLog("发送阿里云文本邮件")
     @PostMapping("/dev/email/sendAliyunTxt")
@@ -129,7 +123,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "发送阿里云HTML邮件")
     @CommonLog("发送阿里云HTML邮件")
     @PostMapping("/dev/email/sendAliyunHtml")
@@ -144,7 +137,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "发送阿里云模板邮件")
     @CommonLog("发送阿里云模板邮件")
     @PostMapping("/dev/email/sendAliyunTmp")
@@ -159,7 +151,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "发送腾讯云文本邮件")
     @CommonLog("发送腾讯云文本邮件")
     @PostMapping("/dev/email/sendTencentTxt")
@@ -174,7 +165,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "发送腾讯云HTML邮件")
     @CommonLog("发送腾讯云HTML邮件")
     @PostMapping("/dev/email/sentTencentHtml")
@@ -189,7 +179,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "发送腾讯云模板邮件")
     @CommonLog("发送腾讯云模板邮件")
     @PostMapping("/dev/email/sentTencentTmp")
@@ -204,7 +193,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "获取邮件分页")
     @GetMapping("/dev/email/page")
     public CommonResult<Page<DevEmail>> page(DevEmailPageParam devEmailPageParam) {
@@ -217,7 +205,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "删除邮件")
     @CommonLog("删除邮件")
     @PostMapping("/dev/email/delete")
@@ -233,7 +220,6 @@ public class DevEmailController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "获取邮件详情")
     @GetMapping("/dev/email/detail")
     public CommonResult<DevEmail> detail(@Valid DevEmailIdParam devEmailIdParam) {

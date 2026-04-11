@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.sms.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +53,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "动态发送短信")
     @CommonLog("动态发送短信")
     @PostMapping("/dev/sms/sendDynamic")
@@ -69,7 +67,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "发送阿里云短信")
     @CommonLog("发送阿里云短信")
     @PostMapping("/dev/sms/sendAliyun")
@@ -84,7 +81,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "发送腾讯云短信")
     @CommonLog("发送腾讯云短信")
     @PostMapping("/dev/sms/sendTencent")
@@ -99,7 +95,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "发送小诺短信")
     @CommonLog("发送小诺短信")
     @PostMapping("/dev/sms/sendXiaonuo")
@@ -114,7 +109,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取短信分页")
     @GetMapping("/dev/sms/page")
     public CommonResult<Page<DevSms>> page(DevSmsPageParam devSmsPageParam) {
@@ -127,7 +121,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "删除短信")
     @CommonLog("删除短信")
     @PostMapping("/dev/sms/delete")
@@ -143,7 +136,6 @@ public class DevSmsController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取短信详情")
     @GetMapping("/dev/sms/detail")
     public CommonResult<DevSms> detail(@Valid DevSmsIdParam devSmsIdParam) {

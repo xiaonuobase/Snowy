@@ -14,7 +14,6 @@ package vip.xiaonuo.dev.modular.config.controller;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -67,7 +66,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取配置分页")
     @GetMapping("/dev/config/page")
     public CommonResult<Page<DevConfig>> page(DevConfigPageParam devConfigPageParam) {
@@ -80,7 +78,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取系统基础配置")
     @GetMapping("/dev/config/sysBaseList")
     public CommonResult<List<DevConfig>> sysBaseList() {
@@ -93,7 +90,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取系统三方登录开关配置")
     @GetMapping("/dev/config/sysThirdAllowFlagList")
     public CommonResult<List<DevConfig>> sysThirdAllowFlagList() {
@@ -106,7 +102,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取配置列表")
     @GetMapping("/dev/config/list")
     public CommonResult<List<DevConfig>> list(DevConfigListParam devConfigListParam) {
@@ -119,7 +114,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加配置")
     @CommonLog("添加配置")
     @PostMapping("/dev/config/add")
@@ -134,7 +128,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑配置")
     @CommonLog("编辑配置")
     @PostMapping("/dev/config/edit")
@@ -149,7 +142,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除配置")
     @CommonLog("删除配置")
     @PostMapping("/dev/config/delete")
@@ -165,7 +157,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取配置详情")
     @GetMapping("/dev/config/detail")
     public CommonResult<DevConfig> detail(@Valid DevConfigIdParam devConfigIdParam) {
@@ -178,7 +169,6 @@ public class DevConfigController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "配置批量更新")
     @CommonLog("配置批量更新")
     @PostMapping("/dev/config/editBatch")

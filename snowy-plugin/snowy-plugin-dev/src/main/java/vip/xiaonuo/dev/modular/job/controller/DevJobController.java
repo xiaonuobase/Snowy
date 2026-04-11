@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.job.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +53,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取定时任务分页")
     @GetMapping("/dev/job/page")
     public CommonResult<Page<DevJob>> page(DevJobPageParam devJobPageParam) {
@@ -67,7 +65,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取定时任务列表")
     @GetMapping("/dev/job/list")
     public CommonResult<List<DevJob>> list(DevJobListParam devJobListParam) {
@@ -80,7 +77,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加定时任务")
     @CommonLog("添加定时任务")
     @PostMapping("/dev/job/add")
@@ -95,7 +91,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑定时任务")
     @CommonLog("编辑定时任务")
     @PostMapping("/dev/job/edit")
@@ -110,7 +105,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除定时任务")
     @CommonLog("删除定时任务")
     @PostMapping("/dev/job/delete")
@@ -126,7 +120,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取定时任务详情")
     @GetMapping("/dev/job/detail")
     public CommonResult<DevJob> detail(@Valid DevJobIdParam devJobIdParam) {
@@ -139,7 +132,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "停止定时任务")
     @CommonLog("停止定时任务")
     @PostMapping("/dev/job/stopJob")
@@ -154,7 +146,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "运行定时任务")
     @CommonLog("运行定时任务")
     @PostMapping("/dev/job/runJob")
@@ -169,7 +160,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "立即运行定时任务")
     @CommonLog("立即运行定时任务")
     @PostMapping("/dev/job/runJobNow")
@@ -184,7 +174,6 @@ public class DevJobController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取定时任务类")
     @GetMapping("/dev/job/getActionClass")
     public CommonResult<List<String>> getActionClass() {

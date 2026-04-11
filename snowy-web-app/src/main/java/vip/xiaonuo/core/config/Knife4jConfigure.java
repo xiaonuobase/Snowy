@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.core.config;
 
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.github.xiaoymin.knife4j.core.conf.ExtensionsConstants;
 import com.github.xiaoymin.knife4j.core.model.MarkdownProperty;
@@ -24,8 +25,10 @@ import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import com.github.xiaoymin.knife4j.spring.filter.JakartaProductionSecurityFilter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
+import org.springdoc.core.customizers.GlobalOperationCustomizer;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,12 +37,18 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.HandlerMethod;
 
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +82,19 @@ public class Knife4jConfigure {
     @ConditionalOnMissingBean
     public Knife4jJakartaOperationCustomizer knife4jJakartaOperationCustomizer() {
         return new Knife4jJakartaOperationCustomizer();
+    }
+
+    /**
+     * 接口自动排序自定义器：按方法在Controller中的声明顺序自动设置x-order，
+     * 无需手动编写@ApiOperationSupport(order = x)。
+     * 若方法已通过@ApiOperationSupport指定了order > 0，则优先使用手动指定的值。
+     * 使用@Order(LOWEST_PRECEDENCE)确保在Knife4jJakartaOperationCustomizer之后执行，
+     * 防止被其覆盖。
+     */
+    @Bean
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    public GlobalOperationCustomizer autoOrderOperationCustomizer() {
+        return new AutoOrderOperationCustomizer();
     }
 
     /**
@@ -207,6 +229,80 @@ public class Knife4jConfigure {
                 }
             }
             return classes;
+        }
+    }
+
+    /**
+     * 自动排序自定义器：根据方法在Controller类中的声明顺序自动分配x-order值。
+     * 效果：Knife4j文档中接口顺序与源码中方法书写顺序一致，无需手动编号。
+     * 兼容：若方法已通过@ApiOperationSupport(order > 0)手动指定顺序，则优先使用手动值。
+     * 实现：通过Spring内置的ASM读取.class文件获取可靠的方法声明顺序，
+     * 不依赖getDeclaredMethods()（JDK 7+不保证返回源码顺序）。
+     */
+    static class AutoOrderOperationCustomizer implements GlobalOperationCustomizer {
+
+        private final Map<Class<?>, Map<String, Integer>> classMethodOrderCache = new ConcurrentHashMap<>();
+
+        @Override
+        public Operation customize(Operation operation, HandlerMethod handlerMethod) {
+            // 如果已通过@ApiOperationSupport手动指定了order > 0，优先使用
+            ApiOperationSupport support = handlerMethod.getMethodAnnotation(ApiOperationSupport.class);
+            if (support != null && support.order() > 0) {
+                operation.addExtension(ExtensionsConstants.EXTENSION_ORDER, support.order());
+                return operation;
+            }
+            // 自动按方法声明顺序分配order
+            Class<?> beanType = handlerMethod.getBeanType();
+            Map<String, Integer> methodOrderMap = classMethodOrderCache.computeIfAbsent(beanType,
+                    this::buildMethodOrderMap);
+            String methodKey = handlerMethod.getMethod().getName();
+            Integer order = methodOrderMap.get(methodKey);
+            if (order != null) {
+                operation.addExtension(ExtensionsConstants.EXTENSION_ORDER, order);
+            }
+            return operation;
+        }
+
+        /**
+         * 通过ASM读取.class文件，按字节码中方法的声明顺序构建映射。
+         * .class文件中的方法顺序与源码声明顺序一致（javac保证），
+         * 比getDeclaredMethods()更可靠（后者在JDK 7+不保证返回源码顺序）。
+         */
+        private Map<String, Integer> buildMethodOrderMap(Class<?> clazz) {
+            Map<String, Integer> map = new LinkedHashMap<>();
+            try {
+                String resourcePath = clazz.getName().replace('.', '/') + ".class";
+                try (InputStream is = clazz.getClassLoader().getResourceAsStream(resourcePath)) {
+                    if (is != null) {
+                        org.springframework.asm.ClassReader reader = new org.springframework.asm.ClassReader(is);
+                        int[] counter = {1};
+                        reader.accept(new org.springframework.asm.ClassVisitor(org.springframework.asm.Opcodes.ASM9) {
+                            @Override
+                            public org.springframework.asm.MethodVisitor visitMethod(int access, String name,
+                                    String descriptor, String signature, String[] exceptions) {
+                                boolean isPublic = (access & org.springframework.asm.Opcodes.ACC_PUBLIC) != 0;
+                                boolean isConstructor = "<init>".equals(name) || "<clinit>".equals(name);
+                                if (isPublic && !isConstructor) {
+                                    map.putIfAbsent(name, counter[0]++);
+                                }
+                                return null;
+                            }
+                        }, org.springframework.asm.ClassReader.SKIP_CODE
+                                | org.springframework.asm.ClassReader.SKIP_DEBUG
+                                | org.springframework.asm.ClassReader.SKIP_FRAMES);
+                    }
+                }
+            } catch (Exception e) {
+                // ASM读取失败时降级到getDeclaredMethods
+                Method[] methods = clazz.getDeclaredMethods();
+                int order = 1;
+                for (Method method : methods) {
+                    if (java.lang.reflect.Modifier.isPublic(method.getModifiers())) {
+                        map.putIfAbsent(method.getName(), order++);
+                    }
+                }
+            }
+            return map;
         }
     }
 }

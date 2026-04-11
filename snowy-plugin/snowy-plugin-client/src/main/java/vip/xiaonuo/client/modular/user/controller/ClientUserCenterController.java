@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.client.modular.user.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,7 +48,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取图片验证码")
     @GetMapping("/client/userCenter/getPicCaptcha")
     public CommonResult<ClientUserPicValidCodeResult> getPicCaptcha() {
@@ -62,7 +60,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "找回密码获取手机验证码")
     @GetMapping("/client/userCenter/findPasswordGetPhoneValidCode")
     public CommonResult<String> findPasswordGetPhoneValidCode(@Valid ClientUserGetPhoneValidCodeParam clientUserGetPhoneValidCodeParam) {
@@ -75,7 +72,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "找回密码获取邮箱验证码")
     @GetMapping("/client/userCenter/findPasswordGetEmailValidCode")
     public CommonResult<String> findPasswordGetEmailValidCode(@Valid ClientUserGetEmailValidCodeParam clientUserGetEmailValidCodeParam) {
@@ -88,7 +84,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "通过手机号找回用户密码")
     @CommonLog("通过手机号找回用户密码")
     @PostMapping("/client/userCenter/findPasswordByPhone")
@@ -103,7 +98,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "通过邮箱找回用户密码")
     @CommonLog("通过邮箱找回用户密码")
     @PostMapping("/client/userCenter/findPasswordByEmail")
@@ -118,7 +112,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "修改密码获取手机验证码")
     @GetMapping("/client/userCenter/updatePasswordGetPhoneValidCode")
     public CommonResult<String> updatePasswordGetPhoneValidCode(@Valid ClientUserGetPhoneValidCodeParam clientUserGetPhoneValidCodeParam) {
@@ -131,7 +124,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "修改密码获取邮箱验证码")
     @GetMapping("/client/userCenter/updatePasswordGetEmailValidCode")
     public CommonResult<String> updatePasswordGetEmailValidCode(@Valid ClientUserGetEmailValidCodeParam clientUserGetEmailValidCodeParam) {
@@ -144,7 +136,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "通过验证旧密码修改用户密码")
     @CommonLog("通过验证旧密码修改用户密码")
     @PostMapping("/client/userCenter/updatePasswordByOld")
@@ -159,7 +150,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "通过验证手机号修改用户密码")
     @CommonLog("通过验证手机号修改用户密码")
     @PostMapping("/client/userCenter/updatePasswordByPhone")
@@ -174,7 +164,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "通过验证邮箱修改用户密码")
     @CommonLog("通过验证邮箱修改用户密码")
     @PostMapping("/client/userCenter/updatePasswordByEmail")
@@ -189,7 +178,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "绑定手机号获取手机验证码")
     @GetMapping("/client/userCenter/bindPhoneGetPhoneValidCode")
     public CommonResult<String> bindPhoneGetPhoneValidCode(@Valid ClientUserGetPhoneValidCodeParam clientUserGetPhoneValidCodeParam) {
@@ -202,7 +190,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "修改绑定手机号获取手机验证码")
     @GetMapping("/client/userCenter/updateBindPhoneGetPhoneValidCode")
     public CommonResult<String> updateBindPhoneGetPhoneValidCode(@Valid ClientUserGetPhoneValidCodeParam clientUserGetPhoneValidCodeParam) {
@@ -215,7 +202,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "绑定手机号")
     @CommonLog("绑定手机号")
     @PostMapping("/client/userCenter/bindPhone")
@@ -230,7 +216,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 14)
     @Operation(summary = "绑定邮箱获取邮箱验证码")
     @GetMapping("/client/userCenter/bindEmailGetEmailValidCode")
     public CommonResult<String> bindEmailGetEmailValidCode(@Valid ClientUserGetEmailValidCodeParam clientUserGetEmailValidCodeParam) {
@@ -243,7 +228,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "修改绑定邮箱获取邮箱验证码")
     @GetMapping("/client/userCenter/updateBindEmailGetEmailValidCode")
     public CommonResult<String> updateBindEmailGetEmailValidCode(@Valid ClientUserGetEmailValidCodeParam clientUserGetEmailValidCodeParam) {
@@ -256,7 +240,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "绑定邮箱")
     @CommonLog("绑定邮箱")
     @PostMapping("/client/userCenter/bindEmail")
@@ -271,7 +254,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "修改用户头像")
     @CommonLog("修改用户头像")
     @PostMapping("/client/userCenter/updateAvatar")
@@ -285,7 +267,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 18)
     @Operation(summary = "修改用户签名图片")
     @CommonLog("修改用户签名图片")
     @PostMapping("/client/userCenter/updateSignature")
@@ -300,7 +281,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 19)
     @Operation(summary = "编辑个人信息")
     @CommonLog("编辑个人信息")
     @PostMapping("/client/userCenter/updateUserInfo")
@@ -315,7 +295,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 20)
     @Operation(summary = "根据id获取头像")
     @GetMapping("/client/userCenter/getAvatarById")
     public CommonResult<String> getAvatarById(@Valid ClientUserIdParam clientUserIdParam) {
@@ -328,7 +307,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 21)
     @Operation(summary = "判断当前用户是否需要绑定手机号")
     @GetMapping("/client/userCenter/isUserNeedBindPhone")
     public CommonResult<Boolean> isUserNeedBindPhone() {
@@ -341,7 +319,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 22)
     @Operation(summary = "判断当前用户是否需要绑定邮箱")
     @GetMapping("/client/userCenter/isUserNeedBindEmail")
     public CommonResult<Boolean> isUserNeedBindEmail() {
@@ -354,7 +331,6 @@ public class ClientUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 21)
     @Operation(summary = "判断当前用户密码是否过期")
     @GetMapping("/client/userCenter/isUserPasswordExpired")
     public CommonResult<Boolean> isUserPasswordExpired() {
