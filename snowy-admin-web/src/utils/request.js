@@ -108,7 +108,8 @@ service.interceptors.response.use(
 			//   });
 			// }
 		} else {
-			// 统一成功提示
+			// 统一成功提示（支持 skipSuccessMessage 跳过）
+			if (!response.config.skipSuccessMessage) {
 			const functionName = response.config.url.split('/').pop()
 			const apiNameArray = [
 				'add',
@@ -136,6 +137,7 @@ service.interceptors.response.use(
 					message.success(data.msg)
 				}
 			})
+			}
 		}
 		return Promise.resolve(data.data)
 	},
