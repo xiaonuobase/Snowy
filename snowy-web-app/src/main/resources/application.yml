@@ -1,0 +1,239 @@
+#########################################
+# server configuration
+#########################################
+server:
+  port: 82
+
+spring:
+  application:
+    name: snowy
+#########################################
+# spring allow-circular-references
+#########################################
+  main:
+    allow-circular-references: true
+#########################################
+# spring profiles configuration
+#########################################
+  profiles:
+    active: local
+    #active: test
+    #active: prod
+#spring.profiles.active=test
+#spring.profiles.active=prod
+#########################################
+# multipart configuration
+#########################################
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 100MB
+#########################################
+# datasource configuration
+#########################################
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/snowy?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&useInformationSchema=true&rewriteBatchedStatements=true
+          username: root
+          password: 12345678
+          # postgres
+          #spring.datasource.dynamic.datasource.master.driver-class-name=org.postgresql.Driver
+          #spring.datasource.dynamic.datasource.master.url=jdbc:postgresql://localhost:5432/snowy
+          #spring.datasource.dynamic.datasource.master.username=postgres
+          #spring.datasource.dynamic.datasource.master.password=123456
+          #spring.datasource.dynamic.strict=true
+          # oracle
+          #spring.datasource.dynamic.datasource.master.driver-class-name=oracle.jdbc.OracleDriver
+          #spring.datasource.dynamic.datasource.master.url=jdbc:oracle:thin:@//127.0.0.1:1521/ORCL?remarksReporting=true
+          #spring.datasource.dynamic.datasource.master.username=SNOWY
+          #spring.datasource.dynamic.datasource.master.password=12345678
+          #spring.datasource.dynamic.strict=true
+          # mssql
+          #spring.datasource.dynamic.datasource.master.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
+          #spring.datasource.dynamic.datasource.master.url=jdbc:sqlserver://localhost:1433;DatabaseName=SNOWY
+          #spring.datasource.dynamic.datasource.master.username=sa
+          #spring.datasource.dynamic.datasource.master.password=123456
+          #spring.datasource.dynamic.strict=true
+          # dm database
+          #spring.datasource.dynamic.datasource.master.driver-class-name=dm.jdbc.driver.DmDriver
+          #spring.datasource.dynamic.datasource.master.url=jdbc:dm://localhost:5236/SNOWY
+          #spring.datasource.dynamic.datasource.master.username=SYSDBA
+          #spring.datasource.dynamic.datasource.master.password=SYSDBA
+          #spring.datasource.dynamic.strict=true
+          # kingbase database
+          #spring.datasource.dynamic.datasource.master.driver-class-name=com.kingbase8.Driver
+          #spring.datasource.dynamic.datasource.master.url=jdbc:kingbase8://localhost:54321/snowy
+          #spring.datasource.dynamic.datasource.master.username=SYSTEM
+          #spring.datasource.dynamic.datasource.master.password=123456
+          #spring.datasource.dynamic.strict=true
+      strict: true
+      # druid global configuration
+      public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMWiTVtdXFVrgFHDDKELZM0SywkWY3KjugN90eY5Sogon1j8Y0ClPF7nx3FuE7pAeBKiv7ChIS0vvx/59WUpKmUCAwEAAQ==
+      druid:
+        initial-size: 5
+        max-active: 20
+        min-idle: 5
+        max-wait: 60000
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+        validation-query-timeout: 2000
+        test-on-borrow: false
+        test-on-return: false
+        test-while-idle: true
+        validation-query: SELECT 1
+        time-between-eviction-runs-millis: 6000
+        min-evictable-idle-time-millis: 300000
+        filters: stat
+        break-after-acquire-failure: false
+    druid:
+      stat-view-servlet:
+        enabled: true
+        login-username: admin
+        login-password: 123456
+#########################################
+# jackson configuration
+#########################################
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
+    serialization:
+      write-dates-as-timestamps: false
+#########################################
+# redis configuration
+#########################################
+  data:
+    redis:
+      database: 1
+      host: 127.0.0.1
+      port: 6379
+      password:
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 200
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 0
+#########################################
+# mybatis-plus configuration
+#########################################
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    jdbc-type-for-null: null
+  global-config:
+    banner: false
+    enable-sql-runner: true
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: DELETE_FLAG
+      logic-delete-value: DELETED
+      logic-not-delete-value: NOT_DELETE
+  mapper-locations: classpath*:vip/xiaonuo/**/mapping/*.xml,com/bstek/**/mapping/*.xml
+  type-handlers-package: vip.xiaonuo.common.handler
+#########################################
+# easy-trans configuration
+#########################################
+easy-trans:
+  is-enable-redis: true
+  is-enable-global: true
+  is-enable-tile: true
+  is-enable-cloud: false
+#########################################
+# sa-token configuration
+#########################################
+sa-token:
+  token-name: token
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: false
+  max-login-count: -1
+  token-style: random-32
+  is-log: false
+  is-print: false
+# sa-token alone-redis configuration
+  alone-redis:
+    database: 2
+    host: ${spring.data.redis.host}
+    port: ${spring.data.redis.port}
+    password: ${spring.data.redis.password}
+    timeout: ${spring.data.redis.timeout}
+    lettuce:
+      pool:
+        max-active: ${spring.data.redis.lettuce.pool.max-active}
+        max-wait: ${spring.data.redis.lettuce.pool.max-wait}
+        max-idle: ${spring.data.redis.lettuce.pool.max-idle}
+        min-idle: ${spring.data.redis.lettuce.pool.min-idle}
+# sso configuration
+  sso-client:
+    client:
+    auth-url:
+    signout-url:
+    push-url:
+    secret-key:
+#########################################
+# knife4j configuration
+#########################################
+knife4j:
+  enable: true
+  production: false
+  basic:
+    enable: true
+    username: admin
+    password: 123456
+  setting:
+    enableOpenApi: false
+    enableSwaggerModels: false
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright 2020-2024[SNOWY](https://www.xiaonuo.vip)
+# knife4j doc groups
+springdoc:
+  default-flat-param-object: true
+  group-configs:
+    - group: SNOWY-PLUGIN-AUTH
+      display-name: ${springdoc.group-configs[0].group}
+      packages-to-scan: vip.xiaonuo.auth
+    - group: SNOWY-PLUGIN-BIZ
+      display-name: ${springdoc.group-configs[1].group}
+      packages-to-scan: vip.xiaonuo.biz
+    - group: SNOWY-PLUGIN-CLIENT
+      display-name: ${springdoc.group-configs[2].group}
+      packages-to-scan: vip.xiaonuo.client
+    - group: SNOWY-PLUGIN-DEV
+      display-name: ${springdoc.group-configs[3].group}
+      packages-to-scan: vip.xiaonuo.dev
+    - group: SNOWY-PLUGIN-GEN
+      display-name: ${springdoc.group-configs[4].group}
+      packages-to-scan: vip.xiaonuo.gen
+    - group: SNOWY-PLUGIN-MOBILE
+      display-name: ${springdoc.group-configs[5].group}
+      packages-to-scan: vip.xiaonuo.mobile
+    - group: SNOWY-PLUGIN-SYS
+      display-name: ${springdoc.group-configs[6].group}
+      packages-to-scan: vip.xiaonuo.sys
+#########################################
+# snowy configuration
+#########################################
+# common configuration
+snowy:
+  config:
+    common:
+      front-url: http://localhost:81
+      backend-url: http://localhost:82
+#########################################
+# third-auth configuration iframe login
+#########################################
+  third-auth:
+    user-info-url:
+# plugin dev-sms configuration
+sms-oa:
+  config-type: yaml
+  core-pool-size: 20
+  queue-capacity: 20
+  max-pool-size: 20
