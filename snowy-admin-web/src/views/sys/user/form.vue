@@ -10,7 +10,7 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-tabs v-model:activeKey="activeTabsKey">
 				<a-tab-pane key="1" tab="基础信息" force-render>
-					<a-row :gutter="16">
+					<a-row :gutter="16" class="!mx-0">
 						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="账号：" name="account">
 								<a-input v-model:value="formData.account" placeholder="请输入账号" allow-clear />
@@ -41,8 +41,6 @@
 								<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择组织：" name="orgId">
 								<xn-tree-select
@@ -79,8 +77,6 @@
 								/>
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="员工编号：" name="empNo">
 								<a-input v-model:value="formData.empNo" placeholder="请输入员工编号" allow-clear />
@@ -96,78 +92,79 @@
 								<a-date-picker v-model:value="formData.entryDate" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
 						</a-col>
-					</a-row>
-
-					<a-form-item label="任职信息" name="positionJson">
-						<a-row :gutter="10" class="form-row mb-5">
-							<a-col :span="7"> 机构 </a-col>
-							<a-col :span="7"> 职位 </a-col>
-							<a-col :span="7"> 主管 </a-col>
-							<a-col :span="3">
-								<a-button type="primary" @click="addDomains()" size="small">
-									<PlusOutlined />
-									增加
-								</a-button>
-							</a-col>
-						</a-row>
-						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
-							<a-row :gutter="10">
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item
-										:name="['positionJson', index, 'orgId']"
-										:rules="{ required: true, message: '请选择组织' }"
-									>
-										<xn-tree-select
-											:ref="(el) => setChildTreeSelectRef(el, index)"
-											v-model:value="positionInfo.orgId"
-											:tree-api="userApi.userOrgTreeSelector"
-											:ancestor-api="userApi.userGetAncestorNodes"
-											placeholder="请选择组织"
-											@change="childOrgSelect(positionInfo, 0, index)"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item
-										:name="['positionJson', index, 'positionId']"
-										:rules="{ required: true, message: '请选择职位' }"
-									>
-										<xn-page-select
-											ref="xnChildPositionPageSelectRef"
-											v-model:value="positionInfo.positionId"
-											placeholder="请选择职位"
-											allow-clear
-											:page-function="selectApiFunction.childPositionSelector"
-											:echo-function="selectApiFunction.echoPosition"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item :name="['positionJson', index, 'directorId']">
-										<xn-page-select
-											ref="xnChildUserPageSelectRef"
-											v-model:value="positionInfo.directorId"
-											placeholder="请选择主管"
-											allow-clear
-											:page-function="selectApiFunction.childUserSelector"
-											:echo-function="selectApiFunction.echoUser"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
-									<a-form-item>
-										<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
-											<DeleteOutlined />
-											移除
+						<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+							<a-form-item label="任职信息" name="positionJson">
+								<a-row :gutter="10" class="bg-[var(--item-hover-bg)] p-1 mb-2.5 !mx-0">
+									<a-col :span="7" class="text-center truncate"> 机构 </a-col>
+									<a-col :span="7" class="text-center truncate"> 职位 </a-col>
+									<a-col :span="7" class="text-center truncate"> 主管 </a-col>
+									<a-col :span="3" class="text-center">
+										<a-button type="primary" @click="addDomains()" size="small">
+											<PlusOutlined />
+											<span class="!hidden md:!inline">增加</span>
 										</a-button>
-									</a-form-item>
-								</a-col>
-							</a-row>
-						</div>
-					</a-form-item>
+									</a-col>
+								</a-row>
+								<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
+									<a-row :gutter="10" class="!mx-0">
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+											<a-form-item
+												:name="['positionJson', index, 'orgId']"
+												:rules="{ required: true, message: '请选择组织' }"
+											>
+												<xn-tree-select
+													:ref="(el) => setChildTreeSelectRef(el, index)"
+													v-model:value="positionInfo.orgId"
+													:tree-api="userApi.userOrgTreeSelector"
+													:ancestor-api="userApi.userGetAncestorNodes"
+													placeholder="请选择组织"
+													@change="childOrgSelect(positionInfo, 0, index)"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+											<a-form-item
+												:name="['positionJson', index, 'positionId']"
+												:rules="{ required: true, message: '请选择职位' }"
+											>
+												<xn-page-select
+													ref="xnChildPositionPageSelectRef"
+													v-model:value="positionInfo.positionId"
+													placeholder="请选择职位"
+													allow-clear
+													:page-function="selectApiFunction.childPositionSelector"
+													:echo-function="selectApiFunction.echoPosition"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+											<a-form-item :name="['positionJson', index, 'directorId']">
+												<xn-page-select
+													ref="xnChildUserPageSelectRef"
+													v-model:value="positionInfo.directorId"
+													placeholder="请选择主管"
+													allow-clear
+													:page-function="selectApiFunction.childUserSelector"
+													:echo-function="selectApiFunction.echoUser"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3" class="text-center">
+											<a-form-item>
+												<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
+													<DeleteOutlined />
+													移除
+												</a-button>
+											</a-form-item>
+										</a-col>
+									</a-row>
+								</div>
+							</a-form-item>
+						</a-col>
+					</a-row>
 				</a-tab-pane>
 				<a-tab-pane key="2" tab="更多信息" force-render>
-					<a-row :gutter="16">
+					<a-row :gutter="16" class="!mx-0">
 						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="出生日期：" name="birthday">
 								<a-date-picker v-model:value="formData.birthday" value-format="YYYY-MM-DD" class="xn-wd" />
@@ -462,11 +459,3 @@
 
 	defineExpose({ onOpen })
 </script>
-
-<style scoped lang="less">
-	.form-row {
-		background-color: var(--item-hover-bg);
-		margin-bottom: 10px;
-		padding: 4px;
-	}
-</style>
