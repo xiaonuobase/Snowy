@@ -75,7 +75,7 @@
 	</a-modal>
 </template>
 <script setup>
-	import { ref, computed, watch, watchEffect } from 'vue'
+	import { ref, computed, nextTick, watch, watchEffect } from 'vue'
 	import { AimOutlined, CloseOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue'
 	import { useDraggable } from '@vueuse/core'
 
@@ -249,7 +249,9 @@
 		transformY.value = 0
 		preTransformX.value = 0
 		preTransformY.value = 0
-		startedDrag.value = false
+		nextTick(() => {
+			startedDrag.value = false
+		})
 	}
 
 	watch(

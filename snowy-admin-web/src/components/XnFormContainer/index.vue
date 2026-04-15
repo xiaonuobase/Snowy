@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-	import { computed, useSlots, onMounted, onUnmounted } from 'vue'
+	import { computed, nextTick, onMounted, onUnmounted, useSlots } from 'vue'
 	import { AimOutlined, CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 	import { useDraggable } from '@vueuse/core'
 	import { globalStore } from '@/store'
@@ -199,7 +199,9 @@
 		transformY.value = 0
 		preTransformX.value = 0
 		preTransformY.value = 0
-		startedDrag.value = false
+		nextTick(() => {
+			startedDrag.value = false
+		})
 	}
 
 	watch(
