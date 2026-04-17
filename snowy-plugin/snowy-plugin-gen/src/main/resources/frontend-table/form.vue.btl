@@ -41,6 +41,22 @@
 						<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" uploadMode="image" />
 						<% } else if (configList[i].effectType == 'editor') {%>
 						<xn-editor v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+						<% } else if (configList[i].effectType == 'userSelector') {%>
+						<xn-user-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'userSelectorMulti') {%>
+						<xn-user-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'orgSelector') {%>
+						<xn-org-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'orgSelectorMulti') {%>
+						<xn-org-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'positionSelector') {%>
+						<xn-position-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'positionSelectorMulti') {%>
+						<xn-position-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'groupSelector') {%>
+						<xn-group-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+						<% } else if (configList[i].effectType == 'groupSelectorMulti') {%>
+						<xn-group-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
 						<% } %>
 					</a-form-item>
 				</a-col>
@@ -75,6 +91,22 @@
 				<xn-upload v-model:value="formData.${configList[i].fieldNameCamelCase}" uploadMode="image" />
 				<% } else if (configList[i].effectType == 'editor') {%>
 				<xn-editor v-model:value="formData.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+				<% } else if (configList[i].effectType == 'userSelector') {%>
+				<xn-user-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'userSelectorMulti') {%>
+				<xn-user-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'orgSelector') {%>
+				<xn-org-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'orgSelectorMulti') {%>
+				<xn-org-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'positionSelector') {%>
+				<xn-position-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'positionSelectorMulti') {%>
+				<xn-position-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'groupSelector') {%>
+				<xn-group-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+				<% } else if (configList[i].effectType == 'groupSelectorMulti') {%>
+				<xn-group-selector v-model:value="formData.${configList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
 				<% } %>
 			</a-form-item>
 		<% } %>
@@ -105,6 +137,9 @@
 	import { cloneDeep } from 'lodash-es'
 	import { required } from '@/utils/formRules'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
+<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+	import userCenterApi from '@/api/sys/userCenterApi'
+<% } %>
 	// 抽屉状态
 	const open = ref(false)
 	const emit = defineEmits({ successful: null })

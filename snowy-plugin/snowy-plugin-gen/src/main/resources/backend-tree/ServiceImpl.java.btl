@@ -19,6 +19,9 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNode;
+import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -33,11 +36,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import cn.dev33.satoken.stp.StpUtil;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.util.CommonServletUtil;
+import vip.xiaonuo.common.util.CommonSqlUtil;
 import ${packageName}.common.enums.CommonSortOrderEnum;
 import ${packageName}.common.exception.CommonException;
 import ${packageName}.common.page.CommonPageRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
 import ${packageName}.${moduleName}.modular.${busName}.mapper.${className}Mapper;
 import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
@@ -67,7 +80,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     public Page<${className}> page(${className}PageParam ${classNameFirstLower}PageParam) {
         QueryWrapper<${className}> queryWrapper = new QueryWrapper<${className}>().checkSqlInjection();
         <% for(var i = 0; i < configList.~size; i++) { %>
-        <% if(configList[i].needPage) { %>
+        <% if(configList[i].needPage && configList[i].fieldNameCamelCase != treeParentFieldCamelCase) { %>
         <% if(configList[i].effectType == 'datepicker') { %>
         if(ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.getStart${configList[i].fieldNameCamelCaseFirstUpper}()) && ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.getEnd${configList[i].fieldNameCamelCaseFirstUpper}())) {
             queryWrapper.lambda().between(${className}::get${configList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}PageParam.getStart${configList[i].fieldNameCamelCaseFirstUpper}(), ${classNameFirstLower}PageParam.getEnd${configList[i].fieldNameCamelCaseFirstUpper}());
@@ -79,6 +92,10 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
         <% } %>
         <% } %>
         <% } %>
+        // 父级字段过滤
+        if(ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.get${treeParentFieldCamelCaseFirstUpper}())) {
+            queryWrapper.lambda().eq(${className}::get${treeParentFieldCamelCaseFirstUpper}, ${classNameFirstLower}PageParam.get${treeParentFieldCamelCaseFirstUpper}());
+        }
         if(ObjectUtil.isAllNotEmpty(${classNameFirstLower}PageParam.getSortField(), ${classNameFirstLower}PageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(${classNameFirstLower}PageParam.getSortOrder());
             queryWrapper.orderBy(true, ${classNameFirstLower}PageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
@@ -90,13 +107,201 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
             queryWrapper.lambda().orderByAsc(${className}::get${dbTableKeyFirstUpper});
             <% } %>
         }
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            // 根据业务需要，取消下面注释并修改为实际的数据范围字段，例如：orgId
+            // CommonSqlUtil.scopeIn(queryWrapper.lambda(), ${className}::getOrgId, StpUtil.getLoginIdAsString(), CommonServletUtil.getRequest().getServletPath());
+        }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+    }
+
+    @Override
+    public List<JSONObject> tree(${className}PageParam ${classNameFirstLower}PageParam) {
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (${classNameFirstLower}PageParam.getSearchKey() != null) {
+            return this.treeSearch(${classNameFirstLower}PageParam.getSearchKey());
+        }
+        // 懒加载模式：按父级字段过滤当前层
+        LambdaQueryWrapper<${className}> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(ObjectUtil.isNotEmpty(${classNameFirstLower}PageParam.get${treeParentFieldCamelCaseFirstUpper}())) {
+            lambdaQueryWrapper.eq(${className}::get${treeParentFieldCamelCaseFirstUpper}, ${classNameFirstLower}PageParam.get${treeParentFieldCamelCaseFirstUpper}());
+        } else {
+            lambdaQueryWrapper.and(wrapper -> wrapper.isNull(${className}::get${treeParentFieldCamelCaseFirstUpper})
+                    .or().eq(${className}::get${treeParentFieldCamelCaseFirstUpper}, "0")
+                    .or().eq(${className}::get${treeParentFieldCamelCaseFirstUpper}, ""));
+        }
+        <% if(hasSortCodeField) { %>
+        lambdaQueryWrapper.orderByAsc(${className}::getSortCode);
+        <% } else { %>
+        lambdaQueryWrapper.orderByAsc(${className}::get${dbTableKeyFirstUpper});
+        <% } %>
+        List<${className}> list = this.list(lambdaQueryWrapper);
+        if (ObjectUtil.isEmpty(list)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 批量判断哪些节点还有下级
+        List<String> ids = list.stream().map(item -> item.get${dbTableKeyFirstUpper}().toString()).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<${className}>()
+                        .select(${className}::get${treeParentFieldCamelCaseFirstUpper})
+                        .in(${className}::get${treeParentFieldCamelCaseFirstUpper}, ids))
+                .stream().map(item -> item.get${treeParentFieldCamelCaseFirstUpper}().toString()).collect(Collectors.toSet());
+        return list.stream().map(item -> {
+            JSONObject jsonObject = JSONUtil.parseObj(item);
+            jsonObject.set("key", item.get${dbTableKeyFirstUpper}());
+            jsonObject.set("title", item.get${treeNameFieldCamelCaseFirstUpper}());
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(item.get${dbTableKeyFirstUpper}().toString()));
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 全量搜索模式，返回嵌套树结构
+     * searchKey为空字符串时返回全量树，非空时按关键字过滤（包含匹配节点及其所有祖先）
+     */
+    private List<JSONObject> treeSearch(String searchKey) {
+        List<${className}> allList = this.list();
+        List<${className}> filteredList;
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            // 找到所有匹配节点及其祖先
+            Set<String> neededIds = CollectionUtil.newLinkedHashSet();
+            allList.stream()
+                    .filter(item -> StrUtil.containsIgnoreCase(
+                            ObjectUtil.isEmpty(item.get${treeNameFieldCamelCaseFirstUpper}()) ? "" : item.get${treeNameFieldCamelCaseFirstUpper}().toString(),
+                            searchKey))
+                    .forEach(item -> {
+                        // 沿parentId向上收集所有祖先
+                        String currentId = item.get${dbTableKeyFirstUpper}().toString();
+                        while (ObjectUtil.isNotEmpty(currentId) && !"0".equals(currentId)) {
+                            if (!neededIds.add(currentId)) break;
+                            String finalCurrentId = currentId;
+                            currentId = allList.stream()
+                                    .filter(p -> p.get${dbTableKeyFirstUpper}().toString().equals(finalCurrentId))
+                                    .map(p -> ObjectUtil.isEmpty(p.get${treeParentFieldCamelCaseFirstUpper}()) ? null : p.get${treeParentFieldCamelCaseFirstUpper}().toString())
+                                    .findFirst().orElse(null);
+                        }
+                    });
+            filteredList = allList.stream()
+                    .filter(item -> neededIds.contains(item.get${dbTableKeyFirstUpper}().toString()))
+                    .collect(Collectors.toList());
+        } else {
+            filteredList = allList;
+        }
+        <% if(hasSortCodeField) { %>
+        filteredList.sort(Comparator.comparingInt((${className} item) -> item.getSortCode() == null ? 0 : item.getSortCode())
+                .thenComparing(item -> item.get${dbTableKeyFirstUpper}().toString()));
+        <% } else { %>
+        filteredList.sort(Comparator.comparing(item -> item.get${dbTableKeyFirstUpper}().toString()));
+        <% } %>
+        List<TreeNode<String>> treeNodeList = filteredList.stream().map(item -> {
+            JSONObject extra = JSONUtil.parseObj(item);
+            extra.set("key", item.get${dbTableKeyFirstUpper}());
+            extra.set("title", item.get${treeNameFieldCamelCaseFirstUpper}());
+            return new TreeNode<>(item.get${dbTableKeyFirstUpper}().toString(),
+                    ObjectUtil.isEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) ? "0" : item.get${treeParentFieldCamelCaseFirstUpper}().toString(),
+                    ObjectUtil.isEmpty(item.get${treeNameFieldCamelCaseFirstUpper}()) ? "" : item.get${treeNameFieldCamelCaseFirstUpper}().toString(),
+                    0).setExtra(extra);
+        }).collect(Collectors.toList());
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
+        List<JSONObject> result = JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
+        markLeafNodes(result);
+        return result;
+    }
+
+    /**
+     * 递归标记叶子节点
+     */
+    private void markLeafNodes(List<JSONObject> nodes) {
+        if (nodes == null) return;
+        for (JSONObject node : nodes) {
+            List<JSONObject> children = node.getBeanList("children", JSONObject.class);
+            if (children == null || children.isEmpty()) {
+                node.set("isLeaf", true);
+                node.remove("children");
+            } else {
+                node.set("isLeaf", false);
+                markLeafNodes(children);
+            }
+        }
+    }
+
+    @Override
+    public List<JSONObject> getAncestorNodes(List<String> idList) {
+        if (ObjectUtil.isEmpty(idList)) {
+            return CollectionUtil.newArrayList();
+        }
+        List<${className}> allList = this.list();
+        // 收集所有需要的节点（已选节点 + 所有祖先），用LinkedHashSet去重保序
+        Set<String> ancestorIdSet = new LinkedHashSet<>();
+        for (String id : idList) {
+            String currentId = id;
+            while (ObjectUtil.isNotEmpty(currentId) && !"0".equals(currentId)) {
+                if (!ancestorIdSet.add(currentId)) break;
+                String finalCurrentId = currentId;
+                currentId = allList.stream()
+                        .filter(item -> item.get${dbTableKeyFirstUpper}().toString().equals(finalCurrentId))
+                        .map(item -> ObjectUtil.isEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) ? null : item.get${treeParentFieldCamelCaseFirstUpper}().toString())
+                        .findFirst().orElse(null);
+            }
+        }
+        if (ObjectUtil.isEmpty(ancestorIdSet)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 收集祖先链上每个节点的parentId，用于补充同级兄弟节点
+        Set<String> ancestorParentIds = new HashSet<>();
+        for (${className} item : allList) {
+            if (ancestorIdSet.contains(item.get${dbTableKeyFirstUpper}().toString())) {
+                String pid = ObjectUtil.isEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) ? null : item.get${treeParentFieldCamelCaseFirstUpper}().toString();
+                if (pid != null) {
+                    ancestorParentIds.add(pid);
+                }
+            }
+        }
+        // 最终需要的节点 = 祖先节点 + 每层祖先的兄弟节点（同parentId的节点）
+        Set<String> neededIdSet = new LinkedHashSet<>(ancestorIdSet);
+        for (${className} item : allList) {
+            String pid = ObjectUtil.isEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) ? "" : item.get${treeParentFieldCamelCaseFirstUpper}().toString();
+            if (ancestorParentIds.contains(pid)) {
+                neededIdSet.add(item.get${dbTableKeyFirstUpper}().toString());
+            }
+        }
+        // 取出这些节点并判断是否有子节点
+        List<${className}> resultList = allList.stream()
+                .filter(item -> neededIdSet.contains(item.get${dbTableKeyFirstUpper}().toString()))
+                .collect(Collectors.toList());
+        List<String> resultIds = resultList.stream().map(item -> item.get${dbTableKeyFirstUpper}().toString()).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<${className}>()
+                        .select(${className}::get${treeParentFieldCamelCaseFirstUpper})
+                        .in(${className}::get${treeParentFieldCamelCaseFirstUpper}, resultIds))
+                .stream().map(item -> item.get${treeParentFieldCamelCaseFirstUpper}().toString()).collect(Collectors.toSet());
+        return resultList.stream().map(item -> {
+            JSONObject jsonObject = JSONUtil.parseObj(item);
+            jsonObject.set("key", item.get${dbTableKeyFirstUpper}());
+            jsonObject.set("title", item.get${treeNameFieldCamelCaseFirstUpper}());
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(item.get${dbTableKeyFirstUpper}().toString()));
+            return jsonObject;
+        }).collect(Collectors.toList());
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(${className}AddParam ${classNameFirstLower}AddParam) {
         ${className} ${classNameFirstLower} = BeanUtil.toBean(${classNameFirstLower}AddParam, ${className}.class);
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限增加${functionName}");
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            // 根据业务需要，取消下面注释并修改为实际的数据范围字段，例如：orgId
+            // if(!loginUserDataScope.contains(${classNameFirstLower}.getOrgId())) {
+            //     throw new CommonException("您没有权限在该机构下增加${functionName}");
+            // }
+        }
+
         <% for(var i = 0; i < uniqueFieldList.~size; i++) { %>
         <% if(!uniqueFieldList[i].needTableId) { %>
         if(this.count(new LambdaQueryWrapper<${className}>().eq(${className}::get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
@@ -112,6 +317,18 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     public void edit(${className}EditParam ${classNameFirstLower}EditParam) {
         ${className} ${classNameFirstLower} = this.queryEntity(${classNameFirstLower}EditParam.get${dbTableKeyFirstUpper}());
         BeanUtil.copyProperties(${classNameFirstLower}EditParam, ${classNameFirstLower});
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限编辑${functionName}");
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            // 根据业务需要，取消下面注释并修改为实际的数据范围字段，例如：orgId
+            // if(!loginUserDataScope.contains(${classNameFirstLower}.getOrgId())) {
+            //     throw new CommonException("您没有权限编辑该机构下的${functionName}");
+            // }
+        }
+
         <% for(var i = 0; i < uniqueFieldList.~size; i++) { %>
         <% if(!uniqueFieldList[i].needTableId) { %>
         if(this.count(new LambdaQueryWrapper<${className}>().ne(${className}::get${dbTableKeyFirstUpper}, ${classNameFirstLower}.get${dbTableKeyFirstUpper}()).eq(${className}::get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
@@ -125,6 +342,19 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${c
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<${className}IdParam> ${classNameFirstLower}IdParamList) {
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限删除${functionName}");
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            // 根据业务需要，取消下面注释并修改为实际的数据范围字段，例如对删除的记录进行数据范围校验
+            // Set<String> orgIdSet = this.listByIds(CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${dbTableKeyFirstUpper}))
+            //         .stream().map(${className}::getOrgId).collect(Collectors.toSet());
+            // if(!new HashSet<>(loginUserDataScope).containsAll(orgIdSet)) {
+            //     throw new CommonException("您没有权限删除这些机构下的${functionName}");
+            // }
+        }
         // 执行删除
         this.removeByIds(CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${dbTableKeyFirstUpper}));
     }

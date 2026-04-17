@@ -3,6 +3,11 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-row :gutter="16">
 				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+					<a-form-item label="生成类型：">
+						<a-tag :color="genTypeMap[formData.genType]?.color || 'blue'">{{ genTypeMap[formData.genType]?.label || formData.genType }}</a-tag>
+					</a-form-item>
+				</a-col>
+				<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 					<a-form-item label="选择主表或表名称搜索：" name="dbTable">
 						<a-select
 							v-model:value="formData.dbTable"
@@ -171,6 +176,63 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
+			<!-- 树表类型：树父级字段、树显示字段 -->
+			<template v-if="formData.genType === 'TREE' || formData.genType === 'LEFT_TREE_TABLE'">
+				<a-divider>{{ formData.genType === 'LEFT_TREE_TABLE' ? '左树配置' : '树配置' }}</a-divider>
+				<a-row :gutter="16">
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="树父级字段" name="treeParentField" :rules="[{ required: true, message: '请选择树父级字段' }]">
+							<a-select v-model:value="formData.treeParentField" placeholder="请选择树父级字段"
+								:options="tableColumnList.map(c => ({label: c.columnName + '(' + c.columnRemark + ')', value: c.columnName}))" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="树显示字段" name="treeNameField" :rules="[{ required: true, message: '请选择树显示字段' }]">
+							<a-select v-model:value="formData.treeNameField" placeholder="请选择树显示名称字段"
+								:options="tableColumnList.map(c => ({label: c.columnName + '(' + c.columnRemark + ')', value: c.columnName}))" />
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</template>
+			<!-- 双表类型：子表配置 -->
+			<template v-if="formData.genType === 'LEFT_TREE_TABLE' || formData.genType === 'MASTER_DETAIL'">
+				<a-divider>{{ formData.genType === 'LEFT_TREE_TABLE' ? '右表配置' : '子表配置' }}</a-divider>
+				<a-row :gutter="16">
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="子表" name="subDbTable" :rules="[{ required: true, message: '请选择子表' }]">
+							<a-select v-model:value="formData.subDbTable" placeholder="请选择子表" show-search option-filter-prop="label" @change="subTableChange"
+								:options="tableList.map(t => ({label: t.label, value: t.value}))" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="子表主键" name="subDbTableKey" :rules="[{ required: true, message: '请选择子表主键' }]">
+							<a-select v-model:value="formData.subDbTableKey" placeholder="请选择子表主键"
+								:options="subTableColumnList.map(c => ({label: c.columnName + '(' + c.columnRemark + ')', value: c.columnName}))" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="关联外键" name="subForeignKey" :rules="[{ required: true, message: '请选择关联外键' }]">
+							<a-select v-model:value="formData.subForeignKey" placeholder="请选择子表中关联主表的外键字段"
+								:options="subTableColumnList.map(c => ({label: c.columnName + '(' + c.columnRemark + ')', value: c.columnName}))" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="子表功能名" name="subFunctionName" :rules="[{ required: true, message: '请输入子表功能名' }]">
+							<a-input v-model:value="formData.subFunctionName" placeholder="请输入子表功能名" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="子表业务名" name="subBusName" :rules="[{ required: true, message: '请输入子表业务名' }]">
+							<a-input v-model:value="formData.subBusName" placeholder="请输入子表业务名（英文小写）" />
+						</a-form-item>
+					</a-col>
+					<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+						<a-form-item label="子表类名" name="subClassName" :rules="[{ required: true, message: '请输入子表类名' }]">
+							<a-input v-model:value="formData.subClassName" placeholder="请输入子表类名（大驼峰）" />
+						</a-form-item>
+					</a-col>
+				</a-row>
+			</template>
 		</a-form>
 	</a-card>
 </template>
@@ -183,10 +245,18 @@
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
+	const genTypeMap = {
+		TABLE: { label: '单表格', color: 'blue' },
+		TREE: { label: '单树表', color: 'green' },
+		LEFT_TREE_TABLE: { label: '左树右表', color: 'orange' },
+		MASTER_DETAIL: { label: '主子表', color: 'purple' }
+	}
 	// 定义
 	const mobileModuleList = ref([])
 	const tableList = ref([])
 	const tableColumns = ref([])
+	const tableColumnList = ref([])
+	const subTableColumnList = ref([])
 	const menuTreeData = ref([])
 	const treeFieldNames = { children: 'children', label: 'title', value: 'id' }
 	const submitLoading = ref(false)
@@ -232,7 +302,7 @@
 		}
 	])
 	// 打开抽屉
-	const onOpen = (record) => {
+	const onOpen = (record, genType) => {
 		// 加载默认的模块
 		genBasicApi.basicModuleSelector().then((data) => {
 			if (data) {
@@ -251,6 +321,7 @@
 					value: item['tableName'],
 					label: `${item['tableRemark']}-${item['tableName']}`,
 					tableRemark: item['tableRemark'] || item['tableName'],
+					tableName: item['tableName'],
 					tableColumns: []
 				}
 			})
@@ -263,16 +334,24 @@
 					.basicDetail(params)
 					.then((data) => {
 						formData.value = data
+						formData.value.genType = data.genType || genType || 'TABLE'
 						// 让主键选中
 						selectTableColumnsData(data.dbTable, true)
 						// 让模块旁边的上级菜单选中
 						moduleChange(data.module, true)
+						// 如果有子表，加载子表字段
+						if (data.subDbTable) {
+							genBasicApi.basicTableColumns({ tableName: data.subDbTable }).then((res) => {
+								subTableColumnList.value = res
+							})
+						}
 					})
 					.finally(() => {
 						submitLoading.value = false
 					})
 			} else {
 				formData.value = {
+					genType: genType || 'TABLE',
 					pluginName: 'snowy-plugin-biz',
 					packageName: 'vip.xiaonuo',
 					moduleName: 'biz',
@@ -374,12 +453,30 @@
 			tableName: tableName
 		}
 		genBasicApi.basicTableColumns(param).then((data) => {
+			tableColumnList.value = data
 			tableColumns.value = data.map((item) => {
 				return {
 					value: item['columnName'],
 					label: item['columnRemark'] || item['columnName']
 				}
 			})
+		})
+	}
+
+	// 子表选择变化
+	const subTableChange = (tableName) => {
+		formData.value.subDbTableKey = undefined
+		formData.value.subForeignKey = undefined
+		// 自动计算子表功能名、业务名、类名
+		const subData = tableList.value.find((item) => item.value === tableName)
+		if (subData) {
+			formData.value.subFunctionName = formData.value.subFunctionName || subData.tableRemark
+			const subTableNameHump = getTableNameToHump(subData.value)
+			formData.value.subBusName = formData.value.subBusName || subTableNameHump.toLowerCase()
+			formData.value.subClassName = formData.value.subClassName || getClassName(subData.value)
+		}
+		genBasicApi.basicTableColumns({ tableName }).then((res) => {
+			subTableColumnList.value = res
 		})
 	}
 

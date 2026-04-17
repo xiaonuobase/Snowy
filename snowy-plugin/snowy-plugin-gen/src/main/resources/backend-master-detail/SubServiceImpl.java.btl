@@ -1,0 +1,126 @@
+/*
+ * Copyright [2022] [https://www.xiaonuo.vip]
+ *
+ * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *
+ * 1.请不要删除和修改根目录下的LICENSE文件。
+ * 2.请不要删除和修改Snowy源码头部的版权声明。
+ * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${moduleName}.modular.${busName}.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.common.enums.CommonSortOrderEnum;
+import ${packageName}.common.exception.CommonException;
+import ${packageName}.common.page.CommonPageRequest;
+import ${packageName}.${moduleName}.modular.${busName}.entity.${subClassName};
+import ${packageName}.${moduleName}.modular.${busName}.mapper.${subClassName}Mapper;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}PageParam;
+import ${packageName}.${moduleName}.modular.${busName}.service.${subClassName}Service;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * ${subFunctionName}Service接口实现类
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+@Service
+public class ${subClassName}ServiceImpl extends ServiceImpl<${subClassName}Mapper, ${subClassName}> implements ${subClassName}Service {
+
+    @Override
+    public Page<${subClassName}> page(${subClassName}PageParam ${subClassNameFirstLower}PageParam) {
+        QueryWrapper<${subClassName}> queryWrapper = new QueryWrapper<${subClassName}>().checkSqlInjection();
+        // 根据外键过滤
+        if(ObjectUtil.isNotEmpty(${subClassNameFirstLower}PageParam.get${subForeignKeyFirstUpper}())) {
+            queryWrapper.lambda().eq(${subClassName}::get${subForeignKeyFirstUpper}, ${subClassNameFirstLower}PageParam.get${subForeignKeyFirstUpper}());
+        }
+        <% for(var i = 0; i < subConfigList.~size; i++) { %>
+        <% if(subConfigList[i].needPage) { %>
+        <% if(subConfigList[i].effectType == 'datepicker') { %>
+        if(ObjectUtil.isNotEmpty(${subClassNameFirstLower}PageParam.getStart${subConfigList[i].fieldNameCamelCaseFirstUpper}()) && ObjectUtil.isNotEmpty(${subClassNameFirstLower}PageParam.getEnd${subConfigList[i].fieldNameCamelCaseFirstUpper}())) {
+            queryWrapper.lambda().between(${subClassName}::get${subConfigList[i].fieldNameCamelCaseFirstUpper}, ${subClassNameFirstLower}PageParam.getStart${subConfigList[i].fieldNameCamelCaseFirstUpper}(), ${subClassNameFirstLower}PageParam.getEnd${subConfigList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } else { %>
+        if(ObjectUtil.isNotEmpty(${subClassNameFirstLower}PageParam.get${subConfigList[i].fieldNameCamelCaseFirstUpper}())) {
+            queryWrapper.lambda().${subConfigList[i].needPageType}(${subClassName}::get${subConfigList[i].fieldNameCamelCaseFirstUpper}, ${subClassNameFirstLower}PageParam.get${subConfigList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        <% } %>
+        if(ObjectUtil.isAllNotEmpty(${subClassNameFirstLower}PageParam.getSortField(), ${subClassNameFirstLower}PageParam.getSortOrder())) {
+            CommonSortOrderEnum.validate(${subClassNameFirstLower}PageParam.getSortOrder());
+            queryWrapper.orderBy(true, ${subClassNameFirstLower}PageParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),
+                    StrUtil.toUnderlineCase(${subClassNameFirstLower}PageParam.getSortField()));
+        } else {
+            queryWrapper.lambda().orderByAsc(${subClassName}::get${subDbTableKeyFirstUpper});
+        }
+        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void add(${subClassName}AddParam ${subClassNameFirstLower}AddParam) {
+        ${subClassName} ${subClassNameFirstLower} = BeanUtil.toBean(${subClassNameFirstLower}AddParam, ${subClassName}.class);
+        <% for(var i = 0; i < subUniqueFieldList.~size; i++) { %>
+        <% if(!subUniqueFieldList[i].needTableId) { %>
+        if(this.count(new LambdaQueryWrapper<${subClassName}>().eq(${subClassName}::get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${subClassNameFirstLower}.get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
+            throw new CommonException("存在重复的${subUniqueFieldList[i].fieldRemark}，值为：{}", ${subClassNameFirstLower}.get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        this.save(${subClassNameFirstLower});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void edit(${subClassName}EditParam ${subClassNameFirstLower}EditParam) {
+        ${subClassName} ${subClassNameFirstLower} = this.queryEntity(${subClassNameFirstLower}EditParam.get${subDbTableKeyFirstUpper}());
+        BeanUtil.copyProperties(${subClassNameFirstLower}EditParam, ${subClassNameFirstLower});
+        <% for(var i = 0; i < subUniqueFieldList.~size; i++) { %>
+        <% if(!subUniqueFieldList[i].needTableId) { %>
+        if(this.count(new LambdaQueryWrapper<${subClassName}>().ne(${subClassName}::get${subDbTableKeyFirstUpper}, ${subClassNameFirstLower}.get${subDbTableKeyFirstUpper}()).eq(${subClassName}::get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${subClassNameFirstLower}.get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
+            throw new CommonException("存在重复的${subUniqueFieldList[i].fieldRemark}，值为：{}", ${subClassNameFirstLower}.get${subUniqueFieldList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        this.updateById(${subClassNameFirstLower});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(List<${subClassName}IdParam> ${subClassNameFirstLower}IdParamList) {
+        this.removeByIds(CollStreamUtil.toList(${subClassNameFirstLower}IdParamList, ${subClassName}IdParam::get${subDbTableKeyFirstUpper}));
+    }
+
+    @Override
+    public ${subClassName} detail(${subClassName}IdParam ${subClassNameFirstLower}IdParam) {
+        return this.queryEntity(${subClassNameFirstLower}IdParam.get${subDbTableKeyFirstUpper}());
+    }
+
+    @Override
+    public ${subClassName} queryEntity(Serializable ${subDbTableKeyCamelCase}) {
+        ${subClassName} ${subClassNameFirstLower} = this.getById(${subDbTableKeyCamelCase});
+        if(ObjectUtil.isEmpty(${subClassNameFirstLower})) {
+            throw new CommonException("${subFunctionName}不存在，${subDbTableKeyCamelCase}值为：{}", ${subDbTableKeyCamelCase});
+        }
+        return ${subClassNameFirstLower};
+    }
+}

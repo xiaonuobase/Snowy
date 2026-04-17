@@ -1,0 +1,74 @@
+import { baseRequest } from '@/utils/request'
+
+const request = (url, ...arg) => baseRequest(`/${moduleName}/${busName}/` + url, ...arg)
+
+/**
+ * ${functionName}Api接口管理器
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+export default {
+	// 获取${functionName}分页
+	${classNameFirstLower}Page(data) {
+		return request('page', data, 'get')
+	},
+	// 提交${functionName}表单 edit为true时为编辑，默认为新增
+	${classNameFirstLower}SubmitForm(data, edit = false) {
+		return request(edit ? 'edit' : 'add', data)
+	},
+	// 删除${functionName}
+	${classNameFirstLower}Delete(data) {
+		return request('delete', data)
+	},
+	// 获取${functionName}详情
+	${classNameFirstLower}Detail(data) {
+		return request('detail', data, 'get')
+	},
+	// 下载${functionName}导入模板
+    ${classNameFirstLower}DownloadTemplate(data) {
+		return request('downloadImportTemplate', data, 'get', {
+			responseType: 'blob'
+		})
+    },
+	// 导入${functionName}
+	${classNameFirstLower}Import(data) {
+		return request('importData', data)
+	},
+	// 导出${functionName}
+	${classNameFirstLower}Export(data) {
+		return request('exportData', data, 'post', {
+			responseType: 'blob'
+		})
+	},
+<% if(hasUserSelector) { %>
+	// 人员选择器
+	${classNameFirstLower}UserSelector(data) {
+		return request('userSelector', data, 'get')
+	},
+<% } %>
+<% if(hasOrgSelector || hasUserSelector || hasPositionSelector) { %>
+	// 机构树选择器
+	${classNameFirstLower}OrgTreeSelector(data) {
+		return request('orgTreeSelector', data, 'get')
+	},
+<% } %>
+<% if(hasOrgSelector) { %>
+	// 机构列表选择器
+	${classNameFirstLower}OrgListSelector(data) {
+		return request('orgListSelector', data, 'get')
+	},
+<% } %>
+<% if(hasPositionSelector) { %>
+	// 职位选择器
+	${classNameFirstLower}PositionSelector(data) {
+		return request('positionSelector', data, 'get')
+	},
+<% } %>
+<% if(hasGroupSelector) { %>
+	// 用户组选择器
+	${classNameFirstLower}GroupSelector(data) {
+		return request('groupSelector', data, 'get')
+	},
+<% } %>
+}

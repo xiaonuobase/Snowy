@@ -103,4 +103,40 @@ public class GenBasic extends CommonEntity {
     /** 作者 */
     @Schema(description = "作者")
     private String authorName;
+
+    /** 生成类型：TABLE/TREE/LEFT_TREE_TABLE/MASTER_DETAIL */
+    @Schema(description = "生成类型")
+    private String genType;
+
+    /** 树父级字段名（单树表专用） */
+    @Schema(description = "树父级字段名")
+    private String treeParentField;
+
+    /** 树显示名称字段名（单树表专用） */
+    @Schema(description = "树显示名称字段名")
+    private String treeNameField;
+
+    /** 子表表名（双表专用） */
+    @Schema(description = "子表表名")
+    private String subDbTable;
+
+    /** 子表主键（双表专用） */
+    @Schema(description = "子表主键")
+    private String subDbTableKey;
+
+    /** 子表关联外键（双表专用） */
+    @Schema(description = "子表关联外键")
+    private String subForeignKey;
+
+    /** 子表类名（双表专用） */
+    @Schema(description = "子表类名")
+    private String subClassName;
+
+    /** 子表功能名（双表专用） */
+    @Schema(description = "子表功能名")
+    private String subFunctionName;
+
+    /** 子表业务名（双表专用） */
+    @Schema(description = "子表业务名")
+    private String subBusName;
 }

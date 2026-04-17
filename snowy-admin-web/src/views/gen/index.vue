@@ -14,7 +14,7 @@
 		>
 			<template #operator>
 				<a-space>
-					<a-button type="primary" @click="openConfig()">
+					<a-button type="primary" @click="handleNewClick()">
 						<template #icon><plus-outlined /></template>
 						新建
 					</a-button>
@@ -31,10 +31,13 @@
 				<template v-if="column.dataIndex === 'tablePrefix'">
 					{{ tablePrefixFilter(record.tablePrefix) }}
 				</template>
-				<template v-if="column.dataIndex === 'generateType'">
+				<template v-else-if="column.dataIndex === 'generateType'">
 					{{ generateTypeFilter(record.generateType) }}
 				</template>
-				<template v-if="column.dataIndex === 'action'">
+				<template v-else-if="column.dataIndex === 'genType'">
+					<a-tag :color="$TOOL.dictTypeColor('GEN_TYPE', record.genType || 'TABLE')">{{ $TOOL.dictTypeData('GEN_TYPE', record.genType || 'TABLE') }}</a-tag>
+				</template>
+				<template v-else-if="column.dataIndex === 'action'">
 					<a @click="genPreviewRef.onOpen(record)">预览</a>
 					<a-divider type="vertical" />
 					<a-popconfirm title="确定生成代码？" @confirm="execGen(record)">
@@ -52,6 +55,7 @@
 	</xn-panel>
 	<steps v-else ref="stepsRef" @successful="tableRef.refresh(true)" @closed="closeConfig()" />
 	<genPreview ref="genPreviewRef" />
+	<type-select ref="typeSelectRef" @confirm="onTypeSelectConfirm" />
 </template>
 
 <script setup name="genIndex">
@@ -59,13 +63,20 @@
 	import downloadUtil from '@/utils/downloadUtil'
 	import Steps from './steps.vue'
 	import GenPreview from './preview.vue'
+	import typeSelect from './typeSelect.vue'
 	import genBasicApi from '@/api/gen/genBasicApi'
 	const tableRef = ref()
 	const indexShow = ref(true)
 	const stepsRef = ref()
 	const genPreviewRef = ref()
+	const typeSelectRef = ref()
 
 	const columns = [
+		{
+			title: '生成类型',
+			dataIndex: 'genType',
+			align: 'center'
+		},
 		{
 			title: '业务名',
 			dataIndex: 'busName',
@@ -189,11 +200,19 @@
 			tableRef.value.refresh()
 		})
 	}
+	// 点击新建按钮，先弹出类型选择
+	const handleNewClick = () => {
+		typeSelectRef.value.onOpen()
+	}
+	// 类型选择确认后，进入配置界面
+	const onTypeSelectConfirm = (genType) => {
+		openConfig(undefined, genType)
+	}
 	// 打开配置界面
-	const openConfig = (record) => {
+	const openConfig = (record, genType) => {
 		indexShow.value = false
 		nextTick(() => {
-			stepsRef.value.configSteps(record)
+			stepsRef.value.configSteps(record, genType)
 		})
 	}
 	// 关闭配置界面

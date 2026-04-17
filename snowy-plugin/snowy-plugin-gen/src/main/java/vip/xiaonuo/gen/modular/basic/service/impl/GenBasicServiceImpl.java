@@ -48,6 +48,7 @@ import vip.xiaonuo.common.util.CommonDownloadUtil;
 import vip.xiaonuo.common.util.CommonResponseUtil;
 import vip.xiaonuo.gen.core.util.GenDbTypeUtil;
 import vip.xiaonuo.gen.modular.basic.entity.GenBasic;
+import vip.xiaonuo.gen.modular.basic.enums.GenCategoryEnum;
 import vip.xiaonuo.gen.modular.basic.enums.GenEffectTypeEnum;
 import vip.xiaonuo.gen.modular.basic.enums.GenYesNoEnum;
 import vip.xiaonuo.gen.modular.basic.mapper.GenBasicMapper;
@@ -124,6 +125,46 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             JSONUtil.createObj().set("name", "Service.java.btl").set("path", "service"),
             JSONUtil.createObj().set("name", "ServiceImpl.java.btl").set("path", "service" + File.separator + "impl"));
 
+    // 单树表模板目录名
+    private static final String TEMPLATE_BACKEND_TREE = "backend-tree";
+    private static final String TEMPLATE_FRONTEND_TREE = "frontend-tree";
+
+    // 左树右表模板目录名
+    private static final String TEMPLATE_BACKEND_LEFT_TREE_TABLE = "backend-left-tree-table";
+    private static final String TEMPLATE_FRONTEND_LEFT_TREE_TABLE = "frontend-left-tree-table";
+
+    // 主子表模板目录名
+    private static final String TEMPLATE_BACKEND_MASTER_DETAIL = "backend-master-detail";
+    private static final String TEMPLATE_FRONTEND_MASTER_DETAIL = "frontend-master-detail";
+
+    // 双表类型的子表后端文件列表
+    private static final List<JSONObject> GEN_BACKEND_SUB_FILE_LIST = CollectionUtil.newArrayList(
+            JSONUtil.createObj().set("name", "SubEntity.java.btl").set("path", "entity"),
+            JSONUtil.createObj().set("name", "SubMapper.java.btl").set("path", "mapper"),
+            JSONUtil.createObj().set("name", "SubMapper.xml.btl").set("path", "mapper" + File.separator + "mapping"),
+            JSONUtil.createObj().set("name", "SubAddParam.java.btl").set("path", "param"),
+            JSONUtil.createObj().set("name", "SubEditParam.java.btl").set("path", "param"),
+            JSONUtil.createObj().set("name", "SubIdParam.java.btl").set("path", "param"),
+            JSONUtil.createObj().set("name", "SubPageParam.java.btl").set("path", "param"),
+            JSONUtil.createObj().set("name", "SubService.java.btl").set("path", "service"),
+            JSONUtil.createObj().set("name", "SubServiceImpl.java.btl").set("path", "service" + File.separator + "impl"));
+
+    // 主子表类型的前端文件列表（比标准多一个subForm.vue）
+    private static final List<JSONObject> GEN_FRONT_MASTER_DETAIL_FILE_LIST = CollectionUtil.newArrayList(
+            JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
+            JSONUtil.createObj().set("name", "form.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "subForm.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "importModel.vue.btl").set("path", "views"));
+
+    // 左树右表类型的前端文件列表（比标准多一个treeForm.vue）
+    private static final List<JSONObject> GEN_FRONT_LEFT_TREE_TABLE_FILE_LIST = CollectionUtil.newArrayList(
+            JSONUtil.createObj().set("name", "Api.js.btl").set("path", "api"),
+            JSONUtil.createObj().set("name", "form.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "treeForm.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "index.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "importModel.vue.btl").set("path", "views"));
+
     private static final String SORT_CODE_KEY = "SORT_CODE";
 
     private static final String CREATE_USER_KEY = "CREATE_USER";
@@ -177,6 +218,11 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     @Transactional(rollbackFor = Exception.class)
     @Override
     public GenBasic add(GenBasicAddParam genBasicAddParam) {
+        // 校验生成类型及条件字段
+        validateGenTypeFields(genBasicAddParam.getGenType(), genBasicAddParam.getTreeParentField(),
+                genBasicAddParam.getTreeNameField(), genBasicAddParam.getSubDbTable(),
+                genBasicAddParam.getSubDbTableKey(), genBasicAddParam.getSubForeignKey(),
+                genBasicAddParam.getSubClassName());
         GenBasic genBasic = BeanUtil.toBean(genBasicAddParam, GenBasic.class);
         this.save(genBasic);
         addGenConfig(genBasic);
@@ -187,17 +233,66 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
     @Override
     public GenBasic edit(GenBasicEditParam genBasicEditParam) {
         GenBasic genBasic = this.queryEntity(genBasicEditParam.getId());
-        if (!genBasic.getDbTable().equals(genBasicEditParam.getDbTable())) {
+        // 校验生成类型及条件字段
+        validateGenTypeFields(genBasicEditParam.getGenType(), genBasicEditParam.getTreeParentField(),
+                genBasicEditParam.getTreeNameField(), genBasicEditParam.getSubDbTable(),
+                genBasicEditParam.getSubDbTableKey(), genBasicEditParam.getSubForeignKey(),
+                genBasicEditParam.getSubClassName());
+        // 主表变更：刷新全部字段配置
+        if (!StrUtil.equals(genBasic.getDbTable(), genBasicEditParam.getDbTable())) {
             // 删除配置表内该表的字段
             QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<GenConfig>().checkSqlInjection();
             queryWrapper.lambda().eq(GenConfig::getBasicId, genBasic.getId());
             genConfigService.remove(queryWrapper);
+            BeanUtil.copyProperties(genBasicEditParam, genBasic);
+            this.updateById(genBasic);
             // 新增新表的数据字段
             addGenConfig(genBasic);
+        } else if (GenCategoryEnum.isDualTable(genBasicEditParam.getGenType()) &&
+                !StrUtil.equals(genBasic.getSubDbTable(), genBasicEditParam.getSubDbTable())) {
+            // 子表变更：仅刷新子表字段配置
+            genConfigService.remove(new LambdaQueryWrapper<GenConfig>()
+                    .eq(GenConfig::getBasicId, genBasic.getId())
+                    .eq(GenConfig::getTableType, "SUB"));
+            BeanUtil.copyProperties(genBasicEditParam, genBasic);
+            this.updateById(genBasic);
+            // 重新扫描子表字段
+            addSubGenConfig(genBasic);
+        } else {
+            BeanUtil.copyProperties(genBasicEditParam, genBasic);
+            this.updateById(genBasic);
         }
-        BeanUtil.copyProperties(genBasicEditParam, genBasic);
-        this.updateById(genBasic);
         return genBasic;
+    }
+
+    /**
+     * 校验生成类型及其关联的条件字段
+     */
+    private void validateGenTypeFields(String genType, String treeParentField, String treeNameField,
+                                       String subDbTable, String subDbTableKey, String subForeignKey, String subClassName) {
+        GenCategoryEnum.validate(genType);
+        if (GenCategoryEnum.isTreeType(genType)) {
+            if (ObjectUtil.isEmpty(treeParentField)) {
+                throw new CommonException("树类型必须指定树父级字段（treeParentField）");
+            }
+            if (ObjectUtil.isEmpty(treeNameField)) {
+                throw new CommonException("树类型必须指定树显示名称字段（treeNameField）");
+            }
+        }
+        if (GenCategoryEnum.isDualTable(genType)) {
+            if (ObjectUtil.isEmpty(subDbTable)) {
+                throw new CommonException("双表类型必须指定子表名称（subDbTable）");
+            }
+            if (ObjectUtil.isEmpty(subDbTableKey)) {
+                throw new CommonException("双表类型必须指定子表主键（subDbTableKey）");
+            }
+            if (ObjectUtil.isEmpty(subForeignKey)) {
+                throw new CommonException("双表类型必须指定子表关联外键（subForeignKey）");
+            }
+            if (ObjectUtil.isEmpty(subClassName)) {
+                throw new CommonException("双表类型必须指定子表类名（subClassName）");
+            }
+        }
     }
 
     /**
@@ -247,7 +342,60 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             addParam.setQueryWhether(GenYesNoEnum.N.getValue());
             addParam.setSortCode(i);
             GenConfig genConfig = BeanUtil.toBean(addParam, GenConfig.class);
+            genConfig.setTableType("MAIN");
             genConfigService.save(genConfig);
+        }
+        // 双表类型：额外扫描子表字段
+        if (GenCategoryEnum.isDualTable(genBasic.getGenType())) {
+            addSubGenConfig(genBasic);
+        }
+    }
+
+    /**
+     * 新增子表字段至配置内（双表类型专用）
+     */
+    private void addSubGenConfig(GenBasic genBasic) {
+        GenBasicTableColumnParam subTableColumnParam = new GenBasicTableColumnParam();
+        subTableColumnParam.setTableName(genBasic.getSubDbTable());
+        List<GenBasicTableColumnResult> subResultList = this.tableColumns(subTableColumnParam);
+        for (int j = 0; j < subResultList.size(); j++) {
+            GenBasicTableColumnResult subItem = subResultList.get(j);
+            GenConfigAddParam subAddParam = new GenConfigAddParam();
+            subAddParam.setBasicId(genBasic.getId());
+            if (subItem.getColumnName().equals(genBasic.getSubDbTableKey())) {
+                subAddParam.setIsTableKey(GenYesNoEnum.Y.getValue());
+            } else {
+                subAddParam.setIsTableKey(GenYesNoEnum.N.getValue());
+            }
+            subAddParam.setFieldName(subItem.getColumnName());
+            subAddParam.setFieldType(subItem.getTypeName());
+            subAddParam.setFieldRemark(subItem.getColumnRemark());
+            subAddParam.setFieldJavaType(GenDbTypeUtil.getJavaTypeBySqlType(subItem.getTypeName()));
+            subAddParam.setEffectType(GenEffectTypeEnum.INPUT.getValue().toLowerCase());
+            String logicDeleteField = mybatisPlusProperties.getGlobalConfig().getDbConfig().getLogicDeleteField();
+            if(ObjectUtil.isEmpty(logicDeleteField)) {
+                logicDeleteField = "DELETE_FLAG";
+            }
+            if(genBasic.getSubDbTableKey().equalsIgnoreCase(subItem.getColumnName()) ||
+                    logicDeleteField.equalsIgnoreCase(subItem.getColumnName()) ||
+                    CREATE_USER_KEY.equalsIgnoreCase(subItem.getColumnName()) ||
+                    CREATE_TIME_KEY.equalsIgnoreCase(subItem.getColumnName()) ||
+                    UPDATE_USER_KEY.equalsIgnoreCase(subItem.getColumnName()) ||
+                    UPDATE_TIME_KEY.equalsIgnoreCase(subItem.getColumnName())) {
+                subAddParam.setWhetherTable(GenYesNoEnum.N.getValue());
+                subAddParam.setWhetherAddUpdate(GenYesNoEnum.N.getValue());
+            } else {
+                subAddParam.setWhetherTable(GenYesNoEnum.Y.getValue());
+                subAddParam.setWhetherAddUpdate(GenYesNoEnum.Y.getValue());
+            }
+            subAddParam.setWhetherRetract(GenYesNoEnum.N.getValue());
+            subAddParam.setWhetherRequired(GenYesNoEnum.N.getValue());
+            subAddParam.setWhetherUnique(GenYesNoEnum.N.getValue());
+            subAddParam.setQueryWhether(GenYesNoEnum.N.getValue());
+            subAddParam.setSortCode(j);
+            GenConfig subGenConfig = BeanUtil.toBean(subAddParam, GenConfig.class);
+            subGenConfig.setTableType("SUB");
+            genConfigService.save(subGenConfig);
         }
     }
 
@@ -416,7 +564,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                     StrUtil.SLASH + genModuleName + StrUtil.SLASH + genBasic.getBusName());
 
             // 生成按钮
-            sysButtonApi.addForGenButton(menuId, genBasic.getClassName(), genBasic.getFunctionName());
+            sysButtonApi.addForGenButton(menuId, genBasic.getClassName(), genBasic.getFunctionName(),
+                    genBasic.getGenType(), genBasic.getSubFunctionName());
 
             // 授权菜单
             sysRoleApi.grantForGenMenuAndButton(menuId);
@@ -507,10 +656,11 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             // 前端基础路径
             String genFrontBasicPath = "";
             // 前端
-            GroupTemplate groupTemplateFront = new GroupTemplate(new ClasspathResourceLoader("frontend"),
+            String genType = ObjectUtil.isEmpty(genBasic.getGenType()) ? GenCategoryEnum.TABLE.getValue() : genBasic.getGenType();
+            GroupTemplate groupTemplateFront = new GroupTemplate(new ClasspathResourceLoader(getFrontendTemplateDir(genType)),
                     Configuration.defaultConfiguration());
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeFrontendResultList = CollectionUtil.newArrayList();
-            GEN_FRONT_FILE_LIST.forEach(fileJsonObject -> {
+            getFrontendFileList(genType).forEach(fileJsonObject -> {
                 String fileTemplateName = fileJsonObject.getStr("name");
                 String fileTemplatePath = fileJsonObject.getStr("path") + File.separator + genBasic.getModuleName();
                 GenBasicPreviewResult.GenBasicCodeResult genBasicCodeFrontResult = new GenBasicPreviewResult.GenBasicCodeResult();
@@ -534,7 +684,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             String genBackendBasicPath = StrUtil.replace(genBasic.getPackageName(), StrUtil.DOT, File.separator) +
                     File.separator + genBasic.getModuleName() + File.separator + "modular" +  File.separator + genBasic.getBusName() + File.separator;
             // 后端
-            GroupTemplate groupTemplateBackEnd = new GroupTemplate(new ClasspathResourceLoader("backend"),
+            GroupTemplate groupTemplateBackEnd = new GroupTemplate(new ClasspathResourceLoader(getBackendTemplateDir(genType)),
                     Configuration.defaultConfiguration());
             List<GenBasicPreviewResult.GenBasicCodeResult> genBasicCodeBackendResultList = CollectionUtil.newArrayList();
             GEN_BACKEND_FILE_LIST.forEach(fileJsonObject -> {
@@ -553,6 +703,29 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 genBasicCodeBackendResultList.add(genBasicCodeBackendResult);
             });
             genBasicPreviewResult.setGenBasicCodeBackendResultList(genBasicCodeBackendResultList);
+
+            // 双表类型：生成子表后端代码
+            if (GenCategoryEnum.isDualTable(genType)) {
+                GroupTemplate groupTemplateSubBackEnd = new GroupTemplate(new ClasspathResourceLoader(getBackendTemplateDir(genType)),
+                        Configuration.defaultConfiguration());
+                GEN_BACKEND_SUB_FILE_LIST.forEach(fileJsonObject -> {
+                    String fileTemplateName = fileJsonObject.getStr("name");
+                    String fileTemplatePath = fileJsonObject.getStr("path");
+                    GenBasicPreviewResult.GenBasicCodeResult genBasicCodeBackendResult = new GenBasicPreviewResult.GenBasicCodeResult();
+                    Template templateBackend = groupTemplateSubBackEnd.getTemplate(fileTemplateName);
+                    templateBackend.binding(bindingJsonObject);
+                    String resultName = StrUtil.removeSuffix(fileTemplateName, ".btl");
+                    // 去掉 Sub 前缀得到实际文件名后缀
+                    String actualSuffix = resultName.substring(3); // "SubEntity.java" -> "Entity.java"
+                    if("SubEntity.java.btl".equalsIgnoreCase(fileTemplateName)) {
+                        actualSuffix = ".java";
+                    }
+                    genBasicCodeBackendResult.setCodeFileName(genBasic.getSubClassName() + actualSuffix);
+                    genBasicCodeBackendResult.setCodeFileWithPathName(genBackendBasicPath + fileTemplatePath + File.separator + genBasic.getSubClassName() + actualSuffix);
+                    genBasicCodeBackendResult.setCodeFileContent(templateBackend.render());
+                    genBasicCodeBackendResultList.add(genBasicCodeBackendResult);
+                });
+            }
 
             // 移动端基础路径
             if (ObjectUtil.isEmpty(genBasic.getMobileModule())){
@@ -672,6 +845,12 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("moduleId", genBasic.getModule());
         // 移动端模块ID
         bindingJsonObject.set("mobileModuleId", genBasic.getMobileModule());
+        // 生成类型（用于SQL模板区分）
+        bindingJsonObject.set("genType", genBasic.getGenType());
+        // 左树按钮ID（左树右表类型使用）
+        bindingJsonObject.set("treeAddButtonId", IdWorker.getIdStr());
+        bindingJsonObject.set("treeEditButtonId", IdWorker.getIdStr());
+        bindingJsonObject.set("treeDeleteButtonId", IdWorker.getIdStr());
         // 添加按钮ID
         bindingJsonObject.set("addButtonId", IdWorker.getIdStr());
         // 编辑按钮ID
@@ -684,6 +863,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("importButtonId", IdWorker.getIdStr());
         // 导出按钮ID
         bindingJsonObject.set("exportButtonId", IdWorker.getIdStr());
+        // 子表按钮ID（主子表类型使用）
+        bindingJsonObject.set("subAddButtonId", IdWorker.getIdStr());
+        bindingJsonObject.set("subEditButtonId", IdWorker.getIdStr());
+        bindingJsonObject.set("subDeleteButtonId", IdWorker.getIdStr());
         // 作者
         bindingJsonObject.set("authorName", genBasic.getAuthorName());
         // 生成时间
@@ -692,7 +875,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         List<JSONObject> configList = CollectionUtil.newArrayList();
         // 定义是否有排序字段
         AtomicBoolean hasSortCodeField = new AtomicBoolean(false);
-        genConfigService.list(new LambdaQueryWrapper<GenConfig>().eq(GenConfig::getBasicId, genBasic.getId()))
+        genConfigService.list(new LambdaQueryWrapper<GenConfig>().eq(GenConfig::getBasicId, genBasic.getId())
+                .and(wrapper -> wrapper.eq(GenConfig::getTableType, "MAIN").or().isNull(GenConfig::getTableType)))
                 .forEach(genConfig -> {
                     // 定义字段信息
                     JSONObject configItem = JSONUtil.createObj();
@@ -782,6 +966,185 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                 configItem.getStr("fieldNameCamelCase")).collect(Collectors.toList())));
         // 有排序字段
         bindingJsonObject.set("hasSortCodeField", hasSortCodeField.get());
+
+        // 计算选择器类型标志
+        boolean hasUserSelector = configList.stream().anyMatch(c -> {
+            String et = c.getStr("effectType");
+            return "userSelector".equals(et) || "userSelectorMulti".equals(et);
+        });
+        boolean hasOrgSelector = configList.stream().anyMatch(c -> {
+            String et = c.getStr("effectType");
+            return "orgSelector".equals(et) || "orgSelectorMulti".equals(et);
+        });
+        boolean hasPositionSelector = configList.stream().anyMatch(c -> {
+            String et = c.getStr("effectType");
+            return "positionSelector".equals(et) || "positionSelectorMulti".equals(et);
+        });
+        boolean hasGroupSelector = configList.stream().anyMatch(c -> {
+            String et = c.getStr("effectType");
+            return "groupSelector".equals(et) || "groupSelectorMulti".equals(et);
+        });
+        bindingJsonObject.set("hasUserSelector", hasUserSelector);
+        bindingJsonObject.set("hasOrgSelector", hasOrgSelector);
+        bindingJsonObject.set("hasPositionSelector", hasPositionSelector);
+        bindingJsonObject.set("hasGroupSelector", hasGroupSelector);
+
+        // 生成类型
+        String genType = ObjectUtil.isEmpty(genBasic.getGenType()) ? GenCategoryEnum.TABLE.getValue() : genBasic.getGenType();
+        bindingJsonObject.set("genType", genType);
+
+        // 单树表相关变量
+        if (GenCategoryEnum.TREE.getValue().equals(genType) || GenCategoryEnum.LEFT_TREE_TABLE.getValue().equals(genType)) {
+            String treeParentField = genBasic.getTreeParentField();
+            String treeNameField = genBasic.getTreeNameField();
+            if (ObjectUtil.isNotEmpty(treeParentField)) {
+                bindingJsonObject.set("treeParentFieldCamelCase", StrUtil.toCamelCase(treeParentField.toLowerCase()));
+                bindingJsonObject.set("treeParentFieldCamelCaseFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(treeParentField.toLowerCase())));
+            }
+            if (ObjectUtil.isNotEmpty(treeNameField)) {
+                bindingJsonObject.set("treeNameFieldCamelCase", StrUtil.toCamelCase(treeNameField.toLowerCase()));
+                bindingJsonObject.set("treeNameFieldCamelCaseFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(treeNameField.toLowerCase())));
+            }
+        }
+
+        // 双表相关变量
+        if (GenCategoryEnum.isDualTable(genType)) {
+            bindingJsonObject.set("subDbTable", genBasic.getSubDbTable());
+            bindingJsonObject.set("subDbTableKey", genBasic.getSubDbTableKey());
+            bindingJsonObject.set("subDbTableKeyCamelCase", StrUtil.toCamelCase(genBasic.getSubDbTableKey().toLowerCase()));
+            bindingJsonObject.set("subDbTableKeyFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(genBasic.getSubDbTableKey().toLowerCase())));
+            bindingJsonObject.set("subForeignKey", genBasic.getSubForeignKey());
+            bindingJsonObject.set("subForeignKeyCamelCase", StrUtil.toCamelCase(genBasic.getSubForeignKey().toLowerCase()));
+            bindingJsonObject.set("subForeignKeyFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(genBasic.getSubForeignKey().toLowerCase())));
+            bindingJsonObject.set("subClassName", genBasic.getSubClassName());
+            bindingJsonObject.set("subClassNameFirstLower", StrUtil.lowerFirst(genBasic.getSubClassName()));
+            bindingJsonObject.set("subFunctionName", genBasic.getSubFunctionName());
+            bindingJsonObject.set("subBusName", genBasic.getSubBusName());
+            // 子表主键Java类型（默认String）
+            bindingJsonObject.set("subDbTableKeyJavaType", "String");
+            bindingJsonObject.set("subDbTableKeyRemark", genBasic.getSubDbTableKey());
+
+            // 子表字段配置列表
+            List<JSONObject> subConfigList = CollectionUtil.newArrayList();
+            AtomicBoolean subHasSortCodeField = new AtomicBoolean(false);
+            genConfigService.list(new LambdaQueryWrapper<GenConfig>()
+                    .eq(GenConfig::getBasicId, genBasic.getId())
+                    .eq(GenConfig::getTableType, "SUB"))
+                    .forEach(genConfig -> {
+                        JSONObject subConfigItem = JSONUtil.createObj();
+                        if(genConfig.getFieldName().equalsIgnoreCase(SORT_CODE_KEY)) {
+                            subHasSortCodeField.set(true);
+                        }
+                        if(genConfig.getFieldName().equalsIgnoreCase(genBasic.getSubDbTableKey())) {
+                            subConfigItem.set("needAdd", false);
+                            subConfigItem.set("needEdit", true);
+                            subConfigItem.set("needPage", false);
+                            subConfigItem.set("needPageType", "none");
+                            subConfigItem.set("required", true);
+                            subConfigItem.set("unique", true);
+                            subConfigItem.set("needTableId", true);
+                            bindingJsonObject.set("subDbTableKeyJavaType", genConfig.getFieldJavaType());
+                            bindingJsonObject.set("subDbTableKeyRemark", genConfig.getFieldRemark());
+                        } else {
+                            String logicDeleteField = mybatisPlusProperties.getGlobalConfig().getDbConfig().getLogicDeleteField();
+                            if(ObjectUtil.isEmpty(logicDeleteField)) {
+                                logicDeleteField = "DELETE_FLAG";
+                            }
+                            if(genConfig.getFieldName().equalsIgnoreCase(logicDeleteField)) {
+                                subConfigItem.set("needAdd", false);
+                                subConfigItem.set("needEdit", false);
+                                subConfigItem.set("needPage", false);
+                                subConfigItem.set("needPageType", "none");
+                                subConfigItem.set("required", false);
+                                subConfigItem.set("unique", false);
+                                subConfigItem.set("needTableId", false);
+                            } else {
+                                boolean needAddAndUpdate = genConfig.getWhetherAddUpdate().equalsIgnoreCase(GenYesNoEnum.Y.getValue());
+                                subConfigItem.set("needAdd", needAddAndUpdate);
+                                subConfigItem.set("needEdit", needAddAndUpdate);
+                                // 子表外键字段必须在AddParam和EditParam中，无论是否配置增改
+                                if(genConfig.getFieldName().equalsIgnoreCase(genBasic.getSubForeignKey())) {
+                                    subConfigItem.set("needAdd", true);
+                                    subConfigItem.set("needEdit", true);
+                                }
+                                subConfigItem.set("needPage", genConfig.getQueryWhether().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                                subConfigItem.set("needPageType", genConfig.getQueryType());
+                                subConfigItem.set("required", genConfig.getWhetherRequired().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                                subConfigItem.set("unique", ObjectUtil.isNotEmpty(genConfig.getWhetherUnique()) && genConfig.getWhetherUnique().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                                subConfigItem.set("needTableId", false);
+                            }
+                        }
+                        subConfigItem.set("whetherTable", genConfig.getWhetherTable().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                        subConfigItem.set("whetherRetract", genConfig.getWhetherRetract().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                        subConfigItem.set("whetherAddUpdate", genConfig.getWhetherAddUpdate().equalsIgnoreCase(GenYesNoEnum.Y.getValue()));
+                        subConfigItem.set("effectType", genConfig.getEffectType());
+                        subConfigItem.set("dictTypeCode", genConfig.getDictTypeCode());
+                        subConfigItem.set("fieldJavaType", genConfig.getFieldJavaType());
+                        subConfigItem.set("fieldNameCamelCase", StrUtil.toCamelCase(genConfig.getFieldName().toLowerCase()));
+                        subConfigItem.set("fieldNameCamelCaseFirstUpper", StrUtil.upperFirst(StrUtil.toCamelCase(genConfig.getFieldName().toLowerCase())));
+                        subConfigItem.set("fieldRemark", genConfig.getFieldRemark());
+                        subConfigItem.set("needAutoInsert", CREATE_USER_KEY.equalsIgnoreCase(genConfig.getFieldName()) ||
+                                CREATE_TIME_KEY.equalsIgnoreCase(genConfig.getFieldName()));
+                        subConfigItem.set("needAutoUpdate", UPDATE_USER_KEY.equalsIgnoreCase(genConfig.getFieldName()) ||
+                                UPDATE_TIME_KEY.equalsIgnoreCase(genConfig.getFieldName()));
+                        subConfigItem.set("needLogicDelete", DELETE_FLAG_KEY.equalsIgnoreCase(genConfig.getFieldName()));
+                        subConfigList.add(subConfigItem);
+                    });
+            bindingJsonObject.set("subConfigList", subConfigList);
+            bindingJsonObject.set("subHasSortCodeField", subHasSortCodeField.get());
+            // 子表必填字段
+            List<JSONObject> subRequiredFieldList = subConfigList.stream().filter(item -> item.getBool("required")).toList();
+            bindingJsonObject.set("subRequiredFieldList", subRequiredFieldList);
+            bindingJsonObject.set("subRequiredFieldStr", StrUtil.join(StrUtil.COMMA + " ", subRequiredFieldList.stream().map(item ->
+                    item.getStr("fieldNameCamelCase")).collect(Collectors.toList())));
+            // 子表唯一字段
+            List<JSONObject> subUniqueFieldList = subConfigList.stream().filter(item -> item.getBool("unique")).toList();
+            bindingJsonObject.set("subUniqueFieldList", subUniqueFieldList);
+            bindingJsonObject.set("subUniqueFieldStr", StrUtil.join(StrUtil.COMMA + " ", subUniqueFieldList.stream().map(item ->
+                    item.getStr("fieldNameCamelCase")).collect(Collectors.toList())));
+        }
+
         return bindingJsonObject;
+    }
+
+    /**
+     * 根据生成类型获取后端模板目录
+     */
+    private String getBackendTemplateDir(String genType) {
+        if (GenCategoryEnum.TREE.getValue().equals(genType)) {
+            return TEMPLATE_BACKEND_TREE;
+        } else if (GenCategoryEnum.LEFT_TREE_TABLE.getValue().equals(genType)) {
+            return TEMPLATE_BACKEND_LEFT_TREE_TABLE;
+        } else if (GenCategoryEnum.MASTER_DETAIL.getValue().equals(genType)) {
+            return TEMPLATE_BACKEND_MASTER_DETAIL;
+        }
+        return "backend-table";
+    }
+
+    /**
+     * 根据生成类型获取前端模板目录
+     */
+    private String getFrontendTemplateDir(String genType) {
+        if (GenCategoryEnum.TREE.getValue().equals(genType)) {
+            return TEMPLATE_FRONTEND_TREE;
+        } else if (GenCategoryEnum.LEFT_TREE_TABLE.getValue().equals(genType)) {
+            return TEMPLATE_FRONTEND_LEFT_TREE_TABLE;
+        } else if (GenCategoryEnum.MASTER_DETAIL.getValue().equals(genType)) {
+            return TEMPLATE_FRONTEND_MASTER_DETAIL;
+        }
+        return "frontend-table";
+    }
+
+    /**
+     * 根据生成类型获取前端文件列表
+     */
+    private List<JSONObject> getFrontendFileList(String genType) {
+        if (GenCategoryEnum.MASTER_DETAIL.getValue().equals(genType)) {
+            return GEN_FRONT_MASTER_DETAIL_FILE_LIST;
+        }
+        if (GenCategoryEnum.LEFT_TREE_TABLE.getValue().equals(genType)) {
+            return GEN_FRONT_LEFT_TREE_TABLE_FILE_LIST;
+        }
+        return GEN_FRONT_FILE_LIST;
     }
 }

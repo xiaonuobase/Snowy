@@ -33,4 +33,9 @@ public class SysButtonApiProvider implements SysButtonApi {
     public void addForGenButton(String menuId, String className, String functionName) {
         sysButtonService.addForGenButton(menuId, className, functionName);
     }
+
+    @Override
+    public void addForGenButton(String menuId, String className, String functionName, String genType, String subFunctionName) {
+        sysButtonService.addForGenButton(menuId, className, functionName, genType, subFunctionName);
+    }
 }

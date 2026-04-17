@@ -1,0 +1,74 @@
+import { baseRequest } from '@/utils/request'
+
+const request = (url, ...arg) => baseRequest(`/${moduleName}/${busName}/` + url, ...arg)
+
+/**
+ * ${functionName}Api接口管理器
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+export default {
+	// 获取${functionName}分页
+	${classNameFirstLower}Page(data) {
+		return request('page', data, 'get')
+	},
+	// 提交${functionName}表单 edit为true时为编辑，默认为新增
+	${classNameFirstLower}SubmitForm(data, edit = false) {
+		return request(edit ? 'edit' : 'add', data)
+	},
+	// 删除${functionName}
+	${classNameFirstLower}Delete(data) {
+		return request('delete', data)
+	},
+	// 获取${functionName}详情
+	${classNameFirstLower}Detail(data) {
+		return request('detail', data, 'get')
+	},
+	// 获取${subFunctionName}分页
+	${subClassNameFirstLower}Page(data) {
+		return request('sub/page', data, 'get')
+	},
+	// 提交${subFunctionName}表单 edit为true时为编辑，默认为新增
+	${subClassNameFirstLower}SubmitForm(data, edit = false) {
+		return request(edit ? 'sub/edit' : 'sub/add', data)
+	},
+	// 删除${subFunctionName}
+	${subClassNameFirstLower}Delete(data) {
+		return request('sub/delete', data)
+	},
+	// 获取${subFunctionName}详情
+	${subClassNameFirstLower}Detail(data) {
+		return request('sub/detail', data, 'get')
+	},
+<% if(hasUserSelector) { %>
+	// 人员选择器
+	${classNameFirstLower}UserSelector(data) {
+		return request('userSelector', data, 'get')
+	},
+<% } %>
+<% if(hasOrgSelector || hasUserSelector || hasPositionSelector) { %>
+	// 机构树选择器
+	${classNameFirstLower}OrgTreeSelector(data) {
+		return request('orgTreeSelector', data, 'get')
+	},
+<% } %>
+<% if(hasOrgSelector) { %>
+	// 机构列表选择器
+	${classNameFirstLower}OrgListSelector(data) {
+		return request('orgListSelector', data, 'get')
+	},
+<% } %>
+<% if(hasPositionSelector) { %>
+	// 职位选择器
+	${classNameFirstLower}PositionSelector(data) {
+		return request('positionSelector', data, 'get')
+	},
+<% } %>
+<% if(hasGroupSelector) { %>
+	// 用户组选择器
+	${classNameFirstLower}GroupSelector(data) {
+		return request('groupSelector', data, 'get')
+	},
+<% } %>
+}

@@ -209,6 +209,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         sysMenu.setPath(path);
         sysMenu.setComponent(StrUtil.removePrefix(path, StrUtil.SLASH) + StrUtil.SLASH + "index");
         sysMenu.setIcon("appstore-outlined");
+        sysMenu.setVisible("YES");
+        sysMenu.setDisplayLayout("YES");
+        sysMenu.setKeepLive("YES");
         sysMenu.setSortCode(99);
         this.save(sysMenu);
         return sysMenu.getId();

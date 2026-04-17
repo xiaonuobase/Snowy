@@ -27,4 +27,12 @@ public interface SysButtonApi {
      * @date 2022/11/1 13:48
      **/
     void addForGenButton(String menuId, String className, String functionName);
+
+    /**
+     * 代码生成按钮插入（支持不同生成类型）
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 13:48
+     **/
+    void addForGenButton(String menuId, String className, String functionName, String genType, String subFunctionName);
 }
