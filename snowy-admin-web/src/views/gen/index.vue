@@ -53,7 +53,7 @@
 			</template>
 		</s-table>
 	</xn-panel>
-	<steps v-else ref="stepsRef" @successful="tableRef.refresh(true)" @closed="closeConfig()" />
+	<steps v-else ref="stepsRef" @successful="tableRef?.refresh(true)" @closed="closeConfig()" />
 	<genPreview ref="genPreviewRef" />
 	<type-select ref="typeSelectRef" @confirm="onTypeSelectConfirm" />
 </template>
