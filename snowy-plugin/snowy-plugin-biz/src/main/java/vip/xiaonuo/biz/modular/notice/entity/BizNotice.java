@@ -69,7 +69,7 @@ public class BizNotice extends CommonEntity {
 
     /** 排序 */
     @Schema(description = "排序")
-    private String sortCode;
+    private Integer sortCode;
 
     /** 扩展信息 */
     @Schema(description = "扩展信息")
