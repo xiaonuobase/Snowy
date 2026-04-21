@@ -91,4 +91,9 @@ public class SysOrgApiProvider implements SysOrgApi {
         return sysOrgService.getChildListById(sysOrgService.getAllOrgList(), orgId, true)
                 .stream().map(SysOrg::getId).collect(Collectors.toList());
     }
+
+    @Override
+    public List<JSONObject> getAncestorNodes(List<String> orgIdList) {
+        return sysOrgService.getAncestorNodes(orgIdList);
+    }
 }

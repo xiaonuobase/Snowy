@@ -88,4 +88,12 @@ public interface SysOrgApi {
      * @date 2026/3/23 14:00
      **/
     List<String> getChildOrgIdListById(String orgId);
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author xuyuxiang
+     * @date 2026/4/22
+     **/
+    List<JSONObject> getAncestorNodes(List<String> orgIdList);
 }
