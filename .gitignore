@@ -30,3 +30,5 @@ logs/
 *.ipr
 *.log
 tmp/
+!**/src/main/resources/lib/*.jar
+!**/allatori/**
