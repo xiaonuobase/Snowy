@@ -13,7 +13,6 @@
 package vip.xiaonuo.mobile.modular.resource.controller;
 
 import cn.hutool.core.lang.tree.Tree;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -40,7 +39,6 @@ import java.util.List;
  * @date  2023/01/28 22:42
  */
 @Tag(name = "移动端菜单控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class MobileMenuController {

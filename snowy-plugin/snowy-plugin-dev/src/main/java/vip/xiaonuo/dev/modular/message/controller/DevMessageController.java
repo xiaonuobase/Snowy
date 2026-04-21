@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.message.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -42,7 +41,6 @@ import java.util.List;
  * @date 2022/6/21 14:57
  **/
 @Tag(name = "站内信控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 6)
 @RestController
 @Validated
 public class DevMessageController {

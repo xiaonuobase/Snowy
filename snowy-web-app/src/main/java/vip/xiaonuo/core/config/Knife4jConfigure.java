@@ -13,7 +13,6 @@
 package vip.xiaonuo.core.config;
 
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.github.xiaoymin.knife4j.core.conf.ExtensionsConstants;
 import com.github.xiaoymin.knife4j.core.model.MarkdownProperty;
 import com.github.xiaoymin.knife4j.extend.filter.basic.JakartaServletSecurityBasicAuthFilter;
@@ -23,33 +22,24 @@ import com.github.xiaoymin.knife4j.spring.configuration.Knife4jSetting;
 import com.github.xiaoymin.knife4j.spring.extension.Knife4jJakartaOperationCustomizer;
 import com.github.xiaoymin.knife4j.spring.extension.OpenApiExtensionResolver;
 import com.github.xiaoymin.knife4j.spring.filter.JakartaProductionSecurityFilter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springdoc.core.customizers.GlobalOperationCustomizer;
-import org.springdoc.core.properties.SpringDocConfigProperties;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Knife4j兼容性配置，替代原始Knife4jAutoConfiguration（已在Application中排除）。
@@ -70,9 +60,8 @@ public class Knife4jConfigure {
      */
     @Bean
     @ConditionalOnMissingBean
-    public GlobalOpenApiCustomizer knife4jOpenApiCustomizer(Knife4jProperties knife4jProperties,
-                                                            SpringDocConfigProperties properties) {
-        return new CompatibleKnife4jOpenApiCustomizer(knife4jProperties, properties);
+    public GlobalOpenApiCustomizer knife4jOpenApiCustomizer(Knife4jProperties knife4jProperties) {
+        return new CompatibleKnife4jOpenApiCustomizer(knife4jProperties);
     }
 
     /**
@@ -143,12 +132,9 @@ public class Knife4jConfigure {
     static class CompatibleKnife4jOpenApiCustomizer implements GlobalOpenApiCustomizer {
 
         private final Knife4jProperties knife4jProperties;
-        private final SpringDocConfigProperties properties;
 
-        public CompatibleKnife4jOpenApiCustomizer(Knife4jProperties knife4jProperties,
-                                                  SpringDocConfigProperties properties) {
+        public CompatibleKnife4jOpenApiCustomizer(Knife4jProperties knife4jProperties) {
             this.knife4jProperties = knife4jProperties;
-            this.properties = properties;
         }
 
         @Override
@@ -162,74 +148,9 @@ public class Knife4jConfigure {
                 objectMap.put("x-setting", setting);
                 objectMap.put("x-markdownFiles", resolver.getMarkdownFiles());
                 openApi.addExtension("x-openapi", objectMap);
-                addOrderExtension(openApi);
             }
         }
 
-        private void addOrderExtension(OpenAPI openApi) {
-            // 关键修复：使用Set替代List，兼容springdoc 2.6.0+
-            Set<SpringDocConfigProperties.GroupConfig> groupConfigs = properties.getGroupConfigs();
-            if (!CollectionUtils.isEmpty(groupConfigs)) {
-                Set<String> packagesToScan = groupConfigs.stream()
-                        .map(SpringDocConfigProperties.GroupConfig::getPackagesToScan)
-                        .filter(toScan -> !CollectionUtils.isEmpty(toScan))
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toSet());
-
-                Map<String, Integer> tagOrderMap = new HashMap<>();
-                Set<Class<?>> classes = new HashSet<>();
-                for (String packageName : packagesToScan) {
-                    classes.addAll(scanPackageByAnnotation(packageName));
-                }
-                for (Class<?> clazz : classes) {
-                    Tag tag = getTag(clazz);
-                    if (tag != null) {
-                        ApiSupport apiSupport = clazz.getAnnotation(ApiSupport.class);
-                        if (apiSupport != null) {
-                            tagOrderMap.putIfAbsent(tag.name(), apiSupport.order());
-                        }
-                    }
-                }
-                if (openApi.getTags() != null) {
-                    openApi.getTags().forEach(tag -> {
-                        if (tagOrderMap.containsKey(tag.getName())) {
-                            tag.addExtension(ExtensionsConstants.EXTENSION_ORDER, tagOrderMap.get(tag.getName()));
-                        }
-                    });
-                }
-            }
-        }
-
-        private Tag getTag(Class<?> clazz) {
-            Tag anno = clazz.getAnnotation(Tag.class);
-            if (anno != null) {
-                return anno;
-            }
-            Class<?>[] interfaces = clazz.getInterfaces();
-            if (ArrayUtils.isNotEmpty(interfaces)) {
-                for (Class<?> interfaceClazz : interfaces) {
-                    anno = interfaceClazz.getAnnotation(Tag.class);
-                    if (anno != null) {
-                        return anno;
-                    }
-                }
-            }
-            return null;
-        }
-
-        private Set<Class<?>> scanPackageByAnnotation(String packageName) {
-            ClassPathScanningCandidateComponentProvider scanner =
-                    new ClassPathScanningCandidateComponentProvider(false);
-            scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
-            Set<Class<?>> classes = new HashSet<>();
-            for (BeanDefinition beanDefinition : scanner.findCandidateComponents(packageName)) {
-                try {
-                    classes.add(Class.forName(beanDefinition.getBeanClassName()));
-                } catch (ClassNotFoundException ignored) {
-                }
-            }
-            return classes;
-        }
     }
 
     /**

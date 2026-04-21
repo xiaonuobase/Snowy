@@ -14,7 +14,6 @@ package vip.xiaonuo.dev.modular.config.controller;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -43,7 +42,6 @@ import java.util.List;
  * @date 2022/4/22 10:56
  **/
 @Tag(name = "配置控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class DevConfigController {

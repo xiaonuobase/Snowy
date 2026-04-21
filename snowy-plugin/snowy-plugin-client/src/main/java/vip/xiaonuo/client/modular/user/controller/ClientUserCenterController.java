@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.client.modular.user.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -34,7 +33,6 @@ import javax.validation.Valid;
  * @date 2022/4/22 9:34
  **/
 @Tag(name = "C端用户个人控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class ClientUserCenterController {

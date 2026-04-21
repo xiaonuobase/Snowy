@@ -14,7 +14,6 @@ package vip.xiaonuo.auth.modular.login.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -39,7 +38,6 @@ import javax.validation.Valid;
  * @date 2021/12/23 21:50
  */
 @Tag(name = "B端登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class AuthController {

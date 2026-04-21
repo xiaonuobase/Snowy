@@ -15,7 +15,6 @@ package vip.xiaonuo.biz.modular.org.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -43,7 +42,6 @@ import java.util.List;
  * @date 2022/4/24 19:55
  */
 @Tag(name = "机构控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class BizOrgController {

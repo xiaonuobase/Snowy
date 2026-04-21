@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.log.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -44,7 +43,6 @@ import java.util.List;
  * @date 2022/9/2 15:15
  */
 @Tag(name = "日志控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 8)
 @RestController
 @Validated
 public class DevLogController {

@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.password.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -42,7 +41,6 @@ import java.util.List;
  * @date 2022/4/25 20:40
  */
 @Tag(name = "弱密码库控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class DevWeakPasswordController {

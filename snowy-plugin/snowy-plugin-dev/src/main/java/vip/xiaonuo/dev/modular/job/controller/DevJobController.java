@@ -13,7 +13,6 @@
 package vip.xiaonuo.dev.modular.job.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -39,7 +38,6 @@ import java.util.List;
  * @date 2022/8/5 10:48
  **/
 @Tag(name = "定时任务控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 7)
 @RestController
 @Validated
 public class DevJobController {

@@ -14,7 +14,6 @@ package vip.xiaonuo.sys.modular.role.controller;
 
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -44,7 +43,6 @@ import java.util.List;
  * @date 2022/4/25 20:19
  */
 @Tag(name = "角色控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 8)
 @RestController
 @Validated
 public class SysRoleController {

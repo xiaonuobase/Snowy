@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.auth.modular.sso.controller;
 
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -33,7 +32,6 @@ import javax.validation.Valid;
  * @date 2022/8/30 9:20
  **/
 @Tag(name = "单点登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 4)
 @RestController
 @Validated
 public class AuthSsoController {

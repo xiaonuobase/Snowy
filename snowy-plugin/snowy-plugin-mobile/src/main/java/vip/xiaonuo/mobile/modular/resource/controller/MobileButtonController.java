@@ -13,7 +13,6 @@
 package vip.xiaonuo.mobile.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -42,7 +41,6 @@ import java.util.List;
  * @date 2022/6/27 13:56
  **/
 @Tag(name = "移动端按钮控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 3)
 @RestController
 @Validated
 public class MobileButtonController {
