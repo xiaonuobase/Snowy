@@ -242,13 +242,11 @@
 		}
 
 		&.unread {
-			background-color: #f0f9ff;
 			&:hover {
 				background-color: #e6f7ff;
 			}
 			.msg-title {
 				font-weight: 600;
-				color: #1890ff;
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 	<a-modal
 		v-if="isModal"
 		v-bind="$attrs"
-		:open="visible"
+		:open="isOpen"
 		:width="modalWidth"
 		:footer="slotKeys.includes('footer') ? undefined : null"
 		:wrap-class-name="wrapClassName + fullscreenClass"
@@ -60,7 +60,8 @@
 	<a-drawer
 		v-else
 		v-bind="$attrs"
-		:open="visible"
+		:open="isOpen"
+		:title="title"
 		:width="drawerWidth"
 		:footer-style="{ textAlign: 'right' }"
 		@close="cancel"
@@ -79,6 +80,11 @@
 	const slots = useSlots()
 	const store = globalStore()
 	const props = defineProps({
+		open: {
+			type: Boolean,
+			default: false,
+			required: false
+		},
 		visible: {
 			type: Boolean,
 			default: false,
@@ -111,9 +117,12 @@
 		return FormContainerTypeEnum.MODAL === formStyle.value
 	})
 
-	const emit = defineEmits(['close', 'fullscreen'])
+	const isOpen = computed(() => props.open || props.visible)
+
+	const emit = defineEmits(['close', 'fullscreen', 'update:open'])
 
 	const cancel = () => {
+		emit('update:open', false)
 		emit('close')
 	}
 
@@ -204,12 +213,9 @@
 		})
 	}
 
-	watch(
-		() => props.visible,
-		() => {
-			if (!props.visible) toggleResetDrag()
-		}
-	)
+	watch(isOpen, () => {
+		if (!isOpen.value) toggleResetDrag()
+	})
 
 	// 监听窗口大小变化
 	const handleResize = () => {
