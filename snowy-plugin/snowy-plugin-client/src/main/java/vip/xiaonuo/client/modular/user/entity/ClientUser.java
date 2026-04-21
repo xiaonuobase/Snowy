@@ -16,11 +16,11 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.dromara.core.trans.anno.Trans;
-import org.dromara.core.trans.constant.TransType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.dromara.core.trans.anno.Trans;
+import org.dromara.core.trans.constant.TransType;
 import vip.xiaonuo.common.handler.CommonSm4CbcTypeHandler;
 import vip.xiaonuo.common.pojo.CommonEntity;
 

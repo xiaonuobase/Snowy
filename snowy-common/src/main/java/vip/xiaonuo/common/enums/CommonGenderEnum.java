@@ -13,7 +13,6 @@
 package vip.xiaonuo.common.enums;
 
 import lombok.Getter;
-import vip.xiaonuo.common.exception.CommonException;
 
 /**
  * 通用性别枚举

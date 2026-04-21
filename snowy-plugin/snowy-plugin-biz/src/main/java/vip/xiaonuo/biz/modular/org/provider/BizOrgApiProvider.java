@@ -13,7 +13,6 @@
 package vip.xiaonuo.biz.modular.org.provider;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;

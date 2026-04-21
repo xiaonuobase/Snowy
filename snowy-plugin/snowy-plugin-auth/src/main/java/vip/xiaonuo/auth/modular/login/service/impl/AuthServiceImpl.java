@@ -42,6 +42,7 @@ import vip.xiaonuo.auth.modular.login.enums.AuthExceptionEnum;
 import vip.xiaonuo.auth.modular.login.enums.AuthPhoneOrEmailTypeEnum;
 import vip.xiaonuo.auth.modular.login.enums.AuthStrategyWhenNoUserWithPhoneOrEmailEnum;
 import vip.xiaonuo.auth.modular.login.param.*;
+import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.client.ClientUserApi;
@@ -55,7 +56,6 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.sys.api.SysUserApi;
-import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
