@@ -183,4 +183,16 @@ public class SysIndexController {
     public CommonResult<SysToolDataCountResult> getToolDataCount() {
         return CommonResult.data(sysIndexService.getToolDataCount());
     }
+
+    /**
+     * 获取系统运行信息
+     *
+     * @author yubaoshan
+     * @date 2026/4/21
+     */
+    @Operation(summary = "获取系统运行信息")
+    @GetMapping("/sys/index/sysInfo")
+    public CommonResult<SysIndexSysInfoResult> getSysInfo() {
+        return CommonResult.data(sysIndexService.getSysInfo());
+    }
 }

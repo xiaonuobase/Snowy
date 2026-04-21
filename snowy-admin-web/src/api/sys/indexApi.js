@@ -61,5 +61,9 @@ export default {
 	// 获取基础工具数据
 	indexToolDataCount(data) {
 		return request('toolDataCount', data, 'get')
+	},
+	// 获取系统运行信息
+	indexSysInfo(data) {
+		return request('sysInfo', data, 'get')
 	}
 }

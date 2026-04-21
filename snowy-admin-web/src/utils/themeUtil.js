@@ -9,7 +9,6 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 import { generate } from '@ant-design/colors'
-import tool from '../utils/tool'
 import config from '../config'
 import { themeEnum } from '@/layout/enum/themeEnum'
 
@@ -55,27 +54,4 @@ const loadLocalTheme = (localSetting) => {
 	}
 }
 
-/**
- * 获取本地保存的配置
- * @param loadTheme {boolean} 是否加载配置中的主题
- * @returns {Object}
- */
-const getLocalSetting = (loadTheme) => {
-	let localSetting = {}
-	try {
-		const theme = tool.data.get('SNOWY_THEME')
-		const themeColor = tool.data.get('SNOWY_THEME_COLOR')
-		localSetting = {
-			theme,
-			themeColor
-		}
-	} catch (e) {
-		console.error(e)
-	}
-	if (loadTheme) {
-		loadLocalTheme(localSetting)
-	}
-	return localSetting
-}
-
-export { loadLocalTheme, getLocalSetting, changeColor }
+export { loadLocalTheme, changeColor }

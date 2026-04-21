@@ -89,7 +89,6 @@
 	import { BellOutlined } from '@ant-design/icons-vue'
 	import router from '@/router'
 	import { onMounted } from 'vue'
-	import sysConfig from '@/config'
 	import { convertUrl } from '@/utils/apiAdaptive'
 	import tool from '@/utils/tool'
 
@@ -105,8 +104,9 @@
 	// 创建ws连接
 	const createWebSocketConnect = () => {
 		if ('WebSocket' in window) {
-			let url = sysConfig.API_URL + convertUrl('/dev/message/ws') + '?token=' + tool.data.get('TOKEN')
-			url = url.replace('https://', 'wss://').replace('http://', 'ws://')
+			const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+			let url =
+				protocol + window.location.host + '/api' + convertUrl('/dev/message/ws') + '?token=' + tool.data.get('TOKEN')
 			const socket = new WebSocket(url)
 			// 监听打开事件
 			socket.onopen = () => {

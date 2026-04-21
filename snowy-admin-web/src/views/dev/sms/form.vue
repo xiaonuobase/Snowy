@@ -8,9 +8,6 @@
 		@close="onClose"
 	>
 		<a-tabs v-model:activeKey="activeKey">
-			<a-tab-pane key="XiaonuoSmsSend" tab="小诺短信">
-				<xiaouo-sms-send ref="xiaonuoSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
-			</a-tab-pane>
 			<a-tab-pane key="AliyunSmsSend" tab="阿里云短信">
 				<aliyun-sms-send ref="aliyunSmsSendRef" @loadingStart="loadingStart" @loadingEnd="loadingEnd" />
 			</a-tab-pane>
@@ -26,17 +23,15 @@
 </template>
 
 <script setup name="smsForm">
-	import XiaouoSmsSend from './send/xiaonuoSmsSend.vue'
 	import AliyunSmsSend from './send/aliyunSmsSend.vue'
 	import TencentSmsSend from './send/tencentSmsSend.vue'
 
-	const xiaonuoSmsSendRef = ref()
 	const aliyunSmsSendRef = ref()
 	const tencentSmsSendRef = ref()
 
 	// 默认是关闭状态
 	const visible = ref(false)
-	const activeKey = ref('XiaonuoSmsSend')
+	const activeKey = ref('AliyunSmsSend')
 	const sendLoading = ref(false)
 	// 打开抽屉
 	const onOpen = () => {
@@ -53,8 +48,6 @@
 			aliyunSmsSendRef.value.send()
 		} else if (tabActiveKey === 'TencentSmsSend') {
 			tencentSmsSendRef.value.send()
-		} else if (tabActiveKey === 'XiaonuoSmsSend') {
-			xiaonuoSmsSendRef.value.send()
 		}
 	}
 	// 请求loading开始

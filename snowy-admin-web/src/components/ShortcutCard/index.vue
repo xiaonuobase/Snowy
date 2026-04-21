@@ -1,9 +1,9 @@
 <template>
-	<div class="container">
-		<a-tag :color="randomColor()" class="container-tag">
-			<component :is="props.icon" class="container-tag-icon" />
-		</a-tag>
-		<span class="container-span">{{ props.label }}</span>
+	<div class="shortcut-item">
+		<div class="icon-wrapper" :style="{ backgroundColor: getBgColor() }">
+			<component :is="props.icon" :style="{ color: getColor() }" class="shortcut-icon" />
+		</div>
+		<span class="shortcut-label">{{ props.label }}</span>
 	</div>
 </template>
 
@@ -25,60 +25,61 @@
 			required: false
 		}
 	})
-	// 颜色列表
-	const colorList = ['#7265E6', '#FFBF00', '#00A2AE', '#F56A00', '#1677FF', '#606D80']
-	// 获取随机颜色
-	const randomColor = () => {
-		if (props.color) {
-			return props.color
-		}
-		return colorList[randomNum(0, colorList.length - 1)]
-	}
-	// 获取minNum到maxNum内的随机数
-	const randomNum = (minNum, maxNum) => {
-		switch (arguments.length) {
-			case 1:
-				return parseInt(Math.random() * minNum + 1, 10)
-			case 2:
-				return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10)
-			default:
-				return 0
-		}
-	}
+	const colorList = [
+		{ color: 'var(--blue-6)', bg: 'var(--blue-1)' },
+		{ color: 'var(--green-6)', bg: 'var(--green-1)' },
+		{ color: 'var(--orange-6)', bg: 'var(--orange-1)' },
+		{ color: 'var(--red-5)', bg: 'var(--red-1)' },
+		{ color: 'var(--purple-6)', bg: 'var(--purple-1)' },
+		{ color: 'var(--cyan-6)', bg: 'var(--cyan-1)' }
+	]
+
+	let colorIndex = Math.floor(Math.random() * colorList.length)
+
+	const getColor = () => props.color || colorList[colorIndex].color
+	const getBgColor = () => colorList[colorIndex].bg
 </script>
 
-<style scoped>
-	.container {
-		height: 60px;
-		/*border:1px solid var(--border-color-split);*/
-		border-radius: 5px;
+<style scoped lang="less">
+	.shortcut-item {
+		height: 80px;
 		display: flex;
+		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		cursor: pointer;
-		/*实现渐变（时间变化效果）*/
-		-webkit-transition: all 0.5s;
-		-moz-transition: all 0.5s;
-		-ms-transition: all 0.5s;
-		-o-transition: all 0.5s;
-		transition: all 0.5s;
+		transition: all 0.25s ease;
+		border-radius: 2px;
+		background: var(--component-background);
+		border: 1px solid var(--border-color-split);
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px var(--shadow-color);
+			border-color: var(--primary-color);
+		}
+		&:active {
+			transform: translateY(0);
+		}
 	}
-	.container:hover {
-		background: var(--border-color-split);
-	}
-	.container-tag {
-		width: 42px;
-		height: 42px;
+	.icon-wrapper {
+		width: 40px;
+		height: 40px;
 		border-radius: 10px;
 		display: flex;
 		align-items: center;
-		margin-left: 10px;
 		justify-content: center;
+		margin-bottom: 6px;
 	}
-	.container-tag-icon {
-		font-size: 25px;
+	.shortcut-icon {
+		font-size: 20px;
 	}
-	.container-span {
-		max-width: 60%;
+	.shortcut-label {
+		font-size: 12px;
+		color: var(--text-color);
 		font-weight: 500;
+		max-width: 90%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 </style>

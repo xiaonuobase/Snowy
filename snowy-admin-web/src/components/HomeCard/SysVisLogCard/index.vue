@@ -1,11 +1,18 @@
 <template>
-	<a-card :title="title" :bordered="false" :loading="apiLoading">
-		<template #extra v-if="displayMore()"><a @click="leaveFor('/dev/vislog')">更多</a></template>
+	<a-card :title="title" :bordered="false" :loading="apiLoading" class="vis-log-card">
+		<template #extra v-if="displayMore()">
+			<a-button type="link" size="small" @click="leaveFor('/dev/vislog')">更多</a-button>
+		</template>
 		<div class="timeline-div">
 			<a-timeline>
 				<a-timeline-item :key="visLog.id" v-for="visLog in visLogList" :color="getTimelineColor(visLog.category)">
-					{{ $TOOL.parseTime(visLog.opTime, '{y}-{m}-{d} {h}:{i}:{s}') }} {{ visLog.name }}
-					<p class="timeline-item-p">{{ visLog.opIp }} {{ visLog.opAddress }}</p>
+					<div class="log-item">
+						<div class="log-header">
+							<span class="log-name">{{ visLog.name }}</span>
+							<span class="log-time">{{ $TOOL.parseTime(visLog.opTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+						</div>
+						<p class="log-address">{{ visLog.opIp }} {{ visLog.opAddress }}</p>
+					</div>
 				</a-timeline-item>
 			</a-timeline>
 		</div>
@@ -15,7 +22,7 @@
 <script setup name="indexVisLog">
 	import router from '@/router'
 	import indexApi from '@/api/sys/indexApi'
-	import { onMounted } from 'vue'
+	import { onMounted, ref } from 'vue'
 	import tool from '@/utils/tool'
 	const userInfo = tool.data.get('USER_INFO')
 	const visLogList = ref([])
@@ -48,27 +55,51 @@
 			path: url
 		})
 	}
-	// 获取颜色
 	const getTimelineColor = (value) => {
-		if (value === 'LOGIN') {
-			return 'blue'
-		}
-		if (value === 'LOGOUT') {
-			return 'gray'
-		}
+		if (value === 'LOGOUT') return 'gray'
+		return 'blue'
 	}
 </script>
-<style scoped>
-	.ant-timeline-item {
-		padding-top: 5px;
-		padding-bottom: 10px !important;
-	}
-	.timeline-item-p {
-		margin-bottom: 0;
-		color: rgb(188, 189, 190);
+<style scoped lang="less">
+	:deep(.ant-card-body) {
+		padding-top: 0 !important;
 	}
 	.timeline-div {
-		height: 300px;
-		overflow: auto;
+		height: 330px;
+		overflow-y: auto;
+		padding: 10px 5px;
+		/* 自定义滚动条 */
+		&::-webkit-scrollbar {
+			width: 4px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background: var(--border-color-split);
+			border-radius: 2px;
+		}
+	}
+	.log-item {
+		margin-bottom: 5px;
+	}
+	.log-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 4px;
+	}
+	.log-name {
+		font-weight: 500;
+		color: var(--text-color);
+	}
+	.log-time {
+		font-size: 12px;
+		color: var(--text-color-secondary);
+	}
+	.log-address {
+		margin-bottom: 0;
+		font-size: 12px;
+		color: var(--disabled-color);
+	}
+	:deep(.ant-timeline-item-content) {
+		margin-left: 25px;
 	}
 </style>

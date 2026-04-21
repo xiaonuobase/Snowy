@@ -27,10 +27,7 @@ public enum SysSmsEngineTypeEnum {
     ALIYUN("ALIYUN"),
 
     /** 腾讯云 */
-    TENCENT("TENCENT"),
-
-    /** 小诺短信 */
-    XIAONUO("XIAONUO");
+    TENCENT("TENCENT");
 
     private final String value;
 

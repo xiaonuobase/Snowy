@@ -90,20 +90,6 @@ public class DevSmsController {
     }
 
     /**
-     * 发送短信——小诺短信
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:47
-     */
-    @Operation(summary = "发送小诺短信")
-    @CommonLog("发送小诺短信")
-    @PostMapping("/dev/sms/sendXiaonuo")
-    public CommonResult<String> sendXiaonuo(@RequestBody @Valid DevSmsSendXiaonuoParam devSmsSendXiaonuoParam) {
-        devSmsService.sendXiaonuo(devSmsSendXiaonuoParam);
-        return CommonResult.ok();
-    }
-
-    /**
      * 获取短信分页
      *
      * @author xuyuxiang

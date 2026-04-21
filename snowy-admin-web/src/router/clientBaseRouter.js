@@ -59,7 +59,7 @@ const clientOpenRouter = ['/front/client/login', '/front/client/findPwd', '/fron
  */
 export const validateClientAccess = (path) => {
 	// 如果不是C端路由，直接返回true
-	if (!path.includes('/front/client/')) {
+	if (!path.startsWith('/front/client')) {
 		return { valid: true }
 	}
 

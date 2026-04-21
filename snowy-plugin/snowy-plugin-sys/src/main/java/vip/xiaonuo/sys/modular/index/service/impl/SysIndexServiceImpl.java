@@ -161,4 +161,9 @@ public class SysIndexServiceImpl implements SysIndexService {
     public SysToolDataCountResult getToolDataCount() {
         return BeanUtil.toBean(devApi.getToolDataCount(), SysToolDataCountResult.class);
     }
+
+    @Override
+    public SysIndexSysInfoResult getSysInfo() {
+        return BeanUtil.toBean(devApi.getSysRunInfo(), SysIndexSysInfoResult.class);
+    }
 }

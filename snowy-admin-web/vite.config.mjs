@@ -125,12 +125,7 @@ export default defineConfig(({ command, mode }) => {
 			preprocessorOptions: {
 				less: {
 					javascriptEnabled: true,
-					plugins: [
-						new Less2CssVariablePlugin({
-							// TODO：有必要用的情况下，是否需要传入 variables，可能会造成重复引用
-							variables: { ...v3Token }
-						})
-					],
+					plugins: [new Less2CssVariablePlugin()],
 					modifyVars: v3Token
 				}
 			}

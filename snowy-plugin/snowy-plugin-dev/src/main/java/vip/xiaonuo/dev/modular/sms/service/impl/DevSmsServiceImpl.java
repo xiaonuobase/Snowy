@@ -14,7 +14,6 @@ package vip.xiaonuo.dev.modular.sms.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.StrUtil;
@@ -37,9 +36,7 @@ import vip.xiaonuo.dev.modular.sms.param.*;
 import vip.xiaonuo.dev.modular.sms.service.DevSmsService;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsAliyunUtil;
 import vip.xiaonuo.dev.modular.sms.util.DevSmsTencentUtil;
-import vip.xiaonuo.dev.modular.sms.util.DevSmsXiaonuoUtil;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -60,13 +57,7 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void sendDynamic(String engine, String phoneNumbers, String templateCodeOrId, JSONObject templateParam) {
-        if(engine.equals(DevSmsEngineTypeEnum.XIAONUO.getValue())) {
-            DevSmsSendXiaonuoParam devSmsSendXiaonuoParam = new DevSmsSendXiaonuoParam();
-            devSmsSendXiaonuoParam.setPhoneNumbers(phoneNumbers);
-            devSmsSendXiaonuoParam.setTemplateCode(templateCodeOrId);
-            devSmsSendXiaonuoParam.setTemplateParam(JSONUtil.toJsonStr(templateParam));
-            this.sendXiaonuo(devSmsSendXiaonuoParam);
-        } else if (engine.equals(DevSmsEngineTypeEnum.ALIYUN.getValue())) {
+        if (engine.equals(DevSmsEngineTypeEnum.ALIYUN.getValue())) {
             DevSmsSendAliyunParam devSmsSendAliyunParam = new DevSmsSendAliyunParam();
             devSmsSendAliyunParam.setPhoneNumbers(phoneNumbers);
             devSmsSendAliyunParam.setTemplateCode(templateCodeOrId);
@@ -121,27 +112,6 @@ public class DevSmsServiceImpl extends ServiceImpl<DevSmsMapper, DevSms> impleme
         BeanUtil.copyProperties(smsSendTencentParam, devSms);
         devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsTencentUtil.getDefaultSignName());
         devSms.setEngine(DevSmsEngineTypeEnum.TENCENT.getValue());
-        devSms.setReceiptInfo(receiptInfo);
-        this.save(devSms);
-    }
-
-    @Override
-    public void sendXiaonuo(DevSmsSendXiaonuoParam devSmsSendXiaonuoParam) {
-        validPhone(devSmsSendXiaonuoParam.getPhoneNumbers());
-        String receiptInfo;
-        if(ObjectUtil.isEmpty(devSmsSendXiaonuoParam.getTemplateCode())) {
-            receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
-                    devSmsSendXiaonuoParam.getMessage());
-        } else {
-            LinkedHashMap<String, String> paramMap = new LinkedHashMap<>();
-            JSONUtil.parseObj(devSmsSendXiaonuoParam.getTemplateParam()).forEach((k, v) -> paramMap.put(k, Convert.toStr(v)));
-            receiptInfo = DevSmsXiaonuoUtil.sendSms(devSmsSendXiaonuoParam.getPhoneNumbers(), devSmsSendXiaonuoParam.getSignName(),
-                    devSmsSendXiaonuoParam.getTemplateCode(), paramMap);
-        }
-        DevSms devSms = new DevSms();
-        BeanUtil.copyProperties(devSmsSendXiaonuoParam, devSms);
-        devSms.setSignName(ObjectUtil.isNotEmpty(devSms.getSignName())?devSms.getSignName():DevSmsXiaonuoUtil.getDefaultSignName());
-        devSms.setEngine(DevSmsEngineTypeEnum.XIAONUO.getValue());
         devSms.setReceiptInfo(receiptInfo);
         this.save(devSms);
     }

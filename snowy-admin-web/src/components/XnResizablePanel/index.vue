@@ -2,6 +2,7 @@
 	<div class="resizable-panel" :style="wrapperStyle" ref="rootRef">
 		<div
 			class="panel-left"
+			:class="{ 'panel-left-animating': animating }"
 			:style="leftPanelStyle"
 			v-if="!shouldHideLeft"
 		>
@@ -75,6 +76,7 @@
 	const leftSize = ref(props.initialSize)
 	const isResizing = ref(false)
 	const collapsed = ref(false)
+	const animating = ref(false)
 	const rootRef = ref(null)
 	let activeContainer = null
 
@@ -100,8 +102,10 @@
 
 	const toggleCollapse = () => {
 		if (!props.collapsible) return
+		animating.value = true
 		collapsed.value = !collapsed.value
 		emit('collapse', collapsed.value)
+		setTimeout(() => { animating.value = false }, 300)
 	}
 
 	const onResizerMouseDown = (e) => {
@@ -185,6 +189,9 @@
 	.panel-left {
 		overflow: hidden;
 		background: var(--snowy-background-color);
+	}
+
+	.panel-left-animating {
 		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
 					height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
 					min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
