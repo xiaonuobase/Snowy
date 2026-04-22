@@ -121,6 +121,7 @@
 	}
 	// 默认要校验的
 	const formRules = {
+		parentId: [required('请选择上级字典')],
 		dictLabel: [required('请输入字典名称')],
 		dictValue: [required('请选择字典值')],
 		dictColor: [required('请选择字典颜色')],
