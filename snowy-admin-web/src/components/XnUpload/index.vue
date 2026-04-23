@@ -4,6 +4,7 @@
 			v-if="props.uploadMode === 'file'"
 			v-model:file-list="fileList"
 			name="file"
+			:multiple="props.uploadNumber > 1"
 			:action="action"
 			:headers="headers"
 			:maxCount="props.uploadNumber"
@@ -23,6 +24,7 @@
 			v-if="props.uploadMode === 'video'"
 			v-model:file-list="fileList"
 			name="file"
+			:multiple="props.uploadNumber > 1"
 			:action="action"
 			:headers="headers"
 			:maxCount="props.uploadNumber"
@@ -45,6 +47,7 @@
 			v-if="props.uploadMode === 'image'"
 			v-model:file-list="fileList"
 			name="file"
+			:multiple="props.uploadNumber > 1"
 			:action="action"
 			:headers="headers"
 			:maxCount="props.uploadNumber"
@@ -84,7 +87,7 @@
 			v-if="props.uploadMode === 'drag'"
 			v-model:fileList="fileList"
 			name="file"
-			:multiple="true"
+			:multiple="props.uploadNumber > 1"
 			:action="action"
 			:headers="headers"
 			:maxCount="props.uploadNumber"
@@ -108,6 +111,7 @@
 
 <script setup name="uploadIndex">
 	import tool from '@/utils/tool'
+	import fileApi from '@/api/dev/fileApi'
 	import { convertUrl } from '@/utils/apiAdaptive'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
@@ -205,9 +209,25 @@
 
 	// 构造文件对象
 	const buildFileObject = (url, id) => {
+		let name = id
+		if (url) {
+			// 提取最后一段路径
+			name = url.substring(url.lastIndexOf('/') + 1)
+			// 去除查询参数
+			if (name.includes('?')) {
+				name = name.split('?')[0]
+			}
+			// 特殊处理：如果是 download 接口且带 id 参数，尝试提取 id 作为备选名称
+			if ((name === 'download' || !name) && url.includes('id=')) {
+				const match = url.match(/[?&]id=([^&]+)/)
+				if (match) {
+					name = match[1]
+				}
+			}
+		}
 		return {
 			data: url ? url : '/api' + props.uploadIdDownloadUrl + id,
-			name: url ? url : id,
+			name: name,
 			url: url ? url : '/api' + props.uploadIdDownloadUrl + id,
 			status: 'done',
 			response: {
@@ -218,22 +238,37 @@
 	}
 	// 处理回显
 	const echo = (newVal) => {
+		const oldFileList = cloneDeep(fileList.value)
+		fileList.value = []
+		const idsToFetch = []
+		const urlsToFetch = []
+
 		// 字符串隔离情况
 		if (props.uploadResultCategory === 'interval') {
 			// id隔离
 			if (props.uploadResultType === 'id') {
 				newVal.split(',').forEach((id) => {
-					const file = buildFileObject(undefined, id)
-					fileList.value.push(file)
-					fileList.value.reverse()
+					const existing = oldFileList.find((f) => f.response?.data === id)
+					if (existing) {
+						fileList.value.push(existing)
+					} else {
+						const file = buildFileObject(undefined, id)
+						fileList.value.push(file)
+						idsToFetch.push(id)
+					}
 				})
 			}
 			// url隔离
 			if (props.uploadResultType === 'url') {
 				newVal.split(',').forEach((url) => {
-					const file = buildFileObject(url)
-					fileList.value.push(file)
-					fileList.value.reverse()
+					const existing = oldFileList.find((f) => f.url === url || f.response?.data === url)
+					if (existing) {
+						fileList.value.push(existing)
+					} else {
+						const file = buildFileObject(url)
+						fileList.value.push(file)
+						urlsToFetch.push(url)
+					}
 				})
 			}
 		}
@@ -258,25 +293,66 @@
 				// id数组
 				if (props.uploadResultType === 'id') {
 					newVal.forEach((id) => {
-						fileList.value.push(buildFileObject(undefined, id))
+						const existing = oldFileList.find((f) => f.response?.data === id)
+						if (existing) {
+							fileList.value.push(existing)
+						} else {
+							const file = buildFileObject(undefined, id)
+							fileList.value.push(file)
+							idsToFetch.push(id)
+						}
 					})
 				}
 				// url数组
 				if (props.uploadResultType === 'url') {
 					newVal.forEach((url) => {
-						fileList.value.push(buildFileObject(url))
+						const existing = oldFileList.find((f) => f.url === url || f.response?.data === url)
+						if (existing) {
+							fileList.value.push(existing)
+						} else {
+							const file = buildFileObject(url)
+							fileList.value.push(file)
+							urlsToFetch.push(url)
+						}
 					})
 				}
 			}
+		}
+
+		// 异步获取文件详情以修正名称
+		if (idsToFetch.length > 0) {
+			fileApi.fileGetFileListByIds(idsToFetch).then((data) => {
+				if (data) {
+					fileList.value.forEach((file) => {
+						const detail = data.find((d) => d.id === file.response?.data)
+						if (detail) {
+							file.name = detail.name
+						}
+					})
+				}
+			})
+		}
+		if (urlsToFetch.length > 0) {
+			fileApi.fileGetFileListByUrlList({ urlList: urlsToFetch }).then((data) => {
+				if (data) {
+					fileList.value.forEach((file) => {
+						const detail = data.find((d) => d.downloadPath === file.url || d.downloadPath === file.response?.data)
+						if (detail) {
+							file.name = detail.name
+						}
+					})
+				}
+			})
 		}
 	}
 	// 监听参数
 	watch(
 		() => props.value,
 		(newVal) => {
-			if (props.value && newVal) {
-				fileList.value = []
+			if (newVal) {
 				echo(newVal)
+			} else {
+				fileList.value = []
 			}
 		},
 		{ immediate: true, deep: true }
@@ -337,49 +413,49 @@
 	}
 	// 上传事件
 	const handleChange = (uploads) => {
-		let result = []
 		const file = uploads.file
-		if (file && (file.status === 'done' || file.status === 'removed') && file.response && file.response.code === 200) {
-			uploads.fileList.forEach((f) => {
-				result.push(f)
-			})
-		}
-		if (result.length > 0) {
-			if (props.uploadResultCategory === 'interval') {
-				const resultIntervalValue = ref('')
-				result.forEach((data) => {
-					resultIntervalValue.value =
-						data.response.data + (resultIntervalValue.value ? ',' + resultIntervalValue.value : '')
-				})
-				emit('update:value', resultIntervalValue)
-				emit('onSuccessful', resultIntervalValue)
-				emit('onChange', resultIntervalValue)
-			} else if (props.uploadResultCategory === 'array') {
-				if (props.completeResult) {
-					// 得去掉数组里面的thumbUrl，一个base64太大，无用
-					let newResult = cloneDeep(result)
-					newResult.map((e) => {
-						if (e.thumbUrl) {
-							delete e.thumbUrl
-						}
-					})
-					emit('update:value', newResult)
-					emit('onSuccessful', newResult)
-					emit('onChange', newResult)
-				} else {
-					const resultArrayValue = ref([])
-					result.forEach((data) => {
-						resultArrayValue.value.push(data.response.data)
-					})
-					emit('update:value', resultArrayValue)
-					emit('onSuccessful', resultArrayValue)
-					emit('onChange', resultArrayValue)
-				}
+		if (file.status === 'done' || file.status === 'removed') {
+			if (file.status === 'done' && file.response && file.response.code !== 200) {
+				message.error(file.response.message || '上传失败')
+				return
 			}
-			return
+			const result = uploads.fileList.filter((f) => f.status === 'done' && f.response && f.response.code === 200)
+			if (result.length > 0) {
+				if (props.uploadResultCategory === 'interval') {
+					let resultIntervalValue = ''
+					result.forEach((data) => {
+						resultIntervalValue = (resultIntervalValue ? resultIntervalValue + ',' : '') + data.response.data
+					})
+					emit('update:value', resultIntervalValue)
+					emit('onSuccessful', resultIntervalValue)
+					emit('onChange', resultIntervalValue)
+				} else if (props.uploadResultCategory === 'array') {
+					if (props.completeResult) {
+						// 得去掉数组里面的thumbUrl，一个base64太大，无用
+						let newResult = cloneDeep(result)
+						newResult.map((e) => {
+							if (e.thumbUrl) {
+								delete e.thumbUrl
+							}
+						})
+						emit('update:value', newResult)
+						emit('onSuccessful', newResult)
+						emit('onChange', newResult)
+					} else {
+						let resultArrayValue = []
+						result.forEach((data) => {
+							resultArrayValue.push(data.response.data)
+						})
+						emit('update:value', resultArrayValue)
+						emit('onSuccessful', resultArrayValue)
+						emit('onChange', resultArrayValue)
+					}
+				}
+				return
+			}
+			emit('update:value', undefined)
+			emit('onChange', undefined)
 		}
-		emit('update:value', undefined)
-		emit('onChange', undefined)
 	}
 	// 通过DOM获取上传的文件
 	const uploadFileList = () => {

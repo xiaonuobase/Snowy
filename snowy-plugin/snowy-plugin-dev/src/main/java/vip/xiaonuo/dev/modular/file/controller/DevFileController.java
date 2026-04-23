@@ -279,6 +279,18 @@ public class DevFileController {
     }
 
     /**
+     * 根据文件id集合获取文件集合
+     *
+     * @author yubaoshan
+     * @date 2024/6/9 23:52
+     **/
+    @Operation(summary = "根据文件id集合获取文件集合")
+    @PostMapping("/dev/file/getFileListByIds")
+    public CommonResult<List<DevFile>> getFileListByIds(@RequestBody @Valid @NotEmpty(message = "集合不能为空") List<String> ids) {
+        return CommonResult.data(devFileService.getFileListByIds(ids));
+    }
+
+    /**
      * 根据文件url集合获取文件集合
      *
      * @author yubaoshan

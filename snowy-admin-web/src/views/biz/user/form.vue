@@ -95,9 +95,9 @@
 						<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 							<a-form-item label="任职信息" name="positionJson">
 								<a-row :gutter="10" class="bg-[var(--item-hover-bg)] p-1 mb-2.5 !mx-0">
-									<a-col :span="7" class="text-center truncate"> 机构 </a-col>
-									<a-col :span="7" class="text-center truncate"> 岗位 </a-col>
-									<a-col :span="7" class="text-center truncate"> 主管 </a-col>
+									<a-col :span="7" class="truncate"> 机构 </a-col>
+									<a-col :span="7" class="truncate"> 岗位 </a-col>
+									<a-col :span="7" class="truncate"> 主管 </a-col>
 									<a-col :span="3">
 										<a-button type="primary" @click="addDomains()" size="small">
 											<PlusOutlined />
@@ -107,7 +107,7 @@
 								</a-row>
 								<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
 									<a-row :gutter="10" class="!mx-0">
-										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
 											<a-form-item
 												:name="['positionJson', index, 'orgId']"
 												:rules="{ required: true, message: '请选择机构' }"
@@ -122,7 +122,7 @@
 												/>
 											</a-form-item>
 										</a-col>
-										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
 											<a-form-item
 												:name="['positionJson', index, 'positionId']"
 												:rules="{ required: true, message: '请选择岗位' }"
@@ -137,7 +137,7 @@
 												/>
 											</a-form-item>
 										</a-col>
-										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="text-center truncate">
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
 											<a-form-item :name="['positionJson', index, 'directorId']">
 												<xn-page-select
 													ref="xnChildUserPageSelectRef"
@@ -314,6 +314,16 @@
 				convertFormData(record).then(() => {
 					const allOrgIds = collectAllOrgIds()
 					orgTreeSelectRef.value.echo(allOrgIds)
+					// 子表树回显
+					nextTick(() => {
+						if (formData.value.positionJson) {
+							formData.value.positionJson.forEach((item, index) => {
+								if (childTreeSelectRefs.value[index]) {
+									childTreeSelectRefs.value[index].echo(allOrgIds)
+								}
+							})
+						}
+					})
 				})
 			} else if (orgId) {
 				orgTreeSelectRef.value.echo([orgId])
@@ -390,6 +400,12 @@
 			formData.value.positionJson = []
 		}
 		formData.value.positionJson.push({ orgId: undefined, positionId: undefined, directorId: undefined })
+		nextTick(() => {
+			const index = formData.value.positionJson.length - 1
+			if (childTreeSelectRefs.value[index]) {
+				childTreeSelectRefs.value[index].init()
+			}
+		})
 	}
 
 	const delDomains = (index) => {
