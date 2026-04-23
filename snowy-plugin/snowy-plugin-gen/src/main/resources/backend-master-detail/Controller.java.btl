@@ -13,15 +13,18 @@
 package ${packageName}.${moduleName}.modular.${busName}.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ${packageName}.common.annotation.CommonLog;
 import ${packageName}.common.pojo.CommonResult;
 <% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
-import cn.hutool.json.JSONObject;
 <% } %>
 <% if(hasUserSelector) { %>
 import vip.xiaonuo.sys.api.SysUserApi;
@@ -51,6 +54,7 @@ import ${packageName}.${moduleName}.modular.${busName}.service.${subClassName}Se
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -163,6 +167,45 @@ public class ${className}Controller {
     }
 
     /**
+     * 下载${functionName}导入模板
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "下载${functionName}导入模板")
+    @GetMapping(value = "/${moduleName}/${busName}/downloadImportTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        ${classNameFirstLower}Service.downloadImportTemplate(response);
+    }
+
+    /**
+     * 导入${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导入${functionName}")
+    @CommonLog("导入${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/importData")
+    @PostMapping("/${moduleName}/${busName}/importData")
+    public CommonResult<JSONObject> importData(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(${classNameFirstLower}Service.importData(file));
+    }
+
+    /**
+     * 导出${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导出${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/exportData")
+    @PostMapping(value = "/${moduleName}/${busName}/exportData", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void exportData(@RequestBody List<${className}IdParam> ${classNameFirstLower}IdParamList, HttpServletResponse response) throws IOException {
+        ${classNameFirstLower}Service.exportData(${classNameFirstLower}IdParamList, response);
+    }
+
+    /**
      * 获取${subFunctionName}分页
      *
      * @author ${authorName}
@@ -232,6 +275,45 @@ public class ${className}Controller {
     @GetMapping("/${moduleName}/${busName}/sub/detail")
     public CommonResult<${subClassName}> subDetail(@Valid ${subClassName}IdParam ${subClassNameFirstLower}IdParam) {
         return CommonResult.data(${subClassNameFirstLower}Service.detail(${subClassNameFirstLower}IdParam));
+    }
+
+    /**
+     * 下载${subFunctionName}导入模板
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "下载${subFunctionName}导入模板")
+    @GetMapping(value = "/${moduleName}/${busName}/sub/downloadImportTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void subDownloadImportTemplate(HttpServletResponse response) throws IOException {
+        ${subClassNameFirstLower}Service.downloadImportTemplate(response);
+    }
+
+    /**
+     * 导入${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导入${subFunctionName}")
+    @CommonLog("导入${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/importData")
+    @PostMapping("/${moduleName}/${busName}/sub/importData")
+    public CommonResult<JSONObject> subImportData(@RequestPart("file") MultipartFile file, @RequestParam(required = false) String ${subForeignKeyCamelCase}) {
+        return CommonResult.data(${subClassNameFirstLower}Service.importData(file, ${subForeignKeyCamelCase}));
+    }
+
+    /**
+     * 导出${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导出${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/exportData")
+    @PostMapping(value = "/${moduleName}/${busName}/sub/exportData", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void subExportData(@RequestBody List<${subClassName}IdParam> ${subClassNameFirstLower}IdParamList, @RequestParam(required = false) String ${subForeignKeyCamelCase}, HttpServletResponse response) throws IOException {
+        ${subClassNameFirstLower}Service.exportData(${subClassNameFirstLower}IdParamList, ${subForeignKeyCamelCase}, response);
     }
 <% if(hasUserSelector) { %>
 

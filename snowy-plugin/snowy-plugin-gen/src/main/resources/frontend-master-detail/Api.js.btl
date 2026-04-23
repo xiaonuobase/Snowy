@@ -41,6 +41,42 @@ export default {
 	${subClassNameFirstLower}Detail(data) {
 		return request('sub/detail', data, 'get')
 	},
+	// 下载${functionName}导入模板
+    ${classNameFirstLower}DownloadTemplate(data) {
+		return request('downloadImportTemplate', data, 'get', {
+			responseType: 'blob'
+		})
+    },
+	// 导入${functionName}
+	${classNameFirstLower}Import(data) {
+		return request('importData', data)
+	},
+	// 导出${functionName}
+	${classNameFirstLower}Export(data) {
+		return request('exportData', data, 'post', {
+			responseType: 'blob'
+		})
+	},
+	// 下载${subFunctionName}导入模板
+    ${subClassNameFirstLower}DownloadTemplate(data) {
+		return request('sub/downloadImportTemplate', data, 'get', {
+			responseType: 'blob'
+		})
+    },
+	// 导入${subFunctionName}
+	${subClassNameFirstLower}Import(data) {
+		return request('sub/importData', data)
+	},
+	// 导出${subFunctionName}
+	${subClassNameFirstLower}Export(data, ${subForeignKeyCamelCase}) {
+		let url = 'sub/exportData'
+		if (${subForeignKeyCamelCase}) {
+			url += '?${subForeignKeyCamelCase}=' + ${subForeignKeyCamelCase}
+		}
+		return request(url, data, 'post', {
+			responseType: 'blob'
+		})
+	},
 <% if(hasUserSelector) { %>
 	// 人员选择器
 	${classNameFirstLower}UserSelector(data) {

@@ -12,14 +12,18 @@
  */
 package ${packageName}.${moduleName}.modular.${busName}.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.multipart.MultipartFile;
 import ${packageName}.${moduleName}.modular.${busName}.entity.${subClassName};
 import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}AddParam;
 import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}EditParam;
 import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}IdParam;
 import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}PageParam;
 import java.io.Serializable;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -77,4 +81,28 @@ public interface ${subClassName}Service extends IService<${subClassName}> {
      * @date ${genTime}
      **/
     ${subClassName} queryEntity(Serializable ${subDbTableKeyCamelCase});
+
+    /**
+     * 下载${subFunctionName}导入模板
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    void downloadImportTemplate(HttpServletResponse response) throws IOException;
+
+    /**
+     * 导入${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     **/
+    JSONObject importData(MultipartFile file, String ${subForeignKeyCamelCase});
+
+    /**
+     * 导出${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    void exportData(List<${subClassName}IdParam> ${subClassNameFirstLower}IdParamList, String ${subForeignKeyCamelCase}, HttpServletResponse response) throws IOException;
 }

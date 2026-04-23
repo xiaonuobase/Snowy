@@ -41,6 +41,10 @@ INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${subAddButtonId}', '${menuId}', '�
 INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${subEditButtonId}', '${menuId}', '编辑${subFunctionName}', NULL, '${classNameFirstLower}SubEdit', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '8', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${subDeleteButtonId}', '${menuId}', '删除${subFunctionName}', NULL, '${classNameFirstLower}SubDelete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '9', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${subImportButtonId}', '${menuId}', '导入${subFunctionName}', NULL, '${classNameFirstLower}SubImport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '10', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${subExportButtonId}', '${menuId}', '导出${subFunctionName}', NULL, '${classNameFirstLower}SubExport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '11', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 <% } else { %>
 INSERT INTO "SNOWY"."SYS_RESOURCE" VALUES ('${addButtonId}', '${menuId}', '新增${functionName}', NULL, '${classNameFirstLower}Add', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 

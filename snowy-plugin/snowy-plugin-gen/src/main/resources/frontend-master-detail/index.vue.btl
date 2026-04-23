@@ -169,10 +169,20 @@
 				<div style="padding: 10px 50px">
 					<div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center">
 						<span style="font-weight: bold">子表列表</span>
-						<a-button type="primary" size="small" @click="subFormRef.onOpen(undefined, record.${dbTableKeyCamelCase})" v-if="hasPerm('${classNameFirstLower}SubAdd')">
-							<template #icon><plus-outlined /></template>
-							新增
-						</a-button>
+						<a-space>
+							<a-button type="primary" size="small" @click="subFormRef.onOpen(undefined, record.${dbTableKeyCamelCase})" v-if="hasPerm('${classNameFirstLower}SubAdd')">
+								<template #icon><plus-outlined /></template>
+								新增
+							</a-button>
+							<a-button size="small" @click="subImportModelRef.onOpen(record.${dbTableKeyCamelCase})" v-if="hasPerm('${classNameFirstLower}SubImport')">
+								<template #icon><import-outlined /></template>
+								导入
+							</a-button>
+							<a-button size="small" @click="exportSubData(record.${dbTableKeyCamelCase})" v-if="hasPerm('${classNameFirstLower}SubExport')">
+								<template #icon><export-outlined /></template>
+								导出
+							</a-button>
+						</a-space>
 					</div>
 					<a-table
 						:columns="subColumns"
@@ -229,6 +239,7 @@
 	<Form ref="formRef" @successful="tableRef.refresh()" />
 	<SubForm ref="subFormRef" @successful="onSubFormSuccess" />
 	<ImportModel ref="importModelRef" />
+	<SubImportModel ref="subImportModelRef" @successful="onSubFormSuccess" />
 </template>
 
 <script setup name="${busName}">
@@ -251,6 +262,7 @@
 	import Form from './form.vue'
 	import SubForm from './subForm.vue'
 	import ImportModel from './importModel.vue'
+	import SubImportModel from './subImportModel.vue'
 	import downloadUtil from '@/utils/downloadUtil'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
 	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
@@ -264,6 +276,7 @@
 	const formRef = ref()
 	const subFormRef = ref()
 	const importModelRef = ref()
+	const subImportModelRef = ref()
 	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
 	const translateMap = ref({})
 	const subTranslateMap = ref({})
@@ -549,6 +562,11 @@
 		// 刷新当前展开的子表数据
 		expandedRowKeys.value.forEach(key => {
 			loadSubData(key)
+		})
+	}
+	const exportSubData = (masterKey) => {
+		${classNameFirstLower}Api.${subClassNameFirstLower}Export([], masterKey).then((res) => {
+			downloadUtil.resultDownload(res)
 		})
 	}
 	<% if (searchCount > 0) { %>

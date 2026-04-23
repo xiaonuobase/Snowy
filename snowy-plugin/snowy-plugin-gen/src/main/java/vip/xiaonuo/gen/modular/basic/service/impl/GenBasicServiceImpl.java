@@ -155,7 +155,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             JSONUtil.createObj().set("name", "form.vue.btl").set("path", "views"),
             JSONUtil.createObj().set("name", "subForm.vue.btl").set("path", "views"),
             JSONUtil.createObj().set("name", "index.vue.btl").set("path", "views"),
-            JSONUtil.createObj().set("name", "importModel.vue.btl").set("path", "views"));
+            JSONUtil.createObj().set("name", "importModel.vue.btl").set("path", "views"),
+            JSONUtil.createObj().set("name", "subImportModel.vue.btl").set("path", "views"));
 
     // 左树右表类型的前端文件列表（比标准多一个treeForm.vue）
     private static final List<JSONObject> GEN_FRONT_LEFT_TREE_TABLE_FILE_LIST = CollectionUtil.newArrayList(
@@ -867,6 +868,10 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("subAddButtonId", IdWorker.getIdStr());
         bindingJsonObject.set("subEditButtonId", IdWorker.getIdStr());
         bindingJsonObject.set("subDeleteButtonId", IdWorker.getIdStr());
+        // 子表导入按钮ID（主子表类型使用）
+        bindingJsonObject.set("subImportButtonId", IdWorker.getIdStr());
+        // 子表导出按钮ID（主子表类型使用）
+        bindingJsonObject.set("subExportButtonId", IdWorker.getIdStr());
         // 作者
         bindingJsonObject.set("authorName", genBasic.getAuthorName());
         // 生成时间
