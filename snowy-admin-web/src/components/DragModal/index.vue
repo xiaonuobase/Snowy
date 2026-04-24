@@ -5,10 +5,11 @@
 		:width="modalWidth"
 		:wrap-class-name="wrapClassName + fullscreenClass"
 		:bodyStyle="calcBodyStyle"
+		:closable="false"
 		@cancel="handleCancel"
 	>
 		<template #title>
-			<div class="flex justify-between items-center">
+			<div class="flex justify-between items-center -mr-9">
 				<div
 					ref="modalTitleRef"
 					:style="{
@@ -20,35 +21,46 @@
 						userSelect: 'none'
 					}"
 				>
-					<span class="cursor-default select-text">{{ title }}</span>
+					<span class="cursor-default select-text">
+						<slot name="title">{{ title }}</slot>
+					</span>
 				</div>
-				<div v-if="draggable && isDragged" class="ant-modal-action" @click="toggleResetDrag">
-					<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
-						<component :is="AimOutlined" class="p-0.5" />
-					</a-tooltip>
-				</div>
-				<div v-if="fullscreen" class="ant-modal-action" @click="toggleFullScreen">
-					<a-tooltip
-						:key="isFullscreen ? '' : 'fullscreen'"
-						:title="isFullscreen ? '退出全屏' : '全屏'"
-						placement="bottom"
-						:getPopupContainer="(trigger) => trigger"
-					>
-						<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
-					</a-tooltip>
+				<div class="flex items-center space-x-1 pr-2">
+					<div v-if="draggable && isDragged" class="ant-modal-action" @click="toggleResetDrag">
+						<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="AimOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div v-if="fullscreen" class="ant-modal-action" @click="toggleFullScreen">
+						<a-tooltip
+							:key="isFullscreen ? '' : 'fullscreen'"
+							:title="isFullscreen ? '退出全屏' : '全屏'"
+							placement="bottom"
+							:getPopupContainer="(trigger) => trigger"
+						>
+							<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div class="ant-modal-action" @click="handleCancel">
+						<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="CloseOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
 				</div>
 			</div>
 		</template>
 
 		<template #modalRender="{ originVNode }">
-			<div :style="transformStyle" class="relative">
-				<component ref="modalContentRef" :is="originVNode" />
-				<div
-					v-if="props.resizable && !isFullscreen"
-					class="absolute right-0.5 bottom-0.5 w-2 h-2 resize overflow-auto pointer-events-auto"
-					@mousedown="handleResize"
-				/>
-			</div>
+			<slot name="modalRender" :originVNode="originVNode">
+				<div :style="transformStyle" class="relative">
+					<component ref="modalContentRef" :is="originVNode" />
+					<div
+						v-if="props.resizable && !isFullscreen"
+						class="absolute right-0.5 bottom-0.5 w-2 h-2 resize overflow-auto pointer-events-auto"
+						@mousedown="handleResize"
+					/>
+				</div>
+			</slot>
 		</template>
 
 		<template #closeIcon>

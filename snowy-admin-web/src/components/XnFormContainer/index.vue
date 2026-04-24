@@ -4,12 +4,13 @@
 		v-bind="$attrs"
 		:open="isOpen"
 		:width="modalWidth"
-		:footer="slotKeys.includes('footer') ? undefined : null"
+		:footer="slots.footer ? undefined : null"
 		:wrap-class-name="wrapClassName + fullscreenClass"
+		:closable="false"
 		@cancel="cancel"
 	>
-		<template #title>
-			<div class="flex justify-between items-center">
+		<template #title v-if="slots.title || title">
+			<div class="flex justify-between items-center -mr-9">
 				<div
 					ref="modalTitleRef"
 					:style="{
@@ -21,39 +22,44 @@
 						userSelect: 'none'
 					}"
 				>
-					<span class="cursor-default select-text">{{ title }}</span>
+					<span class="cursor-default select-text">
+						<slot name="title">{{ title }}</slot>
+					</span>
 				</div>
-				<div v-if="isDragged" class="ant-modal-action" @click="toggleResetDrag">
-					<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
-						<component :is="AimOutlined" class="p-0.5" />
-					</a-tooltip>
-				</div>
-				<div class="ant-modal-action" @click="toggleFullScreen">
-					<a-tooltip
-						:key="isFullscreen ? '' : 'isFullscreen'"
-						:title="isFullscreen ? '退出全屏' : '全屏'"
-						placement="bottom"
-						:getPopupContainer="(trigger) => trigger"
-					>
-						<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
-					</a-tooltip>
+				<div class="flex items-center space-x-1 pr-2">
+					<div v-if="isDragged" class="ant-modal-action" @click="toggleResetDrag">
+						<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="AimOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div class="ant-modal-action" @click="toggleFullScreen">
+						<a-tooltip
+							:key="isFullscreen ? '' : 'isFullscreen'"
+							:title="isFullscreen ? '退出全屏' : '全屏'"
+							placement="bottom"
+							:getPopupContainer="(trigger) => trigger"
+						>
+							<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div class="ant-modal-action" @click="cancel">
+						<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="CloseOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
 				</div>
 			</div>
 		</template>
 
 		<template #modalRender="{ originVNode }">
-			<div :style="transformStyle">
-				<component ref="modalContentRef" :is="originVNode" />
-			</div>
+			<slot name="modalRender" :originVNode="originVNode">
+				<div :style="transformStyle">
+					<component ref="modalContentRef" :is="originVNode" />
+				</div>
+			</slot>
 		</template>
 
-		<template #closeIcon>
-			<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
-				<component :is="CloseOutlined" class="p-0.5" />
-			</a-tooltip>
-		</template>
-
-		<template v-for="slotKey in slotKeys" #[slotKey]>
+		<template v-for="slotKey in filteredSlotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
 	</a-modal>
@@ -61,19 +67,28 @@
 		v-else
 		v-bind="$attrs"
 		:open="isOpen"
-		:title="title"
 		:width="drawerWidth"
 		:footer-style="{ textAlign: 'right' }"
 		@close="cancel"
 	>
-		<template v-for="slotKey in slotKeys" #[slotKey]>
+		<template #title v-if="slots.title || title">
+			<slot name="title">{{ title }}</slot>
+		</template>
+		<template #closeIcon>
+			<slot name="closeIcon">
+				<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
+					<component :is="CloseOutlined" class="p-0.5" />
+				</a-tooltip>
+			</slot>
+		</template>
+		<template v-for="slotKey in filteredSlotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
 	</a-drawer>
 </template>
 
 <script setup>
-	import { computed, nextTick, onMounted, onUnmounted, useSlots } from 'vue'
+	import { computed, nextTick, onMounted, onUnmounted, useSlots, ref, watch, watchEffect } from 'vue'
 	import { AimOutlined, CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 	import { useDraggable } from '@vueuse/core'
 	import { globalStore } from '@/store'
@@ -112,6 +127,9 @@
 	})
 	const slotKeys = computed(() => {
 		return Object.keys(slots)
+	})
+	const filteredSlotKeys = computed(() => {
+		return slotKeys.value.filter((key) => !['title', 'modalRender', 'closeIcon'].includes(key))
 	})
 	const isModal = computed(() => {
 		return FormContainerTypeEnum.MODAL === formStyle.value
