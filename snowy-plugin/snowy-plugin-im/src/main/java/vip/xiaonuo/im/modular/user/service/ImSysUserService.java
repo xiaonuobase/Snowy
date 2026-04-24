@@ -41,7 +41,7 @@ public interface ImSysUserService {
      * @author chengchuanyao
      * @date 2025/5/16 15:23
      */
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector();
 
 
     /**

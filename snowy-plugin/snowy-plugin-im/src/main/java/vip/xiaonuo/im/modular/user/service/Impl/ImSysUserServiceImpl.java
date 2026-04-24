@@ -57,8 +57,8 @@ public class ImSysUserServiceImpl implements ImSysUserService {
      * @date 2025/5/16 15:23
      */
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        return sysOrgApi.orgTreeSelector();
+    public List<JSONObject> orgTreeSelector() {
+        return sysOrgApi.orgTreeSelector(null, null);
     }
 
     /**

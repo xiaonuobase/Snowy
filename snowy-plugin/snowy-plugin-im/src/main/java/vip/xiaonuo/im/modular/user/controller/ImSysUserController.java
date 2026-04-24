@@ -15,7 +15,7 @@ package vip.xiaonuo.im.modular.user.controller;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +70,7 @@ public class ImSysUserController {
     @ApiOperationSupport(order = 19)
     @Operation(summary = "IM-获取组织树选择器")
     @GetMapping("/im/user/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
+    public CommonResult<List<JSONObject>> orgTreeSelector() {
         return CommonResult.data(imSysUserService.orgTreeSelector());
     }
 
