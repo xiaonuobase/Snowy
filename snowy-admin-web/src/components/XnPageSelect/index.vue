@@ -5,7 +5,7 @@
 			v-if="props.showSearch"
 			v-model:value="modelValue"
 			:options="options"
-			:field-names="{ label: 'name', value: 'id' }"
+			:field-names="selectFieldNames"
 			class="xn-wd"
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
@@ -20,7 +20,7 @@
 			v-else
 			v-model:value="modelValue"
 			:options="options"
-			:field-names="{ label: 'name', value: 'id' }"
+			:field-names="selectFieldNames"
 			class="xn-wd"
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
@@ -40,6 +40,7 @@
 	const initParams = ref({})
 	const options = ref([])
 	const spinning = ref(false)
+	const selectFieldNames = { label: 'name', value: 'id' }
 	const emit = defineEmits({ change: null, 'update:value': null, search: null })
 	const props = defineProps({
 		value: {

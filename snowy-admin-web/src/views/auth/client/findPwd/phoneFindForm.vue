@@ -1,63 +1,64 @@
 <template>
-	<a-form ref="phoneLoginFormRef" :model="phoneFormData" :rules="formRules">
-		<a-form-item name="phone">
+	<a-form ref="phoneLoginFormRef" :model="phoneFormData" :rules="formRules" layout="vertical">
+		<a-form-item name="phone" label="手机号">
 			<a-input v-model:value="phoneFormData.phone" placeholder="请输入手机号" size="large">
 				<template #prefix>
-					<mobile-outlined class="xn-color-00025" />
+					<MobileOutlined class="field-icon" />
 				</template>
 			</a-input>
 		</a-form-item>
-		<a-form-item name="phoneValidCode">
-			<a-row :gutter="8">
-				<a-col :span="16">
-					<a-input v-model:value="phoneFormData.phoneValidCode" placeholder="请输入短信验证码" size="large">
+		<a-form-item name="phoneValidCode" label="短信验证码">
+			<a-row :gutter="12">
+				<a-col :span="15">
+					<a-input v-model:value="phoneFormData.phoneValidCode" placeholder="请输入验证码" size="large">
 						<template #prefix>
-							<mail-outlined class="xn-color-00025" />
+							<MailOutlined class="field-icon" />
 						</template>
 					</a-input>
 				</a-col>
-				<a-col :span="8">
-					<a-button size="large" class="xn-wd" @click="getPhoneValidCode" :disabled="state.smsSendBtn">{{
-						(!state.smsSendBtn && '获取验证码') || state.time + ' s'
-					}}</a-button>
-				</a-col>
-			</a-row>
-		</a-form-item>
-
-		<a-form-item name="newPassword">
-			<a-input-password v-model:value="phoneFormData.newPassword" placeholder="请输入新密码" size="large">
-				<template #prefix>
-					<LockOutlined class="xn-color-00025" />
-				</template>
-			</a-input-password>
-		</a-form-item>
-
-		<a-form-item>
-			<a-row :gutter="8">
-				<a-col :span="8">
-					<a-button class="xn-wd" round size="large" href="/front/client/login">返回登录</a-button>
-				</a-col>
-				<a-col :span="16">
-					<a-button type="primary" class="xn-wd" :loading="isFind" round size="large" @click="submitReset">
-						重置密码
+				<a-col :span="9">
+					<a-button size="large" block @click="getPhoneValidCode" :disabled="state.smsSendBtn">
+						{{ (!state.smsSendBtn && '获取验证码') || state.time + ' s' }}
 					</a-button>
 				</a-col>
 			</a-row>
 		</a-form-item>
+
+		<a-form-item name="newPassword" label="设置新密码">
+			<a-input-password v-model:value="phoneFormData.newPassword" placeholder="请输入新密码" size="large">
+				<template #prefix>
+					<LockOutlined class="field-icon" />
+				</template>
+			</a-input-password>
+		</a-form-item>
+
+		<a-form-item class="submit-item">
+			<a-button type="primary" class="login-button" :loading="isFind" size="large" @click="submitReset" block>
+				重置密码
+			</a-button>
+		</a-form-item>
 	</a-form>
-	<a-modal v-model:open="visible" :width="400" title="机器验证" @cancel="handleCancel" @ok="handleOk">
-		<a-form ref="phoneLoginFormModalRef" :model="phoneFormModalData" :rules="formModalRules">
-			<a-form-item name="validCode">
-				<a-row :gutter="8">
-					<a-col :span="17">
-						<a-input v-model:value="phoneFormModalData.validCode" placeholder="机器验证" size="large">
+
+	<a-modal v-model:open="visible" :width="400" title="机器验证" @cancel="handleCancel" @ok="handleOk" centered>
+		<a-form ref="phoneLoginFormModalRef" :model="phoneFormModalData" :rules="formModalRules" layout="vertical">
+			<a-form-item name="validCode" label="请输入图中验证码">
+				<a-row :gutter="12">
+					<a-col :span="15">
+						<a-input v-model:value="phoneFormModalData.validCode" placeholder="验证码" size="large">
 							<template #prefix>
-								<verified-outlined class="xn-color-00025" />
+								<SafetyOutlined class="field-icon" />
 							</template>
 						</a-input>
 					</a-col>
-					<a-col :span="7">
-						<img :src="validCodeBase64" class="xn-findform-line" @click="getPhonePicCaptcha" />
+					<a-col :span="9">
+						<div class="captcha-img-wrapper" style="height: 40px">
+							<img
+								:src="validCodeBase64"
+								class="login-validCode-img"
+								@click="getPhonePicCaptcha"
+								style="width: 100%; height: 100%; object-fit: cover; cursor: pointer"
+							/>
+						</div>
 					</a-col>
 				</a-row>
 			</a-form-item>

@@ -39,4 +39,8 @@ public class GenConfigListParam {
     @Schema(description = "基础ID")
     @NotBlank(message = "basicId不能为空")
     private String basicId;
+
+    /** 表类型（MAIN-主表，SUB-子表） */
+    @Schema(description = "表类型")
+    private String tableType;
 }

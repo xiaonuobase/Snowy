@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
@@ -50,9 +51,7 @@ import vip.xiaonuo.sys.modular.user.entity.SysUser;
 import vip.xiaonuo.sys.modular.user.enums.SysUserStatusEnum;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +62,20 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
+
+    private static final String ORG_ALL_LIST_CACHE_KEY = "sys-org:all-list";
+
+    /** 本地内存缓存，避免每次从Redis取出后JSON反序列化2万+条记录 */
+    private volatile List<SysOrg> localOrgListCache;
+
+    /** 本地内存缓存：parentId -> 直接子机构列表，用于快速查找子机构 */
+    private volatile Map<String, List<SysOrg>> localParentChildrenMap;
+
+    /** 本地内存缓存：所有机构ID列表，避免每次stream().map().toList() */
+    private volatile List<String> localAllOrgIdList;
+
+    @Resource
+    private CommonCacheOperator commonCacheOperator;
 
     @Resource
     private SysOrgExtService sysOrgExtService;
@@ -98,19 +111,6 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
 
-    @Override
-    public List<Tree<String>> tree() {
-        List<SysOrg> sysOrgList = this.getAllOrgList();
-        // 使用稳定的排序方式，首先按排序码排序，然后按机构ID排序作为次级条件
-        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
-                .thenComparing(SysOrg::getId)); // 添加ID作为次级排序条件
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
-                        sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
-    }
-
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void add(SysOrgAddParam sysOrgAddParam, String sourceFromType) {
@@ -127,7 +127,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.save(sysOrg);
         // 插入扩展信息
         sysOrgExtService.createExtInfo(sysOrg.getId(), sourceFromType);
-        // 发布增加事件
+        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
 
@@ -150,7 +150,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         }
         // 更新组织
         this.updateById(sysOrg);
-        // 发布更新事件
+        // 发布更新事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
     }
 
@@ -195,7 +195,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
             // 执行删除
             this.removeByIds(toDeleteOrgIdList);
 
-            // 发布删除事件
+            // 发布删除事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.ORG.getValue(), toDeleteOrgIdList);
         }
     }
@@ -241,6 +241,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                         // 插入扩展信息
                         sysOrgExtService.createExtInfo(copySysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
                         // 发布增加事件
+                        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
                         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(copySysOrg));
                     }
                 }
@@ -259,7 +260,64 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 
     @Override
     public List<SysOrg> getAllOrgList() {
-        return this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
+        // 优先从本地内存缓存获取，避免每次JSON反序列化
+        List<SysOrg> localCache = localOrgListCache;
+        if (localCache != null) {
+            return localCache;
+        }
+        // 其次从Redis缓存获取
+        Object cached = commonCacheOperator.get(ORG_ALL_LIST_CACHE_KEY);
+        if (cached != null) {
+            List<SysOrg> list = JSONUtil.toList(JSONUtil.parseArray(cached), SysOrg.class);
+            localOrgListCache = list;
+            buildParentChildrenMap(list);
+            return list;
+        }
+        // 最后从数据库查询
+        List<SysOrg> list = this.list(new LambdaQueryWrapper<SysOrg>().orderByAsc(SysOrg::getSortCode));
+        commonCacheOperator.put(ORG_ALL_LIST_CACHE_KEY, list);
+        localOrgListCache = list;
+        buildParentChildrenMap(list);
+        return list;
+    }
+
+    /**
+     * 构建parentId -> 子机构列表的索引Map，同时构建所有机构ID列表
+     */
+    private void buildParentChildrenMap(List<SysOrg> orgList) {
+        Map<String, List<SysOrg>> map = new HashMap<>();
+        List<String> allIdList = new ArrayList<>(orgList.size());
+        for (SysOrg org : orgList) {
+            map.computeIfAbsent(org.getParentId(), k -> new ArrayList<>()).add(org);
+            allIdList.add(org.getId());
+        }
+        localParentChildrenMap = map;
+        localAllOrgIdList = allIdList;
+    }
+
+    /**
+     * 获取所有机构ID列表（从缓存获取，避免每次stream转换）
+     */
+    @Override
+    public List<String> getAllOrgIdList() {
+        List<String> cached = localAllOrgIdList;
+        if (cached != null) {
+            return cached;
+        }
+        // 触发缓存构建
+        getAllOrgList();
+        return localAllOrgIdList;
+    }
+
+    /**
+     * 清除本地内存缓存和Redis缓存
+     */
+    @Override
+    public void clearOrgCache() {
+        localOrgListCache = null;
+        localParentChildrenMap = null;
+        localAllOrgIdList = null;
+        commonCacheOperator.remove(ORG_ALL_LIST_CACHE_KEY);
     }
 
     @Override
@@ -309,7 +367,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         this.save(sysOrg);
         // 插入扩展信息
         sysOrgExtService.createExtInfo(sysOrg.getId(), SysOrgSourceFromTypeEnum.SYSTEM_ADD.getValue());
-        // 发布增加事件
+        // 发布增加事件（SysDataChangeListener 和 BizDataChangeListener 监听后自动清缓存）
         CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.ORG.getValue(), JSONUtil.createArray().put(sysOrg));
         return sysOrg.getId();
     }
@@ -317,12 +375,76 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     /* ====组织部分所需要用到的选择器==== */
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = this.getAllOrgList();
+    public List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        // searchKey不为null时，走全量搜索模式，返回嵌套树结构
+        if (sysOrgSelectorTreeParam.getSearchKey() != null) {
+            return this.treeSearch(sysOrgSelectorTreeParam.getSearchKey());
+        }
+        String parentId = ObjectUtil.isNotEmpty(sysOrgSelectorTreeParam.getParentId()) ? sysOrgSelectorTreeParam.getParentId() : "0";
+        // 超管接口，无需数据范围过滤，直接SQL查询当前父级下的子机构
+        List<SysOrg> childList = this.list(new LambdaQueryWrapper<SysOrg>()
+                .eq(SysOrg::getParentId, parentId)
+                .orderByAsc(SysOrg::getSortCode)
+                .orderByAsc(SysOrg::getId));
+        if (ObjectUtil.isEmpty(childList)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 批量判断哪些子机构还有下级
+        List<String> childIds = childList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
+                        .select(SysOrg::getParentId)
+                        .in(SysOrg::getParentId, childIds))
+                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
+        return childList.stream().map(sysOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
+            return jsonObject;
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * 全量搜索模式，返回嵌套树结构的JSONObject列表
+     * searchKey为空字符串时返回全量树，非空时按关键字过滤
+     */
+    private List<JSONObject> treeSearch(String searchKey) {
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        List<SysOrg> sysOrgList;
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            Set<SysOrg> filteredSet = CollectionUtil.newLinkedHashSet();
+            allOrgList.stream()
+                    .filter(org -> StrUtil.containsIgnoreCase(org.getName(), searchKey))
+                    .forEach(org -> filteredSet.addAll(this.getParentListById(allOrgList, org.getId(), true)));
+            sysOrgList = new ArrayList<>(filteredSet);
+        } else {
+            sysOrgList = allOrgList;
+        }
+        sysOrgList.sort(Comparator.comparingInt(SysOrg::getSortCode)
+                .thenComparing(SysOrg::getId));
         List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
+                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(),
+                                sysOrg.getName(), sysOrg.getSortCode()).setExtra(JSONUtil.parseObj(sysOrg)))
                 .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+        List<Tree<String>> treeList = TreeUtil.build(treeNodeList, "0");
+        List<JSONObject> result = JSONUtil.toList(JSONUtil.parseArray(treeList), JSONObject.class);
+        markLeafNodes(result);
+        return result;
+    }
+
+    /**
+     * 递归标记叶子节点（没有children的节点设置isLeaf=true）
+     */
+    private void markLeafNodes(List<JSONObject> nodes) {
+        if (nodes == null) return;
+        for (JSONObject node : nodes) {
+            List<JSONObject> children = node.getBeanList("children", JSONObject.class);
+            if (children == null || children.isEmpty()) {
+                node.set("isLeaf", true);
+                node.remove("children");
+            } else {
+                node.set("isLeaf", false);
+                markLeafNodes(children);
+            }
+        }
     }
 
     @Override
@@ -403,7 +525,25 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     @Override
     public List<SysOrg> getChildListById(List<SysOrg> originDataList, String id, boolean includeSelf) {
         List<SysOrg> resultList = CollectionUtil.newArrayList();
-        execRecursionFindChild(originDataList, id, resultList);
+        // 优先使用预构建的parentId索引Map，O(n)复杂度；否则降级为原始递归
+        Map<String, List<SysOrg>> parentMap = localParentChildrenMap;
+        if (parentMap != null) {
+            // BFS方式查找所有子机构
+            Deque<String> queue = new ArrayDeque<>();
+            queue.add(id);
+            while (!queue.isEmpty()) {
+                String parentId = queue.poll();
+                List<SysOrg> children = parentMap.get(parentId);
+                if (children != null) {
+                    for (SysOrg child : children) {
+                        resultList.add(child);
+                        queue.add(child.getId());
+                    }
+                }
+            }
+        } else {
+            execRecursionFindChild(originDataList, id, resultList);
+        }
         if(includeSelf) {
             SysOrg self = this.getById(originDataList, id);
             if(ObjectUtil.isNotEmpty(self)) {
@@ -463,5 +603,54 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public SysOrg getChildById(List<SysOrg> originDataList, String id) {
         int index = CollStreamUtil.toList(originDataList, SysOrg::getParentId).indexOf(id);
         return index == -1?null:originDataList.get(index);
+    }
+
+    @Override
+    public List<JSONObject> getAncestorNodes(List<String> orgIdList) {
+        if (ObjectUtil.isEmpty(orgIdList)) {
+            return CollectionUtil.newArrayList();
+        }
+        List<SysOrg> allOrgList = this.getAllOrgList();
+        // 收集所有需要的节点（已选节点 + 所有祖先），用LinkedHashSet去重保序
+        Set<String> ancestorIdSet = new LinkedHashSet<>();
+        for (String orgId : orgIdList) {
+            List<SysOrg> ancestorList = this.getParentListById(allOrgList, orgId, true);
+            for (SysOrg org : ancestorList) {
+                ancestorIdSet.add(org.getId());
+            }
+        }
+        if (ObjectUtil.isEmpty(ancestorIdSet)) {
+            return CollectionUtil.newArrayList();
+        }
+        // 收集祖先链上每个节点的parentId，用于补充同级兄弟节点
+        Set<String> ancestorParentIds = new HashSet<>();
+        for (SysOrg org : allOrgList) {
+            if (ancestorIdSet.contains(org.getId())) {
+                ancestorParentIds.add(org.getParentId());
+            }
+        }
+        // 最终需要的节点 = 祖先节点 + 每层祖先的兄弟节点（同parentId的节点）
+        Set<String> neededIdSet = new LinkedHashSet<>(ancestorIdSet);
+        for (SysOrg org : allOrgList) {
+            if (ancestorParentIds.contains(org.getParentId())) {
+                neededIdSet.add(org.getId());
+            }
+        }
+        // 从缓存中取出这些节点
+        List<SysOrg> resultOrgList = allOrgList.stream()
+                .filter(org -> neededIdSet.contains(org.getId()))
+                .sorted(Comparator.comparingInt(SysOrg::getSortCode).thenComparing(SysOrg::getId))
+                .collect(Collectors.toList());
+        // 批量判断哪些节点还有下级子节点
+        List<String> resultIds = resultOrgList.stream().map(SysOrg::getId).collect(Collectors.toList());
+        Set<String> hasChildrenParentIds = this.list(new LambdaQueryWrapper<SysOrg>()
+                        .select(SysOrg::getParentId)
+                        .in(SysOrg::getParentId, resultIds))
+                .stream().map(SysOrg::getParentId).collect(Collectors.toSet());
+        return resultOrgList.stream().map(sysOrg -> {
+            JSONObject jsonObject = JSONUtil.parseObj(sysOrg);
+            jsonObject.set("isLeaf", !hasChildrenParentIds.contains(sysOrg.getId()));
+            return jsonObject;
+        }).collect(Collectors.toList());
     }
 }

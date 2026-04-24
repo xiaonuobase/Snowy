@@ -209,6 +209,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         sysMenu.setPath(path);
         sysMenu.setComponent(StrUtil.removePrefix(path, StrUtil.SLASH) + StrUtil.SLASH + "index");
         sysMenu.setIcon("appstore-outlined");
+        sysMenu.setVisible("YES");
+        sysMenu.setDisplayLayout("YES");
+        sysMenu.setKeepLive("YES");
         sysMenu.setSortCode(99);
         this.save(sysMenu);
         return sysMenu.getId();
@@ -240,6 +243,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Override
     public void edit(SysMenuEditParam sysMenuEditParam) {
         SysMenu sysMenu = this.queryEntity(sysMenuEditParam.getId());
+        // 保存旧的module值，用于后续判断是否需要级联更新子级
+        String oldModule = sysMenu.getModule();
         checkParam(sysMenuEditParam);
         BeanUtil.copyProperties(sysMenuEditParam, sysMenu);
         boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenu.getParentId())
@@ -272,6 +277,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         }
         this.updateById(sysMenu);
 
+        // 如果module发生了变化，级联更新所有子级菜单和按钮的module字段
+        if(!sysMenu.getModule().equals(oldModule)) {
+            List<SysMenu> allResourceList = this.list(new LambdaQueryWrapper<SysMenu>()
+                    .in(SysMenu::getCategory, CollectionUtil.newArrayList(SysResourceCategoryEnum.MENU.getValue(),
+                            SysResourceCategoryEnum.BUTTON.getValue())));
+            List<SysMenu> childList = this.getChildListById(allResourceList, sysMenu.getId(), false).stream()
+                    .peek(child -> child.setModule(sysMenu.getModule())).collect(Collectors.toList());
+            if(ObjectUtil.isNotEmpty(childList)) {
+                this.updateBatchById(childList);
+            }
+        }
+
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.RESOURCE.getValue(), JSONUtil.createArray().put(sysMenu));
     }
@@ -283,11 +300,16 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         if(!"0".equals(sysMenu.getParentId())) {
             throw new CommonException("非顶级菜单不可修改所属模块");
         }
-        List<SysMenu> sysMenuList = this.list(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getCategory,
-                SysResourceCategoryEnum.MENU.getValue()));
-        List<SysMenu> sysMenuChildList = this.getChildListById(sysMenuList, sysMenu.getId(), true).stream()
+        // 查询所有菜单和按钮资源（与delete方法保持一致），确保按钮的module也能被级联更新
+        List<SysMenu> allResourceList = this.list(new LambdaQueryWrapper<SysMenu>()
+                .in(SysMenu::getCategory, CollectionUtil.newArrayList(SysResourceCategoryEnum.MENU.getValue(),
+                        SysResourceCategoryEnum.BUTTON.getValue())));
+        List<SysMenu> sysMenuChildList = this.getChildListById(allResourceList, sysMenu.getId(), true).stream()
                 .peek(sysMenuTemp -> sysMenuTemp.setModule(sysMenuChangeModuleParam.getModule())).collect(Collectors.toList());
-        sysMenuChildList.forEach(sysMenuTemp -> {
+        // 仅对菜单类型做重复标题校验（按钮不需要校验标题唯一性）
+        sysMenuChildList.stream()
+                .filter(sysMenuTemp -> SysResourceCategoryEnum.MENU.getValue().equals(sysMenuTemp.getCategory()))
+                .forEach(sysMenuTemp -> {
             boolean repeatTitle = this.count(new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId, sysMenuTemp.getParentId())
                     .eq(SysMenu::getModule, sysMenuTemp.getModule()).eq(SysMenu::getCategory, SysResourceCategoryEnum.MENU.getValue())
                     .eq(SysMenu::getTitle, sysMenuTemp.getTitle())

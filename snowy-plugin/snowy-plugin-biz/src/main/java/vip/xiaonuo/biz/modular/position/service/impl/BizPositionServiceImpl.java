@@ -16,9 +16,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -33,7 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
-import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.position.enums.BizPositionCategoryEnum;
@@ -46,6 +43,7 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.common.util.CommonSqlUtil;
 
 import java.util.HashSet;
 import java.util.List;
@@ -91,10 +89,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         }
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizPosition::getOrgId, loginUserDataScope);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
     }
@@ -105,12 +104,13 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         BizPositionCategoryEnum.validate(bizPositionAddParam.getCategory());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
+        }
         if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
             if(!loginUserDataScope.contains(bizPositionAddParam.getOrgId())) {
                 throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
             }
-        } else {
-            throw new CommonException("您没有权限在该机构下增加岗位，机构id：{}", bizPositionAddParam.getOrgId());
         }
         BizPosition bizPosition = BeanUtil.toBean(bizPositionAddParam, BizPosition.class);
         boolean repeatName = this.count(new LambdaQueryWrapper<BizPosition>().eq(BizPosition::getOrgId, bizPosition.getOrgId())
@@ -132,12 +132,12 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         BizPosition bizPosition = this.queryEntity(bizPositionEditParam.getId());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            if(!loginUserDataScope.contains(bizPositionEditParam.getOrgId())) {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            if(!bizPositionEditParam.getId().equals(StpUtil.getLoginIdAsString())) {
                 throw new CommonException("您没有权限编辑该机构下的岗位，机构id：{}", bizPositionEditParam.getOrgId());
             }
-        } else {
-            if(!bizPositionEditParam.getId().equals(StpUtil.getLoginIdAsString())) {
+        } else if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            if(!loginUserDataScope.contains(bizPositionEditParam.getOrgId())) {
                 throw new CommonException("您没有权限编辑该机构下的岗位，机构id：{}", bizPositionEditParam.getOrgId());
             }
         }
@@ -162,12 +162,13 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             Set<String> positionOrgIdList = this.listByIds(positionIdList).stream().map(BizPosition::getOrgId).collect(Collectors.toSet());
             // 校验数据范围
             List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+            if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+                throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
+            }
             if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
                 if(!new HashSet<>(loginUserDataScope).containsAll(positionOrgIdList)) {
                     throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
                 }
-            } else {
-                throw new CommonException("您没有权限删除这些机构下的岗位，机构id：{}", positionOrgIdList);
             }
             // 岗位下有人不能删除（直属岗位）
             boolean hasOrgUser = bizUserService.count(new LambdaQueryWrapper<BizUser>().in(BizUser::getPositionId, positionIdList)) > 0;
@@ -216,27 +217,8 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
     /* ====岗位部分所需要用到的选择器==== */
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        LambdaQueryWrapper<BizOrg> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        // 定义机构集合
-        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            // 获取所有机构
-            List<BizOrg> allOrgList = bizOrgService.list();
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
-            List<String> loginUserDataScopeFullList = bizOrgSet.stream().map(BizOrg::getId).collect(Collectors.toList());
-            lambdaQueryWrapper.in(BizOrg::getId, loginUserDataScopeFullList);
-        } else {
-            return CollectionUtil.newArrayList();
-        }
-        lambdaQueryWrapper.orderByAsc(BizOrg::getSortCode);
-        List<BizOrg> bizOrgList = bizOrgService.list(lambdaQueryWrapper);
-        List<TreeNode<String>> treeNodeList = bizOrgList.stream().map(bizOrg ->
-                new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(), bizOrg.getName(), bizOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+    public List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @Override
@@ -244,10 +226,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>();
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizPosition::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizPosition::getOrgId, loginUserDataScope);
         }
         // 查询部分字段
         queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,

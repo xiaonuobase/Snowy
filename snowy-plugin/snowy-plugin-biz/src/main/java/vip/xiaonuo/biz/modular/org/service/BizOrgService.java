@@ -12,7 +12,7 @@
  */
 package vip.xiaonuo.biz.modular.org.service;
 
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
@@ -36,14 +36,6 @@ public interface BizOrgService extends IService<BizOrg> {
      * @date 2022/4/24 20:08
      */
     Page<BizOrg> page(BizOrgPageParam bizOrgPageParam);
-
-    /**
-     * 获取机构树
-     *
-     * @author xuyuxiang
-     * @date 2022/4/24 20:08
-     */
-    List<Tree<String>> tree();
 
     /**
      * 添加机构
@@ -150,12 +142,12 @@ public interface BizOrgService extends IService<BizOrg> {
     BizOrg getChildById(List<BizOrg> originDataList, String id);
 
     /**
-     * 获取机构树选择器
+     * 获取机构树（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:08
      */
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam);
 
     /**
      * 获取机构列表选择器
@@ -180,4 +172,22 @@ public interface BizOrgService extends IService<BizOrg> {
      * @date 2025/12/24 01:30
      */
     void copy(BizOrgCopyParam bizOrgCopyParam);
+
+    /**
+     * 清除机构缓存（Redis缓存 + 版本号递增）
+     * 当其他模块修改了SYS_ORG表数据时，需要调用此方法同步清除缓存
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     */
+    void clearOrgCache();
+
+    /**
+     * 根据orgId列表获取其祖先路径节点（扁平列表，含节点自身及所有祖先）
+     * 用于懒加载树的回显场景
+     *
+     * @author yubaoshan
+     * @date 2026/3/22
+     */
+    List<JSONObject> getAncestorNodes(List<String> orgIdList);
 }

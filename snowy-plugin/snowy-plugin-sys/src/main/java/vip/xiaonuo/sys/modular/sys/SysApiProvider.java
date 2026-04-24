@@ -2,7 +2,7 @@ package vip.xiaonuo.sys.modular.sys;
 
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.sys.api.SysApi;
-import vip.xiaonuo.sys.core.util.SysPasswordUtl;
+import vip.xiaonuo.sys.core.util.SysPasswordUtil;
 
 /**
  * 系统模块综合API接口实现类
@@ -15,6 +15,6 @@ public class SysApiProvider implements SysApi {
 
     @Override
     public String getDefaultPassword() {
-        return SysPasswordUtl.getDefaultPassword();
+        return SysPasswordUtil.getDefaultPassword();
     }
 }

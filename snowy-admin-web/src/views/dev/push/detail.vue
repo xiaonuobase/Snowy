@@ -3,7 +3,7 @@
 		<a-descriptions :column="1" size="middle" bordered class="mb-2">
 			<a-descriptions-item label="消息标题">{{ formData.title }}</a-descriptions-item>
 			<a-descriptions-item label="消息引擎">
-				{{ $TOOL.dictTypeData('PUSH_ENGINE', formData.engine) }}
+				<a-tag :color="$TOOL.dictTypeColor('PUSH_ENGINE', formData.engine)">{{ $TOOL.dictTypeData('PUSH_ENGINE', formData.engine) }}</a-tag>
 			</a-descriptions-item>
 			<a-descriptions-item label="消息类别">{{ formData.type }}</a-descriptions-item>
 			<a-descriptions-item label="发送人" v-if="formData.createUserName">

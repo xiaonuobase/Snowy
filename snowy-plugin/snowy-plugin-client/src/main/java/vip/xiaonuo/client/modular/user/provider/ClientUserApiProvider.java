@@ -82,4 +82,17 @@ public class ClientUserApiProvider implements ClientUserApi {
     public JSONObject getOrCreateClientUserExt(String userId) {
         return JSONUtil.parseObj(clientUserService.getOrCreateClientUserExt(userId));
     }
+
+    @Override
+    public List<JSONObject> userSelector(String searchKey) {
+        LambdaQueryWrapper<ClientUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(ClientUser::getId, ClientUser::getName, ClientUser::getAccount, ClientUser::getAvatar);
+        if (ObjectUtil.isNotEmpty(searchKey)) {
+            queryWrapper.and(w -> w
+                    .like(ClientUser::getName, searchKey)
+                    .or().like(ClientUser::getAccount, searchKey));
+        }
+        queryWrapper.orderByAsc(ClientUser::getSortCode);
+        return clientUserService.list(queryWrapper).stream().map(JSONUtil::parseObj).collect(Collectors.toList());
+    }
 }

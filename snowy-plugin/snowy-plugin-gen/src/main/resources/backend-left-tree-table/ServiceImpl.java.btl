@@ -1,0 +1,164 @@
+/*
+ * Copyright [2022] [https://www.xiaonuo.vip]
+ *
+ * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *
+ * 1.请不要删除和修改根目录下的LICENSE文件。
+ * 2.请不要删除和修改Snowy源码头部的版权声明。
+ * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${moduleName}.modular.${busName}.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import cn.dev33.satoken.stp.StpUtil;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.util.CommonServletUtil;
+import vip.xiaonuo.common.util.CommonSqlUtil;
+import ${packageName}.common.exception.CommonException;
+import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
+import ${packageName}.${moduleName}.modular.${busName}.entity.${subClassName};
+import ${packageName}.${moduleName}.modular.${busName}.mapper.${className}Mapper;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.service.${className}Service;
+import ${packageName}.${moduleName}.modular.${busName}.service.${subClassName}Service;
+
+import jakarta.annotation.Resource;
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * ${functionName}Service接口实现类
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ **/
+@Service
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    @Resource
+    private ${subClassName}Service ${subClassNameFirstLower}Service;
+
+    @Override
+    public List<${className}> tree(String searchKey) {
+        LambdaQueryWrapper<${className}> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if(StrUtil.isNotBlank(searchKey)) {
+            lambdaQueryWrapper.like(${className}::get${treeNameFieldCamelCaseFirstUpper}, searchKey);
+        }
+        <% if(hasSortCodeField) { %>
+        lambdaQueryWrapper.orderByAsc(${className}::getSortCode);
+        <% } else { %>
+        lambdaQueryWrapper.orderByAsc(${className}::get${dbTableKeyFirstUpper});
+        <% } %>
+        List<${className}> allList = this.list(lambdaQueryWrapper);
+        // 获取顶级节点（parentId为0或为空的节点）
+        List<${className}> topList = allList.stream()
+                .filter(item -> ObjectUtil.isEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) || "0".equals(item.get${treeParentFieldCamelCaseFirstUpper}().toString()))
+                .collect(Collectors.toList());
+        topList.forEach(item -> fillChildren(allList, item));
+        return topList;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void add(${className}AddParam ${classNameFirstLower}AddParam) {
+        ${className} ${classNameFirstLower} = BeanUtil.toBean(${classNameFirstLower}AddParam, ${className}.class);
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限增加${functionName}");
+        }
+
+        <% for(var i = 0; i < uniqueFieldList.~size; i++) { %>
+        <% if(!uniqueFieldList[i].needTableId) { %>
+        if(this.count(new LambdaQueryWrapper<${className}>().eq(${className}::get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
+            throw new CommonException("存在重复的${uniqueFieldList[i].fieldRemark}，值为：{}", ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        this.save(${classNameFirstLower});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void edit(${className}EditParam ${classNameFirstLower}EditParam) {
+        ${className} ${classNameFirstLower} = this.queryEntity(${classNameFirstLower}EditParam.get${dbTableKeyFirstUpper}());
+        BeanUtil.copyProperties(${classNameFirstLower}EditParam, ${classNameFirstLower});
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限编辑${functionName}");
+        }
+
+        <% for(var i = 0; i < uniqueFieldList.~size; i++) { %>
+        <% if(!uniqueFieldList[i].needTableId) { %>
+        if(this.count(new LambdaQueryWrapper<${className}>().ne(${className}::get${dbTableKeyFirstUpper}, ${classNameFirstLower}.get${dbTableKeyFirstUpper}()).eq(${className}::get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}, ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}())) > 0) {
+            throw new CommonException("存在重复的${uniqueFieldList[i].fieldRemark}，值为：{}", ${classNameFirstLower}.get${uniqueFieldList[i].fieldNameCamelCaseFirstUpper}());
+        }
+        <% } %>
+        <% } %>
+        this.updateById(${classNameFirstLower});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void delete(List<${className}IdParam> ${classNameFirstLower}IdParamList) {
+        // 校验数据范围
+        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
+            throw new CommonException("您没有权限删除${functionName}");
+        }
+        List<String> idList = CollStreamUtil.toList(${classNameFirstLower}IdParamList, ${className}IdParam::get${dbTableKeyFirstUpper});
+        // 校验是否存在子节点
+        if(this.count(new LambdaQueryWrapper<${className}>().in(${className}::get${treeParentFieldCamelCaseFirstUpper}, idList)) > 0) {
+            throw new CommonException("请先删除子节点");
+        }
+        // 校验是否存在关联的${subFunctionName}数据
+        if(${subClassNameFirstLower}Service.count(new LambdaQueryWrapper<${subClassName}>().in(${subClassName}::get${subForeignKeyFirstUpper}, idList)) > 0) {
+            throw new CommonException("请先删除关联的${subFunctionName}数据");
+        }
+        this.removeByIds(idList);
+    }
+
+    @Override
+    public ${className} detail(${className}IdParam ${classNameFirstLower}IdParam) {
+        return this.queryEntity(${classNameFirstLower}IdParam.get${dbTableKeyFirstUpper}());
+    }
+
+    @Override
+    public ${className} queryEntity(Serializable ${dbTableKeyCamelCase}) {
+        ${className} ${classNameFirstLower} = this.getById(${dbTableKeyCamelCase});
+        if(ObjectUtil.isEmpty(${classNameFirstLower})) {
+            throw new CommonException("${functionName}不存在，${dbTableKeyCamelCase}值为：{}", ${dbTableKeyCamelCase});
+        }
+        return ${classNameFirstLower};
+    }
+
+    /**
+     * 递归填充子节点
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    private void fillChildren(List<${className}> allList, ${className} parent) {
+        List<${className}> children = allList.stream()
+                .filter(item -> ObjectUtil.isNotEmpty(item.get${treeParentFieldCamelCaseFirstUpper}()) && item.get${treeParentFieldCamelCaseFirstUpper}().toString().equals(parent.get${dbTableKeyFirstUpper}().toString()))
+                .collect(Collectors.toList());
+        if (ObjectUtil.isNotEmpty(children)) {
+            parent.setChildren(children);
+            children.forEach(child -> fillChildren(allList, child));
+        }
+    }
+}

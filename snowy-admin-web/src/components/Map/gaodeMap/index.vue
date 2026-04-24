@@ -189,7 +189,7 @@
 						: {
 								color: '#333',
 								fontSize: '12px'
-						  }
+							}
 				},
 				// 图标主题：default，fresh，numv1，numv2
 				iconTheme: theme,
@@ -220,7 +220,7 @@
 						: {
 								color: '#333',
 								fontSize: '12px'
-						  }
+							}
 				},
 				// 背景图标的样式
 				iconStyle: d.style

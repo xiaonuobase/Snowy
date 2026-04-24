@@ -147,44 +147,59 @@
 </script>
 
 <template>
-	<div class="login-wrapper">
-		<div class="login_main">
-			<div class="login-form">
-				<a-card>
-					<div class="login-header" style="margin-bottom: 20px">
-						<h2>用户注册</h2>
+	<div class="login-container">
+		<div class="login-content">
+			<!-- 左侧品牌展示区 -->
+			<div class="login-left">
+				<div class="brand-info">
+					<img :src="sysBaseConfig.SNOWY_SYS_LOGO" class="brand-logo" alt="Logo" />
+					<h1 class="brand-title">{{ sysBaseConfig.SNOWY_SYS_NAME }}</h1>
+					<p class="brand-desc">{{ sysBaseConfig.SNOWY_SYS_DEFAULT_DESCRRIPTION }}</p>
+				</div>
+				<div class="brand-footer">
+					<p>{{ sysBaseConfig.SNOWY_SYS_COPYRIGHT }}</p>
+				</div>
+			</div>
+
+			<!-- 右侧注册表单区 -->
+			<div class="login-right">
+				<div class="login-form-wrapper">
+					<div class="login-header">
+						<h2>创建账号</h2>
+						<p>请填写以下信息完成注册</p>
 					</div>
+
 					<a-form
 						ref="registerFormRef"
 						:model="registerFormData"
 						:rules="formRules"
-						class="user-box"
+						layout="vertical"
 						autocomplete="off"
 					>
-						<a-form-item name="account">
+						<a-form-item name="account" label="账号">
 							<a-input v-model:value="registerFormData.account" placeholder="请输入账号" size="large">
 								<template #prefix>
-									<user-outlined class="login-icon-gray" />
+									<UserOutlined class="field-icon" />
 								</template>
 							</a-input>
 						</a-form-item>
-						<a-form-item name="password">
+						<a-form-item name="password" label="密码">
 							<a-input-password v-model:value="registerFormData.password" placeholder="请输入密码" size="large">
 								<template #prefix>
-									<lock-outlined class="login-icon-gray" />
+									<LockOutlined class="field-icon" />
 								</template>
 							</a-input-password>
 						</a-form-item>
-						<a-form-item name="newPassword">
+						<a-form-item name="newPassword" label="确认密码">
 							<a-input-password v-model:value="registerFormData.newPassword" placeholder="请再次输入密码" size="large">
 								<template #prefix>
-									<lock-outlined class="login-icon-gray" />
+									<LockOutlined class="field-icon" />
 								</template>
 							</a-input-password>
 						</a-form-item>
-						<a-form-item name="validCode" v-if="captchaOpen === 'true'">
-							<a-row :gutter="8">
-								<a-col :span="17">
+						<a-form-item name="validCode" v-if="captchaOpen === 'true'" label="验证码">
+							<a-row :gutter="12">
+								<a-col :span="15">
 									<a-input
 										v-model:value="registerFormData.validCode"
 										placeholder="请输入验证码"
@@ -192,38 +207,47 @@
 										@keyup.enter="submitRegister"
 									>
 										<template #prefix>
-											<verified-outlined class="login-icon-gray" />
+											<SafetyOutlined class="field-icon" />
 										</template>
 									</a-input>
 								</a-col>
-								<a-col :span="7">
-									<img :src="validCodeBase64" class="login-validCode-img" @click="registerCaptcha" />
+								<a-col :span="9">
+									<div class="captcha-img-wrapper">
+										<img
+											:src="validCodeBase64"
+											class="login-validCode-img"
+											@click="registerCaptcha"
+											title="点击刷新验证码"
+										/>
+									</div>
 								</a-col>
 							</a-row>
 						</a-form-item>
-						<a-form-item>
+
+						<a-form-item class="submit-item">
 							<a-button
 								type="primary"
-								class="w-full"
+								class="login-button"
 								:loading="isRegister"
-								round
 								size="large"
 								@click="submitRegister"
 								:disabled="registerButtonDisable"
+								block
 							>
-								注册
+								立即注册
 							</a-button>
 						</a-form-item>
-						<div style="display: flex; justify-content: flex-end">
-							<a href="/front/client/login">已有账号？前往登录</a>
+
+						<div class="register-footer">
+							已有账号？ <a href="/front/client/login">立即登录</a>
 						</div>
 					</a-form>
-				</a-card>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 	@import '../login/login';
 </style>

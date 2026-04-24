@@ -93,7 +93,7 @@ public class SysUserApiProvider implements SysUserApi {
     }
 
     @Override
-    public List<String> getUserIdListByOrgIdList(List<String> orgIdList) {
+    public List<String> getUserIdListByOrgIdList(String initiator, List<String> orgIdList) {
         if(ObjectUtil.isNotEmpty(orgIdList)) {
             String orConditionSql = orgIdList.stream().map(orgId -> "POSITION_JSON LIKE '%" + orgId + "%'")
                     .collect(Collectors.joining(" OR "));
@@ -105,7 +105,7 @@ public class SysUserApiProvider implements SysUserApi {
     }
 
     @Override
-    public List<String> getUserIdListByPositionIdList(List<String> positionIdList) {
+    public List<String> getUserIdListByPositionIdList(String initiator, List<String> positionIdList) {
         if(ObjectUtil.isNotEmpty(positionIdList)) {
             String orConditionSql = positionIdList.stream().map(positionId -> "POSITION_JSON LIKE '%" + positionId + "%'")
                     .collect(Collectors.joining(" OR "));
@@ -116,8 +116,8 @@ public class SysUserApiProvider implements SysUserApi {
     }
 
     @Override
-    public JSONObject getSupervisorIdBySupervisorLevel(List<String> userIdList, String userId, String orgId, String supervisorLevel) {
-        SysUser sysUser = sysUserService.queryEntity(userId);
+    public JSONObject getSupervisorIdBySupervisorLevel(String initiator, List<String> userIdList, String orgId, String supervisorLevel) {
+        SysUser sysUser = sysUserService.queryEntity(initiator);
         String userOrgId = sysUser.getOrgId();
         String positionJson = sysUser.getPositionJson();
         AtomicReference<String> result = new AtomicReference<>();
@@ -153,21 +153,21 @@ public class SysUserApiProvider implements SysUserApi {
             if(ObjectUtil.isEmpty(resultUserId)) {
                 // 查不到，则当前用户就是最高层级主管
                 if(ObjectUtil.isEmpty(userIdList)) {
-                    return JSONUtil.createObj().set("id", userId).set("idList", CollectionUtil.newArrayList(userId));
+                    return JSONUtil.createObj().set("id", initiator).set("idList", CollectionUtil.newArrayList(initiator));
                 } else {
-                    return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
+                    return JSONUtil.createObj().set("id", initiator).set("idList", userIdList);
                 }
             } else {
                 if(ObjectUtil.isNotEmpty(userIdList)) {
                     if(userIdList.contains(resultUserId)) {
                         // 如果查出的结果已经出现过，意味着出现了循环主管，则当前的userId就是最高级主管
-                        return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
+                        return JSONUtil.createObj().set("id", initiator).set("idList", userIdList);
                     }
                 }
                 // 如果结果为空，则将查询的结果放入集合
                 userIdList.add(resultUserId);
                 // 继续查询
-                return this.getSupervisorIdBySupervisorLevel(userIdList, resultUserId, orgId, supervisorLevel);
+                return this.getSupervisorIdBySupervisorLevel(resultUserId, userIdList, orgId, supervisorLevel);
             }
         } else {
             // 如果要求查指定层级主管
@@ -185,23 +185,23 @@ public class SysUserApiProvider implements SysUserApi {
                     if(ObjectUtil.isNotEmpty(userIdList)) {
                         if(userIdList.contains(resultUserId)) {
                             // 如果查出的结果已经出现过，意味着出现了循环主管，则当前的userId就暂定是满足层级的主管
-                            return JSONUtil.createObj().set("id", userId).set("idList", userIdList);
+                            return JSONUtil.createObj().set("id", initiator).set("idList", userIdList);
                         }
                     }
                     // 如果查出的结果没有出现过，则将查询的结果放入集合
                     userIdList.add(resultUserId);
                     // 继续查更高层级主管
-                    return this.getSupervisorIdBySupervisorLevel(userIdList, resultUserId, orgId, nextLevel);
+                    return this.getSupervisorIdBySupervisorLevel(resultUserId, userIdList, orgId, nextLevel);
                 }
             }
         }
     }
 
     @Override
-    public List<String> getMulSupervisorIdListByEndLevel(String userId, String orgId, String endLevel) {
+    public List<String> getMulSupervisorIdListByEndLevel(String initiator, String orgId, String endLevel) {
         List<String> resultList = CollectionUtil.newArrayList();
         if(endLevel.equals("-1")) {
-            List<String> idList = this.getSupervisorIdBySupervisorLevel(CollectionUtil.newArrayList(), userId, orgId, endLevel)
+            List<String> idList = this.getSupervisorIdBySupervisorLevel(initiator, CollectionUtil.newArrayList(), orgId, endLevel)
                     .getBeanList("idList", String.class);
             if(ObjectUtil.isNotEmpty(idList)) {
                 resultList.addAll(idList);
@@ -209,7 +209,7 @@ public class SysUserApiProvider implements SysUserApi {
         } else {
             Integer levelValue = Convert.toInt(endLevel);
             for (int i = 1; i < levelValue; i++) {
-                String supervisorId = this.getSupervisorIdBySupervisorLevel(CollectionUtil.newArrayList(), userId, orgId,
+                String supervisorId = this.getSupervisorIdBySupervisorLevel(initiator, CollectionUtil.newArrayList(), orgId,
                         Convert.toStr(i)).getStr("id");
                 if(ObjectUtil.isNotEmpty(supervisorId)) {
                     resultList.add(supervisorId);

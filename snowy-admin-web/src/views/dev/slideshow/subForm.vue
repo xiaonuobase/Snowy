@@ -4,7 +4,7 @@
 			<template #bodyCell="{ text, record, index, column }">
 				<template v-if="column.dataIndex === 'label'">
 					<a-form-item :validate-status="validateStatus(record, 'whetherToClick')">
-						{{record.label}}
+						{{ record.label }}
 					</a-form-item>
 				</template>
 				<template v-if="column.dataIndex === 'whetherToClick'">
@@ -165,6 +165,4 @@
 		getData
 	})
 </script>
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

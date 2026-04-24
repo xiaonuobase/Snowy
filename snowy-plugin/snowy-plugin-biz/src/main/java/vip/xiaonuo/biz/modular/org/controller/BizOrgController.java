@@ -13,10 +13,8 @@
 package vip.xiaonuo.biz.modular.org.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -44,7 +42,6 @@ import java.util.List;
  * @date 2022/4/24 19:55
  */
 @Tag(name = "机构控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class BizOrgController {
@@ -58,7 +55,6 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取机构分页")
     @SaCheckPermission("/biz/org/page")
     @GetMapping("/biz/org/page")
@@ -67,17 +63,16 @@ public class BizOrgController {
     }
 
     /**
-     * 获取机构树
+     * 获取机构树（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "获取机构树")
+    @Operation(summary = "获取机构树（懒加载）")
     @SaCheckPermission("/biz/org/tree")
     @GetMapping("/biz/org/tree")
-    public CommonResult<List<Tree<String>>> tree() {
-        return CommonResult.data(bizOrgService.tree());
+    public CommonResult<List<JSONObject>> tree(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return CommonResult.data(bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam));
     }
 
     /**
@@ -86,7 +81,6 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加机构")
     @CommonLog("添加机构")
     @SaCheckPermission("/biz/org/add")
@@ -102,7 +96,6 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑机构")
     @CommonLog("编辑机构")
     @SaCheckPermission("/biz/org/edit")
@@ -118,7 +111,6 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除机构")
     @CommonLog("删除机构")
     @SaCheckPermission("/biz/org/delete")
@@ -135,7 +127,6 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取机构详情")
     @SaCheckPermission("/biz/org/detail")
     @GetMapping("/biz/org/detail")
@@ -149,7 +140,6 @@ public class BizOrgController {
      * @author yubaoshan
      * @date 2025/12/24 01:30
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "复制机构")
     @CommonLog("复制机构")
     @SaCheckPermission("/biz/org/copy")
@@ -162,17 +152,16 @@ public class BizOrgController {
     /* ====机构部分所需要用到的选择器==== */
 
     /**
-     * 获取机构树选择器
+     * 获取机构树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
-    @Operation(summary = "获取机构树选择器")
+    @Operation(summary = "获取机构树选择器（懒加载）")
     @SaCheckPermission("/biz/org/orgTreeSelector")
     @GetMapping("/biz/org/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(bizOrgService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return CommonResult.data(bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam));
     }
 
     /**
@@ -181,11 +170,22 @@ public class BizOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/org/userSelector")
     @GetMapping("/biz/org/userSelector")
     public CommonResult<Page<BizUser>> userSelector(BizOrgSelectorUserParam bizOrgSelectorUserParam) {
         return CommonResult.data(bizOrgService.userSelector(bizOrgSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/22
+     */
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/biz/org/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(bizOrgService.getAncestorNodes(orgIdList));
     }
 }

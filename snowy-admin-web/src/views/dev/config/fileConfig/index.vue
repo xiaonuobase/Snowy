@@ -12,6 +12,9 @@
 		<a-tab-pane key="minioFile" tab="MINIO文件">
 			<minioFileForm />
 		</a-tab-pane>
+		<a-tab-pane key="rustfsFile" tab="RUSTFS文件">
+			<rustfsFileForm />
+		</a-tab-pane>
 	</a-tabs>
 </template>
 
@@ -20,5 +23,6 @@
 	import AliyunFileForm from './aliyunFileForm.vue'
 	import TencentFileForm from './tencentFileForm.vue'
 	import MinioFileForm from './minioFileForm.vue'
+	import RustfsFileForm from './rustfsFileForm.vue'
 	const activeKey = ref('localFile')
 </script>

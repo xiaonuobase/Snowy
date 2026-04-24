@@ -40,7 +40,7 @@ public class SysPositionApiProvider implements SysPositionApi {
 
     @SuppressWarnings("ALL")
     @Override
-    public Page<JSONObject> positionSelector(String orgId, String searchKey, Integer current, Integer size) {
+    public Page<JSONObject> positionSelector(String orgId, String searchKey) {
         SysPositionSelectorPositionParam sysPositionSelectorPositionParam = new SysPositionSelectorPositionParam();
         sysPositionSelectorPositionParam.setOrgId(orgId);
         sysPositionSelectorPositionParam.setSearchKey(searchKey);

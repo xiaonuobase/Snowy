@@ -17,7 +17,7 @@
 			</a-col>
 			<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 				<div class="imgBox">
-					<img v-if="resultImg" :src="resultImg"/>
+					<img v-if="resultImg" :src="resultImg" />
 					<a-empty v-else />
 				</div>
 			</a-col>

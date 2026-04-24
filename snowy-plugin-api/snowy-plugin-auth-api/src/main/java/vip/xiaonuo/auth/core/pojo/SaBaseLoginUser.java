@@ -267,5 +267,9 @@ public abstract class SaBaseLoginUser {
         /** 数据范围 */
         @Schema(description = "数据范围")
         private List<String> dataScope;
+
+        /** 是否全部数据范围（SCOPE_ALL），为true时dataScope为空，表示不需要过滤 */
+        @Schema(description = "是否全部数据范围", hidden = true)
+        private boolean scopeAll;
     }
 }

@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo;
 
+import com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.Banner;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@SpringBootApplication
+@SpringBootApplication(exclude = {Knife4jAutoConfiguration.class})
 public class Application {
 
     /* 解决druid 日志报错：discard long time none received connection:xxx */

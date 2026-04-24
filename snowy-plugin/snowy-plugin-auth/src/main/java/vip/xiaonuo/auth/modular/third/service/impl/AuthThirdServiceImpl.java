@@ -28,7 +28,8 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
-import me.zhyd.oauth.request.*;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.request.AuthWeChatOpenRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -269,7 +270,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_SECRET_KEY))
                     .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_REDIRECT_URL_KEY))
                     .ignoreCheckState(true)
-                    .scopes(CollectionUtil.newArrayList("profile", "account", "email", "phone"))
+                    .scopes(CollectionUtil.newArrayList("profile", "account", "email", "phone", "org", "position"))
                     .build(), Map.of(
                     "authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY),
                     "accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY),

@@ -62,7 +62,7 @@ public class DevRelationServiceImpl extends ServiceImpl<DevRelationMapper, DevRe
             devRelation.setObjectId(objectId);
             devRelation.setTargetId(targetIdList.get(i));
             devRelation.setCategory(category);
-            if(ObjectUtil.isNotEmpty(extJsonList)) {
+            if(ObjectUtil.isNotEmpty(extJsonList) && extJsonList.size() > i) {
                 devRelation.setExtJson(extJsonList.get(i));
             }
             devRelationList.add(devRelation);

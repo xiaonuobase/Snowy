@@ -11,7 +11,6 @@
 import { defineStore } from 'pinia'
 import { changeColor } from '@/utils/themeUtil'
 import config from '@/config'
-import { message } from 'ant-design-vue'
 import tool from '@/utils/tool'
 
 const toolDataGet = (key) => {

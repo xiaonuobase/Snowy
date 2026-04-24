@@ -1,0 +1,572 @@
+<template>
+	<%
+	var searchCount = 0;
+	var row = 0;
+	%>
+	<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(!configList[i].needTableId && configList[i].needPage) { searchCount ++; }%>
+	<% } %>
+	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
+		<template #left>
+			<div ref="treeContainerRef" style="height: 100%; display: flex; flex-direction: column">
+				<a-input-search
+					v-model:value="treeSearchKey"
+					placeholder="搜索"
+					allow-clear
+					style="margin-bottom: 8px; flex-shrink: 0"
+					@search="onTreeSearch"
+				/>
+				<div style="flex: 1; overflow: hidden">
+					<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
+					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
+						<a-tree
+							v-model:expandedKeys="defaultExpandedKeys"
+							v-model:loadedKeys="treeLoadedKeys"
+							v-model:selectedKeys="selectedTreeKeys"
+							:show-line="{ showLeafIcon: false }"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="searchMode ? undefined : onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						/>
+					</a-spin>
+					<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+				</div>
+			</div>
+		</template>
+		<template #right>
+			<% if (searchCount > 0) { %>
+			<a-form ref="searchFormRef" :model="searchFormState">
+				<a-row :gutter="10">
+					<% for(var i = 0; i < configList.~size; i++) { %>
+					<% if(!configList[i].needTableId && configList[i].needPage) { row ++; %>
+					<% if(row <= 3) { %>
+					<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
+					<% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-select v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input-number v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" style="width: 100%" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'datepicker') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time />
+						</a-form-item>
+					<% } else {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+						</a-form-item>
+					<% } %>
+					</a-col>
+					<% } else { %>
+					<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6" v-show="advanced">
+					<% if(configList[i].effectType == 'input' || configList[i].effectType == 'textarea') { %>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-select v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请选择${configList[i].fieldRemark}" :options="${configList[i].fieldNameCamelCase}Options" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'inputNumber' || configList[i].effectType == 'slider') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input-number v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" style="width: 100%" />
+						</a-form-item>
+					<% } else if (configList[i].effectType == 'datepicker') {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-range-picker v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time />
+						</a-form-item>
+					<% } else {%>
+						<a-form-item label="${configList[i].fieldRemark}" name="${configList[i].fieldNameCamelCase}">
+							<a-input v-model:value="searchFormState.${configList[i].fieldNameCamelCase}" placeholder="请输入${configList[i].fieldRemark}" />
+						</a-form-item>
+					<% } %>
+					</a-col>
+					<% } %>
+					<% } %>
+					<% } %>
+					<a-col :xs="24" :sm="6" :md="6" :lg="6" :xl="6">
+					    <a-form-item>
+					        <a-space>
+					            <a-button type="primary" @click="tableRef.refresh(true)">
+					                <template #icon><SearchOutlined /></template>
+					                查询
+					            </a-button>
+					            <a-button @click="reset">
+					                <template #icon><redo-outlined /></template>
+					                 重置
+					            </a-button>
+	                            <% if(searchCount > 3) { %>
+	                            <a @click="toggleAdvanced">
+	                                {{ advanced ? '收起' : '展开' }}
+	                                <component :is="advanced ? 'up-outlined' : 'down-outlined'"/>
+	                            </a>
+	                            <% }%>
+	                        </a-space>
+	                    </a-form-item>
+	                </a-col>
+	            </a-row>
+			</a-form>
+			<% } %>
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:alert="options.alert.show"
+				bordered
+				:row-key="(record) => record.${dbTableKeyCamelCase}"
+				:tool-config="toolConfig"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+			>
+				<template #operator>
+					<a-space>
+						<a-button type="primary" @click="formRef.onOpen(undefined, searchFormState.${treeParentFieldCamelCase})" v-if="hasPerm('${classNameFirstLower}Add')">
+							<template #icon><plus-outlined /></template>
+							新增
+						</a-button>
+						<a-button @click="importModelRef.onOpen()" v-if="hasPerm('${classNameFirstLower}Import')">
+	                        <template #icon><import-outlined /></template>
+	                        <span>导入</span>
+	                    </a-button>
+	                    <a-button @click="exportData" v-if="hasPerm('${classNameFirstLower}Export')">
+	                        <template #icon><export-outlined /></template>
+	                        <span>导出</span>
+	                    </a-button>
+						<xn-batch-button
+							v-if="hasPerm('${classNameFirstLower}BatchDelete')"
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatch${className}"
+						/>
+					</a-space>
+				</template>
+				<template #bodyCell="{ column, record }">
+					<% for(var i = 0; i < configList.~size; i++) { %>
+					<% if(!configList[i].needTableId && configList[i].whetherTable) { %>
+					<% if (configList[i].effectType == 'select' || configList[i].effectType == 'radio') { %>
+					<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+						{{ $TOOL.dictTypeData('${configList[i].dictTypeCode}', record.${configList[i].fieldNameCamelCase}) }}
+					</template>
+					<% } else if (configList[i].effectType == 'checkbox') { %>
+					<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+						<a-tag v-for="textValue in JSON.parse(record.${configList[i].fieldNameCamelCase})" :key="textValue" :color="$TOOL.dictTypeColor('${configList[i].dictTypeCode}', textValue)">{{ $TOOL.dictTypeData('${configList[i].dictTypeCode}', textValue) }}</a-tag>
+					</template>
+					<% } else if (configList[i].effectType == 'imageUpload') { %>
+					<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+						<a-image :src="record.${configList[i].fieldNameCamelCase}" style="width: 30px; height: 30px;" />
+					</template>
+					<% } else if (configList[i].effectType == 'fileUpload') { %>
+					<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+						<a :href="record.${configList[i].fieldNameCamelCase}" :target="record.${configList[i].fieldNameCamelCase}">{{ record.${configList[i].fieldNameCamelCase} }}</a>
+					</template>
+					<% } %>
+					<% } %>
+					<% } %>
+					<% for(var i = 0; i < configList.~size; i++) { %>
+					<% if(configList[i].whetherTable && (configList[i].effectType == 'userSelector' || configList[i].effectType == 'userSelectorMulti' || configList[i].effectType == 'orgSelector' || configList[i].effectType == 'orgSelectorMulti' || configList[i].effectType == 'positionSelector' || configList[i].effectType == 'positionSelectorMulti' || configList[i].effectType == 'groupSelector' || configList[i].effectType == 'groupSelectorMulti')) { %>
+					<template v-if="column.dataIndex === '${configList[i].fieldNameCamelCase}'">
+						<template v-if="record.${configList[i].fieldNameCamelCase} && record.${configList[i].fieldNameCamelCase}.includes(',')">
+							<a-tag v-for="id in record.${configList[i].fieldNameCamelCase}.split(',')" :key="id">{{ translateMap['${configList[i].fieldNameCamelCase}']?.[id] || id }}</a-tag>
+						</template>
+						<span v-else>{{ translateMap['${configList[i].fieldNameCamelCase}']?.[record.${configList[i].fieldNameCamelCase}] || record.${configList[i].fieldNameCamelCase} }}</span>
+					</template>
+					<% } %>
+					<% } %>
+					<template v-if="column.dataIndex === 'action'">
+						<a-space>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Edit')">编辑</a>
+							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete'], 'and')" />
+							<a-popconfirm title="确定要删除吗？" @confirm="delete${className}(record)">
+								<a-button type="link" danger size="small" v-if="hasPerm('${classNameFirstLower}Delete')">删除</a-button>
+							</a-popconfirm>
+						</a-space>
+					</template>
+				</template>
+			</s-table>
+		</template>
+	</XnResizablePanel>
+	<ImportModel ref="importModelRef" />
+	<Form ref="formRef" @successful="onFormSuccess" />
+</template>
+
+<script setup name="${busName}">
+	<%
+	var iptTool = 0;
+	if (searchCount > 0) {
+		for(var i = 0; i < configList.~size; i++) {
+			if(!configList[i].needTableId) {
+			if(configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') {
+				iptTool++;
+			}
+			}
+		}
+	}
+	%>
+	<% if(iptTool > 0) { %>
+	import tool from '@/utils/tool'
+	<% } %>
+	import { Empty } from 'ant-design-vue'
+	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
+	import { cloneDeep } from 'lodash-es'
+	import Form from './form.vue'
+	import ImportModel from './importModel.vue'
+	import downloadUtil from '@/utils/downloadUtil'
+	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
+	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+	import userCenterApi from '@/api/sys/userCenterApi'
+	<% } %>
+	<% if (searchCount > 0) { %>
+	const searchFormState = ref({})
+	const searchFormRef = ref()
+	<% } else { %>
+	const searchFormState = ref({})
+	<% } %>
+	const tableRef = ref()
+	const importModelRef = ref()
+	const formRef = ref()
+	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+	const translateMap = ref({})
+	<% } %>
+	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
+	<% if(searchCount > 3) { %>
+	// 查询区域显示更多控制
+	const advanced = ref(false)
+	const toggleAdvanced = () => {
+		advanced.value = !advanced.value
+	}
+	<% } %>
+	const columns = [
+	<% for(var i = 0; i < configList.~size; i++) { %>
+	<% if(!configList[i].needTableId && configList[i].whetherTable) { %>
+		{
+			title: '${configList[i].fieldRemark}',
+			dataIndex: '${configList[i].fieldNameCamelCase}'<% if(configList[i].whetherRetract) { %>,<% } %>
+			<% if(configList[i].whetherRetract) { %>
+			ellipsis: true
+			<% } %>
+		},
+	<% } %>
+	<% } %>
+	]
+	// 操作栏通过权限判断是否显示
+	if (hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete'])) {
+		columns.push({
+			title: '操作',
+			dataIndex: 'action',
+			align: 'center',
+			fixed: 'right'
+		})
+	}
+	const selectedRowKeys = ref([])
+	// 列表选择配置
+	const options = {
+		alert: {
+			show: true,
+			clear: () => {
+				selectedRowKeys.value = ref([])
+			}
+		},
+		rowSelection: {
+			onChange: (selectedRowKey, selectedRows) => {
+				selectedRowKeys.value = selectedRowKey
+			}
+		}
+	}
+
+	// 树相关
+	const defaultExpandedKeys = ref([])
+	const treeData = ref([])
+	const treeFieldNames = { children: 'children', title: 'title', key: 'key' }
+	const treeLoading = ref(true)
+	const treeSearchKey = ref('')
+	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
+	const selectedTreeKeys = ref([])
+	// 树容器高度自适应
+	const treeContainerRef = ref(null)
+	const treeHeight = ref(0)
+	let resizeObserver = null
+	const calcTreeHeight = () => {
+		if (treeContainerRef.value) {
+			treeHeight.value = treeContainerRef.value.clientHeight - 40
+		}
+	}
+	onMounted(() => {
+		calcTreeHeight()
+		if (treeContainerRef.value) {
+			resizeObserver = new ResizeObserver(calcTreeHeight)
+			resizeObserver.observe(treeContainerRef.value)
+		}
+	})
+	onActivated(calcTreeHeight)
+	onUnmounted(() => {
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+	})
+
+	// 收集树所有节点key，用于搜索时全部展开
+	const collectTreeKeys = (nodes) => {
+		const keys = []
+		const traverse = (list) => {
+			if (!list) return
+			list.forEach((node) => {
+				keys.push(node.key)
+				if (node.children) traverse(node.children)
+			})
+		}
+		traverse(nodes)
+		return keys
+	}
+	// 树搜索
+	const onTreeSearch = (value) => {
+		if (!value || !value.trim()) {
+			treeData.value = []
+			defaultExpandedKeys.value = []
+			treeLoadedKeys.value = []
+			searchMode.value = false
+			loadTreeData()
+			return
+		}
+		treeLoading.value = true
+		searchMode.value = true
+		${classNameFirstLower}Api
+			.${classNameFirstLower}Tree({ searchKey: value.trim() })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+					defaultExpandedKeys.value = collectTreeKeys(res)
+				} else {
+					treeData.value = []
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	// 加载左侧的树
+	const loadTreeData = () => {
+		treeLoading.value = true
+		${classNameFirstLower}Api
+			.${classNameFirstLower}Tree()
+			.then((res) => {
+				if (res !== null) {
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
+					treeData.value = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].key]
+					}
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	loadTreeData()
+	// 刷新树数据
+	const refreshTreeData = () => {
+		treeLoading.value = true
+		${classNameFirstLower}Api
+			.${classNameFirstLower}Tree({ searchKey: '' })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
+			}
+			${classNameFirstLower}Api
+				.${classNameFirstLower}Tree({
+					${treeParentFieldCamelCase}: treeNode.dataRef.key
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					triggerRef(treeData)
+					resolve()
+				})
+		})
+	}
+	// 点击树查询
+	const treeSelect = (selectedKeys) => {
+		if (selectedKeys.length > 0) {
+			searchFormState.value.${treeParentFieldCamelCase} = selectedKeys.toString()
+		} else {
+			delete searchFormState.value.${treeParentFieldCamelCase}
+		}
+		tableRef.value.refresh(true)
+	}
+
+	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+	// 选择器字段翻译
+	const translateSelectorFields = async (records) => {
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(configList[i].effectType == 'userSelector' || configList[i].effectType == 'userSelectorMulti') { %>
+		{
+			const ids = records.map(r => r.${configList[i].fieldNameCamelCase}).filter(Boolean)
+			const allIds = ids.flatMap(id => id.includes(',') ? id.split(',') : [id])
+			const uniqueIds = [...new Set(allIds)]
+			if (uniqueIds.length > 0) {
+				const res = await userCenterApi.userCenterGetUserListByIdList({ idList: uniqueIds })
+				const map = {}
+				res.forEach(item => { map[item.id] = item.name })
+				translateMap.value['${configList[i].fieldNameCamelCase}'] = map
+			}
+		}
+		<% } %>
+		<% if(configList[i].effectType == 'orgSelector' || configList[i].effectType == 'orgSelectorMulti') { %>
+		{
+			const ids = records.map(r => r.${configList[i].fieldNameCamelCase}).filter(Boolean)
+			const allIds = ids.flatMap(id => id.includes(',') ? id.split(',') : [id])
+			const uniqueIds = [...new Set(allIds)]
+			if (uniqueIds.length > 0) {
+				const res = await userCenterApi.userCenterGetOrgListByIdList({ idList: uniqueIds })
+				const map = {}
+				res.forEach(item => { map[item.id] = item.name })
+				translateMap.value['${configList[i].fieldNameCamelCase}'] = map
+			}
+		}
+		<% } %>
+		<% if(configList[i].effectType == 'positionSelector' || configList[i].effectType == 'positionSelectorMulti') { %>
+		{
+			const ids = records.map(r => r.${configList[i].fieldNameCamelCase}).filter(Boolean)
+			const allIds = ids.flatMap(id => id.includes(',') ? id.split(',') : [id])
+			const uniqueIds = [...new Set(allIds)]
+			if (uniqueIds.length > 0) {
+				const res = await userCenterApi.userCenterGetPositionListByIdList({ idList: uniqueIds })
+				const map = {}
+				res.forEach(item => { map[item.id] = item.name })
+				translateMap.value['${configList[i].fieldNameCamelCase}'] = map
+			}
+		}
+		<% } %>
+		<% if(configList[i].effectType == 'groupSelector' || configList[i].effectType == 'groupSelectorMulti') { %>
+		{
+			const ids = records.map(r => r.${configList[i].fieldNameCamelCase}).filter(Boolean)
+			const allIds = ids.flatMap(id => id.includes(',') ? id.split(',') : [id])
+			const uniqueIds = [...new Set(allIds)]
+			if (uniqueIds.length > 0) {
+				const res = await userCenterApi.userCenterGetGroupListByIdList({ idList: uniqueIds })
+				const map = {}
+				res.forEach(item => { map[item.id] = item.name })
+				translateMap.value['${configList[i].fieldNameCamelCase}'] = map
+			}
+		}
+		<% } %>
+		<% } %>
+	}
+	<% } %>
+
+	const loadData = (parameter) => {
+		<% if (searchCount > 0) { %>
+		const searchFormParam = cloneDeep(searchFormState.value)
+		<% for(var i = 0; i < configList.~size; i++) { %>
+		<% if(!configList[i].needTableId && configList[i].needPage) { %>
+		<% if (configList[i].effectType == 'datepicker') {%>
+		// ${configList[i].fieldNameCamelCase}范围查询条件重载
+		if (searchFormParam.${configList[i].fieldNameCamelCase}) {
+			searchFormParam.start${configList[i].fieldNameCamelCaseFirstUpper} = searchFormParam.${configList[i].fieldNameCamelCase}[0]
+			searchFormParam.end${configList[i].fieldNameCamelCaseFirstUpper} = searchFormParam.${configList[i].fieldNameCamelCase}[1]
+			delete searchFormParam.${configList[i].fieldNameCamelCase}
+		}
+		<% } %>
+		<% } %>
+		<% } %>
+		return ${classNameFirstLower}Api.${classNameFirstLower}Page(Object.assign(parameter, searchFormParam)).then((data) => {
+		<% } else { %>
+		return ${classNameFirstLower}Api.${classNameFirstLower}Page(Object.assign(parameter, searchFormState.value)).then((data) => {
+		<% } %>
+			<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+			translateSelectorFields(data.records || [])
+			<% } %>
+			return data
+		})
+	}
+	// 重置
+	const reset = () => {
+		<% if (searchCount > 0) { %>
+		searchFormRef.value.resetFields()
+		<% } %>
+		delete searchFormState.value.${treeParentFieldCamelCase}
+		tableRef.value.refresh(true)
+	}
+	// 删除
+	const delete${className} = (record) => {
+		let params = [
+			{
+				${dbTableKeyCamelCase}: record.${dbTableKeyCamelCase}
+			}
+		]
+		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
+			tableRef.value.refresh(true)
+			refreshTreeData()
+		})
+	}
+	// 导出
+    const exportData = () => {
+        if (selectedRowKeys.value.length > 0) {
+            const params = selectedRowKeys.value.map((m) => {
+                return {
+                    id: m
+                }
+            })
+            ${classNameFirstLower}Api.${classNameFirstLower}Export(params).then((res) => {
+                downloadUtil.resultDownload(res)
+            })
+        } else {
+            ${classNameFirstLower}Api.${classNameFirstLower}Export([]).then((res) => {
+                downloadUtil.resultDownload(res)
+            })
+        }
+    }
+	// 批量删除
+	const deleteBatch${className} = (params) => {
+		${classNameFirstLower}Api.${classNameFirstLower}Delete(params).then(() => {
+			tableRef.value.clearRefreshSelected()
+			refreshTreeData()
+		})
+	}
+	// Form成功回调
+	const onFormSuccess = () => {
+		tableRef.value.refresh()
+		refreshTreeData()
+	}
+	<% if (searchCount > 0) { %>
+	<% for(var i = 0; i < configList.~size; i++) { %>
+	<% if(!configList[i].needTableId && configList[i].needPage) { %>
+	<% if (configList[i].effectType == 'select' || configList[i].effectType == 'radio' || configList[i].effectType == 'checkbox') { %>
+	const ${configList[i].fieldNameCamelCase}Options = tool.dictList('${configList[i].dictTypeCode}')
+	<% } %>
+	<% } %>
+	<% } %>
+	<% } %>
+</script>

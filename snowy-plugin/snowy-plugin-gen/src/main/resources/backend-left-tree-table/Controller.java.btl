@@ -1,0 +1,322 @@
+/*
+ * Copyright [2022] [https://www.xiaonuo.vip]
+ *
+ * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *
+ * 1.请不要删除和修改根目录下的LICENSE文件。
+ * 2.请不要删除和修改Snowy源码头部的版权声明。
+ * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+package ${packageName}.${moduleName}.modular.${busName}.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ${packageName}.common.annotation.CommonLog;
+import ${packageName}.common.pojo.CommonResult;
+<% if(hasUserSelector) { %>
+import vip.xiaonuo.sys.api.SysUserApi;
+<% } %>
+<% if(hasOrgSelector || hasUserSelector || hasPositionSelector) { %>
+import vip.xiaonuo.sys.api.SysOrgApi;
+<% } %>
+<% if(hasPositionSelector) { %>
+import vip.xiaonuo.sys.api.SysPositionApi;
+<% } %>
+<% if(hasGroupSelector) { %>
+import vip.xiaonuo.sys.api.SysGroupApi;
+<% } %>
+import ${packageName}.${moduleName}.modular.${busName}.entity.${className};
+import ${packageName}.${moduleName}.modular.${busName}.entity.${subClassName};
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${className}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}AddParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}EditParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}IdParam;
+import ${packageName}.${moduleName}.modular.${busName}.param.${subClassName}PageParam;
+import ${packageName}.${moduleName}.modular.${busName}.service.${className}Service;
+import ${packageName}.${moduleName}.modular.${busName}.service.${subClassName}Service;
+
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * ${functionName}控制器
+ *
+ * @author ${authorName}
+ * @date ${genTime}
+ */
+@Tag(name = "${functionName}控制器")
+@RestController
+@Validated
+public class ${className}Controller {
+
+    @Resource
+    private ${className}Service ${classNameFirstLower}Service;
+
+    @Resource
+    private ${subClassName}Service ${subClassNameFirstLower}Service;
+<% if(hasUserSelector) { %>
+
+    @Resource
+    private SysUserApi sysUserApi;
+<% } %>
+<% if(hasOrgSelector || hasUserSelector || hasPositionSelector) { %>
+
+    @Resource
+    private SysOrgApi sysOrgApi;
+<% } %>
+<% if(hasPositionSelector) { %>
+
+    @Resource
+    private SysPositionApi sysPositionApi;
+<% } %>
+<% if(hasGroupSelector) { %>
+
+    @Resource
+    private SysGroupApi sysGroupApi;
+<% } %>
+
+    /* ==================== 左树接口 ==================== */
+
+    /**
+     * 获取${functionName}树
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "获取${functionName}树")
+    @SaCheckPermission("/${moduleName}/${busName}/tree")
+    @GetMapping("/${moduleName}/${busName}/tree")
+    public CommonResult<List<${className}>> tree(@RequestParam(required = false) String searchKey) {
+        return CommonResult.data(${classNameFirstLower}Service.tree(searchKey));
+    }
+
+    /**
+     * 添加${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "添加${functionName}")
+    @CommonLog("添加${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/add")
+    @PostMapping("/${moduleName}/${busName}/add")
+    public CommonResult<String> add(@RequestBody @Valid ${className}AddParam ${classNameFirstLower}AddParam) {
+        ${classNameFirstLower}Service.add(${classNameFirstLower}AddParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 编辑${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "编辑${functionName}")
+    @CommonLog("编辑${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/edit")
+    @PostMapping("/${moduleName}/${busName}/edit")
+    public CommonResult<String> edit(@RequestBody @Valid ${className}EditParam ${classNameFirstLower}EditParam) {
+        ${classNameFirstLower}Service.edit(${classNameFirstLower}EditParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 删除${functionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "删除${functionName}")
+    @CommonLog("删除${functionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/delete")
+    @PostMapping("/${moduleName}/${busName}/delete")
+    public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
+                                                   List<${className}IdParam> ${classNameFirstLower}IdParamList) {
+        ${classNameFirstLower}Service.delete(${classNameFirstLower}IdParamList);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 获取${functionName}详情
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "获取${functionName}详情")
+    @SaCheckPermission("/${moduleName}/${busName}/detail")
+    @GetMapping("/${moduleName}/${busName}/detail")
+    public CommonResult<${className}> detail(@Valid ${className}IdParam ${classNameFirstLower}IdParam) {
+        return CommonResult.data(${classNameFirstLower}Service.detail(${classNameFirstLower}IdParam));
+    }
+
+    /* ==================== 右表接口 ==================== */
+
+    /**
+     * 获取${subFunctionName}分页
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "获取${subFunctionName}分页")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/page")
+    @GetMapping("/${moduleName}/${busName}/sub/page")
+    public CommonResult<Page<${subClassName}>> subPage(${subClassName}PageParam ${subClassNameFirstLower}PageParam) {
+        return CommonResult.data(${subClassNameFirstLower}Service.page(${subClassNameFirstLower}PageParam));
+    }
+
+    /**
+     * 添加${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "添加${subFunctionName}")
+    @CommonLog("添加${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/add")
+    @PostMapping("/${moduleName}/${busName}/sub/add")
+    public CommonResult<String> subAdd(@RequestBody @Valid ${subClassName}AddParam ${subClassNameFirstLower}AddParam) {
+        ${subClassNameFirstLower}Service.add(${subClassNameFirstLower}AddParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 编辑${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "编辑${subFunctionName}")
+    @CommonLog("编辑${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/edit")
+    @PostMapping("/${moduleName}/${busName}/sub/edit")
+    public CommonResult<String> subEdit(@RequestBody @Valid ${subClassName}EditParam ${subClassNameFirstLower}EditParam) {
+        ${subClassNameFirstLower}Service.edit(${subClassNameFirstLower}EditParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 删除${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "删除${subFunctionName}")
+    @CommonLog("删除${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/delete")
+    @PostMapping("/${moduleName}/${busName}/sub/delete")
+    public CommonResult<String> subDelete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
+                                                   List<${subClassName}IdParam> ${subClassNameFirstLower}IdParamList) {
+        ${subClassNameFirstLower}Service.delete(${subClassNameFirstLower}IdParamList);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 获取${subFunctionName}详情
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "获取${subFunctionName}详情")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/detail")
+    @GetMapping("/${moduleName}/${busName}/sub/detail")
+    public CommonResult<${subClassName}> subDetail(@Valid ${subClassName}IdParam ${subClassNameFirstLower}IdParam) {
+        return CommonResult.data(${subClassNameFirstLower}Service.detail(${subClassNameFirstLower}IdParam));
+    }
+
+    /**
+     * 下载${subFunctionName}导入模板
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "下载${subFunctionName}导入模板")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/downloadImportTemplate")
+    @GetMapping("/${moduleName}/${busName}/sub/downloadImportTemplate")
+    public void subDownloadImportTemplate(HttpServletResponse response) throws IOException {
+        ${subClassNameFirstLower}Service.downloadImportTemplate(response);
+    }
+
+    /**
+     * 导入${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导入${subFunctionName}")
+    @CommonLog("导入${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/importData")
+    @PostMapping(value = "/${moduleName}/${busName}/sub/importData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonResult<JSONObject> subImportData(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(${subClassNameFirstLower}Service.importData(file));
+    }
+
+    /**
+     * 导出${subFunctionName}
+     *
+     * @author ${authorName}
+     * @date ${genTime}
+     */
+    @Operation(summary = "导出${subFunctionName}")
+    @CommonLog("导出${subFunctionName}")
+    @SaCheckPermission("/${moduleName}/${busName}/sub/exportData")
+    @PostMapping("/${moduleName}/${busName}/sub/exportData")
+    public void subExportData(@RequestBody @Valid List<${subClassName}IdParam> ${subClassNameFirstLower}IdParamList, HttpServletResponse response) throws IOException {
+        ${subClassNameFirstLower}Service.exportData(${subClassNameFirstLower}IdParamList, response);
+    }
+<% if(hasUserSelector) { %>
+
+    @Operation(summary = "人员选择器")
+    @GetMapping("/${moduleName}/${busName}/userSelector")
+    public CommonResult<Page<JSONObject>> userSelector(@RequestParam(required = false) String orgId, @RequestParam(required = false) String searchKey) {
+        return CommonResult.data(sysUserApi.userSelector(orgId, searchKey));
+    }
+<% } %>
+<% if(hasOrgSelector || hasUserSelector || hasPositionSelector) { %>
+
+    @Operation(summary = "机构树选择器")
+    @GetMapping("/${moduleName}/${busName}/orgTreeSelector")
+    public CommonResult<List<JSONObject>> orgTreeSelector(@RequestParam(required = false) String parentId, @RequestParam(required = false) String searchKey) {
+        return CommonResult.data(sysOrgApi.orgTreeSelector(parentId, searchKey));
+    }
+<% } %>
+<% if(hasOrgSelector) { %>
+
+    @Operation(summary = "机构列表选择器")
+    @GetMapping("/${moduleName}/${busName}/orgListSelector")
+    public CommonResult<Page<JSONObject>> orgListSelector(@RequestParam(required = false) String parentId, @RequestParam(required = false) String searchKey) {
+        return CommonResult.data(sysOrgApi.orgListSelector(parentId, searchKey));
+    }
+<% } %>
+<% if(hasPositionSelector) { %>
+
+    @Operation(summary = "职位选择器")
+    @GetMapping("/${moduleName}/${busName}/positionSelector")
+    public CommonResult<Page<JSONObject>> positionSelector(@RequestParam(required = false) String orgId, @RequestParam(required = false) String searchKey) {
+        return CommonResult.data(sysPositionApi.positionSelector(orgId, searchKey));
+    }
+<% } %>
+<% if(hasGroupSelector) { %>
+
+    @Operation(summary = "用户组选择器")
+    @GetMapping("/${moduleName}/${busName}/groupSelector")
+    public CommonResult<Page<JSONObject>> groupSelector(@RequestParam(required = false) String searchKey) {
+        return CommonResult.data(sysGroupApi.groupSelector(searchKey));
+    }
+<% } %>
+}

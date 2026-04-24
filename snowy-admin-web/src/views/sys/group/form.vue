@@ -2,7 +2,7 @@
 	<xn-form-container
 		:title="formData.id ? '编辑用户组' : '增加用户组'"
 		:width="700"
-		v-model:open="open"
+		:visible="visible"
 		:destroy-on-close="true"
 		@close="onClose"
 	>
@@ -35,7 +35,7 @@
 	import { required } from '@/utils/formRules'
 	import sysGroupApi from '@/api/sys/groupApi'
 	// 抽屉状态
-	const open = ref(false)
+	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	// 表单数据
@@ -44,7 +44,7 @@
 
 	// 打开抽屉
 	const onOpen = (record) => {
-		open.value = true
+		visible.value = true
 		formData.value = {
 			sortCode: 99
 		}
@@ -57,7 +57,7 @@
 	const onClose = () => {
 		formRef.value.resetFields()
 		formData.value = {}
-		open.value = false
+		visible.value = false
 	}
 	// 默认要校验的
 	const formRules = {

@@ -22,11 +22,7 @@
 								placeholder="请选择上级字典"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
+								:field-names="treeSelectFieldNames"
 								selectable="false"
 								tree-line
 							/>
@@ -68,9 +64,12 @@
 				:scroll="{ x: 'max-content' }"
 			>
 				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'dictColor'">
+						<a-tag v-if="record.dictColor" :color="record.dictColor">{{ record.dictColor }}</a-tag>
+					</template>
 					<template v-if="column.dataIndex === 'level'">
-						<a-tag color="blue" v-if="record.level">{{ record.level }}</a-tag>
-						<a-tag color="green" v-else>子级</a-tag>
+						<a-tag color="processing" v-if="record.level">{{ record.level }}</a-tag>
+						<a-tag color="success" v-else>子级</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
@@ -94,11 +93,18 @@
 		},
 		{
 			title: '字典值',
-			dataIndex: 'dictValue'
+			dataIndex: 'dictValue',
+			ellipsis: true
+		},
+		{
+			title: '字典颜色',
+			dataIndex: 'dictColor',
+			align: 'center'
 		},
 		{
 			title: '排序',
-			dataIndex: 'sortCode'
+			dataIndex: 'sortCode',
+			align: 'center'
 		}
 	]
 	if (hasPerm('bizDictEdit')) {
@@ -119,6 +125,7 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 
 	// 表格查询 返回 Promise 对象

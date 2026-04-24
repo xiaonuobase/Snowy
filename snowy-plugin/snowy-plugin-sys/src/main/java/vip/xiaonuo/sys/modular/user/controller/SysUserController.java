@@ -12,11 +12,8 @@
  */
 package vip.xiaonuo.sys.modular.user.controller;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -29,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
@@ -49,7 +48,6 @@ import java.util.List;
  * @date 2022/4/22 9:34
  **/
 @Tag(name = "B端用户控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 9)
 @RestController
 @Validated
 public class SysUserController {
@@ -57,13 +55,15 @@ public class SysUserController {
     @Resource
     private SysUserService sysUserService;
 
+    @Resource
+    private SysOrgService sysOrgService;
+
     /**
      * 获取用户分页
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取用户分页")
     @GetMapping("/sys/user/page")
     public CommonResult<Page<SysUser>> page(SysUserPageParam sysUserPageParam) {
@@ -76,7 +76,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加用户")
     @CommonLog("添加用户")
     @PostMapping("/sys/user/add")
@@ -91,7 +90,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑用户")
     @CommonLog("编辑用户")
     @PostMapping("/sys/user/edit")
@@ -106,7 +104,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除用户")
     @CommonLog("删除用户")
     @PostMapping("/sys/user/delete")
@@ -122,7 +119,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取用户详情")
     @GetMapping("/sys/user/detail")
     public CommonResult<SysUser> detail(@Valid SysUserIdParam sysUserIdParam) {
@@ -135,7 +131,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "禁用用户")
     @CommonLog("禁用用户")
     @PostMapping("/sys/user/disableUser")
@@ -150,7 +145,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "启用用户")
     @CommonLog("启用用户")
     @PostMapping("/sys/user/enableUser")
@@ -165,7 +159,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "重置用户密码")
     @CommonLog("重置用户密码")
     @PostMapping("/sys/user/resetPassword")
@@ -180,7 +173,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取用户拥有角色")
     @GetMapping("/sys/user/ownRole")
     public CommonResult<List<String>> ownRole(@Valid SysUserIdParam sysUserIdParam) {
@@ -193,7 +185,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "给用户授权角色")
     @CommonLog("给用户授权角色")
     @PostMapping("/sys/user/grantRole")
@@ -208,7 +199,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "获取用户拥有资源")
     @GetMapping("/sys/user/ownResource")
     public CommonResult<SysUserOwnResourceResult> ownResource(@Valid SysUserIdParam sysUserIdParam) {
@@ -221,7 +211,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "给用户授权资源")
     @CommonLog("给用户授权资源")
     @PostMapping("/sys/user/grantResource")
@@ -236,7 +225,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "获取用户拥有权限")
     @GetMapping("/sys/user/ownPermission")
     public CommonResult<SysUserOwnPermissionResult> ownPermission(@Valid SysUserIdParam sysUserIdParam) {
@@ -249,7 +237,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
     @Operation(summary = "给用户授权权限")
     @CommonLog("给用户授权权限")
     @PostMapping("/sys/user/grantPermission")
@@ -264,7 +251,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "下载用户导入模板")
     @CommonLog("下载用户导入模板")
     @GetMapping(value = "/sys/user/downloadImportUserTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -278,7 +264,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "用户导入")
     @CommonLog("用户导入")
     @PostMapping("/sys/user/import")
@@ -292,7 +277,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "用户导出")
     @CommonLog("用户导出")
     @GetMapping(value = "/sys/user/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -306,7 +290,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 18)
     @Operation(summary = "导出用户个人信息")
     @CommonLog("导出用户个人信息")
     @GetMapping(value = "/sys/user/exportUserInfo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -317,16 +300,15 @@ public class SysUserController {
     /* ====用户部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 19)
-    @Operation(summary = "获取组织树选择器")
+    @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/user/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysUserService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return CommonResult.data(sysUserService.orgTreeSelector(sysOrgSelectorTreeParam));
     }
 
     /**
@@ -335,7 +317,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 20)
     @Operation(summary = "获取组织列表选择器")
     @GetMapping("/sys/user/orgListSelector")
     public CommonResult<Page<SysOrg>> orgListSelector(SysUserSelectorOrgListParam sysUserSelectorOrgListParam) {
@@ -348,7 +329,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 21)
     @Operation(summary = "获取职位选择器")
     @GetMapping("/sys/user/positionSelector")
     public CommonResult<Page<SysPosition>> positionSelector(SysUserSelectorPositionParam sysUserSelectorPositionParam) {
@@ -361,7 +341,6 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 22)
     @Operation(summary = "获取角色选择器")
     @GetMapping("/sys/user/roleSelector")
     public CommonResult<Page<SysRole>> roleSelector(SysUserSelectorRoleParam sysUserSelectorRoleParam) {
@@ -374,10 +353,21 @@ public class SysUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 23)
     @Operation(summary = "获取用户选择器")
     @GetMapping("/sys/user/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysUserSelectorUserParam sysUserSelectorUserParam) {
         return CommonResult.data(sysUserService.userSelector(sysUserSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/user/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

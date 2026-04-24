@@ -14,8 +14,6 @@ package vip.xiaonuo.auth.modular.login.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -40,7 +38,6 @@ import javax.validation.Valid;
  * @date 2021/12/23 21:50
  */
 @Tag(name = "B端登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class AuthController {
@@ -54,7 +51,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "B端获取图片验证码")
     @GetMapping("/auth/b/getPicCaptcha")
     public CommonResult<AuthPicValidCodeResult> getPicCaptcha() {
@@ -67,7 +63,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "B端获取手机登录验证码")
     @GetMapping("/auth/b/getPhoneValidCode")
     public CommonResult<String> getPhoneValidCode(@Valid AuthGetPhoneValidCodeParam authGetPhoneValidCodeParam) {
@@ -80,7 +75,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "B端获取邮箱登录验证码")
     @GetMapping("/auth/b/getEmailValidCode")
     public CommonResult<String> getEmailValidCode(@Valid AuthGetEmailValidCodeParam authGetEmailValidCodeParam) {
@@ -93,7 +87,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "B端账号密码登录")
     @PostMapping("/auth/b/doLogin")
     public CommonResult<String> doLogin(@RequestBody @Valid AuthAccountPasswordLoginParam authAccountPasswordLoginParam) {
@@ -106,7 +99,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "B端手机验证码登录")
     @PostMapping("/auth/b/doLoginByPhone")
     public CommonResult<String> doLoginByPhone(@RequestBody @Valid AuthPhoneValidCodeLoginParam authPhoneValidCodeLoginParam) {
@@ -119,7 +111,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "B端邮箱验证码登录")
     @PostMapping("/auth/b/doLoginByEmail")
     public CommonResult<String> doLoginByEmail(@RequestBody @Valid AuthEmailValidCodeLoginParam authEmailValidCodeLoginParam) {
@@ -132,7 +123,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "B端退出")
     @SaCheckLogin
     @GetMapping("/auth/b/doLogout")
@@ -147,7 +137,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "B端获取用户信息")
     @SaCheckLogin
     @GetMapping("/auth/b/getLoginUser")
@@ -161,7 +150,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "B端注册")
     @PostMapping("/auth/b/register")
     public CommonResult<String> register(@RequestBody @Valid AuthRegisterParam authRegisterParam) {
@@ -175,11 +163,22 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "B端动态口令登录")
     @PostMapping("/auth/b/doLoginByOtp")
     public CommonResult<String> doLoginByOtp(@RequestBody @Valid AuthOtpLoginParam authOtpLoginParam) {
         return CommonResult.data(authService.doLoginByOtp(authOtpLoginParam, SaClientTypeEnum.B.getValue()));
+    }
+
+    /**
+     * B端第三方Token交换登录（用于iframe嵌入免登）
+     *
+     * @author yubaoshan
+     * @date 2026/2/11
+     **/
+    @Operation(summary = "B端第三方Token交换登录（iframe嵌入免登）")
+    @PostMapping("/auth/b/doLoginByThirdToken")
+    public CommonResult<String> doLoginByThirdToken(@RequestBody @Valid AuthThirdTokenLoginParam authThirdTokenLoginParam) {
+        return CommonResult.data(authService.doLoginByThirdToken(authThirdTokenLoginParam));
     }
 
     /**
@@ -188,7 +187,6 @@ public class AuthController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "B端判断是否登录")
     @GetMapping("/auth/b/isLogin")
     public CommonResult<Boolean> isLogin() {

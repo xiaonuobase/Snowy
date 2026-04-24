@@ -86,7 +86,7 @@
 		text-align: center;
 		height: 180px;
 		line-height: 150px;
-		background: #1890ff;
+		background: var(--primary-1);
 		overflow: hidden;
 	}
 	.ant-carousel :deep(.slick-arrow.custom-slick-arrow) {

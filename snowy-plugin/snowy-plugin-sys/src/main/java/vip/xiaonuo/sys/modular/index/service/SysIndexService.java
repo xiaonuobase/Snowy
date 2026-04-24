@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.modular.index.service;
 
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 
@@ -113,4 +112,12 @@ public interface SysIndexService {
      * @date 2024/7/18 17:35
      */
     SysToolDataCountResult getToolDataCount();
+
+    /**
+     * 获取系统运行信息
+     *
+     * @author yubaoshan
+     * @date 2026/4/21
+     */
+    SysIndexSysInfoResult getSysInfo();
 }

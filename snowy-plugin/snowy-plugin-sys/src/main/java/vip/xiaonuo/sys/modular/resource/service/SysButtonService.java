@@ -56,6 +56,14 @@ public interface SysButtonService extends IService<SysButton> {
     void addForGenButton(String menuId, String className, String functionName);
 
     /**
+     * 代码生成按钮插入（支持不同生成类型）
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 15:34
+     **/
+    void addForGenButton(String menuId, String className, String functionName, String genType, String subFunctionName);
+
+    /**
      * 编辑按钮
      *
      * @author xuyuxiang

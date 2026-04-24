@@ -1,6 +1,13 @@
 <template>
 	<a-spin :spinning="loadSpinning">
-		<a-table :dataSource="dataSource" :columns="columns" :pagination="false" bordered size="middle" :scroll="{ x: 'max-content' }">
+		<a-table
+			:dataSource="dataSource"
+			:columns="columns"
+			:pagination="false"
+			bordered
+			size="middle"
+			:scroll="{ x: 'max-content' }"
+		>
 			<template #bodyCell="{ record, column }">
 				<template v-if="column.dataIndex === 'subject'">
 					<a-tag color="#FAAD14">{{ JSON.parse(record.configValue).subject }}</a-tag>

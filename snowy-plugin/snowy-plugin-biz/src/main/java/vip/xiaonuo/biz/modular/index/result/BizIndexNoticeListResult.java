@@ -50,7 +50,7 @@ public class BizIndexNoticeListResult {
 
     /** 排序 */
     @Schema(description = "排序")
-    private String sortCode;
+    private Integer sortCode;
 
     /** 创建时间 */
     @Schema(description = "创建时间")

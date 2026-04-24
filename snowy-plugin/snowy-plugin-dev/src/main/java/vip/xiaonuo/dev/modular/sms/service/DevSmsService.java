@@ -65,14 +65,6 @@ public interface DevSmsService extends IService<DevSms> {
     void sendTencent(DevSmsSendTencentParam devSmsSendTencentParam);
 
     /**
-     * 发送短信——小诺短信
-     *
-     * @author xuyuxiang
-     * @date 2024/1/25 14:08
-     **/
-    void sendXiaonuo(DevSmsSendXiaonuoParam devSmsSendXiaonuoParam);
-
-    /**
      * 获取短信分页
      *
      * @author xuyuxiang

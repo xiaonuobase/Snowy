@@ -104,6 +104,22 @@ public interface ClientUserService extends IService<ClientUser> {
     ClientUser detail(ClientUserIdParam clientUserIdParam);
 
     /**
+     * 禁用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    void disableUser(ClientUserIdParam clientUserIdParam);
+
+    /**
+     * 启用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    void enableUser(ClientUserIdParam clientUserIdParam);
+
+    /**
      * 获取用户详情
      *
      * @author xuyuxiang

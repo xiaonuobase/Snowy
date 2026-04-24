@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.user.entity.SysUser;
@@ -367,6 +368,14 @@ public interface SysUserService extends IService<SysUser> {
     List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam);
 
     /**
+     * 获取用户组织树子节点（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2026/4/3
+     */
+    List<JSONObject> loginOrgTreeChildren(SysUserIdParam sysUserIdParam, String parentId);
+
+    /**
      * 编辑个人信息
      *
      * @author xuyuxiang
@@ -473,12 +482,12 @@ public interface SysUserService extends IService<SysUser> {
     /* ====用户部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam);
 
     /**
      * 获取组织列表选择器

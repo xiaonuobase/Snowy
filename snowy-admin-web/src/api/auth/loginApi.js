@@ -61,5 +61,9 @@ export default {
 	// B端判断是否登录
 	isLogin(data) {
 		return request('isLogin', data, 'get')
+	},
+	// B端第三方Token交换登录（iframe嵌入免登）
+	doLoginByThirdToken(data) {
+		return request('doLoginByThirdToken', data, 'post', false)
 	}
 }

@@ -9,7 +9,7 @@
 					@click="handleLink"
 				>
 					<img :alt="systemName" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-					<label>{{ systemName }}</label>
+					<label style="color: var(--primary-color);font-weight: bold">{{ systemName }}</label>
 				</a>
 			</div>
 			<div class="version">

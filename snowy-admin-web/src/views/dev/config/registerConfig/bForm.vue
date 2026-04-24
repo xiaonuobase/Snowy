@@ -139,8 +139,8 @@
 	}
 	// 传递选择组件需要的API
 	const selectApiFunction = {
-		orgTreeApi: () => {
-			return configApi.configOrgTree().then((data) => {
+		orgTreeApi: (param) => {
+			return configApi.configOrgTreeSelector(param).then((data) => {
 				return Promise.resolve(data)
 			})
 		},

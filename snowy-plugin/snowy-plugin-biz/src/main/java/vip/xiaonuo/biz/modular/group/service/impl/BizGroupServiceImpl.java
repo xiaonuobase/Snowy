@@ -14,12 +14,9 @@ package vip.xiaonuo.biz.modular.group.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,23 +25,25 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.biz.core.enums.BizDataTypeEnum;
 import vip.xiaonuo.biz.modular.group.entity.BizGroup;
 import vip.xiaonuo.biz.modular.group.mapper.BizGroupMapper;
 import vip.xiaonuo.biz.modular.group.param.*;
 import vip.xiaonuo.biz.modular.group.service.BizGroupService;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserStatusEnum;
 import vip.xiaonuo.biz.modular.user.service.BizUserService;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.common.util.CommonSqlUtil;
 import vip.xiaonuo.sys.api.SysGroupApi;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 用户组Service接口实现类
@@ -85,6 +84,8 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
     public void add(BizGroupAddParam bizGroupAddParam) {
         BizGroup bizGroup = BeanUtil.toBean(bizGroupAddParam, BizGroup.class);
         this.save(bizGroup);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(BizDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(bizGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -93,13 +94,18 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
         BizGroup bizGroup = this.queryEntity(bizGroupEditParam.getId());
         BeanUtil.copyProperties(bizGroupEditParam, bizGroup);
         this.updateById(bizGroup);
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(bizGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<BizGroupIdParam> bizGroupIdParamList) {
+        List<String> groupIdList = CollStreamUtil.toList(bizGroupIdParamList, BizGroupIdParam::getId);
         // 执行删除
-        this.removeByIds(CollStreamUtil.toList(bizGroupIdParamList, BizGroupIdParam::getId));
+        this.removeByIds(groupIdList);
+        // 发布删除事件
+        CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.GROUP.getValue(), groupIdList);
     }
 
     @Override
@@ -122,23 +128,8 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
     }
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        // 获取所有机构
-        List<BizOrg> allOrgList = bizOrgService.list();
-        // 定义机构集合
-        Set<BizOrg> bizOrgSet = CollectionUtil.newHashSet();
-        // 校验数据范围
-        List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            loginUserDataScope.forEach(orgId -> bizOrgSet.addAll(bizOrgService.getParentListById(allOrgList, orgId, true)));
-        } else {
-            return CollectionUtil.newArrayList();
-        }
-        List<TreeNode<String>> treeNodeList = bizOrgSet.stream().map(bizOrg ->
-                        new TreeNode<>(bizOrg.getId(), bizOrg.getParentId(),
-                                bizOrg.getName(), bizOrg.getSortCode()).setExtra(JSONUtil.parseObj(bizOrg)))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+    public List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @Override
@@ -148,10 +139,11 @@ public class BizGroupServiceImpl extends ServiceImpl<BizGroupMapper, BizGroup> i
         queryWrapper.lambda().eq(BizUser::getUserStatus, BizUserStatusEnum.ENABLE.getValue());
         // 校验数据范围
         List<String> loginUserDataScope = StpLoginUserUtil.getLoginUserDataScope();
-        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
-            queryWrapper.lambda().in(BizUser::getOrgId, loginUserDataScope);
-        } else {
+        if(loginUserDataScope != null && loginUserDataScope.isEmpty()) {
             return new Page<>();
+        }
+        if(ObjectUtil.isNotEmpty(loginUserDataScope)) {
+            CommonSqlUtil.safeIn(queryWrapper.lambda(), BizUser::getOrgId, loginUserDataScope);
         }
         // 只查询部分字段
         queryWrapper.lambda().select(BizUser::getId, BizUser::getAvatar, BizUser::getOrgId, BizUser::getPositionId, BizUser::getAccount,

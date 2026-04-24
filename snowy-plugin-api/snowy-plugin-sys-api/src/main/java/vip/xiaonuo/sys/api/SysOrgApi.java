@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.sys.api;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -43,12 +42,12 @@ public interface SysOrgApi {
     String getSupervisorIdByOrgId(String orgId);
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/7/22 14:46
      **/
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector(String parentId, String searchKey);
 
     /**
      * 获取组织列表选择器
@@ -56,7 +55,7 @@ public interface SysOrgApi {
      * @author xuyuxiang
      * @date 2022/7/22 14:45
      **/
-    Page<JSONObject> orgListSelector(String parentId);
+    Page<JSONObject> orgListSelector(String parentId, String searchKey);
 
     /**
      * 获取某组织的所有父级id集合
@@ -73,4 +72,28 @@ public interface SysOrgApi {
      * @date 2025/01/10 14:45
      **/
     List<JSONObject> getOrgListByIdListWithoutException(List<String> orgIdList);
+
+    /**
+     * 清除组织缓存
+     *
+     * @author yubaoshan
+     * @date 2026/2/12
+     **/
+    void clearOrgCache();
+
+    /**
+     * 根据组织id获取其及所有下级组织id列表
+     *
+     * @author yubaoshan
+     * @date 2026/3/23 14:00
+     **/
+    List<String> getChildOrgIdListById(String orgId);
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author xuyuxiang
+     * @date 2026/4/22
+     **/
+    List<JSONObject> getAncestorNodes(List<String> orgIdList);
 }

@@ -70,7 +70,7 @@ export default {
 		enteredPasswordsDiffer: 'Entered passwords differ',
 		paramError: 'Param Error',
 		thirdLoginError: 'Third Login Error',
-		frontLogin: 'Front Login',
+		frontLogin: 'Front Login'
 	},
 	user: {
 		userOrg: 'User Org',

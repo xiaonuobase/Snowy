@@ -13,8 +13,6 @@
 package vip.xiaonuo.dev.modular.file.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -46,7 +44,6 @@ import java.util.List;
  * @date 2022/2/23 18:26
  **/
 @Tag(name = "文件控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 4)
 @RestController
 @Validated
 public class DevFileController {
@@ -66,7 +63,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "动态上传文件返回id")
     @CommonLog("动态上传文件返回id")
     @PostMapping("/dev/file/uploadDynamicReturnId")
@@ -80,7 +76,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "动态上传文件返回url")
     @CommonLog("动态上传文件返回url")
     @PostMapping("/dev/file/uploadDynamicReturnUrl")
@@ -94,7 +89,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "上传本地文件返回id")
     @CommonLog("上传本地文件返回id")
     @PostMapping("/dev/file/uploadLocalReturnId")
@@ -108,7 +102,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "上传本地文件返回url")
     @CommonLog("上传本地文件返回url")
     @PostMapping("/dev/file/uploadLocalReturnUrl")
@@ -122,7 +115,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "上传阿里云文件返回id")
     @CommonLog("上传阿里云文件返回id")
     @PostMapping("/dev/file/uploadAliyunReturnId")
@@ -136,7 +128,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "上传阿里云文件返回url")
     @CommonLog("上传阿里云文件返回url")
     @PostMapping("/dev/file/uploadAliyunReturnUrl")
@@ -150,7 +141,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "上传腾讯云文件返回id")
     @CommonLog("上传腾讯云文件返回id")
     @PostMapping("/dev/file/uploadTencentReturnId")
@@ -164,7 +154,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "上传腾讯云文件返回url")
     @CommonLog("上传腾讯云文件返回url")
     @PostMapping("/dev/file/uploadTencentReturnUrl")
@@ -178,7 +167,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "上传MINIO文件返回id")
     @CommonLog("上传MINIO文件返回id")
     @PostMapping("/dev/file/uploadMinioReturnId")
@@ -192,7 +180,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "上传MINIO文件返回url")
     @CommonLog("上传MINIO文件返回url")
     @PostMapping("/dev/file/uploadMinioReturnUrl")
@@ -206,7 +193,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "获取文件分页列表")
     @GetMapping("/dev/file/page")
     public CommonResult<Page<DevFile>> page(DevFilePageParam devFilePageParam) {
@@ -219,7 +205,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "获取文件列表")
     @GetMapping("/dev/file/list")
     public CommonResult<List<DevFile>> list(DevFileListParam devFileListParam) {
@@ -232,7 +217,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "下载文件")
     @CommonLog("下载文件")
     @GetMapping(value = "/dev/file/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -246,7 +230,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 14)
     @Operation(summary = "授权下载文件")
     @CommonLog("授权下载文件")
     @GetMapping(value = "/dev/file/authDownload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -260,7 +243,6 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "删除文件")
     @CommonLog("删除文件")
     @PostMapping(value = "/dev/file/delete")
@@ -276,7 +258,6 @@ public class DevFileController {
      * @author 每天一点
      * @date 2025/4/06 20:25
      */
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "物理删除文件")
     @CommonLog("物理删除文件")
     @PostMapping(value = "/dev/file/deleteAbsolute")
@@ -291,11 +272,22 @@ public class DevFileController {
      * @author xuyuxiang
      * @date 2022/6/21 15:44
      **/
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "获取文件详情")
     @GetMapping("/dev/file/detail")
     public CommonResult<DevFile> detail(@Valid DevFileIdParam devFileIdParam) {
         return CommonResult.data(devFileService.detail(devFileIdParam));
+    }
+
+    /**
+     * 根据文件id集合获取文件集合
+     *
+     * @author yubaoshan
+     * @date 2024/6/9 23:52
+     **/
+    @Operation(summary = "根据文件id集合获取文件集合")
+    @PostMapping("/dev/file/getFileListByIds")
+    public CommonResult<List<DevFile>> getFileListByIds(@RequestBody @Valid @NotEmpty(message = "集合不能为空") List<String> ids) {
+        return CommonResult.data(devFileService.getFileListByIds(ids));
     }
 
     /**
@@ -304,7 +296,6 @@ public class DevFileController {
      * @author yubaoshan
      * @date 2024/6/9 23:52
      **/
-    @ApiOperationSupport(order = 18)
     @Operation(summary = "根据文件url集合获取文件集合")
     @PostMapping("/dev/file/getFileListByUrlList")
     public CommonResult<List<DevFile>> getFileListByUrlList(@RequestBody @Valid DevFileUrlListParam devFileUrlListParam) {

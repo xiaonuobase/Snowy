@@ -10,7 +10,7 @@
 		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
 			<a-tabs v-model:activeKey="activeTabsKey">
 				<a-tab-pane key="1" tab="基础信息" force-render>
-					<a-row :gutter="16">
+					<a-row :gutter="16" class="!mx-0">
 						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="账号：" name="account">
 								<a-input v-model:value="formData.account" placeholder="请输入账号" allow-clear />
@@ -41,24 +41,14 @@
 								<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="选择机构：" name="orgId">
-								<a-tree-select
+								<xn-tree-select
+									ref="orgTreeSelectRef"
 									v-model:value="formData.orgId"
-									class="xn-wd"
-									:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+									:tree-api="bizUserApi.userOrgTreeSelector"
+									:ancestor-api="bizUserApi.userGetAncestorNodes"
 									placeholder="请选择机构"
-									allow-clear
-									tree-default-expand-all
-									:tree-data="treeData"
-									:tree-default-expanded-keys="treeDefaultExpandedKeys"
-									:field-names="{
-										children: 'children',
-										label: 'name',
-										value: 'id'
-									}"
 									@change="selePositionData(formData.orgId, 0)"
 								/>
 							</a-form-item>
@@ -87,8 +77,6 @@
 								/>
 							</a-form-item>
 						</a-col>
-					</a-row>
-					<a-row :gutter="16">
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="员工编号：" name="empNo">
 								<a-input v-model:value="formData.empNo" placeholder="请输入员工编号" allow-clear />
@@ -104,79 +92,76 @@
 								<a-date-picker v-model:value="formData.entryDate" value-format="YYYY-MM-DD" class="xn-wd" />
 							</a-form-item>
 						</a-col>
-					</a-row>
-
-					<a-form-item label="任职信息" name="positionJson">
-						<a-row :gutter="10" class="form-row mb-5">
-							<a-col :span="7"> 机构 </a-col>
-							<a-col :span="7"> 岗位 </a-col>
-							<a-col :span="7"> 主管 </a-col>
-							<a-col :span="3">
-								<a-button type="primary" @click="addDomains()" size="small">
-									<PlusOutlined />
-									增加
-								</a-button>
-							</a-col>
-						</a-row>
-						<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
-							<a-row :gutter="10">
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item
-										:name="['positionJson', index, 'orgId']"
-										:rules="{ required: true, message: '请选择机构' }"
-									>
-										<a-tree-select
-											v-model:value="positionInfo.orgId"
-											class="xn-wd"
-											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-											placeholder="请选择机构"
-											allow-clear
-											tree-default-expand-all
-											:tree-data="treeData"
-											:tree-default-expanded-keys="treeDefaultExpandedKeys"
-											:field-names="{ children: 'children', label: 'name', value: 'id' }"
-											@select="childOrgSelect(positionInfo, 0, index)"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item
-										:name="['positionJson', index, 'positionId']"
-										:rules="{ required: true, message: '请选择岗位' }"
-									>
-										<xn-page-select
-											ref="xnChildPositionPageSelectRef"
-											v-model:value="positionInfo.positionId"
-											placeholder="请选择岗位"
-											allow-clear
-											:page-function="selectApiFunction.childPositionSelector"
-											:echo-function="selectApiFunction.echoPosition"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7">
-									<a-form-item :name="['positionJson', index, 'directorId']">
-										<xn-page-select
-											ref="xnChildUserPageSelectRef"
-											v-model:value="positionInfo.directorId"
-											placeholder="请选择主管"
-											allow-clear
-											:page-function="selectApiFunction.childUserSelector"
-											:echo-function="selectApiFunction.echoUser"
-										/>
-									</a-form-item>
-								</a-col>
-								<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3">
-									<a-form-item>
-										<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
-											<DeleteOutlined />
-											移除
+						<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+							<a-form-item label="任职信息" name="positionJson">
+								<a-row :gutter="10" class="bg-[var(--item-hover-bg)] p-1 mb-2.5 !mx-0">
+									<a-col :span="7" class="truncate"> 机构 </a-col>
+									<a-col :span="7" class="truncate"> 岗位 </a-col>
+									<a-col :span="7" class="truncate"> 主管 </a-col>
+									<a-col :span="3">
+										<a-button type="primary" @click="addDomains()" size="small">
+											<PlusOutlined />
+											<span class="!hidden md:!inline">增加</span>
 										</a-button>
-									</a-form-item>
-								</a-col>
-							</a-row>
-						</div>
-					</a-form-item>
+									</a-col>
+								</a-row>
+								<div :key="positionInfo" v-for="(positionInfo, index) in formData.positionJson">
+									<a-row :gutter="10" class="!mx-0">
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
+											<a-form-item
+												:name="['positionJson', index, 'orgId']"
+												:rules="{ required: true, message: '请选择机构' }"
+											>
+												<xn-tree-select
+													:ref="(el) => setChildTreeSelectRef(el, index)"
+													v-model:value="positionInfo.orgId"
+													:tree-api="bizUserApi.userOrgTreeSelector"
+													:ancestor-api="bizUserApi.userGetAncestorNodes"
+													placeholder="请选择机构"
+													@change="childOrgSelect(positionInfo, 0, index)"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
+											<a-form-item
+												:name="['positionJson', index, 'positionId']"
+												:rules="{ required: true, message: '请选择岗位' }"
+											>
+												<xn-page-select
+													ref="xnChildPositionPageSelectRef"
+													v-model:value="positionInfo.positionId"
+													placeholder="请选择岗位"
+													allow-clear
+													:page-function="selectApiFunction.childPositionSelector"
+													:echo-function="selectApiFunction.echoPosition"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="7" :lg="7" :xl="7" class="truncate">
+											<a-form-item :name="['positionJson', index, 'directorId']">
+												<xn-page-select
+													ref="xnChildUserPageSelectRef"
+													v-model:value="positionInfo.directorId"
+													placeholder="请选择主管"
+													allow-clear
+													:page-function="selectApiFunction.childUserSelector"
+													:echo-function="selectApiFunction.echoUser"
+												/>
+											</a-form-item>
+										</a-col>
+										<a-col :xs="24" :sm="24" :md="3" :lg="3" :xl="3" class="text-center">
+											<a-form-item>
+												<a-button type="primary" danger ghost @click="delDomains(index)" size="small">
+													<DeleteOutlined />
+													移除
+												</a-button>
+											</a-form-item>
+										</a-col>
+									</a-row>
+								</div>
+							</a-form-item>
+						</a-col>
+					</a-row>
 				</a-tab-pane>
 				<a-tab-pane key="2" tab="更多信息" force-render>
 					<a-row :gutter="16">
@@ -210,16 +195,6 @@
 								/>
 							</a-form-item>
 						</a-col>
-						<!--						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-													<a-form-item label="通信地址：" name="mailingAddress">
-														<a-textarea
-															v-model:value="formData.mailingAddress"
-															placeholder="请输入通信地址"
-															:auto-size="{ minRows: 2, maxRows: 5 }"
-															allow-clear
-														/>
-													</a-form-item>
-												</a-col>-->
 						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
 							<a-form-item label="证件类型：" name="idCardType">
 								<a-select
@@ -304,92 +279,91 @@
 	import { required } from '@/utils/formRules'
 	import tool from '@/utils/tool'
 	import userCenterApi from '@/api/sys/userCenterApi'
-	// 默认是关闭状态
+
 	const visible = ref(false)
 	const formRef = ref()
 	const activeTabsKey = ref('1')
 	const emit = defineEmits({ successful: null })
 	const formLoading = ref(false)
-	const treeData = ref([])
-	const treeDefaultExpandedKeys = ref([])
-	// 分页select组件dom定义
+	const formData = ref({})
+
+	// 组件 ref
+	const orgTreeSelectRef = ref()
+	const childTreeSelectRefs = ref({})
 	const xnPositionPageSelectRef = ref()
 	const xnUserPageSelectRef = ref()
 	const xnChildPositionPageSelectRef = ref()
 	const xnChildUserPageSelectRef = ref()
-	// 表单数据
-	const formData = ref({})
-	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
+
+	const setChildTreeSelectRef = (el, index) => {
+		if (el) {
+			childTreeSelectRefs.value[index] = el
+		}
+	}
 
 	// 打开抽屉
 	const onOpen = (record, orgId) => {
 		visible.value = true
-		formData.value = {
-			gender: '男',
-			positionJson: []
-		}
+		formData.value = { gender: '男', positionJson: [] }
 		if (orgId) {
 			formData.value.orgId = orgId
-			// 通过机构再查询岗位、主管
-			nextTick(() => {
-				selePositionData(orgId)
-			})
-		}
-		if (record) {
-			convertFormData(record)
+			nextTick(() => selePositionData(orgId))
 		}
 		nextTick(() => {
-			// 机构选择器数据
-			bizUserApi.userOrgTreeSelector().then((res) => {
-				if (res !== null) {
-					treeData.value = res
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							treeDefaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									treeDefaultExpandedKeys.value.push(items.id)
-								})
-							}
+			if (record) {
+				convertFormData(record).then(() => {
+					const allOrgIds = collectAllOrgIds()
+					orgTreeSelectRef.value.echo(allOrgIds)
+					// 子表树回显
+					nextTick(() => {
+						if (formData.value.positionJson) {
+							formData.value.positionJson.forEach((item, index) => {
+								if (childTreeSelectRefs.value[index]) {
+									childTreeSelectRefs.value[index].echo(allOrgIds)
+								}
+							})
 						}
 					})
-				}
-			})
+				})
+			} else if (orgId) {
+				orgTreeSelectRef.value.echo([orgId])
+			} else {
+				orgTreeSelectRef.value.init()
+			}
 		})
 	}
-	// 关闭抽屉
-	const onClose = () => {
-		treeData.value = []
-		treeDefaultExpandedKeys.value = []
-		visible.value = false
-	}
-	// 回显数据
-	const convertFormData = (record) => {
-		const param = {
-			id: record.id
+
+	const collectAllOrgIds = () => {
+		const ids = []
+		if (formData.value.orgId) ids.push(formData.value.orgId)
+		if (formData.value.positionJson) {
+			formData.value.positionJson.forEach((item) => {
+				if (item.orgId && !ids.includes(item.orgId)) ids.push(item.orgId)
+			})
 		}
-		// 查询详情
-		bizUserApi.userDetail(param).then((data) => {
+		return ids
+	}
+
+	const convertFormData = (record) => {
+		return bizUserApi.userDetail({ id: record.id }).then((data) => {
 			if (data.positionJson) {
-				// 替换表单中的格式与后端查到的
 				data.positionJson = JSON.parse(data.positionJson)
 			}
 			formData.value = Object.assign(formData.value, data)
-			// 这里再写一次是因为上面需要先加载增行，下面再进行循环赋值
 			if (data.positionJson) {
-				// 遍历进行补充
-				data.positionJson.map((item, index) => {
+				data.positionJson.forEach((item, index) => {
 					childOrgSelect(item, 1, index)
-					return item
 				})
 			}
 			selePositionData(formData.value.orgId)
 		})
 	}
-	// 默认要校验的
+
+	const onClose = () => {
+		childTreeSelectRefs.value = {}
+		visible.value = false
+	}
+
 	const formRules = {
 		account: [required('请输入账号')],
 		name: [required('请输入姓名')],
@@ -397,15 +371,11 @@
 		orgId: [required('请选择机构')],
 		positionId: [required('请选择岗位')]
 	}
-	// 机构选择后查询对应的岗位
+
 	const selePositionData = (orgId, type) => {
 		if (orgId) {
-			const xnPositionPageSelectParam = {
-				orgId: orgId
-			}
-			xnPositionPageSelectRef.value.onPage(xnPositionPageSelectParam)
+			xnPositionPageSelectRef.value.onPage({ orgId })
 			xnUserPageSelectRef.value.onPage()
-			// 此类型代表选择的时候重置后面的岗位
 			if (type === 0) {
 				formData.value.positionId = undefined
 				formData.value.directorId = undefined
@@ -415,58 +385,35 @@
 			formData.value.directorId = undefined
 		}
 	}
-	// 传递选择组件需要的API
+
 	const selectApiFunction = {
-		positionSelector: (param) => {
-			return bizUserApi.userPositionSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		userSelector: (param) => {
-			return bizUserApi.userSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		childPositionSelector: (param) => {
-			return bizUserApi.userPositionSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		childUserSelector: (param) => {
-			return bizUserApi.userSelector(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		// 通过id回显数据接口
-		echoPosition: (param) => {
-			return userCenterApi.userCenterGetPositionListByIdList(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		},
-		echoUser: (param) => {
-			return userCenterApi.userCenterGetUserListByIdList(param).then((data) => {
-				return Promise.resolve(data)
-			})
-		}
+		positionSelector: (param) => bizUserApi.userPositionSelector(param),
+		userSelector: (param) => bizUserApi.userSelector(param),
+		childPositionSelector: (param) => bizUserApi.userPositionSelector(param),
+		childUserSelector: (param) => bizUserApi.userSelector(param),
+		echoPosition: (param) => userCenterApi.userCenterGetPositionListByIdList(param),
+		echoUser: (param) => userCenterApi.userCenterGetUserListByIdList(param)
 	}
-	// 附属岗位信息增行
+
 	const addDomains = () => {
 		if (formData.value.positionJson === null) {
 			formData.value.positionJson = []
 		}
-		formData.value.positionJson.push({
-			orgId: undefined,
-			positionId: undefined,
-			directorId: undefined
+		formData.value.positionJson.push({ orgId: undefined, positionId: undefined, directorId: undefined })
+		nextTick(() => {
+			const index = formData.value.positionJson.length - 1
+			if (childTreeSelectRefs.value[index]) {
+				childTreeSelectRefs.value[index].init()
+			}
 		})
 	}
-	// 删减行
+
 	const delDomains = (index) => {
 		formData.value.positionJson.splice(index, 1)
+		delete childTreeSelectRefs.value[index]
 	}
-	// 子表行内选择机构
-	const childOrgSelect = async (data, type, index) => {
-		// 说明正在切换机构，我们就将他的后面的设置空
+
+	const childOrgSelect = (data, type, index) => {
 		if (type === 0) {
 			formData.value.positionJson.filter((item, serial) => {
 				if (item.orgId === data.orgId && serial === index) {
@@ -475,20 +422,16 @@
 				}
 			})
 		}
-		const param = {
-			orgId: data.orgId
-		}
 		nextTick(() => {
-			xnChildPositionPageSelectRef.value[index].onPage(param)
-			xnChildUserPageSelectRef.value[index].onPage(param)
+			xnChildPositionPageSelectRef.value[index].onPage({ orgId: data.orgId })
+			xnChildUserPageSelectRef.value[index].onPage({ orgId: data.orgId })
 		})
 	}
-	// 验证并提交数据
+
 	const onSubmit = () => {
 		formRef.value
 			.validate()
 			.then(() => {
-				// 因为不切断，我下面转换数据格式，影响上面表单会报错
 				let formDatas = JSON.parse(JSON.stringify(formData.value))
 				if (formDatas.positionJson && formDatas.positionJson.length > 0) {
 					formDatas.positionJson = JSON.stringify(formDatas.positionJson)
@@ -508,25 +451,11 @@
 			})
 			.catch(() => {})
 	}
-	// 性别
+
 	const genderOptions = tool.dictList('GENDER')
-	// 民族
 	const nationOptions = tool.dictList('NATION')
-	// 身份证件
 	const idcardTypeOptions = tool.dictList('IDCARD_TYPE')
-	// 文化程度
 	const cultureLevelOptions = tool.dictList('CULTURE_LEVEL')
 
-	// 调用这个函数将子组件的一些数据和方法暴露出去
-	defineExpose({
-		onOpen
-	})
+	defineExpose({ onOpen })
 </script>
-
-<style scoped lang="less">
-	.form-row {
-		background-color: var(--item-hover-bg);
-		margin-bottom: 10px;
-		padding: 4px;
-	}
-</style>

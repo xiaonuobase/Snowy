@@ -36,7 +36,6 @@ import vip.xiaonuo.dev.modular.config.mapper.DevConfigMapper;
 import vip.xiaonuo.dev.modular.config.param.*;
 import vip.xiaonuo.dev.modular.config.service.DevConfigService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

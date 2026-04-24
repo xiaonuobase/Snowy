@@ -44,9 +44,9 @@
 					<p v-if="noTitleKey === 'accountBasic'">
 						<accountBasic />
 					</p>
-					<p v-if="noTitleKey === 'organizationChart'">
-						<organizationChart />
-					</p>
+					<keep-alive>
+						<organizationChart v-if="noTitleKey === 'organizationChart'" />
+					</keep-alive>
 					<p v-if="noTitleKey === 'accountBind'">
 						<accountBind />
 					</p>

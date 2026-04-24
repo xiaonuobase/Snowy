@@ -16,11 +16,7 @@
 					placeholder="请选择上级字典"
 					allow-clear
 					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'name',
-						value: 'id'
-					}"
+					:field-names="treeFieldNames"
 					selectable="false"
 					treeLine
 				/>
@@ -69,6 +65,7 @@
 	const treeData = ref([])
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
+	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 定义字典颜色
 	const dictColorList = [
 		'default',
@@ -124,6 +121,7 @@
 	}
 	// 默认要校验的
 	const formRules = {
+		parentId: [required('请选择上级字典')],
 		dictLabel: [required('请输入字典名称')],
 		dictValue: [required('请选择字典值')],
 		dictColor: [required('请选择字典颜色')],

@@ -18,13 +18,7 @@
 		>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'tokenDevice'">
-					<a-tag v-if="record.tokenDevice === 'PC'" color="blue">
-						{{ $TOOL.dictTypeData('AUTH_DEVICE_TYPE', record.tokenDevice) }}
-					</a-tag>
-					<a-tag v-if="record.tokenDevice === 'APP'" color="purple">
-						{{ $TOOL.dictTypeData('AUTH_DEVICE_TYPE', record.tokenDevice) }}
-					</a-tag>
-					<a-tag v-if="record.tokenDevice === 'MINI'" color="orange">
+					<a-tag :color="$TOOL.dictTypeColor('AUTH_DEVICE_TYPE', record.tokenDevice)">
 						{{ $TOOL.dictTypeData('AUTH_DEVICE_TYPE', record.tokenDevice) }}
 					</a-tag>
 				</template>

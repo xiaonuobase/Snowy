@@ -1,14 +1,31 @@
 <template>
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
-			<a-tree
-				v-if="treeData.length > 0"
-				v-model:expandedKeys="defaultExpandedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				@select="treeSelect"
-			/>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<div ref="treeContainerRef" style="height: 100%; display: flex; flex-direction: column">
+				<a-input-search
+					v-model:value="treeSearchKey"
+					placeholder="搜索组织"
+					allow-clear
+					style="margin-bottom: 8px; flex-shrink: 0"
+					@search="onTreeSearch"
+				/>
+				<div style="flex: 1; overflow: hidden">
+					<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
+					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
+						<a-tree
+							v-model:expandedKeys="defaultExpandedKeys"
+							v-model:loadedKeys="treeLoadedKeys"
+							:show-line="{ showLeafIcon: false }"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="searchMode ? undefined : onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						/>
+					</a-spin>
+					<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+				</div>
+			</div>
 		</template>
 		<template #right>
 			<a-form ref="searchFormRef" :model="searchFormState">
@@ -22,13 +39,9 @@
 								placeholder="请选择组织"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
-								selectable="false"
+								:field-names="treeSelectFieldNames"
 								tree-line
+								:load-data="onLoadData"
 							/>
 						</a-form-item>
 					</a-col>
@@ -87,7 +100,7 @@
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'category'">
-						{{ $TOOL.dictTypeData('POSITION_CATEGORY', record.category) }}
+						<a-tag :color="$TOOL.dictTypeColor('POSITION_CATEGORY', record.category)">{{ $TOOL.dictTypeData('POSITION_CATEGORY', record.category) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)">编辑</a>
@@ -105,7 +118,7 @@
 
 <script setup name="sysPosition">
 	import { Empty } from 'ant-design-vue'
-	import { isEmpty } from 'lodash-es'
+	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import positionApi from '@/api/sys/positionApi'
 	import orgApi from '@/api/sys/orgApi'
 	import Form from './form.vue'
@@ -155,6 +168,29 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
+	// 树容器高度自适应
+	const treeContainerRef = ref(null)
+	const treeHeight = ref(0)
+	let resizeObserver = null
+	const calcTreeHeight = () => {
+		if (treeContainerRef.value) {
+			treeHeight.value = treeContainerRef.value.clientHeight - 40
+		}
+	}
+	onMounted(() => {
+		calcTreeHeight()
+		if (treeContainerRef.value) {
+			resizeObserver = new ResizeObserver(calcTreeHeight)
+			resizeObserver.observe(treeContainerRef.value)
+		}
+	})
+	onActivated(calcTreeHeight)
+	onUnmounted(() => {
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+	})
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
@@ -167,27 +203,97 @@
 		searchFormRef.value.resetFields()
 		tableRef.value.refresh(true)
 	}
-	// 加载左侧的树
-	orgApi.orgTree().then((res) => {
-		if (res !== null) {
-			treeData.value = res
-			if (isEmpty(defaultExpandedKeys.value)) {
-				// 默认展开2级
-				treeData.value.forEach((item) => {
-					// 因为0的顶级
-					if (item.parentId === '0') {
-						defaultExpandedKeys.value.push(item.id)
-						// 取到下级ID
-						if (item.children) {
-							item.children.forEach((items) => {
-								defaultExpandedKeys.value.push(items.id)
-							})
-						}
-					}
-				})
-			}
+	const treeLoading = ref(true)
+	const treeSearchKey = ref('')
+	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
+	const collectTreeKeys = (nodes) => {
+		const keys = []
+		const traverse = (list) => {
+			if (!list) return
+			list.forEach((node) => {
+				keys.push(node.id)
+				if (node.children) traverse(node.children)
+			})
 		}
-	})
+		traverse(nodes)
+		return keys
+	}
+	const onTreeSearch = (value) => {
+		if (!value || !value.trim()) {
+			// 先清空树数据和展开状态，再切换模式，避免懒加载风暴导致卡死
+			treeData.value = []
+			defaultExpandedKeys.value = []
+			treeLoadedKeys.value = []
+			searchMode.value = false
+			loadTreeData()
+			return
+		}
+		treeLoading.value = true
+		searchMode.value = true
+		orgApi
+			.orgTree({ searchKey: value.trim() })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+					defaultExpandedKeys.value = collectTreeKeys(res)
+				} else {
+					treeData.value = []
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	// 加载左侧的树
+	const loadTreeData = () => {
+		treeLoading.value = true
+		orgApi
+			.orgTree()
+			.then((res) => {
+				if (res !== null) {
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
+					treeData.value = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].id]
+					}
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	loadTreeData()
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
+			}
+			orgApi
+				.orgTree({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					triggerRef(treeData)
+					resolve()
+				})
+		})
+	}
 	// 点击树查询
 	const treeSelect = (selectedKeys) => {
 		if (selectedKeys.length > 0) {

@@ -9,7 +9,14 @@
 		</a-col>
 		<a-col :span="18">
 			<div class="xn-mt-16">
-				<s-table ref="tableRef" :columns="columns" :data="loadData" bordered :row-key="(record) => record.id" :scroll="{ x: 'max-content' }">
+				<s-table
+					ref="tableRef"
+					:columns="columns"
+					:data="loadData"
+					bordered
+					:row-key="(record) => record.id"
+					:scroll="{ x: 'max-content' }"
+				>
 					<template #bodyCell="{ column, record }">
 						<template v-if="column.dataIndex === 'subject'">
 							<ellipsis :length="40" tooltip>
@@ -83,6 +90,6 @@
 
 <style lang="less" scoped>
 	.xn-mt-16 {
-		margin-top: -16px
+		margin-top: -16px;
 	}
 </style>

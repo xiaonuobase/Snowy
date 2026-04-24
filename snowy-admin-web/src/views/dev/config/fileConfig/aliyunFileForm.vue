@@ -16,7 +16,10 @@
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="阿里云密钥SECRET：" name="SNOWY_FILE_ALIYUN_ACCESS_KEY_SECRET">
-						<a-input v-model:value="formData.SNOWY_FILE_ALIYUN_ACCESS_KEY_SECRET" placeholder="请输入阿里云密钥SECRET" />
+						<a-input
+							v-model:value="formData.SNOWY_FILE_ALIYUN_ACCESS_KEY_SECRET"
+							placeholder="请输入阿里云密钥SECRET"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -26,7 +29,10 @@
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="阿里云默认储存桶：" name="SNOWY_FILE_ALIYUN_DEFAULT_BUCKET_NAME">
-						<a-input v-model:value="formData.SNOWY_FILE_ALIYUN_DEFAULT_BUCKET_NAME" placeholder="请输入阿里云默认储存桶" />
+						<a-input
+							v-model:value="formData.SNOWY_FILE_ALIYUN_DEFAULT_BUCKET_NAME"
+							placeholder="请输入阿里云默认储存桶"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">

@@ -34,6 +34,12 @@
             <artifactId>snowy-plugin-sys-api</artifactId>
         </dependency>
 
+        <!-- rustfs文件sdk (兼容S3协议) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+
         <!-- websocket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

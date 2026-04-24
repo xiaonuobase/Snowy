@@ -48,10 +48,7 @@ import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
-import vip.xiaonuo.dev.modular.file.util.DevFileAliyunUtil;
-import vip.xiaonuo.dev.modular.file.util.DevFileLocalUtil;
-import vip.xiaonuo.dev.modular.file.util.DevFileMinIoUtil;
-import vip.xiaonuo.dev.modular.file.util.DevFileTencentUtil;
+import vip.xiaonuo.dev.modular.file.util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -184,6 +181,8 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 DevFileTencentUtil.deleteFile(bucketName, fileKey);
             } else if (DevFileEngineTypeEnum.MINIO.getValue().equals(engine)) {
                 DevFileMinIoUtil.deleteFile(bucketName, fileKey);
+            } else if (DevFileEngineTypeEnum.RUSTFS.getValue().equals(engine)) {
+                DevFileRustFsUtil.deleteFile(bucketName, fileKey);
             } else {
                 log.error("未知存储引擎：{}", engine);
             }
@@ -239,6 +238,11 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             // 使用MINIO默认配置的bucketName
             bucketName = DevFileMinIoUtil.getDefaultBucketName();
             storageUrl = DevFileMinIoUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
+        } else if(engine.equals(DevFileEngineTypeEnum.RUSTFS.getValue())) {
+
+            // 使用RUSTFS默认配置的bucketName
+            bucketName = DevFileRustFsUtil.getDefaultBucketName();
+            storageUrl = DevFileRustFsUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else {
             throw new CommonException("不支持的文件引擎：{}", engine);
         }

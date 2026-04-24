@@ -1,16 +1,31 @@
 <template>
-	<div class="login-wrapper">
-		<div class="login_main">
-			<div class="login-form">
-				<a-card>
+	<div class="login-container">
+		<div class="login-content">
+			<!-- 左侧品牌展示区 -->
+			<div class="login-left">
+				<div class="brand-info">
+					<img :src="sysBaseConfig.SNOWY_SYS_LOGO" class="brand-logo" alt="Logo" />
+					<h1 class="brand-title">{{ sysBaseConfig.SNOWY_SYS_NAME }}</h1>
+					<p class="brand-desc">{{ sysBaseConfig.SNOWY_SYS_DEFAULT_DESCRRIPTION }}</p>
+				</div>
+				<div class="brand-footer">
+					<p>{{ sysBaseConfig.SNOWY_SYS_COPYRIGHT }}</p>
+				</div>
+			</div>
+
+			<!-- 右侧登录表单区 -->
+			<div class="login-right">
+				<div class="login-form-wrapper">
 					<div class="login-header">
-						<h2>登录</h2>
+						<h2>欢迎登录</h2>
+						<p>请使用您的账号和密码进行登录</p>
 					</div>
-					<a-tabs v-model:activeKey="activeKey">
-						<a-tab-pane key="userAccount" tab="账号密码">
-							<a-form ref="loginForm" :model="ruleForm" :rules="rules">
+
+					<a-tabs v-model:activeKey="activeKey" class="login-tabs">
+						<a-tab-pane key="userAccount" tab="账号登录">
+							<a-form ref="loginForm" :model="ruleForm" :rules="rules" layout="vertical">
 								<div v-if="tenSelectShow">
-									<a-form-item name="tenCode" v-if="tenOptions.length > 1 || !ruleForm.tenCode">
+									<a-form-item name="tenCode" v-if="tenOptions.length > 1 || !ruleForm.tenCode" label="租户">
 										<a-select
 											v-model:value="ruleForm.tenCode"
 											size="large"
@@ -20,14 +35,14 @@
 										/>
 									</a-form-item>
 								</div>
-								<a-form-item name="account">
+								<a-form-item name="account" label="账号">
 									<a-input v-model:value="ruleForm.account" placeholder="请输入账号" size="large" @keyup.enter="login">
 										<template #prefix>
-											<UserOutlined class="login-icon-gray" />
+											<UserOutlined class="field-icon" />
 										</template>
 									</a-input>
 								</a-form-item>
-								<a-form-item name="password">
+								<a-form-item name="password" label="密码">
 									<a-input-password
 										v-model:value="ruleForm.password"
 										placeholder="请输入密码"
@@ -36,13 +51,13 @@
 										@keyup.enter="login"
 									>
 										<template #prefix>
-											<LockOutlined class="login-icon-gray" />
+											<LockOutlined class="field-icon" />
 										</template>
 									</a-input-password>
 								</a-form-item>
-								<a-form-item name="validCode" v-if="captchaOpen === 'true'">
-									<a-row :gutter="8">
-										<a-col :span="17">
+								<a-form-item name="validCode" v-if="captchaOpen === 'true'" label="验证码">
+									<a-row :gutter="12">
+										<a-col :span="15">
 											<a-input
 												v-model:value="ruleForm.validCode"
 												placeholder="请输入验证码"
@@ -50,48 +65,54 @@
 												@keyup.enter="login"
 											>
 												<template #prefix>
-													<verified-outlined class="login-icon-gray" />
+													<SafetyOutlined class="field-icon" />
 												</template>
 											</a-input>
 										</a-col>
-										<a-col :span="7">
-											<img :src="validCodeBase64" class="login-validCode-img" @click="loginCaptcha" />
+										<a-col :span="9">
+											<div class="captcha-img-wrapper">
+												<img :src="validCodeBase64" class="login-validCode-img" @click="loginCaptcha" title="点击刷新验证码" />
+											</div>
 										</a-col>
 									</a-row>
 								</a-form-item>
 
-								<a-form-item>
-									<div style="display: flex; justify-content: space-between">
-										<a href="/front/client/findPwd">忘记密码？</a>
-										<a href="/front/client/register" v-if="registerOpen === 'true'"> 没有账号？前往注册 </a>
+								<div class="form-options">
+									<a-checkbox v-model:checked="ruleForm.autologin">记住我</a-checkbox>
+									<div class="links">
+										<a href="/front/client/findPwd" class="forgot-link">忘记密码？</a>
 									</div>
-								</a-form-item>
-								<a-form-item>
+								</div>
+
+								<a-form-item class="submit-item">
 									<a-button
 										type="primary"
-										class="w-full"
+										class="login-button"
 										:loading="loading"
-										round
 										size="large"
 										@click="login"
 										:disabled="loginButtonDisable"
+										block
 									>
-										登录
+										立即登录
 									</a-button>
 								</a-form-item>
+
+								<div class="register-footer" v-if="registerOpen === 'true'">
+									还没有账号？ <a href="/front/client/register">立即注册</a>
+								</div>
 							</a-form>
 						</a-tab-pane>
-						<a-tab-pane key="userSms" tab="手机号登录" force-render v-if="phoneLogin === 'true'">
+
+						<a-tab-pane key="userSms" tab="手机登录" force-render v-if="phoneLogin === 'true'">
 							<phone-login-form />
 						</a-tab-pane>
-						<a-tab-pane key="userEmail" tab="邮箱号登录" force-render v-if="emailLogin === 'true'">
+
+						<a-tab-pane key="userEmail" tab="邮箱登录" force-render v-if="emailLogin === 'true'">
 							<email-login-form />
 						</a-tab-pane>
 					</a-tabs>
-					<div v-if="configData.FRONT_BACK_LOGIN_URL_SHOW">
-						<a href="/login">后台登录</a>
-					</div>
-				</a-card>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -152,6 +173,12 @@
 
 	onMounted(() => {
 		getSysConfig()
+		// 加载记住的账号
+		const rememberAccount = tool.data.get('REMEMBER_ACCOUNT')
+		if (rememberAccount) {
+			ruleForm.account = rememberAccount
+			ruleForm.autologin = true
+		}
 	})
 	// 查询这个租户的配置，租户code已经被放domain里了
 	const getSysConfig = () => {
@@ -218,6 +245,12 @@
 				// 获取token
 				try {
 					const loginToken = await clientLoginApi.clientLogin(loginData)
+					// 记住账号
+					if (ruleForm.autologin) {
+						tool.data.set('REMEMBER_ACCOUNT', ruleForm.account)
+					} else {
+						tool.data.remove('REMEMBER_ACCOUNT')
+					}
 					await afterLogin(loginToken)
 				} catch (err) {
 					if (captchaOpen.value === 'true') {

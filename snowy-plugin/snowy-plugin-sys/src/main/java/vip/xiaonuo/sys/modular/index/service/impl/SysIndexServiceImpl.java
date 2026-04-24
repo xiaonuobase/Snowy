@@ -39,7 +39,6 @@ import vip.xiaonuo.sys.modular.role.service.SysRoleService;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -161,5 +160,10 @@ public class SysIndexServiceImpl implements SysIndexService {
     @Override
     public SysToolDataCountResult getToolDataCount() {
         return BeanUtil.toBean(devApi.getToolDataCount(), SysToolDataCountResult.class);
+    }
+
+    @Override
+    public SysIndexSysInfoResult getSysInfo() {
+        return BeanUtil.toBean(devApi.getSysRunInfo(), SysIndexSysInfoResult.class);
     }
 }

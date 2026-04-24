@@ -74,9 +74,11 @@
 	const basicRef = ref()
 	const configRef = ref()
 	const genPreviewRef = ref()
+	const genType = ref('TABLE')
 	// 打开这个界面
-	const configSteps = (record) => {
-		basicRef.value.onOpen(record)
+	const configSteps = (record, type) => {
+		genType.value = type || (record && record.genType) || 'TABLE'
+		basicRef.value.onOpen(record, genType.value)
 	}
 	// 下一步
 	const next = () => {
@@ -89,7 +91,7 @@
 					recordData.value = data
 					current.value++
 					nextTick(() => {
-						configRef.value.onOpen(data)
+						configRef.value.onOpen(data, genType.value)
 					})
 				})
 				.catch(() => {})
@@ -114,12 +116,12 @@
 		current.value--
 		if (current.value === 0) {
 			nextTick(() => {
-				basicRef.value.onOpen(recordData.value)
+				basicRef.value.onOpen(recordData.value, genType.value)
 			})
 		}
 		if (current.value === 1) {
 			nextTick(() => {
-				configRef.value.onOpen(recordData.value)
+				configRef.value.onOpen(recordData.value, genType.value)
 			})
 		}
 	}

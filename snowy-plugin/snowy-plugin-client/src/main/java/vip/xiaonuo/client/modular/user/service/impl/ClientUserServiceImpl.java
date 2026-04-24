@@ -32,8 +32,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fhs.trans.service.impl.TransService;
 import jakarta.annotation.Resource;
+import org.dromara.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -305,6 +305,20 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Override
     public ClientUser detail(ClientUserIdParam clientUserIdParam) {
         return this.queryEntity(clientUserIdParam.getId());
+    }
+
+    @Override
+    public void disableUser(ClientUserIdParam clientUserIdParam) {
+        ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
+        clientUser.setUserStatus(ClientUserStatusEnum.DISABLED.getValue());
+        this.updateById(clientUser);
+    }
+
+    @Override
+    public void enableUser(ClientUserIdParam clientUserIdParam) {
+        ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
+        clientUser.setUserStatus(ClientUserStatusEnum.ENABLE.getValue());
+        this.updateById(clientUser);
     }
 
     @Override

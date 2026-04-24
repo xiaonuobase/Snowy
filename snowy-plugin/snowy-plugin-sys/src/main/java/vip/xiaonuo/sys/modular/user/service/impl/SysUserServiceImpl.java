@@ -57,14 +57,15 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fhs.trans.service.impl.TransService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.dromara.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonGenderEnum;
@@ -83,11 +84,12 @@ import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.core.enums.SysYesOrNoEnum;
-import vip.xiaonuo.sys.core.util.SysEmailFormatUtl;
-import vip.xiaonuo.sys.core.util.SysPasswordUtl;
+import vip.xiaonuo.sys.core.util.SysEmailFormatUtil;
+import vip.xiaonuo.sys.core.util.SysPasswordUtil;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.position.entity.SysPosition;
 import vip.xiaonuo.sys.modular.position.service.SysPositionService;
@@ -259,6 +261,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     private SysUserPasswordService sysUserPasswordService;
 
+    @Resource(name = "loginUserApi")
+    private SaBaseLoginUserApi loginUserApi;
+
     @Override
     public SysLoginUser getUserById(String id) {
         SysUser sysUser = this.getById(id);
@@ -333,7 +338,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         if(ObjectUtil.isEmpty(sysUser.getPassword())) {
             // 设置默认密码
-            sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
+            sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtil.getDefaultPassword()));
         } else {
             // 设置传入的密码
             sysUser.setPassword(CommonCryptogramUtil.doHashValue(sysUser.getPassword()));
@@ -388,6 +393,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         this.updateById(sysUser);
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
+        // 刷新该用户的在线缓存信息
+        loginUserApi.refreshOnlineUserPermission(sysUserEditParam.getId());
     }
 
     private void checkParam(SysUserEditParam sysUserEditParam) {
@@ -485,7 +492,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取用户
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         // 获取默认密码
-        String defaultPassword = SysPasswordUtl.getDefaultPassword();
+        String defaultPassword = SysPasswordUtil.getDefaultPassword();
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getPassword,
@@ -528,9 +535,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", defaultPassword);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -685,9 +692,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -714,7 +721,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取新密码
         String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByPhoneParam.getNewPassword()).trim();
         // 校验新密码
-        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
                 CommonCryptogramUtil.doSm4CbcEncrypt(phone)).set(SysUser::getPassword,
@@ -766,7 +773,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
         // 追加用户历史密码信息
         sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
-        SysPasswordUtl.validNewPassword(sysLoginUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail, email).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
@@ -779,9 +786,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 定义变量参数
             JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
             // 获取格式化后的主题
-            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
             // 获取格式化后的内容
-            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
             try {
                 // 发送邮件
                 devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -794,21 +801,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public String updatePasswordGetPhoneValidCode(SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
         return this.getPhoneValidCode(sysUserGetPhoneValidCodeParam, "修改密码验证码短信消息模板编码", SNOWY_SMS_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
     }
 
     @Override
     public String updatePasswordGetEmailValidCode(SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
         return this.getEmailValidCode(sysUserGetEmailValidCodeParam, "修改密码验证码邮件消息模板内容", SNOWY_EMAIL_TEMPLATE_VALID_CODE_UPDATE_PASSWORD_FOR_B_KEY);
     }
 
     @Override
     public void updatePasswordByOld(SysUserUpdatePwdByOldParam sysUserUpdatePwdByOldParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.OLD.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.OLD.getValue());
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         String password = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getPassword()).trim();
         String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserUpdatePwdByOldParam.getNewPassword()).trim();
@@ -816,7 +823,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("原密码错误");
         }
         // 校验新密码
-        SysPasswordUtl.validNewPassword(sysUser, newPassword);
+        SysPasswordUtil.validNewPassword(sysUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUser.getId()).set(SysUser::getPassword,
@@ -863,9 +870,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -879,7 +886,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updatePasswordByPhone(SysUserUpdatePwdByPhoneParam sysUserUpdatePwdByPhoneParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.PHONE.getValue());
         SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam = new SysUserFindPwdByPhoneParam();
         BeanUtil.copyProperties(sysUserUpdatePwdByPhoneParam, sysUserFindPwdByPhoneParam);
         this.findPasswordByPhone(sysUserFindPwdByPhoneParam);
@@ -888,7 +895,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public void updatePasswordByEmail(SysUserUpdatePwdByEmailParam sysUserUpdatePwdByEmailParam) {
         // 判断密码验证方式
-        SysPasswordUtl.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
+        SysPasswordUtil.validUpdatePasswordValidType(SysUpdatePasswordValidTypeEnum.EMAIL.getValue());
         SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam = new SysUserFindPwdByEmailParam();
         BeanUtil.copyProperties(sysUserUpdatePwdByEmailParam, sysUserFindPwdByEmailParam);
         this.findPasswordByEmail(sysUserFindPwdByEmailParam);
@@ -1024,9 +1031,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -1066,9 +1073,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("validCode", emailValidCode)
                 .set("validTime", validCodeExpiredDuration/60);
         // 获取格式化后的主题
-        String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+        String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
         // 获取格式化后的内容
-        String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+        String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
         // 发送邮件
         devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         // 将请求号作为key，验证码的值作为value放到redis，用于校验
@@ -1152,65 +1159,65 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 获取角色id列表
         List<String> roleIdList = this.ownRole(sysUserIdParam);
 
-        // 获取菜单id列表
-        List<String> menuIdList = sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
-                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue());
+        // 获取菜单id列表，用Set加速后续contains查找
+        Set<String> menuIdSet = new HashSet<>(sysRelationService.getRelationTargetIdListByObjectIdAndCategory(sysUserIdParam.getId(),
+                SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()));
 
         if (ObjectUtil.isNotEmpty(roleIdList)) {
-            menuIdList.addAll(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
+            menuIdSet.addAll(sysRelationService.getRelationTargetIdListByObjectIdListAndCategory(roleIdList,
                     SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
         }
 
         // 获取所有的菜单和模块列表，并按分类和排序码排序
-        List<SysMenu> allModuleAndMenuAndSpaList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
+        List<SysMenu> allModuleAndMenuList = sysMenuService.list(new LambdaQueryWrapper<SysMenu>()
                 .in(SysMenu::getCategory, SysResourceCategoryEnum.MODULE.getValue(), SysResourceCategoryEnum.MENU.getValue())
-                .orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory,SysMenu::getSortCode)));
-        // 全部以菜单承载
-        List<SysMenu> allModuleList = CollectionUtil.newArrayList();
-        List<SysMenu> allMenuList = CollectionUtil.newArrayList();
-        // 根据类型抽取
-        allModuleAndMenuAndSpaList.forEach(sysMenu -> {
-            boolean isModule = sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue());
-            if (isModule) {
-                // 抽取所有的模块列表
-                allModuleList.add(sysMenu);
+                .orderByAsc(CollectionUtil.newArrayList(SysMenu::getCategory, SysMenu::getSortCode)));
+
+        // 按类型分组：模块和菜单
+        Map<String, List<SysMenu>> categoryMap = allModuleAndMenuList.stream()
+                .collect(Collectors.groupingBy(SysMenu::getCategory));
+        List<SysMenu> allModuleList = categoryMap.getOrDefault(SysResourceCategoryEnum.MODULE.getValue(), CollectionUtil.newArrayList());
+        List<SysMenu> allMenuList = categoryMap.getOrDefault(SysResourceCategoryEnum.MENU.getValue(), CollectionUtil.newArrayList());
+
+        // 构建菜单id->菜单的Map，用于O(1)查找父节点
+        Map<String, SysMenu> menuIdMap = allMenuList.stream().collect(Collectors.toMap(SysMenu::getId, m -> m, (a, b) -> a));
+
+        // 获取用户拥有的菜单列表
+        List<SysMenu> menuList = allMenuList.stream().filter(sysMenu -> menuIdSet.contains(sysMenu.getId())).toList();
+
+        // 收集拥有的菜单及其所有父节点（去重）
+        Set<String> resultIdSet = new LinkedHashSet<>();
+        for (SysMenu menu : menuList) {
+            // 向上追溯所有父节点
+            String parentId = menu.getParentId();
+            while (ObjectUtil.isNotEmpty(parentId) && !"0".equals(parentId) && resultIdSet.add(parentId)) {
+                SysMenu parent = menuIdMap.get(parentId);
+                if (parent == null) {
+                    break;
+                }
+                parentId = parent.getParentId();
             }
-            boolean isMenu = sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue());
-            if (isMenu) {
-                // 抽取所有的菜单列表
-                allMenuList.add(sysMenu);
-            }
-        });
+            resultIdSet.add(menu.getId());
+        }
 
-        // 定义结果
-        List<SysMenu> resultList = CollectionUtil.newArrayList();
-
-        // 获取拥有的菜单列表
-        List<SysMenu> menuList = allMenuList.stream().filter(sysMenu ->
-                menuIdList.contains(sysMenu.getId())).toList();
-
-        // 对获取到的角色对应的菜单列表进行处理，获取父列表
-        menuList.forEach(sysMenu -> execRecursionFindParent(allMenuList, sysMenu.getId(), resultList));
-
-        // 将拥有的菜单列表添加
-        resultList.addAll(menuList);
+        // 按resultIdSet收集结果菜单
+        List<SysMenu> resultList = resultIdSet.stream().map(menuIdMap::get).filter(ObjectUtil::isNotEmpty)
+                .collect(Collectors.toCollection(ArrayList::new));
 
         // 获取模块id集合
         Set<String> moduleIdSet = resultList.stream().map(SysMenu::getModule).collect(Collectors.toSet());
 
         // 抽取拥有的模块列表
         List<SysMenu> moduleList = allModuleList.stream().filter(sysMenu ->
-                moduleIdSet.contains(sysMenu.getId())).collect(Collectors.toList());
+                moduleIdSet.contains(sysMenu.getId())).collect(Collectors.toCollection(ArrayList::new));
 
         // 如果一个模块都没拥有
         if (ObjectUtil.isEmpty(moduleList)) {
-            // 如果系统中无模块（极端情况）
             if (ObjectUtil.isEmpty(allModuleList)) {
-                // 如果系统中无菜单，则返回空列表
                 if (ObjectUtil.isEmpty(allMenuList)) {
                     return CollectionUtil.newArrayList();
                 } else {
-                    // 否则构造一个模块，并添加到拥有模块
+                    // 极端情况：系统无模块但有菜单，构造一个虚拟模块
                     SysMenu sysMenu = new SysMenu();
                     sysMenu.setId(IdWorker.getIdStr());
                     sysMenu.setPath(StrUtil.SLASH + RandomUtil.randomString(10));
@@ -1219,36 +1226,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     moduleList.add(sysMenu);
                 }
             } else {
-                // 否则将系统中第一个模块作为拥有的模块
+                // 将系统中第一个模块作为拥有的模块
                 moduleList.add(allModuleList.get(0));
             }
         }
 
-        // 将拥有的模块放入集合
+        // 将拥有的模块放入结果集合
         resultList.addAll(moduleList);
 
-        // 获取第一个模块
+        // 获取第一个模块下的第一个非目录菜单（用于标记首页affix）
         SysMenu firstModule = moduleList.get(0);
-
-        // 获取第一个模块下的第一个菜单
-        Optional<SysMenu> sysMenus = menuList.stream()
-                .filter(sysMenu -> sysMenu.getModule().equals(firstModule.getId()))
+        String firstMenuId = menuList.stream()
+                .filter(sysMenu -> firstModule.getId().equals(sysMenu.getModule()))
+                .filter(sysMenu -> !SysResourceMenuTypeEnum.CATALOG.getValue().equals(sysMenu.getMenuType()))
                 .findFirst()
-                .filter(sysMenu -> !sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue()));
+                .map(SysMenu::getId)
+                .orElse(null);
 
         // 最终处理，构造meta
-        List<JSONObject> resultJsonObjectList = resultList.stream().map(sysMenu -> {
-
+        List<TreeNode<String>> treeNodeList = resultList.stream().map(sysMenu -> {
             // 将模块的父id设置为0，设置随机path
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MODULE.getValue())) {
+            if (SysResourceCategoryEnum.MODULE.getValue().equals(sysMenu.getCategory())) {
                 sysMenu.setParentId("0");
                 sysMenu.setPath(StrUtil.SLASH + RandomUtil.randomString(10));
             }
             // 将根菜单的父id设置为模块的id
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if ("0".equals(sysMenu.getParentId())) {
-                    sysMenu.setParentId(sysMenu.getModule());
-                }
+            if (SysResourceCategoryEnum.MENU.getValue().equals(sysMenu.getCategory()) && "0".equals(sysMenu.getParentId())) {
+                sysMenu.setParentId(sysMenu.getModule());
             }
             JSONObject menuJsonObject = JSONUtil.parseObj(sysMenu);
             JSONObject metaJsonObject = JSONUtil.createObj();
@@ -1256,43 +1260,29 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             metaJsonObject.set("title", sysMenu.getTitle());
             metaJsonObject.set("type", ObjectUtil.isEmpty(sysMenu.getMenuType())
                     ? sysMenu.getCategory().toLowerCase() : sysMenu.getMenuType().toLowerCase());
-            // 如果是菜单，则设置type菜单类型为小写
-            if (sysMenu.getCategory().equals(SysResourceCategoryEnum.MENU.getValue())) {
-                if (!sysMenu.getMenuType().equals(SysResourceMenuTypeEnum.CATALOG.getValue())) {
+            if (SysResourceCategoryEnum.MENU.getValue().equals(sysMenu.getCategory())) {
+                if (!SysResourceMenuTypeEnum.CATALOG.getValue().equals(sysMenu.getMenuType())) {
                     metaJsonObject.set("type", sysMenu.getMenuType().toLowerCase());
                 }
-                if (sysMenus.orElse(null) != null && sysMenu.getId().equals(sysMenus.orElse(null).getId())) {
-                    // 如果是首页，则设置affix
+                if (sysMenu.getId().equals(firstMenuId)) {
                     metaJsonObject.set("affix", true);
                 }
-                String menuMetaKeepLiveKey = "keepLive";
-                String menuMetaDisplayLayoutKey = "displayLayout";
                 // 设置缓存
-                if (ObjectUtil.isEmpty(sysMenu.getKeepLive()) || sysMenu.getKeepLive().equals(SysMenuWhetherEnum.NO.getValue())) {
-                    metaJsonObject.set(menuMetaKeepLiveKey, false);
-                } else if (sysMenu.getKeepLive().equals(SysMenuWhetherEnum.YES.getValue())) {
-                    metaJsonObject.set(menuMetaKeepLiveKey, true);
-                }
+                metaJsonObject.set("keepLive",
+                        ObjectUtil.isNotEmpty(sysMenu.getKeepLive()) && SysMenuWhetherEnum.YES.getValue().equals(sysMenu.getKeepLive()));
                 // 设置显示布局
-                if (ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.YES.getValue())) {
-                    metaJsonObject.set(menuMetaDisplayLayoutKey, true);
-                } else if (sysMenu.getDisplayLayout().equals(SysMenuWhetherEnum.NO.getValue())) {
-                    metaJsonObject.set(menuMetaDisplayLayoutKey, false);
-                }
+                metaJsonObject.set("displayLayout",
+                        ObjectUtil.isEmpty(sysMenu.getDisplayLayout()) || SysMenuWhetherEnum.YES.getValue().equals(sysMenu.getDisplayLayout()));
             }
-            // 如果设置了不可见，那么设置为false，为了兼容已有，所以只是false的为不显示
-            if (ObjectUtil.isNotEmpty(sysMenu.getVisible()) && sysMenu.getVisible().equals("FALSE")) {
+            // 如果设置了不可见
+            if ("FALSE".equals(sysMenu.getVisible()) || "NO".equals(sysMenu.getVisible())) {
                 metaJsonObject.set("hidden", true);
             }
             menuJsonObject.set("meta", metaJsonObject);
-            return menuJsonObject;
-        }).toList();
+            return new TreeNode<>(sysMenu.getId(), sysMenu.getParentId(),
+                    sysMenu.getTitle(), sysMenu.getSortCode()).setExtra(menuJsonObject);
+        }).collect(Collectors.toList());
 
-        // 执行构造树
-        List<TreeNode<String>> treeNodeList = resultJsonObjectList.stream().map(jsonObject ->
-                new TreeNode<>(jsonObject.getStr("id"), jsonObject.getStr("parentId"),
-                        jsonObject.getStr("title"), jsonObject.getInt("sortCode")).setExtra(JSONUtil.parseObj(jsonObject)))
-                .collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "0");
     }
 
@@ -1308,26 +1298,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return resultList;
     }
 
-    /**
-     * 递归获取父节点
-     *
-     * @author xuyuxiang
-     * @date 2022/6/27 17:56
-     **/
-    private void execRecursionFindParent(List<SysMenu> originDataList, String id, List<SysMenu> resultList) {
-        originDataList.forEach(item -> {
-            if (item.getId().equals(id)) {
-                int index = CollStreamUtil.toList(originDataList, SysMenu::getId).indexOf(id);
-                SysMenu parent = index == -1 ? null : originDataList.get(index);
-                if (ObjectUtil.isNotEmpty(parent)) {
-                    if (!CollectionUtil.contains(resultList, parent)) {
-                        resultList.add(parent);
-                    }
-                }
-                execRecursionFindParent(originDataList, item.getParentId(), resultList);
-            }
-        });
-    }
 
     @Override
     public List<String> ownRole(SysUserIdParam sysUserIdParam) {
@@ -1339,6 +1309,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void grantRole(SysUserGrantRoleParam sysUserGrantRoleParam) {
         sysRelationService.saveRelationBatchWithClear(sysUserGrantRoleParam.getId(), sysUserGrantRoleParam.getRoleIdList(),
                 SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+        // 刷新该用户的权限缓存
+        loginUserApi.refreshOnlineUserPermission(sysUserGrantRoleParam.getId());
     }
 
     @Override
@@ -1377,6 +1349,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<String> extJsonList = sysUserGrantResourceParam.getGrantInfoList().stream()
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(sysUserGrantResourceParam.getId(), menuIdList, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue(), extJsonList);
+        // 刷新该用户的权限缓存
+        loginUserApi.refreshOnlineUserPermission(sysUserGrantResourceParam.getId());
     }
 
     @Override
@@ -1398,28 +1372,67 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, apiUrlList, SysRelationCategoryEnum.SYS_USER_HAS_PERMISSION.getValue(),
                 extJsonList);
+        // 刷新该用户的权限缓存
+        loginUserApi.refreshOnlineUserPermission(id);
     }
 
     @Override
     public List<Tree<String>> loginOrgTree(SysUserIdParam sysUserIdParam) {
         SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
         List<SysOrg> originDataList = sysOrgService.getAllOrgList();
+        // 构建parentId -> 直接子组织列表的映射
+        Map<String, List<SysOrg>> parentChildrenMap = originDataList.stream()
+                .collect(Collectors.groupingBy(SysOrg::getParentId));
+        // 收集所有有子节点的parentId集合，用于判断isLeaf
+        Set<String> hasChildrenIds = parentChildrenMap.keySet();
         // 构建一个根组织
         SysOrg rootSysOrg = new SysOrg();
         rootSysOrg.setId("0");
         rootSysOrg.setParentId("-1");
         rootSysOrg.setName("根组织");
-        originDataList.add(rootSysOrg);
-        List<TreeNode<String>> treeNodeList = originDataList.stream().map(sysOrg -> {
+        // 只取前2层的组织构建树（根组织 -> 第1层 -> 第2层），减少前端渲染量
+        List<SysOrg> limitedList = new ArrayList<>();
+        limitedList.add(rootSysOrg);
+        // 第1层：parentId为"0"的组织
+        List<SysOrg> level1List = parentChildrenMap.getOrDefault("0", CollectionUtil.newArrayList());
+        limitedList.addAll(level1List);
+        List<TreeNode<String>> treeNodeList = limitedList.stream().map(sysOrg -> {
             TreeNode<String> treeNode = new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode());
+            JSONObject extra = JSONUtil.createObj();
             if (sysOrg.getId().equals(sysUser.getOrgId())) {
-                treeNode.setExtra(JSONUtil.createObj().set("style", JSONUtil.createObj().set("color", "#FFF")
-                        .set("background", "var(--primary-color)")));
+                extra.set("style", JSONUtil.createObj().set("color", "#FFF")
+                        .set("background", "var(--primary-color)"));
             }
+            // 标记叶子节点：如果该节点没有子节点则为叶子
+            extra.set("isLeaf", !hasChildrenIds.contains(sysOrg.getId()));
+            treeNode.setExtra(extra);
             return treeNode;
         }).collect(Collectors.toList());
         return TreeUtil.build(treeNodeList, "-1", new TreeNodeConfig().setParentIdKey("pid")
                 .setNameKey("label"), new DefaultNodeParser<>());
+    }
+
+    @Override
+    public List<JSONObject> loginOrgTreeChildren(SysUserIdParam sysUserIdParam, String parentId) {
+        SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+        List<SysOrg> originDataList = sysOrgService.getAllOrgList();
+        // 构建parentId -> 直接子组织列表的映射
+        Map<String, List<SysOrg>> parentChildrenMap = originDataList.stream()
+                .collect(Collectors.groupingBy(SysOrg::getParentId));
+        Set<String> hasChildrenIds = parentChildrenMap.keySet();
+        // 获取指定父组织的直接子组织（已按sortCode排序）
+        List<SysOrg> children = parentChildrenMap.getOrDefault(parentId, CollectionUtil.newArrayList());
+        return children.stream().map(sysOrg -> {
+            JSONObject node = JSONUtil.createObj();
+            node.set("id", sysOrg.getId());
+            node.set("label", sysOrg.getName());
+            node.set("isLeaf", !hasChildrenIds.contains(sysOrg.getId()));
+            if (sysOrg.getId().equals(sysUser.getOrgId())) {
+                node.set("style", JSONUtil.createObj().set("color", "#FFF")
+                        .set("background", "var(--primary-color)"));
+            }
+            return node;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -1469,6 +1482,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isEmpty(sysUser)) {
             throw new CommonException("用户不存在，id值为：{}", id);
         }
+        transService.transOne(sysUser);
         return sysUser;
     }
 
@@ -1525,30 +1539,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     public List<JSONObject> getScopeListByMap(Map<String, List<SysRelation>> groupMap, String orgId) {
         List<JSONObject> resultList = CollectionUtil.newArrayList();
-        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<String> scopeAllList = sysOrgList.stream().map(SysOrg::getId).toList();
         List<String> scopeOrgList = CollectionUtil.newArrayList(orgId);
-        List<String> scopeOrgChildList = sysOrgService.getChildListById(sysOrgList, orgId, true)
-                .stream().map(SysOrg::getId).toList();
+        // 懒加载子机构列表：局部缓存，避免重复计算，线程安全
+        final List<String>[] orgChildListHolder = new List[]{null};
         groupMap.forEach((key, value) -> {
             JSONObject jsonObject = JSONUtil.createObj().set("apiUrl", key);
+            boolean hasScopeAll = false;
             Set<String> scopeSet = CollectionUtil.newHashSet();
-            value.forEach(sysRelation -> {
+            for (SysRelation sysRelation : value) {
                 JSONObject extJsonObject = JSONUtil.parseObj(sysRelation.getExtJson());
                 String scopeCategory = extJsonObject.getStr("scopeCategory");
-                if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
-                    if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
-                        scopeSet.addAll(scopeAllList);
-                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
-                        scopeSet.addAll(scopeOrgList);
-                    } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
-                        scopeSet.addAll(scopeOrgChildList);
-                    } else {
-                        scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
+                if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ALL.getValue())) {
+                    hasScopeAll = true;
+                    break;
+                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG.getValue())) {
+                    scopeSet.addAll(scopeOrgList);
+                } else if (scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_ORG_CHILD.getValue())) {
+                    if (orgChildListHolder[0] == null) {
+                        orgChildListHolder[0] = sysOrgService.getChildListById(sysOrgService.getAllOrgList(), orgId, true)
+                                .stream().map(SysOrg::getId).toList();
                     }
+                    scopeSet.addAll(orgChildListHolder[0]);
+                } else if (!scopeCategory.equals(SysRoleDataScopeCategoryEnum.SCOPE_SELF.getValue())) {
+                    scopeSet.addAll(extJsonObject.getBeanList("scopeDefineOrgIdList", String.class));
                 }
-            });
-            resultList.add(jsonObject.set("dataScope", CollectionUtil.newArrayList(scopeSet)));
+            }
+            jsonObject.set("scopeAll", hasScopeAll);
+            jsonObject.set("dataScope", hasScopeAll ? CollectionUtil.newArrayList() : CollectionUtil.newArrayList(scopeSet));
+            resultList.add(jsonObject);
         });
         return resultList;
     }
@@ -1696,7 +1714,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     // 设置默认头像
                     sysUser.setAvatar(CommonAvatarUtil.generateImg(sysUser.getName()));
                     // 设置默认密码
-                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtl.getDefaultPassword()));
+                    sysUser.setPassword(CommonCryptogramUtil.doHashValue(SysPasswordUtil.getDefaultPassword()));
                     // 设置排序码
                     sysUser.setSortCode(99);
                     // 设置状态
@@ -1961,7 +1979,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                     SysOrg slaveSysOrg = sysOrgService.getById(sysOrgList, slaveOrgId);
                     if (ObjectUtil.isEmpty(slaveSysOrg)) {
-                        throw new CommonException("组织不存在，id值为：{}", slaveSysOrg);
+                        throw new CommonException("组织不存在，id值为：{}", slaveOrgId);
                     }
                     String slaveOrgName = slaveSysOrg.getName();
 
@@ -1995,12 +2013,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /* ====用户部分所需要用到的选择器==== */
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+    public List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam);
     }
 
     @Override
@@ -2228,9 +2242,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 定义变量参数
             JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
             // 获取格式化后的主题
-            String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
             // 获取格式化后的内容
-            String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
             // 发送邮件
             devEmailApi.sendDynamicHtmlEmail(email, subject, content);
         }
@@ -2339,7 +2353,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public Boolean isUserPasswordExpired() {
-        return SysPasswordUtl.isUserPasswordExpired(StpUtil.getLoginIdAsString());
+        return SysPasswordUtil.isUserPasswordExpired(StpUtil.getLoginIdAsString());
     }
 
     @Override
@@ -2349,7 +2363,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 密码即将到期邮件消息模板
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_EXPIRED_FOR_B_KEY);
         // 获取今日需要提醒密码到期的用户集合
-        SysPasswordUtl.thisDayPasswordExpiredNeedNoticeUserIdList().forEach(sysUser -> {
+        SysPasswordUtil.thisDayPasswordExpiredNeedNoticeUserIdList().forEach(sysUser -> {
             // 获取手机号
             String phone = sysUser.getPhone();
             // 不为空才发送
@@ -2379,9 +2393,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 // 定义变量参数
                 JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
                 // 获取格式化后的主题
-                String subject = SysEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
                 // 获取格式化后的内容
-                String content = SysEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
                 try {
                     // 发送邮件
                     devEmailApi.sendDynamicHtmlEmail(email, subject, content);
@@ -2401,14 +2415,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("账号已存在");
         }
         // 校验密码
-        SysPasswordUtl.validNewPassword(password);
+        SysPasswordUtil.validNewPassword(password);
         // 根据账号密码创建用户
         this.createUserWithAccount(account, password);
     }
 
     @Override
     public JSONObject getUpdatePasswordValidConfig() {
-        return SysPasswordUtl.getUpdatePasswordValidConfig();
+        return SysPasswordUtil.getUpdatePasswordValidConfig();
     }
 
     @Override

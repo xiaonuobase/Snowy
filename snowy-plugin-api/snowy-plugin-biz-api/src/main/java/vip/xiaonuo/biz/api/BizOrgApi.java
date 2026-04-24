@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.biz.api;
 
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -27,12 +26,12 @@ import java.util.List;
 public interface BizOrgApi {
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author yubaoshan
      * @date 2024/11/1 18:27:51
      **/
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector(String parentId, String searchKey);
 
     /**
      * 获取组织列表选择器
@@ -40,5 +39,5 @@ public interface BizOrgApi {
      * @author yubaoshan
      * @date 2024/11/1 18:27:51
      **/
-    Page<JSONObject> orgListSelector(String parentId);
+    Page<JSONObject> orgListSelector(String parentId, String searchKey);
 }

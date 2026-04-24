@@ -14,11 +14,10 @@ package vip.xiaonuo.sys.modular.group.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.lang.tree.TreeNode;
-import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,12 +27,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
+import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.group.entity.SysGroup;
 import vip.xiaonuo.sys.modular.group.mapper.SysGroupMapper;
 import vip.xiaonuo.sys.modular.group.param.*;
 import vip.xiaonuo.sys.modular.group.service.SysGroupService;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
@@ -87,6 +89,8 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     public void add(SysGroupAddParam sysGroupAddParam) {
         SysGroup sysGroup = BeanUtil.toBean(sysGroupAddParam, SysGroup.class);
         this.save(sysGroup);
+        // 发布增加事件
+        CommonDataChangeEventCenter.doAddWithData(SysDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(sysGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -95,13 +99,18 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
         SysGroup sysGroup = this.queryEntity(sysGroupEditParam.getId());
         BeanUtil.copyProperties(sysGroupEditParam, sysGroup);
         this.updateById(sysGroup);
+        // 发布更新事件
+        CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.GROUP.getValue(), JSONUtil.createArray().put(sysGroup));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<SysGroupIdParam> sysGroupIdParamList) {
+        List<String> groupIdList = CollStreamUtil.toList(sysGroupIdParamList, SysGroupIdParam::getId);
         // 执行删除
-        this.removeByIds(CollStreamUtil.toList(sysGroupIdParamList, SysGroupIdParam::getId));
+        this.removeByIds(groupIdList);
+        // 发布删除事件
+        CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.GROUP.getValue(), groupIdList);
     }
 
     @Override
@@ -125,12 +134,8 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupMapper, SysGroup> i
     }
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                        new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+    public List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam);
     }
 
     @Override

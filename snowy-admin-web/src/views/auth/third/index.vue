@@ -53,7 +53,7 @@
 					<a-avatar :src="record.avatar" style="margin-bottom: -5px; margin-top: -5px" />
 				</template>
 				<template v-if="column.dataIndex === 'category'">
-					{{ $TOOL.dictTypeData('THIRD_CATEGORY', record.category) }}
+					<a-tag :color="$TOOL.dictTypeColor('THIRD_CATEGORY', record.category)">{{ $TOOL.dictTypeData('THIRD_CATEGORY', record.category) }}</a-tag>
 				</template>
 			</template>
 		</s-table>

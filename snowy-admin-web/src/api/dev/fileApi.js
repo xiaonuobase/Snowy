@@ -80,6 +80,10 @@ export default {
 	fileGetFileListByUrlList(data) {
 		return request('getFileListByUrlList', data)
 	},
+	// 根据文件id集合获取文件集合
+	fileGetFileListByIds(data) {
+		return request('getFileListByIds', data)
+	},
 	// 删除文件
 	fileDelete(data) {
 		return request('delete', data)

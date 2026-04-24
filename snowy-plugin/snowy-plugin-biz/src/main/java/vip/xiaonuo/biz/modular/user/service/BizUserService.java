@@ -12,11 +12,12 @@
  */
 package vip.xiaonuo.biz.modular.user.service;
 
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletResponse;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.param.*;
@@ -140,12 +141,12 @@ public interface BizUserService extends IService<BizUser> {
     /* ====人员部分所需要用到的选择器==== */
 
     /**
-     * 获取机构树选择器
+     * 获取机构树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/5/13 21:00
      */
-    List<Tree<String>> orgTreeSelector();
+    List<JSONObject> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam);
 
     /**
      * 获取机构列表选择器

@@ -31,6 +31,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.consts.CacheConstant;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
@@ -41,6 +42,7 @@ import vip.xiaonuo.mobile.api.MobileMenuApi;
 import vip.xiaonuo.sys.core.enums.SysBuildInEnum;
 import vip.xiaonuo.sys.core.enums.SysDataTypeEnum;
 import vip.xiaonuo.sys.modular.org.entity.SysOrg;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
 import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.relation.entity.SysRelation;
 import vip.xiaonuo.sys.modular.relation.enums.SysRelationCategoryEnum;
@@ -93,6 +95,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
+
+    @Resource(name = "loginUserApi")
+    private SaBaseLoginUserApi loginUserApi;
 
     @Override
     public Page<SysRole> page(SysRolePageParam sysRolePageParam) {
@@ -312,6 +317,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, apiUrlList, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue(),
                 extJsonList);
+        // 刷新拥有该角色的所有在线用户的权限缓存
+        List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdAndCategory(
+                id, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+        userIdList.forEach(loginUserApi::refreshOnlineUserPermission);
     }
 
     @Override
@@ -324,7 +333,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public void grantUser(SysRoleGrantUserParam sysRoleGrantUserParam) {
         String id = sysRoleGrantUserParam.getId();
         List<String> grantInfoList = sysRoleGrantUserParam.getGrantInfoList();
+        // 记录变更前拥有该角色的用户（用于后续刷新被移除用户的权限）
+        Set<String> affectedUserIds = new HashSet<>();
         if(sysRoleGrantUserParam.getRemoveFirst()) {
+            affectedUserIds.addAll(sysRelationService.getRelationObjectIdListByTargetIdAndCategory(
+                    id, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue()));
             sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().eq(SysRelation::getTargetId, id)
                     .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue()));
         }
@@ -335,6 +348,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             sysRelation.setCategory(SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
             return sysRelation;
         }).collect(Collectors.toList()));
+        // 合并新增用户，刷新所有受影响用户的权限缓存
+        affectedUserIds.addAll(grantInfoList);
+        affectedUserIds.forEach(loginUserApi::refreshOnlineUserPermission);
     }
 
     @Override
@@ -349,12 +365,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     /* ====角色部分所需要用到的选择器==== */
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        List<SysOrg> sysOrgList = sysOrgService.getAllOrgList();
-        List<TreeNode<String>> treeNodeList = sysOrgList.stream().map(sysOrg ->
-                new TreeNode<>(sysOrg.getId(), sysOrg.getParentId(), sysOrg.getName(), sysOrg.getSortCode()))
-                .collect(Collectors.toList());
-        return TreeUtil.build(treeNodeList, "0");
+    public List<JSONObject> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam);
     }
 
     @Override

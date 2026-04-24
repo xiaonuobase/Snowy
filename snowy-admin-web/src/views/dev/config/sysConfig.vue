@@ -9,12 +9,11 @@
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
 			style="width: 90%"
 		>
-			<a-alert message="系统基础配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="系统基础配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="系统LOGO：" name="SNOWY_SYS_LOGO">
 						<a-upload
-							v-model:file-list="formData.SNOWY_SYS_LOGO"
 							class="avatar-uploader"
 							list-type="picture-card"
 							:show-upload-list="false"
@@ -58,7 +57,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="验证码配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="验证码配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="后台验证码开关：" name="SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B">
@@ -103,7 +102,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="默认引擎配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="默认引擎配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="默认文件引擎：" name="SNOWY_SYS_DEFAULT_FILE_ENGINE">
@@ -144,7 +143,7 @@
 					</a-form-item>
 				</a-col>
 			</a-row>
-			<a-alert message="版权信息配置" type="info" :closable="false" class="mb-2" show-icon/>
+			<a-alert message="版权信息配置" type="info" :closable="false" class="mb-2" show-icon />
 			<a-row :gutter="8">
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item label="版权信息：" name="SNOWY_SYS_COPYRIGHT">
@@ -200,10 +199,9 @@
 		loadSpinning.value = false
 		if (data) {
 			data.forEach((item) => {
-				// 如果是系统的logo，它这个组件要一个数组，我将其单独处理
+				// 如果是系统的logo，直接存base64字符串
 				if (item.configKey === 'SNOWY_SYS_LOGO') {
-					formData.value[item.configKey] = [item.configValue]
-					// 让其回显
+					formData.value[item.configKey] = item.configValue
 					imageUrl.value = item.configValue
 				} else if (item.configKey === 'SNOWY_SYS_DEFAULT_WORKBENCH_DATA') {
 					try {
@@ -236,11 +234,10 @@
 		}
 	}
 	const customRequest = (data) => {
-		formData.value.SNOWY_SYS_LOGO = ref([])
 		getBase64(data.file)
 			.then((res) => {
 				imageUrl.value = res
-				formData.value.SNOWY_SYS_LOGO.push(res)
+				formData.value.SNOWY_SYS_LOGO = res
 			})
 			.catch((err) => {})
 	}
@@ -260,7 +257,6 @@
 
 	// 默认要校验的
 	const formRules = {
-		SNOWY_SYS_LOGO: [required('请上传系统LOGO')],
 		SNOWY_SYS_NAME: [required('请输入系统名称')],
 		SNOWY_SYS_VERSION: [required('请输入系统版本')],
 		SNOWY_SYS_COPYRIGHT: [required('请输入版权信息')],
@@ -293,7 +289,6 @@
 					shortcut: menuTreeSelectRef.value.getSelectData()
 				}
 				submitParam.SNOWY_SYS_DEFAULT_WORKBENCH_DATA = JSON.stringify(shortcut)
-				submitParam.SNOWY_SYS_LOGO = submitParam.SNOWY_SYS_LOGO[0]
 				const param = Object.entries(submitParam).map((item) => {
 					return {
 						configKey: item[0],

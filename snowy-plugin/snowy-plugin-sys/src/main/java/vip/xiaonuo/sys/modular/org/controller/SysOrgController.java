@@ -12,10 +12,8 @@
  */
 package vip.xiaonuo.sys.modular.org.controller;
 
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -43,7 +41,6 @@ import java.util.List;
  * @date 2022/4/24 19:55
  */
 @Tag(name = "组织控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class SysOrgController {
@@ -57,7 +54,6 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取组织分页")
     @GetMapping("/sys/org/page")
     public CommonResult<Page<SysOrg>> page(SysOrgPageParam sysOrgPageParam) {
@@ -65,16 +61,15 @@ public class SysOrgController {
     }
 
     /**
-     * 获取组织树
+     * 获取组织树（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
-    @Operation(summary = "获取组织树")
+    @Operation(summary = "获取组织树（懒加载）")
     @GetMapping("/sys/org/tree")
-    public CommonResult<List<Tree<String>>> tree() {
-        return CommonResult.data(sysOrgService.tree());
+    public CommonResult<List<JSONObject>> tree(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return CommonResult.data(sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam));
     }
 
     /**
@@ -83,7 +78,6 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加组织")
     @CommonLog("添加组织")
     @PostMapping("/sys/org/add")
@@ -98,7 +92,6 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑组织")
     @CommonLog("编辑组织")
     @PostMapping("/sys/org/edit")
@@ -113,7 +106,6 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "删除组织")
     @CommonLog("删除组织")
     @PostMapping("/sys/org/delete")
@@ -129,7 +121,6 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取组织详情")
     @GetMapping("/sys/org/detail")
     public CommonResult<SysOrg> detail(@Valid SysOrgIdParam sysOrgIdParam) {
@@ -142,7 +133,6 @@ public class SysOrgController {
      * @author yubaoshan
      * @date 2025/12/24 01:10
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "复制组织")
     @CommonLog("复制组织")
     @PostMapping("/sys/org/copy")
@@ -154,16 +144,15 @@ public class SysOrgController {
     /* ====组织部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
-    @Operation(summary = "获取组织树选择器")
+    @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/org/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysOrgService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return CommonResult.data(sysOrgService.orgTreeSelector(sysOrgSelectorTreeParam));
     }
 
     /**
@@ -172,10 +161,21 @@ public class SysOrgController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取用户选择器")
     @GetMapping("/sys/org/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysOrgSelectorUserParam sysOrgSelectorUserParam) {
         return CommonResult.data(sysOrgService.userSelector(sysOrgSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/22
+     */
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/org/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

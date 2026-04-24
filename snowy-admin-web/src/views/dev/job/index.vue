@@ -75,12 +75,10 @@
 			</template>
 			<template #bodyCell="{ column, record }">
 				<template v-if="column.dataIndex === 'category'">
-					{{ $TOOL.dictTypeData('JOB_CATEGORY', record.category) }}
+					<a-tag :color="$TOOL.dictTypeColor('JOB_CATEGORY', record.category)">{{ $TOOL.dictTypeData('JOB_CATEGORY', record.category) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'jobStatus'">
-					<a-badge status="processing" v-if="record.jobStatus === 'RUNNING'" />
-					<a-badge status="default" v-else />
-					{{ $TOOL.dictTypeData('JOB_STATUS', record.jobStatus) }}
+					<a-tag :color="$TOOL.dictTypeColor('JOB_STATUS', record.jobStatus)"><a-badge status="processing" v-if="record.jobStatus === 'RUNNING'" /><a-badge status="default" v-else />{{ $TOOL.dictTypeData('JOB_STATUS', record.jobStatus) }}</a-tag>
 				</template>
 				<template v-if="column.dataIndex === 'jobStatusUpdate'">
 					<a-switch

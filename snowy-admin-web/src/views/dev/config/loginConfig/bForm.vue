@@ -30,7 +30,10 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="连续登录失败锁定时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B">
+					<a-form-item
+						label="连续登录失败锁定时间："
+						name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B"
+					>
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_B"
 							placeholder="分钟"

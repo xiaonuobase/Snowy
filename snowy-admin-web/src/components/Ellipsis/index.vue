@@ -43,6 +43,6 @@
 		return props.tooltip && fullLength > props.length
 			? h(Tooltip, { title: str }, { default: () => showStr })
 			: // 引用组件时，需要设置默认值 default: () => xxx
-			  h('span', showStr)
+				h('span', showStr)
 	}
 </script>

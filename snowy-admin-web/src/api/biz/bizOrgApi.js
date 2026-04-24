@@ -22,11 +22,7 @@ export default {
 	orgPage(data) {
 		return request('page', data, 'get')
 	},
-	// 获取机构列表
-	orgList(data) {
-		return request('list', data, 'get')
-	},
-	// 获取机构树
+	// 获取机构树（懒加载）
 	orgTree(data) {
 		return request('tree', data, 'get')
 	},
@@ -42,7 +38,7 @@ export default {
 	orgDetail(data) {
 		return request('detail', data, 'get')
 	},
-	// 获取机构树选择器
+	// 获取机构树选择器（懒加载）
 	orgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
@@ -53,5 +49,9 @@ export default {
 	// 复制机构
 	orgCopy(data) {
 		return request('copy', data)
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	orgGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

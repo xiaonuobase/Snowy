@@ -1,40 +1,121 @@
 <template>
 	<a-modal
 		v-if="isModal"
-		:open="visible"
-		@cancel="cancel"
 		v-bind="$attrs"
-		:footer="slotKeys.includes('footer') ? undefined : null"
+		:open="isOpen"
+		:width="modalWidth"
+		:footer="slots.footer ? undefined : null"
+		:wrap-class-name="wrapClassName + fullscreenClass"
+		:closable="false"
+		@cancel="cancel"
 	>
-		<template v-for="slotKey in slotKeys" #[slotKey]>
+		<template #title v-if="slots.title || title">
+			<div class="flex justify-between items-center -mr-9">
+				<div
+					ref="modalTitleRef"
+					:style="{
+						flex: 1,
+						overflow: 'hidden',
+						whiteSpace: 'nowrap',
+						textOverflow: 'ellipsis',
+						cursor: isFullscreen ? 'default' : 'move',
+						userSelect: 'none'
+					}"
+				>
+					<span class="cursor-default select-text">
+						<slot name="title">{{ title }}</slot>
+					</span>
+				</div>
+				<div class="flex items-center space-x-1 pr-2">
+					<div v-if="isDragged" class="ant-modal-action" @click="toggleResetDrag">
+						<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="AimOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div class="ant-modal-action" @click="toggleFullScreen">
+						<a-tooltip
+							:key="isFullscreen ? '' : 'isFullscreen'"
+							:title="isFullscreen ? '退出全屏' : '全屏'"
+							placement="bottom"
+							:getPopupContainer="(trigger) => trigger"
+						>
+							<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+					<div class="ant-modal-action" @click="cancel">
+						<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
+							<component :is="CloseOutlined" class="p-0.5" />
+						</a-tooltip>
+					</div>
+				</div>
+			</div>
+		</template>
+
+		<template #modalRender="{ originVNode }">
+			<slot name="modalRender" :originVNode="originVNode">
+				<div :style="transformStyle">
+					<component ref="modalContentRef" :is="originVNode" />
+				</div>
+			</slot>
+		</template>
+
+		<template v-for="slotKey in filteredSlotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
 	</a-modal>
 	<a-drawer
 		v-else
-		:open="visible"
 		v-bind="$attrs"
-		@close="cancel"
-		:footer-style="{ textAlign: 'right' }"
+		:open="isOpen"
 		:width="drawerWidth"
+		:footer-style="{ textAlign: 'right' }"
+		@close="cancel"
 	>
-		<template v-for="slotKey in slotKeys" #[slotKey]>
+		<template #title v-if="slots.title || title">
+			<slot name="title">{{ title }}</slot>
+		</template>
+		<template #closeIcon>
+			<slot name="closeIcon">
+				<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
+					<component :is="CloseOutlined" class="p-0.5" />
+				</a-tooltip>
+			</slot>
+		</template>
+		<template v-for="slotKey in filteredSlotKeys" #[slotKey]>
 			<slot :name="slotKey" />
 		</template>
 	</a-drawer>
 </template>
 
 <script setup>
-	import { useSlots, computed, useAttrs, onMounted, onUnmounted } from 'vue'
+	import { computed, nextTick, onMounted, onUnmounted, useSlots, ref, watch, watchEffect } from 'vue'
+	import { AimOutlined, CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+	import { useDraggable } from '@vueuse/core'
 	import { globalStore } from '@/store'
 	const slots = useSlots()
-	const attrs = useAttrs()
 	const store = globalStore()
 	const props = defineProps({
+		open: {
+			type: Boolean,
+			default: false,
+			required: false
+		},
 		visible: {
 			type: Boolean,
 			default: false,
 			required: false
+		},
+		title: {
+			type: String,
+			default: ''
+		},
+		width: {
+			type: [Number, String],
+			default: '50%'
+		},
+		wrapClassName: {
+			type: String,
+			default: ''
 		}
 	})
 	const FormContainerTypeEnum = {
@@ -47,20 +128,112 @@
 	const slotKeys = computed(() => {
 		return Object.keys(slots)
 	})
+	const filteredSlotKeys = computed(() => {
+		return slotKeys.value.filter((key) => !['title', 'modalRender', 'closeIcon'].includes(key))
+	})
 	const isModal = computed(() => {
 		return FormContainerTypeEnum.MODAL === formStyle.value
 	})
 
+	const isOpen = computed(() => props.open || props.visible)
+
+	const emit = defineEmits(['close', 'fullscreen', 'update:open'])
+
+	const cancel = () => {
+		emit('update:open', false)
+		emit('close')
+	}
+
 	// 响应式抽屉宽度
 	const isSmallScreen = ref(window.innerWidth <= 768)
 	const drawerWidth = computed(() => {
-		return isSmallScreen.value ? '100%' : attrs.width // 小屏幕100%宽度，其他情况使用默认值
+		return isSmallScreen.value ? '100%' : props.width // 小屏幕100%宽度，其他情况使用默认值
 	})
 
-	const emit = defineEmits(['close'])
-	const cancel = () => {
-		emit('close')
+	// 响应式对话框
+	const modalContentRef = ref()
+
+	// 响应式对话框宽度
+	const modalWidth = ref(props.width)
+
+	// 全屏
+	const isFullscreen = ref(false)
+	const fullscreenClass = ref()
+	const toggleFullScreen = () => {
+		if (!isFullscreen.value) toggleResetDrag()
+		isFullscreen.value = !isFullscreen.value
+		modalWidth.value = isFullscreen.value ? '100vw' : props.width
+		modalContentRef.value.style.height = isFullscreen.value ? '100vh' : ''
+		fullscreenClass.value = isFullscreen.value ? ' full-modal' : ''
+		emit('fullscreen', isFullscreen.value)
 	}
+
+	// 基于 vueuse 实现对话框拖拽
+	const modalTitleRef = ref()
+	const { x, y, isDragging } = useDraggable(modalTitleRef, {
+		disabled: computed(() => isFullscreen.value)
+	})
+	const startedDrag = ref(false)
+	const startX = ref(0)
+	const startY = ref(0)
+	const transformX = ref(0)
+	const transformY = ref(0)
+	const preTransformX = ref(0)
+	const preTransformY = ref(0)
+	const dragRect = ref({ left: 0, right: 0, top: 0, bottom: 0 })
+	watch([x, y], () => {
+		if (!startedDrag.value) {
+			startX.value = x.value
+			startY.value = y.value
+			const bodyRect = document.body.getBoundingClientRect()
+			const titleRect = modalTitleRef.value.getBoundingClientRect()
+			dragRect.value.right = bodyRect.width - titleRect.width
+			dragRect.value.bottom = bodyRect.height - titleRect.height
+			preTransformX.value = transformX.value
+			preTransformY.value = transformY.value
+		}
+		startedDrag.value = true
+	})
+	watch(isDragging, () => {
+		if (!isDragging.value) {
+			startedDrag.value = false
+		}
+	})
+	watchEffect(() => {
+		if (startedDrag.value) {
+			transformX.value =
+				preTransformX.value + Math.min(Math.max(dragRect.value.left, x.value), dragRect.value.right) - startX.value
+			transformY.value =
+				preTransformY.value + Math.min(Math.max(dragRect.value.top, y.value), dragRect.value.bottom) - startY.value
+		}
+	})
+	const transformStyle = computed(() => {
+		return {
+			transform: `translate(${transformX.value}px, ${transformY.value}px)`
+		}
+	})
+
+	// 是否被拖拽
+	const isDragged = computed(() => x.value !== 0 || y.value !== 0)
+
+	// 还原拖拽
+	const toggleResetDrag = () => {
+		x.value = 0
+		y.value = 0
+		startX.value = 0
+		startY.value = 0
+		transformX.value = 0
+		transformY.value = 0
+		preTransformX.value = 0
+		preTransformY.value = 0
+		nextTick(() => {
+			startedDrag.value = false
+		})
+	}
+
+	watch(isOpen, () => {
+		if (!isOpen.value) toggleResetDrag()
+	})
 
 	// 监听窗口大小变化
 	const handleResize = () => {
@@ -82,7 +255,7 @@
 	}
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 	/* 确保小屏幕下抽屉不会有额外的边距或滚动条 */
 	@media (max-width: 576px) {
 		:deep(.ant-drawer-content-wrapper) {

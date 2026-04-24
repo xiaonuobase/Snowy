@@ -33,7 +33,10 @@ public enum DevFileEngineTypeEnum {
     TENCENT("TENCENT"),
 
     /** MINIO */
-    MINIO("MINIO");
+    MINIO("MINIO"),
+
+    /** RUSTFS */
+    RUSTFS("RUSTFS");
 
     private final String value;
 

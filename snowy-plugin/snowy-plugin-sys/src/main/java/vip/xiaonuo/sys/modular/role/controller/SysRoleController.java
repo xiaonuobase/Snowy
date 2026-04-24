@@ -12,10 +12,8 @@
  */
 package vip.xiaonuo.sys.modular.role.controller;
 
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -27,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
+import vip.xiaonuo.sys.modular.org.param.SysOrgSelectorTreeParam;
+import vip.xiaonuo.sys.modular.org.service.SysOrgService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
 import vip.xiaonuo.sys.modular.role.param.*;
 import vip.xiaonuo.sys.modular.role.result.*;
@@ -43,7 +43,6 @@ import java.util.List;
  * @date 2022/4/25 20:19
  */
 @Tag(name = "角色控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 8)
 @RestController
 @Validated
 public class SysRoleController {
@@ -51,13 +50,15 @@ public class SysRoleController {
     @Resource
     private SysRoleService sysRoleService;
 
+    @Resource
+    private SysOrgService sysOrgService;
+
     /**
      * 获取角色分页
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取角色分页")
     @GetMapping("/sys/role/page")
     public CommonResult<Page<SysRole>> page(SysRolePageParam sysRolePageParam) {
@@ -70,7 +71,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加角色")
     @CommonLog("添加角色")
     @PostMapping("/sys/role/add")
@@ -85,7 +85,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑角色")
     @CommonLog("编辑角色")
     @PostMapping("/sys/role/edit")
@@ -100,7 +99,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除角色")
     @CommonLog("删除角色")
     @PostMapping("/sys/role/delete")
@@ -116,7 +114,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取角色详情")
     @GetMapping("/sys/role/detail")
     public CommonResult<SysRole> detail(@Valid SysRoleIdParam sysRoleIdParam) {
@@ -129,7 +126,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "获取角色拥有资源")
     @GetMapping("/sys/role/ownResource")
     public CommonResult<SysRoleOwnResourceResult> ownResource(@Valid SysRoleIdParam sysRoleIdParam) {
@@ -142,7 +138,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "给角色授权资源")
     @CommonLog("给角色授权资源")
     @PostMapping("/sys/role/grantResource")
@@ -157,7 +152,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "获取角色拥有移动端菜单")
     @GetMapping("/sys/role/ownMobileMenu")
     public CommonResult<SysRoleOwnMobileMenuResult> ownMobileMenu(@Valid SysRoleIdParam sysRoleIdParam) {
@@ -170,7 +164,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "给角色授权移动端菜单")
     @CommonLog("给角色授权移动端菜单")
     @PostMapping("/sys/role/grantMobileMenu")
@@ -185,7 +178,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "获取角色拥有权限")
     @GetMapping("/sys/role/ownPermission")
     public CommonResult<SysRoleOwnPermissionResult> ownPermission(@Valid SysRoleIdParam sysRoleIdParam) {
@@ -198,7 +190,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "给角色授权权限")
     @CommonLog("给角色授权权限")
     @PostMapping("/sys/role/grantPermission")
@@ -213,7 +204,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "获取角色下的用户")
     @GetMapping("/sys/role/ownUser")
     public CommonResult<List<String>> ownUser(@Valid SysRoleIdParam sysRoleIdParam) {
@@ -226,7 +216,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "给角色授权用户")
     @CommonLog("给角色授权用户")
     @PostMapping("/sys/role/grantUser")
@@ -239,16 +228,15 @@ public class SysRoleController {
     /* ====角色部分所需要用到的选择器==== */
 
     /**
-     * 获取组织树选择器
+     * 获取组织树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
-    @Operation(summary = "获取组织树选择器")
+    @Operation(summary = "获取组织树选择器（懒加载）")
     @GetMapping("/sys/role/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(sysRoleService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(SysOrgSelectorTreeParam sysOrgSelectorTreeParam) {
+        return CommonResult.data(sysRoleService.orgTreeSelector(sysOrgSelectorTreeParam));
     }
 
     /**
@@ -257,7 +245,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "获取资源授权树")
     @GetMapping("/sys/role/resourceTreeSelector")
     public CommonResult<List<SysRoleGrantResourceTreeResult>> resourceTreeSelector() {
@@ -270,7 +257,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "获取移动端菜单授权树")
     @GetMapping("/sys/role/mobileMenuTreeSelector")
     public CommonResult<List<SysRoleGrantMobileMenuTreeResult>> mobileMenuTreeSelector() {
@@ -283,7 +269,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "获取权限授权树")
     @GetMapping("/sys/role/permissionTreeSelector")
     public CommonResult<List<String>> permissionTreeSelector() {
@@ -296,7 +281,6 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 18)
     @Operation(summary = "获取角色选择器")
     @GetMapping("/sys/role/roleSelector")
     public CommonResult<Page<SysRole>> roleSelector(SysRoleSelectorRoleParam sysRoleSelectorRoleParam) {
@@ -309,10 +293,21 @@ public class SysRoleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 19)
     @Operation(summary = "获取用户选择器")
     @GetMapping("/sys/role/userSelector")
     public CommonResult<Page<SysUser>> userSelector(SysRoleSelectorUserParam sysRoleSelectorUserParam) {
         return CommonResult.data(sysRoleService.userSelector(sysRoleSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/sys/role/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(sysOrgService.getAncestorNodes(orgIdList));
     }
 }

@@ -1,0 +1,226 @@
+<template>
+	<xn-form-container
+		<% for(var i = 0; i < subConfigList.~size; i++) { %>
+		<% if(subConfigList[i].needTableId) { %>
+		:title="formData.${subConfigList[i].fieldNameCamelCase} ? '编辑${subFunctionName}' : '增加${subFunctionName}'"
+		<% } %>
+		<% } %>
+		:width="700"
+		v-model:open="open"
+		:destroy-on-close="true"
+		@close="onClose"
+	>
+		<a-form ref="formRef" :model="formData" :rules="formRules" layout="${formLayout}">
+		<% if(gridWhether) { %>
+			<a-row :gutter="16">
+			<% for(var i = 0; i < subConfigList.~size; i++) { %>
+			<% if(!subConfigList[i].needTableId && subConfigList[i].whetherAddUpdate) { %>
+				<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+					<a-form-item label="${subConfigList[i].fieldRemark}：" name="${subConfigList[i].fieldNameCamelCase}">
+						<% if(subConfigList[i].effectType == 'input') { %>
+						<a-input v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" allow-clear />
+						<% } else if (subConfigList[i].effectType == 'textarea') {%>
+						<a-textarea v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
+						<% } else if (subConfigList[i].effectType == 'select') {%>
+						<a-select v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+						<% } else if (subConfigList[i].effectType == 'radio') {%>
+						<a-radio-group v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+						<% } else if (subConfigList[i].effectType == 'checkbox') {%>
+						<a-checkbox-group v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+						<% } else if (subConfigList[i].effectType == 'datepicker') {%>
+						<a-date-picker v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${subConfigList[i].fieldRemark}" style="width: 100%" />
+						<% } else if (subConfigList[i].effectType == 'timepicker') {%>
+						<a-time-picker v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" style="width: 100%" />
+						<% } else if (subConfigList[i].effectType == 'inputNumber') {%>
+						<a-input-number v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :min="1" :max="10000" style="width: 100%" />
+						<% } else if (subConfigList[i].effectType == 'slider') {%>
+						<a-slider v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :max="1000" style="width: 100%" />
+						<% } else if (subConfigList[i].effectType == 'fileUpload') {%>
+						<xn-upload v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" />
+						<% } else if (subConfigList[i].effectType == 'imageUpload') {%>
+						<xn-upload v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" uploadMode="image" />
+						<% } else if (subConfigList[i].effectType == 'editor') {%>
+						<xn-editor v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" />
+						<% } else if (subConfigList[i].effectType == 'userSelector') {%>
+						<xn-user-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'userSelectorMulti') {%>
+						<xn-user-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'orgSelector') {%>
+						<xn-org-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'orgSelectorMulti') {%>
+						<xn-org-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'positionSelector') {%>
+						<xn-position-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'positionSelectorMulti') {%>
+						<xn-position-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'groupSelector') {%>
+						<xn-group-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+						<% } else if (subConfigList[i].effectType == 'groupSelectorMulti') {%>
+						<xn-group-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+						<% } %>
+					</a-form-item>
+				</a-col>
+			<% } %>
+			<% } %>
+			</a-row>
+		<% } else { %>
+		<% for(var i = 0; i < subConfigList.~size; i++) { %>
+		<% if(!subConfigList[i].needTableId && subConfigList[i].whetherAddUpdate) { %>
+			<a-form-item label="${subConfigList[i].fieldRemark}：" name="${subConfigList[i].fieldNameCamelCase}">
+				<% if(subConfigList[i].effectType == 'input') { %>
+				<a-input v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" allow-clear />
+				<% } else if (subConfigList[i].effectType == 'textarea') {%>
+				<a-textarea v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" :auto-size="{ minRows: 3, maxRows: 5 }" />
+				<% } else if (subConfigList[i].effectType == 'select') {%>
+				<a-select v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+				<% } else if (subConfigList[i].effectType == 'radio') {%>
+				<a-radio-group v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+				<% } else if (subConfigList[i].effectType == 'checkbox') {%>
+				<a-checkbox-group v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请选择${subConfigList[i].fieldRemark}" :options="${subConfigList[i].fieldNameCamelCase}Options" />
+				<% } else if (subConfigList[i].effectType == 'datepicker') {%>
+				<a-date-picker v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${subConfigList[i].fieldRemark}" style="width: 100%" />
+				<% } else if (subConfigList[i].effectType == 'timepicker') {%>
+				<a-time-picker v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" value-format="YYYY-MM-DD HH:mm:ss" show-time placeholder="请选择${subConfigList[i].fieldRemark}" style="width: 100%" />
+				<% } else if (subConfigList[i].effectType == 'inputNumber') {%>
+				<a-input-number v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" :min="1" :max="10000" style="width: 100%" />
+				<% } else if (subConfigList[i].effectType == 'slider') {%>
+				<a-slider v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请滑动${subConfigList[i].fieldRemark}" :max="1000" style="width: 100%" />
+				<% } else if (subConfigList[i].effectType == 'fileUpload') {%>
+				<xn-upload v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" />
+				<% } else if (subConfigList[i].effectType == 'imageUpload') {%>
+				<xn-upload v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" uploadMode="image" />
+				<% } else if (subConfigList[i].effectType == 'editor') {%>
+				<xn-editor v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" placeholder="请输入${subConfigList[i].fieldRemark}" />
+				<% } else if (subConfigList[i].effectType == 'userSelector') {%>
+				<xn-user-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'userSelectorMulti') {%>
+				<xn-user-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :user-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}UserSelector(param)" :user-list-by-id-list-api="(param) => userCenterApi.userCenterGetUserListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'orgSelector') {%>
+				<xn-org-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'orgSelectorMulti') {%>
+				<xn-org-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :org-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgListSelector(param)" :org-list-by-id-list-api="(param) => userCenterApi.userCenterGetOrgListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'positionSelector') {%>
+				<xn-position-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'positionSelectorMulti') {%>
+				<xn-position-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :org-tree-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}OrgTreeSelector(param)" :position-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}PositionSelector(param)" :position-list-by-id-list-api="(param) => userCenterApi.userCenterGetPositionListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'groupSelector') {%>
+				<xn-group-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="true" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+				<% } else if (subConfigList[i].effectType == 'groupSelectorMulti') {%>
+				<xn-group-selector v-model:value="formData.${subConfigList[i].fieldNameCamelCase}" dataType="string" :radioModel="false" :data-page-api="(param) => ${classNameFirstLower}Api.${classNameFirstLower}GroupSelector(param)" :data-detail-by-id-list-api="(param) => userCenterApi.userCenterGetGroupListByIdList(param)" />
+				<% } %>
+			</a-form-item>
+		<% } %>
+		<% } %>
+		<% } %>
+		</a-form>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
+		</template>
+	</xn-form-container>
+</template>
+
+<script setup name="${subClassNameFirstLower}SubForm">
+	<%
+	var iptTool = 0;
+	for(var i = 0; i < subConfigList.~size; i++) {
+		if(!subConfigList[i].needTableId) {
+		if(subConfigList[i].effectType == 'select' || subConfigList[i].effectType == 'radio' || subConfigList[i].effectType == 'checkbox') {
+			iptTool++;
+		}
+		}
+	}
+	%>
+	<% if(iptTool > 0) { %>
+	import tool from '@/utils/tool'
+	<% } %>
+	import { cloneDeep } from 'lodash-es'
+	import { required } from '@/utils/formRules'
+	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
+<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
+	import userCenterApi from '@/api/sys/userCenterApi'
+<% } %>
+	const open = ref(false)
+	const emit = defineEmits({ successful: null })
+	const formRef = ref()
+	const formData = ref({})
+	const submitLoading = ref(false)
+	const foreignKeyValue = ref('')
+	<% for(var i = 0; i < subConfigList.~size; i++) { %>
+	<% if(!subConfigList[i].needTableId) { %>
+	<% if(subConfigList[i].effectType == 'select' || subConfigList[i].effectType == 'radio' || subConfigList[i].effectType == 'checkbox') { %>
+	const ${subConfigList[i].fieldNameCamelCase}Options = ref([])
+	<% } %>
+	<% } %>
+	<% } %>
+
+	const onOpen = (record, masterKey) => {
+		open.value = true
+		foreignKeyValue.value = masterKey || ''
+		if (record) {
+			let recordData = cloneDeep(record)
+			<% for(var i = 0; i < subConfigList.~size; i++) { %>
+			<% if(!subConfigList[i].needTableId && subConfigList[i].whetherAddUpdate && subConfigList[i].effectType == 'checkbox') { %>
+			recordData.${subConfigList[i].fieldNameCamelCase} = JSON.parse(recordData.${subConfigList[i].fieldNameCamelCase})
+			<% } %>
+			<% } %>
+			formData.value = Object.assign({}, recordData)
+		} else {
+			formData.value = {}
+			if (foreignKeyValue.value) {
+				formData.value.${subForeignKeyCamelCase} = foreignKeyValue.value
+			}
+		}
+		<% for(var i = 0; i < subConfigList.~size; i++) { %>
+		<% if(!subConfigList[i].needTableId) { %>
+		<% if(subConfigList[i].effectType == 'select' || subConfigList[i].effectType == 'radio' || subConfigList[i].effectType == 'checkbox') { %>
+		${subConfigList[i].fieldNameCamelCase}Options.value = tool.dictList('${subConfigList[i].dictTypeCode}')
+		<% } %>
+		<% } %>
+		<% } %>
+	}
+	const onClose = () => {
+		formRef.value.resetFields()
+		formData.value = {}
+		open.value = false
+	}
+	const formRules = {
+		<% for(var i = 0; i < subConfigList.~size; i++) { %>
+		<% if(!subConfigList[i].needTableId) { %>
+		<% if(subConfigList[i].required) { %>
+		${subConfigList[i].fieldNameCamelCase}: [required('请输入${subConfigList[i].fieldRemark}')],
+		<% } %>
+		<% } %>
+		<% } %>
+	}
+	const onSubmit = () => {
+		formRef.value
+			.validate()
+			.then(() => {
+				submitLoading.value = true
+				const formDataParam = cloneDeep(formData.value)
+				<% for(var i = 0; i < subConfigList.~size; i++) { %>
+				<% if(subConfigList[i].whetherAddUpdate && subConfigList[i].effectType == 'checkbox') { %>
+				formDataParam.${subConfigList[i].fieldNameCamelCase} = JSON.stringify(formDataParam.${subConfigList[i].fieldNameCamelCase})
+				<% } %>
+				<% } %>
+				${classNameFirstLower}Api
+					<% for(var i = 0; i < subConfigList.~size; i++) { %>
+					<% if(subConfigList[i].needTableId) { %>
+					.${subClassNameFirstLower}SubmitForm(formDataParam, formDataParam.${subConfigList[i].fieldNameCamelCase})
+					<% } %>
+					<% } %>
+					.then(() => {
+						onClose()
+						emit('successful')
+					})
+					.finally(() => {
+						submitLoading.value = false
+					})
+			})
+			.catch(() => {})
+	}
+	defineExpose({
+		onOpen
+	})
+</script>

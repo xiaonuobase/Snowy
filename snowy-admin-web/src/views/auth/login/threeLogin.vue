@@ -1,21 +1,27 @@
 <template>
-	<a-divider>{{ $t('login.signInOther') }}</a-divider>
-	<div class="login-oauth layout-center">
-		<a-space align="start">
-			<a v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('IAM')">
-				<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/iam.png" alt="" />
-			</a>
-			<a v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT')">
-				<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechat.png" alt="" />
-			</a>
-		</a-space>
-	</div>
+	<template v-if="hasAnyThirdLogin">
+		<a-divider>{{ $t('login.signInOther') }}</a-divider>
+		<div class="login-oauth layout-center">
+			<a-space align="start">
+				<a v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('IAM')">
+					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/iam.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT')">
+					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechat.png" alt="" />
+				</a>
+			</a-space>
+		</div>
+	</template>
 </template>
 
 <script setup name="threeLogin">
+	import { ref, computed } from 'vue'
 	import configApi from '@/api/dev/configApi'
 	import thirdApi from '@/api/auth/thirdApi'
 	const formData = ref({})
+	const hasAnyThirdLogin = computed(() => {
+		return Object.values(formData.value).some((v) => v === true)
+	})
 	const getConfigSysThirdAllowFlagList = () => {
 		configApi.configSysThirdAllowFlagList().then((data) => {
 			data.forEach((item) => {

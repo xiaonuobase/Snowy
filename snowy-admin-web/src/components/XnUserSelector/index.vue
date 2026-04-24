@@ -36,15 +36,20 @@
 	>
 		<a-row :gutter="10">
 			<a-col :xs="0" :sm="0" :md="0" :lg="7" :xl="7">
-				<a-card size="small" :loading="cardLoading" class="selectorTreeDiv">
-					<a-tree
-						v-if="treeData"
-						v-model:expandedKeys="defaultExpandedKeys"
-						:tree-data="treeData"
-						:field-names="treeFieldNames"
-						@select="treeSelect"
-					>
-					</a-tree>
+				<a-card size="small" class="selectorTreeDiv">
+					<a-spin :spinning="cardLoading">
+						<a-tree
+							v-if="treeData"
+							v-model:expandedKeys="defaultExpandedKeys"
+							:show-line="{ showLeafIcon: false }"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						>
+						</a-tree>
+					</a-spin>
 				</a-card>
 			</a-col>
 			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
@@ -60,11 +65,7 @@
 										placeholder="请选择组织"
 										allow-clear
 										:tree-data="treeData"
-										:field-names="{
-											children: 'children',
-											label: 'name',
-											value: 'id'
-										}"
+										:field-names="treeSelectFieldNames"
 										selectable="false"
 										tree-line
 									/>
@@ -112,7 +113,7 @@
 								<a-button type="dashed" size="small" @click="addRecord(record)"><PlusOutlined /></a-button>
 							</template>
 							<template v-if="column.dataIndex === 'category'">
-								{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}
+								<a-tag :color="$TOOL.dictTypeColor('ROLE_CATEGORY', record.category)">{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}</a-tag>
 							</template>
 						</template>
 					</a-table>
@@ -162,6 +163,7 @@
 	import { message } from 'ant-design-vue'
 	import { remove, isEmpty, cloneDeep } from 'lodash-es'
 	import userCenterApi from '@/api/sys/userCenterApi'
+	import { triggerRef } from 'vue'
 	// 弹窗是否打开
 	const visible = ref(false)
 	const deleteShow = ref('')
@@ -245,6 +247,7 @@
 	const selectedTableListLoading = ref(false)
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	// 获取机构树数据
 	const treeData = ref()
 	//  默认展开二级树的节点id
@@ -255,8 +258,9 @@
 	const recordIds = ref([])
 	// 分页相关
 	const current = ref(0) // 当前页数
-	const pageSize = ref(20) // 每页条数
+	const pageSize = ref(10) // 每页条数
 	const total = ref(0) // 数据总数
+	const treeHeight = ref(400)
 	// 获取选中列表的api
 	const userListByIdList = (param) => {
 		if (typeof props.userListByIdListApi === 'function') {
@@ -280,35 +284,54 @@
 	const onMouseLeave = (index) => {
 		deleteShow.value = ''
 	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (typeof props.orgTreeApi !== 'function' || treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
+			}
+			props
+				.orgTreeApi({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					triggerRef(treeData)
+					resolve()
+				})
+		})
+	}
+
+	// 打开弹框
 	const openModal = () => {
-		if (typeof props.orgTreeApi !== 'function') {
-			message.warning('未配置选择器需要的orgTreeApi接口')
-			return
-		}
-		if (typeof props.userPageApi !== 'function') {
-			message.warning('未配置选择器需要的userPageApi接口')
+		if (typeof props.orgTreeApi !== 'function' || typeof props.userPageApi !== 'function') {
+			message.warning('未配置用户选择器API')
 			return
 		}
 		visible.value = true
+		// 动态计算树高度，适配不同屏幕
+		treeHeight.value = Math.min(Math.max(window.innerHeight - 350, 250), 460)
 		// 获取机构树
 		props
 			.orgTreeApi()
 			.then((data) => {
-				if (data !== null) {
-					treeData.value = data
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
-							}
+				if (!isEmpty(data)) {
+					treeData.value = data.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
+					// 只有一个根节点时才自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value.push(treeData.value[0].id)
+					}
 				}
 			})
 			.finally(() => {
@@ -326,6 +349,7 @@
 		userListByIdList(param)
 			.then((data) => {
 				selectedData.value = data
+				userObj.value = data
 			})
 			.finally(() => {
 				selectedTableListLoading.value = false

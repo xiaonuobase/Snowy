@@ -12,6 +12,10 @@
  */
 package vip.xiaonuo.dev.api;
 
+import cn.hutool.json.JSONObject;
+
+import java.util.List;
+
 /**
  * 字典API
  *
@@ -27,4 +31,12 @@ public interface DevDictApi {
      * @date 2025/6/6 13:04
      */
     String getDictLabel(String typeCode, String value);
+
+    /**
+     * 根据父类型获取字典列表
+     *
+     * @author xuyuxiang
+     * @date 2025/6/6 13:04
+     */
+    List<JSONObject> getDictListByParentDictValue(String typeCode);
 }

@@ -13,8 +13,6 @@
 package vip.xiaonuo.mobile.modular.resource.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -43,7 +41,6 @@ import java.util.List;
  * @date 2022/6/27 14:12
  **/
 @Tag(name = "移动端模块控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 6)
 @RestController
 @Validated
 public class MobileModuleController {
@@ -57,7 +54,6 @@ public class MobileModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取移动端模块分页")
     @GetMapping("/mobile/module/page")
     public CommonResult<Page<MobileModule>> page(MobileModulePageParam mobileModulePageParam) {
@@ -70,7 +66,6 @@ public class MobileModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加移动端模块")
     @CommonLog("添加移动端模块")
     @PostMapping("/mobile/module/add")
@@ -85,7 +80,6 @@ public class MobileModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑移动端模块")
     @CommonLog("编辑移动端模块")
     @PostMapping("/mobile/module/edit")
@@ -100,7 +94,6 @@ public class MobileModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除移动端模块")
     @CommonLog("删除移动端模块")
     @PostMapping("/mobile/module/delete")
@@ -116,7 +109,6 @@ public class MobileModuleController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取移动端模块详情")
     @GetMapping("/mobile/module/detail")
     public CommonResult<MobileModule> detail(@Valid MobileModuleIdParam mobileModuleIdParam) {

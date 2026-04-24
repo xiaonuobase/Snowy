@@ -8,7 +8,8 @@
 
 Snowy（SnowyAdmin）是国内首个国密前后端分离快速开发平台，集成国密加解密插件，
 软件层面完全符合等保测评要求，同时实现国产化机型、中间件、数据库适配，是您的不二之选！
-技术框架与密码结合，让更多的人认识密码，使用密码；更是让前后分离“密”不可分。
+将国密能力内置于技术框架底层，让密码技术从"专业门槛"变为"开箱即用"，真正实现业务安全从底层做起。
+历经多年开源社区打磨与企业客户实践验证，新版本在大数据处理能力与安全体系方面实现了全面升级。
 
 采用SpringBoot+MybatisPlus+AntDesignVue+Vite 等更多组件及前沿技术开发，注释丰富，代码简洁，开箱即用！
 
@@ -60,6 +61,43 @@ gitcode下载地址：[https://gitcode.com/xiaonuobase/Snowy](https://gitcode.co
 演示地址：[https://snowy.xiaonuo.vip](https://snowy.xiaonuo.vip)
 
 文档地址：[https://xiaonuo.vip/doc](https://xiaonuo.vip/doc)
+
+## 商业产品
+
+- 如果开源版本不能满足您的需求，还可以看看我们官方推出的基于开源版开发的商业化产品
+
+<table>
+    <colgroup>
+        <col style="width: 25%"/>
+        <col style="width: 20%"/>
+        <col style="width: 55%"/>
+    </colgroup>
+    <thead>
+        <tr><th>产品名称</th><th>演示</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>AI智能化零代码开发平台</td>
+            <td><a href="https://alsc.xiaonuo.vip">https://alsc.xiaonuo.vip</a></td>
+            <td>AI智能驱动，拖拉拽即可搭建业务系统，无需编写一行代码。</td>
+        </tr>
+        <tr>
+            <td>国产数据中台</td>
+            <td><a href="https://data.xiaonuo.vip">https://data.xiaonuo.vip</a></td>
+            <td>覆盖数据采集、存储、治理、安全、资产化、服务全流程的一站式数据管理平台。</td>
+        </tr>
+        <tr>
+            <td>统一身份认证平台</td>
+            <td><a href="https://iam.xnark.com">https://iam.xnark.com</a></td>
+            <td>一款企业级统一身份认证平台，全面支持 OAuth、SAML、JWT、CAS 等主流协议，既可作为 IDP 构建企业统一认证中心，也可作为 SP 对接第三方身份源，一个平台统管身份认证、单点登录与权限体系。</td>
+        </tr>
+        <tr>
+            <td>AI大模型平台</td>
+            <td><a href="https://ai.xnark.com">https://ai.xnark.com</a></td>
+            <td>一站式企业级AI应用平台，覆盖从大模型接入、智能体搭建、知识库管理到应用发布的全链路，让企业零门槛构建和运营自己的AI能力。</td>
+        </tr>
+    </tbody>
+</table>
 
 ## 快速启动
 
@@ -240,7 +278,7 @@ QQ技术群：732230670（已满）、685395081
 
 微信技术群：
 
-因群达到200人以上，需加微信拉群，禁止群内艾特群主及管理员，私信提问技术问题无时间精力回答（免开尊口），请群内互动互助才是建群的意义，否则我认为你没有加群的必要
+因群达到200人以上，需加微信拉群，禁止群内艾特群主及管理员，私信提问技术问题无时间精力回答，请群内互动互助交流技术才是建群的意义
 
 <table>
     <tr>
@@ -277,13 +315,13 @@ QQ技术群：732230670（已满）、685395081
 
 ## 团队成员
 
-| 成员  | 技术 |  昵称   | 
-|:---:|:--:|:-----:| 
-| 俞宝山 | 全栈 |  俞宝山  | 
-| 徐玉祥 | 全栈 | 就是那个锅 | 
-| 董夏雨 | 全栈 |  阿董   | 
-| 王鹏  | 全栈 | 每天一点  | 
-| 陈心雨 | 前端 |   .   | 
+| 成员  | 技术 |  昵称   |
+|:---:|:--:|:-----:|
+| 俞宝山 | 全栈 |  俞宝山  |
+| 徐玉祥 | 全栈 | 就是那个锅 |
+| 董夏雨 | 全栈 |  阿董   |
+| 王鹏  | 全栈 | 每天一点  |
+| 陈心雨 | 前端 |   .   |
 
 ## 曾获荣誉
 
@@ -297,6 +335,10 @@ QQ技术群：732230670（已满）、685395081
 
 🔥 **2024中国互联网发展创新与投资大赛（开源）-优秀奖**
 
+🔥 **2025年度GitCode百大开源项目**
+
+🔥 **2025年度Gitee开源项目Web应用开发赛道Top3**
+
 <table>
     <tr>
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9mLM-zg%7D%2F&_etag=1730698398-294375&shareID=-9mLM-zg"/></td>
@@ -306,6 +348,14 @@ QQ技术群：732230670（已满）、685395081
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A-9nmI4yQ%7D%2F&_etag=1730707931-764633&shareID=-9nmI4yQ"/></td>
         <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/fileOut&path=%7BshareItemLink%3A_COsphyQ%7D%2F&_etag=1732688010-447888&shareID=_COsphyQ"/></td>
     </tr>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=5f35-ed_a3_uGz1INMaJhSNbI6ixk370tTV5JR0whVe5n8ALraGqmEvRQQMoqeV-Gbs"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=f6618VQ6vkSFTY9v8sg-7ahUp0Zj6Q33y2zL6LUL63_yDOa0xN4TW31IRrrBZZ836AE"/></td>
+    </tr>
+    <tr>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=6dc31rfG5KA1l0nQukMmUm7gEufv6r5Q98iTgZyHbaPhjvGR-h6h77cvZ1DmBC5D_rY"/></td>
+        <td style="width: 50%"><img src="https://pan.xiaonuo.vip/?explorer/share/file&hash=d7cfk0ftuw2tl1bAL42bl2wgk7sgcm-Z4ULwZu5TIjp4zsvmKBkYfGIoY48Buc4H0s0"/></td>
+    </tr>
 </table>
 
 ## 版权说明
@@ -314,6 +364,6 @@ QQ技术群：732230670（已满）、685395081
 
 - 代码可用于个人项目等接私活或企业项目脚手架使用，Snowy全系开源版完全免费
 
-- 二次开发如用于开源竞品请先联系群主沟通，禁止任何变相的二开行为，未经审核视为侵权
+- 二次开源不可参与同类竞争，可在其他赛道进行，有好的案例可以提供，我们会挂在本页进行宣传
 
 - 请不要删除和修改Snowy源码头部的版权与作者声明及出处

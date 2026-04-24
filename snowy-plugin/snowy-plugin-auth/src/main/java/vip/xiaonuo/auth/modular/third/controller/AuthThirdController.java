@@ -13,8 +13,6 @@
 package vip.xiaonuo.auth.modular.third.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -42,7 +40,6 @@ import javax.validation.Valid;
  * @date 2022/7/8 16:18
  **/
 @Tag(name = "三方登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 5)
 @RestController
 @Validated
 public class AuthThirdController {
@@ -56,7 +53,6 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/7/8 16:19
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "第三方登录页面渲染")
     @GetMapping("/auth/third/render")
     public CommonResult<AuthThirdRenderResult> render(@Valid AuthThirdRenderParam authThirdRenderParam) {
@@ -69,7 +65,6 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/7/8 16:42
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "第三方登录授权回调")
     @GetMapping("/auth/third/callback")
     public CommonResult<String> callback(@Valid AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback) {
@@ -82,7 +77,6 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/7/8 16:42
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "第三方登录绑定账号")
     @PostMapping("/auth/third/bindAccount")
     public CommonResult<String> bindAccount(@RequestBody @Valid AuthThirdBindAccountParam authThirdBindAccountParam) {
@@ -95,7 +89,6 @@ public class AuthThirdController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "获取三方用户分页")
     @GetMapping("/auth/third/page")
     public CommonResult<Page<AuthThirdUser>> page(AuthThirdUserPageParam authThirdUserPageParam) {

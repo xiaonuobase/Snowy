@@ -45,6 +45,9 @@ public class GenConfigServiceImpl extends ServiceImpl<GenConfigMapper, GenConfig
         QueryWrapper<GenConfig> queryWrapper = new QueryWrapper<GenConfig>().checkSqlInjection();
 
         queryWrapper.lambda().eq(GenConfig::getBasicId, genConfigListParam.getBasicId());
+        if(ObjectUtil.isNotEmpty(genConfigListParam.getTableType())) {
+            queryWrapper.lambda().eq(GenConfig::getTableType, genConfigListParam.getTableType());
+        }
         if(ObjectUtil.isAllNotEmpty(genConfigListParam.getSortField(), genConfigListParam.getSortOrder())) {
             CommonSortOrderEnum.validate(genConfigListParam.getSortOrder());
             queryWrapper.orderBy(true, genConfigListParam.getSortOrder().equals(CommonSortOrderEnum.ASC.getValue()),

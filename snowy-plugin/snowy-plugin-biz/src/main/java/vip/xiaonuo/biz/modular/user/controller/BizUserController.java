@@ -13,10 +13,8 @@
 package vip.xiaonuo.biz.modular.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -29,6 +27,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.biz.modular.org.entity.BizOrg;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
+import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 import vip.xiaonuo.biz.modular.position.entity.BizPosition;
 import vip.xiaonuo.biz.modular.user.entity.BizUser;
 import vip.xiaonuo.biz.modular.user.enums.BizUserSourceFromTypeEnum;
@@ -49,7 +49,6 @@ import java.util.List;
  * @date 2022/4/22 9:34
  **/
 @Tag(name = "人员控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 9)
 @RestController
 @Validated
 public class BizUserController {
@@ -57,13 +56,15 @@ public class BizUserController {
     @Resource
     private BizUserService bizUserService;
 
+    @Resource
+    private BizOrgService bizOrgService;
+
     /**
      * 获取人员分页
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取人员分页")
     @SaCheckPermission("/biz/user/page")
     @GetMapping("/biz/user/page")
@@ -77,7 +78,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加人员")
     @CommonLog("添加人员")
     @SaCheckPermission("/biz/user/add")
@@ -93,7 +93,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑人员")
     @CommonLog("编辑人员")
     @SaCheckPermission("/biz/user/edit")
@@ -109,7 +108,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除人员")
     @CommonLog("删除人员")
     @SaCheckPermission("/biz/user/delete")
@@ -126,7 +124,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取人员详情")
     @SaCheckPermission("/biz/user/detail")
     @GetMapping("/biz/user/detail")
@@ -140,7 +137,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "禁用人员")
     @CommonLog("禁用人员")
     @SaCheckPermission("/biz/user/disableUser")
@@ -156,7 +152,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "启用人员")
     @CommonLog("启用人员")
     @SaCheckPermission("/biz/user/enableUser")
@@ -172,7 +167,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "重置人员密码")
     @CommonLog("重置人员密码")
     @SaCheckPermission("/biz/user/resetPassword")
@@ -188,7 +182,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取人员拥有角色")
     @SaCheckPermission("/biz/user/ownRole")
     @GetMapping("/biz/user/ownRole")
@@ -202,7 +195,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "给人员授权角色")
     @CommonLog("给人员授权角色")
     @SaCheckPermission("/biz/user/grantRole")
@@ -218,7 +210,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "人员导出")
     @CommonLog("人员导出")
     @SaCheckPermission("/biz/user/export")
@@ -233,7 +224,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "导出人员个人信息")
     @CommonLog("导出人员个人信息")
     @SaCheckPermission("/biz/user/exportUserInfo")
@@ -245,17 +235,16 @@ public class BizUserController {
     /* ====人员部分所需要用到的选择器==== */
 
     /**
-     * 获取机构树选择器
+     * 获取机构树选择器（懒加载）
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 13)
-    @Operation(summary = "获取机构树选择器")
+    @Operation(summary = "获取机构树选择器（懒加载）")
     @SaCheckPermission("/biz/user/orgTreeSelector")
     @GetMapping("/biz/user/orgTreeSelector")
-    public CommonResult<List<Tree<String>>> orgTreeSelector() {
-        return CommonResult.data(bizUserService.orgTreeSelector());
+    public CommonResult<List<JSONObject>> orgTreeSelector(BizOrgSelectorTreeParam bizOrgSelectorTreeParam) {
+        return CommonResult.data(bizUserService.orgTreeSelector(bizOrgSelectorTreeParam));
     }
 
     /**
@@ -264,7 +253,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 14)
     @Operation(summary = "获取机构列表选择器")
     @SaCheckPermission("/biz/user/orgListSelector")
     @GetMapping("/biz/user/orgListSelector")
@@ -278,7 +266,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "获取岗位选择器")
     @SaCheckPermission("/biz/user/positionSelector")
     @GetMapping("/biz/user/positionSelector")
@@ -292,7 +279,6 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "获取角色选择器")
     @SaCheckPermission("/biz/user/roleSelector")
     @GetMapping("/biz/user/roleSelector")
@@ -306,11 +292,22 @@ public class BizUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "获取人员选择器")
     @SaCheckPermission("/biz/user/userSelector")
     @GetMapping("/biz/user/userSelector")
     public CommonResult<Page<BizUser>> userSelector(BizUserSelectorUserParam bizUserSelectorUserParam) {
         return CommonResult.data(bizUserService.userSelector(bizUserSelectorUserParam));
+    }
+
+    /**
+     * 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+     *
+     * @author yubaoshan
+     * @date 2026/3/23
+     */
+    @Operation(summary = "根据orgId列表获取祖先路径节点")
+    @PostMapping("/biz/user/getAncestorNodes")
+    public CommonResult<List<JSONObject>> getAncestorNodes(@RequestBody List<String> orgIdList) {
+        return CommonResult.data(bizOrgService.getAncestorNodes(orgIdList));
     }
 }

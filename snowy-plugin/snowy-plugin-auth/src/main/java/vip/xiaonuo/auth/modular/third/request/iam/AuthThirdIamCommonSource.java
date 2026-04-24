@@ -46,6 +46,6 @@ public record AuthThirdIamCommonSource(String authorizeUrl, String accessTokenUr
 
     @Override
     public String toString() {
-        return "COMMON_THIRD";
+        return "IAM";
     }
 }

@@ -93,7 +93,7 @@
 		autoCropHeight: {
 			type: Number,
 			default: () => 100
-		},
+		}
 	})
 	const emit = defineEmits({ successful: null })
 	const visible = ref(false)
@@ -164,31 +164,30 @@
 		width: 165px;
 		height: 165px;
 		border: 1px solid #e9e9e9;
-		border-radius: 2px
+		border-radius: 2px;
 	}
 	.xn-pt {
 		padding-top: 10px;
 	}
 	.xn-tl {
 		text-align: center;
-		padding-top: 10px
+		padding-top: 10px;
 	}
 	.xn-cj-two {
 		padding-top: 10px;
-		display: flex
-
+		display: flex;
 	}
 	.xn-cj-two > div:first-child {
 		height: 100px;
 		width: 100px;
 		border: 1px solid #e9e9e9;
-		border-radius: 2px
+		border-radius: 2px;
 	}
-	.xn-cj-two > div:nth-child(2)  {
+	.xn-cj-two > div:nth-child(2) {
 		height: 60px;
 		width: 60px;
 		border: 1px solid #e9e9e9;
 		margin-left: 5px;
-		border-radius: 2px
+		border-radius: 2px;
 	}
 </style>

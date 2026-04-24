@@ -72,13 +72,13 @@
 
         <!-- easy-trans -->
         <dependency>
-            <groupId>com.fhs-opensource</groupId>
+            <groupId>org.dromara</groupId>
             <artifactId>easy-trans-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- easy-trans-mybatis-plus-extend -->
         <dependency>
-            <groupId>com.fhs-opensource</groupId>
+            <groupId>org.dromara</groupId>
             <artifactId>easy-trans-mybatis-plus-extend</artifactId>
         </dependency>
 
@@ -108,8 +108,21 @@
 
         <!-- knife4j -->
         <dependency>
-            <groupId>com.github.xingfudeshi</groupId>
+            <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springdoc</groupId>
+                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- springdoc，需要高版本兼容Spring Boot 3.5.x -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.13</version>
         </dependency>
 
         <!-- easy-poi -->

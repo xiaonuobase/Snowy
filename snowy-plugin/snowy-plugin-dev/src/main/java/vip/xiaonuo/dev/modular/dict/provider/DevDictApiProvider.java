@@ -12,10 +12,13 @@
  */
 package vip.xiaonuo.dev.modular.dict.provider;
 
+import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.dev.api.DevDictApi;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
+
+import java.util.List;
 
 /**
  * 字典API接口实现类
@@ -37,5 +40,16 @@ public class DevDictApiProvider implements DevDictApi {
      */
     public String getDictLabel(String typeCode, String value) {
         return devDictService.getDictLabel(typeCode, value);
+    }
+
+    /**
+     * 根据父类型获取字典列表
+     *
+     * @author yubaoshan
+     * @date 2025/6/6 13:04
+     */
+    @Override
+    public List<JSONObject> getDictListByParentDictValue(String typeCode) {
+        return devDictService.getDictListByParentDictValue(typeCode);
     }
 }

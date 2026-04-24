@@ -18,7 +18,6 @@ const request = (url, ...arg) => baseRequest(`/auth/sso/b/` + url, ...arg)
  * @date 2022-09-22 22:33:20
  */
 export default {
-
 	// B端获取认证中心地址
 	getSsoAuthUrl(data) {
 		return request('getSsoAuthUrl', data, 'get')

@@ -85,6 +85,8 @@
 						bordered
 						:tool-config="toolConfig"
 						:row-key="(record) => record.id"
+						:alert="options.alert.show"
+						:row-selection="options.rowSelection"
 						:scroll="{ x: 'max-content' }"
 					>
 						<template #operator>
@@ -93,9 +95,19 @@
 									<template #icon><PlusOutlined /></template>
 									新增字典
 								</a-button>
+								<xn-batch-button
+									buttonName="批量删除"
+									icon="DeleteOutlined"
+									buttonDanger
+									:selectedRowKeys="selectedRowKeys"
+									@batchCallBack="deleteBatchDict"
+								/>
 							</a-space>
 						</template>
 						<template #bodyCell="{ column, record }">
+							<template v-if="column.dataIndex === 'dictColor'">
+								<a-tag v-if="record.dictColor" :color="record.dictColor">{{ record.dictColor }}</a-tag>
+							</template>
 							<template v-if="column.dataIndex === 'level'">
 								<a-tag color="processing" v-if="record.level">{{ record.level }}</a-tag>
 								<a-tag color="success" v-else>子级</a-tag>
@@ -135,8 +147,7 @@
 	const columns = ref([
 		{
 			title: '字典名称',
-			dataIndex: 'dictLabel',
-			width: 200
+			dataIndex: 'dictLabel'
 		},
 		{
 			title: '字典值',
@@ -144,17 +155,20 @@
 			ellipsis: true
 		},
 		{
+			title: '字典颜色',
+			dataIndex: 'dictColor',
+			align: 'center'
+		},
+		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			width: 100,
 			align: 'center'
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right',
-			width: 150
+			fixed: 'right'
 		}
 	])
 
@@ -177,6 +191,22 @@
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
+
+	// 选择配置
+	let selectedRowKeys = ref([])
+	const options = {
+		alert: {
+			show: false,
+			clear: () => {
+				selectedRowKeys = ref([])
+			}
+		},
+		rowSelection: {
+			onChange: (selectedRowKey, selectedRows) => {
+				selectedRowKeys.value = selectedRowKey
+			}
+		}
+	}
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
@@ -312,6 +342,15 @@
 			tableRef.value.refresh()
 			refreshStoreDict()
 			loadTreeData() // 删除后刷新树
+		})
+	}
+
+	// 批量删除
+	const deleteBatchDict = (params) => {
+		dictApi.dictDelete(params).then(() => {
+			tableRef.value.clearRefreshSelected()
+			refreshStoreDict()
+			loadTreeData()
 		})
 	}
 

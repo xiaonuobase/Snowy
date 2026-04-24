@@ -22,6 +22,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -40,15 +42,14 @@ import vip.xiaonuo.auth.modular.login.enums.AuthExceptionEnum;
 import vip.xiaonuo.auth.modular.login.enums.AuthPhoneOrEmailTypeEnum;
 import vip.xiaonuo.auth.modular.login.enums.AuthStrategyWhenNoUserWithPhoneOrEmailEnum;
 import vip.xiaonuo.auth.modular.login.param.*;
+import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.client.ClientUserApi;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
-import vip.xiaonuo.common.consts.CacheConstant;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
 import vip.xiaonuo.common.util.CommonEmailUtil;
-import java.util.concurrent.CompletableFuture;
 import vip.xiaonuo.common.util.CommonOtpUtil;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -57,6 +58,7 @@ import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.sys.api.SysUserApi;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -175,6 +177,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Resource
     private ClientUserApi clientUserApi;
+
+    @Resource
+    private AuthThirdClientProperties authThirdClientProperties;
 
     @Override
     public AuthPicValidCodeResult getPicCaptcha(String type) {
@@ -403,7 +408,7 @@ public class AuthServiceImpl implements AuthService {
             }
         } else {
             if(CommonEmailUtil.isNotEmail(phoneOrEmail)) {
-                throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+                throw new CommonException(AuthExceptionEnum.EMAIL_FORMAT_ERROR.getValue());
             }
         }
         // 先校验验证码
@@ -696,7 +701,7 @@ public class AuthServiceImpl implements AuthService {
      * @date 2024/7/22 22:00
      */
     private void fillSaBaseLoginUserAndUpdateCache(SaBaseLoginUser saBaseLoginUser) {
-        // 角色集合
+        // 角色集合（后续查询依赖角色ID，必须先执行）
         List<JSONObject> roleList = loginUserApi.getRoleListByUserId(saBaseLoginUser.getId());
         // 角色id集合
         List<String> roleIdList = roleList.stream().map(jsonObject -> jsonObject.getStr("id")).collect(Collectors.toList());
@@ -704,38 +709,35 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseLoginUser.getId()));
-
-        // 并行获取信息
-        CompletableFuture<List<String>> buttonCodeListFuture = CompletableFuture.supplyAsync(() ->
+        // 以下三个查询互不依赖，并行执行
+        CompletableFuture<List<String>> buttonCodeFuture = CompletableFuture.supplyAsync(() ->
                 loginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
-        CompletableFuture<List<String>> mobileButtonCodeListFuture = CompletableFuture.supplyAsync(() ->
+        CompletableFuture<List<String>> mobileButtonCodeFuture = CompletableFuture.supplyAsync(() ->
                 loginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
-        CompletableFuture<List<JSONObject>> permissionListFuture = CompletableFuture.supplyAsync(() ->
-                loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId()));
-        try {
-            // 等待所有任务完成
-            CompletableFuture.allOf(buttonCodeListFuture, mobileButtonCodeListFuture, permissionListFuture).join();
-            // 获取按钮码
-            saBaseLoginUser.setButtonCodeList(buttonCodeListFuture.get());
-            // 获取移动端按钮码
-            saBaseLoginUser.setMobileButtonCodeList(mobileButtonCodeListFuture.get());
-            // 获取数据范围
-            saBaseLoginUser.setDataScopeList(Convert.toList(SaBaseLoginUser.DataScope.class, permissionListFuture.get()));
-        } catch (Exception e) {
-            throw new CommonException("获取登录配置信息失败", e);
-        }
-
+        CompletableFuture<List<SaBaseLoginUser.DataScope>> dataScopeFuture = CompletableFuture.supplyAsync(() ->
+                Convert.toList(SaBaseLoginUser.DataScope.class,
+                        loginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, saBaseLoginUser.getOrgId())));
+        // 等待所有查询完成
+        CompletableFuture.allOf(buttonCodeFuture, mobileButtonCodeFuture, dataScopeFuture).join();
+        // 获取按钮码
+        saBaseLoginUser.setButtonCodeList(buttonCodeFuture.join());
+        // 获取移动端按钮码
+        saBaseLoginUser.setMobileButtonCodeList(mobileButtonCodeFuture.join());
+        // 获取数据范围
+        saBaseLoginUser.setDataScopeList(dataScopeFuture.join());
         // 获取权限码
         List<String> permissionCodeList = saBaseLoginUser.getDataScopeList().stream()
                 .map(SaBaseLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
         // 设置权限码
         saBaseLoginUser.setPermissionCodeList(permissionCodeList);
-        // 权限码列表存入缓存
-        commonCacheOperator.put(CacheConstant.AUTH_B_PERMISSION_LIST_CACHE_KEY + saBaseLoginUser.getId(),permissionCodeList);
         // 获取角色码
         saBaseLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
         StpUtil.getTokenSession().set("loginUser", saBaseLoginUser);
+        // 异步刷新用户数据范围预计算表（不阻塞登录返回，权限数据已写入TokenSession）
+        String userId = saBaseLoginUser.getId();
+        List<SaBaseLoginUser.DataScope> dataScopeList = saBaseLoginUser.getDataScopeList();
+        CompletableFuture.runAsync(() -> loginUserApi.refreshUserDataScope(userId, dataScopeList));
     }
 
     /**
@@ -764,7 +766,7 @@ public class AuthServiceImpl implements AuthService {
      * @date 2024/7/22 22:00
      */
     private void fillSaBaseClientLoginUserAndUpdateCache(SaBaseClientLoginUser saBaseClientLoginUser) {
-        // 角色集合
+        // 角色集合（后续查询依赖角色ID，必须先执行）
         List<JSONObject> roleList = clientLoginUserApi.getRoleListByUserId(saBaseClientLoginUser.getId());
         // 角色id集合
         List<String> roleIdList = roleList.stream().map(jsonObject -> jsonObject.getStr("id")).collect(Collectors.toList());
@@ -772,35 +774,27 @@ public class AuthServiceImpl implements AuthService {
         List<String> roleCodeList = roleList.stream().map(jsonObject -> jsonObject.getStr("code")).collect(Collectors.toList());
         // 角色id和用户id集合
         List<String> userAndRoleIdList = CollectionUtil.unionAll(roleIdList, CollectionUtil.newArrayList(saBaseClientLoginUser.getId()));
-
-        // 并行获取信息
-        CompletableFuture<List<String>> buttonCodeListFuture = CompletableFuture.supplyAsync(() ->
+        // 以下三个查询互不依赖，并行执行
+        CompletableFuture<List<String>> buttonCodeFuture = CompletableFuture.supplyAsync(() ->
                 clientLoginUserApi.getButtonCodeListListByUserAndRoleIdList(userAndRoleIdList));
-        CompletableFuture<List<String>> mobileButtonCodeListFuture = CompletableFuture.supplyAsync(() ->
+        CompletableFuture<List<String>> mobileButtonCodeFuture = CompletableFuture.supplyAsync(() ->
                 clientLoginUserApi.getMobileButtonCodeListListByUserIdAndRoleIdList(userAndRoleIdList));
-        CompletableFuture<List<JSONObject>> permissionListFuture = CompletableFuture.supplyAsync(() ->
-                clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null));
-
-        try {
-            // 等待所有任务完成
-            CompletableFuture.allOf(buttonCodeListFuture, mobileButtonCodeListFuture, permissionListFuture).join();
-            // 获取按钮码
-            saBaseClientLoginUser.setButtonCodeList(buttonCodeListFuture.get());
-            // 获取移动端按钮码
-            saBaseClientLoginUser.setMobileButtonCodeList(mobileButtonCodeListFuture.get());
-            // 获取数据范围
-            saBaseClientLoginUser.setDataScopeList(Convert.toList(SaBaseClientLoginUser.DataScope.class, permissionListFuture.get()));
-        } catch (Exception e) {
-            throw new CommonException("获取登录配置信息失败", e);
-        }
-
+        CompletableFuture<List<SaBaseClientLoginUser.DataScope>> dataScopeFuture = CompletableFuture.supplyAsync(() ->
+                Convert.toList(SaBaseClientLoginUser.DataScope.class,
+                        clientLoginUserApi.getPermissionListByUserIdAndRoleIdList(userAndRoleIdList, null)));
+        // 等待所有查询完成
+        CompletableFuture.allOf(buttonCodeFuture, mobileButtonCodeFuture, dataScopeFuture).join();
+        // 获取按钮码
+        saBaseClientLoginUser.setButtonCodeList(buttonCodeFuture.join());
+        // 获取移动端按钮码
+        saBaseClientLoginUser.setMobileButtonCodeList(mobileButtonCodeFuture.join());
+        // 获取数据范围
+        saBaseClientLoginUser.setDataScopeList(dataScopeFuture.join());
         // 获取权限码
         List<String> permissionCodeList = saBaseClientLoginUser.getDataScopeList().stream()
                 .map(SaBaseClientLoginUser.DataScope::getApiUrl).collect(Collectors.toList());
         // 设置权限码
         saBaseClientLoginUser.setPermissionCodeList(permissionCodeList);
-        // 权限码列表存入缓存
-        commonCacheOperator.put(CacheConstant.AUTH_C_PERMISSION_LIST_CACHE_KEY + saBaseClientLoginUser.getId(),permissionCodeList);
         // 获取角色码
         saBaseClientLoginUser.setRoleCodeList(roleCodeList);
         // 缓存用户信息，此处使用TokenSession为了指定时间内无操作则自动下线
@@ -815,20 +809,23 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseLoginUser getLoginUser() {
-        // 获取当前缓存的用户信息
+        // 直接从TokenSession获取缓存的用户信息
         SaBaseLoginUser saBaseLoginUser = StpLoginUserUtil.getLoginUser();
-        // 获取B端用户信息
-        saBaseLoginUser = loginUserApi.getUserById(saBaseLoginUser.getId());
-        // 填充B端用户信息并更新缓存
-        fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        // 如果缓存中没有用户信息（如旧session），回退到查DB+填充缓存
+        if(ObjectUtil.isEmpty(saBaseLoginUser)) {
+            saBaseLoginUser = loginUserApi.getUserById(StpUtil.getLoginIdAsString());
+            fillSaBaseLoginUserAndUpdateCache(saBaseLoginUser);
+        }
+        // 通过JSON序列化深拷贝，避免修改缓存中的对象
+        SaBaseLoginUser result = JSONUtil.toBean(JSONUtil.toJsonStr(saBaseLoginUser), saBaseLoginUser.getClass());
         // 去掉密码
-        saBaseLoginUser.setPassword("******");
+        result.setPassword("******");
         // 去掉权限码
-        saBaseLoginUser.setPermissionCodeList(CollectionUtil.newArrayList());
+        result.setPermissionCodeList(CollectionUtil.newArrayList());
         // 去掉数据范围
-        saBaseLoginUser.setDataScopeList(CollectionUtil.newArrayList());
+        result.setDataScopeList(CollectionUtil.newArrayList());
         // 返回
-        return saBaseLoginUser;
+        return result;
     }
 
     /**
@@ -839,20 +836,23 @@ public class AuthServiceImpl implements AuthService {
      **/
     @Override
     public SaBaseClientLoginUser getClientLoginUser() {
-        // 获取当前缓存的用户信息
+        // 直接从TokenSession获取缓存的用户信息
         SaBaseClientLoginUser saBaseClientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
-        // 获取C端用户信息
-        saBaseClientLoginUser = clientLoginUserApi.getClientUserById(saBaseClientLoginUser.getId());
-        // 填充C端用户信息并更新缓存
-        fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        // 如果缓存中没有用户信息（如旧session），回退到查DB+填充缓存
+        if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+            saBaseClientLoginUser = clientLoginUserApi.getClientUserById(StpClientUtil.getLoginIdAsString());
+            fillSaBaseClientLoginUserAndUpdateCache(saBaseClientLoginUser);
+        }
+        // 通过JSON序列化深拷贝，避免修改缓存中的对象
+        SaBaseClientLoginUser result = JSONUtil.toBean(JSONUtil.toJsonStr(saBaseClientLoginUser), saBaseClientLoginUser.getClass());
         // 去掉密码
-        saBaseClientLoginUser.setPassword("******");
+        result.setPassword("******");
         // 去掉权限码
-        saBaseClientLoginUser.setPermissionCodeList(CollectionUtil.newArrayList());
+        result.setPermissionCodeList(CollectionUtil.newArrayList());
         // 去掉数据范围
-        saBaseClientLoginUser.setDataScopeList(CollectionUtil.newArrayList());
+        result.setDataScopeList(CollectionUtil.newArrayList());
         // 返回
-        return saBaseClientLoginUser;
+        return result;
     }
 
     @Override
@@ -1206,6 +1206,92 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new CommonException("管理员未开启动态口令登录");
         }
+    }
+
+    @Override
+    public String doLoginByThirdToken(AuthThirdTokenLoginParam authThirdTokenLoginParam) {
+        // 校验是否配置了第三方用户信息接口地址（配置了即开启）
+        String userInfoUrl = authThirdClientProperties.getUserInfoUrl();
+        if(ObjectUtil.isEmpty(userInfoUrl)) {
+            throw new CommonException("未配置第三方用户信息接口地址，无法使用Token交换登录");
+        }
+        // 用accessToken调用第三方用户信息接口
+        JSONObject thirdUserInfo = requestThirdUserInfo(userInfoUrl, authThirdTokenLoginParam.getAccessToken());
+        // 从第三方返回中解析用户信息（固定字段：account、email、phone）
+        String thirdAccount = thirdUserInfo.getStr("account");
+        String thirdEmail = thirdUserInfo.getStr("email");
+        String thirdPhone = thirdUserInfo.getStr("phone");
+        // 三级降级匹配本地用户：account → email → phone
+        SaBaseLoginUser saBaseLoginUser = matchLocalUser(thirdAccount, thirdEmail, thirdPhone);
+        // 执行B端登录
+        return execLoginB(saBaseLoginUser, AuthDeviceTypeEnum.PC.getValue());
+    }
+
+    /**
+     * 调用第三方用户信息接口
+     * 规范：GET请求，Header传Authorization: Bearer xxx
+     * 返回格式：{code:200, data:{account,email,phone}}
+     */
+    private JSONObject requestThirdUserInfo(String userInfoUrl, String accessToken) {
+        try {
+            HttpResponse response = HttpRequest.get(userInfoUrl)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .timeout(10000)
+                    .execute();
+            if(!response.isOk()) {
+                throw new CommonException("调用第三方用户信息接口失败，HTTP状态码：{}", response.getStatus());
+            }
+            String body = response.body();
+            if(ObjectUtil.isEmpty(body)) {
+                throw new CommonException("第三方用户信息接口返回为空");
+            }
+            JSONObject resultJson = JSONUtil.parseObj(body);
+            // 校验code
+            Integer code = resultJson.getInt("code");
+            if(code == null || code != 200) {
+                throw new CommonException("第三方用户信息接口返回业务异常，code={}", code);
+            }
+            // 提取data
+            JSONObject dataJson = resultJson.getJSONObject("data");
+            if(ObjectUtil.isEmpty(dataJson)) {
+                throw new CommonException("第三方用户信息接口返回数据中未找到data字段");
+            }
+            return dataJson;
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("调用第三方用户信息接口异常：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 三级降级匹配本地用户：account → email → phone
+     */
+    private SaBaseLoginUser matchLocalUser(String thirdAccount, String thirdEmail, String thirdPhone) {
+        // 优先通过account查找
+        if(StrUtil.isNotBlank(thirdAccount)) {
+            SaBaseLoginUser user = loginUserApi.getUserByAccount(thirdAccount);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 其次通过email查找
+        if(StrUtil.isNotBlank(thirdEmail)) {
+            SaBaseLoginUser user = loginUserApi.getUserByEmail(thirdEmail);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 最后通过phone查找
+        if(StrUtil.isNotBlank(thirdPhone)) {
+            SaBaseLoginUser user = loginUserApi.getUserByPhone(thirdPhone);
+            if(ObjectUtil.isNotEmpty(user)) {
+                return user;
+            }
+        }
+        // 三种方式都找不到
+        throw new CommonException("第三方用户（account={}, email={}, phone={}）在本系统中未找到对应用户，请联系管理员同步用户",
+                thirdAccount, thirdEmail, thirdPhone);
     }
 
     /**

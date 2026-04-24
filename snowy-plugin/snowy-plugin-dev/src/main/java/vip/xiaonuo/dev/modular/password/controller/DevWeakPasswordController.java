@@ -13,8 +13,6 @@
 package vip.xiaonuo.dev.modular.password.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -43,7 +41,6 @@ import java.util.List;
  * @date 2022/4/25 20:40
  */
 @Tag(name = "弱密码库控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 2)
 @RestController
 @Validated
 public class DevWeakPasswordController {
@@ -57,7 +54,6 @@ public class DevWeakPasswordController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取弱密码库分页")
     @GetMapping("/dev/weakPassword/page")
     public CommonResult<Page<DevWeakPassword>> page(DevWeakPasswordPageParam devWeakPasswordPageParam) {
@@ -70,7 +66,6 @@ public class DevWeakPasswordController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加弱密码库")
     @CommonLog("添加弱密码库")
     @PostMapping("/dev/weakPassword/add")
@@ -85,7 +80,6 @@ public class DevWeakPasswordController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑弱密码库")
     @CommonLog("编辑弱密码库")
     @PostMapping("/dev/weakPassword/edit")
@@ -100,7 +94,6 @@ public class DevWeakPasswordController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除弱密码库")
     @CommonLog("删除弱密码库")
     @PostMapping("/dev/weakPassword/delete")
@@ -116,7 +109,6 @@ public class DevWeakPasswordController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取弱密码库详情")
     @GetMapping("/dev/weakPassword/detail")
     public CommonResult<DevWeakPassword> detail(@Valid DevWeakPasswordIdParam devWeakPasswordIdParam) {

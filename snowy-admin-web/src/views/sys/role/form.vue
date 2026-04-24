@@ -22,21 +22,12 @@
 				/>
 			</a-form-item>
 			<a-form-item v-if="formData.category === 'ORG'" label="所属机构：" name="orgId">
-				<a-tree-select
+				<xn-tree-select
+					ref="orgTreeSelectRef"
 					v-model:value="formData.orgId"
-					class="xn-wd"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+					:tree-api="roleApi.roleOrgTreeSelector"
+					:ancestor-api="roleApi.roleGetAncestorNodes"
 					placeholder="请选择组织"
-					allow-clear
-					tree-default-expand-all
-					:tree-data="treeData"
-					:field-names="{
-						children: 'children',
-						label: 'name',
-						value: 'id'
-					}"
-					selectable="false"
-					tree-line
 				/>
 			</a-form-item>
 			<a-form-item label="排序：" name="sortCode">
@@ -55,24 +46,17 @@
 	import tool from '@/utils/tool'
 	import roleApi from '@/api/sys/roleApi'
 
-	// 定义emit事件
 	const emit = defineEmits({ successful: null })
-	// 默认是关闭状态
 	const visible = ref(false)
 	const formRef = ref()
-	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
-	// 定义机构元素
-	const treeData = ref([])
 	const submitLoading = ref(false)
-	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
-	// 打开抽屉
+	const orgTreeSelectRef = ref()
+
 	const onOpen = (record, category, orgId) => {
 		visible.value = true
-		// 判断角色的类型
-		if (category) {
-			formData.value.category = category
-		}
+		formData.value = {}
+		if (category) formData.value.category = category
 		if (orgId) {
 			formData.value.category = 'ORG'
 			formData.value.orgId = orgId
@@ -83,16 +67,24 @@
 			formData.value.sortCode = 99
 			formData.value.code = tool.generateString(10)
 		}
-		// 获取机构树并加入顶级
-		roleApi.roleOrgTreeSelector().then((res) => {
-			treeData.value = res
+		nextTick(() => {
+			const echoOrgId = (record && record.orgId) || orgId
+			if (echoOrgId) {
+				// 等组件渲染后再调用 echo（v-if 可能延迟挂载）
+				nextTick(() => {
+					orgTreeSelectRef.value && orgTreeSelectRef.value.echo([echoOrgId])
+				})
+			} else if (orgTreeSelectRef.value) {
+				orgTreeSelectRef.value.init()
+			}
 		})
 	}
-	// 关闭抽屉
+
 	const onClose = () => {
 		visible.value = false
+		formData.value = {}
 	}
-	// 默认要校验的
+
 	const formRules = {
 		orgId: [required('请选择所属组织')],
 		name: [required('请输入角色名称')],
@@ -100,9 +92,9 @@
 		category: [required('请选择角色分类')],
 		sortCode: [required('请选择排序')]
 	}
-	// 机构分类字典
+
 	let categoryOptions = tool.dictList('ROLE_CATEGORY')
-	// 验证并提交数据
+
 	const onSubmit = () => {
 		formRef.value
 			.validate()
@@ -111,7 +103,7 @@
 				roleApi
 					.submitForm(formData.value, formData.value.id)
 					.then(() => {
-						visible.value = false
+						onClose()
 						emit('successful')
 					})
 					.finally(() => {
@@ -120,8 +112,6 @@
 			})
 			.catch(() => {})
 	}
-	// 调用这个函数将子组件的一些数据和方法暴露出去
-	defineExpose({
-		onOpen
-	})
+
+	defineExpose({ onOpen })
 </script>

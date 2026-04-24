@@ -20,17 +20,29 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientId：" name="SNOWY_THIRD_WECHAT_CLIENT_ID" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientId："
+						name="SNOWY_THIRD_WECHAT_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_CLIENT_ID" placeholder="请输入clientId" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientSecret：" name="SNOWY_THIRD_WECHAT_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientSecret："
+						name="SNOWY_THIRD_WECHAT_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_CLIENT_SECRET" placeholder="请输入clientSecret" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="redirectUrl：" name="SNOWY_THIRD_WECHAT_REDIRECT_URL" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="redirectUrl："
+						name="SNOWY_THIRD_WECHAT_REDIRECT_URL"
+						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_REDIRECT_URL" placeholder="请输入redirectUrl" />
 					</a-form-item>
 				</a-col>

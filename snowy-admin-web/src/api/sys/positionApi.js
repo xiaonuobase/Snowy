@@ -38,12 +38,16 @@ export default {
 	positionDetail(data) {
 		return request('detail', data, 'get')
 	},
-	// 获取组织树选择器
+	// 获取组织树选择器（懒加载）
 	positionOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
 	// 获取职位选择器
 	positionPositionSelector(data) {
 		return request('positionSelector', data, 'get')
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	positionGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

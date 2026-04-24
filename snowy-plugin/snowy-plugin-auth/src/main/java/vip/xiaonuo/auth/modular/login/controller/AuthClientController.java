@@ -12,8 +12,6 @@
  */
 package vip.xiaonuo.auth.modular.login.controller;
 
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -40,7 +38,6 @@ import javax.validation.Valid;
  * @date 2021/12/23 21:50
  */
 @Tag(name = "C端登录控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class AuthClientController {
@@ -54,7 +51,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "C端获取图片验证码")
     @GetMapping("/auth/c/getPicCaptcha")
     public CommonResult<AuthPicValidCodeResult> getPicCaptcha() {
@@ -67,7 +63,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "C端获取手机登录验证码")
     @GetMapping("/auth/c/getPhoneValidCode")
     public CommonResult<String> getPhoneValidCode(@Valid AuthGetPhoneValidCodeParam authGetPhoneValidCodeParam) {
@@ -80,7 +75,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "C端获取邮箱登录验证码")
     @GetMapping("/auth/c/getEmailValidCode")
     public CommonResult<String> getEmailValidCode(@Valid AuthGetEmailValidCodeParam authGetEmailValidCodeParam) {
@@ -93,7 +87,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "C端账号密码登录")
     @PostMapping("/auth/c/doLogin")
     public CommonResult<String> doLogin(@RequestBody @Valid AuthAccountPasswordLoginParam authAccountPasswordLoginParam) {
@@ -106,7 +99,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "C端手机验证码登录")
     @PostMapping("/auth/c/doLoginByPhone")
     public CommonResult<String> doLoginByPhone(@RequestBody @Valid AuthPhoneValidCodeLoginParam authPhoneValidCodeLoginParam) {
@@ -119,7 +111,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "C端邮箱验证码登录")
     @PostMapping("/auth/c/doLoginByEmail")
     public CommonResult<String> doLoginByEmail(@RequestBody @Valid AuthEmailValidCodeLoginParam authEmailValidCodeLoginParam) {
@@ -132,7 +123,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "C端退出")
     @SaClientCheckLogin
     @GetMapping("/auth/c/doLogout")
@@ -147,7 +137,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "C端获取用户信息")
     @SaClientCheckLogin
     @GetMapping("/auth/c/getLoginUser")
@@ -161,7 +150,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "C端注册")
     @PostMapping("/auth/c/register")
     public CommonResult<String> register(@RequestBody @Valid AuthRegisterParam authRegisterParam) {
@@ -175,7 +163,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "C端动态口令登录")
     @PostMapping("/auth/c/doLoginByOtp")
     public CommonResult<String> doLoginByOtp(@RequestBody @Valid AuthOtpLoginParam authOtpLoginParam) {
@@ -188,7 +175,6 @@ public class AuthClientController {
      * @author xuyuxiang
      * @date 2021/10/15 13:12
      **/
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "C端判断是否登录")
     @GetMapping("/auth/c/isLogin")
     public CommonResult<Boolean> isLogin() {

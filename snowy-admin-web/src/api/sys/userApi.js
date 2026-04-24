@@ -46,7 +46,7 @@ export default {
 	userResetPassword(data) {
 		return request('resetPassword', data)
 	},
-	// 获取组织选择器
+	// 获取组织树选择器（懒加载）
 	userOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},
@@ -107,5 +107,9 @@ export default {
 		return request('exportUserInfo', data, 'get', {
 			responseType: 'blob'
 		})
+	},
+	// 根据orgId列表获取祖先路径节点（用于懒加载树回显）
+	userGetAncestorNodes(data) {
+		return request('getAncestorNodes', data)
 	}
 }

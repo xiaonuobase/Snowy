@@ -1,14 +1,32 @@
 <template>
 	<XnResizablePanel direction="row" :initial-size="300" :min-size="200" :max-size="500" :md="0">
 		<template #left>
-			<a-tree
-				v-if="treeData.length > 0"
-				v-model:expandedKeys="defaultExpandedKeys"
-				:tree-data="treeData"
-				:field-names="treeFieldNames"
-				@select="treeSelect"
-			/>
-			<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+			<div ref="treeContainerRef" style="height: 100%; display: flex; flex-direction: column">
+				<a-input-search
+					v-model:value="treeSearchKey"
+					placeholder="搜索机构"
+					allow-clear
+					style="margin-bottom: 8px; flex-shrink: 0"
+					@search="onTreeSearch"
+				/>
+				<div style="flex: 1; overflow: hidden">
+					<xn-tree-skeleton v-if="treeLoading && treeData.length === 0" />
+					<a-spin v-else-if="treeData.length > 0" :spinning="treeLoading">
+						<a-tree
+							v-model:expandedKeys="defaultExpandedKeys"
+							v-model:loadedKeys="treeLoadedKeys"
+							v-model:selectedKeys="selectedTreeKeys"
+							:show-line="{ showLeafIcon: false }"
+							:tree-data="treeData"
+							:field-names="treeFieldNames"
+							:load-data="searchMode ? undefined : onLoadData"
+							:height="treeHeight"
+							@select="treeSelect"
+						/>
+					</a-spin>
+					<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" />
+				</div>
+			</div>
 		</template>
 		<template #right>
 			<a-form ref="searchFormRef" :model="searchFormState">
@@ -22,13 +40,9 @@
 								placeholder="请选择上级机构"
 								allow-clear
 								:tree-data="treeData"
-								:field-names="{
-									children: 'children',
-									label: 'name',
-									value: 'id'
-								}"
-								selectable="false"
+								:field-names="treeSelectFieldNames"
 								tree-line
+								:load-data="onLoadData"
 							/>
 						</a-form-item>
 					</a-col>
@@ -95,7 +109,7 @@
 				</template>
 				<template #bodyCell="{ column, record }">
 					<template v-if="column.dataIndex === 'category'">
-						{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}
+						<a-tag :color="$TOOL.dictTypeColor('ORG_CATEGORY', record.category)">{{ $TOOL.dictTypeData('ORG_CATEGORY', record.category) }}</a-tag>
 					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizOrgEdit')">编辑</a>
@@ -108,13 +122,13 @@
 			</s-table>
 		</template>
 	</XnResizablePanel>
-	<Form ref="formRef" @successful="tableRef.refresh()" />
-	<CopyForm ref="copyFormRef" @successful="tableRef.clearRefreshSelected()" />
+	<Form ref="formRef" @successful="onFormSuccess" />
+	<CopyForm ref="copyFormRef" @successful="onCopyFormSuccess" />
 </template>
 
 <script setup name="bizOrg">
 	import { Empty } from 'ant-design-vue'
-	import { isEmpty } from 'lodash-es'
+	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
 	import CopyForm from './copyForm.vue'
@@ -167,10 +181,32 @@
 	const treeData = ref([])
 	// 替换treeNode 中 title,key,children
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
+	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
+	// 树容器高度自适应
+	const treeContainerRef = ref(null)
+	const treeHeight = ref(0)
+	let resizeObserver = null
+	const calcTreeHeight = () => {
+		if (treeContainerRef.value) {
+			treeHeight.value = treeContainerRef.value.clientHeight - 40
+		}
+	}
+	onMounted(() => {
+		calcTreeHeight()
+		if (treeContainerRef.value) {
+			resizeObserver = new ResizeObserver(calcTreeHeight)
+			resizeObserver.observe(treeContainerRef.value)
+		}
+	})
+	onActivated(calcTreeHeight)
+	onUnmounted(() => {
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+	})
 
 	// 表格查询 返回 Promise 对象
 	const loadData = (parameter) => {
-		loadTreeData()
 		return bizOrgApi.orgPage(Object.assign(parameter, searchFormState.value)).then((res) => {
 			return res
 		})
@@ -180,27 +216,114 @@
 		searchFormRef.value.resetFields()
 		tableRef.value.refresh(true)
 	}
+	const treeLoading = ref(true)
+	const treeSearchKey = ref('')
+	const searchMode = ref(false)
+	const treeLoadedKeys = ref([])
+
+	const selectedTreeKeys = ref([])
+	// 收集树所有节点key，用于搜索时全部展开
+	const collectTreeKeys = (nodes) => {
+		const keys = []
+		const traverse = (list) => {
+			if (!list) return
+			list.forEach((node) => {
+				keys.push(node.id)
+				if (node.children) traverse(node.children)
+			})
+		}
+		traverse(nodes)
+		return keys
+	}
+	// 树搜索
+	const onTreeSearch = (value) => {
+		if (!value || !value.trim()) {
+			// 先清空树数据和展开状态，再切换模式，避免懒加载风暴导致卡死
+			treeData.value = []
+			defaultExpandedKeys.value = []
+			treeLoadedKeys.value = []
+			searchMode.value = false
+			loadTreeData()
+			return
+		}
+		treeLoading.value = true
+		searchMode.value = true
+		bizOrgApi
+			.orgTree({ searchKey: value.trim() })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+					defaultExpandedKeys.value = collectTreeKeys(res)
+				} else {
+					treeData.value = []
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
 	// 加载左侧的树
 	const loadTreeData = () => {
-		bizOrgApi.orgTree().then((res) => {
-			if (res !== null) {
-				treeData.value = res
-				if (isEmpty(defaultExpandedKeys.value)) {
-					// 默认展开2级
-					treeData.value.forEach((item) => {
-						// 因为0的顶级
-						if (item.parentId === '0') {
-							defaultExpandedKeys.value.push(item.id)
-							// 取到下级ID
-							if (item.children) {
-								item.children.forEach((items) => {
-									defaultExpandedKeys.value.push(items.id)
-								})
-							}
+		treeLoading.value = true
+		bizOrgApi
+			.orgTree()
+			.then((res) => {
+				if (res !== null) {
+					// 重置懒加载状态和展开状态，避免树组件缓存导致无法展开
+					treeLoadedKeys.value = []
+					defaultExpandedKeys.value = []
+					treeData.value = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}
 					})
+					// 只有一个根节点时自动展开
+					if (treeData.value.length === 1) {
+						defaultExpandedKeys.value = [treeData.value[0].id]
+					}
 				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	loadTreeData()
+	// 刷新树数据（增删改后调用，使用全量树接口保留展开状态）
+	const refreshTreeData = () => {
+		treeLoading.value = true
+		bizOrgApi
+			.orgTree({ searchKey: '' })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+	// 懒加载子节点
+	const onLoadData = (treeNode) => {
+		return new Promise((resolve) => {
+			if (treeNode.dataRef.children || treeNode.dataRef.isLeaf) {
+				resolve()
+				return
 			}
+			bizOrgApi
+				.orgTree({
+					parentId: treeNode.dataRef.id
+				})
+				.then((res) => {
+					treeNode.dataRef.children = res.map((item) => {
+						return {
+							...item,
+							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+						}
+					})
+					triggerRef(treeData)
+					resolve()
+				})
 		})
 	}
 	// 点击树查询
@@ -221,13 +344,25 @@
 		]
 		bizOrgApi.orgDelete(params).then(() => {
 			tableRef.value.refresh(true)
+			refreshTreeData()
 		})
 	}
 	// 批量删除
 	const deleteBatchOrg = (params) => {
 		bizOrgApi.orgDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
+			refreshTreeData()
 		})
+	}
+	// 表单成功回调
+	const onFormSuccess = () => {
+		tableRef.value.refresh()
+		refreshTreeData()
+	}
+	// 复制表单成功回调
+	const onCopyFormSuccess = () => {
+		tableRef.value.clearRefreshSelected()
+		refreshTreeData()
 	}
 	// 批量复制
 	const copyFormRef = ref()

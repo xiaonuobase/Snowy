@@ -36,7 +36,13 @@ public enum BizDataTypeEnum {
     /**
      * 人员
      */
-    USER("USER");
+    USER("USER"),
+
+    /**
+     * 用户组
+     */
+    GROUP("GROUP");
+
 
     private final String value;
 

@@ -14,8 +14,6 @@ package vip.xiaonuo.sys.modular.resource.controller;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -42,7 +40,6 @@ import java.util.List;
  * @date 2022/6/27 14:09
  **/
 @Tag(name = "菜单控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 5)
 @RestController
 @Validated
 public class SysMenuController {
@@ -56,7 +53,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取菜单分页")
     @GetMapping("/sys/menu/page")
     public CommonResult<Page<SysMenu>> page(SysMenuPageParam sysMenuPageParam) {
@@ -69,7 +65,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "获取菜单树")
     @GetMapping("/sys/menu/tree")
     public CommonResult<List<Tree<String>>> tree(SysMenuTreeParam sysMenuTreeParam) {
@@ -82,7 +77,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "添加菜单")
     @CommonLog("添加菜单")
     @PostMapping("/sys/menu/add")
@@ -97,7 +91,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "编辑菜单")
     @CommonLog("编辑菜单")
     @PostMapping("/sys/menu/edit")
@@ -112,7 +105,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "更改菜单所属模块")
     @CommonLog("更改菜单所属模块")
     @PostMapping("/sys/menu/changeModule")
@@ -127,7 +119,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "删除菜单")
     @CommonLog("删除菜单")
     @PostMapping("/sys/menu/delete")
@@ -143,7 +134,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "获取菜单详情")
     @GetMapping("/sys/menu/detail")
     public CommonResult<SysMenu> detail(@Valid SysMenuIdParam sysMenuIdParam) {
@@ -158,7 +148,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "获取模块选择器")
     @GetMapping("/sys/menu/moduleSelector")
     public CommonResult<List<SysModule>> moduleSelector(SysMenuSelectorModuleParam sysMenuSelectorModuleParam) {
@@ -171,7 +160,6 @@ public class SysMenuController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "获取菜单树选择器")
     @GetMapping("/sys/menu/menuTreeSelector")
     public CommonResult<List<Tree<String>>> menuTreeSelector(SysMenuSelectorMenuParam sysMenuSelectorMenuParam) {

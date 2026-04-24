@@ -96,4 +96,8 @@ public class GenConfig extends CommonEntity {
     /** 排序 */
     @Schema(description = "排序")
     private Integer sortCode;
+
+    /** 所属表类型：MAIN主表/SUB子表 */
+    @Schema(description = "所属表类型")
+    private String tableType;
 }

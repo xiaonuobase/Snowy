@@ -27,6 +27,9 @@ import lombok.extern.slf4j.Slf4j;
  * 使用小伙伴需要过等保密评相关，请在此处更改为自己的加密方法，或加密机，使用加密机同时需要替换公钥，私钥在内部无法导出，提供加密的方法
  * 如果不涉及到加密机方面的内容，请更改公私要为自己重新生成的，生成方式请看集成的sm-crypto主页
  *
+ * 密钥已通过 CommonKeyUtil 进行混淆存储，防止反编译直接获取明文
+ * 如需重新生成密钥对，调用 CommonKeyUtil.generateSm2KeyPair() 方法，将输出的混淆代码替换下方对应数组即可
+ *
  * @author yubaoshan
  * @date 2022/9/15 21:51
  */
@@ -36,11 +39,61 @@ public class CommonCryptogramUtil {
     /** 公钥 */
     private static final String PUBLIC_KEY = "04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54";
 
-    /** 私钥 */
-    private static final String PRIVATE_KEY = "3037723d47292171677ec8bd7dc9af696c7472bc5f251b2cec07e65fdef22e25";
+    /** 私钥混淆后的密文数据，运行时通过XOR还原，防止反编译直接获取明文，更换密钥请运行CommonKeyUtil.main() */
+    private static final byte[] PRIVATE_KEY_DATA = {
+        (byte)0x32, (byte)0x10, (byte)0xA6, (byte)0xC8, (byte)0xAB, (byte)0x84, (byte)0xFD, (byte)0x19, (byte)0x1D, (byte)0xDE,
+        (byte)0x51, (byte)0xE9, (byte)0x48, (byte)0x71, (byte)0xA5, (byte)0x27, (byte)0x26, (byte)0x62, (byte)0x25, (byte)0x6B,
+        (byte)0xE6, (byte)0x12, (byte)0x52, (byte)0x27, (byte)0x52, (byte)0x14, (byte)0x66, (byte)0xFC, (byte)0x63, (byte)0xA2,
+        (byte)0x43, (byte)0xB0, (byte)0x1F, (byte)0xB7, (byte)0x9E, (byte)0xFE, (byte)0x0E, (byte)0xA6, (byte)0x84, (byte)0xE8,
+        (byte)0x61, (byte)0x63, (byte)0xFB, (byte)0xCB, (byte)0x50, (byte)0x6B, (byte)0xFF, (byte)0x79, (byte)0x48, (byte)0xBF,
+        (byte)0x2E, (byte)0x3E, (byte)0x9D, (byte)0x9F, (byte)0xD8, (byte)0x6E, (byte)0xE8, (byte)0x33, (byte)0x70, (byte)0x45,
+        (byte)0xC6, (byte)0x9C, (byte)0x76, (byte)0x8D
+    };
+    /** 私钥混淆掩码，与PRIVATE_KEY_DATA逐字节XOR可还原出私钥明文 */
+    private static final byte[] PRIVATE_KEY_MASK = {
+        (byte)0x01, (byte)0x20, (byte)0x95, (byte)0xFF, (byte)0x9C, (byte)0xB6, (byte)0xCE, (byte)0x7D, (byte)0x29, (byte)0xE9,
+        (byte)0x63, (byte)0xD0, (byte)0x7A, (byte)0x40, (byte)0x92, (byte)0x16, (byte)0x10, (byte)0x55, (byte)0x12, (byte)0x0E,
+        (byte)0x85, (byte)0x2A, (byte)0x30, (byte)0x43, (byte)0x65, (byte)0x70, (byte)0x05, (byte)0xC5, (byte)0x02, (byte)0xC4,
+        (byte)0x75, (byte)0x89, (byte)0x29, (byte)0xD4, (byte)0xA9, (byte)0xCA, (byte)0x39, (byte)0x94, (byte)0xE6, (byte)0x8B,
+        (byte)0x54, (byte)0x05, (byte)0xC9, (byte)0xFE, (byte)0x61, (byte)0x09, (byte)0xCD, (byte)0x1A, (byte)0x2D, (byte)0xDC,
+        (byte)0x1E, (byte)0x09, (byte)0xF8, (byte)0xA9, (byte)0xED, (byte)0x08, (byte)0x8C, (byte)0x56, (byte)0x16, (byte)0x77,
+        (byte)0xF4, (byte)0xF9, (byte)0x44, (byte)0xB8
+    };
 
-    /** SM4的对称秘钥（生产环境需要改成自己使用的） 16 进制字符串，要求为 128 比特 */
-    private static final String KEY = "0123456789abcdeffedcba9876543210";
+    /** SM4对称密钥混淆后的密文数据（生产环境需要改成自己的，运行CommonKeyUtil.main()生成） */
+    private static final byte[] SM4_KEY_DATA = {
+        (byte)0x51, (byte)0x99, (byte)0x90, (byte)0x06, (byte)0x38, (byte)0x18, (byte)0xB4, (byte)0x8C, (byte)0x1D, (byte)0xE4,
+        (byte)0x8C, (byte)0x2E, (byte)0x35, (byte)0x6E, (byte)0x1F, (byte)0xDD, (byte)0x96, (byte)0xF5, (byte)0x8D, (byte)0x1E,
+        (byte)0x5A, (byte)0xB9, (byte)0x70, (byte)0xB0, (byte)0xDD, (byte)0xEC, (byte)0x01, (byte)0x2C, (byte)0xBF, (byte)0x46,
+        (byte)0x2D, (byte)0x9D
+    };
+    /** SM4对称密钥混淆掩码，与SM4_KEY_DATA逐字节XOR可还原出密钥明文 */
+    private static final byte[] SM4_KEY_MASK = {
+        (byte)0x61, (byte)0xA8, (byte)0xA2, (byte)0x35, (byte)0x0C, (byte)0x2D, (byte)0x82, (byte)0xBB, (byte)0x25, (byte)0xDD,
+        (byte)0xED, (byte)0x4C, (byte)0x56, (byte)0x0A, (byte)0x7A, (byte)0xBB, (byte)0xF0, (byte)0x90, (byte)0xE9, (byte)0x7D,
+        (byte)0x38, (byte)0xD8, (byte)0x49, (byte)0x88, (byte)0xEA, (byte)0xDA, (byte)0x34, (byte)0x18, (byte)0x8C, (byte)0x74,
+        (byte)0x1C, (byte)0xAD
+    };
+
+    /** SM4初始化向量IV混淆后的密文数据 */
+    private static final byte[] SM4_IV_DATA = {
+        (byte)0x1C, (byte)0xDB, (byte)0x85, (byte)0x32, (byte)0x42, (byte)0x38, (byte)0x33, (byte)0x1A, (byte)0x79, (byte)0x2B,
+        (byte)0xB9, (byte)0xB3, (byte)0x30, (byte)0x92, (byte)0xCA, (byte)0xB7, (byte)0x51, (byte)0xE8, (byte)0xE1, (byte)0x89,
+        (byte)0x0E, (byte)0xCA, (byte)0x9A, (byte)0x86, (byte)0x28, (byte)0xBB, (byte)0x78, (byte)0x75, (byte)0x5D, (byte)0x0B,
+        (byte)0x84, (byte)0x02
+    };
+    /** SM4初始化向量IV混淆掩码，与SM4_IV_DATA逐字节XOR可还原出IV明文 */
+    private static final byte[] SM4_IV_MASK = {
+        (byte)0x7A, (byte)0xBE, (byte)0xE1, (byte)0x51, (byte)0x20, (byte)0x59, (byte)0x0A, (byte)0x22, (byte)0x4E, (byte)0x1D,
+        (byte)0x8C, (byte)0x87, (byte)0x03, (byte)0xA0, (byte)0xFB, (byte)0x87, (byte)0x61, (byte)0xD9, (byte)0xD3, (byte)0xBA,
+        (byte)0x3A, (byte)0xFF, (byte)0xAC, (byte)0xB1, (byte)0x10, (byte)0x82, (byte)0x19, (byte)0x17, (byte)0x3E, (byte)0x6F,
+        (byte)0xE1, (byte)0x64
+    };
+
+    /** 运行时还原的密钥 */
+    private static final String PRIVATE_KEY = CommonKeyUtil.reconstruct(PRIVATE_KEY_DATA, PRIVATE_KEY_MASK);
+    private static final String KEY = CommonKeyUtil.reconstruct(SM4_KEY_DATA, SM4_KEY_MASK);
+    private static final String IV = CommonKeyUtil.reconstruct(SM4_IV_DATA, SM4_IV_MASK);
 
     /** Hutool SM2 对象 */
     private static final SM2 sm2 = SmUtil.sm2(HexUtil.decodeHex(PRIVATE_KEY), HexUtil.decodeHex(PUBLIC_KEY));
@@ -92,7 +145,7 @@ public class CommonCryptogramUtil {
         // SM4 加密  cbc模式
         Sm4Options sm4Options4 = new Sm4Options();
         sm4Options4.setMode("cbc");
-        sm4Options4.setIv("fedcba98765432100123456789abcdef");
+        sm4Options4.setIv(IV);
         return Sm4.encrypt(str, KEY, sm4Options4);
     }
 
@@ -109,7 +162,7 @@ public class CommonCryptogramUtil {
         // 解密，cbc 模式，输出 utf8 字符串
         Sm4Options sm4Options8 = new Sm4Options();
         sm4Options8.setMode("cbc");
-        sm4Options8.setIv("fedcba98765432100123456789abcdef");
+        sm4Options8.setIv(IV);
         String docString =  Sm4.decrypt(str, KEY, sm4Options8);
         if ("".equals(docString)) {
             log.warn(">>> 字段解密失败，返回原文值：{}", str);

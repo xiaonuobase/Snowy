@@ -146,6 +146,16 @@ public interface AuthService {
     void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo);
 
     /**
+     * 通过第三方Token交换登录（用于iframe嵌入免登）
+     *
+     * @param authThirdTokenLoginParam 第三方Token登录参数
+     * @return 本系统Token
+     * @author yubaoshan
+     * @date 2026/2/11
+     */
+    String doLoginByThirdToken(AuthThirdTokenLoginParam authThirdTokenLoginParam);
+
+    /**
      * 获取B端验证码是否开启
      *
      * @author xuyuxiang

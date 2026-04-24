@@ -13,8 +13,6 @@
 package vip.xiaonuo.client.modular.user.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -44,7 +42,6 @@ import java.util.List;
  * @date 2022/4/22 9:34
  **/
 @Tag(name = "C端用户控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 1)
 @RestController
 @Validated
 public class ClientUserController {
@@ -58,7 +55,6 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取用户分页")
     @GetMapping("/client/user/page")
     public CommonResult<Page<ClientUser>> page(ClientUserPageParam clientUserPageParam) {
@@ -71,7 +67,6 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "添加用户")
     @CommonLog("添加用户")
     @PostMapping("/client/user/add")
@@ -86,7 +81,6 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "编辑用户")
     @CommonLog("编辑用户")
     @PostMapping("/client/user/edit")
@@ -101,7 +95,6 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "删除用户")
     @CommonLog("删除用户")
     @PostMapping("/client/user/delete")
@@ -117,10 +110,37 @@ public class ClientUserController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "获取用户详情")
     @GetMapping("/client/user/detail")
     public CommonResult<ClientUser> detail(@Valid ClientUserIdParam clientUserIdParam) {
         return CommonResult.data(clientUserService.detail(clientUserIdParam));
+    }
+
+    /**
+     * 禁用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    @Operation(summary = "禁用用户")
+    @CommonLog("禁用用户")
+    @PostMapping("/client/user/disableUser")
+    public CommonResult<String> disableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
+        clientUserService.disableUser(clientUserIdParam);
+        return CommonResult.ok();
+    }
+
+    /**
+     * 启用用户
+     *
+     * @author yubaoshan
+     * @date 2026/3/30 23:50
+     */
+    @Operation(summary = "启用用户")
+    @CommonLog("启用用户")
+    @PostMapping("/client/user/enableUser")
+    public CommonResult<String> enableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
+        clientUserService.enableUser(clientUserIdParam);
+        return CommonResult.ok();
     }
 }

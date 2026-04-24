@@ -79,7 +79,7 @@ public interface SysUserApi {
      * @author xuyuxiang
      * @date 2022/6/6 11:40
      **/
-    List<String> getUserIdListByOrgIdList(List<String> orgIdList);
+    List<String> getUserIdListByOrgIdList(String initiator, List<String> orgIdList);
 
     /**
      * 根据职位id集合获取职位下用户id集合（含兼职该职位的人）
@@ -87,7 +87,7 @@ public interface SysUserApi {
      * @author xuyuxiang
      * @date 2022/6/6 11:44
      **/
-    List<String> getUserIdListByPositionIdList(List<String> positionIdList);
+    List<String> getUserIdListByPositionIdList(String initiator, List<String> positionIdList);
 
     /**
      * 根据用户id和组织id和主管层级获取上级主管id
@@ -95,7 +95,7 @@ public interface SysUserApi {
      * @author xuyuxiang
      * @date 2022/6/6 14:50
      **/
-    JSONObject getSupervisorIdBySupervisorLevel(List<String> userIdList, String userId, String orgId, String supervisorLevel);
+    JSONObject getSupervisorIdBySupervisorLevel(String initiator, List<String> userIdList, String orgId, String supervisorLevel);
 
     /**
      * 根据用户id和组织id和终点主管层级获取上级主管id集合
@@ -103,7 +103,7 @@ public interface SysUserApi {
      * @author xuyuxiang
      * @date 2022/6/6 14:50
      **/
-    List<String> getMulSupervisorIdListByEndLevel(String userId, String orgId, String endLevel);
+    List<String> getMulSupervisorIdListByEndLevel(String initiator, String orgId, String endLevel);
 
     /**
      * 获取用户选择器

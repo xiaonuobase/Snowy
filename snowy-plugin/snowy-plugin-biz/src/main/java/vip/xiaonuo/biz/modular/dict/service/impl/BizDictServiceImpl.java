@@ -23,8 +23,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fhs.trans.service.impl.DictionaryTransService;
 import jakarta.annotation.Resource;
+import org.dromara.trans.service.impl.DictionaryTransService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.modular.dict.entity.BizDict;
@@ -152,6 +152,9 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
                 }
             }
             return null;
+        }).exceptionally(e -> {
+            log.error("刷新字典缓存失败", e);
+            throw new CommonException("刷新字典缓存失败");
         });
     }
 }

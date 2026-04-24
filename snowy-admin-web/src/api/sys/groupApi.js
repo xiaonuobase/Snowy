@@ -29,7 +29,7 @@ export default {
 	groupOwnUser(data) {
 		return request('ownUser', data, 'get')
 	},
-	// 获取机构树
+	// 获取组织树选择器（懒加载）
 	groupOrgTreeSelector(data) {
 		return request('orgTreeSelector', data, 'get')
 	},

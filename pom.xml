@@ -191,16 +191,16 @@
 
             <!-- easy-trans -->
             <dependency>
-                <groupId>com.fhs-opensource</groupId>
+                <groupId>org.dromara</groupId>
                 <artifactId>easy-trans-spring-boot-starter</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.4</version>
             </dependency>
 
             <!-- easy-trans-mybatis-plus-extend -->
             <dependency>
-                <groupId>com.fhs-opensource</groupId>
+                <groupId>org.dromara</groupId>
                 <artifactId>easy-trans-mybatis-plus-extend</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.4</version>
             </dependency>
 
             <!-- redis -->
@@ -233,9 +233,9 @@
 
             <!-- knife4j -->
             <dependency>
-                <groupId>com.github.xingfudeshi</groupId>
+                <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>4.6.0</version>
+                <version>4.5.0</version>
             </dependency>
 
             <!-- easy-poi -->
@@ -369,6 +369,13 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>8.5.2</version>
+            </dependency>
+
+            <!--rustfs文件sdk (兼容S3协议)-->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>2.20.0</version>
             </dependency>
 
             <!--java邮件sdk-->

@@ -67,21 +67,15 @@
 			</div>
 			<div class="mb-4 layout-slide" v-if="layout === layoutEnum.TOP">
 				<h4 class="setting-item-title">固定宽度：</h4>
-				<a-switch :checked="fixedWidth"
-						  @change="toggleState('fixedWidth')"
-				/>
+				<a-switch :checked="fixedWidth" @change="toggleState('fixedWidth')" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">面包屑：</h4>
-				<a-switch :checked="breadcrumbOpen"
-						  @change="toggleState('breadcrumbOpen')"
-				/>
+				<a-switch :checked="breadcrumbOpen" @change="toggleState('breadcrumbOpen')" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">多标签：</h4>
-				<a-switch :checked="layoutTagsOpen"
-						  @change="toggleState('layoutTagsOpen')"
-				/>
+				<a-switch :checked="layoutTagsOpen" @change="toggleState('layoutTagsOpen')" />
 			</div>
 			<div class="mb-4 layout-slide" v-if="!menuIsCollapseDisabled">
 				<h4 class="setting-item-title">折叠菜单：</h4>
@@ -101,21 +95,15 @@
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">登录用户水印：</h4>
-				<a-switch :checked="loginUserWatermarkOpen"
-						  @change="toggleState('loginUserWatermarkOpen')"
-				/>
+				<a-switch :checked="loginUserWatermarkOpen" @change="toggleState('loginUserWatermarkOpen')" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">页脚版权信息：</h4>
-				<a-switch :checked="footerCopyrightOpen"
-						  @change="toggleState('footerCopyrightOpen')"
-				/>
+				<a-switch :checked="footerCopyrightOpen" @change="toggleState('footerCopyrightOpen')" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">圆角风格：</h4>
-				<a-switch :checked="roundedCornerStyleOpen"
-						  @change="toggleState('roundedCornerStyleOpen')"
-				/>
+				<a-switch :checked="roundedCornerStyleOpen" @change="toggleState('roundedCornerStyleOpen')" />
 			</div>
 			<div class="mb-4 layout-slide">
 				<h4 class="setting-item-title">表单风格：</h4>
@@ -408,7 +396,7 @@
 		position: absolute;
 		right: 8px;
 		bottom: 8px;
-		color: #1677FF;
+		color: #1677ff;
 		font-weight: 700;
 		font-size: 14px;
 		pointer-events: none;

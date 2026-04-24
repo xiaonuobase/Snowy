@@ -16,8 +16,6 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
-import com.github.xingfudeshi.knife4j.annotations.ApiSupport;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
@@ -45,7 +43,6 @@ import java.util.List;
  * @date 2022/4/22 9:34
  **/
 @Tag(name = "B端用户个人控制器")
-@ApiSupport(author = "SNOWY_TEAM", order = 10)
 @RestController
 @Validated
 public class SysUserCenterController {
@@ -59,7 +56,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 1)
     @Operation(summary = "获取图片验证码")
     @GetMapping("/sys/userCenter/getPicCaptcha")
     public CommonResult<SysUserPicValidCodeResult> getPicCaptcha() {
@@ -72,7 +68,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 2)
     @Operation(summary = "找回密码获取手机验证码")
     @GetMapping("/sys/userCenter/findPasswordGetPhoneValidCode")
     public CommonResult<String> findPasswordGetPhoneValidCode(@Valid SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
@@ -85,7 +80,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 3)
     @Operation(summary = "找回密码获取邮箱验证码")
     @GetMapping("/sys/userCenter/findPasswordGetEmailValidCode")
     public CommonResult<String> findPasswordGetEmailValidCode(@Valid SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
@@ -98,7 +92,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 4)
     @Operation(summary = "通过手机号找回用户密码")
     @CommonLog("通过手机号找回用户密码")
     @PostMapping("/sys/userCenter/findPasswordByPhone")
@@ -113,7 +106,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 5)
     @Operation(summary = "通过邮箱找回用户密码")
     @CommonLog("通过邮箱找回用户密码")
     @PostMapping("/sys/userCenter/findPasswordByEmail")
@@ -128,7 +120,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 6)
     @Operation(summary = "修改密码获取手机验证码")
     @GetMapping("/sys/userCenter/updatePasswordGetPhoneValidCode")
     public CommonResult<String> updatePasswordGetPhoneValidCode(@Valid SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
@@ -141,7 +132,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 7)
     @Operation(summary = "修改密码获取邮箱验证码")
     @GetMapping("/sys/userCenter/updatePasswordGetEmailValidCode")
     public CommonResult<String> updatePasswordGetEmailValidCode(@Valid SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
@@ -154,7 +144,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 8)
     @Operation(summary = "通过验证旧密码修改用户密码")
     @CommonLog("通过验证旧密码修改用户密码")
     @PostMapping("/sys/userCenter/updatePasswordByOld")
@@ -169,7 +158,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 9)
     @Operation(summary = "通过验证手机号修改用户密码")
     @CommonLog("通过验证手机号修改用户密码")
     @PostMapping("/sys/userCenter/updatePasswordByPhone")
@@ -184,7 +172,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 10)
     @Operation(summary = "通过验证邮箱修改用户密码")
     @CommonLog("通过验证邮箱修改用户密码")
     @PostMapping("/sys/userCenter/updatePasswordByEmail")
@@ -199,7 +186,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 11)
     @Operation(summary = "绑定手机号获取手机验证码")
     @GetMapping("/sys/userCenter/bindPhoneGetPhoneValidCode")
     public CommonResult<String> bindPhoneGetPhoneValidCode(@Valid SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
@@ -212,7 +198,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 12)
     @Operation(summary = "修改绑定手机号获取手机验证码")
     @GetMapping("/sys/userCenter/updateBindPhoneGetPhoneValidCode")
     public CommonResult<String> updateBindPhoneGetPhoneValidCode(@Valid SysUserGetPhoneValidCodeParam sysUserGetPhoneValidCodeParam) {
@@ -225,7 +210,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 13)
     @Operation(summary = "绑定手机号")
     @CommonLog("绑定手机号")
     @PostMapping("/sys/userCenter/bindPhone")
@@ -240,7 +224,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 14)
     @Operation(summary = "绑定邮箱获取邮箱验证码")
     @GetMapping("/sys/userCenter/bindEmailGetEmailValidCode")
     public CommonResult<String> bindEmailGetEmailValidCode(@Valid SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
@@ -253,7 +236,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 15)
     @Operation(summary = "修改绑定邮箱获取邮箱验证码")
     @GetMapping("/sys/userCenter/updateBindEmailGetEmailValidCode")
     public CommonResult<String> updateBindEmailGetEmailValidCode(@Valid SysUserGetEmailValidCodeParam sysUserGetEmailValidCodeParam) {
@@ -266,7 +248,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 16)
     @Operation(summary = "绑定邮箱")
     @CommonLog("绑定邮箱")
     @PostMapping("/sys/userCenter/bindEmail")
@@ -281,7 +262,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 17)
     @Operation(summary = "修改用户头像")
     @CommonLog("修改用户头像")
     @PostMapping("/sys/userCenter/updateAvatar")
@@ -295,7 +275,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 18)
     @Operation(summary = "修改用户签名图片")
     @CommonLog("修改用户签名图片")
     @PostMapping("/sys/userCenter/updateSignature")
@@ -310,7 +289,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 19)
     @Operation(summary = "编辑个人信息")
     @CommonLog("编辑个人信息")
     @PostMapping("/sys/userCenter/updateUserInfo")
@@ -325,7 +303,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:47
      */
-    @ApiOperationSupport(order = 20)
     @Operation(summary = "编辑个人工作台")
     @CommonLog("编辑个人工作台")
     @PostMapping("/sys/userCenter/updateUserWorkbench")
@@ -340,7 +317,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 21)
     @Operation(summary = "获取登录用户PC端菜单")
     @GetMapping("/sys/userCenter/loginMenu")
     public CommonResult<List<Tree<String>>> loginMenu() {
@@ -355,7 +331,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 22)
     @Operation(summary = "获取登录用户移动端菜单")
     @GetMapping("/sys/userCenter/loginMobileMenu")
     public CommonResult<List<Tree<String>>> loginMobileMenu() {
@@ -370,7 +345,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 23)
     @Operation(summary = "获取登录用户组织树")
     @GetMapping("/sys/userCenter/loginOrgTree")
     public CommonResult<List<Tree<String>>> loginOrgTree() {
@@ -380,12 +354,25 @@ public class SysUserCenterController {
     }
 
     /**
+     * 获取登录用户组织树子节点（懒加载）
+     *
+     * @author yubaoshan
+     * @date 2026/4/3
+     */
+    @Operation(summary = "获取登录用户组织树子节点")
+    @GetMapping("/sys/userCenter/loginOrgTreeChildren")
+    public CommonResult<List<JSONObject>> loginOrgTreeChildren(@RequestParam String parentId) {
+        SysUserIdParam sysUserIdParam = new SysUserIdParam();
+        sysUserIdParam.setId(StpUtil.getLoginIdAsString());
+        return CommonResult.data(sysUserService.loginOrgTreeChildren(sysUserIdParam, parentId));
+    }
+
+    /**
      * 获取登录用户的职位信息
      *
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 24)
     @Operation(summary = "获取登录用户的职位信息")
     @GetMapping("/sys/userCenter/loginPositionInfo")
     public CommonResult<List<SysUserPositionResult>> loginPositionInfo() {
@@ -400,7 +387,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 25)
     @Operation(summary = "获取登录用户的工作台")
     @GetMapping("/sys/userCenter/loginWorkbench")
     public CommonResult<String> loginWorkbench() {
@@ -415,7 +401,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 26)
     @Operation(summary = "获取登录用户的站内信分页")
     @GetMapping("/sys/userCenter/loginUnreadMessagePage")
     public CommonResult<Page<SysUserMessageResult>> loginMessagePage(SysUserMessagePageParam sysUserMessagePageParam) {
@@ -428,7 +413,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 27)
     @Operation(summary = "读取登录用户站内信详情")
     @GetMapping("/sys/userCenter/loginUnreadMessageDetail")
     public CommonResult<SysUserMessageDetailResult> loginMessageDetail(@Valid SysUserMessageIdParam sysUserMessageIdParam) {
@@ -441,7 +425,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 28)
     @Operation(summary = "根据id集合获取组织集合")
     @PostMapping("/sys/userCenter/getOrgListByIdList")
     public CommonResult<List<SysOrg>> getOrgListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
@@ -454,7 +437,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 29)
     @Operation(summary = "根据id集合获取用户集合")
     @PostMapping("/sys/userCenter/getUserListByIdList")
     public CommonResult<List<SysUser>> getUserListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
@@ -467,7 +449,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 30)
     @Operation(summary = "根据id集合获取职位集合")
     @PostMapping("/sys/userCenter/getPositionListByIdList")
     public CommonResult<List<SysPosition>> getPositionListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
@@ -480,7 +461,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 31)
     @Operation(summary = "根据id集合获取角色集合")
     @PostMapping("/sys/userCenter/getRoleListByIdList")
     public CommonResult<List<SysRole>> getRoleListByIdList(@RequestBody @Valid SysUserIdListParam sysUserIdListParam) {
@@ -493,7 +473,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 32)
     @Operation(summary = "根据id集合获取用户组集合")
     @PostMapping("/sys/userCenter/getGroupListByIdList")
     public CommonResult<List<SysGroup>> getGroupListByIdList(@RequestBody @Valid SysUserGroupIdListParam sysUserGroupIdListParam) {
@@ -506,7 +485,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 33)
     @Operation(summary = "根据id获取头像")
     @GetMapping("/sys/userCenter/getAvatarById")
     public CommonResult<String> getAvatarById(@Valid SysUserIdParam sysUserIdParam) {
@@ -519,7 +497,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 34)
     @Operation(summary = "判断当前用户是否需要绑定手机号")
     @GetMapping("/sys/userCenter/isUserNeedBindPhone")
     public CommonResult<Boolean> isUserNeedBindPhone() {
@@ -532,7 +509,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 35)
     @Operation(summary = "判断当前用户是否需要绑定邮箱")
     @GetMapping("/sys/userCenter/isUserNeedBindEmail")
     public CommonResult<Boolean> isUserNeedBindEmail() {
@@ -545,7 +521,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 36)
     @Operation(summary = "判断当前用户密码是否过期")
     @GetMapping("/sys/userCenter/isUserPasswordExpired")
     public CommonResult<Boolean> isUserPasswordExpired() {
@@ -558,7 +533,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/4/24 20:00
      */
-    @ApiOperationSupport(order = 37)
     @Operation(summary = "获取修改密码验证方式及配置")
     @GetMapping("/sys/userCenter/getUpdatePasswordValidConfig")
     public CommonResult<JSONObject> getUpdatePasswordValidConfig() {
@@ -571,7 +545,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 38)
     @Operation(summary = "获取绑定动态口令状态")
     @GetMapping("/sys/userCenter/getOtpInfoBindStatus")
     public CommonResult<Boolean> getOtpInfoBindStatus() {
@@ -584,7 +557,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2022/7/8 9:26
      **/
-    @ApiOperationSupport(order = 39)
     @Operation(summary = "获取动态口令信息")
     @GetMapping("/sys/userCenter/getOtpInfo")
     public CommonResult<SysUserOtpInfoResult> getOtpInfo() {
@@ -597,7 +569,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 40)
     @Operation(summary = "绑定动态口令")
     @CommonLog("绑定动态口令")
     @PostMapping("/sys/userCenter/bindOtp")
@@ -612,7 +583,6 @@ public class SysUserCenterController {
      * @author xuyuxiang
      * @date 2021/10/13 14:01
      **/
-    @ApiOperationSupport(order = 41)
     @Operation(summary = "解绑动态口令")
     @CommonLog("解绑动态口令")
     @PostMapping("/sys/userCenter/unBindOtp")

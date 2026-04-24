@@ -13,13 +13,13 @@
 package vip.xiaonuo.biz.modular.org.provider;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.api.BizOrgApi;
 import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorOrgListParam;
+import vip.xiaonuo.biz.modular.org.param.BizOrgSelectorTreeParam;
 import vip.xiaonuo.biz.modular.org.service.BizOrgService;
 
 import java.util.List;
@@ -37,15 +37,19 @@ public class BizOrgApiProvider implements BizOrgApi {
     private BizOrgService bizOrgService;
 
     @Override
-    public List<Tree<String>> orgTreeSelector() {
-        return bizOrgService.orgTreeSelector();
+    public List<JSONObject> orgTreeSelector(String parentId, String searchKey) {
+        BizOrgSelectorTreeParam bizOrgSelectorTreeParam = new BizOrgSelectorTreeParam();
+        bizOrgSelectorTreeParam.setParentId(parentId);
+        bizOrgSelectorTreeParam.setSearchKey(searchKey);
+        return bizOrgService.orgTreeSelector(bizOrgSelectorTreeParam);
     }
 
     @SuppressWarnings("ALL")
     @Override
-    public Page<JSONObject> orgListSelector(String parentId) {
+    public Page<JSONObject> orgListSelector(String parentId, String searchKey) {
         BizOrgSelectorOrgListParam bizOrgSelectorOrgListParam = new BizOrgSelectorOrgListParam();
         bizOrgSelectorOrgListParam.setParentId(parentId);
+        bizOrgSelectorOrgListParam.setSearchKey(searchKey);
         return BeanUtil.toBean(bizOrgService.orgListSelector(bizOrgSelectorOrgListParam), Page.class);
     }
 }

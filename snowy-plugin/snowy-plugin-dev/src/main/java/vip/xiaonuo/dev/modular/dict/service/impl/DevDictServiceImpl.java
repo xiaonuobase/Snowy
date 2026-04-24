@@ -22,13 +22,14 @@ import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fhs.trans.service.impl.DictionaryTransService;
 import jakarta.annotation.Resource;
+import org.dromara.trans.service.impl.DictionaryTransService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -233,6 +234,9 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
                 }
             }
             return null;
+        }).exceptionally(e -> {
+            log.error("刷新字典缓存失败", e);
+            throw new CommonException("刷新字典缓存失败");
         });
     }
 
@@ -250,5 +254,12 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
             }
         }
         return null;
+    }
+
+    @Override
+    public List<JSONObject> getDictListByParentDictValue(String typeCode) {
+        DevDict parentDict = this.getOne(new LambdaQueryWrapper<DevDict>().eq(DevDict::getDictValue, typeCode));
+        return this.list(new LambdaQueryWrapper<DevDict>().eq(DevDict::getParentId, parentDict.getId())).stream()
+                .map(JSONUtil::parseObj).collect(Collectors.toList());
     }
 }

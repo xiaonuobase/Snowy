@@ -61,7 +61,7 @@ const routes = [
 		meta: {
 			title: '三方登录回调'
 		}
-	},
+	}
 ]
 
 export default routes
