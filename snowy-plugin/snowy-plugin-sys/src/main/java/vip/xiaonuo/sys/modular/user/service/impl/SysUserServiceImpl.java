@@ -1703,7 +1703,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                                 .equals(phone) && !tempSysUser.getId().equals(finalExistUserId));
                         if(repeatPhone) {
                             // 更新用户手机号重复则使用原手机号
-                            sysUser.setPhone(sysUser.getPhone());
+                            sysUserImportParam.setPhone(sysUser.getPhone());
                         }
                     }
                 }
@@ -1722,8 +1722,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                                 .isNotEmpty(tempSysUser.getEmail()) && tempSysUser.getEmail()
                                 .equals(email) && !tempSysUser.getId().equals(finalExistUserId));
                         if(repeatEmail) {
-                            // 更新用户手机号重复则使用原邮箱
-                            sysUser.setEmail(sysUser.getEmail());
+                            // 更新用户手机号重复则使用原邮箱 并置空
+                            sysUserImportParam.setEmail(sysUser.getEmail());
                         }
                     }
                 }
