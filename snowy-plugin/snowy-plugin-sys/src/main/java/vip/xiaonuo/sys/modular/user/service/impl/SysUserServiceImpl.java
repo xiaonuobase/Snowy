@@ -66,6 +66,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
+import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonGenderEnum;
@@ -127,6 +128,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -998,6 +1000,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 修改手机号
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, StpUtil.getLoginIdAsString())
                 .set(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        refreshLoginUserCacheField(u -> u.setPhone(phone));
     }
 
     @Override
@@ -1101,6 +1104,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 修改邮箱
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, StpUtil.getLoginIdAsString())
                 .set(SysUser::getEmail, email));
+        refreshLoginUserCacheField(u -> u.setEmail(email));
     }
 
     @Override
@@ -1117,6 +1121,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
             this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                     sysUser.getId()).set(SysUser::getAvatar, base64));
+            refreshLoginUserCacheField(u -> u.setAvatar(base64));
             return base64;
         } catch (IOException e) {
             log.error(">>> 头像修改失败：", e);
@@ -1132,10 +1137,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserSignatureStr = StrUtil.split(sysUserSignatureStr, StrUtil.COMMA).get(1);
         }
         String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(sysUserSignatureStr),
-                100, 50, null), ImgUtil.IMAGE_TYPE_PNG);
+                200, 100, null), ImgUtil.IMAGE_TYPE_PNG);
         // 更新指定字段
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
                 .set(SysUser::getSignature, base64));
+        refreshLoginUserCacheField(u -> u.setSignature(base64));
+    }
+
+    /**
+     * 刷新 TokenSession 中缓存的当前登录用户字段，避免 DB 已更新但 getLoginUser 返回旧值
+     */
+    private void refreshLoginUserCacheField(Consumer<SaBaseLoginUser> mutator) {
+        SaBaseLoginUser cached = StpLoginUserUtil.getLoginUser();
+        if (cached != null) {
+            mutator.accept(cached);
+            StpUtil.getTokenSession().set("loginUser", cached);
+        }
     }
 
     @Override
@@ -1457,6 +1474,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         // 更新指定字段
         this.update(lambdaUpdateWrapper);
+        refreshLoginUserCacheField(u -> {
+            if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getName())) {
+                u.setName(sysUserUpdateInfoParam.getName());
+            }
+            if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getNickname())) {
+                u.setNickname(sysUserUpdateInfoParam.getNickname());
+            }
+            if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getGender())) {
+                u.setGender(sysUserUpdateInfoParam.getGender());
+            }
+            if (ObjectUtil.isNotEmpty(sysUserUpdateInfoParam.getBirthday())) {
+                u.setBirthday(sysUserUpdateInfoParam.getBirthday());
+            }
+        });
     }
 
     @Override

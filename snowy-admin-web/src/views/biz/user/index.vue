@@ -139,9 +139,9 @@
 						</a-popconfirm>
 						<a-divider
 							type="vertical"
-							v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])"
+							v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserTransfer'])"
 						/>
-						<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo'])">
+						<a-dropdown v-if="hasPerm(['bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserTransfer'])">
 							<a class="ant-dropdown-link">
 								更多
 								<DownOutlined />
@@ -159,6 +159,9 @@
 									<a-menu-item v-if="hasPerm('bizUserExportUserInfo')">
 										<a @click="exportUserInfo(record)">导出信息</a>
 									</a-menu-item>
+									<a-menu-item v-if="hasPerm('bizUserTransfer')">
+										<a @click="transferRef.onOpen(record)">权限调整</a>
+									</a-menu-item>
 								</a-menu>
 							</template>
 						</a-dropdown>
@@ -168,6 +171,7 @@
 		</template>
 	</XnResizablePanel>
 	<Form ref="formRef" @successful="tableRef.refresh()" />
+	<Transfer ref="transferRef" @successful="tableRef.refresh()" />
 	<xn-role-selector
 		ref="RoleSelectorPlusRef"
 		:org-tree-api="selectorApiFunction.orgTreeApi"
@@ -185,6 +189,7 @@
 	import bizUserApi from '@/api/biz/bizUserApi'
 	import bizOrgApi from '@/api/biz/bizOrgApi'
 	import Form from './form.vue'
+	import Transfer from './transfer.vue'
 
 	const columns = [
 		{
@@ -225,7 +230,7 @@
 			dataIndex: 'userStatus'
 		}
 	]
-	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserDelete'])) {
+	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserTransfer', 'bizUserDelete'])) {
 		columns.push({
 			title: '操作',
 			dataIndex: 'action',
@@ -244,6 +249,7 @@
 	const treeFieldNames = { children: 'children', title: 'name', key: 'id' }
 	const treeSelectFieldNames = { children: 'children', label: 'name', value: 'id' }
 	const formRef = ref(null)
+	const transferRef = ref(null)
 	const RoleSelectorPlusRef = ref()
 	const selectedRecord = ref({})
 	const loading = ref(false)
