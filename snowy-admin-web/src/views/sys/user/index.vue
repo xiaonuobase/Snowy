@@ -173,6 +173,9 @@
 									<a-menu-item>
 										<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
 									</a-menu-item>
+									<a-menu-item>
+										<a @click="transferRef.onOpen(record)">权限调整</a>
+									</a-menu-item>
 								</a-menu>
 							</template>
 						</a-dropdown>
@@ -194,6 +197,7 @@
 	<ImpExp ref="ImpExpRef" />
 	<grantResourceForm ref="grantResourceFormRef" @successful="tableRef.refresh()" />
 	<grantPermissionForm ref="grantPermissionFormRef" @successful="tableRef.refresh()" />
+	<Transfer ref="transferRef" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="sysUser">
@@ -207,6 +211,7 @@
 	import ImpExp from './impExp.vue'
 	import GrantResourceForm from './grantResourceForm.vue'
 	import GrantPermissionForm from './grantPermissionForm.vue'
+	import Transfer from './transfer.vue'
 
 	const columns = [
 		{
@@ -269,6 +274,7 @@
 	const ImpExpRef = ref()
 	const grantResourceFormRef = ref()
 	const grantPermissionFormRef = ref()
+	const transferRef = ref()
 	// 树容器高度自适应
 	const treeContainerRef = ref(null)
 	const treeHeight = ref(0)
