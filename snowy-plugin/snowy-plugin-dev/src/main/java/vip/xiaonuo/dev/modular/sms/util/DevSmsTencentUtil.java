@@ -139,7 +139,19 @@ public class DevSmsTencentUtil {
                 String data = Convert.toStr(smsResponse.getData());
                 if(JSONUtil.isTypeJSON(data)) {
                     JSONObject responseData = JSONUtil.parseObj(smsResponse.getData());
-                    throw new CommonException(responseData.getStr("resInfo"));
+                    String errMsg = "腾讯云短信发送失败";
+                    if(!responseData.containsKey("Response")) {
+                        throw new CommonException(errMsg);
+                    }
+                    JSONObject respJSONObject = responseData.getJSONObject("Response");
+                    if(!respJSONObject.containsKey("SendStatusSet")) {
+                        throw new CommonException(errMsg);
+                    }
+                    JSONArray sendStatusSet = respJSONObject.getJSONArray("SendStatusSet");
+                    if (sendStatusSet.isEmpty()) {
+                        throw new CommonException(errMsg);
+                    }
+                    throw new CommonException(sendStatusSet.getJSONObject(0).getStr("Message"));
                 } else {
                     throw new CommonException(data);
                 }
