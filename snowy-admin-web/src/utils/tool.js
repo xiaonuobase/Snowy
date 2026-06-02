@@ -102,7 +102,7 @@ tool.dictTypeData = (dictValue, value) => {
 	if (!tree.children) {
 		return ''
 	}
-	const dict = children.find((item) => item.dictValue === value)
+	const dict = children.find((item) => item.dictValue === String(value))
 	return dict ? dict.dictLabel : ''
 }
 
@@ -120,7 +120,7 @@ tool.dictTypeColor = (dictValue, value) => {
 	if (!tree.children) {
 		return 'default'
 	}
-	const dict = children.find((item) => item.dictValue === value)
+	const dict = children.find((item) => item.dictValue === String(value))
 	return dict ? dict.dictColor : 'default'
 }
 
