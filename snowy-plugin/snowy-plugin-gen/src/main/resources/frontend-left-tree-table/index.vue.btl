@@ -175,7 +175,7 @@
 						<% if(!subConfigList[i].needTableId && subConfigList[i].whetherTable) { %>
 						<% if (subConfigList[i].effectType == 'select' || subConfigList[i].effectType == 'radio') { %>
 						<template v-if="column.dataIndex === '${subConfigList[i].fieldNameCamelCase}'">
-							{{ $TOOL.dictTypeData('${subConfigList[i].dictTypeCode}', record.${subConfigList[i].fieldNameCamelCase}) }}
+							<a-tag :color="$TOOL.dictTypeColor('${subConfigList[i].dictTypeCode}', record.${subConfigList[i].fieldNameCamelCase})">{{ $TOOL.dictTypeData('${subConfigList[i].dictTypeCode}', record.${subConfigList[i].fieldNameCamelCase}) }}</a-tag>
 						</template>
 						<% } else if (subConfigList[i].effectType == 'checkbox') { %>
 						<template v-if="column.dataIndex === '${subConfigList[i].fieldNameCamelCase}'">
