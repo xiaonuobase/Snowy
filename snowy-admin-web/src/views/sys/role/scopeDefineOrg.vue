@@ -11,6 +11,8 @@
 		<a-spin :spinning="treeLoading">
 			<div class="scopeDefineOrgActions">
 				<a-space size="small">
+					<a-button size="small" @click="expandAll">展开全部</a-button>
+					<a-button size="small" @click="collapseAll">折叠全部</a-button>
 					<a-tooltip title="仅对已展开加载的节点生效">
 						<a-button size="small" @click="checkAll">全选</a-button>
 					</a-tooltip>
@@ -77,11 +79,18 @@
 				return
 			}
 			roleApi.roleOrgTreeSelector({ parentId: treeNode.dataRef.id }).then((res) => {
-				treeNode.dataRef.children = res.map((item) => ({
-					...item,
-					isLeaf: item.isLeaf === undefined ? false : item.isLeaf
-				}))
+				if (res && res.length > 0) {
+					treeNode.dataRef.children = res.map((item) => ({
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}))
+				} else {
+					treeNode.dataRef.children = []
+					treeNode.dataRef.isLeaf = true
+				}
 				treeData.value = [...treeData.value]
+				resolve()
+			}).catch(() => {
 				resolve()
 			})
 		})
@@ -119,7 +128,10 @@
 			return children.map((child) => {
 				const node = { ...child, isLeaf: child.isLeaf === undefined ? false : child.isLeaf }
 				if (ancestorIdSet.has(child.id) && parentChildMap.has(child.id)) {
-					node.children = buildBranch(child.id)
+					const builtChildren = buildBranch(child.id)
+					if (builtChildren && builtChildren.length > 0) {
+						node.children = builtChildren
+					}
 				}
 				return node
 			})
@@ -127,11 +139,20 @@
 		return buildBranch('0') || []
 	}
 
-	// 收集所有祖先节点的id用于展开
-	const collectAncestorKeys = (ancestorNodes, selectedIds) => {
-		const selectedSet = new Set(selectedIds)
-		// 祖先节点中排除叶子选中节点本身，只展开其父级路径
-		return ancestorNodes.filter((n) => !selectedSet.has(n.id) || !n.isLeaf).map((n) => n.id)
+	// 从构建好的树中提取所有包含子节点的节点id，用于默认展开
+	const getExpandedKeysFromTree = (nodes) => {
+		const keys = []
+		const traverse = (list) => {
+			if (!list) return
+			for (const node of list) {
+				if (node.children && node.children.length > 0) {
+					keys.push(node.id)
+					traverse(node.children)
+				}
+			}
+		}
+		traverse(nodes)
+		return keys
 	}
 
 	// 打开此界面需要具体某条菜单的id跟选中的
@@ -168,7 +189,10 @@
 					// 回显选中项
 					echoOrgSelectKeys(checkKeys)
 					// 展开祖先路径
-					defaultExpandedKeys.value = collectAncestorKeys(ancestorNodes || [], selectedIds)
+					// 使用 nextTick 确保回显数据挂载后再更新 expandedKeys，防止树组件错误触发 load-data
+					nextTick(() => {
+						defaultExpandedKeys.value = getExpandedKeysFromTree(treeData.value)
+					})
 				})
 				.finally(() => {
 					treeLoading.value = false
@@ -184,12 +208,6 @@
 							...item,
 							isLeaf: item.isLeaf === undefined ? false : item.isLeaf
 						}))
-						// 默认展开1级
-						treeData.value.forEach((item) => {
-							if (item.parentId === '0') {
-								defaultExpandedKeys.value.push(item.id)
-							}
-						})
 					}
 				})
 				.finally(() => {
@@ -241,6 +259,29 @@
 		checkedKeys.value = next
 		resultDataModel.defineOrgIdData.scopeDefineOrgIdList = next
 	}
+
+	const expandAll = () => {
+		treeLoading.value = true
+		roleApi
+			.roleOrgTreeSelector({ searchKey: '' })
+			.then((res) => {
+				if (res !== null) {
+					treeData.value = res.map((item) => ({
+						...item,
+						isLeaf: item.isLeaf === undefined ? false : item.isLeaf
+					}))
+					defaultExpandedKeys.value = getAllIds(treeData.value)
+				}
+			})
+			.finally(() => {
+				treeLoading.value = false
+			})
+	}
+
+	const collapseAll = () => {
+		defaultExpandedKeys.value = []
+	}
+
 	// 定义emit事件
 	const emit = defineEmits({
 		click: null
