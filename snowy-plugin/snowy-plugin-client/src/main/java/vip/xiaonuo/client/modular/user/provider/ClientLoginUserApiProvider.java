@@ -194,7 +194,7 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public SaBaseClientLoginUser createClientUserWithPhone(String phone) {
         ClientUser clientUser = clientUserService.createUserWithPhone(phone);
-        return BeanUtil.copyProperties(clientUser, SaBaseClientLoginUser.class);
+        return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     @Override
     public SaBaseClientLoginUser createClientUserWithEmail(String email) {
         ClientUser clientUser = clientUserService.createUserWithEmail(email);
-        return BeanUtil.copyProperties(clientUser, SaBaseClientLoginUser.class);
+        return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
     }
 
     @Override
