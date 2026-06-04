@@ -64,7 +64,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     public Page<SysPosition> page(SysPositionPageParam sysPositionPageParam) {
         QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
+        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName, SysPosition::getCode,
                 SysPosition::getCategory, SysPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(sysPositionPageParam.getOrgId())) {
             queryWrapper.lambda().eq(SysPosition::getOrgId, sysPositionPageParam.getOrgId());
@@ -94,7 +94,11 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
         if(repeatName) {
             throw new CommonException("同组织下存在重复的职位，名称为：{}", sysPosition.getName());
         }
-        sysPosition.setCode(RandomUtil.randomString(10));
+        boolean repeatCode = this.count(new LambdaQueryWrapper<SysPosition>().eq(SysPosition::getOrgId, sysPosition.getOrgId())
+                .eq(SysPosition::getCode, sysPosition.getCode())) > 0;
+        if(repeatCode) {
+            throw new CommonException("同组织下存在重复的职位，编码为：{}", sysPosition.getCode());
+        }
         this.save(sysPosition);
 
         // 发布增加事件
@@ -110,6 +114,11 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
                 .eq(SysPosition::getName, sysPosition.getName()).ne(SysPosition::getId, sysPosition.getId())) > 0;
         if(repeatName) {
             throw new CommonException("同组织下存在重复的职位，名称为：{}", sysPosition.getName());
+        }
+        boolean repeatCode = this.count(new LambdaQueryWrapper<SysPosition>().eq(SysPosition::getOrgId, sysPosition.getOrgId())
+                .eq(SysPosition::getCode, sysPosition.getCode()).ne(SysPosition::getId, sysPosition.getId())) > 0;
+        if(repeatCode) {
+            throw new CommonException("同组织下存在重复的职位，编码为：{}", sysPosition.getCode());
         }
         this.updateById(sysPosition);
 

@@ -43,6 +43,11 @@ public class BizPositionEditParam {
     @NotBlank(message = "name不能为空")
     private String name;
 
+    /** 编码 */
+    @Schema(description = "编码")
+    @NotBlank(message = "code不能为空")
+    private String code;
+
     /** 分类 */
     @Schema(description = "分类")
     @NotBlank(message = "category不能为空")

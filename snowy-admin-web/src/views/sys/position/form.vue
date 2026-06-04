@@ -19,6 +19,9 @@
 			<a-form-item label="职位名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入职位名称" allow-clear />
 			</a-form-item>
+			<a-form-item label="职位编码：" name="code">
+				<a-input v-model:value="formData.code" placeholder="请输入职位编码" allow-clear />
+			</a-form-item>
 			<a-form-item label="职位分类：" name="category">
 				<a-select
 					v-model:value="formData.category"
@@ -72,6 +75,7 @@
 	const formRules = {
 		orgId: [required('请选择所属组织')],
 		name: [required('请输入职位名称')],
+		code: [required('请输入职位编码')],
 		category: [required('请选择职位分类')],
 		sortCode: [required('请选择排序')]
 	}

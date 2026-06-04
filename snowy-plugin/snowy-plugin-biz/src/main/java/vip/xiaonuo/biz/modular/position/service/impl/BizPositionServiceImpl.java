@@ -69,7 +69,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
     public Page<BizPosition> page(BizPositionPageParam bizPositionPageParam) {
         QueryWrapper<BizPosition> queryWrapper = new QueryWrapper<BizPosition>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
+        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName, BizPosition::getCode,
                 BizPosition::getCategory, BizPosition::getSortCode, BizPosition::getExtJson);
         if(ObjectUtil.isNotEmpty(bizPositionPageParam.getOrgId())) {
             queryWrapper.lambda().eq(BizPosition::getOrgId, bizPositionPageParam.getOrgId());
@@ -118,7 +118,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
         if(repeatName) {
             throw new CommonException("同机构下存在重复的岗位，名称为：{}", bizPosition.getName());
         }
-        bizPosition.setCode(RandomUtil.randomString(10));
+        boolean repeatCode = this.count(new LambdaQueryWrapper<BizPosition>().eq(BizPosition::getOrgId, bizPosition.getOrgId())
+                .eq(BizPosition::getCode, bizPosition.getCode())) > 0;
+        if(repeatCode) {
+            throw new CommonException("同机构下存在重复的岗位，编码为：{}", bizPosition.getCode());
+        }
         this.save(bizPosition);
 
         // 发布增加事件
@@ -146,6 +150,11 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
                 .eq(BizPosition::getName, bizPosition.getName()).ne(BizPosition::getId, bizPosition.getId())) > 0;
         if(repeatName) {
             throw new CommonException("同机构下存在重复的岗位，名称为：{}", bizPosition.getName());
+        }
+        boolean repeatCode = this.count(new LambdaQueryWrapper<BizPosition>().eq(BizPosition::getOrgId, bizPosition.getOrgId())
+                .eq(BizPosition::getCode, bizPosition.getCode()).ne(BizPosition::getId, bizPosition.getId())) > 0;
+        if(repeatCode) {
+            throw new CommonException("同机构下存在重复的岗位，编码为：{}", bizPosition.getCode());
         }
         this.updateById(bizPosition);
 
