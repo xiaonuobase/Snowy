@@ -102,7 +102,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
     public Page<BizOrg> page(BizOrgPageParam bizOrgPageParam) {
         QueryWrapper<BizOrg> queryWrapper = new QueryWrapper<BizOrg>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
+        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName, BizOrg::getCode,
                 BizOrg::getCategory, BizOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(bizOrgPageParam.getParentId())) {
             queryWrapper.lambda().eq(BizOrg::getParentId, bizOrgPageParam.getParentId());
@@ -240,7 +240,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
         if(repeatName) {
             throw new CommonException("存在重复的同级机构，名称为：{}", bizOrg.getName());
         }
-        bizOrg.setCode(RandomUtil.randomString(10));
+        boolean repeatCode = this.count(new LambdaQueryWrapper<BizOrg>().eq(BizOrg::getParentId, bizOrg.getParentId())
+                .eq(BizOrg::getCode, bizOrg.getCode())) > 0;
+        if(repeatCode) {
+            throw new CommonException("存在重复的同级机构，编码为：{}", bizOrg.getCode());
+        }
         // 保存机构
         this.save(bizOrg);
         // 插入扩展信息
@@ -272,6 +276,11 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
                 .eq(BizOrg::getName, bizOrg.getName()).ne(BizOrg::getId, bizOrg.getId())) > 0;
         if(repeatName) {
             throw new CommonException("存在重复的同级机构，名称为：{}", bizOrg.getName());
+        }
+        boolean repeatCode = this.count(new LambdaQueryWrapper<BizOrg>().eq(BizOrg::getParentId, bizOrg.getParentId())
+                .eq(BizOrg::getCode, bizOrg.getCode()).ne(BizOrg::getId, bizOrg.getId())) > 0;
+        if(repeatCode) {
+            throw new CommonException("存在重复的同级机构，编码为：{}", bizOrg.getCode());
         }
         List<BizOrg> originDataList = this.getAllOrgList();
         boolean errorLevel = this.getChildListById(originDataList, bizOrg.getId(), true).stream()
@@ -526,7 +535,7 @@ public class BizOrgServiceImpl extends ServiceImpl<BizOrgMapper, BizOrg> impleme
             CommonSqlUtil.scopeIn(queryWrapper.lambda(), BizOrg::getId, StpUtil.getLoginIdAsString(), CommonServletUtil.getRequest().getServletPath());
         }
         // 查询部分字段
-        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName,
+        queryWrapper.lambda().select(BizOrg::getId, BizOrg::getParentId, BizOrg::getName, BizOrg::getCode,
                 BizOrg::getCategory, BizOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(bizOrgSelectorOrgListParam.getParentId())) {
             queryWrapper.lambda().eq(BizOrg::getParentId, bizOrgSelectorOrgListParam.getParentId());

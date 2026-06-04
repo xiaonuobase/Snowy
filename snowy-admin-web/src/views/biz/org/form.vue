@@ -20,6 +20,9 @@
 			<a-form-item label="机构名称：" name="name">
 				<a-input v-model:value="formData.name" placeholder="请输入机构名称" allow-clear />
 			</a-form-item>
+			<a-form-item label="机构编码：" name="code">
+				<a-input v-model:value="formData.code" placeholder="请输入机构编码" allow-clear />
+			</a-form-item>
 			<a-form-item label="机构分类：" name="category">
 				<a-select
 					v-model:value="formData.category"
@@ -89,6 +92,7 @@
 	const formRules = {
 		parentId: [required('请选择上级机构')],
 		name: [required('请输入机构名称')],
+		code: [required('请输入机构编码')],
 		category: [required('请选择机构分类')],
 		sortCode: [required('请选择排序')]
 	}

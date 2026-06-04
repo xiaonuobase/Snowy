@@ -93,7 +93,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public Page<SysOrg> page(SysOrgPageParam sysOrgPageParam) {
         QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<SysOrg>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
+        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName, SysOrg::getCode,
                 SysOrg::getCategory, SysOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(sysOrgPageParam.getParentId())) {
             queryWrapper.lambda().eq(SysOrg::getParentId, sysOrgPageParam.getParentId());
@@ -122,7 +122,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
         if(repeatName) {
             throw new CommonException("存在重复的同级组织，名称为：{}", sysOrg.getName());
         }
-        sysOrg.setCode(RandomUtil.randomString(10));
+        boolean repeatCode = this.count(new LambdaQueryWrapper<SysOrg>().eq(SysOrg::getParentId, sysOrg.getParentId())
+                .eq(SysOrg::getCode, sysOrg.getCode())) > 0;
+        if(repeatCode) {
+            throw new CommonException("存在重复的同级组织，编码为：{}", sysOrg.getCode());
+        }
         // 保存组织
         this.save(sysOrg);
         // 插入扩展信息
@@ -141,6 +145,11 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
                 .eq(SysOrg::getName, sysOrg.getName()).ne(SysOrg::getId, sysOrg.getId())) > 0;
         if(repeatName) {
             throw new CommonException("存在重复的同级组织，名称为：{}", sysOrg.getName());
+        }
+        boolean repeatCode = this.count(new LambdaQueryWrapper<SysOrg>().eq(SysOrg::getParentId, sysOrg.getParentId())
+                .eq(SysOrg::getCode, sysOrg.getCode()).ne(SysOrg::getId, sysOrg.getId())) > 0;
+        if(repeatCode) {
+            throw new CommonException("存在重复的同级组织，编码为：{}", sysOrg.getCode());
         }
         List<SysOrg> originDataList = this.getAllOrgList();
         boolean errorLevel = this.getChildListById(originDataList, sysOrg.getId(), true).stream()
@@ -451,7 +460,7 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
     public Page<SysOrg> orgListSelector(SysOrgSelectorOrgListParam sysOrgSelectorOrgListParam) {
         QueryWrapper<SysOrg> queryWrapper = new QueryWrapper<SysOrg>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName,
+        queryWrapper.lambda().select(SysOrg::getId, SysOrg::getParentId, SysOrg::getName, SysOrg::getCode,
                 SysOrg::getCategory, SysOrg::getSortCode);
         if(ObjectUtil.isNotEmpty(sysOrgSelectorOrgListParam.getParentId())) {
             queryWrapper.lambda().eq(SysOrg::getParentId, sysOrgSelectorOrgListParam.getParentId());
