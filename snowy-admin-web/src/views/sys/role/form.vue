@@ -19,6 +19,7 @@
 					:options="categoryOptions"
 					class="xn-wd"
 					placeholder="请选择角色分类"
+					@change="categoryChange"
 				/>
 			</a-form-item>
 			<a-form-item v-if="formData.category === 'ORG'" label="所属机构：" name="orgId">
@@ -91,6 +92,16 @@
 		code: [required('请输入角色编码')],
 		category: [required('请选择角色分类')],
 		sortCode: [required('请选择排序')]
+	}
+
+	const categoryChange = (val) => {
+		if (val === 'ORG') {
+			nextTick(() => {
+				if (orgTreeSelectRef.value) {
+					orgTreeSelectRef.value.init()
+				}
+			})
+		}
 	}
 
 	let categoryOptions = tool.dictList('ROLE_CATEGORY')
