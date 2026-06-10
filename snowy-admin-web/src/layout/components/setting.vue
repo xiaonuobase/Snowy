@@ -115,6 +115,10 @@
 					@change="formStyleChange"
 				/>
 			</div>
+			<div class="mb-4 layout-slide">
+				<h4 class="setting-item-title">灰色模式：</h4>
+				<a-switch :checked="grayModeOpen" @change="toggleState('grayModeOpen')" />
+			</div>
 			<a-alert
 				message="以上配置可实时预览，开发者可在 config/index.js 中配置默认值，不建议在生产环境下开放布局设置"
 				type="warning"
@@ -145,7 +149,8 @@
 		loginUserWatermarkOpen: 'LOGIN_USER_WATERMARK_OPEN',
 		footerCopyrightOpen: 'FOOTER_COPYRIGHT_OPEN',
 		roundedCornerStyleOpen: 'ROUNDED_CORNER_STYLE_OPEN',
-		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN'
+		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN',
+		grayModeOpen: 'GRAY_MODE_OPEN'
 	}
 	const sideStyleList = ref([
 		{
@@ -214,6 +219,9 @@
 	})
 	const roundedCornerStyleOpen = computed(() => {
 		return store.roundedCornerStyleOpen
+	})
+	const grayModeOpen = computed(() => {
+		return store.grayModeOpen
 	})
 	const layoutTagsOpen = computed(() => {
 		return store.layoutTagsOpen

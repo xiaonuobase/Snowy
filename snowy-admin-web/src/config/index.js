@@ -66,6 +66,9 @@ const DEFAULT_CONFIG = {
 	// 圆角风格
 	SNOWY_ROUNDED_CORNER_STYLE_OPEN: false,
 
+	// 灰色模式
+	SNOWY_GRAY_MODE_OPEN: false,
+
 	// 语言
 	LANG: 'zh-cn',
 

@@ -9,12 +9,14 @@
 			}
 		}"
 	>
-		<a-watermark
-			:content="loginUserWatermarkOpen && userInfo ? [userInfo.name, userInfo.account] : undefined"
-			class="admin-ui-main"
-		>
-			<router-view />
-		</a-watermark>
+		<div :class="['app-wrapper', { 'gray-mode': grayModeOpen }]">
+			<a-watermark
+				:content="loginUserWatermarkOpen && userInfo ? [userInfo.name, userInfo.account] : undefined"
+				class="admin-ui-main"
+			>
+				<router-view />
+			</a-watermark>
+		</div>
 	</a-config-provider>
 </template>
 
@@ -37,4 +39,20 @@
 	const roundedCornerStyleOpen = computed(() => {
 		return store.roundedCornerStyleOpen
 	})
+	// 灰色模式
+	const grayModeOpen = computed(() => {
+		return store.grayModeOpen
+	})
 </script>
+
+<style lang="less" scoped>
+	.app-wrapper {
+		width: 100%;
+		height: 100%;
+	}
+
+	// 灰色模式 - 将页面变为灰度
+	.gray-mode {
+		filter: grayscale(100%);
+	}
+</style>

@@ -60,6 +60,8 @@ export const globalStore = defineStore('global', () => {
 	const roundedCornerStyleOpen = ref(getCacheConfig('SNOWY_ROUNDED_CORNER_STYLE_OPEN'))
 	// 整体表单风格
 	const formStyle = ref(getCacheConfig('SNOWY_FORM_STYLE'))
+	// 灰色模式
+	const grayModeOpen = ref(getCacheConfig('SNOWY_GRAY_MODE_OPEN'))
 	// 用户信息
 	const userInfo = ref(toolDataGet('USER_INFO') || {})
 	// 系统配置
@@ -120,6 +122,9 @@ export const globalStore = defineStore('global', () => {
 			case 'roundedCornerStyleOpen':
 				roundedCornerStyleOpen.value = !roundedCornerStyleOpen.value
 				break
+			case 'grayModeOpen':
+				grayModeOpen.value = !grayModeOpen.value
+				break
 			case 'moduleUnfoldOpen':
 				moduleUnfoldOpen.value = !moduleUnfoldOpen.value
 				break
@@ -154,6 +159,7 @@ export const globalStore = defineStore('global', () => {
 		themeColor,
 		roundedCornerStyleOpen,
 		formStyle,
+		grayModeOpen,
 		userInfo,
 		sysBaseConfig,
 		module,
