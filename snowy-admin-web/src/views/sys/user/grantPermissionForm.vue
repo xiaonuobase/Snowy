@@ -13,6 +13,34 @@
 			closable
 		/>
 		<a-spin :spinning="spinningLoading">
+			<div class="permission-filter-bar">
+				<a-input
+					v-model:value="state.searchText"
+					allow-clear
+					placeholder="搜索接口前缀、接口路径或名称"
+					class="filter-keyword"
+					@pressEnter="refreshSearch"
+					@change="refreshSearch"
+				/>
+				<a-select
+					v-model:value="grantStatusFilter"
+					:options="grantStatusOptions"
+					class="filter-select"
+					@change="refreshSearch"
+				/>
+				<a-select
+					v-model:value="dataScopeFilter"
+					:options="dataScopeFilterOptions"
+					class="filter-select"
+					@change="refreshSearch"
+				/>
+				<a-button type="primary" @click="refreshSearch">
+					<template #icon><SearchOutlined /></template>
+					查询
+				</a-button>
+				<a-button @click="resetPermissionFilter">重置</a-button>
+				<span class="filter-summary">共 {{ pagination.total }} 个接口</span>
+			</div>
 			<a-table
 				class="mt-4"
 				size="middle"
@@ -140,6 +168,21 @@
 	const loadDatas = ref([])
 	// 标题接口列搜索, 数据范围默认
 	const scopeRadioValue = ref()
+	const grantStatusFilter = ref('ALL')
+	const dataScopeFilter = ref('ALL')
+	const grantStatusOptions = [
+		{ label: '全部授权状态', value: 'ALL' },
+		{ label: '已授权', value: 'CHECKED' },
+		{ label: '未授权', value: 'UNCHECKED' }
+	]
+	const dataScopeFilterOptions = [
+		{ label: '全部数据范围', value: 'ALL' },
+		{ label: '全部', value: 'SCOPE_ALL' },
+		{ label: '仅自己', value: 'SCOPE_SELF' },
+		{ label: '所属组织', value: 'SCOPE_ORG' },
+		{ label: '所属组织及以下', value: 'SCOPE_ORG_CHILD' },
+		{ label: '自定义', value: 'SCOPE_ORG_DEFINE' }
+	]
 	const state = reactive({
 		searchText: '',
 		searchedColumn: ''
@@ -218,10 +261,23 @@
 	const searchFunc = () => {
 		spinningLoading.value = true
 		const loadData = loadDatas.value.filter((item) => {
-			if (!state.searchText || state.searchText.trim().length === 0) {
-				return true
+			const keyword = state.searchText?.trim().toUpperCase()
+			if (keyword) {
+				const searchTarget = [item.api, item.prefix, item.suffix].filter(Boolean).join(' ').toUpperCase()
+				if (!searchTarget.includes(keyword)) {
+					return false
+				}
 			}
-			return item.api.toUpperCase().includes(state.searchText?.toUpperCase())
+			if (grantStatusFilter.value === 'CHECKED' && !item.check) {
+				return false
+			}
+			if (grantStatusFilter.value === 'UNCHECKED' && item.check) {
+				return false
+			}
+			if (dataScopeFilter.value !== 'ALL') {
+				return item.dataScope?.some((scope) => scope.value === dataScopeFilter.value && scope.check)
+			}
+			return true
 		})
 		pagination.value.total = loadData.length
 		const start = (pagination.value.current - 1) * pagination.value.pageSize
@@ -376,6 +432,10 @@
 		// 将这些缓存的给清空
 		loadDatas.value = []
 		scopeRadioValue.value = ''
+		grantStatusFilter.value = 'ALL'
+		dataScopeFilter.value = 'ALL'
+		state.searchText = ''
+		state.searchedColumn = ''
 		visible.value = false
 	}
 	// 全选
@@ -510,6 +570,13 @@
 		state.searchedColumn = ''
 		refreshSearch()
 	}
+	const resetPermissionFilter = () => {
+		state.searchText = ''
+		state.searchedColumn = ''
+		grantStatusFilter.value = 'ALL'
+		dataScopeFilter.value = 'ALL'
+		refreshSearch()
+	}
 	// 重置搜索
 	const refreshSearch = () => {
 		pagination.value.current = 1
@@ -548,25 +615,7 @@
 	// 监听分页及数据变化
 	watch(
 		loadDatas,
-		(val) => {
-			const loadData = val.filter((item) => {
-				return item.api.toUpperCase().includes(state.searchText.toUpperCase())
-			})
-			pagination.value.total = loadData.length
-			const start = (pagination.value.current - 1) * pagination.value.pageSize
-			const end = start + pagination.value.pageSize
-			const tableData = loadData.slice(start, end)
-			firstShowMap.value = {}
-			// 生成map
-			tableData?.forEach((item, index) => {
-				if (firstShowMap.value[item.prefix]) {
-					firstShowMap.value[item.prefix].push(index)
-				} else {
-					firstShowMap.value[item.prefix] = [index]
-				}
-			})
-			tableLoadData.value = tableData
-		},
+		() => searchFunc(),
 		{ deep: true }
 	)
 	// 调用这个函数将子组件的一些数据和方法暴露出去
@@ -581,5 +630,21 @@
 		margin-left: 0px !important;
 		padding-top: 2px !important;
 		padding-bottom: 2px !important;
+	}
+	.permission-filter-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 16px;
+		flex-wrap: wrap;
+	}
+	.filter-keyword {
+		width: 320px;
+	}
+	.filter-select {
+		width: 150px;
+	}
+	.filter-summary {
+		color: #8c8c8c;
 	}
 </style>
