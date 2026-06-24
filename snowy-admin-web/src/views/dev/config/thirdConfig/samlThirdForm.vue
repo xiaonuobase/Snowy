@@ -127,7 +127,7 @@
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_SOURCE_PROPERTY" placeholder="请输入关联源属性" />
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+<!--				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_TARGET_PROPERTY" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
 							<a-tooltip>
@@ -138,7 +138,7 @@
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_TARGET_PROPERTY" placeholder="请输入关联目标属性" />
 					</a-form-item>
-				</a-col>
+				</a-col>-->
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item>
 						<a-space>
