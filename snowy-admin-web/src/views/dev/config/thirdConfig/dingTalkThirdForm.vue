@@ -20,12 +20,20 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientId：" name="SNOWY_THIRD_DINGTALK_CLIENT_ID" v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientId："
+						name="SNOWY_THIRD_DINGTALK_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_DINGTALK_CLIENT_ID" placeholder="请输入clientId" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientSecret：" name="SNOWY_THIRD_DINGTALK_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientSecret："
+						name="SNOWY_THIRD_DINGTALK_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_DINGTALK_CLIENT_SECRET" placeholder="请输入clientSecret" />
 					</a-form-item>
 				</a-col>
@@ -33,7 +41,9 @@
 					<a-form-item name="SNOWY_THIRD_DINGTALK_REDIRECT_URL" v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG">
 						<template #label>
 							<a-tooltip>
-								<template #title> 请填写{前端地址}/callback/DINGTALK，如http://localhost:81/callback/DINGTALK </template>
+								<template #title>
+									请填写{前端地址}/callback/DINGTALK，如http://localhost:81/callback/DINGTALK
+								</template>
 								<question-circle-outlined />
 							</a-tooltip>
 							重定向地址：

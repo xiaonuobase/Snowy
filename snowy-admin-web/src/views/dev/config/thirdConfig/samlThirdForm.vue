@@ -22,11 +22,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_SP_META_DATA" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成SP元数据后填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  SP元数据：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成SP元数据后填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							SP元数据：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_SP_META_DATA" placeholder="请输入SP元数据" />
 					</a-form-item>
@@ -34,11 +34,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item ame="SNOWY_THIRD_SAML_CERTIFICATE" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成自签证书后填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  自签证书：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成自签证书后填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							自签证书：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_CERTIFICATE" placeholder="请输入自签证书" />
 					</a-form-item>
@@ -46,11 +46,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_PRIVATE_KEY" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成签名私钥后填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  签名私钥：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成签名私钥后填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							签名私钥：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_PRIVATE_KEY" placeholder="请输入签名私钥" />
 					</a-form-item>
@@ -58,11 +58,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_PUBLIC_KEY" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成验证公钥后填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  验证公钥：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成验证公钥后填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							验证公钥：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_PUBLIC_KEY" placeholder="请输入验证公钥" />
 					</a-form-item>
@@ -70,11 +70,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_SP_ENTITY_ID" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成SP元数据后取spEntityId填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  SP的entityID：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成SP元数据后取spEntityId填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							SP的entityID：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_SP_ENTITY_ID" placeholder="请输入SP的entityID" />
 					</a-form-item>
@@ -82,11 +82,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_SP_ACL_URL" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> AuthSamlClient生成SP元数据后取spAclUrl填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  SP的AclUrl：
+							<a-tooltip>
+								<template #title> AuthSamlClient生成SP元数据后取spAclUrl填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							SP的AclUrl：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_SP_ACL_URL" placeholder="请输入SP的AclUrl" />
 					</a-form-item>
@@ -94,11 +94,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_IDP_META_DATA" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> 从IDP平台下载后填入 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  IdP元数据：
+							<a-tooltip>
+								<template #title> 从IDP平台下载后填入 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							IdP元数据：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_IDP_META_DATA" placeholder="请输入IdP元数据" />
 					</a-form-item>
@@ -106,11 +106,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_BINDING_TYPE" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> 请填写POST或Redirect </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  绑定类型：
+							<a-tooltip>
+								<template #title> 请填写POST或Redirect </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							绑定类型：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_BINDING_TYPE" placeholder="请输入绑定类型" />
 					</a-form-item>
@@ -118,11 +118,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_SOURCE_PROPERTY" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> 请固定填写nameID </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  关联源属性：
+							<a-tooltip>
+								<template #title> 请固定填写nameID </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							关联源属性：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_SOURCE_PROPERTY" placeholder="请输入关联源属性" />
 					</a-form-item>
@@ -130,11 +130,11 @@
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
 					<a-form-item name="SNOWY_THIRD_SAML_TARGET_PROPERTY" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
-						  <a-tooltip>
-							<template #title> 请填写对应本系统字段 </template>
-							<question-circle-outlined />
-						  </a-tooltip>
-						  关联目标属性：
+							<a-tooltip>
+								<template #title> 请填写对应本系统字段 </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							关联目标属性：
 						</template>
 						<a-input v-model:value="formData.SNOWY_THIRD_SAML_TARGET_PROPERTY" placeholder="请输入关联目标属性" />
 					</a-form-item>

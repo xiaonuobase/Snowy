@@ -20,17 +20,29 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientId：" name="SNOWY_THIRD_ALIPAY_CLIENT_ID"  v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientId："
+						name="SNOWY_THIRD_ALIPAY_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_ALIPAY_CLIENT_ID" placeholder="请输入clientId" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="clientSecret：" name="SNOWY_THIRD_ALIPAY_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="clientSecret："
+						name="SNOWY_THIRD_ALIPAY_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_ALIPAY_CLIENT_SECRET" placeholder="请输入clientSecret" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="publicKey：" name="SNOWY_THIRD_ALIPAY_PUBLIC_KEY" v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="publicKey："
+						name="SNOWY_THIRD_ALIPAY_PUBLIC_KEY"
+						v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG"
+					>
 						<a-textarea v-model:value="formData.SNOWY_THIRD_ALIPAY_PUBLIC_KEY" placeholder="请输入publicKey" />
 					</a-form-item>
 				</a-col>

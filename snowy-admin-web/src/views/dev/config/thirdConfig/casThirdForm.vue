@@ -20,13 +20,27 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="CAS认证服务登录地址：" name="SNOWY_THIRD_CAS_SERVER_LOGIN_URL" v-if="formData.SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG">
-						<a-input v-model:value="formData.SNOWY_THIRD_CAS_SERVER_LOGIN_URL" placeholder="请输入CAS认证服务登录地址" />
+					<a-form-item
+						label="CAS认证服务登录地址："
+						name="SNOWY_THIRD_CAS_SERVER_LOGIN_URL"
+						v-if="formData.SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG"
+					>
+						<a-input
+							v-model:value="formData.SNOWY_THIRD_CAS_SERVER_LOGIN_URL"
+							placeholder="请输入CAS认证服务登录地址"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="CAS认证服务验证地址：" name="SNOWY_THIRD_CAS_SERVER_VALIDATE_URL" v-if="formData.SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG">
-						<a-input v-model:value="formData.SNOWY_THIRD_CAS_SERVER_VALIDATE_URL" placeholder="请输入CAS认证服务验证地址" />
+					<a-form-item
+						label="CAS认证服务验证地址："
+						name="SNOWY_THIRD_CAS_SERVER_VALIDATE_URL"
+						v-if="formData.SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG"
+					>
+						<a-input
+							v-model:value="formData.SNOWY_THIRD_CAS_SERVER_VALIDATE_URL"
+							placeholder="请输入CAS认证服务验证地址"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -38,7 +52,10 @@
 							</a-tooltip>
 							CAS认证服务协议版本：
 						</template>
-						<a-input v-model:value="formData.SNOWY_THIRD_CAS_SERVER_PROTOCOL_VERSION" placeholder="请输入CAS认证服务协议版本" />
+						<a-input
+							v-model:value="formData.SNOWY_THIRD_CAS_SERVER_PROTOCOL_VERSION"
+							placeholder="请输入CAS认证服务协议版本"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">

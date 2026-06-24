@@ -20,22 +20,38 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC认证地址：" name="SNOWY_THIRD_OIDC_AUTHORIZE_URL" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC认证地址："
+						name="SNOWY_THIRD_OIDC_AUTHORIZE_URL"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_AUTHORIZE_URL" placeholder="请输入OIDC认证地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC获取token地址：" name="SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC获取token地址："
+						name="SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL" placeholder="请输入OIDC获取token地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC获取用户信息地址：" name="SNOWY_THIRD_OIDC_USER_INFO_URL" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC获取用户信息地址："
+						name="SNOWY_THIRD_OIDC_USER_INFO_URL"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_USER_INFO_URL" placeholder="请输入OIDC获取用户信息地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC权限范围：" name="SNOWY_THIRD_OIDC_SCOPE" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC权限范围："
+						name="SNOWY_THIRD_OIDC_SCOPE"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_SCOPE" placeholder="请输入OIDC权限范围" />
 					</a-form-item>
 				</a-col>
@@ -64,12 +80,20 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC客户端ID：" name="SNOWY_THIRD_OIDC_CLIENT_ID" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC客户端ID："
+						name="SNOWY_THIRD_OIDC_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_CLIENT_ID" placeholder="请输入OIDC客户端ID" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="OIDC客户端SECRET：" name="SNOWY_THIRD_OIDC_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="OIDC客户端SECRET："
+						name="SNOWY_THIRD_OIDC_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_OIDC_CLIENT_SECRET" placeholder="请输入OIDC客户端SECRET" />
 					</a-form-item>
 				</a-col>

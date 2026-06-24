@@ -20,7 +20,11 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="JWT认证地址：" name="SNOWY_THIRD_JWT_AUTHORIZE_URL" v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="JWT认证地址："
+						name="SNOWY_THIRD_JWT_AUTHORIZE_URL"
+						v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_JWT_AUTHORIZE_URL" placeholder="请输入JWT认证地址" />
 					</a-form-item>
 				</a-col>
@@ -49,12 +53,20 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="JWT客户端ID：" name="SNOWY_THIRD_JWT_CLIENT_ID" v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="JWT客户端ID："
+						name="SNOWY_THIRD_JWT_CLIENT_ID"
+						v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_JWT_CLIENT_ID" placeholder="请输入JWT客户端ID" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item label="JWT客户端SECRET：" name="SNOWY_THIRD_JWT_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG">
+					<a-form-item
+						label="JWT客户端SECRET："
+						name="SNOWY_THIRD_JWT_CLIENT_SECRET"
+						v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG"
+					>
 						<a-input v-model:value="formData.SNOWY_THIRD_JWT_CLIENT_SECRET" placeholder="请输入JWT客户端SECRET" />
 					</a-form-item>
 				</a-col>
