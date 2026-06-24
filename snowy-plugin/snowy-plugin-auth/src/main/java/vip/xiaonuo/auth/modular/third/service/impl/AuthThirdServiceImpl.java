@@ -294,21 +294,11 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             // 定义生成的token
             String token;
             // 根据客户端类型执行登录，返回token
-            String targetProperty = authSourceBaseClient.getAuthBaseJson().getTargetProperty();
-            if (AuthPropertyEnum.ID.getValue().equals(targetProperty)) {
-                token = authService.doLoginById(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType);
-            } else if (AuthPropertyEnum.ACCOUNT.getValue().equals(targetProperty)) {
-                token = authService.doLoginByAccount(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType);
-            } else if (AuthPropertyEnum.PHONE.getValue().equals(targetProperty)) {
-                token = authService.doLoginByPhone(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType,
-                        AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue());
-            } else if (AuthPropertyEnum.EMAIL.getValue().equals(targetProperty)) {
-                token = authService.doLoginByEmail(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType,
-                        AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue());
+            if(SaClientTypeEnum.B.getValue().equals(clientType)) {
+                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
             } else {
-                throw new CommonException("不支持的认证源属性：{}", targetProperty);
+                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
             }
-            return token;
         } else {
             throw new CommonException("第三方登录授权回调失败，原因：{}", authResponse.getMsg());
         }
