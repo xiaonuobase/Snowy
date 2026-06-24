@@ -10,7 +10,7 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.enums;
+package vip.xiaonuo.auth.core.enums;
 
 import lombok.Getter;
 import vip.xiaonuo.common.exception.CommonException;
@@ -22,71 +22,71 @@ import vip.xiaonuo.common.exception.CommonException;
  * @date 2021/10/11 14:02
  **/
 @Getter
-public enum AuthThirdPlatformEnum {
+public enum AuthPlatformEnum {
 
-    /**
-     * IAM
-     */
+    /** OAUTH */
+    OAUTH("OAUTH"),
+
+    /** OIDC */
+    OIDC("OIDC"),
+
+    /** JWT */
+    JWT("JWT"),
+
+    /** CAS */
+    CAS("CAS"),
+
+    /** SAML */
+    SAML("SAML"),
+
+   // =======以下为OIDC协议的具体实现======= //
+
+    /** IAM */
     IAM("IAM"),
 
-    /**
-     * 钉钉
-     */
+    /** 钉钉 */
     DINGTALK("DINGTALK"),
 
-    /**
-     * 企业微信
-     */
+    /** 企业微信 */
     WORKWECHAT("WORKWECHAT"),
 
-    /**
-     * 飞书
-     */
+    /** 飞书 */
     FEISHU("FEISHU"),
 
-    /**
-     * WeLink
-     */
+    /** WeLink */
     WELINK("WELINK"),
 
-    /**
-     * 云之家
-     */
+    /** 云之家 */
     YUNZHIJIA("YUNZHIJIA"),
 
-    /**
-     * QQ
-     */
+    /** QQ */
     QQ("QQ"),
 
-    /**
-     * 微信
-     */
+    /** 微信 */
     WECHAT("WECHAT"),
 
-    /**
-     * 微博
-     */
+    /** 微博 */
     WEIBO("WEIBO"),
 
-    /**
-     * 抖音
-     */
+    /** 抖音 */
     DOUYIN("DOUYIN"),
 
-    /**
-     * 支付宝
-     */
+    /** 支付宝 */
     ALIPAY("ALIPAY");
 
     private final String value;
 
-    AuthThirdPlatformEnum(String value) {
+    AuthPlatformEnum(String value) {
         this.value = value;
     }
 
     public static void validate(String value) {
-        boolean flag = IAM.getValue().equals(value) ||
+        boolean flag = OAUTH.getValue().equals(value) ||
+                OIDC.getValue().equals(value) ||
+                JWT.getValue().equals(value) ||
+                CAS.getValue().equals(value) ||
+                SAML.getValue().equals(value) ||
+                IAM.getValue().equals(value) ||
                 DINGTALK.getValue().equals(value) ||
                 WORKWECHAT.getValue().equals(value) ||
                 FEISHU.getValue().equals(value) ||
@@ -98,7 +98,7 @@ public enum AuthThirdPlatformEnum {
                 DOUYIN.getValue().equals(value) ||
                 ALIPAY.getValue().equals(value);
         if(!flag) {
-            throw new CommonException("不支持的第三方平台：{}", value);
+            throw new CommonException("不支持的认证源平台：{}", value);
         }
     }
 }

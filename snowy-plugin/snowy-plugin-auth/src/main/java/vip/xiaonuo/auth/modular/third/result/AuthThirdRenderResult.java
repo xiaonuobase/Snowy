@@ -29,8 +29,4 @@ public class AuthThirdRenderResult {
     /** 授权地址 */
     @Schema(description = "授权地址")
     private String authorizeUrl;
-
-    /** 状态码 */
-    @Schema(description = "状态码")
-    private String state;
 }

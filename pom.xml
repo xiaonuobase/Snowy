@@ -39,6 +39,19 @@
         <module>snowy-web-app</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>mulesoft</id>
+            <name>mulesoft</name>
+            <url>https://repository.mulesoft.org/releases/</url>
+        </repository>
+        <repository>
+            <id>shibboleth</id>
+            <name>shibboleth</name>
+            <url>https://build.shibboleth.net/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
 

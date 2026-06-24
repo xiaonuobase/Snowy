@@ -10,24 +10,24 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.request.iam;
+package vip.xiaonuo.auth.core.protocol.oidc.impl.iam;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.enums.AuthUserGender;
-import me.zhyd.oauth.enums.scope.AuthGiteeScope;
 import me.zhyd.oauth.exception.AuthException;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthToken;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthDefaultRequest;
-import me.zhyd.oauth.utils.AuthScopeUtils;
 import me.zhyd.oauth.utils.UrlBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import vip.xiaonuo.auth.core.protocol.oidc.AuthOidcBaseJson;
 
 import java.security.Security;
-import java.util.Map;
+import java.util.List;
 
 /**
  * 山信通认证源通用请求
@@ -36,22 +36,25 @@ import java.util.Map;
  * @date 2025/1/24 15:09
  **/
 @Getter
-public class AuthThirdIamRequest extends AuthDefaultRequest {
+public class AuthOidcIamRequest extends AuthDefaultRequest {
+
+    private final AuthOidcBaseJson authOidcBaseJson;
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public AuthThirdIamRequest(AuthConfig config, Map<String, String> authSourceOidcBaseJson) {
-        super(config, new AuthThirdIamCommonSource(authSourceOidcBaseJson.get("authorizeUrl"),
-                authSourceOidcBaseJson.get("accessTokenUrl"),
-                authSourceOidcBaseJson.get("userInfoUrl")));
+    public AuthOidcIamRequest(AuthConfig config, AuthOidcBaseJson authOidcBaseJson) {
+        super(config, new AuthOidcIamSource(authOidcBaseJson.getAuthorizeUrl(),
+                authOidcBaseJson.getAccessTokenUrl(),
+                authOidcBaseJson.getUserInfoUrl()));
+        this.authOidcBaseJson = authOidcBaseJson;
     }
 
     @Override
     public AuthToken getAccessToken(AuthCallback authCallback) {
         String response = this.doPostAuthorizationCode(authCallback.getCode());
-        com.alibaba.fastjson.JSONObject accessTokenObject = com.alibaba.fastjson.JSONObject.parseObject(response);
+        JSONObject accessTokenObject = JSONObject.parseObject(response);
         this.checkResponse(accessTokenObject);
         return AuthToken.builder()
                 .accessToken(accessTokenObject.getString("access_token"))
@@ -65,7 +68,7 @@ public class AuthThirdIamRequest extends AuthDefaultRequest {
     @Override
     public AuthUser getUserInfo(AuthToken authToken) {
         String userInfo = this.doGetUserInfo(authToken);
-        com.alibaba.fastjson.JSONObject userInfoObject = com.alibaba.fastjson.JSONObject.parseObject(userInfo);
+        JSONObject userInfoObject = JSONObject.parseObject(userInfo);
         this.checkResponse(userInfoObject);
         return AuthUser.builder().rawUserInfo(userInfoObject)
                 .uuid(userInfoObject.getString("sub"))
@@ -86,6 +89,13 @@ public class AuthThirdIamRequest extends AuthDefaultRequest {
 
     @Override
     public String authorize(String state) {
-        return UrlBuilder.fromBaseUrl(super.authorize(state)).queryParam("scope", this.getScopes(" ", true, AuthScopeUtils.getDefaultScopes(AuthGiteeScope.values()))).build();
+        List<String> scopes = this.config.getScopes();
+        if(ObjectUtil.isNotEmpty(scopes)) {
+            return UrlBuilder.fromBaseUrl(super.authorize(state))
+                    .queryParam("scope", super.getScopes(" ", true, scopes))
+                    .build();
+        } else {
+            return UrlBuilder.fromBaseUrl(super.authorize(state)).build();
+        }
     }
 }

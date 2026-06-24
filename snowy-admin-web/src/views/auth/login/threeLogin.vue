@@ -4,10 +4,37 @@
 		<div class="login-oauth layout-center">
 			<a-space align="start">
 				<a v-if="formData.SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('IAM')">
-					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/iam.png" alt="" />
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/iam.png" alt="" />
 				</a>
 				<a v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT')">
-					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechat.png" alt="" />
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/wechat.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('DINGTALK')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/dingtalk.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_WORKWECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WORKWECHAT')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/workwechat.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_FEISHU_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('FEISHU')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/feishu.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_WELINK_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WELINK')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/welink.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_YUNZHIJIA_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('YUNZHIJIA')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/yunzhijia.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_QQ_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('QQ')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/qq.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_WEIBO_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WEIBO')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/weibo.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_DOUYIN_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('DOUYIN')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/douyin.png" alt="" />
+				</a>
+				<a v-if="formData.SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('ALIPAY')">
+					<img style="width: 32px; height: 32px;" src="/src/assets/images/authSource/alipay.png" alt="" />
 				</a>
 			</a-space>
 		</div>

@@ -33,9 +33,9 @@
 		/*authLoginApi.getAppAuthSourceList(param).then((data) => {
 			const appName = data.appName
 			const authAppLinkResultList = data.authAppLinkResultList
-			let phoneLogin = authAppLinkResultList.filter((item) => item.authSourceTemplateCode === 'PHONE').length > 0?'true':'false';
-			let emailLogin = authAppLinkResultList.filter((item) => item.authSourceTemplateCode === 'EMAIL').length > 0?'true':'false';
-			let otpLogin = authAppLinkResultList.filter((item) => item.authSourceTemplateCode === 'OTP').length > 0?'true':'false';
+			let phoneLogin = authAppLinkResultList.filter((item) => item.authOidcImplCode === 'PHONE').length > 0?'true':'false';
+			let emailLogin = authAppLinkResultList.filter((item) => item.authOidcImplCode === 'EMAIL').length > 0?'true':'false';
+			let otpLogin = authAppLinkResultList.filter((item) => item.authOidcImplCode === 'OTP').length > 0?'true':'false';
 			appAuthSourceList.value = authAppLinkResultList.filter((item) => !item.isBuildIn);
 			phoneLogin = props.loginTypes.phoneLogin === 'true' && phoneLogin === 'true'?'true':'false'
 			emailLogin = props.loginTypes.emailLogin === 'true' && emailLogin === 'true'?'true':'false'

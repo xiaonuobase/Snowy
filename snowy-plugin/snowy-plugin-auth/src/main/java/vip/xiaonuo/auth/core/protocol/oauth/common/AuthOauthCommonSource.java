@@ -10,18 +10,18 @@
  * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
  * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
-package vip.xiaonuo.auth.modular.third.request.iam;
+package vip.xiaonuo.auth.core.protocol.oauth.common;
 
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.request.AuthDefaultRequest;
 
 /**
- * 山信通认证源通用源
+ * Oauth认证源通用源
  *
  * @author xuyuxiang
  * @date 2025/2/6 17:07
  **/
-public record AuthThirdIamCommonSource(String authorizeUrl, String accessTokenUrl, String userInfoUrl) implements AuthSource {
+public record AuthOauthCommonSource(String authorizeUrl, String accessTokenUrl, String userInfoUrl) implements AuthSource {
 
     @Override
     public String authorize() {
@@ -40,12 +40,11 @@ public record AuthThirdIamCommonSource(String authorizeUrl, String accessTokenUr
 
     @Override
     public Class<? extends AuthDefaultRequest> getTargetClass() {
-        return AuthThirdIamRequest.class;
+        return AuthOauthCommonRequest.class;
     }
-
 
     @Override
     public String toString() {
-        return "IAM";
+        return "OAUTH";
     }
 }

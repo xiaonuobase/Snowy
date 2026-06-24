@@ -31,13 +31,4 @@ public class AuthThirdCallbackParam {
     @Schema(description = "第三方平台标识", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "platform不能为空")
     private String platform;
-
-    /** 第三方回调code */
-    @Schema(description = "第三方回调code", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "code不能为空")
-    private String code;
-
-    /** 第三方回调state */
-    @Schema(description = "第三方回调state")
-    private String state;
 }

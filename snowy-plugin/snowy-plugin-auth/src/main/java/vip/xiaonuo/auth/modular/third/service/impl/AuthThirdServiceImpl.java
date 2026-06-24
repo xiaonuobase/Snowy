@@ -12,10 +12,13 @@
  */
 package vip.xiaonuo.auth.modular.third.service.impl;
 
+import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.oauth2.consts.SaOAuth2Consts;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,28 +27,27 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xkcoding.http.HttpUtil;
 import com.xkcoding.http.support.hutool.HutoolImpl;
 import jakarta.annotation.Resource;
-import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
-import me.zhyd.oauth.request.AuthRequest;
-import me.zhyd.oauth.request.AuthWeChatOpenRequest;
-import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
+import vip.xiaonuo.auth.core.enums.AuthPlatformEnum;
+import vip.xiaonuo.auth.core.enums.AuthPropertyEnum;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
+import vip.xiaonuo.auth.core.protocol.AuthClientFactory;
+import vip.xiaonuo.auth.core.protocol.base.AuthBaseClient;
 import vip.xiaonuo.auth.modular.login.enums.AuthDeviceTypeEnum;
+import vip.xiaonuo.auth.modular.login.enums.AuthStrategyWhenNoUserWithPhoneOrEmailEnum;
 import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.entity.AuthThirdUser;
-import vip.xiaonuo.auth.modular.third.enums.AuthThirdPlatformEnum;
 import vip.xiaonuo.auth.modular.third.mapper.AuthThirdMapper;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
-import vip.xiaonuo.auth.modular.third.request.iam.AuthThirdIamRequest;
 import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -53,8 +55,6 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.api.DevConfigApi;
-
-import java.util.Map;
 
 /**
  * 第三方登录Service接口实现类
@@ -68,6 +68,66 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     /** 缓存前缀 */
     private static final String CONFIG_CACHE_KEY = "auth-third-state:";
 
+    // OAUTH
+    private static final String SNOWY_THIRD_OAUTH_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_OAUTH_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_OAUTH_AUTHORIZE_URL_KEY = "SNOWY_THIRD_OAUTH_AUTHORIZE_URL";
+    private static final String SNOWY_THIRD_OAUTH_ACCESS_TOKEN_URL_KEY = "SNOWY_THIRD_OAUTH_ACCESS_TOKEN_URL";
+    private static final String SNOWY_THIRD_OAUTH_USER_INFO_URL_KEY = "SNOWY_THIRD_OAUTH_USER_INFO_URL";
+    private static final String SNOWY_THIRD_OAUTH_SCOPE_KEY = "SNOWY_THIRD_OAUTH_SCOPE";
+    private static final String SNOWY_THIRD_OAUTH_CLIENT_ID_KEY = "SNOWY_THIRD_OAUTH_CLIENT_ID";
+    private static final String SNOWY_THIRD_OAUTH_CLIENT_SECRET_KEY = "SNOWY_THIRD_OAUTH_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_OAUTH_REDIRECT_URL_KEY = "SNOWY_THIRD_OAUTH_REDIRECT_URL";
+    private static final String SNOWY_THIRD_OAUTH_SOURCE_PROPERTY_KEY = "SNOWY_THIRD_OAUTH_SOURCE_PROPERTY";
+    private static final String SNOWY_THIRD_OAUTH_TARGET_PROPERTY_KEY = "SNOWY_THIRD_OAUTH_TARGET_PROPERTY";
+
+    // OIDC
+    private static final String SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_OIDC_AUTHORIZE_URL_KEY = "SNOWY_THIRD_OIDC_AUTHORIZE_URL";
+    private static final String SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL_KEY = "SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL";
+    private static final String SNOWY_THIRD_OIDC_USER_INFO_URL_KEY = "SNOWY_THIRD_OIDC_USER_INFO_URL";
+    private static final String SNOWY_THIRD_OIDC_SCOPE_KEY = "SNOWY_THIRD_OIDC_SCOPE";
+    private static final String SNOWY_THIRD_OIDC_PUBLIC_KEY_KEY = "SNOWY_THIRD_OIDC_PUBLIC_KEY";
+    private static final String SNOWY_THIRD_OIDC_ALGORITHM_KEY = "SNOWY_THIRD_OIDC_ALGORITHM";
+    private static final String SNOWY_THIRD_OIDC_CLIENT_ID_KEY = "SNOWY_THIRD_OIDC_CLIENT_ID";
+    private static final String SNOWY_THIRD_OIDC_CLIENT_SECRET_KEY = "SNOWY_THIRD_OIDC_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_OIDC_REDIRECT_URL_KEY = "SNOWY_THIRD_OIDC_REDIRECT_URL";
+    private static final String SNOWY_THIRD_OIDC_SOURCE_PROPERTY_KEY = "SNOWY_THIRD_OIDC_SOURCE_PROPERTY";
+    private static final String SNOWY_THIRD_OIDC_TARGET_PROPERTY_KEY = "SNOWY_THIRD_OIDC_TARGET_PROPERTY";
+
+    // JWT
+    private static final String SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_JWT_AUTHORIZE_URL_KEY = "SNOWY_THIRD_JWT_AUTHORIZE_URL";
+    private static final String SNOWY_THIRD_JWT_PUBLIC_KEY_KEY = "SNOWY_THIRD_JWT_PUBLIC_KEY";
+    private static final String SNOWY_THIRD_JWT_ALGORITHM_KEY = "SNOWY_THIRD_JWT_ALGORITHM";
+    private static final String SNOWY_THIRD_JWT_CLIENT_ID_KEY = "SNOWY_THIRD_JWT_CLIENT_ID";
+    private static final String SNOWY_THIRD_JWT_CLIENT_SECRET_KEY = "SNOWY_THIRD_JWT_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_JWT_REDIRECT_URL_KEY = "SNOWY_THIRD_JWT_REDIRECT_URL";
+    private static final String SNOWY_THIRD_JWT_SOURCE_PROPERTY_KEY = "SNOWY_THIRD_JWT_SOURCE_PROPERTY";
+    private static final String SNOWY_THIRD_JWT_TARGET_PROPERTY_KEY = "SNOWY_THIRD_JWT_TARGET_PROPERTY";
+
+    // CAS
+    private static final String SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_CAS_SERVER_LOGIN_URL_KEY = "SNOWY_THIRD_CAS_SERVER_LOGIN_URL";
+    private static final String SNOWY_THIRD_CAS_SERVER_VALIDATE_URL_KEY = "SNOWY_THIRD_CAS_SERVER_VALIDATE_URL";
+    private static final String SNOWY_THIRD_CAS_SERVER_PROTOCOL_VERSION_KEY = "SNOWY_THIRD_CAS_SERVER_PROTOCOL_VERSION";
+    private static final String SNOWY_THIRD_CAS_SERVICE_URL_KEY = "SNOWY_THIRD_CAS_SERVICE_URL";
+    private static final String SNOWY_THIRD_CAS_SOURCE_PROPERTY_KEY = "SNOWY_THIRD_CAS_SOURCE_PROPERTY";
+    private static final String SNOWY_THIRD_CAS_TARGET_PROPERTY_KEY = "SNOWY_THIRD_CAS_TARGET_PROPERTY";
+
+    // SAML
+    private static final String SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_SAML_SP_META_DATA_KEY = "SNOWY_THIRD_SAML_SP_META_DATA";
+    private static final String SNOWY_THIRD_SAML_CERTIFICATE_KEY = "SNOWY_THIRD_SAML_CERTIFICATE";
+    private static final String SNOWY_THIRD_SAML_PRIVATE_KEY_KEY = "SNOWY_THIRD_SAML_PRIVATE_KEY";
+    private static final String SNOWY_THIRD_SAML_PUBLIC_KEY_KEY = "SNOWY_THIRD_SAML_PUBLIC_KEY";
+    private static final String SNOWY_THIRD_SAML_SP_ENTITY_ID_KEY = "SNOWY_THIRD_SAML_SP_ENTITY_ID";
+    private static final String SNOWY_THIRD_SAML_SP_ACL_URL_KEY = "SNOWY_THIRD_SAML_SP_ACL_URL";
+    private static final String SNOWY_THIRD_SAML_IDP_META_DATA_KEY = "SNOWY_THIRD_SAML_IDP_META_DATA";
+    private static final String SNOWY_THIRD_SAML_BINDING_TYPE_KEY = "SNOWY_THIRD_SAML_BINDING_TYPE";
+    private static final String SNOWY_THIRD_SAML_SOURCE_PROPERTY_KEY = "SNOWY_THIRD_SAML_SOURCE_PROPERTY";
+    private static final String SNOWY_THIRD_SAML_TARGET_PROPERTY_KEY = "SNOWY_THIRD_SAML_TARGET_PROPERTY";
+
+    // IAM
     private static final String SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG";
     private static final String SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY = "SNOWY_THIRD_IAM_AUTHORIZE_URL";
     private static final String SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY = "SNOWY_THIRD_IAM_ACCESS_TOKEN_URL";
@@ -81,6 +141,62 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     private static final String SNOWY_THIRD_WECHAT_CLIENT_ID_KEY = "SNOWY_THIRD_WECHAT_CLIENT_ID";
     private static final String SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY = "SNOWY_THIRD_WECHAT_CLIENT_SECRET";
     private static final String SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY = "SNOWY_THIRD_WECHAT_REDIRECT_URL";
+
+    // 钉钉
+    private static final String SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_DINGTALK_CLIENT_ID_KEY = "SNOWY_THIRD_DINGTALK_CLIENT_ID";
+    private static final String SNOWY_THIRD_DINGTALK_CLIENT_SECRET_KEY = "SNOWY_THIRD_DINGTALK_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_DINGTALK_REDIRECT_URL_KEY = "SNOWY_THIRD_DINGTALK_REDIRECT_URL";
+
+    // 企业微信
+    private static final String SNOWY_THIRD_WORKWECHAT_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_WORKWECHAT_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_WORKWECHAT_AGENT_ID_KEY = "SNOWY_THIRD_WORKWECHAT_AGENT_ID";
+    private static final String SNOWY_THIRD_WORKWECHAT_CLIENT_ID_KEY = "SNOWY_THIRD_WORKWECHAT_CLIENT_ID";
+    private static final String SNOWY_THIRD_WORKWECHAT_CLIENT_SECRET_KEY = "SNOWY_THIRD_WORKWECHAT_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_WORKWECHAT_REDIRECT_URL_KEY = "SNOWY_THIRD_WORKWECHAT_REDIRECT_URL";
+
+    // 飞书
+    private static final String SNOWY_THIRD_FEISHU_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_FEISHU_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_FEISHU_CLIENT_ID_KEY = "SNOWY_THIRD_FEISHU_CLIENT_ID";
+    private static final String SNOWY_THIRD_FEISHU_CLIENT_SECRET_KEY = "SNOWY_THIRD_FEISHU_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_FEISHU_REDIRECT_URL_KEY = "SNOWY_THIRD_FEISHU_REDIRECT_URL";
+
+    // WeLink
+    private static final String SNOWY_THIRD_WELINK_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_WELINK_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_WELINK_CLIENT_ID_KEY = "SNOWY_THIRD_WELINK_CLIENT_ID";
+    private static final String SNOWY_THIRD_WELINK_CLIENT_SECRET_KEY = "SNOWY_THIRD_WELINK_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_WELINK_REDIRECT_URL_KEY = "SNOWY_THIRD_WELINK_REDIRECT_URL";
+
+    // 云之家
+    private static final String SNOWY_THIRD_YUNZHIJIA_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_YUNZHIJIA_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_YUNZHIJIA_CLIENT_ID_KEY = "SNOWY_THIRD_YUNZHIJIA_CLIENT_ID";
+    private static final String SNOWY_THIRD_YUNZHIJIA_CLIENT_SECRET_KEY = "SNOWY_THIRD_YUNZHIJIA_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_YUNZHIJIA_REDIRECT_URL_KEY = "SNOWY_THIRD_YUNZHIJIA_REDIRECT_URL";
+
+    // QQ
+    private static final String SNOWY_THIRD_QQ_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_QQ_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_QQ_CLIENT_ID_KEY = "SNOWY_THIRD_QQ_CLIENT_ID";
+    private static final String SNOWY_THIRD_QQ_CLIENT_SECRET_KEY = "SNOWY_THIRD_QQ_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_QQ_REDIRECT_URL_KEY = "SNOWY_THIRD_QQ_REDIRECT_URL";
+
+    // 微博
+    private static final String SNOWY_THIRD_WEIBO_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_WEIBO_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_WEIBO_CLIENT_ID_KEY = "SNOWY_THIRD_WEIBO_CLIENT_ID";
+    private static final String SNOWY_THIRD_WEIBO_CLIENT_SECRET_KEY = "SNOWY_THIRD_WEIBO_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_WEIBO_REDIRECT_URL_KEY = "SNOWY_THIRD_WEIBO_REDIRECT_URL";
+
+    // 抖音
+    private static final String SNOWY_THIRD_DOUYIN_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_DOUYIN_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_DOUYIN_CLIENT_ID_KEY = "SNOWY_THIRD_DOUYIN_CLIENT_ID";
+    private static final String SNOWY_THIRD_DOUYIN_CLIENT_SECRET_KEY = "SNOWY_THIRD_DOUYIN_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_DOUYIN_REDIRECT_URL_KEY = "SNOWY_THIRD_DOUYIN_REDIRECT_URL";
+
+    // 支付宝
+    private static final String SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_ALIPAY_CLIENT_ID_KEY = "SNOWY_THIRD_ALIPAY_CLIENT_ID";
+    private static final String SNOWY_THIRD_ALIPAY_CLIENT_SECRET_KEY = "SNOWY_THIRD_ALIPAY_CLIENT_SECRET";
+    private static final String SNOWY_THIRD_ALIPAY_PUBLIC_KEY_KEY = "SNOWY_THIRD_ALIPAY_PUBLIC_KEY";
+    private static final String SNOWY_THIRD_ALIPAY_REDIRECT_URL_KEY = "SNOWY_THIRD_ALIPAY_REDIRECT_URL";
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
@@ -99,25 +215,21 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
 
     @Override
     public AuthThirdRenderResult render(AuthThirdRenderParam authThirdRenderParam) {
-
-        // 获取请求
-        AuthRequest authRequest = this.getAuthRequest(authThirdRenderParam.getPlatform());
-        // 获取登录端类型
-        String clientType = authThirdRenderParam.getClientType();
+        // 校验认证源是否存在
+        String platform = authThirdRenderParam.getPlatform();
+        AuthPlatformEnum.validate(platform);
         // 校验登录端类型
+        String clientType = authThirdRenderParam.getClientType();
         SaClientTypeEnum.validate(clientType);
-        // 创建state
-        String state = AuthStateUtils.createState();
-        // 放入缓存
-        commonCacheOperator.put(CONFIG_CACHE_KEY + state, JSONUtil.createObj().set("clientType", clientType), 300);
-        // 构造授权地址
-        String authorizeUrl = authRequest.authorize(state);
+        // 创建客户端
+        AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
+        // 获取认证地址，需客户端类型
+        String authorizeUrl = authSourceBaseClient.getAuthorizeUrl(clientType);
         // 构造结果
         AuthThirdRenderResult authThirdRenderResult = new AuthThirdRenderResult();
-        // 返回授权地址
+        // 设置授权地址
         authThirdRenderResult.setAuthorizeUrl(authorizeUrl);
-        // 返回状态码
-        authThirdRenderResult.setState(state);
+        // 返回结果
         return authThirdRenderResult;
     }
 
@@ -125,29 +237,36 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String callback(AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback) {
-        // 获取请求
-        AuthRequest authRequest = this.getAuthRequest(authThirdCallbackParam.getPlatform());
+        // 校验认证源是否存在
+        String platform = authThirdCallbackParam.getPlatform();
+        AuthPlatformEnum.validate(platform);
+        // 创建客户端
+        AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
         // 获取state
-        String state = authThirdCallbackParam.getState();
-        // 定义登录端类型
-        String clientType;
-        if(ObjectUtil.isNotEmpty(state)) {
-            // 获取缓存值
-            Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
-            // 判断是否为空
-            if(ObjectUtil.isEmpty(stateCacheValueObj)){
-                throw new CommonException("state已失效");
+        String state = SaHolder.getRequest().getParam(SaOAuth2Consts.Param.state);
+        // 校验state
+        if(ObjectUtil.isEmpty(state)) {
+            state = SaHolder.getRequest().getParam("RelayState");
+            if(ObjectUtil.isEmpty(state)) {
+                throw new CommonException("state不能为空");
             }
-            // 获取登录端类型
-            clientType = JSONUtil.parseObj(stateCacheValueObj).getStr("clientType");
-            // 移除缓存
-            commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
-        } else {
-            // 默认B端登录
-            clientType = SaClientTypeEnum.B.getValue();
         }
+        // 获取缓存操作类
+        CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
+        // 获取缓存值
+        Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
+        // 判断是否为空
+        if(ObjectUtil.isEmpty(stateCacheValueObj)){
+            throw new CommonException("state已失效");
+        }
+        // 转换为json对象
+        JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
+        // 获取登录端类型
+        String clientType = stateCacheValueJsonObject.getStr("clientType");
+        // 移除缓存
+        commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
         // 执行请求
-        AuthResponse<AuthUser> authResponse = authRequest.login(authCallback);
+        AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin();
         if (authResponse.ok()) {
             // 授权的用户信息
             AuthUser authUser = authResponse.getData();
@@ -172,12 +291,24 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     return "needBind:" + authThirdUser.getId();
                 }
             }
+            // 定义生成的token
+            String token;
             // 根据客户端类型执行登录，返回token
-            if(SaClientTypeEnum.B.getValue().equals(clientType)) {
-                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
+            String targetProperty = authSourceBaseClient.getAuthBaseJson().getTargetProperty();
+            if (AuthPropertyEnum.ID.getValue().equals(targetProperty)) {
+                token = authService.doLoginById(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType);
+            } else if (AuthPropertyEnum.ACCOUNT.getValue().equals(targetProperty)) {
+                token = authService.doLoginByAccount(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType);
+            } else if (AuthPropertyEnum.PHONE.getValue().equals(targetProperty)) {
+                token = authService.doLoginByPhone(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType,
+                        AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue());
+            } else if (AuthPropertyEnum.EMAIL.getValue().equals(targetProperty)) {
+                token = authService.doLoginByEmail(uuid, AuthDeviceTypeEnum.PC.getValue(), clientType,
+                        AuthStrategyWhenNoUserWithPhoneOrEmailEnum.NOT_ALLOW_LOGIN.getValue());
             } else {
-                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
+                throw new CommonException("不支持的认证源属性：{}", targetProperty);
             }
+            return token;
         } else {
             throw new CommonException("第三方登录授权回调失败，原因：{}", authResponse.getMsg());
         }
@@ -246,17 +377,116 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     }
 
     /**
-     * 创建授权请求
+     * 创建授权请求客户端
      *
      * @author xuyuxiang
      * @date 2022/7/8 16:48
      **/
-    private AuthRequest getAuthRequest(String source) {
-        AuthRequest authRequest = null;
-        source = source.toUpperCase();
+    private AuthBaseClient<?> getAuthClient(String platform) {
+        AuthBaseClient<?> authClient = null;
+        platform = platform.toUpperCase();
         HttpUtil.setHttp(new HutoolImpl());
-        AuthThirdPlatformEnum.validate(source);
-        if(source.equals(AuthThirdPlatformEnum.IAM.getValue())) {
+        AuthPlatformEnum.validate(platform);
+        if(platform.equals(AuthPlatformEnum.OAUTH.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("OAUTH登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // OAUTH登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_REDIRECT_URL_KEY))
+                    .set("authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_AUTHORIZE_URL_KEY))
+                    .set("accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_ACCESS_TOKEN_URL_KEY))
+                    .set("userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_USER_INFO_URL_KEY))
+                    .set("scope", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_SCOPE_KEY))
+                    .set("sourceProperty", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_SOURCE_PROPERTY_KEY))
+                    .set("targetProperty", devConfigApi.getValueByKey(SNOWY_THIRD_OAUTH_TARGET_PROPERTY_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.OIDC.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("OIDC登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // OIDC登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_REDIRECT_URL_KEY))
+                    .set("authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_AUTHORIZE_URL_KEY))
+                    .set("accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_ACCESS_TOKEN_URL_KEY))
+                    .set("userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_USER_INFO_URL_KEY))
+                    .set("scope", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_SCOPE_KEY))
+                    .set("publicKey", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_PUBLIC_KEY_KEY))
+                    .set("algorithm", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_ALGORITHM_KEY))
+                    .set("sourceProperty", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_SOURCE_PROPERTY_KEY))
+                    .set("targetProperty", devConfigApi.getValueByKey(SNOWY_THIRD_OIDC_TARGET_PROPERTY_KEY)));
+        }
+
+        if(platform.equals(AuthPlatformEnum.JWT.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("JWT登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_JWT_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // JWT登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_REDIRECT_URL_KEY))
+                    .set("authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_AUTHORIZE_URL_KEY))
+                    .set("publicKey", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_PUBLIC_KEY_KEY))
+                    .set("algorithm", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_ALGORITHM_KEY))
+                    .set("sourceProperty", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_SOURCE_PROPERTY_KEY))
+                    .set("targetProperty", devConfigApi.getValueByKey(SNOWY_THIRD_JWT_TARGET_PROPERTY_KEY)));
+        }
+
+        if(platform.equals(AuthPlatformEnum.CAS.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_CAS_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("CAS登录已禁用");
+            }
+            // CAS登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("casServerLoginUrl", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_SERVER_LOGIN_URL_KEY))
+                    .set("casServerValidateUrl", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_SERVER_VALIDATE_URL_KEY))
+                    .set("casServerProtocolVersion", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_SERVER_PROTOCOL_VERSION_KEY))
+                    .set("serviceUrl", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_SERVICE_URL_KEY))
+                    .set("sourceProperty", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_SOURCE_PROPERTY_KEY))
+                    .set("targetProperty", devConfigApi.getValueByKey(SNOWY_THIRD_CAS_TARGET_PROPERTY_KEY)));
+        }
+
+        if(platform.equals(AuthPlatformEnum.SAML.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("SAML登录已禁用");
+            }
+            // SAML登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("spMetaData", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_SP_META_DATA_KEY))
+                    .set("certificate", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_CERTIFICATE_KEY))
+                    .set("privateKey", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_PRIVATE_KEY_KEY))
+                    .set("publicKey", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_PUBLIC_KEY_KEY))
+                    .set("spEntityId", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_SP_ENTITY_ID_KEY))
+                    .set("spAclUrl", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_SP_ACL_URL_KEY))
+                    .set("idpMetaData", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_IDP_META_DATA_KEY))
+                    .set("bindingType", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_BINDING_TYPE_KEY))
+                    .set("sourceProperty", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_SOURCE_PROPERTY_KEY))
+                    .set("targetProperty", devConfigApi.getValueByKey(SNOWY_THIRD_SAML_TARGET_PROPERTY_KEY)));
+        }
+
+        // =======以下为OIDC协议的具体实现======= //
+
+        if(platform.equals(AuthPlatformEnum.IAM.getValue())) {
             // 检查是否允许登录
             if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ALLOW_LOGIN_FLAG_KEY))) {
                 throw new CommonException("IAM登录已禁用");
@@ -265,18 +495,15 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                 throw new CommonException("重定向地址配置错误");
             }
             // IAM登录
-            authRequest = new AuthThirdIamRequest(AuthConfig.builder()
-                    .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_ID_KEY))
-                    .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_SECRET_KEY))
-                    .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_IAM_REDIRECT_URL_KEY))
-                    .ignoreCheckState(true)
-                    .scopes(CollectionUtil.newArrayList("profile", "account", "email", "phone", "org", "position"))
-                    .build(), Map.of(
-                    "authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY),
-                    "accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY),
-                    "userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_USER_INFO_URL_KEY)));
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_REDIRECT_URL_KEY))
+                    .set("authorizeUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_AUTHORIZE_URL_KEY))
+                    .set("accessTokenUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_ACCESS_TOKEN_URL_KEY))
+                    .set("userInfoUrl", devConfigApi.getValueByKey(SNOWY_THIRD_IAM_USER_INFO_URL_KEY)));
         }
-        if(source.equals(AuthThirdPlatformEnum.WECHAT.getValue())){
+        if(platform.equals(AuthPlatformEnum.WECHAT.getValue())){
             // 检查是否允许登录
             if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG_KEY))) {
                 throw new CommonException("微信登录已禁用");
@@ -285,13 +512,139 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                 throw new CommonException("重定向地址配置错误");
             }
             // 微信登录
-            authRequest = new AuthWeChatOpenRequest(AuthConfig.builder()
-                    .clientId(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_ID_KEY))
-                    .clientSecret(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY))
-                    .redirectUri(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY))
-                    .ignoreCheckState(true)
-                    .build());
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY)));
         }
-        return authRequest;
+        if(platform.equals(AuthPlatformEnum.DINGTALK.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("钉钉登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_DINGTALK_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 钉钉登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_DINGTALK_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_DINGTALK_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_DINGTALK_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.WORKWECHAT.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("企业微信登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 企业微信登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("agentId", devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_AGENT_ID_KEY))
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_WORKWECHAT_REDIRECT_URL_KEY)));
+        }
+        if (platform.equals(AuthPlatformEnum.FEISHU.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_FEISHU_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("飞书登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_FEISHU_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 飞书登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_FEISHU_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_FEISHU_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_FEISHU_REDIRECT_URL_KEY)));
+        }
+        if (platform.equals(AuthPlatformEnum.WELINK.getValue())) {
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WELINK_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("企业微信登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_WELINK_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // WeLink登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WELINK_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WELINK_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_WELINK_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.YUNZHIJIA.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_YUNZHIJIA_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("云之家登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_YUNZHIJIA_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 云之家登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_YUNZHIJIA_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_YUNZHIJIA_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_YUNZHIJIA_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.QQ.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_QQ_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("QQ登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_QQ_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // QQ登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_QQ_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_QQ_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_QQ_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.WEIBO.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WEIBO_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("微博登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_WEIBO_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 微博登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WEIBO_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WEIBO_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_WEIBO_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.DOUYIN.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_DOUYIN_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("抖音登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_DOUYIN_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 抖音登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_DOUYIN_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_DOUYIN_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_DOUYIN_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.ALIPAY.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("支付宝登录已禁用");
+            }
+            if(!devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_REDIRECT_URL_KEY).startsWith("http")) {
+                throw new CommonException("重定向地址配置错误");
+            }
+            // 支付宝登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_CLIENT_SECRET_KEY))
+                    .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_REDIRECT_URL_KEY))
+                    .set("publicKey", devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_PUBLIC_KEY_KEY)));
+        }
+        return authClient;
     }
 }

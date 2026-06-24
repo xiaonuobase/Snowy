@@ -20,30 +20,25 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item
-						label="clientId："
-						name="SNOWY_THIRD_WECHAT_CLIENT_ID"
-						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
-					>
+					<a-form-item label="clientId：" name="SNOWY_THIRD_WECHAT_CLIENT_ID" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
 						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_CLIENT_ID" placeholder="请输入clientId" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item
-						label="clientSecret："
-						name="SNOWY_THIRD_WECHAT_CLIENT_SECRET"
-						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
-					>
+					<a-form-item label="clientSecret：" name="SNOWY_THIRD_WECHAT_CLIENT_SECRET" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
 						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_CLIENT_SECRET" placeholder="请输入clientSecret" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item
-						label="redirectUrl："
-						name="SNOWY_THIRD_WECHAT_REDIRECT_URL"
-						v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG"
-					>
-						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_REDIRECT_URL" placeholder="请输入redirectUrl" />
+					<a-form-item name="SNOWY_THIRD_WECHAT_REDIRECT_URL" v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG">
+						<template #label>
+							<a-tooltip>
+								<template #title> 请填写{前端地址}/callback/CAS，如http://localhost:81/callback/WECHAT </template>
+								<question-circle-outlined />
+							</a-tooltip>
+							重定向地址：
+						</template>
+						<a-input v-model:value="formData.SNOWY_THIRD_WECHAT_REDIRECT_URL" placeholder="请输入重定向地址" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -97,7 +92,7 @@
 		SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG: [required('请选择是否允许微信登录')],
 		SNOWY_THIRD_WECHAT_CLIENT_ID: [required('请输入clientId')],
 		SNOWY_THIRD_WECHAT_CLIENT_SECRET: [required('请输入clientSecret')],
-		SNOWY_THIRD_WECHAT_REDIRECT_URL: [required('请输入redirectUrl')]
+		SNOWY_THIRD_WECHAT_REDIRECT_URL: [required('请输入重定向地址')]
 	}
 	// 验证并提交数据
 	const onSubmit = () => {
