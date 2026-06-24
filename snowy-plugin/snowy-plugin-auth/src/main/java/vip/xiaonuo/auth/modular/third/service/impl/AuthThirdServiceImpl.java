@@ -247,24 +247,27 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         // 校验state
         if(ObjectUtil.isEmpty(state)) {
             state = SaHolder.getRequest().getParam("RelayState");
-            if(ObjectUtil.isEmpty(state)) {
-                throw new CommonException("state不能为空");
+        }
+        // 定义登录端类型
+        String clientType = SaClientTypeEnum.B.getValue();
+        if(ObjectUtil.isNotEmpty(state)) {
+            // 获取缓存操作类
+            CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
+            // 获取缓存值
+            Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
+            // 判断是否为空
+            if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
+                // 转换为json对象
+                JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
+                // 判断是否包含缓存值
+                if(stateCacheValueJsonObject.containsKey("clientType")) {
+                    // 获取登录端类型
+                    clientType = stateCacheValueJsonObject.getStr("clientType");
+                }
+                // 移除缓存
+                commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
             }
         }
-        // 获取缓存操作类
-        CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
-        // 获取缓存值
-        Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
-        // 判断是否为空
-        if(ObjectUtil.isEmpty(stateCacheValueObj)){
-            throw new CommonException("state已失效");
-        }
-        // 转换为json对象
-        JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
-        // 获取登录端类型
-        String clientType = stateCacheValueJsonObject.getStr("clientType");
-        // 移除缓存
-        commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
         // 执行请求
         AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin();
         if (authResponse.ok()) {
@@ -359,7 +362,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         authThirdUser.setAvatar(authUser.getAvatar());
         authThirdUser.setName(authUser.getUsername());
         authThirdUser.setNickname(authUser.getNickname());
-        authThirdUser.setGender(authUser.getGender().getDesc());
+        authThirdUser.setGender(ObjectUtil.isNotEmpty(authUser.getGender())?authUser.getGender().getDesc():"");
         authThirdUser.setCategory(authUser.getSource());
         authThirdUser.setExtJson(JSONUtil.toJsonStr(authUser.getRawUserInfo()));
         this.save(authThirdUser);

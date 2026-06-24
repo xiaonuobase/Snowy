@@ -17,6 +17,7 @@ import cn.dev33.satoken.oauth2.consts.SaOAuth2Consts;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.xkcoding.http.config.HttpConfig;
 import com.xkcoding.http.support.HttpHeader;
@@ -54,29 +55,33 @@ public class AuthOauthCommonRequest extends AuthDefaultRequest {
 
     @Override
     public AuthToken getAccessToken(AuthCallback authCallback) {
-        cn.hutool.json.JSONObject jsonObject = JSONUtil.createObj();
+        JSONObject jsonObject = JSONUtil.createObj();
         jsonObject.set( SaOAuth2Consts.Param.client_id, this.config.getClientId());
         jsonObject.set( SaOAuth2Consts.Param.client_secret, this.config.getClientSecret());
         jsonObject.set( SaOAuth2Consts.Param.grant_type, GrantType.authorization_code);
         jsonObject.set( SaOAuth2Consts.Param.redirect_uri, this.config.getRedirectUri());
         jsonObject.set( SaOAuth2Consts.Param.code, authCallback.getCode());
         String body = HttpUtil.post(this.source.accessToken(), jsonObject, 5000);
-        cn.hutool.json.JSONObject bodyJsonObject = JSONUtil.parseObj(body);
-        if(!bodyJsonObject.containsKey(SaOAuth2Consts.Param.access_token) &&
-                !bodyJsonObject.containsKey(StrUtil.toCamelCase(SaOAuth2Consts.Param.access_token))) {
+        JSONObject bodyJsonObject = JSONUtil.parseObj(body);
+        String accessTokenKey = SaOAuth2Consts.Param.access_token;
+        String accessTokenCamelKey = StrUtil.toCamelCase(accessTokenKey);
+
+        if(!bodyJsonObject.containsKey(accessTokenKey) &&
+                !bodyJsonObject.containsKey(accessTokenCamelKey) && bodyJsonObject.containsKey("data")) {
             Object data = bodyJsonObject.get("data");
             if(ObjectUtil.isEmpty(data)) {
                 throw new AuthException(AuthResponseStatus.FAILURE);
             }
             bodyJsonObject = JSONUtil.parseObj(data);
         }
-        if(ObjectUtil.isAllEmpty(bodyJsonObject.getStr(SaOAuth2Consts.Param.access_token),
-                bodyJsonObject.getStr(StrUtil.toCamelCase(SaOAuth2Consts.Param.access_token)))) {
-            throw new AuthException(AuthResponseStatus.FAILURE);
-        }
-        String accessToken = bodyJsonObject.getStr(SaOAuth2Consts.Param.access_token);
+
+        String accessToken = bodyJsonObject.getStr(accessTokenKey);
         if(ObjectUtil.isEmpty(accessToken)) {
-            accessToken = bodyJsonObject.getStr(StrUtil.toCamelCase(SaOAuth2Consts.Param.access_token));
+            accessToken = bodyJsonObject.getStr(accessTokenCamelKey);
+        }
+        
+        if(ObjectUtil.isEmpty(accessToken)) {
+            throw new AuthException(AuthResponseStatus.FAILURE);
         }
         return AuthToken.builder()
                 .accessToken(accessToken)
@@ -96,13 +101,16 @@ public class AuthOauthCommonRequest extends AuthDefaultRequest {
             HttpHeader header = (new HttpHeader()).add(SaOAuth2Consts.Param.Authorization,
                     SaOAuth2Consts.TokenType.Bearer + " " + authToken.getAccessToken());
             userInfo = (new HttpUtils(httpConfig))
-                    .post(this.source.userInfo(), null, header, false).getBody();
+                    .get(this.source.userInfo(), null, header, false).getBody();
         } else {
             userInfo = (new HttpUtils(httpConfig)).get(this.userInfoUrl(authToken)).getBody();
         }
-        cn.hutool.json.JSONObject bodyJsonObject = JSONUtil.parseObj(userInfo);
-        Object data = bodyJsonObject.get("data");
-        if(ObjectUtil.isNotEmpty(data)) {
+        JSONObject bodyJsonObject = JSONUtil.parseObj(userInfo);
+        if(!bodyJsonObject.containsKey(authOauthBaseJson.getSourceProperty()) && bodyJsonObject.containsKey("data")) {
+            Object data = bodyJsonObject.get("data");
+            if(ObjectUtil.isEmpty(data)) {
+                throw new AuthException(AuthResponseStatus.FAILURE);
+            }
             bodyJsonObject = JSONUtil.parseObj(data);
         }
         return AuthUser.builder()

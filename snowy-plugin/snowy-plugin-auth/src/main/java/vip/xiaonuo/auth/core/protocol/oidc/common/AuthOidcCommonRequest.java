@@ -70,15 +70,28 @@ public class AuthOidcCommonRequest extends AuthDefaultRequest {
         jsonObject.set( SaOAuth2Consts.Param.code, authCallback.getCode());
         String body = HttpUtil.post(this.source.accessToken(), jsonObject, 5000);
         JSONObject bodyJsonObject = JSONUtil.parseObj(body);
-        if(ObjectUtil.isAllEmpty(bodyJsonObject.getStr(SaOAuth2Consts.Param.access_token),
-                bodyJsonObject.getStr(StrUtil.toCamelCase(SaOAuth2Consts.Param.access_token)))) {
+        String accessTokenKey = SaOAuth2Consts.Param.access_token;
+        String accessTokenCamelKey = StrUtil.toCamelCase(accessTokenKey);
+
+        if(!bodyJsonObject.containsKey(accessTokenKey) &&
+                !bodyJsonObject.containsKey(accessTokenCamelKey) && bodyJsonObject.containsKey("data")) {
+            Object data = bodyJsonObject.get("data");
+            if(ObjectUtil.isEmpty(data)) {
+                throw new AuthException(AuthResponseStatus.FAILURE);
+            }
+            bodyJsonObject = JSONUtil.parseObj(data);
+        }
+
+        String accessToken = bodyJsonObject.getStr(accessTokenKey);
+        if(ObjectUtil.isEmpty(accessToken)) {
+            accessToken = bodyJsonObject.getStr(accessTokenCamelKey);
+        }
+        
+        if(ObjectUtil.isEmpty(accessToken)) {
             throw new AuthException(AuthResponseStatus.FAILURE);
         }
+        
         this.checkResponse(bodyJsonObject);
-        String accessToken = bodyJsonObject.getStr(SaOAuth2Consts.Param.access_token);
-        if(ObjectUtil.isEmpty(accessToken)) {
-            accessToken = bodyJsonObject.getStr(StrUtil.toCamelCase(SaOAuth2Consts.Param.access_token));
-        }
         return AuthToken.builder()
                 .accessToken(accessToken)
                 .refreshToken(bodyJsonObject.getStr(SaOAuth2Consts.Param.refresh_token))
@@ -97,11 +110,18 @@ public class AuthOidcCommonRequest extends AuthDefaultRequest {
             HttpHeader header = (new HttpHeader()).add(SaOAuth2Consts.Param.Authorization,
                     SaOAuth2Consts.TokenType.Bearer + " " + authToken.getAccessToken());
             userInfo = (new HttpUtils(httpConfig))
-                    .post(this.source.userInfo(), null, header, false).getBody();
+                    .get(this.source.userInfo(), null, header, false).getBody();
         } else {
             userInfo = (new HttpUtils(httpConfig)).get(this.userInfoUrl(authToken)).getBody();
         }
         JSONObject bodyJsonObject = JSONUtil.parseObj(userInfo);
+        if(!bodyJsonObject.containsKey(authOidcBaseJson.getSourceProperty()) && bodyJsonObject.containsKey("data")) {
+            Object data = bodyJsonObject.get("data");
+            if(ObjectUtil.isEmpty(data)) {
+                throw new AuthException(AuthResponseStatus.FAILURE);
+            }
+            bodyJsonObject = JSONUtil.parseObj(data);
+        }
         return AuthUser.builder()
                 .rawUserInfo(com.alibaba.fastjson.JSONObject.parseObject(bodyJsonObject.toString()))
                 .uuid(bodyJsonObject.getStr(authOidcBaseJson.getSourceProperty()))
