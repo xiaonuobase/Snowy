@@ -1111,7 +1111,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public String updateAvatar(MultipartFile file) {
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         try {
-            String suffix = Objects.requireNonNull(FileUtil.getSuffix(file.getOriginalFilename())).toLowerCase();
+            // 验证文件后缀（只允许图片格式）
+            String suffix = FileUtil.getSuffix(file.getOriginalFilename());
+            if (StrUtil.isEmpty(suffix)) {
+                throw new CommonException("文件必须有后缀名");
+            }
+            suffix = suffix.toLowerCase();
+            List<String> allowedExt = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
+            if (!allowedExt.contains(suffix)) {
+                throw new CommonException("头像仅支持图片格式：jpg、jpeg、png、gif、bmp、webp");
+            }
+
             BufferedImage image = ImgUtil.toImage(file.getBytes());
             String base64;
             if(image.getWidth() <= 200 && image.getHeight() <= 200) {

@@ -13,6 +13,7 @@
 package vip.xiaonuo.dev.modular.file.service.impl;
 
 import cn.hutool.core.collection.CollStreamUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
@@ -82,7 +83,19 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     }
 
     @Override
+    public String uploadReturnIdWithValidation(String engine, MultipartFile file, List<String> allowedExtensions) {
+        validateFileExtension(file, allowedExtensions);
+        return this.storageFile(engine, file, true, true);
+    }
+
+    @Override
     public String uploadReturnUrl(String engine, MultipartFile file) {
+        return this.storageFile(engine, file, false, false);
+    }
+
+    @Override
+    public String uploadReturnUrlWithValidation(String engine, MultipartFile file, List<String> allowedExtensions) {
+        validateFileExtension(file, allowedExtensions);
         return this.storageFile(engine, file, false, false);
     }
 
@@ -419,6 +432,35 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         } catch (Exception e) {
             log.error("验证文件下载签名异常，fileId: {}", fileId, e);
             return false;
+        }
+    }
+
+    /**
+     * 验证文件后缀名
+     *
+     * @param file 上传的文件
+     * @param allowedExtensions 允许的后缀列表（不含点号，如：jpg, png）
+     */
+    private void validateFileExtension(MultipartFile file, List<String> allowedExtensions) {
+        if (file == null || file.isEmpty()) {
+            throw new CommonException("上传文件不能为空");
+        }
+
+        String originalFileName = file.getOriginalFilename();
+        if (StrUtil.isEmpty(originalFileName)) {
+            throw new CommonException("文件名不能为空");
+        }
+
+        // 获取文件后缀（小写）
+        String fileSuffix = FileUtil.getSuffix(originalFileName).toLowerCase();
+        if (StrUtil.isEmpty(fileSuffix)) {
+            throw new CommonException("文件必须有后缀名");
+        }
+
+        // 校验后缀是否在白名单中
+        if (CollUtil.isEmpty(allowedExtensions) || !allowedExtensions.contains(fileSuffix)) {
+            throw new CommonException("不允许上传该文件类型，仅支持：{}",
+                CollUtil.isEmpty(allowedExtensions) ? "无" : String.join("、", allowedExtensions));
         }
     }
 }

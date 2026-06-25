@@ -36,6 +36,7 @@ import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -82,6 +83,66 @@ public class DevFileController {
     @PostMapping("/dev/file/uploadDynamicReturnUrl")
     public CommonResult<String> uploadDynamicReturnUrl(@RequestPart("file") MultipartFile file) {
         return CommonResult.data(devFileService.uploadReturnUrl(devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file));
+    }
+
+    /**
+     * 动态上传图片文件返回id（仅允许图片格式）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 14:01
+     **/
+    @Operation(summary = "动态上传图片文件返回id")
+    @CommonLog("动态上传图片文件返回id")
+    @PostMapping("/dev/file/uploadImageDynamicReturnId")
+    public CommonResult<String> uploadImageDynamicReturnId(@RequestPart("file") MultipartFile file) {
+        List<String> allowedExt = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
+        return CommonResult.data(devFileService.uploadReturnIdWithValidation(
+                devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file, allowedExt));
+    }
+
+    /**
+     * 动态上传图片文件返回url（仅允许图片格式）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 14:01
+     **/
+    @Operation(summary = "动态上传图片文件返回url")
+    @CommonLog("动态上传图片文件返回url")
+    @PostMapping("/dev/file/uploadImageDynamicReturnUrl")
+    public CommonResult<String> uploadImageDynamicReturnUrl(@RequestPart("file") MultipartFile file) {
+        List<String> allowedExt = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
+        return CommonResult.data(devFileService.uploadReturnUrlWithValidation(
+                devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file, allowedExt));
+    }
+
+    /**
+     * 动态上传文档文件返回id（仅允许文档格式）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 14:01
+     **/
+    @Operation(summary = "动态上传文档文件返回id")
+    @CommonLog("动态上传文档文件返回id")
+    @PostMapping("/dev/file/uploadDocumentDynamicReturnId")
+    public CommonResult<String> uploadDocumentDynamicReturnId(@RequestPart("file") MultipartFile file) {
+        List<String> allowedExt = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt");
+        return CommonResult.data(devFileService.uploadReturnIdWithValidation(
+                devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file, allowedExt));
+    }
+
+    /**
+     * 动态上传文档文件返回url（仅允许文档格式）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 14:01
+     **/
+    @Operation(summary = "动态上传文档文件返回url")
+    @CommonLog("动态上传文档文件返回url")
+    @PostMapping("/dev/file/uploadDocumentDynamicReturnUrl")
+    public CommonResult<String> uploadDocumentDynamicReturnUrl(@RequestPart("file") MultipartFile file) {
+        List<String> allowedExt = Arrays.asList("pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt");
+        return CommonResult.data(devFileService.uploadReturnUrlWithValidation(
+                devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY), file, allowedExt));
     }
 
     /**

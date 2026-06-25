@@ -18,7 +18,6 @@ import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeListParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexSlideshowListParam;
 import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
-import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
 
@@ -62,5 +61,5 @@ public interface BizIndexService {
      * @author yubaoshan
      * @date  2024/07/13 00:31
      */
-    BizIndexSlideshowDetailResult noticeDetailById(BizIndexNoticeIdParam bizIndexNoticeIdParam);
+    BizNotice noticeDetailById(BizIndexNoticeIdParam bizIndexNoticeIdParam);
 }

@@ -18,7 +18,11 @@
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
 					<a-form-item label="图片：" name="image">
-						<xn-upload v-model:value="formData.image" uploadMode="image" />
+						<xn-upload
+							v-model:value="formData.image"
+							uploadMode="image"
+							uploadDynamicReturnUrlApi="/dev/file/uploadImageDynamicReturnUrl"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">

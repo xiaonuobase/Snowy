@@ -24,7 +24,6 @@ import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeListParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexSlideshowListParam;
 import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
-import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.index.service.BizIndexService;
 import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
@@ -90,7 +89,7 @@ public class BizIndexController {
      */
     @Operation(summary = "获取通知公告详情")
     @GetMapping("/biz/index/notice/detail")
-    public CommonResult<BizIndexSlideshowDetailResult> noticeDetailById(@Valid BizIndexNoticeIdParam bizIndexNoticeIdParam) {
+    public CommonResult<BizNotice> noticeDetailById(@Valid BizIndexNoticeIdParam bizIndexNoticeIdParam) {
         return CommonResult.data(bizIndexService.noticeDetailById(bizIndexNoticeIdParam));
     }
 }

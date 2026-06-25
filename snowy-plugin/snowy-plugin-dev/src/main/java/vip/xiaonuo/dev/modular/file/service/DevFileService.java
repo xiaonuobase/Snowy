@@ -43,12 +43,28 @@ public interface DevFileService extends IService<DevFile> {
     String uploadReturnId(String engine, MultipartFile file);
 
     /**
+     * MultipartFile文件上传，返回文件id（带后缀校验）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 15:53
+     **/
+    String uploadReturnIdWithValidation(String engine, MultipartFile file, List<String> allowedExtensions);
+
+    /**
      * MultipartFile文件上传，返回文件Url
      *
      * @author xuyuxiang
      * @date 2022/4/22 15:53
      **/
     String uploadReturnUrl(String engine, MultipartFile file);
+
+    /**
+     * MultipartFile文件上传，返回文件Url（带后缀校验）
+     *
+     * @author xuyuxiang
+     * @date 2025/6/26 15:53
+     **/
+    String uploadReturnUrlWithValidation(String engine, MultipartFile file, List<String> allowedExtensions);
 
     /**
      * 文件分页列表接口

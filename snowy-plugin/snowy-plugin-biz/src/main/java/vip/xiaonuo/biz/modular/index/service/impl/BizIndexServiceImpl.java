@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.biz.modular.index.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -23,7 +22,6 @@ import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeIdParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexNoticeListParam;
 import vip.xiaonuo.biz.modular.index.param.BizIndexSlideshowListParam;
 import vip.xiaonuo.biz.modular.index.result.BizIndexNoticeListResult;
-import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowDetailResult;
 import vip.xiaonuo.biz.modular.index.result.BizIndexSlideshowListResult;
 import vip.xiaonuo.biz.modular.index.service.BizIndexService;
 import vip.xiaonuo.biz.modular.notice.entity.BizNotice;
@@ -76,9 +74,7 @@ public class BizIndexServiceImpl implements BizIndexService {
     }
 
     @Override
-    public BizIndexSlideshowDetailResult noticeDetailById(BizIndexNoticeIdParam bizIndexNoticeIdParam) {
-        BizIndexSlideshowDetailResult result = new BizIndexSlideshowDetailResult();
-        BeanUtil.copyProperties(bizNoticeService.getById(bizIndexNoticeIdParam.getId()), result);
-        return result;
+    public BizNotice noticeDetailById(BizIndexNoticeIdParam bizIndexNoticeIdParam) {
+        return bizNoticeService.getById(bizIndexNoticeIdParam.getId());
     }
 }
