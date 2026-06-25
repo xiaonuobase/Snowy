@@ -22,6 +22,9 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.digest.HMac;
+import cn.hutool.crypto.digest.HmacAlgorithm;
 import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -43,6 +46,7 @@ import vip.xiaonuo.common.util.CommonResponseUtil;
 import vip.xiaonuo.dev.modular.file.entity.DevFile;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.mapper.DevFileMapper;
+import vip.xiaonuo.dev.modular.file.param.DevFileDownloadParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
@@ -68,6 +72,9 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Resource
     private CommonProperties commonProperties;
+
+    /** 文件下载签名密钥 */
+    private static final String FILE_DOWNLOAD_SIGN_SECRET = "snowy_file_download_secret_key_2025";
 
     @Override
     public String uploadReturnId(String engine, MultipartFile file) {
@@ -104,25 +111,15 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     }
 
     @Override
-    public void download(DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
+    public void download(DevFileDownloadParam devFileDownloadParam, HttpServletResponse response) throws IOException {
+        // 验证签名
+        if (!verifyDownloadSign(devFileDownloadParam.getId(), devFileDownloadParam.getSign())) {
+            CommonResponseUtil.renderError(response, "下载链接无效，请使用正确的下载地址");
+            return;
+        }
+        DevFileIdParam devFileIdParam = new DevFileIdParam();
+        devFileIdParam.setId(devFileDownloadParam.getId());
         unifiedDownload(devFileIdParam, response, false);
-//        DevFile devFile;
-//        try {
-//            devFile = this.queryEntity(devFileIdParam.getId());
-//        } catch (Exception e) {
-//            CommonResponseUtil.renderError(response, e.getMessage());
-//            return;
-//        }
-//        if(!devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
-//            CommonResponseUtil.renderError(response, "非本地文件不支持此方式下载，id值为：" + devFile.getId());
-//            return;
-//        }
-//        File file = FileUtil.file(devFile.getStoragePath());
-//        if(!FileUtil.exist(file)) {
-//            CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
-//            return;
-//        }
-//        CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
     }
 
     @Override
@@ -287,7 +284,9 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
         if (BooleanUtil.isTrue(isDownloadAuth)){
             downloadUrl= apiUrl + "/dev/file/authDownload?id=" + fileId + "&token=";
         }else {
-            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId;
+            // 公开文件使用带签名的 download 接口
+            String sign = generateDownloadSign(fileId);
+            downloadUrl= apiUrl + "/dev/file/download?id=" + fileId + "&sign=" + sign;
         }
         devFile.setDownloadPath(downloadUrl);
 
@@ -387,5 +386,39 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 || ImgUtil.IMAGE_TYPE_BMP.equals(fileSuffix)
                 || ImgUtil.IMAGE_TYPE_PNG.equals(fileSuffix)
                 || ImgUtil.IMAGE_TYPE_PSD.equals(fileSuffix);
+    }
+
+    /**
+     * 生成文件下载签名
+     *
+     * @param fileId 文件ID
+     * @return 签名字符串
+     */
+    private String generateDownloadSign(String fileId) {
+        HMac hmac = SecureUtil.hmac(HmacAlgorithm.HmacSHA256, FILE_DOWNLOAD_SIGN_SECRET);
+        String sign = hmac.digestHex(fileId);
+        return cn.hutool.core.codec.Base64.encode(sign);
+    }
+
+    /**
+     * 验证文件下载签名
+     *
+     * @param fileId 文件ID
+     * @param sign 签名字符串
+     * @return 是否有效
+     */
+    public boolean verifyDownloadSign(String fileId, String sign) {
+        if (StrUtil.isEmpty(sign)) {
+            return false;
+        }
+        try {
+            String decoded = cn.hutool.core.codec.Base64.decodeStr(sign);
+            HMac hmac = SecureUtil.hmac(HmacAlgorithm.HmacSHA256, FILE_DOWNLOAD_SIGN_SECRET);
+            String expectedSign = hmac.digestHex(fileId);
+            return expectedSign.equals(decoded);
+        } catch (Exception e) {
+            log.error("验证文件下载签名异常，fileId: {}", fileId, e);
+            return false;
+        }
     }
 }

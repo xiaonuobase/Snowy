@@ -27,6 +27,7 @@ import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.modular.file.entity.DevFile;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
+import vip.xiaonuo.dev.modular.file.param.DevFileDownloadParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileListParam;
 import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
@@ -220,8 +221,8 @@ public class DevFileController {
     @Operation(summary = "下载文件")
     @CommonLog("下载文件")
     @GetMapping(value = "/dev/file/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public void download(@Valid DevFileIdParam devFileIdParam, HttpServletResponse response) throws IOException {
-        devFileService.download(devFileIdParam, response);
+    public void download(@Valid DevFileDownloadParam devFileDownloadParam, HttpServletResponse response) throws IOException {
+        devFileService.download(devFileDownloadParam, response);
     }
 
     /**

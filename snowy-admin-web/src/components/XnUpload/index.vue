@@ -140,7 +140,7 @@
 		// 当上传接口为id的情况下，配置下载接口
 		uploadIdDownloadUrl: {
 			type: String,
-			default: convertUrl('/dev/file/download?id='),
+			default: convertUrl('/dev/file/authDownload?id='),
 			required: false
 		},
 		// 上传样式或图片方式 file || video || drag || image
