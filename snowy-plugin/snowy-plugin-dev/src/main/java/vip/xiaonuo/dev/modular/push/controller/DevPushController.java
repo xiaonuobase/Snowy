@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
+import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.push.entity.DevPush;
 import vip.xiaonuo.dev.modular.push.param.*;
@@ -53,6 +54,7 @@ public class DevPushController {
      */
     @Operation(summary = "动态推送TEXT消息")
     @CommonLog("动态推送TEXT消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushDynamicText")
     public CommonResult<String> pushDynamicText(@RequestBody @Valid DevPushDynamicTextParam devPushDynamicTextParam) {
         devPushService.pushDynamicText(devPushDynamicTextParam);
@@ -67,6 +69,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送飞书TEXT消息")
     @CommonLog("推送飞书TEXT消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushFeiShuText")
     public CommonResult<String> pushFeiShuText(@RequestBody @Valid DevPushFeiShuTextParam devPushFeiShuTextParam) {
         devPushService.pushFeiShuText(devPushFeiShuTextParam);
@@ -81,6 +84,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送钉钉TEXT消息")
     @CommonLog("推送钉钉TEXT消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushDingTalkText")
     public CommonResult<String> pushDingTalkText(@RequestBody @Valid DevPushDingTalkTextParam devPushDingTalkTextParam) {
         devPushService.pushDingTalkText(devPushDingTalkTextParam);
@@ -95,6 +99,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送钉钉MARKDOWN消息")
     @CommonLog("推送钉钉MARKDOWN消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushDingTalkMarkdown")
     public CommonResult<String> pushDingTalkMarkdown(@RequestBody @Valid DevPushDingTalkMarkdownParam devPushDingTalkMarkdownParam) {
         devPushService.pushDingTalkMarkdown(devPushDingTalkMarkdownParam);
@@ -109,6 +114,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送钉钉LINK消息")
     @CommonLog("推送钉钉LINK消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushDingTalkLink")
     public CommonResult<String> pushDingTalkLink(@RequestBody @Valid DevPushDingTalkLinkParam devPushDingTalkLinkParam) {
         devPushService.pushDingTalkLink(devPushDingTalkLinkParam);
@@ -123,6 +129,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送企业微信TEXT消息")
     @CommonLog("推送企业微信TEXT消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushWorkWechatText")
     public CommonResult<String> pushWorkWechatText(@RequestBody @Valid DevPushWorkWechatTextParam devPushWorkWechatTextParam) {
         devPushService.pushWorkWechatText(devPushWorkWechatTextParam);
@@ -137,6 +144,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送企业微信MARKDOWN消息")
     @CommonLog("推送企业微信MARKDOWN消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushWorkWechatMarkdown")
     public CommonResult<String> pushWorkWechatMarkdown(@RequestBody @Valid DevPushWorkWechatMarkdownParam devPushWorkWechatMarkdownParam) {
         devPushService.pushWorkWechatMarkdown(devPushWorkWechatMarkdownParam);
@@ -151,6 +159,7 @@ public class DevPushController {
      */
     @Operation(summary = "推送企业微信NEWS消息")
     @CommonLog("推送企业微信NEWS消息")
+    @CommonNoRepeat
     @PostMapping("/dev/push/pushWorkWechatNews")
     public CommonResult<String> pushWorkWechatNews(@RequestBody @Valid DevPushWorkWechatNewsParam devPushWorkWechatNewsParam) {
         devPushService.pushWorkWechatNews(devPushWorkWechatNewsParam);

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
+import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.sms.entity.DevSms;
 import vip.xiaonuo.dev.modular.sms.param.*;
@@ -53,6 +54,7 @@ public class DevSmsController {
      */
     @Operation(summary = "动态发送短信")
     @CommonLog("动态发送短信")
+    @CommonNoRepeat
     @PostMapping("/dev/sms/sendDynamic")
     public CommonResult<String> sendDynamic(@RequestBody @Valid DevSmsSendDynamicParam devSmsSendDynamicParam) {
         devSmsService.sendDynamic(devSmsSendDynamicParam);
@@ -67,6 +69,7 @@ public class DevSmsController {
      */
     @Operation(summary = "发送阿里云短信")
     @CommonLog("发送阿里云短信")
+    @CommonNoRepeat
     @PostMapping("/dev/sms/sendAliyun")
     public CommonResult<String> sendAliyun(@RequestBody @Valid DevSmsSendAliyunParam devSmsSendAliyunParam) {
         devSmsService.sendAliyun(devSmsSendAliyunParam);
@@ -81,6 +84,7 @@ public class DevSmsController {
      */
     @Operation(summary = "发送腾讯云短信")
     @CommonLog("发送腾讯云短信")
+    @CommonNoRepeat
     @PostMapping("/dev/sms/sendTencent")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevSmsSendTencentParam devSmsSendTencentParam) {
         devSmsService.sendTencent(devSmsSendTencentParam);

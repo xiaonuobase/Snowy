@@ -59,7 +59,8 @@
 	// 默认要校验的
 	const formRules = {
 		subject: [required('请输入主题')],
-		category: [required('请选择站内信分类')]
+		category: [required('请选择站内信分类')],
+		receiverIdList: [required('请选择接收人')],
 	}
 	// 站内信分类字典
 	const categoryOptions = tool.dictList('MESSAGE_CATEGORY')

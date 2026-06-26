@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
+import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.message.entity.DevMessage;
 import vip.xiaonuo.dev.modular.message.param.DevMessageIdParam;
@@ -56,6 +57,7 @@ public class DevMessageController {
      */
     @Operation(summary = "发送站内信")
     @CommonLog("发送站内信")
+    @CommonNoRepeat
     @PostMapping("/dev/message/send")
     public CommonResult<String> send(@RequestBody @Valid DevMessageSendParam devMessageSendParam) {
         devMessageService.send(devMessageSendParam);

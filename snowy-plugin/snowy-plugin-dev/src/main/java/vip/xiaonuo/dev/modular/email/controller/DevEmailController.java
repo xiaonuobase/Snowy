@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.common.annotation.CommonLog;
+import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.dev.modular.email.entity.DevEmail;
 import vip.xiaonuo.dev.modular.email.param.*;
@@ -53,6 +54,7 @@ public class DevEmailController {
      */
     @Operation(summary = "动态发送TXT邮件")
     @CommonLog("动态发送TXT邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendDynamicTxt")
     public CommonResult<String> sendDynamic(@RequestBody @Valid DevEmailSendDynamicTxtParam devEmailSendDynamicTxtParam) {
         devEmailService.sendDynamicTxt(devEmailSendDynamicTxtParam);
@@ -67,6 +69,7 @@ public class DevEmailController {
      */
     @Operation(summary = "动态发送HTML邮件")
     @CommonLog("动态发送HTML邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendDynamicHtml")
     public CommonResult<String> sendDynamic(@RequestBody @Valid DevEmailSendDynamicHtmlParam devEmailSendDynamicHtmlParam) {
         devEmailService.sendDynamicHtml(devEmailSendDynamicHtmlParam);
@@ -81,6 +84,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送本地文本邮件")
     @CommonLog("发送本地文本邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendLocalTxt")
     public CommonResult<String> sendLocal(@RequestBody @Valid DevEmailSendLocalTxtParam devEmailSendLocalTxtParam) {
         devEmailService.sendLocal(devEmailSendLocalTxtParam);
@@ -95,6 +99,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送本地HTML邮件")
     @CommonLog("发送本地HTML邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendLocalHtml")
     public CommonResult<String> sendLocal(@RequestBody @Valid DevEmailSendLocalHtmlParam devEmailSendLocalHtmlParam) {
         devEmailService.sendLocal(devEmailSendLocalHtmlParam);
@@ -109,6 +114,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送阿里云文本邮件")
     @CommonLog("发送阿里云文本邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendAliyunTxt")
     public CommonResult<String> sendAliyun(@RequestBody @Valid DevEmailSendAliyunTxtParam devEmailSendAliyunTxtParam) {
         devEmailService.sendAliyun(devEmailSendAliyunTxtParam);
@@ -123,6 +129,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送阿里云HTML邮件")
     @CommonLog("发送阿里云HTML邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendAliyunHtml")
     public CommonResult<String> sendAliyun(@RequestBody @Valid DevEmailSendAliyunHtmlParam devEmailSendAliyunHtmlParam) {
         devEmailService.sendAliyun(devEmailSendAliyunHtmlParam);
@@ -137,6 +144,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送阿里云模板邮件")
     @CommonLog("发送阿里云模板邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendAliyunTmp")
     public CommonResult<String> sendAliyun(@RequestBody @Valid DevEmailSendAliyunTmpParam devEmailSendAliyunTmpParam) {
         devEmailService.sendAliyun(devEmailSendAliyunTmpParam);
@@ -151,6 +159,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送腾讯云文本邮件")
     @CommonLog("发送腾讯云文本邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sendTencentTxt")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevEmailSendTencentTxtParam devEmailSendTencentTxtParam) {
         devEmailService.sendTencent(devEmailSendTencentTxtParam);
@@ -165,6 +174,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送腾讯云HTML邮件")
     @CommonLog("发送腾讯云HTML邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sentTencentHtml")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevEmailSendTencentHtmlParam devEmailSendTencentHtmlParam) {
         devEmailService.sendTencent(devEmailSendTencentHtmlParam);
@@ -179,6 +189,7 @@ public class DevEmailController {
      */
     @Operation(summary = "发送腾讯云模板邮件")
     @CommonLog("发送腾讯云模板邮件")
+    @CommonNoRepeat
     @PostMapping("/dev/email/sentTencentTmp")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevEmailSendTencentTmpParam devEmailSendTencentTmpParam) {
         devEmailService.sendTencent(devEmailSendTencentTmpParam);
