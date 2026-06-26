@@ -541,8 +541,8 @@ body,
 
 // ant-modal-header 样式
 .ant-modal .ant-modal-header {
-	margin: -20px -24px 20px -24px;
-	padding: 12px 24px;
+	margin: -20px -24px 0 -24px;
+	padding: 10px 24px;
 	background: rgb(from var(--primary-color) r g b / 10%);
 }
 // ant-modal-title 样式
@@ -551,7 +551,7 @@ body,
 }
 // ant-modal-close 样式
 .ant-modal .ant-modal-close {
-	top: 12px;
+	top: 10px;
 	line-height: 1.5;
 	inset-inline-end: 24px;
 }
@@ -581,6 +581,47 @@ body,
 .ant-modal-action {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
+	z-index: 1010;
+	padding: 0;
+	color: rgba(0, 0, 0, 0.45);
+	font-weight: 600;
+	line-height: 1.5;
+	text-decoration: none;
+	background: transparent;
+	border-radius: 4px;
+	width: 22px;
+	height: 22px;
+	border: 0;
+	outline: 0;
+	cursor: pointer;
+	transition:
+		color 0.2s,
+		background-color 0.2s;
+	font-size: 16px;
+	font-style: normal;
+	text-align: center;
+	text-transform: none;
+	text-rendering: auto;
+	&:hover {
+		color: rgba(0, 0, 0, 0.88);
+		background-color: rgba(0, 0, 0, 0.06);
+		text-decoration: none;
+	}
+}
+
+// ant-drawer-close 样式
+.ant-drawer .ant-drawer-close {
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.06);
+	}
+}
+
+// ant-drawer 自定义按钮
+.ant-drawer-action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	z-index: 1010;
 	padding: 0;
 	color: rgba(0, 0, 0, 0.45);

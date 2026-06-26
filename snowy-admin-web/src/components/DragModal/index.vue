@@ -1,15 +1,14 @@
 <template>
 	<a-modal
 		v-bind="$attrs"
-		:open="visible"
+		:open="isOpen"
 		:width="modalWidth"
-		:wrap-class-name="wrapClassName + fullscreenClass"
+		:wrap-class-name="`${wrapClassName} ${fullscreenClass}`"
 		:bodyStyle="calcBodyStyle"
-		:closable="false"
 		@cancel="handleCancel"
 	>
 		<template #title>
-			<div class="flex justify-between items-center -mr-9">
+			<div class="flex justify-between items-center">
 				<div
 					ref="modalTitleRef"
 					:style="{
@@ -21,41 +20,44 @@
 						userSelect: 'none'
 					}"
 				>
-					<span class="cursor-default select-text">
+					<span class="cursor-default select-text" @mousedown.stop>
 						<slot name="title">{{ title }}</slot>
 					</span>
 				</div>
-				<div class="flex items-center space-x-1 pr-2">
-					<div v-if="draggable && isDragged" class="ant-modal-action" @click="toggleResetDrag">
-						<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="(trigger) => trigger">
-							<component :is="AimOutlined" class="p-0.5" />
-						</a-tooltip>
-					</div>
-					<div v-if="fullscreen" class="ant-modal-action" @click="toggleFullScreen">
-						<a-tooltip
-							:key="isFullscreen ? '' : 'fullscreen'"
-							:title="isFullscreen ? '退出全屏' : '全屏'"
-							placement="bottom"
-							:getPopupContainer="(trigger) => trigger"
-						>
-							<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
-						</a-tooltip>
-					</div>
-					<div class="ant-modal-action" @click="handleCancel">
-						<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
-							<component :is="CloseOutlined" class="p-0.5" />
-						</a-tooltip>
-					</div>
+				<div v-if="draggable && isDragged && !isFullscreen" class="ant-modal-action" @click="toggleResetDrag">
+					<a-tooltip title="还原拖拽" placement="bottom" :getPopupContainer="getTooltipContainer">
+						<component :is="AimOutlined" class="p-0.5" />
+					</a-tooltip>
+				</div>
+				<div v-if="fullscreen" class="ant-modal-action" @click="toggleFullscreen">
+					<a-tooltip
+						:key="isFullscreen ? '' : 'fullscreen'"
+						:title="isFullscreen ? '退出全屏' : '全屏'"
+						placement="bottom"
+						:getPopupContainer="getTooltipContainer"
+					>
+						<component :is="isFullscreen ? FullscreenExitOutlined : FullscreenOutlined" class="p-0.5" />
+					</a-tooltip>
 				</div>
 			</div>
+		</template>
+
+		<template #closeIcon>
+			<slot name="closeIcon">
+				<a-tooltip title="关闭" placement="bottom" :getPopupContainer="getTooltipContainer">
+					<component :is="CloseOutlined" class="p-0.5" />
+				</a-tooltip>
+			</slot>
 		</template>
 
 		<template #modalRender="{ originVNode }">
 			<slot name="modalRender" :originVNode="originVNode">
 				<div :style="transformStyle" class="relative">
-					<component ref="modalContentRef" :is="originVNode" />
+					<div ref="modalContentRef">
+						<component :is="originVNode" />
+					</div>
 					<div
-						v-if="props.resizable && !isFullscreen"
+						v-if="resizable && !isFullscreen"
 						class="absolute right-0.5 bottom-0.5 w-2 h-2 resize overflow-auto pointer-events-auto"
 						@mousedown="handleResize"
 					/>
@@ -63,34 +65,29 @@
 			</slot>
 		</template>
 
-		<template #closeIcon>
-			<a-tooltip title="关闭" placement="bottom" :getPopupContainer="(trigger) => trigger">
-				<component :is="CloseOutlined" class="p-0.5" />
-			</a-tooltip>
-		</template>
-
 		<slot></slot>
 
 		<template #footer>
-			<slot name="insertFooter"></slot>
+			<slot name="insertFooter" />
 			<slot name="footer">
 				<a-button @click="handleCancel">
-					{{ cancelText || '取消' }}
+					<slot name="cancelText">{{ cancelText || '取消' }}</slot>
 				</a-button>
 				<slot name="centerFooter"></slot>
 				<a-button type="primary" @click="handleOk" :loading="confirmLoading">
-					{{ okText || '确定' }}
+					<slot name="okText">{{ okText || '确定' }}</slot>
 				</a-button>
 			</slot>
-			<slot name="appendFooter"></slot>
+			<slot name="appendFooter" />
 		</template>
 	</a-modal>
 </template>
 <script setup>
-	import { ref, computed, nextTick, watch, watchEffect } from 'vue'
+	import { ref, computed, nextTick, watch, watchEffect, useAttrs, onUnmounted } from 'vue'
 	import { AimOutlined, CloseOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue'
 	import { useDraggable } from '@vueuse/core'
 
+	const attrs = useAttrs()
 	const props = defineProps({
 		// 对话框是否可见
 		visible: {
@@ -159,23 +156,37 @@
 		}
 	})
 
-	const emit = defineEmits(['ok', 'close', 'fullscreen'])
+	const isOpen = computed(() => {
+		return 'open' in attrs ? attrs.open : props.visible
+	})
+
+	const emit = defineEmits(['ok', 'close', 'update:open', 'update:visible', 'fullscreen'])
 
 	const handleOk = (e) => emit('ok', e)
-	const handleCancel = (e) => emit('close', e)
+	const handleCancel = (e) => {
+		emit('close', e)
+		if ('open' in attrs) {
+			emit('update:open', false)
+		} else {
+			emit('update:visible', false)
+		}
+	}
+
+	// Tooltip 挂载 body, 防止拖拽后定位错位
+	const getTooltipContainer = () => document.body
 
 	// 响应式对话框
 	const modalContentRef = ref()
 
-	// 宽度
+	// 响应式对话框宽度
 	const modalWidth = ref(props.width)
 
-	// 高度
-	const modalHeight = ref(undefined)
+	// 响应式对话框高度
+	const modalHeight = ref('auto')
 
-	// 计算属性 bodyStyle
+	// 对话框计算属性 bodyStyle
 	const calcBodyStyle = computed(() => {
-		const style = { overflow: 'auto', ...props.bodyStyle }
+		const style = { overflow: 'auto', ...(props.bodyStyle || {}) }
 		if (isFullscreen.value) return style
 		if (modalHeight.value) {
 			style.height = `calc(${modalHeight.value}px - 116px)`
@@ -185,12 +196,12 @@
 		return style
 	})
 
-	// 全屏
+	// 对话框全屏/退出全屏
 	const isFullscreen = ref(false)
 	const fullscreenClass = ref()
 	const prevModalWidth = ref(props.width)
-	const prevModalHeight = ref()
-	const toggleFullScreen = () => {
+	const prevModalHeight = ref('auto')
+	const toggleFullscreen = () => {
 		if (!isFullscreen.value) {
 			toggleResetDrag()
 			prevModalWidth.value = modalWidth.value
@@ -199,7 +210,7 @@
 		isFullscreen.value = !isFullscreen.value
 		modalWidth.value = isFullscreen.value ? '100vw' : prevModalWidth.value
 		modalHeight.value = isFullscreen.value ? '100vh' : prevModalHeight.value
-		fullscreenClass.value = isFullscreen.value ? ' full-modal' : ''
+		fullscreenClass.value = isFullscreen.value ? 'full-modal' : ''
 		emit('fullscreen', isFullscreen.value)
 	}
 
@@ -244,14 +255,15 @@
 	})
 	const transformStyle = computed(() => {
 		return {
-			transform: `translate(${transformX.value}px, ${transformY.value}px)`
+			transform: `translate(${transformX.value}px, ${transformY.value}px)`,
+			willChange: 'transform'
 		}
 	})
 
-	// 是否被拖拽
+	// 对话框是否被拖拽
 	const isDragged = computed(() => x.value !== 0 || y.value !== 0)
 
-	// 还原拖拽
+	// 对话框还原拖拽
 	const toggleResetDrag = () => {
 		x.value = 0
 		y.value = 0
@@ -266,14 +278,16 @@
 		})
 	}
 
+	// 监听对话框关闭时还原拖拽
 	watch(
-		() => props.visible,
-		() => {
-			if (!props.visible) toggleResetDrag()
+		() => isOpen.value,
+		(newVal) => {
+			if (!newVal) toggleResetDrag()
 		}
 	)
 
 	// 对话框缩放
+	let modalAbortCtrl = null
 	const handleResize = (e) => {
 		e.preventDefault()
 
@@ -282,26 +296,46 @@
 		const content = modalContentRef.value
 		if (!content) return
 
+		if (modalAbortCtrl) modalAbortCtrl.abort()
+		modalAbortCtrl = new AbortController()
+		const signal = modalAbortCtrl.signal
+
 		const startX = e.clientX
 		const startY = e.clientY
 		const startWidth = parseFloat(window.getComputedStyle(content).width) || content.offsetWidth
 		const startHeight = parseFloat(window.getComputedStyle(content).height) || content.offsetHeight
 
-		const onMouseMove = (e) => {
-			const diffX = e.clientX - startX
-			const diffY = e.clientY - startY
-			const newWidth = startWidth + diffX
-			const newHeight = startHeight + diffY
-			if (newWidth > 200) modalWidth.value = newWidth
-			if (newHeight > 200) modalHeight.value = newHeight
+		const minWidth = 200
+		const minHeight = 200
+
+		const onMousemove = (e) => {
+			requestAnimationFrame(() => {
+				const diffX = e.clientX - startX
+				const diffY = e.clientY - startY
+				const newWidth = startWidth + diffX
+				const newHeight = startHeight + diffY
+				modalWidth.value = Math.min(Math.max(newWidth, minWidth), window.innerWidth)
+				modalHeight.value = Math.min(Math.max(newHeight, minHeight), window.innerHeight)
+			})
 		}
 
-		const onMouseUp = () => {
-			window.removeEventListener('mousemove', onMouseMove)
-			window.removeEventListener('mouseup', onMouseUp)
+		const onMouseup = () => {
+			modalAbortCtrl?.abort()
+			modalAbortCtrl = null
 		}
 
-		window.addEventListener('mousemove', onMouseMove)
-		window.addEventListener('mouseup', onMouseUp)
+		window.addEventListener('mousemove', onMousemove, { signal })
+		window.addEventListener('mouseup', onMouseup, { signal })
+	}
+
+	onUnmounted(() => {
+		modalAbortCtrl?.abort()
+	})
+</script>
+
+<script>
+	// 声明额外的选项
+	export default {
+		inheritAttrs: false
 	}
 </script>
