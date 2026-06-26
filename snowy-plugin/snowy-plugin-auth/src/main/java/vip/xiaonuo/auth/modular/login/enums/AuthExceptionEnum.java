@@ -35,14 +35,14 @@ public enum AuthExceptionEnum {
     /** 验证码错误 */
     VALID_CODE_ERROR("验证码错误"),
 
-    /** 账号错误 */
-    ACCOUNT_ERROR("账号错误"),
+    /** 账号或密码错误（账号错误） */
+    ACCOUNT_ERROR("账号或密码错误"),
 
     /** 账号已停用 */
     ACCOUNT_DISABLED("账号已停用"),
 
-    /** 密码错误 */
-    PWD_ERROR("密码错误"),
+    /** 账号或密码错误（密码错误） */
+    PWD_ERROR("账号或密码错误"),
 
     /** 手机号格式错误 */
     PHONE_FORMAT_ERROR("手机号格式错误"),
