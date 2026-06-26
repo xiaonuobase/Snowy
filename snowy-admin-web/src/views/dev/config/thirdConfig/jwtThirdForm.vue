@@ -32,7 +32,7 @@
 					<a-form-item name="SNOWY_THIRD_JWT_PUBLIC_KEY" v-if="formData.SNOWY_THIRD_JWT_ALLOW_LOGIN_FLAG">
 						<template #label>
 							<a-tooltip>
-								<template #title> 请填写公钥base64字符串或者jwk字符串 </template>
+								<template #title> 请填写公钥base64字符串或者jwk字符串或jwk地址 </template>
 								<question-circle-outlined />
 							</a-tooltip>
 							JWT公钥：

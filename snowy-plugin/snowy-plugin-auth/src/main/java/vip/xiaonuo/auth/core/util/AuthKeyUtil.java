@@ -13,6 +13,7 @@
 package vip.xiaonuo.auth.core.util;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEException;
@@ -213,7 +214,10 @@ public class AuthKeyUtil {
      */
     public static RSAPublicKey parseRSAPublicKeyFromStr(String publicKeyStr, String kid) {
         try {
-            if(JSONUtil.isTypeJSON(publicKeyStr)) {
+            if(publicKeyStr.startsWith("http")) {
+                String jwksJson = HttpUtil.get(publicKeyStr);
+                return parseRSAPublicKeyFromStr(jwksJson, kid);
+            } else if(JSONUtil.isTypeJSON(publicKeyStr)) {
                 JWKSet jwkSet = JWKSet.parse(publicKeyStr);
                 JWK jwk = jwkSet.getKeyByKeyId(kid);
                 return ((RSAKey) jwk).toRSAPublicKey();
@@ -236,7 +240,10 @@ public class AuthKeyUtil {
      */
     public static ECPublicKey parseEcPublicKeyFromStr(String publicKeyStr, String kid) {
         try {
-            if(JSONUtil.isTypeJSON(publicKeyStr)) {
+            if(publicKeyStr.startsWith("http")) {
+                String jwksJson = HttpUtil.get(publicKeyStr);
+                return parseEcPublicKeyFromStr(jwksJson, kid);
+            } else if(JSONUtil.isTypeJSON(publicKeyStr)) {
                 JWKSet jwkSet = JWKSet.parse(publicKeyStr);
                 JWK jwk = jwkSet.getKeyByKeyId(kid);
                 return ((ECKey) jwk).toECPublicKey();
