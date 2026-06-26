@@ -148,11 +148,6 @@
 		autologin: false,
 		tenCode: ''
 	})
-	// 如果是开发环境，填充用户名密码
-	if (process.env.NODE_ENV === 'development') {
-		ruleForm.account = ''
-		ruleForm.password = ''
-	}
 
 	const rules = reactive({
 		account: [required('请输入账号', 'blur')],
