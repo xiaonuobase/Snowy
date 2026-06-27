@@ -22,6 +22,7 @@ import cn.hutool.json.JSONUtil;
 import com.xkcoding.http.config.HttpConfig;
 import com.xkcoding.http.support.HttpHeader;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.enums.AuthResponseStatus;
 import me.zhyd.oauth.exception.AuthException;
@@ -44,6 +45,7 @@ import java.util.List;
  * @author xuyuxiang
  * @date 2025/1/24 15:09
  **/
+@Slf4j
 @Getter
 public class AuthOidcCommonRequest extends AuthDefaultRequest {
 
@@ -106,25 +108,82 @@ public class AuthOidcCommonRequest extends AuthDefaultRequest {
         HttpConfig httpConfig = HttpConfig.builder().timeout(5000).build();
         String tokenType = authToken.getTokenType();
         String userInfo;
+
         if(ObjectUtil.isNotEmpty(tokenType) && tokenType.equals(SaOAuth2Consts.TokenType.Bearer)) {
             HttpHeader header = (new HttpHeader()).add(SaOAuth2Consts.Param.Authorization,
                     SaOAuth2Consts.TokenType.Bearer + " " + authToken.getAccessToken());
-            userInfo = (new HttpUtils(httpConfig))
-                    .get(this.source.userInfo(), null, header, false).getBody();
+
+            // GET/POST降级处理：优先GET，失败后降级POST
+            userInfo = fetchUserInfoWithFallback(httpConfig, header);
         } else {
             userInfo = (new HttpUtils(httpConfig)).get(this.userInfoUrl(authToken)).getBody();
         }
+
+        return parseUserInfo(userInfo, authToken);
+    }
+
+    /**
+     * 获取用户信息（支持GET/POST降级）
+     */
+    private String fetchUserInfoWithFallback(HttpConfig httpConfig, HttpHeader header) {
+        HttpUtils httpUtils = new HttpUtils(httpConfig);
+        String userInfoUrl = this.source.userInfo();
+
+        // 优先尝试GET
+        try {
+            String response = httpUtils.get(userInfoUrl, null, header, false).getBody();
+            log.info(">>> OIDC使用GET方法获取用户信息成功");
+            return response;
+        } catch (Exception e) {
+            log.warn(">>> OIDC使用GET方法获取用户信息失败，尝试POST方法: {}", e.getMessage());
+        }
+
+        // GET失败，降级POST
+        try {
+            String response = httpUtils.post(userInfoUrl, null, header, false).getBody();
+            log.info(">>> OIDC使用POST方法获取用户信息成功");
+            return response;
+        } catch (Exception ex) {
+            log.error(">>> OIDC使用GET和POST方法均获取用户信息失败", ex);
+            throw new AuthException(AuthResponseStatus.FAILURE);
+        }
+    }
+
+    /**
+     * 解析用户信息
+     */
+    private AuthUser parseUserInfo(String userInfo, AuthToken authToken) {
         JSONObject bodyJsonObject = JSONUtil.parseObj(userInfo);
+
+        log.info(">>> OIDC用户信息原始响应: {}", userInfo);
+        log.info(">>> OIDC配置的sourceProperty: {}", authOidcBaseJson.getSourceProperty());
+
+        // 有条件的data解包：只有顶层没有目标字段且有data包装时才解包
         if(!bodyJsonObject.containsKey(authOidcBaseJson.getSourceProperty()) && bodyJsonObject.containsKey("data")) {
             Object data = bodyJsonObject.get("data");
             if(ObjectUtil.isEmpty(data)) {
+                log.error(">>> OIDC响应包含data节点但值为空");
                 throw new AuthException(AuthResponseStatus.FAILURE);
             }
             bodyJsonObject = JSONUtil.parseObj(data);
+            log.info(">>> OIDC检测到响应需要解包data节点");
         }
+
+        String uuidValue = bodyJsonObject.getStr(authOidcBaseJson.getSourceProperty());
+
+        // uuid空值校验
+        if(StrUtil.isBlank(uuidValue)) {
+            log.error(">>> OIDC无法从响应中提取uuid，sourceProperty={}, 响应={}",
+                      authOidcBaseJson.getSourceProperty(), userInfo);
+            throw new AuthException(AuthResponseStatus.FAILURE);
+        }
+
+        log.info(">>> OIDC成功提取uuid: {}", uuidValue);
+
         return AuthUser.builder()
                 .rawUserInfo(com.alibaba.fastjson.JSONObject.parseObject(bodyJsonObject.toString()))
-                .uuid(bodyJsonObject.getStr(authOidcBaseJson.getSourceProperty()))
+                .uuid(uuidValue)
+                .username(uuidValue)
                 .token(authToken)
                 .source(this.source.toString()).build();
     }

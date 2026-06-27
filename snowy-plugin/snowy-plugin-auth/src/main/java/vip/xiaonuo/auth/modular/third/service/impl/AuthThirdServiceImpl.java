@@ -16,6 +16,7 @@ import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.oauth2.consts.SaOAuth2Consts;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
@@ -27,19 +28,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xkcoding.http.HttpUtil;
 import com.xkcoding.http.support.hutool.HutoolImpl;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
+import vip.xiaonuo.auth.core.enums.AuthAccountPrefixEnum;
 import vip.xiaonuo.auth.core.enums.AuthPlatformEnum;
-import vip.xiaonuo.auth.core.enums.AuthPropertyEnum;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.protocol.AuthClientFactory;
 import vip.xiaonuo.auth.core.protocol.base.AuthBaseClient;
 import vip.xiaonuo.auth.modular.login.enums.AuthDeviceTypeEnum;
-import vip.xiaonuo.auth.modular.login.enums.AuthStrategyWhenNoUserWithPhoneOrEmailEnum;
 import vip.xiaonuo.auth.modular.login.param.AuthAccountPasswordLoginParam;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.auth.modular.third.entity.AuthThirdUser;
@@ -62,6 +63,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
  * @author xuyuxiang
  * @date 2022/7/8 16:20
  **/
+@Slf4j
 @Service
 public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThirdUser> implements AuthThirdService {
 
@@ -247,26 +249,36 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         // 校验state
         if(ObjectUtil.isEmpty(state)) {
             state = SaHolder.getRequest().getParam("RelayState");
-        }
-        // 定义登录端类型
-        String clientType = SaClientTypeEnum.B.getValue();
-        if(ObjectUtil.isNotEmpty(state)) {
-            // 获取缓存操作类
-            CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
-            // 获取缓存值
-            Object stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
-            // 判断是否为空
-            if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
-                // 转换为json对象
-                JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
-                // 判断是否包含缓存值
-                if(stateCacheValueJsonObject.containsKey("clientType")) {
-                    // 获取登录端类型
-                    clientType = stateCacheValueJsonObject.getStr("clientType");
-                }
-                // 移除缓存
-                commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
+            if(ObjectUtil.isEmpty(state)) {
+                throw new CommonException("state不能为空");
             }
+        }
+        // 获取缓存操作类
+        CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
+        // 获取缓存值
+        Object stateCacheValueObj = null;
+        try {
+            // 对state进行安全处理，防止特殊字符导致Redis异常
+            if (state.length() > 500) {
+                log.warn(">>> SSO state 过长（{}字符），跳过Redis校验 state={}", state.length(), state.substring(0, 50) + "...");
+            } else {
+                stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
+            }
+        } catch (Exception e) {
+            log.warn(">>> SSO state Redis查询异常，跳过校验 state={}, error={}", state, e.getMessage());
+        }
+        // 默认登录端类型
+        String clientType = SaClientTypeEnum.B.getValue();
+        // 判断是否为空
+        if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
+            // 转换为json对象
+            JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
+            // 获取登录端类型
+            clientType = stateCacheValueJsonObject.getStr("clientType");
+            // 移除缓存
+            commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
+        } else {
+            log.warn(">>> SSO state 校验失败（可能IdP未原样返回或门户发起登录），跳过校验 state={}", state);
         }
         // 执行请求
         AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin();
@@ -283,25 +295,18 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             // 定义系统用户id
             String userId;
             if(ObjectUtil.isEmpty(authThirdUser)) {
-                // 如果用户不存在，则需要绑定用户，先将第三方用户id插入数据库
-                String id = this.insertAuthThirdUser(authUser);
-                // 返回
-                return "needBind:" + id;
+                // 如果三方用户不存在，自动创建本地用户并绑定
+                userId = this.createAndBindUser(authUser, clientType);
             } else {
                 // 否则直接获取用户id，判断是否存在（有可能没绑定）
                 userId = authThirdUser.getUserId();
                 if(ObjectUtil.isEmpty(userId)) {
-                    return "needBind:" + authThirdUser.getId();
+                    // 三方用户存在但未绑定本地用户，自动创建并绑定
+                    userId = this.createAndBindUserForExistThird(authUser, authThirdUser, clientType);
                 }
             }
-            // 定义生成的token
-            String token;
-            // 根据客户端类型执行登录，返回token
-            if(SaClientTypeEnum.B.getValue().equals(clientType)) {
-                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.B.getValue());
-            } else {
-                return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), SaClientTypeEnum.C.getValue());
-            }
+            // 已绑定用户，直接用userId登录
+            return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), clientType);
         } else {
             throw new CommonException("第三方登录授权回调失败，原因：{}", authResponse.getMsg());
         }
@@ -639,5 +644,134 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     .set("publicKey", devConfigApi.getValueByKey(SNOWY_THIRD_ALIPAY_PUBLIC_KEY_KEY)));
         }
         return authClient;
+    }
+
+    /**
+     * 创建本地用户并绑定三方用户（三方用户记录不存在的情况）
+     *
+     * @param authUser 第三方用户信息
+     * @param clientType 登录端类型
+     * @return 创建的本地用户ID
+     *
+     * @author yubaoshan
+     * @date 2025/06/26
+     */
+    private String createAndBindUser(AuthUser authUser, String clientType) {
+        // 从第三方用户信息中提取字段
+        String username = authUser.getUsername();
+        String email = authUser.getEmail();
+        String phone = authUser.getSource().equalsIgnoreCase("phone") ? authUser.getUsername() : null;
+
+        // 定义本地用户
+        String userId;
+
+        // 根据登录端类型创建用户
+        if(SaClientTypeEnum.B.getValue().equals(clientType)) {
+            // B端用户创建逻辑
+            if(StrUtil.isNotBlank(phone)) {
+                userId = loginUserApi.createUserWithPhone(phone).getId();
+            } else if(StrUtil.isNotBlank(email)) {
+                userId = loginUserApi.createUserWithEmail(email).getId();
+            } else if(StrUtil.isNotBlank(username)) {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = loginUserApi.createUserWithAccount(username, randomPassword).getId();
+            } else {
+                String uuid = authUser.getUuid();
+                String account = AuthAccountPrefixEnum.SSO.getValue() + (uuid.length() >= 8 ? uuid.substring(0, 8) : uuid);
+                String randomPassword = RandomUtil.randomString(16);
+                userId = loginUserApi.createUserWithAccount(account, randomPassword).getId();
+            }
+        } else {
+            // C端用户创建逻辑
+            if(StrUtil.isNotBlank(phone)) {
+                userId = clientLoginUserApi.createClientUserWithPhone(phone).getId();
+            } else if(StrUtil.isNotBlank(email)) {
+                userId = clientLoginUserApi.createClientUserWithEmail(email).getId();
+            } else if(StrUtil.isNotBlank(username)) {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = clientLoginUserApi.createClientUserWithAccount(username, randomPassword).getId();
+            } else {
+                String uuid = authUser.getUuid();
+                String account = AuthAccountPrefixEnum.SSO.getValue() + (uuid.length() >= 8 ? uuid.substring(0, 8) : uuid);
+                String randomPassword = RandomUtil.randomString(16);
+                userId = clientLoginUserApi.createClientUserWithAccount(account, randomPassword).getId();
+            }
+        }
+
+        // 插入三方用户记录并绑定
+        AuthThirdUser authThirdUser = new AuthThirdUser();
+        authThirdUser.setThirdId(authUser.getUuid());
+        authThirdUser.setUserId(userId);
+        authThirdUser.setAvatar(authUser.getAvatar());
+        authThirdUser.setName(authUser.getUsername());
+        authThirdUser.setNickname(authUser.getNickname());
+        authThirdUser.setGender(authUser.getGender() != null ? authUser.getGender().getDesc() : "未知");
+        authThirdUser.setCategory(authUser.getSource());
+        authThirdUser.setExtJson(JSONUtil.toJsonStr(authUser.getRawUserInfo()));
+        this.save(authThirdUser);
+
+        log.info(">>> SSO登录自动创建用户成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), authUser.getSource());
+
+        return userId;
+    }
+
+    /**
+     * 为已存在的三方用户创建本地用户并绑定（三方用户记录存在但未绑定的情况）
+     *
+     * @param authUser 第三方用户信息
+     * @param authThirdUser 已存在的三方用户记录
+     * @param clientType 登录端类型
+     * @return 创建的本地用户ID
+     *
+     * @author yubaoshan
+     * @date 2025/06/26
+     */
+    private String createAndBindUserForExistThird(AuthUser authUser, AuthThirdUser authThirdUser, String clientType) {
+        // 从第三方用户信息中提取字段
+        String username = authUser.getUsername();
+        String email = authUser.getEmail();
+        String phone = authUser.getSource().equalsIgnoreCase("phone") ? authUser.getUsername() : null;
+
+        // 定义本地用户
+        String userId;
+
+        // 根据登录端类型创建用户
+        if(SaClientTypeEnum.B.getValue().equals(clientType)) {
+            // B端用户创建逻辑
+            if(StrUtil.isNotBlank(phone)) {
+                userId = loginUserApi.createUserWithPhone(phone).getId();
+            } else if(StrUtil.isNotBlank(email)) {
+                userId = loginUserApi.createUserWithEmail(email).getId();
+            } else if(StrUtil.isNotBlank(username)) {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = loginUserApi.createUserWithAccount(username, randomPassword).getId();
+            } else {
+                String account = AuthAccountPrefixEnum.SSO.getValue() + (authUser.getUuid().length() >= 8 ? authUser.getUuid().substring(0, 8) : authUser.getUuid());
+                String randomPassword = RandomUtil.randomString(16);
+                userId = loginUserApi.createUserWithAccount(account, randomPassword).getId();
+            }
+        } else {
+            // C端用户创建逻辑
+            if(StrUtil.isNotBlank(phone)) {
+                userId = clientLoginUserApi.createClientUserWithPhone(phone).getId();
+            } else if(StrUtil.isNotBlank(email)) {
+                userId = clientLoginUserApi.createClientUserWithEmail(email).getId();
+            } else if(StrUtil.isNotBlank(username)) {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = clientLoginUserApi.createClientUserWithAccount(username, randomPassword).getId();
+            } else {
+                String account = AuthAccountPrefixEnum.SSO.getValue() + (authUser.getUuid().length() >= 8 ? authUser.getUuid().substring(0, 8) : authUser.getUuid());
+                String randomPassword = RandomUtil.randomString(16);
+                userId = clientLoginUserApi.createClientUserWithAccount(account, randomPassword).getId();
+            }
+        }
+
+        // 更新三方用户记录，绑定userId
+        authThirdUser.setUserId(userId);
+        this.updateById(authThirdUser);
+
+        log.info(">>> SSO登录为已存在三方用户创建本地用户并绑定成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), authUser.getSource());
+
+        return userId;
     }
 }
