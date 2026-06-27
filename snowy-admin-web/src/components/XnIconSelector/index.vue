@@ -23,15 +23,30 @@
 							<div class="icon-grid">
 								<template v-for="iconGroup in group.iconItem" :key="iconGroup.key">
 									<template v-if="iconGroup.key === currentCategory">
-										<div
-											v-for="icon in iconGroup.item"
-											:key="icon"
-											class="icon-item"
-											:class="{ active: icon === selectedIcon }"
-											@click="handleIconSelect(icon)"
-										>
-											<component :is="icon" class="icon-preview" />
-										</div>
+										<!-- PC端图标：Vue组件方式 -->
+										<template v-if="!isMobileIcon">
+											<div
+												v-for="icon in iconGroup.item"
+												:key="icon"
+												class="icon-item"
+												:class="{ active: icon === selectedIcon }"
+												@click="handleIconSelect(icon)"
+											>
+												<component :is="icon" class="icon-preview" />
+											</div>
+										</template>
+										<!-- 移动端图标：iconfont字体方式 -->
+										<template v-else>
+											<div
+												v-for="icon in iconGroup.item"
+												:key="icon.font_class"
+												class="icon-item"
+												:class="{ active: icon.font_class === selectedIcon }"
+												@click="handleIconSelect(icon)"
+											>
+												<span class="snowy xn-icons" :class="icon.font_class"></span>
+											</div>
+										</template>
 									</template>
 								</template>
 							</div>
@@ -48,7 +63,11 @@
 				readonly
 			>
 				<template #prefix>
-					<component v-if="selectedIcon" :is="selectedIcon" />
+					<!-- PC端图标预览 -->
+					<component v-if="selectedIcon && !isMobileIcon" :is="selectedIcon" />
+					<!-- 移动端图标预览 -->
+					<span v-else-if="selectedIcon && isMobileIcon" class="snowy xn-icons" :class="selectedIcon"></span>
+					<!-- 默认搜索图标 -->
 					<SearchOutlined v-else />
 				</template>
 				<template #suffix>
@@ -60,8 +79,9 @@
 </template>
 
 <script setup>
-	import { ref, watch, defineModel } from 'vue'
-	import config from '@/config/iconSelect'
+	import { ref, watch, defineModel, computed } from 'vue'
+	import pcConfig from '@/config/iconSelect'
+	import mobileConfig from '@/assets/icons/mobile'
 	import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons-vue'
 
 	const props = defineProps({
@@ -84,13 +104,25 @@
 		showIconName: {
 			type: Boolean,
 			default: true
+		},
+		// 图标类型：pc 使用PC端图标，mobile 使用移动端图标
+		iconType: {
+			type: String,
+			default: 'pc',
+			validator: (value) => ['pc', 'mobile'].includes(value)
 		}
 	})
 	const formRef = defineModel('formRef')
 	const emit = defineEmits(['update:value', 'change'])
 
 	const selectedIcon = ref()
-	const iconData = ref(config.icons)
+	// 根据 iconType 选择对应的配置
+	const iconData = computed(() => {
+		return props.iconType === 'mobile' ? mobileConfig.icons : pcConfig.icons
+	})
+	// 判断是否是移动端图标（iconfont字体图标）
+	const isMobileIcon = computed(() => props.iconType === 'mobile')
+
 	const visible = ref(false)
 	const activeKey = ref(iconData.value[0]?.key || '')
 	const currentCategory = ref('default')
@@ -116,8 +148,10 @@
 	}
 
 	const handleIconSelect = (icon) => {
-		selectedIcon.value = icon
-		emit('update:value', icon)
+		// 移动端图标需要取 font_class 属性
+		const iconValue = isMobileIcon.value ? icon.font_class : icon
+		selectedIcon.value = iconValue
+		emit('update:value', iconValue)
 		formRef.value?.validateFields('icon')
 		visible.value = false
 	}
@@ -244,6 +278,16 @@
 
 		.icon-preview {
 			font-size: 14px;
+		}
+
+		// 移动端iconfont图标样式
+		.xn-icons {
+			font-size: 20px;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 	}
 

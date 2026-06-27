@@ -56,8 +56,12 @@
 				</a-col>
 				<a-col :span="12">
 					<a-form-item label="图标：" name="icon">
-						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
-						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
+						<xn-icon-selector
+							v-model:value="formData.icon"
+							:formRef="formRef"
+							iconType="mobile"
+							placeholder="请选择图标"
+						/>
 					</a-form-item>
 				</a-col>
 				<a-col :span="12">
@@ -86,7 +90,6 @@
 			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" @click="onSubmit" :loading="submitLoading">保存</a-button>
 		</template>
-		<icon-mobile-selector ref="iconSelector" @iconCallBack="iconCallBack" />
 	</xn-form-container>
 </template>
 
@@ -98,12 +101,11 @@
 	import { required } from '@/utils/formRules'
 	import mobileMenuApi from '@/api/mobile/resource/menuApi'
 	import ColorPicker from '@/components/ColorPicker/index.vue'
-	import IconMobileSelector from '@/components/Selector/iconMobileSelector.vue'
+	import XnIconSelector from '@/components/XnIconSelector/index.vue'
 	// 抽屉状态
 	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
-	let iconSelector = ref()
 	// 默认展开的节点(顶级)
 	const defaultExpandedKeys = ref([0])
 	const treeData = ref([])
@@ -190,13 +192,6 @@
 		} else {
 			formData.value.module = null
 		}
-	}
-	// 图标选择器回调
-	const iconCallBack = (value) => {
-		if (value) {
-			formRef.value.clearValidate('icon')
-		}
-		formData.value.icon = value
 	}
 	// 默认要校验的
 	const formRules = {

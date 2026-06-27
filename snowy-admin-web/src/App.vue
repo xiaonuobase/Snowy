@@ -21,6 +21,7 @@
 </template>
 
 <script setup name="App">
+	import { onUnmounted } from 'vue'
 	import i18n from '@/locales'
 	import { globalStore } from '@/store'
 	import { theme } from 'ant-design-vue'
@@ -28,20 +29,26 @@
 	store.initTheme()
 	const locale = i18n.global.messages.value[i18n.global.locale.value].lang
 	// 获取用户信息
-	const userInfo = computed(() => {
-		return store.userInfo
-	})
+	const userInfo = computed(() => store.userInfo)
 	// 水印开关
-	const loginUserWatermarkOpen = computed(() => {
-		return store.loginUserWatermarkOpen
-	})
+	const loginUserWatermarkOpen = computed(() => store.loginUserWatermarkOpen)
 	// 圆角风格
-	const roundedCornerStyleOpen = computed(() => {
-		return store.roundedCornerStyleOpen
-	})
+	const roundedCornerStyleOpen = computed(() => store.roundedCornerStyleOpen)
 	// 灰色模式
-	const grayModeOpen = computed(() => {
-		return store.grayModeOpen
+	const grayModeOpen = computed(() => store.grayModeOpen)
+	// 灰色模式类名
+	const GRAY_MODE_CLASS = 'gray-mode'
+	// 监听灰色模式，同步到 html 元素
+	watch(
+		grayModeOpen,
+		(isEnabled) => {
+			document.documentElement.classList.toggle(GRAY_MODE_CLASS, isEnabled)
+		},
+		{ immediate: true }
+	)
+	// 组件卸载时清理
+	onUnmounted(() => {
+		document.documentElement.classList.remove(GRAY_MODE_CLASS)
 	})
 </script>
 
@@ -49,10 +56,5 @@
 	.app-wrapper {
 		width: 100%;
 		height: 100%;
-	}
-
-	// 灰色模式 - 将页面变为灰度
-	.gray-mode {
-		filter: grayscale(100%);
 	}
 </style>

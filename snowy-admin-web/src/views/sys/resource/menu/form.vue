@@ -93,8 +93,7 @@
 				</a-col>
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
 					<a-form-item label="图标：" name="icon">
-						<a-input v-model:value="formData.icon" class="xn-wdcalc-70" placeholder="请选择图标" allow-clear disabled />
-						<a-button type="primary" @click="iconSelector.showIconModal(formData.icon)">选择</a-button>
+						<xn-icon-selector v-model:value="formData.icon" :formRef="formRef" placeholder="请选择图标" />
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
@@ -133,7 +132,6 @@
 			<a-button class="xn-mr8" @click="onClose">关闭</a-button>
 			<a-button type="primary" :loading="submitLoading" @click="onSubmit">保存</a-button>
 		</template>
-		<Icon-selector ref="iconSelector" @iconCallBack="iconCallBack" />
 	</xn-form-container>
 </template>
 
@@ -143,13 +141,12 @@
 	import SnowflakeId from 'snowflake-id'
 	import tool from '@/utils/tool'
 	import menuApi from '@/api/sys/resource/menuApi'
-	import IconSelector from '@/components/Selector/iconSelector.vue'
+	import XnIconSelector from '@/components/XnIconSelector/index.vue'
 	// 默认是关闭状态
 	const visible = ref(false)
 	const emit = defineEmits({ successful: null })
 	const formRef = ref()
 	const treeData = ref([])
-	const iconSelector = ref()
 	// 表单数据，也就是默认给一些数据
 	const formData = ref({})
 	// 默认展开的节点(顶级)
@@ -218,13 +215,6 @@
 		} else {
 			formData.value.module = null
 		}
-	}
-	// 图标选择器回调
-	const iconCallBack = (value) => {
-		if (value) {
-			formRef.value.clearValidate('icon')
-		}
-		formData.value.icon = value
 	}
 
 	// 默认要校验的
