@@ -92,6 +92,7 @@
 		:open="isOpen"
 		:width="drawerWidth"
 		:height="drawerHeight"
+		:body-style="calcDrawerBodyStyle"
 		:footer-style="{ textAlign: 'right' }"
 		@close="cancel"
 	>
@@ -238,7 +239,7 @@
 	const getTooltipContainer = () => document.body
 
 	/************************* 对话框 *************************/
-		// 响应式对话框
+	// 响应式对话框
 	const modalContentRef = ref()
 
 	// 响应式对话框宽度
@@ -249,12 +250,22 @@
 
 	// 对话框计算属性 bodyStyle
 	const calcBodyStyle = computed(() => {
-		const style = { overflow: 'auto', ...(props.bodyStyle || {}) }
-		if (modalFullscreen.value) return style
-		if (modalHeight.value) {
+		// 优先使用用户传入的 paddingTop，如果没有则使用默认 16px
+		const defaultPaddingTop = props.bodyStyle?.paddingTop ?? props.bodyStyle?.['padding-top'] ?? '16px'
+		const style = { paddingTop: defaultPaddingTop, ...(props.bodyStyle || {}) }
+		if (modalFullscreen.value) {
+			style.height = 'calc(100vh - 116px)'
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
+		} else if (modalHeight.value && modalHeight.value !== 'auto') {
 			style.height = `calc(${modalHeight.value}px - 116px)`
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
 		} else {
-			style.height = props.bodyStyle?.height || 'auto'
+			// 非全屏模式：自适应高度，但最大不超过视口
+			style.maxHeight = 'calc(100vh - 200px)'
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
 		}
 		return style
 	})
@@ -425,6 +436,14 @@
 		return baseDrawerHeight.value
 	})
 
+	// 抽屉计算属性 bodyStyle
+	const calcDrawerBodyStyle = computed(() => {
+		// 优先使用用户传入的 paddingTop，如果没有则使用默认 16px
+		const defaultPaddingTop = props.bodyStyle?.paddingTop ?? props.bodyStyle?.['padding-top'] ?? '16px'
+		const style = { paddingTop: defaultPaddingTop, overflowX: 'hidden', overflowY: 'auto', ...(props.bodyStyle || {}) }
+		return style
+	})
+
 	// 抽屉全屏/退出全屏
 	const toggleFullscreenDrawer = () => {
 		drawerFullscreen.value = !drawerFullscreen.value
@@ -541,47 +560,47 @@
 </script>
 
 <style lang="less" scoped>
-/* 确保小屏幕下抽屉不会有额外的边距或滚动条 */
-@media (max-width: 576px) {
-	:deep(.ant-drawer-content-wrapper) {
-		width: 100% !important;
-		max-width: 100% !important;
+	/* 确保小屏幕下抽屉不会有额外的边距或滚动条 */
+	@media (max-width: 576px) {
+		:deep(.ant-drawer-content-wrapper) {
+			width: 100% !important;
+			max-width: 100% !important;
+		}
 	}
-}
-.resizer-handle {
-	position: absolute;
-	user-select: none;
+	.resizer-handle {
+		position: absolute;
+		user-select: none;
 
-	&.placement-right {
-		left: 0;
-		top: 0;
-		width: 4px;
-		height: 100%;
-		cursor: ew-resize;
-	}
+		&.placement-right {
+			left: 0;
+			top: 0;
+			width: 4px;
+			height: 100%;
+			cursor: ew-resize;
+		}
 
-	&.placement-left {
-		right: 0;
-		top: 0;
-		width: 4px;
-		height: 100%;
-		cursor: ew-resize;
-	}
+		&.placement-left {
+			right: 0;
+			top: 0;
+			width: 4px;
+			height: 100%;
+			cursor: ew-resize;
+		}
 
-	&.placement-top {
-		bottom: 0;
-		left: 0;
-		height: 4px;
-		width: 100%;
-		cursor: ns-resize;
-	}
+		&.placement-top {
+			bottom: 0;
+			left: 0;
+			height: 4px;
+			width: 100%;
+			cursor: ns-resize;
+		}
 
-	&.placement-bottom {
-		top: 0;
-		left: 0;
-		height: 4px;
-		width: 100%;
-		cursor: ns-resize;
+		&.placement-bottom {
+			top: 0;
+			left: 0;
+			height: 4px;
+			width: 100%;
+			cursor: ns-resize;
+		}
 	}
-}
 </style>

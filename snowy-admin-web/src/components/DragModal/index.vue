@@ -186,12 +186,22 @@
 
 	// 对话框计算属性 bodyStyle
 	const calcBodyStyle = computed(() => {
-		const style = { overflow: 'auto', ...(props.bodyStyle || {}) }
-		if (isFullscreen.value) return style
-		if (modalHeight.value) {
+		// 优先使用用户传入的 paddingTop，如果没有则使用默认 16px
+		const defaultPaddingTop = props.bodyStyle?.paddingTop ?? props.bodyStyle?.['padding-top'] ?? '16px'
+		const style = { paddingTop: defaultPaddingTop, ...(props.bodyStyle || {}) }
+		if (isFullscreen.value) {
+			style.height = 'calc(100vh - 116px)'
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
+		} else if (modalHeight.value && modalHeight.value !== 'auto') {
 			style.height = `calc(${modalHeight.value}px - 116px)`
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
 		} else {
-			style.height = props.bodyStyle?.height || 'auto'
+			// 非全屏模式：自适应高度，但最大不超过视口
+			style.maxHeight = 'calc(100vh - 200px)'
+			style.overflowY = 'auto'
+			style.overflowX = 'hidden'
 		}
 		return style
 	})
