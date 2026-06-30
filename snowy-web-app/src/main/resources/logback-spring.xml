@@ -25,8 +25,8 @@
             </encoder>
         </appender>
 
-        <!--默认所有的包以info-->
-        <root level="info">
+        <!--默认所有的包以error-->
+        <root level="error">
             <appender-ref ref="STDOUT"/>
         </root>
 
