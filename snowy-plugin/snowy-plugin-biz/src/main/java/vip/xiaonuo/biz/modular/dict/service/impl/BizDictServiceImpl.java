@@ -25,7 +25,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.dromara.trans.service.impl.DictionaryTransService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.biz.modular.dict.entity.BizDict;
 import vip.xiaonuo.biz.modular.dict.enums.BizDictCategoryEnum;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
  * @date 2022/4/22 10:41
  **/
 @Service
-public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> implements BizDictService, InitializingBean {
+public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> implements BizDictService {
 
     private static final String ROOT_PARENT_ID = "0";
 
@@ -127,11 +126,6 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
             throw new CommonException("字典不存在，id值为：{}", id);
         }
         return bizDict;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        refreshTransCache();
     }
 
     private void refreshTransCache() {
