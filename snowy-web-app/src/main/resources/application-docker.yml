@@ -1,0 +1,19 @@
+server:
+  port: 82
+
+spring:
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DB:snowy}?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&useInformationSchema=true&rewriteBatchedStatements=true
+          username: ${MYSQL_USER:root}
+          password: ${MYSQL_PWD:12345678}
+  data:
+    redis:
+      database: ${REDIS_DB:1}
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PWD:}
+      timeout: 10s

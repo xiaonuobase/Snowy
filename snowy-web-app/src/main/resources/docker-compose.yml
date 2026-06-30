@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  snowy-web-app:
+    build: 
+      context: ../../../
+      dockerfile: Dockerfile
+    image: snowy-web-app:latest
+    container_name: snowy-web-app
+    ports:
+      - "82:82"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MYSQL_HOST=snowy-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DB=snowy
+      - MYSQL_USER=root
+      - MYSQL_PWD=12345678
+      - REDIS_HOST=snowy-redis
+      - REDIS_PORT=6379
+      - REDIS_PWD=
+      - REDIS_DB=1
+    depends_on:
+      - snowy-mysql
+      - snowy-redis
+    networks:
+      - snowy-network
+
+  snowy-mysql:
+    image: mysql:8.0
+    container_name: snowy-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345678
+      - MYSQL_DATABASE=snowy
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - snowy-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  snowy-redis:
+    image: redis:7.0
+    container_name: snowy-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - snowy-network
+    command: redis-server --appendonly yes
+
+networks:
+  snowy-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
