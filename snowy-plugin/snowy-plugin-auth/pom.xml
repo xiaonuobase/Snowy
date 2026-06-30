@@ -46,16 +46,10 @@
             <artifactId>sa-token-spring-boot3-starter</artifactId>
         </dependency>
 
-        <!-- sa-token 整合 redis （使用jackson序列化方式） -->
+        <!-- sa-token 整合 redisson -->
         <dependency>
             <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-redis-jackson</artifactId>
-        </dependency>
-
-        <!-- Sa-Token插件：权限缓存与业务缓存分离 -->
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-alone-redis</artifactId>
+            <artifactId>sa-token-redisson</artifactId>
         </dependency>
 
         <!-- Sa-Token 插件：整合SSO -->
@@ -76,18 +70,16 @@
             <artifactId>JustAuth</artifactId>
         </dependency>
 
-        <!-- sa-token-oauth2（oauth服务端）-->
+        <!-- sa-token-oauth2-->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-oauth2</artifactId>
-            <version>1.44.0</version>
         </dependency>
 
         <!-- sa-token-jwt 签发 OIDC id_token 令牌 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-jwt</artifactId>
-            <version>1.44.0</version>
         </dependency>
 
         <!-- opensaml -->
