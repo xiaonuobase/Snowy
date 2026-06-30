@@ -721,8 +721,8 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
                     if("SubEntity.java.btl".equalsIgnoreCase(fileTemplateName)) {
                         actualSuffix = ".java";
                     }
-                    genBasicCodeBackendResult.setCodeFileName(genBasic.getSubClassName() + actualSuffix);
-                    genBasicCodeBackendResult.setCodeFileWithPathName(genBackendBasicPath + fileTemplatePath + File.separator + genBasic.getSubClassName() + actualSuffix);
+                    genBasicCodeBackendResult.setCodeFileName("Sub" + genBasic.getSubClassName() + actualSuffix);
+                    genBasicCodeBackendResult.setCodeFileWithPathName(genBackendBasicPath + fileTemplatePath + File.separator + "Sub" + genBasic.getSubClassName() + actualSuffix);
                     genBasicCodeBackendResult.setCodeFileContent(templateBackend.render());
                     genBasicCodeBackendResultList.add(genBasicCodeBackendResult);
                 });
