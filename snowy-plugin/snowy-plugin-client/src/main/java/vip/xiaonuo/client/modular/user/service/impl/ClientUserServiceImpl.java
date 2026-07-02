@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.client.modular.user.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.bean.BeanUtil;
@@ -37,8 +38,9 @@ import org.dromara.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
-import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.client.core.enums.ClientYesOrNoEnum;
 import vip.xiaonuo.client.core.util.ClientEmailFormatUtl;
 import vip.xiaonuo.client.core.util.ClientPasswordUtl;
@@ -68,6 +70,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * C端用户Service接口实现类
@@ -338,7 +341,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Override
     public void updateUserInfo(ClientUserUpdateInfoParam clientUserUpdateInfoParam) {
-        String id = StpLoginUserUtil.getLoginUser().getId();
+        String id = StpClientLoginUserUtil.getClientLoginUser().getId();
         if (!StrUtil.equals(id,clientUserUpdateInfoParam.getId())){
             throw new CommonException("被修改用户与当前登录用户不匹配");
         }
@@ -358,6 +361,20 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         }
         // 更新指定字段
         this.update(lambdaUpdateWrapper);
+        refreshLoginUserCacheField(u -> {
+            if (ObjectUtil.isNotEmpty(clientUserUpdateInfoParam.getName())) {
+                u.setName(clientUserUpdateInfoParam.getName());
+            }
+            if (ObjectUtil.isNotEmpty(clientUserUpdateInfoParam.getNickname())) {
+                u.setNickname(clientUserUpdateInfoParam.getNickname());
+            }
+            if (ObjectUtil.isNotEmpty(clientUserUpdateInfoParam.getGender())) {
+                u.setGender(clientUserUpdateInfoParam.getGender());
+            }
+            if (ObjectUtil.isNotEmpty(clientUserUpdateInfoParam.getBirthday())) {
+                u.setBirthday(clientUserUpdateInfoParam.getBirthday());
+            }
+        });
     }
 
     @Override
@@ -812,6 +829,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 修改手机号
         this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId, StpClientUtil.getLoginIdAsString())
                 .set(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        refreshLoginUserCacheField(u -> u.setPhone(phone));
     }
 
     @Override
@@ -915,6 +933,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 修改邮箱
         this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId, StpClientUtil.getLoginIdAsString())
                 .set(ClientUser::getEmail, email));
+        refreshLoginUserCacheField(u -> u.setEmail(email));
     }
 
     @Override
@@ -931,6 +950,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
             }
             this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId,
                     clientUser.getId()).set(ClientUser::getAvatar, base64));
+            refreshLoginUserCacheField(u -> u.setAvatar(base64));
             return base64;
         } catch (IOException e) {
             log.error(">>> 头像修改失败：", e);
@@ -946,10 +966,21 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
             clientUserSignatureStr = StrUtil.split(clientUserSignatureStr, StrUtil.COMMA).get(1);
         }
         String base64 = ImgUtil.toBase64DataUri(ImgUtil.scale(ImgUtil.toImage(clientUserSignatureStr),
-                100, 50, null), ImgUtil.IMAGE_TYPE_PNG);
+                200, 100, null), ImgUtil.IMAGE_TYPE_PNG);
         // 更新指定字段
         this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId, clientUser.getId())
                 .set(ClientUser::getSignature, base64));
+    }
+
+    /**
+     * 刷新 TokenSession 中缓存的当前登录用户字段，避免 DB 已更新但 getLoginUser 返回旧值
+     */
+    private void refreshLoginUserCacheField(Consumer<SaBaseClientLoginUser> mutator) {
+        SaBaseClientLoginUser cached = StpClientLoginUserUtil.getClientLoginUser();
+        if (cached != null) {
+            mutator.accept(cached);
+            StpUtil.getTokenSession().set("loginUser", cached);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
