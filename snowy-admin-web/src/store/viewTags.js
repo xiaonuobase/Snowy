@@ -10,6 +10,28 @@
  */
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
+import tool from '@/utils/tool'
+import { keepAliveStore } from '@/store/keepAlive'
+
+// 标签持久化到 sessionStorage 的 key（刷新后可恢复，关闭标签页/窗口自动清空）
+const VIEW_TAGS_STORAGE_KEY = 'SNOWY_VIEW_TAGS'
+
+// 路由对象里的 matched / components 不可序列化，持久化时只保留恢复所需字段。
+// 注意：meta.breadcrumb 是扁平化时塞进来的带循环引用的数组（其元素是路由对象本身，
+// 又含 meta.breadcrumb），直接 stringify 会抛 "Converting circular structure to JSON"，
+// 所以这里必须浅拷贝 meta 并剔除 breadcrumb（标签栏不需要它，跳转后面包屑会从实时路由重新生成）。
+const slimRoute = (route) => {
+	const meta = route.meta ? { ...route.meta } : {}
+	delete meta.breadcrumb
+	return {
+		path: route.path,
+		fullPath: route.fullPath,
+		name: route.name,
+		query: route.query,
+		params: route.params,
+		meta
+	}
+}
 
 export const viewTagsStore = defineStore('viewTags', () => {
 	// 定义state
@@ -26,6 +48,23 @@ export const viewTagsStore = defineStore('viewTags', () => {
 		},
 		{ immediate: true }
 	)
+
+	// ===== 持久化（参考 soybean admin 的 beforeunload 方案）=====
+	// 把当前标签快照写入 sessionStorage
+	const cacheViewTags = () => {
+		try {
+			tool.session.set(
+				VIEW_TAGS_STORAGE_KEY,
+				viewTags.value.map(slimRoute)
+			)
+		} catch (e) {
+			console.warn('viewTags 写入 sessionStorage 失败：', e)
+		}
+	}
+	// 兜底：标签变化时也写一份，保证会话中途数据最新
+	watch(viewTags, cacheViewTags, { deep: true })
+	// 关键：刷新(F5)/关闭页面前同步写一次，刷新后必定能读到
+	window.addEventListener('beforeunload', cacheViewTags)
 
 	// 定义action
 	const pushViewTags = (route) => {
@@ -77,8 +116,27 @@ export const viewTagsStore = defineStore('viewTags', () => {
 			}
 		})
 	}
+
+	// ===== 恢复：刷新后从 sessionStorage 还原标签 + keepAlive 列表 =====
+	// 注意：刷新时动态路由是异步注册的（refreshApiMenu 未 await），执行到这里时
+	// router.getRoutes() 往往还没有动态菜单路由，所以这里不能用路由表校验。
+	// 失效标签（权限/菜单变更）由 layout 内 updateOrRemoveViewTags 在路由加载后统一清理。
+	const restoreViewTags = () => {
+		const cached = tool.session.get(VIEW_TAGS_STORAGE_KEY)
+		if (!Array.isArray(cached) || cached.length === 0) return
+		const kStore = keepAliveStore()
+		cached.forEach((route) => {
+			if (!route || !route.name || route.meta?.fullpage) return
+			if (viewTags.value.find((item) => item.path === route.path)) return
+			viewTags.value.push(route)
+			kStore.pushKeepLive(route.name)
+		})
+	}
+
 	const clearViewTags = () => {
 		viewTags.value = []
+		// 同步清掉 sessionStorage，避免同一标签页内换号后残留
+		tool.session.remove(VIEW_TAGS_STORAGE_KEY)
 	}
 
 	return {
@@ -88,6 +146,8 @@ export const viewTagsStore = defineStore('viewTags', () => {
 		updateViewTags,
 		updateViewTagsTitle,
 		clearViewTags,
-		updateOrRemoveViewTags
+		updateOrRemoveViewTags,
+		restoreViewTags,
+		cacheViewTags
 	}
 })

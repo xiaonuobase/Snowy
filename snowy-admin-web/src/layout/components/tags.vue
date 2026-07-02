@@ -260,14 +260,18 @@
 		currentContextMenuTabIndex.value = Array.from(tabList).findIndex((tab) => tab === target)
 	}
 
+	// 先恢复刷新前打开过的标签（顺带重建 keepAlive 列表），去重交给 pushViewTags
+	// 放最前面，避免被下方菜单逻辑的异常挡住导致恢复不执行
+	vStore.restoreViewTags()
 	const module = router.getMenu()
 	const indexMenu = routerUtil.getIndexMenu(module).path
 	const dashboardRoute = treeFind(module, (node) => node.path === indexMenu)
 	if (dashboardRoute) {
 		dashboardRoute.fullPath = dashboardRoute.path
 		addViewTags(dashboardRoute)
-		addViewTags(route)
 	}
+	// 当前页始终加入并高亮
+	addViewTags(route)
 
 	const onTabRemove = (tabKey, action) => {
 		if (action === 'remove') {

@@ -69,7 +69,7 @@
 	import { baseRequest } from '@/utils/request'
 	import SnowyIm from './im/index.vue'
 	import PanelSearch from './panel-search/index.vue'
-	import { globalStore } from '@/store'
+	import { globalStore, viewTagsStore, keepAliveStore } from '@/store'
 	import { useI18n } from 'vue-i18n'
 	const { locale } = useI18n()
 
@@ -130,6 +130,9 @@
 							tool.data.remove('USER_INFO')
 							tool.data.remove('MENU')
 							tool.data.remove('PERMISSIONS')
+							// 清理标签与缓存，避免同一标签页内换号后残留
+							viewTagsStore().clearViewTags()
+							keepAliveStore().clearKeepLive()
 							router.replace({ path: '/login' })
 							nextTick(() => {
 								// 清理缓存内的个人信息

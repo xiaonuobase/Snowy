@@ -146,12 +146,8 @@
 		})
 	})
 	const displayLayoutResult = () => {
-		// 根据route.meta.keepLive动态管理keepLiveRoute
-		if (route.meta.keepLive === true) {
-			props.kStore.pushKeepLive(route.name)
-		} else {
-			props.kStore.removeKeepLive(route.name)
-		}
+		// keep-alive 缓存名单由「打开/关闭标签」生命周期管理（tags.vue 的 addViewTags/closeSelectedTag），
+		// 这里不再按 meta.keepLive 踢出，保证已打开的标签切换时不重新挂载
 		if (
 			route.meta.displayLayout === undefined ||
 			route.meta.displayLayout === null ||
