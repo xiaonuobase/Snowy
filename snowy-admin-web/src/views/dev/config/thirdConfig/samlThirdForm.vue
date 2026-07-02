@@ -32,7 +32,7 @@
 					</a-form-item>
 				</a-col>
 				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-					<a-form-item ame="SNOWY_THIRD_SAML_CERTIFICATE" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
+					<a-form-item name="SNOWY_THIRD_SAML_CERTIFICATE" v-if="formData.SNOWY_THIRD_SAML_ALLOW_LOGIN_FLAG">
 						<template #label>
 							<a-tooltip>
 								<template #title> AuthSamlClient生成自签证书后填入 </template>

@@ -144,6 +144,11 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
     private static final String SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY = "SNOWY_THIRD_WECHAT_CLIENT_SECRET";
     private static final String SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY = "SNOWY_THIRD_WECHAT_REDIRECT_URL";
 
+    // 微信小程序
+    private static final String SNOWY_THIRD_WECHAT_MINI_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_WECHAT_MINI_ALLOW_LOGIN_FLAG";
+    private static final String SNOWY_THIRD_WECHAT_MINI_CLIENT_ID_KEY = "SNOWY_THIRD_WECHAT_MINI_CLIENT_ID";
+    private static final String SNOWY_THIRD_WECHAT_MINI_CLIENT_SECRET_KEY = "SNOWY_THIRD_WECHAT_MINI_CLIENT_SECRET";
+
     // 钉钉
     private static final String SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG_KEY = "SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG";
     private static final String SNOWY_THIRD_DINGTALK_CLIENT_ID_KEY = "SNOWY_THIRD_DINGTALK_CLIENT_ID";
@@ -514,6 +519,16 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
                     .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_ID_KEY))
                     .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_CLIENT_SECRET_KEY))
                     .set("callbackUrl", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_REDIRECT_URL_KEY)));
+        }
+        if(platform.equals(AuthPlatformEnum.WECHAT_MINI.getValue())){
+            // 检查是否允许登录
+            if(!Boolean.parseBoolean(devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_MINI_ALLOW_LOGIN_FLAG_KEY))) {
+                throw new CommonException("微信小程序登录已禁用");
+            }
+            // 微信小程序登录
+            authClient = AuthClientFactory.createClient(platform, JSONUtil.createObj()
+                    .set("clientId", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_MINI_CLIENT_ID_KEY))
+                    .set("clientSecret", devConfigApi.getValueByKey(SNOWY_THIRD_WECHAT_MINI_CLIENT_SECRET_KEY)));
         }
         if(platform.equals(AuthPlatformEnum.DINGTALK.getValue())) {
             // 检查是否允许登录

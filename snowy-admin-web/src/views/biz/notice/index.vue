@@ -176,7 +176,7 @@
 		}
 	]
 	// 操作栏通过权限判断是否显示
-	if (hasPerm(['bizNoticeEdit', 'bizNoticeDelete'])) {
+	if (hasPerm(['bizNoticeEdit', 'bizNoticeDelete', 'bizNoticeDetail'])) {
 		columns.push({
 			title: '操作',
 			dataIndex: 'action',

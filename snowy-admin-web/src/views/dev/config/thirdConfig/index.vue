@@ -84,6 +84,18 @@
 			</template>
 			<wechatThirdForm />
 		</a-tab-pane>
+		<a-tab-pane key="wechatMiniThird">
+			<template #tab>
+				<span>
+					<img
+						src="@/assets/images/authSource/wechatmini.png"
+						style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle"
+					/>
+					微信小程序
+				</span>
+			</template>
+			<wechatMiniThirdForm />
+		</a-tab-pane>
 		<a-tab-pane key="dingTalkThird">
 			<template #tab>
 				<span>
@@ -203,6 +215,7 @@
 	import SamlThirdForm from './samlThirdForm.vue'
 	import IamThirdForm from './iamThirdForm.vue'
 	import WechatThirdForm from './wechatThirdForm.vue'
+	import WechatMiniThirdForm from './wechatMiniThirdForm.vue'
 	import DingTalkThirdForm from './dingTalkThirdForm.vue'
 	import WorkWechatThirdForm from './workWechatThirdForm.vue'
 	import FeiShuThirdForm from './feiShuThirdForm.vue'

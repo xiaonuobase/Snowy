@@ -24,6 +24,9 @@
 				<a v-if="formData.SNOWY_THIRD_WECHAT_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT')">
 					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechat.png" alt="" />
 				</a>
+				<a v-if="formData.SNOWY_THIRD_WECHAT_MINI_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('WECHAT_MINI')">
+					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/wechatmini.png" alt="" />
+				</a>
 				<a v-if="formData.SNOWY_THIRD_DINGTALK_ALLOW_LOGIN_FLAG" @click="getLoginRenderUrl('DINGTALK')">
 					<img style="width: 32px; height: 32px" src="/src/assets/images/authSource/dingtalk.png" alt="" />
 				</a>
@@ -60,6 +63,7 @@
 	import { ref, computed } from 'vue'
 	import configApi from '@/api/dev/configApi'
 	import thirdApi from '@/api/auth/thirdApi'
+	import {message} from "ant-design-vue";
 	const formData = ref({})
 	const hasAnyThirdLogin = computed(() => {
 		return Object.values(formData.value).some((v) => v === true)
@@ -80,13 +84,17 @@
 		}
 	}
 	const getLoginRenderUrl = (platform) => {
-		const param = {
-			platform: platform,
-			clientType: 'B'
+		if(platform === 'WECHAT_MINI') {
+			message.warning('请在微信小程序环境使用微信小程序登录')
+		} else {
+			const param = {
+				platform: platform,
+				clientType: 'B'
+			}
+			thirdApi.thirdRender(param).then((data) => {
+				window.location.href = data.authorizeUrl
+			})
 		}
-		thirdApi.thirdRender(param).then((data) => {
-			window.location.href = data.authorizeUrl
-		})
 	}
 	getConfigSysThirdAllowFlagList()
 </script>

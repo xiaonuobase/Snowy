@@ -65,6 +65,9 @@ public enum AuthPlatformEnum {
     /** 微信 */
     WECHAT("WECHAT"),
 
+    /** 微信小程序 */
+    WECHAT_MINI("WECHAT_MINI"),
+
     /** 微博 */
     WEIBO("WEIBO"),
 
@@ -94,6 +97,7 @@ public enum AuthPlatformEnum {
                 YUNZHIJIA.getValue().equals(value) ||
                 QQ.getValue().equals(value) ||
                 WECHAT.getValue().equals(value) ||
+                WECHAT_MINI.getValue().equals(value) ||
                 WEIBO.getValue().equals(value) ||
                 DOUYIN.getValue().equals(value) ||
                 ALIPAY.getValue().equals(value);

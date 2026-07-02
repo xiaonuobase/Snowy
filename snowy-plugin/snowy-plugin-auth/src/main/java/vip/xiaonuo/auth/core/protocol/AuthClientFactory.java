@@ -43,7 +43,7 @@ public class AuthClientFactory {
             case JWT -> new AuthJwtClient(authSource, authPlatform);
             case CAS -> new AuthCasClient(authSource, authPlatform);
             case SAML -> new AuthSamlClient(authSource, authPlatform);
-            case OIDC, IAM, DINGTALK, WORKWECHAT, FEISHU, WELINK, YUNZHIJIA, QQ, WECHAT, WEIBO, DOUYIN, ALIPAY -> new AuthOidcClient(authSource, authPlatform);
+            case OIDC, IAM, DINGTALK, WORKWECHAT, FEISHU, WELINK, YUNZHIJIA, QQ, WECHAT, WECHAT_MINI, WEIBO, DOUYIN, ALIPAY -> new AuthOidcClient(authSource, authPlatform);
         };
     }
 }

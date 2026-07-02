@@ -37,6 +37,7 @@ import vip.xiaonuo.auth.core.protocol.oidc.impl.feishu.AuthOidcFeiShuClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.iam.AuthOidcIamClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.qq.AuthOidcQqClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.wechat.AuthOidcWechatClient;
+import vip.xiaonuo.auth.core.protocol.oidc.impl.wechatmini.AuthOidcWechatMiniClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.weibo.AuthOidcWeiboClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.welink.AuthOidcWeLinkClient;
 import vip.xiaonuo.auth.core.protocol.oidc.impl.workwechat.AuthOidcWorkWechatClient;
@@ -71,9 +72,6 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
         if(StrUtil.isBlank(authOidcBaseJson.getClientSecret())) {
             throw new CommonException("ClientSecret不能为空");
         }
-        if(StrUtil.isBlank(authOidcBaseJson.getCallbackUrl())) {
-            throw new CommonException("回调地址不能为空");
-        }
         if(this.getAuthPlatform().equals(AuthPlatformEnum.OIDC.getValue())) {
             if(StrUtil.isBlank(authOidcBaseJson.getAuthorizeUrl())) {
                 throw new CommonException("认证授权url不能为空");
@@ -107,6 +105,7 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
             case IAM -> authRequest = new AuthOidcIamClient(getAuthBaseJson()).getAuthRequest();
             case QQ -> authRequest = new AuthOidcQqClient(getAuthBaseJson()).getAuthRequest();
             case WECHAT -> authRequest = new AuthOidcWechatClient(getAuthBaseJson()).getAuthRequest();
+            case WECHAT_MINI -> authRequest = new AuthOidcWechatMiniClient(getAuthBaseJson()).getAuthRequest();
             case WEIBO -> authRequest = new AuthOidcWeiboClient(getAuthBaseJson()).getAuthRequest();
             case DOUYIN -> authRequest = new AuthOidcDouyinClient(getAuthBaseJson()).getAuthRequest();
             case ALIPAY -> authRequest = new AuthOidcAlipayClient(getAuthBaseJson()).getAuthRequest();
