@@ -53,10 +53,7 @@ export const viewTagsStore = defineStore('viewTags', () => {
 	// 把当前标签快照写入 sessionStorage
 	const cacheViewTags = () => {
 		try {
-			tool.session.set(
-				VIEW_TAGS_STORAGE_KEY,
-				viewTags.value.map(slimRoute)
-			)
+			tool.session.set(VIEW_TAGS_STORAGE_KEY, viewTags.value.map(slimRoute))
 		} catch (e) {
 			console.warn('viewTags 写入 sessionStorage 失败：', e)
 		}
@@ -129,7 +126,9 @@ export const viewTagsStore = defineStore('viewTags', () => {
 			if (!route || !route.name || route.meta?.fullpage) return
 			if (viewTags.value.find((item) => item.path === route.path)) return
 			viewTags.value.push(route)
-			kStore.pushKeepLive(route.name)
+			if (route.meta?.keepLive !== false) {
+				kStore.pushKeepLive(route.name)
+			}
 		})
 	}
 

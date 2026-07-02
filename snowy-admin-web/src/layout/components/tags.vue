@@ -118,7 +118,11 @@
 		activeKey.value = viewTag ? viewTag.fullPath : to.fullPath
 		if (to.name && !to.meta.fullpage) {
 			vStore.pushViewTags(to)
-			kStore.pushKeepLive(to.name)
+			if (to.meta.keepLive !== false) {
+				kStore.pushKeepLive(to.name)
+			} else {
+				kStore.removeKeepLive(to.name)
+			}
 		}
 		if (tagList.value.length - 1 > maxTabs.value) {
 			const firstTag = tagList.value[1]
