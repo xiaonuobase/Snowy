@@ -174,7 +174,7 @@
 										<a @click="exportUserInfo(record)">{{ $t('user.exportUserInfo') }}</a>
 									</a-menu-item>
 									<a-menu-item>
-										<a @click="transferRef.onOpen(record)">权限调整</a>
+										<a @click="transferRef.onOpen(record)">{{ $t('user.transferUserPermission') }}</a>
 									</a-menu-item>
 								</a-menu>
 							</template>

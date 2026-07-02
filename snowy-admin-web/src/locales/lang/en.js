@@ -82,6 +82,7 @@ export default {
 		grantResource: 'Grant Resource',
 		grantPermission: 'Grant Permission',
 		exportUserInfo: 'Export UserInfo',
+		transferUserPermission: 'Transfer User Permission',
 		placeholderNameAndSearchKey: 'Please enter your name or keyword',
 		placeholderUserStatus: 'Please select status',
 		placeholderUserOrg: 'Please select org',

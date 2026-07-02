@@ -84,6 +84,7 @@ export default {
 		grantResource: '授权资源',
 		grantPermission: '授权权限',
 		exportUserInfo: '导出信息',
+		transferUserPermission: '权限调整',
 		placeholderUserOrg: '请选择所属组织',
 		placeholderNameAndSearchKey: '请输入姓名或关键词',
 		placeholderUserStatus: '请选择用户状态',
