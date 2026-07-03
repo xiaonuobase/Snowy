@@ -84,6 +84,11 @@
 			ellipsis: true
 		},
 		{
+			title: '三方用户ID',
+			dataIndex: 'thirdId',
+			ellipsis: true
+		},
+		{
 			title: '性别',
 			dataIndex: 'gender'
 		},

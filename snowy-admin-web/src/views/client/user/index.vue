@@ -55,6 +55,11 @@
 				<template v-if="column.dataIndex === 'gender'">
 					<a-tag :color="$TOOL.dictTypeColor('GENDER', record.gender)">{{ $TOOL.dictTypeData('GENDER', record.gender) }}</a-tag>
 				</template>
+				<template v-if="column.dataIndex === 'latestLoginDevice'">
+					<a-tag :color="$TOOL.dictTypeColor('AUTH_DEVICE_TYPE', record.latestLoginDevice)">
+						{{ $TOOL.dictTypeData('AUTH_DEVICE_TYPE', record.latestLoginDevice) }}
+					</a-tag>
+				</template>
 				<template v-if="column.dataIndex === 'userStatus'">
 					<a-switch :loading="statusLoading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
 				</template>
@@ -90,6 +95,10 @@
 			dataIndex: 'name'
 		},
 		{
+			title: '昵称',
+			dataIndex: 'nickname'
+		},
+		{
 			title: '性别',
 			dataIndex: 'gender'
 		},
@@ -97,6 +106,18 @@
 			title: '手机',
 			dataIndex: 'phone',
 			ellipsis: true
+		},
+		{
+			title: '创建时间',
+			dataIndex: 'createTime'
+		},
+		{
+			title: '最后登录时间',
+			dataIndex: 'latestLoginTime'
+		},
+		{
+			title: '最后登录设备',
+			dataIndex: 'latestLoginDevice'
 		},
 		{
 			title: '状态',
