@@ -30,5 +30,5 @@ public interface AuthThirdUserService extends IService<AuthThirdUser> {
      * @author xuyuxiang
      * @date 2022/7/9 14:58
      */
-    void insertAuthThirdUser(String userId, AuthUser authUser);
+    void insertAuthThirdUser(String userId, AuthUser authUser, String platform);
 }

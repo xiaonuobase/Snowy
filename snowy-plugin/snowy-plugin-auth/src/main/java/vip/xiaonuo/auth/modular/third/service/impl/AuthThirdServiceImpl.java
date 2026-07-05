@@ -21,6 +21,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -228,16 +229,20 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         // 校验登录端类型
         String clientType = authThirdRenderParam.getClientType();
         SaClientTypeEnum.validate(clientType);
-        // 创建客户端
-        AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
-        // 获取认证地址，需客户端类型
-        String authorizeUrl = authSourceBaseClient.getAuthorizeUrl(clientType);
-        // 构造结果
-        AuthThirdRenderResult authThirdRenderResult = new AuthThirdRenderResult();
-        // 设置授权地址
-        authThirdRenderResult.setAuthorizeUrl(authorizeUrl);
-        // 返回结果
-        return authThirdRenderResult;
+        try {
+            // 创建客户端
+            AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
+            // 获取认证地址，需客户端类型
+            String authorizeUrl = authSourceBaseClient.getAuthorizeUrl(clientType);
+            // 构造结果
+            AuthThirdRenderResult authThirdRenderResult = new AuthThirdRenderResult();
+            // 设置授权地址
+            authThirdRenderResult.setAuthorizeUrl(authorizeUrl);
+            // 返回结果
+            return authThirdRenderResult;
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
     }
 
     @SuppressWarnings("ALL")
@@ -251,39 +256,33 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
         // 获取state
         String state = SaHolder.getRequest().getParam(SaOAuth2Consts.Param.state);
-        // 校验state
         if(ObjectUtil.isEmpty(state)) {
             state = SaHolder.getRequest().getParam("RelayState");
-            if(ObjectUtil.isEmpty(state)) {
-                throw new CommonException("state不能为空");
-            }
-        }
-        // 获取缓存操作类
-        CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
-        // 获取缓存值
-        Object stateCacheValueObj = null;
-        try {
-            // 对state进行安全处理，防止特殊字符导致Redis异常
-            if (state.length() > 500) {
-                log.warn(">>> SSO state 过长（{}字符），跳过Redis校验 state={}", state.length(), state.substring(0, 50) + "...");
-            } else {
-                stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
-            }
-        } catch (Exception e) {
-            log.warn(">>> SSO state Redis查询异常，跳过校验 state={}, error={}", state, e.getMessage());
         }
         // 默认登录端类型
         String clientType = SaClientTypeEnum.B.getValue();
-        // 判断是否为空
-        if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
-            // 转换为json对象
-            JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
-            // 获取登录端类型
-            clientType = stateCacheValueJsonObject.getStr("clientType");
-            // 移除缓存
-            commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
-        } else {
-            log.warn(">>> SSO state 校验失败（可能IdP未原样返回或门户发起登录），跳过校验 state={}", state);
+        // 如果state不为空，尝试从缓存中获取clientType
+        if(ObjectUtil.isNotEmpty(state)) {
+            // 获取缓存操作类
+            CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
+            // 获取缓存值
+            Object stateCacheValueObj = null;
+            try {
+                stateCacheValueObj = commonCacheOperator.get(CONFIG_CACHE_KEY + state);
+            } catch (Exception e) {
+                log.warn(">>> SSO state Redis查询异常，跳过校验 state={}, error={}", state, e.getMessage());
+            }
+            // 判断是否为空
+            if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
+                // 转换为json对象
+                JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
+                // 获取登录端类型
+                clientType = stateCacheValueJsonObject.getStr("clientType");
+                // 移除缓存
+                commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
+            } else {
+                log.warn(">>> SSO state 校验失败（可能未使用render发起登录），跳过校验 state={}", state);
+            }
         }
         // 执行请求
         AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin();
@@ -292,26 +291,27 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             AuthUser authUser = authResponse.getData();
             // 获取第三方用户id
             String uuid = authUser.getUuid();
-            // 获取第三方用户来源
-            String source = authUser.getSource();
-            // 根据第三方用户id和用户来源获取用户信息
+            // 根据第三方用户id和平台标识获取用户信息
             AuthThirdUser authThirdUser = this.getOne(new LambdaQueryWrapper<AuthThirdUser>().eq(AuthThirdUser::getThirdId, uuid)
-                    .eq(AuthThirdUser::getCategory, source));
+                    .eq(AuthThirdUser::getCategory, platform));
             // 定义系统用户id
             String userId;
             if(ObjectUtil.isEmpty(authThirdUser)) {
                 // 如果三方用户不存在，自动创建本地用户并绑定
-                userId = this.createAndBindUser(authUser, clientType);
+                userId = this.createAndBindUser(authUser, platform, clientType);
             } else {
                 // 否则直接获取用户id，判断是否存在（有可能没绑定）
                 userId = authThirdUser.getUserId();
                 if(ObjectUtil.isEmpty(userId)) {
                     // 三方用户存在但未绑定本地用户，自动创建并绑定
-                    userId = this.createAndBindUserForExistThird(authUser, authThirdUser, clientType);
+                    userId = this.createAndBindUserForExistThird(authUser, authThirdUser, platform, clientType);
                 }
             }
+            // 登录设备
+            String device = platform.equalsIgnoreCase(AuthPlatformEnum.WECHAT_MINI.getValue())?
+                    AuthDeviceTypeEnum.MINI.getValue():AuthDeviceTypeEnum.PC.getValue();
             // 已绑定用户，直接用userId登录
-            return authService.doLoginById(userId, AuthDeviceTypeEnum.PC.getValue(), clientType);
+            return authService.doLoginById(userId, device, clientType);
         } else {
             throw new CommonException("第三方登录授权回调失败，原因：{}", authResponse.getMsg());
         }
@@ -357,26 +357,6 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             queryWrapper.lambda().orderByDesc(AuthThirdUser::getCreateTime);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
-    }
-
-    /**
-     * 保存三方用户并返回主键
-     *
-     * @author xuyuxiang
-     * @date 2022/7/9 14:58
-     */
-    private String insertAuthThirdUser(AuthUser authUser) {
-        AuthThirdUser authThirdUser = new AuthThirdUser();
-        authThirdUser.setThirdId(authUser.getUuid());
-        authThirdUser.setUserId(null);
-        authThirdUser.setAvatar(authUser.getAvatar());
-        authThirdUser.setName(authUser.getUsername());
-        authThirdUser.setNickname(authUser.getNickname());
-        authThirdUser.setGender(ObjectUtil.isNotEmpty(authUser.getGender())?authUser.getGender().getDesc():"");
-        authThirdUser.setCategory(authUser.getSource());
-        authThirdUser.setExtJson(JSONUtil.toJsonStr(authUser.getRawUserInfo()));
-        this.save(authThirdUser);
-        return authThirdUser.getId();
     }
 
     /**
@@ -665,53 +645,16 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
      * 创建本地用户并绑定三方用户（三方用户记录不存在的情况）
      *
      * @param authUser 第三方用户信息
+     * @param platform 平台标识
      * @param clientType 登录端类型
      * @return 创建的本地用户ID
      *
      * @author yubaoshan
      * @date 2025/06/26
      */
-    private String createAndBindUser(AuthUser authUser, String clientType) {
-        // 从第三方用户信息中提取字段
-        String username = authUser.getUsername();
-        String email = authUser.getEmail();
-        String phone = authUser.getSource().equalsIgnoreCase("phone") ? authUser.getUsername() : null;
-
-        // 定义本地用户
-        String userId;
-
-        // 根据登录端类型创建用户
-        if(SaClientTypeEnum.B.getValue().equals(clientType)) {
-            // B端用户创建逻辑
-            if(StrUtil.isNotBlank(phone)) {
-                userId = loginUserApi.createUserWithPhone(phone).getId();
-            } else if(StrUtil.isNotBlank(email)) {
-                userId = loginUserApi.createUserWithEmail(email).getId();
-            } else if(StrUtil.isNotBlank(username)) {
-                String randomPassword = RandomUtil.randomString(16);
-                userId = loginUserApi.createUserWithAccount(username, randomPassword).getId();
-            } else {
-                String uuid = authUser.getUuid();
-                String account = AuthAccountPrefixEnum.SSO.getValue() + (uuid.length() >= 8 ? uuid.substring(0, 8) : uuid);
-                String randomPassword = RandomUtil.randomString(16);
-                userId = loginUserApi.createUserWithAccount(account, randomPassword).getId();
-            }
-        } else {
-            // C端用户创建逻辑
-            if(StrUtil.isNotBlank(phone)) {
-                userId = clientLoginUserApi.createClientUserWithPhone(phone).getId();
-            } else if(StrUtil.isNotBlank(email)) {
-                userId = clientLoginUserApi.createClientUserWithEmail(email).getId();
-            } else if(StrUtil.isNotBlank(username)) {
-                String randomPassword = RandomUtil.randomString(16);
-                userId = clientLoginUserApi.createClientUserWithAccount(username, randomPassword).getId();
-            } else {
-                String uuid = authUser.getUuid();
-                String account = AuthAccountPrefixEnum.SSO.getValue() + (uuid.length() >= 8 ? uuid.substring(0, 8) : uuid);
-                String randomPassword = RandomUtil.randomString(16);
-                userId = clientLoginUserApi.createClientUserWithAccount(account, randomPassword).getId();
-            }
-        }
+    private String createAndBindUser(AuthUser authUser, String platform, String clientType) {
+        // 自动创建本地用户
+        String userId = this.autoCreateUser(authUser, platform, clientType);
 
         // 插入三方用户记录并绑定
         AuthThirdUser authThirdUser = new AuthThirdUser();
@@ -721,11 +664,11 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         authThirdUser.setName(authUser.getUsername());
         authThirdUser.setNickname(authUser.getNickname());
         authThirdUser.setGender(authUser.getGender() != null ? authUser.getGender().getDesc() : "未知");
-        authThirdUser.setCategory(authUser.getSource());
+        authThirdUser.setCategory(platform);
         authThirdUser.setExtJson(JSONUtil.toJsonStr(authUser.getRawUserInfo()));
         this.save(authThirdUser);
 
-        log.info(">>> SSO登录自动创建用户成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), authUser.getSource());
+        log.info(">>> SSO登录自动创建用户成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), platform);
 
         return userId;
     }
@@ -735,58 +678,86 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
      *
      * @param authUser 第三方用户信息
      * @param authThirdUser 已存在的三方用户记录
+     * @param platform 平台标识
      * @param clientType 登录端类型
      * @return 创建的本地用户ID
      *
      * @author yubaoshan
      * @date 2025/06/26
      */
-    private String createAndBindUserForExistThird(AuthUser authUser, AuthThirdUser authThirdUser, String clientType) {
-        // 从第三方用户信息中提取字段
-        String username = authUser.getUsername();
-        String email = authUser.getEmail();
-        String phone = authUser.getSource().equalsIgnoreCase("phone") ? authUser.getUsername() : null;
-
-        // 定义本地用户
-        String userId;
-
-        // 根据登录端类型创建用户
-        if(SaClientTypeEnum.B.getValue().equals(clientType)) {
-            // B端用户创建逻辑
-            if(StrUtil.isNotBlank(phone)) {
-                userId = loginUserApi.createUserWithPhone(phone).getId();
-            } else if(StrUtil.isNotBlank(email)) {
-                userId = loginUserApi.createUserWithEmail(email).getId();
-            } else if(StrUtil.isNotBlank(username)) {
-                String randomPassword = RandomUtil.randomString(16);
-                userId = loginUserApi.createUserWithAccount(username, randomPassword).getId();
-            } else {
-                String account = AuthAccountPrefixEnum.SSO.getValue() + (authUser.getUuid().length() >= 8 ? authUser.getUuid().substring(0, 8) : authUser.getUuid());
-                String randomPassword = RandomUtil.randomString(16);
-                userId = loginUserApi.createUserWithAccount(account, randomPassword).getId();
-            }
-        } else {
-            // C端用户创建逻辑
-            if(StrUtil.isNotBlank(phone)) {
-                userId = clientLoginUserApi.createClientUserWithPhone(phone).getId();
-            } else if(StrUtil.isNotBlank(email)) {
-                userId = clientLoginUserApi.createClientUserWithEmail(email).getId();
-            } else if(StrUtil.isNotBlank(username)) {
-                String randomPassword = RandomUtil.randomString(16);
-                userId = clientLoginUserApi.createClientUserWithAccount(username, randomPassword).getId();
-            } else {
-                String account = AuthAccountPrefixEnum.SSO.getValue() + (authUser.getUuid().length() >= 8 ? authUser.getUuid().substring(0, 8) : authUser.getUuid());
-                String randomPassword = RandomUtil.randomString(16);
-                userId = clientLoginUserApi.createClientUserWithAccount(account, randomPassword).getId();
-            }
-        }
+    private String createAndBindUserForExistThird(AuthUser authUser, AuthThirdUser authThirdUser, String platform, String clientType) {
+        // 自动创建本地用户
+        String userId = this.autoCreateUser(authUser, platform, clientType);
 
         // 更新三方用户记录，绑定userId
         authThirdUser.setUserId(userId);
         this.updateById(authThirdUser);
 
-        log.info(">>> SSO登录为已存在三方用户创建本地用户并绑定成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), authUser.getSource());
+        log.info(">>> SSO登录为已存在三方用户创建本地用户并绑定成功，userId={}, thirdId={}, source={}", userId, authUser.getUuid(), platform);
 
         return userId;
+    }
+
+    /**
+     * 自动创建本地用户
+     *
+     * @author yubaoshan
+     * @date 2024/07/05
+     */
+    private String autoCreateUser(AuthUser authUser, String platform, String clientType) {
+        String email = authUser.getEmail();
+        String phone = platform.equalsIgnoreCase("phone") ? authUser.getUsername() : null;
+        String userId;
+
+        // 生成账号：来源 + "_" + 完整UUID，保证全局唯一性，避免截取导致的冲突
+        String account = platform.toLowerCase() + "_" + authUser.getUuid();
+
+        // 生成美观的默认名称（昵称）
+        String name = authUser.getNickname();
+        if (StrUtil.isBlank(name)) {
+            name = authUser.getUsername();
+        }
+        if (StrUtil.isBlank(name)) {
+            name = getFriendlyPlatformName(platform) + "用户_" + RandomUtil.randomString(10);
+        }
+
+        if (SaClientTypeEnum.B.getValue().equals(clientType)) {
+            if (StrUtil.isNotBlank(phone)) {
+                userId = loginUserApi.createUserWithPhone(phone).getId();
+            } else if (StrUtil.isNotBlank(email)) {
+                userId = loginUserApi.createUserWithEmail(email).getId();
+            } else {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = loginUserApi.createUserWithAccount(account, randomPassword, name).getId();
+            }
+        } else {
+            if (StrUtil.isNotBlank(phone)) {
+                userId = clientLoginUserApi.createClientUserWithPhone(phone).getId();
+            } else if (StrUtil.isNotBlank(email)) {
+                userId = clientLoginUserApi.createClientUserWithEmail(email).getId();
+            } else {
+                String randomPassword = RandomUtil.randomString(16);
+                userId = clientLoginUserApi.createClientUserWithAccount(account, randomPassword, name).getId();
+            }
+        }
+        return userId;
+    }
+
+    /**
+     * 获取友好的平台名称
+     *
+     * @author yubaoshan
+     * @date 2024/07/05
+     */
+    private String getFriendlyPlatformName(String source) {
+        if (StrUtil.isBlank(source)) {
+            return "第三方";
+        }
+        for (AuthPlatformEnum platformEnum : AuthPlatformEnum.values()) {
+            if (platformEnum.getValue().equalsIgnoreCase(source)) {
+                return platformEnum.getDescription();
+            }
+        }
+        return source;
     }
 }

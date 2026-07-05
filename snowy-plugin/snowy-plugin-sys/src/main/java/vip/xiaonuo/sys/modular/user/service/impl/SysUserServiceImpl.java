@@ -2295,10 +2295,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public SysUser createUserWithAccount(String account, String password) {
+    public SysUser createUserWithAccount(String account, String password, String name) {
         SysUserAddParam sysUserAddParam = new SysUserAddParam();
         sysUserAddParam.setAccount(account);
-        sysUserAddParam.setName(account);
+        sysUserAddParam.setName(StrUtil.isBlank(name) ? account : name);
         sysUserAddParam.setPassword(password);
         sysUserAddParam.setOrgId(this.getDefaultNewUserOrgId());
         sysUserAddParam.setPositionId(this.getDefaultNewUserPositionId());
@@ -2458,7 +2458,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 校验密码
         SysPasswordUtil.validNewPassword(password);
         // 根据账号密码创建用户
-        this.createUserWithAccount(account, password);
+        this.createUserWithAccount(account, password, null);
     }
 
     @Override

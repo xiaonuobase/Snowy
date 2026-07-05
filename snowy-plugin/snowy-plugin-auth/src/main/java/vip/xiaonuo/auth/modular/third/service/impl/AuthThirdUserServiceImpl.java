@@ -31,7 +31,7 @@ import vip.xiaonuo.auth.modular.third.service.AuthThirdUserService;
 public class AuthThirdUserServiceImpl extends ServiceImpl<AuthThirdUserMapper, AuthThirdUser> implements AuthThirdUserService {
 
     @Override
-    public void insertAuthThirdUser(String userId, AuthUser authUser) {
+    public void insertAuthThirdUser(String userId, AuthUser authUser, String platform) {
         AuthThirdUser authThirdUser = new AuthThirdUser();
         authThirdUser.setThirdId(authUser.getUuid());
         authThirdUser.setUserId(userId);
@@ -39,7 +39,7 @@ public class AuthThirdUserServiceImpl extends ServiceImpl<AuthThirdUserMapper, A
         authThirdUser.setName(authUser.getUsername());
         authThirdUser.setNickname(authUser.getNickname());
         authThirdUser.setGender(ObjectUtil.isEmpty(authUser.getGender()) ? null : authUser.getGender().getDesc());
-        authThirdUser.setCategory(authUser.getSource());
+        authThirdUser.setCategory(platform);
         authThirdUser.setExtJson(JSONUtil.toJsonStr(authUser.getRawUserInfo()));
         this.save(authThirdUser);
     }

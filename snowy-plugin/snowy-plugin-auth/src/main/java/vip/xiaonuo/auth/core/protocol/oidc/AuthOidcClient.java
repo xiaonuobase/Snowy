@@ -20,10 +20,8 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import me.zhyd.oauth.exception.AuthException;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
-import me.zhyd.oauth.model.AuthToken;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
@@ -98,23 +96,27 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
     }
 
     public AuthRequest getAuthRequest() {
+        return getAuthRequest(false);
+    }
+
+    public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String authPlatform = this.getAuthPlatform();
         AuthPlatformEnum authPlatformEnum = AuthPlatformEnum.valueOf(authPlatform);
         AuthRequest authRequest;
         switch (authPlatformEnum) {
-            case IAM -> authRequest = new AuthOidcIamClient(getAuthBaseJson()).getAuthRequest();
-            case QQ -> authRequest = new AuthOidcQqClient(getAuthBaseJson()).getAuthRequest();
-            case WECHAT -> authRequest = new AuthOidcWechatClient(getAuthBaseJson()).getAuthRequest();
-            case WECHAT_MINI -> authRequest = new AuthOidcWechatMiniClient(getAuthBaseJson()).getAuthRequest();
-            case WEIBO -> authRequest = new AuthOidcWeiboClient(getAuthBaseJson()).getAuthRequest();
-            case DOUYIN -> authRequest = new AuthOidcDouyinClient(getAuthBaseJson()).getAuthRequest();
-            case ALIPAY -> authRequest = new AuthOidcAlipayClient(getAuthBaseJson()).getAuthRequest();
-            case DINGTALK -> authRequest = new AuthOidcDingTalkClient(getAuthBaseJson()).getAuthRequest();
-            case WORKWECHAT -> authRequest = new AuthOidcWorkWechatClient(getAuthBaseJson()).getAuthRequest();
-            case FEISHU -> authRequest = new AuthOidcFeiShuClient(getAuthBaseJson()).getAuthRequest();
-            case WELINK -> authRequest = new AuthOidcWeLinkClient(getAuthBaseJson()).getAuthRequest();
-            case YUNZHIJIA -> authRequest = new AuthOidcYunZhiJiaClient(getAuthBaseJson()).getAuthRequest();
-            default -> authRequest = new AuthOidcCommonClient(getAuthBaseJson()).getAuthRequest();
+            case IAM -> authRequest = new AuthOidcIamClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case QQ -> authRequest = new AuthOidcQqClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case WECHAT -> authRequest = new AuthOidcWechatClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case WECHAT_MINI -> authRequest = new AuthOidcWechatMiniClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case WEIBO -> authRequest = new AuthOidcWeiboClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case DOUYIN -> authRequest = new AuthOidcDouyinClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case ALIPAY -> authRequest = new AuthOidcAlipayClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case DINGTALK -> authRequest = new AuthOidcDingTalkClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case WORKWECHAT -> authRequest = new AuthOidcWorkWechatClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case FEISHU -> authRequest = new AuthOidcFeiShuClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case WELINK -> authRequest = new AuthOidcWeLinkClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case YUNZHIJIA -> authRequest = new AuthOidcYunZhiJiaClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            default -> authRequest = new AuthOidcCommonClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
         }
         return authRequest;
     }
@@ -143,63 +145,22 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
             throw new CommonException("code不能为空");
         }
         String state = request.getParam("state");
-        if(ObjectUtil.isEmpty(state)) {
-            throw new CommonException("state不能为空");
-        }
-        AuthRequest authRequest = this.getAuthRequest();
+        AuthRequest authRequest = this.getAuthRequest(ObjectUtil.isEmpty(state));
+        AuthResponse<AuthUser> authResponse = authRequest.login(AuthCallback.builder().code(code).state(state).build());
 
-        // 尝试正常登录流程（包含state校验）
-        try {
-            AuthResponse<AuthUser> authResponse = authRequest.login(AuthCallback.builder().code(code).state(state).build());
-
-            // 检查响应是否失败
-            if(!authResponse.ok()) {
-                String errorMsg = authResponse.getMsg();
-                // 如果是state校验失败，尝试降级处理
-                if(errorMsg != null && errorMsg.contains("Illegal state")) {
-                    log.warn(">>> OIDC state校验失败（响应失败），尝试跳过state校验直接获取token，state={}, error={}", state, errorMsg);
-                    return doLoginWithoutStateCheck(code);
-                }
-                throw new CommonException(errorMsg);
+        // 如果失败了，且是因为 state 校验失败（Illegal state），则尝试降级忽略 state 校验再次登录
+        if(!authResponse.ok()) {
+            String errorMsg = authResponse.getMsg();
+            if(ObjectUtil.isNotEmpty(state) && errorMsg != null && errorMsg.contains("Illegal state")) {
+                log.warn(">>> OIDC state校验失败，尝试降级忽略state校验登录，state={}, error={}", state, errorMsg);
+                authRequest = this.getAuthRequest(true);
+                authResponse = authRequest.login(AuthCallback.builder().code(code).state(state).build());
             }
-
-            return handleAuthResponse(authResponse);
-        } catch (AuthException e) {
-            // 如果是异常形式的state校验失败
-            if(e.getMessage() != null && e.getMessage().contains("Illegal state")) {
-                log.warn(">>> OIDC state校验失败（异常），尝试跳过state校验直接获取token，state={}, error={}", state, e.getMessage());
-                return doLoginWithoutStateCheck(code);
-            }
-            throw e;
         }
-    }
 
-    /**
-     * 跳过state校验，直接用code换token和用户信息
-     */
-    private AuthResponse<AuthUser> doLoginWithoutStateCheck(String code) {
-        try {
-            AuthRequest authRequest = this.getAuthRequest();
-            // 直接用code换token（不校验state）
-            AuthCallback authCallback = AuthCallback.builder()
-                    .code(code)
-                    .state("bypass-state-check")  // 使用占位state
-                    .build();
-
-            // 获取token
-            AuthToken authToken = authRequest.getAccessToken(authCallback);
-            // 获取用户信息
-            AuthUser authUser = authRequest.getUserInfo(authToken);
-
-            log.info(">>> OIDC跳过state校验成功获取用户信息，userId={}", authUser.getUuid());
-
-            return AuthResponse.<AuthUser>builder()
-                    .code(me.zhyd.oauth.enums.AuthResponseStatus.SUCCESS.getCode())
-                    .data(authUser)
-                    .build();
-        } catch (Exception e) {
-            log.error(">>> OIDC跳过state校验后仍然失败", e);
-            throw new CommonException("OIDC登录失败：{}", e.getMessage());
+        if(!authResponse.ok()) {
+            throw new CommonException(authResponse.getMsg());
         }
+        return handleAuthResponse(authResponse);
     }
 }

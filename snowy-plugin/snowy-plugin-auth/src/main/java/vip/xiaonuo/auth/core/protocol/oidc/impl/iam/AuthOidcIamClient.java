@@ -33,6 +33,10 @@ import java.util.List;
 public record AuthOidcIamClient(AuthOidcBaseJson authOidcBaseJson) {
 
     public AuthRequest getAuthRequest() {
+        return getAuthRequest(false);
+    }
+
+    public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String clientId = authOidcBaseJson.getClientId();
         String clientSecret = authOidcBaseJson.getClientSecret();
         String callbackUrl = authOidcBaseJson.getCallbackUrl();
@@ -43,6 +47,7 @@ public record AuthOidcIamClient(AuthOidcBaseJson authOidcBaseJson) {
                 .clientSecret(clientSecret)
                 .scopes(scope)
                 .redirectUri(callbackUrl)
+                .ignoreCheckState(ignoreCheckState)
                 .build(), authOidcBaseJson);
     }
 }

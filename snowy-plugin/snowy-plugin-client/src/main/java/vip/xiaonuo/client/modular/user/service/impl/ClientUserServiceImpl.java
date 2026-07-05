@@ -1041,10 +1041,10 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ClientUser createUserWithAccount(String account, String password) {
+    public ClientUser createUserWithAccount(String account, String password, String name) {
         ClientUserAddParam clientUserAddParam = new ClientUserAddParam();
         clientUserAddParam.setAccount(account);
-        clientUserAddParam.setName(account);
+        clientUserAddParam.setName(StrUtil.isBlank(name) ? account : name);
         clientUserAddParam.setPassword(password);
         clientUserAddParam.setGender(CommonGenderEnum.UNKNOWN.getValue());
         // 保存用户
@@ -1151,7 +1151,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 校验密码
         ClientPasswordUtl.validNewPassword(password);
         // 根据账号密码创建用户
-        this.createUserWithAccount(account, password);
+        this.createUserWithAccount(account, password, null);
     }
 
     @Override

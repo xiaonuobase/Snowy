@@ -30,6 +30,10 @@ import vip.xiaonuo.auth.core.protocol.oidc.AuthOidcBaseJson;
 public record AuthOidcAlipayClient(AuthOidcBaseJson authOidcBaseJson) {
 
     public AuthRequest getAuthRequest() {
+        return getAuthRequest(false);
+    }
+
+    public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String clientId = authOidcBaseJson.getClientId();
         String clientSecret = authOidcBaseJson.getClientSecret();
         String callbackUrl = authOidcBaseJson.getCallbackUrl();
@@ -39,6 +43,7 @@ public record AuthOidcAlipayClient(AuthOidcBaseJson authOidcBaseJson) {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .redirectUri(callbackUrl)
+                .ignoreCheckState(ignoreCheckState)
                 .build(), publicKey);
     }
 }

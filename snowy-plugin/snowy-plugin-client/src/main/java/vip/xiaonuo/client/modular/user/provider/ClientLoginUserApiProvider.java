@@ -210,14 +210,14 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
     }
 
     @Override
-    public SaBaseLoginUser createUserWithAccount(String account, String password) {
+    public SaBaseLoginUser createUserWithAccount(String account, String password, String name) {
         // C端用户API不实现B端用户创建
         throw new UnsupportedOperationException("C端用户API不支持创建B端用户");
     }
 
     @Override
-    public SaBaseClientLoginUser createClientUserWithAccount(String account, String password) {
-        ClientUser clientUser = clientUserService.createUserWithAccount(account, password);
+    public SaBaseClientLoginUser createClientUserWithAccount(String account, String password, String name) {
+        ClientUser clientUser = clientUserService.createUserWithAccount(account, password, name);
         return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
     }
 

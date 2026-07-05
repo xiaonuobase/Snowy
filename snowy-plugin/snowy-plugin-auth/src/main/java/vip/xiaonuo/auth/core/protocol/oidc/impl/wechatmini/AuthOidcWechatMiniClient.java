@@ -17,7 +17,6 @@ import com.xkcoding.http.support.hutool.HutoolImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
-import me.zhyd.oauth.request.AuthWeChatOpenRequest;
 import me.zhyd.oauth.request.AuthWechatMiniProgramRequest;
 import vip.xiaonuo.auth.core.protocol.oidc.AuthOidcBaseJson;
 
@@ -32,6 +31,10 @@ import vip.xiaonuo.auth.core.protocol.oidc.AuthOidcBaseJson;
 public record AuthOidcWechatMiniClient(AuthOidcBaseJson authOidcBaseJson) {
 
     public AuthRequest getAuthRequest() {
+        return getAuthRequest(true);
+    }
+
+    public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String clientId = authOidcBaseJson.getClientId();
         String clientSecret = authOidcBaseJson.getClientSecret();
         HttpUtil.setHttp(new HutoolImpl());
@@ -39,7 +42,7 @@ public record AuthOidcWechatMiniClient(AuthOidcBaseJson authOidcBaseJson) {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .ignoreCheckRedirectUri(true)
-                .ignoreCheckState(true)
+                .ignoreCheckState(ignoreCheckState)
                 .build());
     }
 }

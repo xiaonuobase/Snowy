@@ -29,6 +29,10 @@ import vip.xiaonuo.auth.core.protocol.oauth.AuthOauthBaseJson;
 public record AuthOauthCommonClient(AuthOauthBaseJson authOauthBaseJson) {
 
     public AuthRequest getAuthRequest() {
+        return getAuthRequest(false);
+    }
+
+    public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String clientId = authOauthBaseJson.getClientId();
         String clientSecret = authOauthBaseJson.getClientSecret();
         String callbackUrl = authOauthBaseJson.getCallbackUrl();
@@ -37,6 +41,7 @@ public record AuthOauthCommonClient(AuthOauthBaseJson authOauthBaseJson) {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .redirectUri(callbackUrl)
+                .ignoreCheckState(ignoreCheckState)
                 .build(), authOauthBaseJson);
     }
 }

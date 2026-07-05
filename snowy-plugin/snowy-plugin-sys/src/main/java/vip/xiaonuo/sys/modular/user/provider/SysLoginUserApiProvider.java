@@ -216,13 +216,13 @@ public class SysLoginUserApiProvider implements SaBaseLoginUserApi {
     }
 
     @Override
-    public SaBaseLoginUser createUserWithAccount(String account, String password) {
-        SysUser sysUser = sysUserService.createUserWithAccount(account, password);
+    public SaBaseLoginUser createUserWithAccount(String account, String password, String name) {
+        SysUser sysUser = sysUserService.createUserWithAccount(account, password, name);
         return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
     }
 
     @Override
-    public SaBaseClientLoginUser createClientUserWithAccount(String account, String password) {
+    public SaBaseClientLoginUser createClientUserWithAccount(String account, String password, String name) {
         // B端用户API不实现C端用户创建
         throw new UnsupportedOperationException("B端用户API不支持创建C端用户");
     }

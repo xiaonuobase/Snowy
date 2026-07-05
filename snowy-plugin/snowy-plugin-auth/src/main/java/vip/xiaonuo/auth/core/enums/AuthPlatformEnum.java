@@ -25,62 +25,65 @@ import vip.xiaonuo.common.exception.CommonException;
 public enum AuthPlatformEnum {
 
     /** OAUTH */
-    OAUTH("OAUTH"),
+    OAUTH("OAUTH", "OAUTH"),
 
     /** OIDC */
-    OIDC("OIDC"),
+    OIDC("OIDC", "OIDC"),
 
     /** JWT */
-    JWT("JWT"),
+    JWT("JWT", "JWT"),
 
     /** CAS */
-    CAS("CAS"),
+    CAS("CAS", "CAS"),
 
     /** SAML */
-    SAML("SAML"),
+    SAML("SAML", "SAML"),
 
    // =======以下为OIDC协议的具体实现======= //
 
     /** IAM */
-    IAM("IAM"),
+    IAM("IAM", "IAM"),
 
     /** 钉钉 */
-    DINGTALK("DINGTALK"),
+    DINGTALK("DINGTALK", "钉钉"),
 
     /** 企业微信 */
-    WORKWECHAT("WORKWECHAT"),
+    WORKWECHAT("WORKWECHAT", "企业微信"),
 
     /** 飞书 */
-    FEISHU("FEISHU"),
+    FEISHU("FEISHU", "飞书"),
 
     /** WeLink */
-    WELINK("WELINK"),
+    WELINK("WELINK", "WeLink"),
 
     /** 云之家 */
-    YUNZHIJIA("YUNZHIJIA"),
+    YUNZHIJIA("YUNZHIJIA", "云之家"),
 
     /** QQ */
-    QQ("QQ"),
+    QQ("QQ", "QQ"),
 
     /** 微信 */
-    WECHAT("WECHAT"),
+    WECHAT("WECHAT", "微信"),
 
     /** 微信小程序 */
-    WECHAT_MINI("WECHAT_MINI"),
+    WECHAT_MINI("WECHAT_MINI", "微信小程序"),
 
     /** 微博 */
-    WEIBO("WEIBO"),
+    WEIBO("WEIBO", "微博"),
 
     /** 抖音 */
-    DOUYIN("DOUYIN"),
+    DOUYIN("DOUYIN", "抖音"),
 
     /** 支付宝 */
-    ALIPAY("ALIPAY");
+    ALIPAY("ALIPAY", "支付宝");
 
     private final String value;
 
-    AuthPlatformEnum(String value) {
+    private final String description;
+
+    AuthPlatformEnum(String value, String description) {
         this.value = value;
+        this.description = description;
     }
 
     public static void validate(String value) {

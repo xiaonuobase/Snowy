@@ -312,12 +312,12 @@ public interface ClientUserService extends IService<ClientUser> {
     ClientUser createUserWithEmail(String email);
 
     /**
-     * 根据账号密码创建用户
+     * 根据账号密码和名称创建用户
      *
      * @author xuyuxiang
      * @date 2022/8/25 15:16
      **/
-    ClientUser createUserWithAccount(String account, String password);
+    ClientUser createUserWithAccount(String account, String password, String name);
 
     /**
      * 判断当前用户密码是否过期
