@@ -52,6 +52,17 @@
 					</a-upload-dragger>
 				</a-spin>
 			</a-tab-pane>
+			<a-tab-pane key="Ftp" tab="FTP">
+				<a-spin :spinning="uploadLoading">
+					<a-upload-dragger :custom-request="customRequestFtp" :show-upload-list="false">
+						<p class="ant-upload-drag-icon">
+							<inbox-outlined></inbox-outlined>
+						</p>
+						<p class="ant-upload-text">单击或拖动文件到此区域进行上传</p>
+						<p class="ant-upload-hint">支持单个上传</p>
+					</a-upload-dragger>
+				</a-spin>
+			</a-tab-pane>
 		</a-tabs>
 	</xn-form-container>
 </template>
@@ -123,6 +134,20 @@
 		fileData.append('file', data.file)
 		fileApi
 			.fileUploadMinioReturnUrl(fileData)
+			.then(() => {
+				emit('successful')
+			})
+			.finally(() => {
+				uploadLoading.value = false
+			})
+	}
+	// 上传FTP文件
+	const customRequestFtp = (data) => {
+		uploadLoading.value = true
+		const fileData = new FormData()
+		fileData.append('file', data.file)
+		fileApi
+			.fileUploadFtpReturnUrl(fileData)
 			.then(() => {
 				emit('successful')
 			})

@@ -36,7 +36,10 @@ public enum DevFileEngineTypeEnum {
     MINIO("MINIO"),
 
     /** RUSTFS */
-    RUSTFS("RUSTFS");
+    RUSTFS("RUSTFS"),
+
+    /** FTP */
+    FTP("FTP");
 
     private final String value;
 

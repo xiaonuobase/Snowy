@@ -9,8 +9,15 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 import { baseRequest } from '@/utils/request'
+import { convertUrl } from '@/utils/apiAdaptive'
+import sysConfig from '@/config'
+import tool from '@/utils/tool'
 
 const request = (url, ...arg) => baseRequest(`/dev/file/` + url, ...arg)
+const apiUrl = (url) => {
+	const convertedUrl = convertUrl(url)
+	return convertedUrl.startsWith('/api') ? convertedUrl : '/api' + convertedUrl
+}
 /**
  * 文件
  *
@@ -42,6 +49,10 @@ export default {
 	fileUploadMinioReturnId(data) {
 		return request('uploadMinioReturnId', data)
 	},
+	// FTP文件上传，返回文件id
+	fileUploadFtpReturnId(data) {
+		return request('uploadFtpReturnId', data)
+	},
 	// 本地文件上传，返回文件Url
 	fileUploadLocalReturnUrl(data) {
 		return request('uploadLocalReturnUrl', data)
@@ -58,6 +69,10 @@ export default {
 	fileUploadMinioReturnUrl(data) {
 		return request('uploadMinioReturnUrl', data)
 	},
+	// FTP文件上传，返回文件Url
+	fileUploadFtpReturnUrl(data) {
+		return request('uploadFtpReturnUrl', data)
+	},
 	// 获取文件分页列表
 	filePage(data) {
 		return request('page', data, 'get')
@@ -71,6 +86,21 @@ export default {
 		return request('download', data, 'get', {
 			responseType: 'blob'
 		})
+	},
+	// 授权下载文件，这里要带上blob类型
+	fileAuthDownload(data) {
+		return request('authDownload', data, 'get', {
+			responseType: 'blob'
+		})
+	},
+	// 获取文件预览地址
+	fileDownloadUrl(record) {
+		if (record?.isDownloadAuth) {
+			const token = tool.data.get('TOKEN')
+			const tokenValue = token ? encodeURIComponent(sysConfig.TOKEN_PREFIX + token) : ''
+			return apiUrl(`/dev/file/authDownload?id=${record.id}&${sysConfig.TOKEN_NAME}=${tokenValue}`)
+		}
+		return apiUrl(`/dev/file/download?id=${record.id}`)
 	},
 	// 获取文件详情
 	fileDetail(data) {

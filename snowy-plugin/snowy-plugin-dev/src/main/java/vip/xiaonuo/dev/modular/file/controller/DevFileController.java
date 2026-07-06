@@ -250,6 +250,32 @@ public class DevFileController {
     }
 
     /**
+     * FTP文件上传，返回文件id
+     *
+     * @author lilang
+     * @date 2026/06/30
+     **/
+    @Operation(summary = "上传FTP文件返回id")
+    @CommonLog("上传FTP文件返回id")
+    @PostMapping("/dev/file/uploadFtpReturnId")
+    public CommonResult<String> uploadFtpReturnId(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(devFileService.uploadReturnId(DevFileEngineTypeEnum.FTP.getValue(), file));
+    }
+
+    /**
+     * FTP文件上传，返回文件Url
+     *
+     * @author lilang
+     * @date 2026/06/30
+     **/
+    @Operation(summary = "上传FTP文件返回url")
+    @CommonLog("上传FTP文件返回url")
+    @PostMapping("/dev/file/uploadFtpReturnUrl")
+    public CommonResult<String> uploadFtpReturnUrl(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(devFileService.uploadReturnUrl(DevFileEngineTypeEnum.FTP.getValue(), file));
+    }
+
+    /**
      * 获取文件分页列表
      *
      * @author xuyuxiang

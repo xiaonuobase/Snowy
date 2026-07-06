@@ -15,6 +15,9 @@
 		<a-tab-pane key="rustfsFile" tab="RUSTFS文件">
 			<rustfsFileForm />
 		</a-tab-pane>
+		<a-tab-pane key="ftpFile" tab="FTP文件">
+			<ftpFileForm />
+		</a-tab-pane>
 	</a-tabs>
 </template>
 
@@ -24,5 +27,6 @@
 	import TencentFileForm from './tencentFileForm.vue'
 	import MinioFileForm from './minioFileForm.vue'
 	import RustfsFileForm from './rustfsFileForm.vue'
+	import FtpFileForm from './ftpFileForm.vue'
 	const activeKey = ref('localFile')
 </script>

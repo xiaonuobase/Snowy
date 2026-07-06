@@ -160,6 +160,8 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 return;
             }
             CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
+        } else if(devFile.getEngine().equals(DevFileEngineTypeEnum.FTP.getValue())) {
+            CommonDownloadUtil.download(devFile.getName(), DevFileFtpUtil.getFileBytes(devFile.getBucket(), devFile.getFileKey()), response);
         } else {
             String storagePath = devFile.getStoragePath();
             CommonDownloadUtil.download(devFile.getName(), HttpUtil.downloadBytes(storagePath), response);
@@ -193,6 +195,8 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
                 DevFileMinIoUtil.deleteFile(bucketName, fileKey);
             } else if (DevFileEngineTypeEnum.RUSTFS.getValue().equals(engine)) {
                 DevFileRustFsUtil.deleteFile(bucketName, fileKey);
+            } else if (DevFileEngineTypeEnum.FTP.getValue().equals(engine)) {
+                DevFileFtpUtil.deleteFile(bucketName, fileKey);
             } else {
                 log.error("未知存储引擎：{}", engine);
             }
@@ -253,6 +257,11 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             // 使用RUSTFS默认配置的bucketName
             bucketName = DevFileRustFsUtil.getDefaultBucketName();
             storageUrl = DevFileRustFsUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
+        } else if(engine.equals(DevFileEngineTypeEnum.FTP.getValue())) {
+
+            // 使用FTP默认配置的bucketName
+            bucketName = DevFileFtpUtil.getDefaultBucketName();
+            storageUrl = DevFileFtpUtil.storageFileWithReturnUrl(bucketName, fileKey, file);
         } else {
             throw new CommonException("不支持的文件引擎：{}", engine);
         }

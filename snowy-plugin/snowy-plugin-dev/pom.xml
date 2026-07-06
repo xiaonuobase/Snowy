@@ -40,6 +40,12 @@
             <artifactId>s3</artifactId>
         </dependency>
 
+        <!-- FTP文件操作依赖，Hutool FTP基于Apache Commons Net -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+
         <!-- websocket -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -122,6 +122,26 @@ public interface DevFileApi {
      **/
     String storageFileWithReturnIdMinio(MultipartFile file);
 
+    /* =========FTP文件========= */
+
+    /**
+     * 上传文件返回Url
+     *
+     * @param file 文件
+     * @author lilang
+     * @date 2026/06/30
+     **/
+    String storageFileWithReturnUrlFtp(MultipartFile file);
+
+    /**
+     * 上传文件返回Id
+     *
+     * @param file 文件
+     * @author lilang
+     * @date 2026/06/30
+     **/
+    String storageFileWithReturnIdFtp(MultipartFile file);
+
     /**
      * 通过文件id查询文件详情
      *

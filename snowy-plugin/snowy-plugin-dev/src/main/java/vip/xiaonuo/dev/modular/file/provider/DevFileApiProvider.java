@@ -97,6 +97,16 @@ public class DevFileApiProvider implements DevFileApi {
     }
 
     @Override
+    public String storageFileWithReturnUrlFtp(MultipartFile file) {
+        return devFileService.uploadReturnUrl(DevFileEngineTypeEnum.FTP.getValue(), file);
+    }
+
+    @Override
+    public String storageFileWithReturnIdFtp(MultipartFile file) {
+        return devFileService.uploadReturnId(DevFileEngineTypeEnum.FTP.getValue(), file);
+    }
+
+    @Override
     public JSONObject getFileInfoById(String id) {
         return Optional.ofNullable(devFileService.getById(id))
                 .map(JSONUtil::parseObj)
