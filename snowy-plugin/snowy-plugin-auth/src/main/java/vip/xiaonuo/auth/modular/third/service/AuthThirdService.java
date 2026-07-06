@@ -22,6 +22,8 @@ import vip.xiaonuo.auth.modular.third.param.AuthThirdRenderParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
 import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 
+import java.util.List;
+
 /**
  * 第三方登录Service接口
  *
@@ -61,4 +63,12 @@ public interface AuthThirdService extends IService<AuthThirdUser> {
      * @date 2022/4/24 20:08
      */
     Page<AuthThirdUser> page(AuthThirdUserPageParam authThirdUserPageParam);
+
+    /**
+     * 根据用户id删除三方用户
+     *
+     * @author xuyuxiang
+     * @date 2022/7/9 14:58
+     */
+    void deleteByUserIdList(List<String> userIdList);
 }

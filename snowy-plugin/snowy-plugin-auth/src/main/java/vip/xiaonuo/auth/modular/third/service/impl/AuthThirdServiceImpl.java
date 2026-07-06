@@ -21,7 +21,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +35,6 @@ import me.zhyd.oauth.model.AuthUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
-import vip.xiaonuo.auth.core.enums.AuthAccountPrefixEnum;
 import vip.xiaonuo.auth.core.enums.AuthPlatformEnum;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.protocol.AuthClientFactory;
@@ -57,6 +55,8 @@ import vip.xiaonuo.common.enums.CommonSortOrderEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
 import vip.xiaonuo.dev.api.DevConfigApi;
+
+import java.util.List;
 
 /**
  * 第三方登录Service接口实现类
@@ -259,9 +259,15 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         if(ObjectUtil.isEmpty(state)) {
             state = SaHolder.getRequest().getParam("RelayState");
         }
-        // 默认登录端类型
-        String clientType = SaClientTypeEnum.B.getValue();
-        // 如果state不为空，尝试从缓存中获取clientType
+        // 定义登录端类型
+        String clientType = authThirdCallbackParam.getClientType();
+        if(ObjectUtil.isEmpty(clientType)) {
+            // 默认登录端类型，如果是微信小程序，则默认C端登录，否则默认B端登录
+            clientType = platform.equalsIgnoreCase(AuthPlatformEnum.WECHAT_MINI.getValue())? SaClientTypeEnum.C.getValue():SaClientTypeEnum.B.getValue();
+        } else {
+            SaClientTypeEnum.validate(clientType);
+        }
+        // 如果state不为空，尝试从缓存中获取配置并清理
         if(ObjectUtil.isNotEmpty(state)) {
             // 获取缓存操作类
             CommonCacheOperator commonCacheOperator = SpringUtil.getBean(CommonCacheOperator.class);
@@ -276,9 +282,11 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             if(ObjectUtil.isNotEmpty(stateCacheValueObj)){
                 // 转换为json对象
                 JSONObject stateCacheValueJsonObject = JSONUtil.parseObj(stateCacheValueObj);
-                // 获取登录端类型
-                clientType = stateCacheValueJsonObject.getStr("clientType");
-                // 移除缓存
+                // 如果接口参数未传clientType，则从缓存中获取
+                if(ObjectUtil.isEmpty(authThirdCallbackParam.getClientType())) {
+                    clientType = stateCacheValueJsonObject.getStr("clientType");
+                }
+                // 移除缓存（无论是否使用缓存中的 clientType，只要 state 匹配就清理）
                 commonCacheOperator.remove(CONFIG_CACHE_KEY + state);
             } else {
                 log.warn(">>> SSO state 校验失败（可能未使用render发起登录），跳过校验 state={}", state);
@@ -357,6 +365,13 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             queryWrapper.lambda().orderByDesc(AuthThirdUser::getCreateTime);
         }
         return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+    }
+
+    @Override
+    public void deleteByUserIdList(List<String> userIdList) {
+        if(ObjectUtil.isNotEmpty(userIdList)) {
+            this.remove(new LambdaQueryWrapper<AuthThirdUser>().in(AuthThirdUser::getUserId, userIdList));
+        }
     }
 
     /**

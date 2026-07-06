@@ -18,10 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import me.zhyd.oauth.model.AuthCallback;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vip.xiaonuo.auth.modular.third.entity.AuthThirdUser;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdBindAccountParam;
 import vip.xiaonuo.auth.modular.third.param.AuthThirdCallbackParam;
@@ -66,7 +63,7 @@ public class AuthThirdController {
      * @date 2022/7/8 16:42
      **/
     @Operation(summary = "第三方登录授权回调")
-    @GetMapping("/auth/third/callback")
+    @RequestMapping(value = "/auth/third/callback", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonResult<String> callback(@Valid AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback) {
         return CommonResult.data(authThirdService.callback(authThirdCallbackParam, authCallback));
     }
