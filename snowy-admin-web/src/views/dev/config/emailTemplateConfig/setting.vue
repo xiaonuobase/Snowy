@@ -16,11 +16,12 @@
 						</div>
 					</div>
 				</template>
-				<a-textarea
+				<XnCodeEditor
+					ref="editorRef"
 					v-model:value="formData.content"
 					placeholder="请输入邮件模板"
-					allow-clear
-					:auto-size="{ minRows: 20, maxRows: 20 }"
+					language="htmlmixed"
+					height="450px"
 				/>
 			</a-form-item>
 		</a-form>
@@ -38,6 +39,7 @@
 	// 默认是关闭状态
 	const open = ref(false)
 	const formRef = ref()
+	const editorRef = ref()
 	const emailPreviewRef = ref()
 	const emit = defineEmits({ successful: null })
 	// 表单数据
@@ -54,6 +56,9 @@
 		open.value = true
 		formData.value = JSON.parse(record.configValue)
 		recordConfigKey.value = record.configKey
+		nextTick(() => {
+			editorRef.value.refresh()
+		})
 	}
 	// 关闭抽屉
 	const onClose = () => {
