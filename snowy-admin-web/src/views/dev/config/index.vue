@@ -1,48 +1,25 @@
 <template>
-	<a-card
-		class="xn-wd"
-		:bordered="false"
-		:tab-list="tabListNoTitle"
-		:active-tab-key="noTitleKey"
-		@tabChange="(key) => onTabChange(key, 'noTitleKey')"
-	>
-		<p v-if="noTitleKey === 'sysConfig'">
-			<SysConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'registerConfig'">
-			<RegisterConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'loginConfig'">
-			<LoginConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'passwordConfig'">
-			<PasswordConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'emailConfig'">
-			<EmailConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'emailTemplateConfig'">
-			<EmailTemplateConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'smsConfig'">
-			<SmsConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'smsTemplateConfig'">
-			<SmsTemplateConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'fileConfig'">
-			<FileConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'pushConfig'">
-			<PushConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'thirdConfig'">
-			<ThirdConfig />
-		</p>
-		<p v-else-if="noTitleKey === 'otherConfig'">
-			<OtherConfig />
-		</p>
-	</a-card>
+	<xn-panel :padding="0" :header-divider="false" :bottom-gap="0">
+		<template #title>
+			<a-tabs v-model:activeKey="noTitleKey" class="config-tabs">
+				<a-tab-pane v-for="item in tabListNoTitle" :key="item.key" :tab="item.tab" />
+			</a-tabs>
+		</template>
+		<div class="config-content">
+			<SysConfig v-if="noTitleKey === 'sysConfig'" />
+			<RegisterConfig v-else-if="noTitleKey === 'registerConfig'" />
+			<LoginConfig v-else-if="noTitleKey === 'loginConfig'" />
+			<PasswordConfig v-else-if="noTitleKey === 'passwordConfig'" />
+			<EmailConfig v-else-if="noTitleKey === 'emailConfig'" />
+			<EmailTemplateConfig v-else-if="noTitleKey === 'emailTemplateConfig'" />
+			<SmsConfig v-else-if="noTitleKey === 'smsConfig'" />
+			<SmsTemplateConfig v-else-if="noTitleKey === 'smsTemplateConfig'" />
+			<FileConfig v-else-if="noTitleKey === 'fileConfig'" />
+			<PushConfig v-else-if="noTitleKey === 'pushConfig'" />
+			<ThirdConfig v-else-if="noTitleKey === 'thirdConfig'" />
+			<OtherConfig v-else-if="noTitleKey === 'otherConfig'" />
+		</div>
+	</xn-panel>
 </template>
 
 <script setup name="devConfig">
@@ -58,70 +35,43 @@
 	import ThirdConfig from './thirdConfig/index.vue'
 	import OtherConfig from './otherConfig/index.vue'
 	import PushConfig from './pushConfig/index.vue'
-	const key = ref('sysConfig')
+
 	const noTitleKey = ref('sysConfig')
 
 	const tabListNoTitle = [
-		{
-			key: 'sysConfig',
-			tab: '系统配置'
-		},
-		{
-			key: 'registerConfig',
-			tab: '注册配置'
-		},
-		{
-			key: 'loginConfig',
-			tab: '登录配置'
-		},
-		{
-			key: 'passwordConfig',
-			tab: '密码配置'
-		},
-		{
-			key: 'emailConfig',
-			tab: '邮件配置'
-		},
-		{
-			key: 'emailTemplateConfig',
-			tab: '邮件模板'
-		},
-		{
-			key: 'smsConfig',
-			tab: '短信配置'
-		},
-		{
-			key: 'smsTemplateConfig',
-			tab: '短信模板'
-		},
-		{
-			key: 'fileConfig',
-			tab: '文件配置'
-		},
-		{
-			key: 'pushConfig',
-			tab: '推送配置'
-		},
-		{
-			key: 'thirdConfig',
-			tab: '第三方配置'
-		},
-		{
-			key: 'otherConfig',
-			tab: '其他配置'
-		}
+		{ key: 'sysConfig', tab: '系统配置' },
+		{ key: 'registerConfig', tab: '注册配置' },
+		{ key: 'loginConfig', tab: '登录配置' },
+		{ key: 'passwordConfig', tab: '密码配置' },
+		{ key: 'emailConfig', tab: '邮件配置' },
+		{ key: 'emailTemplateConfig', tab: '邮件模板' },
+		{ key: 'smsConfig', tab: '短信配置' },
+		{ key: 'smsTemplateConfig', tab: '短信模板' },
+		{ key: 'fileConfig', tab: '文件配置' },
+		{ key: 'pushConfig', tab: '推送配置' },
+		{ key: 'thirdConfig', tab: '第三方配置' },
+		{ key: 'otherConfig', tab: '其他配置' }
 	]
-
-	const onTabChange = (value, type) => {
-		if (type === 'key') {
-			key.value = value
-		} else if (type === 'noTitleKey') {
-			noTitleKey.value = value
-		}
-	}
 </script>
+
 <style lang="less" scoped>
-	:deep(.ant-tabs-tab) {
+	:deep(.xn-panel-title) {
+		padding: 0 !important;
+		flex: 1;
+	}
+	.config-tabs {
+		margin-bottom: 0;
+		width: 100%;
+	}
+	.config-tabs :deep(.ant-tabs-nav) {
+		margin-bottom: 0;
+		padding-left: 24px;
+	}
+	.config-tabs :deep(.ant-tabs-tab) {
 		font-size: 14px !important;
+	}
+	.config-content {
+		padding: 16px 24px;
+		height: 100%;
 	}
 </style>

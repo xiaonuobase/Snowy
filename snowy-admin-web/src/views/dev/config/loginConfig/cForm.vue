@@ -7,29 +7,32 @@
 			layout="vertical"
 			:label-col="{ ...layout.labelCol, offset: 0 }"
 			:wrapper-col="{ ...layout.wrapperCol, offset: 0 }"
+			style="width: 60%"
 		>
 			<a-row :gutter="8">
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="连续登录失败持续时间：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_DURATION_FOR_C"
 							placeholder="分钟"
+							style="width: 100%"
 						>
 							<template #addonAfter> 分钟 </template>
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="连续登录失败次数：" name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_C">
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_TIMES_FOR_C"
 							placeholder="分钟"
+							style="width: 100%"
 						>
 							<template #addonAfter> 次 </template>
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						label="连续登录失败锁定时间："
 						name="SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_C"
@@ -37,12 +40,13 @@
 						<a-input-number
 							v-model:value="formData.SNOWY_SYS_DEFAULT_CONTINUOUS_LOGIN_FAIL_LOCK_DURATION_FOR_C"
 							placeholder="分钟"
+							style="width: 100%"
 						>
 							<template #addonAfter> 分钟 </template>
 						</a-input-number>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="是否允许手机号登录：" name="SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C">
 						<a-switch
 							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C"
@@ -52,7 +56,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_PHONE_LOGIN_FLAG_FOR_C"
 						name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_C"
@@ -71,7 +75,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="是否允许邮箱登录：" name="SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C">
 						<a-switch
 							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C"
@@ -81,7 +85,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item
 						v-if="formData.SNOWY_SYS_DEFAULT_ALLOW_EMAIL_LOGIN_FLAG_FOR_C"
 						name="SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_C"
@@ -100,7 +104,7 @@
 						/>
 					</a-form-item>
 				</a-col>
-				<a-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+				<a-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
 					<a-form-item label="是否允许动态口令登录：" name="SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_C">
 						<a-switch
 							v-model:checked="formData.SNOWY_SYS_DEFAULT_ALLOW_OTP_LOGIN_FLAG_FOR_C"
