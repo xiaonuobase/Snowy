@@ -63,6 +63,7 @@
 	const submitLoading = ref(false)
 	const loadSpinning = ref(true)
 
+	// 查询此界面的配置项,并转为表单
 	const param = {
 		category: 'FILE_FTP'
 	}
@@ -77,6 +78,7 @@
 		}
 	})
 
+	// 默认要校验的
 	const formRules = {
 		SNOWY_FILE_FTP_HOST: [required('请输入FTP主机')],
 		SNOWY_FILE_FTP_PORT: [required('请输入FTP端口')],
@@ -85,6 +87,7 @@
 		SNOWY_FILE_FTP_BASE_PATH: [required('请输入FTP基础目录')],
 		SNOWY_FILE_FTP_DEFAULT_BUCKET_NAME: [required('请输入FTP储存桶')]
 	}
+	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value
 			.validate()

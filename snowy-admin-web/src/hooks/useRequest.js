@@ -1,79 +1,52 @@
-import { ref } from 'vue';
+/**
+ *  Copyright [2022] [https://www.xiaonuo.vip]
+ *	Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
+ *	1.请不要删除和修改根目录下的LICENSE文件。
+ *	2.请不要删除和修改Snowy源码头部的版权声明。
+ *	3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
+ *	4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
+ *	5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
+ *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
+ */
+import { ref } from 'vue'
 
 export function useRequest(name, service) {
-  // 参数校验（保持不变）
-  if (typeof name !== 'string' || !name.trim()) {
-    throw new Error('useRequest: first argument "name" must be a non-empty string');
-  }
-  if (typeof service !== 'function') {
-    throw new Error('useRequest: second argument "service" must be a function');
-  }
+	if (typeof name !== 'string' || !name.trim()) {
+		throw new Error('useRequest: first argument "name" must be a non-empty string')
+	}
+	if (typeof service !== 'function') {
+		throw new Error('useRequest: second argument "service" must be a function')
+	}
 
-  const data = ref(null);
-  const error = ref(null);
-  const loading = ref(false);
-  const capName = name.charAt(0).toUpperCase() + name.slice(1);
+	const data = ref(null)
+	const error = ref(null)
+	const loading = ref(false)
+	const capName = name.charAt(0).toUpperCase() + name.slice(1)
 
-  // ✅ 新增：纯 Promise 方法（不管理任何状态）
-  const runAsync = (...args) => {
-    return service(...args); // 直接返回原始 Promise
-  };
+	const runAsync = (...args) => {
+		return service(...args)
+	}
 
-  // ✅ 优化：基于 runAsync 实现 run（避免逻辑重复）
-  const run = async (...args) => {
-    loading.value = true;
-    error.value = null;
-    try {
-      const result = await runAsync(...args); // ← 复用 runAsync
-      data.value = result;
-      return result;
-    } catch (err) {
-      error.value = err;
-      throw err;
-    } finally {
-      loading.value = false;
-    }
-  };
+	const run = async (...args) => {
+		loading.value = true
+		error.value = null
+		try {
+			const result = await runAsync(...args)
+			data.value = result
+			return result
+		} catch (err) {
+			error.value = err
+			throw err
+		} finally {
+			loading.value = false
+		}
+	}
 
-  return {
-    [`${name}Data`]: data,
-    [`${name}Error`]: error,
-    [`${name}Loading`]: loading,
-    [`fetch${capName}`]: run,          // 自动管理状态
-    [`fetch${capName}Async`]: runAsync // 纯 Promise 模式
-  };
+	return {
+		[`${name}Data`]: data,
+		[`${name}Error`]: error,
+		[`${name}Loading`]: loading,
+		[`fetch${capName}`]: run,
+		[`fetch${capName}Async`]: runAsync
+	}
 }
-
-/*
-
-✅ 测试用例 1：基础成功请求（run 模式）
-const mockService = () => Promise.resolve({ id: 1, name: "Test User" });
-
-// 初始化 hook
-const { fetchUser, userData, userLoading, userError } = 
-  useRequest('user', mockService);
-
-// 触发请求
-fetchUser();
-
-// 验证结果
-console.log(userLoading.value); // true → false (自动切换)
-console.log(userData.value);    // { id: 1, name: "Test User" }
-console.log(userError.value);   // null
-
-
-✅ 测试用例 2：基础成功请求（runAsync 模式）
-const { fetchUserAsync, userData, userLoading } = 
-  useRequest('user', mockService);
-
-// 仅执行请求，不修改内部状态
-fetchUserAsync().then(result => {
-  console.log("Raw result:", result); // { id: 1, name: "Test User" }
-  
-  // 关键验证：内部状态未被修改
-  console.log(userLoading.value); // false (始终为 false)
-  console.log(userData.value);    // null (始终为 null)
-});
-
-
- */
