@@ -121,6 +121,7 @@ import vip.xiaonuo.sys.modular.user.result.*;
 import vip.xiaonuo.sys.modular.user.service.SysUserExtService;
 import vip.xiaonuo.sys.modular.user.service.SysUserPasswordService;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
+import vip.xiaonuo.auth.api.AuthApi;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -262,6 +263,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private SysUserPasswordService sysUserPasswordService;
+
+    @Resource
+    private AuthApi authApi;
 
     @Resource(name = "loginUserApi")
     private SaBaseLoginUserApi loginUserApi;
@@ -466,6 +470,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             // 删除扩展信息
             sysUserExtService.remove(new LambdaQueryWrapper<SysUserExt>().in(SysUserExt::getUserId, sysUserIdList));
+
+            // 删除三方用户信息
+            authApi.removeThirdUserByUserIdList(sysUserIdList);
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.USER.getValue(), sysUserIdList);

@@ -162,4 +162,9 @@ public class AuthApiProvider implements AuthApi {
         return authService.doLoginByEmail(email, ObjectUtil.isNotEmpty(device)?device:AuthDeviceTypeEnum.PC.getValue(),
                 SaClientTypeEnum.C.getValue(), AuthStrategyWhenNoUserWithPhoneOrEmailEnum.AUTO_CREATE_USER.getValue());
     }
+
+    @Override
+    public void removeThirdUserByUserIdList(List<String> userIdList) {
+        authThirdService.deleteByUserIdList(userIdList);
+    }
 }

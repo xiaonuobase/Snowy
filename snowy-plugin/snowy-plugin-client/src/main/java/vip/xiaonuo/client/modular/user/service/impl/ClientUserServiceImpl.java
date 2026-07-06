@@ -56,6 +56,7 @@ import vip.xiaonuo.client.modular.user.result.ClientUserPicValidCodeResult;
 import vip.xiaonuo.client.modular.user.service.ClientUserExtService;
 import vip.xiaonuo.client.modular.user.service.ClientUserPasswordService;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
+import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonGenderEnum;
 import vip.xiaonuo.common.enums.CommonSortOrderEnum;
@@ -155,6 +156,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Resource
     private ClientUserPasswordService clientUserPasswordService;
+
+    @Resource
+    private AuthApi authApi;
 
     @Override
     public ClientLoginUser getUserById(String id) {
@@ -302,7 +306,17 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(List<ClientUserIdParam> clientUserIdParamList) {
-        this.removeByIds(CollStreamUtil.toList(clientUserIdParamList, ClientUserIdParam::getId));
+        List<String> clientUserIdList = CollStreamUtil.toList(clientUserIdParamList, ClientUserIdParam::getId);
+        if(ObjectUtil.isNotEmpty(clientUserIdList)) {
+            // 执行删除
+            this.removeByIds(clientUserIdList);
+
+            // 删除扩展信息
+            clientUserExtService.remove(new LambdaQueryWrapper<ClientUserExt>().in(ClientUserExt::getUserId, clientUserIdList));
+
+            // 删除三方用户信息
+            authApi.removeThirdUserByUserIdList(clientUserIdList);
+        }
     }
 
     @Override
