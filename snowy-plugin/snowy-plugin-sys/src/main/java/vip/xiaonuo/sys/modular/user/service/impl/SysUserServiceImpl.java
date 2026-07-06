@@ -476,6 +476,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.USER.getValue(), sysUserIdList);
+
+            // 强制下线
+            sysUserIdList.forEach(StpUtil::kickout);
         }
     }
 
@@ -488,6 +491,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void disableUser(SysUserIdParam sysUserIdParam) {
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getUserStatus, SysUserStatusEnum.DISABLED.getValue()));
+
+        // 强制下线
+        StpUtil.kickout(sysUserIdParam.getId());
     }
 
     @Override

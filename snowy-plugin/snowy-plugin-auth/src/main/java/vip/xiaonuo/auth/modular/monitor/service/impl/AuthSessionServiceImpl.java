@@ -66,25 +66,31 @@ public class AuthSessionServiceImpl implements AuthSessionService {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTerminalList().size();
-            long createTime = saSession.getCreateTime();
-            jsonObject.set("userId", userId);
-            jsonObject.set("tokenCount", tokenCount);
-            jsonObject.set("createTime", DateTime.of(createTime));
-            return jsonObject;
-        }).toList();
+            if (ObjectUtil.isNotEmpty(saSession)) {
+                int tokenCount = saSession.getTerminalList().size();
+                long createTime = saSession.getCreateTime();
+                jsonObject.set("userId", userId);
+                jsonObject.set("tokenCount", tokenCount);
+                jsonObject.set("createTime", DateTime.of(createTime));
+                return jsonObject;
+            }
+            return null;
+        }).filter(ObjectUtil::isNotNull).toList();
 
         List<JSONObject> sessionListC = StpClientUtil.searchSessionId("", -1, -1, true).stream().map(sessionId -> {
             JSONObject jsonObject = JSONUtil.createObj();
             String userId = StrUtil.split(sessionId, StrUtil.COLON).get(3);
             SaSession saSession = StpClientUtil.getSessionByLoginId(userId, false);
-            int tokenCount = saSession.getTerminalList().size();
-            long createTime = saSession.getCreateTime();
-            jsonObject.set("userId", userId);
-            jsonObject.set("tokenCount", tokenCount);
-            jsonObject.set("createTime", DateTime.of(createTime));
-            return jsonObject;
-        }).toList();
+            if (ObjectUtil.isNotEmpty(saSession)) {
+                int tokenCount = saSession.getTerminalList().size();
+                long createTime = saSession.getCreateTime();
+                jsonObject.set("userId", userId);
+                jsonObject.set("tokenCount", tokenCount);
+                jsonObject.set("createTime", DateTime.of(createTime));
+                return jsonObject;
+            }
+            return null;
+        }).filter(ObjectUtil::isNotNull).toList();
 
         List<Integer> tokenCountList = CollectionUtil.newArrayList();
         tokenCountList.addAll(sessionListB.stream().map(jsonObject -> jsonObject.getInt("tokenCount")).toList());
@@ -118,9 +124,22 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     Convert.toInt(defaultPage.getSize()), true).stream().map(sessionId ->
                     StrUtil.split(sessionId, StrUtil.COLON).get(3)).collect(Collectors.toList());
             if (ObjectUtil.isNotEmpty(userIdList)) {
-                List<AuthSessionPageResult> authSessionPageResultList = loginUserApi.listUserByUserIdList(userIdList).stream().map(userJsonObject -> {
-                    SaSession saSession = StpUtil.getSessionByLoginId(userJsonObject.getStr("id"), false);
-                    AuthSessionPageResult authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
+                List<JSONObject> userList = loginUserApi.listUserByUserIdList(userIdList);
+                List<AuthSessionPageResult> authSessionPageResultList = userIdList.stream().map(userId -> {
+                    JSONObject userJsonObject = userList.stream().filter(u -> u.getStr("id").equals(userId)).findFirst().orElse(null);
+                    SaSession saSession = StpUtil.getSessionByLoginId(userId, false);
+                    if (ObjectUtil.isEmpty(saSession)) {
+                        return null;
+                    }
+                    AuthSessionPageResult authSessionPageResult;
+                    if (ObjectUtil.isNotEmpty(userJsonObject)) {
+                        authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
+                    } else {
+                        authSessionPageResult = new AuthSessionPageResult();
+                        authSessionPageResult.setId(userId);
+                        authSessionPageResult.setAccount("已删除用户");
+                        authSessionPageResult.setName("已删除用户");
+                    }
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
                     long sessionTimeOut = saSession.timeout();
@@ -158,7 +177,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     authSessionPageResult.setTokenCount(tokenInfoList.size());
                     authSessionPageResult.setTokenSignList(tokenInfoList);
                     return authSessionPageResult;
-                }).collect(Collectors.toList());
+                }).filter(ObjectUtil::isNotNull).collect(Collectors.toList());
                 defaultPage.setRecords(authSessionPageResultList);
             }
         }
@@ -181,9 +200,22 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     Convert.toInt(defaultPage.getSize()), true).stream().map(sessionId ->
                     StrUtil.split(sessionId, StrUtil.COLON).get(3)).collect(Collectors.toList());
             if (ObjectUtil.isNotEmpty(userIdList)) {
-                List<AuthSessionPageResult> authSessionPageResultList = clientLoginUserApi.listUserByUserIdList(userIdList).stream().map(userJsonObject -> {
-                    SaSession saSession = StpClientUtil.getSessionByLoginId(userJsonObject.getStr("id"), false);
-                    AuthSessionPageResult authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
+                List<JSONObject> userList = clientLoginUserApi.listUserByUserIdList(userIdList);
+                List<AuthSessionPageResult> authSessionPageResultList = userIdList.stream().map(userId -> {
+                    JSONObject userJsonObject = userList.stream().filter(u -> u.getStr("id").equals(userId)).findFirst().orElse(null);
+                    SaSession saSession = StpClientUtil.getSessionByLoginId(userId, false);
+                    if (ObjectUtil.isEmpty(saSession)) {
+                        return null;
+                    }
+                    AuthSessionPageResult authSessionPageResult;
+                    if (ObjectUtil.isNotEmpty(userJsonObject)) {
+                        authSessionPageResult = JSONUtil.toBean(userJsonObject, AuthSessionPageResult.class);
+                    } else {
+                        authSessionPageResult = new AuthSessionPageResult();
+                        authSessionPageResult.setId(userId);
+                        authSessionPageResult.setAccount("已删除用户");
+                        authSessionPageResult.setName("已删除用户");
+                    }
                     authSessionPageResult.setSessionId(saSession.getId());
                     authSessionPageResult.setSessionCreateTime(DateTime.of(saSession.getCreateTime()));
                     long sessionTimeOut = saSession.timeout();
@@ -218,7 +250,7 @@ public class AuthSessionServiceImpl implements AuthSessionService {
                     authSessionPageResult.setTokenCount(tokenInfoList.size());
                     authSessionPageResult.setTokenSignList(tokenInfoList);
                     return authSessionPageResult;
-                }).collect(Collectors.toList());
+                }).filter(ObjectUtil::isNotNull).collect(Collectors.toList());
                 defaultPage.setRecords(authSessionPageResultList);
             }
         }

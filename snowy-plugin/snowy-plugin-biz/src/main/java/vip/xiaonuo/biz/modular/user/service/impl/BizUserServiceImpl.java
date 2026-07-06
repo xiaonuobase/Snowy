@@ -327,6 +327,9 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
 
             // 发布删除事件
             CommonDataChangeEventCenter.doDeleteWithDataIdList(BizDataTypeEnum.USER.getValue(), bizUserIdList);
+
+            // 强制下线
+            bizUserIdList.forEach(StpUtil::kickout);
         }
     }
 
@@ -352,6 +355,8 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         }
         this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId,
                 bizUserIdParam.getId()).set(BizUser::getUserStatus, BizUserStatusEnum.DISABLED.getValue()));
+        // 强制下线
+        StpUtil.kickout(bizUserIdParam.getId());
     }
 
     @Transactional(rollbackFor = Exception.class)

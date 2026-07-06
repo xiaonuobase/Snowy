@@ -316,6 +316,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
             // 删除三方用户信息
             authApi.removeThirdUserByUserIdList(clientUserIdList);
+
+            // 强制下线
+            clientUserIdList.forEach(StpClientUtil::kickout);
         }
     }
 
@@ -329,6 +332,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
         clientUser.setUserStatus(ClientUserStatusEnum.DISABLED.getValue());
         this.updateById(clientUser);
+
+        // 强制下线
+        StpClientUtil.kickout(clientUserIdParam.getId());
     }
 
     @Override
