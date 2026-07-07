@@ -246,13 +246,11 @@
 				return
 			}
 			const idKey = props.fieldNames.key || 'id'
-			props
-				.treeApi({ parentId: treeNode.dataRef[idKey] })
-				.then((res) => {
-					treeNode.dataRef.children = (res || []).map(normalizeNode)
-					treeData.value = [...treeData.value]
-					resolve()
-				})
+			props.treeApi({ parentId: treeNode.dataRef[idKey] }).then((res) => {
+				treeNode.dataRef.children = (res || []).map(normalizeNode)
+				treeData.value = [...treeData.value]
+				resolve()
+			})
 		})
 	}
 

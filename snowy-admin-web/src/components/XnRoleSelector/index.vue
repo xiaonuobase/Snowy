@@ -27,7 +27,7 @@
 		@ok="handleOk"
 		@cancel="handleClose"
 	>
-		<a-row :gutter="10">
+		<a-row :gutter="10" class="selector-row">
 			<a-col :xs="0" :sm="0" :md="0" :lg="7" :xl="7">
 				<a-card size="small" class="selectorTreeDiv">
 					<a-spin :spinning="cardLoading">
@@ -45,9 +45,9 @@
 					</a-spin>
 				</a-card>
 			</a-col>
-			<a-col :xs="24" :sm="24" :md="24" :lg="11" :xl="11">
-				<div class="table-operator xn-mb10">
-					<a-form ref="searchFormRef" :model="searchFormState">
+			<a-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
+				<div class="table-operator">
+					<a-form ref="searchFormRef" :model="searchFormState" class="selector-search-form">
 						<a-row :gutter="10">
 							<a-col :xs="24" :sm="8" :md="8" :lg="0" :xl="0">
 								<a-form-item label="组织：" name="categoryOrOrgId">
@@ -65,16 +65,16 @@
 									/>
 								</a-form-item>
 							</a-col>
-							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+							<a-col :xs="24" :sm="8" :md="8" :lg="10" :xl="10">
 								<a-form-item name="searchKey">
 									<a-input v-model:value="searchFormState.searchKey" placeholder="请输入角色名" />
 								</a-form-item>
 							</a-col>
-							<a-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
+							<a-col :xs="24" :sm="8" :md="8" :lg="14" :xl="14">
 								<a-form-item>
 									<a-space>
-										<a-button type="primary" class="xn-mr-10" @click="loadData()"> 查询 </a-button>
-										<a-button @click="reset()"> 重置 </a-button>
+										<a-button type="primary" @click="loadData()">查询</a-button>
+										<a-button @click="reset()">重置</a-button>
 									</a-space>
 								</a-form-item>
 							</a-col>
@@ -91,7 +91,6 @@
 						:loading="pageLoading"
 						bordered
 						:pagination="false"
-						:scroll="{ x: 'max-content' }"
 					>
 						<template #title>
 							<span>待选择列表 {{ tableRecordNum }} 条</span>
@@ -104,7 +103,9 @@
 								<a-button type="dashed" size="small" @click="addRecord(record)"><PlusOutlined /></a-button>
 							</template>
 							<template v-if="column.dataIndex === 'category'">
-								<a-tag :color="$TOOL.dictTypeColor('ROLE_CATEGORY', record.category)">{{ $TOOL.dictTypeData('ROLE_CATEGORY', record.category) }}</a-tag>
+								<a-tag :color="$TOOL.dictTypeColor('ROLE_CATEGORY', record.category)">{{
+									$TOOL.dictTypeData('ROLE_CATEGORY', record.category)
+								}}</a-tag>
 							</template>
 						</template>
 					</a-table>
@@ -121,7 +122,7 @@
 					</div>
 				</div>
 			</a-col>
-			<a-col :xs="24" :sm="24" :md="24" :lg="6" :xl="6">
+			<a-col :xs="24" :sm="24" :md="24" :lg="7" :xl="7">
 				<div class="selector-table">
 					<a-table
 						ref="selectedTable"
@@ -162,7 +163,8 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center'
+			align: 'center',
+			width: 50
 		},
 		{
 			title: '名称',
@@ -171,7 +173,8 @@
 		},
 		{
 			title: '分类',
-			dataIndex: 'category'
+			dataIndex: 'category',
+			width: 80
 		}
 	]
 	// 选中表格的表格common
@@ -179,7 +182,8 @@
 		{
 			title: '操作',
 			dataIndex: 'action',
-			align: 'center'
+			align: 'center',
+			width: 50
 		},
 		{
 			title: '名称',
@@ -634,18 +638,27 @@
 	})
 </script>
 <style lang="less" scoped>
-	.xn-mr-5 {
-		margin-right: 5px;
+	.selector-search-form {
+		:deep(.ant-form-item) {
+			margin-bottom: 10px;
+		}
 	}
-	.xn-mr-10 {
-		margin-right: 10px;
+	.selector-row {
+		@media (min-width: 992px) {
+			display: flex;
+			align-items: stretch;
+			> .ant-col {
+				display: flex;
+				flex-direction: column;
+			}
+		}
 	}
 	.selectorTreeDiv {
-		max-height: 500px;
+		flex: 1;
 		overflow: auto;
 	}
 	.selector-table {
+		flex: 1;
 		overflow: auto;
-		max-height: 450px;
 	}
 </style>

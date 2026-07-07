@@ -142,7 +142,7 @@
 	]
 </script>
 
-<style scoped>
+<style scoped lang="less">
 	.xn-tree-skeleton {
 		width: 100%;
 		padding: 12px 8px;
