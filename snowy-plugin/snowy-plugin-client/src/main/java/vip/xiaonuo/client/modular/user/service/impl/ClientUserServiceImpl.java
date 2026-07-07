@@ -38,6 +38,7 @@ import org.dromara.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
@@ -160,6 +161,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Resource
     private AuthApi authApi;
 
+    @Resource(name = "clientLoginUserApi")
+    private SaBaseLoginUserApi loginUserApi;
+
     @Override
     public ClientLoginUser getUserById(String id) {
         ClientUser clientUser = this.getById(id);
@@ -273,6 +277,9 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         checkParam(clientUserEditParam);
         BeanUtil.copyProperties(clientUserEditParam, clientUser);
         this.updateById(clientUser);
+
+        // 刷新该用户的在线缓存信息
+        loginUserApi.refreshOnlineUserPermission(clientUserEditParam.getId());
     }
 
     private void checkParam(ClientUserEditParam clientUserEditParam) {

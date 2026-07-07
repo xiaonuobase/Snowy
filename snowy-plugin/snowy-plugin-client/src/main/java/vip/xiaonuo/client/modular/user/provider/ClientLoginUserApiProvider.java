@@ -12,15 +12,19 @@
  */
 package vip.xiaonuo.client.modular.user.provider;
 
+import cn.dev33.satoken.session.SaSession;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.client.modular.user.entity.ClientUser;
 import vip.xiaonuo.client.modular.user.result.ClientLoginUser;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
@@ -34,6 +38,7 @@ import java.util.stream.Collectors;
  * @author xuyuxiang
  * @date 2022/4/29 13:36
  **/
+@Slf4j
 @Service("clientLoginUserApi")
 public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
 
@@ -239,6 +244,27 @@ public class ClientLoginUserApiProvider implements SaBaseLoginUserApi {
 
     @Override
     public void refreshOnlineUserPermission(String userId) {
-        // C端用户暂无数据权限机制，无需刷新
+        // 获取该用户所有在线token
+        List<String> tokenList = StpClientUtil.getTokenValueListByLoginId(userId);
+        if (ObjectUtil.isEmpty(tokenList)) {
+            return;
+        }
+        // 获取用户基本信息
+        SaBaseClientLoginUser saBaseClientLoginUser = this.getClientUserById(userId);
+        if (ObjectUtil.isEmpty(saBaseClientLoginUser)) {
+            return;
+        }
+        // 写入该用户的所有TokenSession
+        for (String token : tokenList) {
+            try {
+                SaSession session = StpClientUtil.getTokenSessionByToken(token);
+                if (session != null) {
+                    session.set("loginUser", saBaseClientLoginUser);
+                }
+            } catch (Exception e) {
+                log.warn(">>> 刷新C端用户权限缓存时跳过无效token，userId：{}，token：{}", userId, token);
+            }
+        }
+        log.info(">>> 已刷新C端在线用户权限缓存，userId：{}，token数：{}", userId, tokenList.size());
     }
 }
