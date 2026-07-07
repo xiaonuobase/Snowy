@@ -185,7 +185,9 @@
 					<template v-if="column.dataIndex === 'action'">
 						<a-space>
 							<a @click="formRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Edit')">编辑</a>
-							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete'], 'and')" />
+							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Detail'], 'and')" />
+							<a @click="detailRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Detail')">详情</a>
+							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Detail', '${classNameFirstLower}Delete'], 'and')" />
 							<a-popconfirm title="确定要删除吗？" @confirm="delete${className}(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('${classNameFirstLower}Delete')">删除</a-button>
 							</a-popconfirm>
@@ -197,6 +199,7 @@
 	</XnResizablePanel>
 	<ImportModel ref="importModelRef" />
 	<Form ref="formRef" @successful="onFormSuccess" />
+	<Detail ref="detailRef" />
 </template>
 
 <script setup name="${busName}">
@@ -219,6 +222,7 @@
 	import { triggerRef, onMounted, onActivated, onUnmounted } from 'vue'
 	import { cloneDeep } from 'lodash-es'
 	import Form from './form.vue'
+	import Detail from './detail.vue'
 	import ImportModel from './importModel.vue'
 	import downloadUtil from '@/utils/downloadUtil'
 	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
@@ -234,6 +238,7 @@
 	const tableRef = ref()
 	const importModelRef = ref()
 	const formRef = ref()
+	const detailRef = ref()
 	<% if(hasUserSelector || hasOrgSelector || hasPositionSelector || hasGroupSelector) { %>
 	const translateMap = ref({})
 	<% } %>

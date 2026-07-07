@@ -92,6 +92,10 @@ public class GenConfigAddParam {
     @Schema(description = "查询方式")
     private String queryType;
 
+    /** 详情显示 */
+    @Schema(description = "详情显示")
+    private String whetherDetail;
+
     /** 排序 */
     @Schema(description = "排序")
     private Integer sortCode;

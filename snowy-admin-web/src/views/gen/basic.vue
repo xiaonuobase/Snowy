@@ -473,7 +473,7 @@
 			formData.value.subFunctionName = formData.value.subFunctionName || subData.tableRemark
 			const subTableNameHump = getTableNameToHump(subData.value)
 			formData.value.subBusName = formData.value.subBusName || subTableNameHump.toLowerCase()
-			formData.value.subClassName = formData.value.subClassName || getClassName(subData.value)
+			formData.value.subClassName = formData.value.subClassName || ('Sub' + getClassName(subData.value))
 		}
 		genBasicApi.basicTableColumns({ tableName }).then((res) => {
 			subTableColumnList.value = res

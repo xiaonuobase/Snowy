@@ -105,6 +105,11 @@ public class GenConfigEditParam {
     @Schema(description = "查询方式", requiredMode = Schema.RequiredMode.REQUIRED)
     private String queryType;
 
+    /** 详情显示 */
+    @Schema(description = "详情显示", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "whetherDetail不能为空")
+    private String whetherDetail;
+
     /** 排序 */
     @Schema(description = "排序", requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer sortCode;

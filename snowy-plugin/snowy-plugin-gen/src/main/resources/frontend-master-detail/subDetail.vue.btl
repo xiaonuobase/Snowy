@@ -1,0 +1,71 @@
+<template>
+	<xn-form-container
+		title="详情${subFunctionName}"
+		:width="700"
+		v-model:open="open"
+		:destroy-on-close="true"
+		@close="onClose"
+	>
+		<a-descriptions :column="1" bordered size="small">
+			<% for(var i = 0; i < subConfigList.~size; i++) { %>
+			<% if(!subConfigList[i].needTableId && subConfigList[i].whetherDetail) { %>
+			<a-descriptions-item label="${subConfigList[i].fieldRemark}">
+				<% if(subConfigList[i].effectType == 'select' || subConfigList[i].effectType == 'radio') { %>
+				<a-tag :color="$TOOL.dictTypeColor('${subConfigList[i].dictTypeCode}', formData.${subConfigList[i].fieldNameCamelCase})">{{ $TOOL.dictTypeData('${subConfigList[i].dictTypeCode}', formData.${subConfigList[i].fieldNameCamelCase}) }}</a-tag>
+				<% } else if (subConfigList[i].effectType == 'checkbox') { %>
+				<a-tag v-for="textValue in JSON.parse(formData.${subConfigList[i].fieldNameCamelCase} || '[]')" :key="textValue" :color="$TOOL.dictTypeColor('${subConfigList[i].dictTypeCode}', textValue)">{{ $TOOL.dictTypeData('${subConfigList[i].dictTypeCode}', textValue) }}</a-tag>
+				<% } else if (subConfigList[i].effectType == 'imageUpload') {%>
+				<a-image v-if="formData.${subConfigList[i].fieldNameCamelCase}" :src="formData.${subConfigList[i].fieldNameCamelCase}" style="width: 100px; height: 100px" />
+				<span v-else>无</span>
+				<% } else if (subConfigList[i].effectType == 'fileUpload') {%>
+				<a-button v-if="formData.${subConfigList[i].fieldNameCamelCase}" type="link" @click="downloadFile(formData.${subConfigList[i].fieldNameCamelCase})">下载文件</a-button>
+				<span v-else>无</span>
+				<% } else if (subConfigList[i].effectType == 'editor') {%>
+				<div v-html="formData.${subConfigList[i].fieldNameCamelCase}"></div>
+				<% } else { %>
+				{{ formData.${subConfigList[i].fieldNameCamelCase} }}
+				<% } %>
+			</a-descriptions-item>
+			<% } %>
+			<% } %>
+		</a-descriptions>
+		<template #footer>
+			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
+		</template>
+	</xn-form-container>
+</template>
+
+<script setup name="${subClassNameFirstLower}Detail">
+	import { cloneDeep } from 'lodash-es'
+	import ${classNameFirstLower}Api from '@/api/${moduleName}/${classNameFirstLower}Api'
+
+	// 抽屉状态
+	const open = ref(false)
+	// 表单数据
+	const formData = ref({})
+
+	// 打开抽屉
+	const onOpen = (record) => {
+		open.value = true
+		<% for(var i = 0; i < subConfigList.~size; i++) { %>
+		<% if(subConfigList[i].needTableId) { %>
+		${classNameFirstLower}Api.${subClassNameFirstLower}Detail({ ${subConfigList[i].fieldNameCamelCase}: record.${subConfigList[i].fieldNameCamelCase} }).then((data) => {
+			formData.value = data
+		})
+		<% } %>
+		<% } %>
+	}
+	// 关闭抽屉
+	const onClose = () => {
+		formData.value = {}
+		open.value = false
+	}
+	// 下载文件
+	const downloadFile = (url) => {
+		window.open(url)
+	}
+	// 抛出函数
+	defineExpose({
+		onOpen
+	})
+</script>

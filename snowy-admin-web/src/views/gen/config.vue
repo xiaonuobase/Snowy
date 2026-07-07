@@ -73,6 +73,9 @@
 							<template v-if="column.dataIndex === 'whetherTable'">
 								<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)" :disabled="isTreeParentField(record) || isLeftTreeNonNameField(record)" />
 							</template>
+							<template v-if="column.dataIndex === 'whetherDetail'">
+								<a-checkbox v-model:checked="record.whetherDetail" :disabled="isTreeParentField(record) || isLeftTreeNonNameField(record)" />
+							</template>
 							<template v-if="column.dataIndex === 'whetherRetract'">
 								<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable || isTreeParentField(record) || isLeftTreeNonNameField(record)" />
 							</template>
@@ -192,6 +195,9 @@
 							<template v-if="column.dataIndex === 'whetherTable'">
 								<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)" :disabled="isTreeParentField(record) || isSubForeignKeyField(record)" />
 							</template>
+							<template v-if="column.dataIndex === 'whetherDetail'">
+								<a-checkbox v-model:checked="record.whetherDetail" :disabled="isTreeParentField(record) || isSubForeignKeyField(record)" />
+							</template>
 							<template v-if="column.dataIndex === 'whetherRetract'">
 								<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable || isTreeParentField(record) || isSubForeignKeyField(record)" />
 							</template>
@@ -297,6 +303,9 @@
 					</template>
 					<template v-if="column.dataIndex === 'whetherTable'">
 						<a-checkbox v-model:checked="record.whetherTable" @change="whetherTableChange(record)" :disabled="isTreeParentField(record)" />
+					</template>
+					<template v-if="column.dataIndex === 'whetherDetail'">
+						<a-checkbox v-model:checked="record.whetherDetail" :disabled="isTreeParentField(record)" />
 					</template>
 					<template v-if="column.dataIndex === 'whetherRetract'">
 						<a-checkbox v-model:checked="record.whetherRetract" :disabled="!record.whetherTable || isTreeParentField(record)" />
@@ -408,6 +417,11 @@
 			dataIndex: 'whetherTable'
 		},
 		{
+			title: '详情显示',
+			align: 'center',
+			dataIndex: 'whetherDetail'
+		},
+		{
 			title: '列省略',
 			align: 'center',
 			dataIndex: 'whetherRetract'
@@ -479,6 +493,7 @@
 				item.queryWhether = false
 				item.queryType = null
 				item.whetherTable = false
+				item.whetherDetail = false
 				item.whetherRetract = false
 				item.whetherUnique = false
 			}
@@ -497,6 +512,7 @@
 					item.queryWhether = false
 					item.queryType = null
 					item.whetherTable = false
+					item.whetherDetail = false
 					item.whetherRetract = false
 					item.whetherUnique = false
 				} else if (currentGenType.value === 'MASTER_DETAIL') {
@@ -505,6 +521,7 @@
 					item.queryWhether = false
 					item.queryType = null
 					item.whetherTable = false
+					item.whetherDetail = false
 					item.whetherRetract = false
 					item.whetherUnique = false
 				}

@@ -124,33 +124,38 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
                     JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "TreeAdd").set("sortCode", 1),
                     JSONUtil.createObj().set("title", "编辑" + functionName).set("code", classNameFirstLower + "TreeEdit").set("sortCode", 2),
                     JSONUtil.createObj().set("title", "删除" + functionName).set("code", classNameFirstLower + "TreeDelete").set("sortCode", 3),
-                    JSONUtil.createObj().set("title", "新增" + subFunctionName).set("code", classNameFirstLower + "Add").set("sortCode", 4),
-                    JSONUtil.createObj().set("title", "编辑" + subFunctionName).set("code", classNameFirstLower + "Edit").set("sortCode", 5),
-                    JSONUtil.createObj().set("title", "删除" + subFunctionName).set("code", classNameFirstLower + "Delete").set("sortCode", 6),
-                    JSONUtil.createObj().set("title", "批量删除" + subFunctionName).set("code", classNameFirstLower + "BatchDelete").set("sortCode", 7),
-                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "Import").set("sortCode", 8),
-                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "Export").set("sortCode", 9));
+                    JSONUtil.createObj().set("title", "详情" + functionName).set("code", classNameFirstLower + "TreeDetail").set("sortCode", 4),
+                    JSONUtil.createObj().set("title", "新增" + subFunctionName).set("code", classNameFirstLower + "Add").set("sortCode", 5),
+                    JSONUtil.createObj().set("title", "编辑" + subFunctionName).set("code", classNameFirstLower + "Edit").set("sortCode", 6),
+                    JSONUtil.createObj().set("title", "删除" + subFunctionName).set("code", classNameFirstLower + "Delete").set("sortCode", 7),
+                    JSONUtil.createObj().set("title", "详情" + subFunctionName).set("code", classNameFirstLower + "Detail").set("sortCode", 8),
+                    JSONUtil.createObj().set("title", "批量删除" + subFunctionName).set("code", classNameFirstLower + "BatchDelete").set("sortCode", 9),
+                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "Import").set("sortCode", 10),
+                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "Export").set("sortCode", 11));
         } else if ("MASTER_DETAIL".equals(genType) && ObjectUtil.isNotEmpty(subFunctionName)) {
             buttonList = CollectionUtil.newArrayList(
                     JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "Add").set("sortCode", 1),
                     JSONUtil.createObj().set("title", "批量删除" + functionName).set("code", classNameFirstLower + "BatchDelete").set("sortCode", 2),
                     JSONUtil.createObj().set("title", "编辑" + functionName).set("code", classNameFirstLower + "Edit").set("sortCode", 3),
                     JSONUtil.createObj().set("title", "删除" + functionName).set("code", classNameFirstLower + "Delete").set("sortCode", 4),
-                    JSONUtil.createObj().set("title", "导入" + functionName).set("code", classNameFirstLower + "Import").set("sortCode", 5),
-                    JSONUtil.createObj().set("title", "导出" + functionName).set("code", classNameFirstLower + "Export").set("sortCode", 6),
-                    JSONUtil.createObj().set("title", "新增" + subFunctionName).set("code", classNameFirstLower + "SubAdd").set("sortCode", 7),
-                    JSONUtil.createObj().set("title", "编辑" + subFunctionName).set("code", classNameFirstLower + "SubEdit").set("sortCode", 8),
-                    JSONUtil.createObj().set("title", "删除" + subFunctionName).set("code", classNameFirstLower + "SubDelete").set("sortCode", 9),
-                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "SubImport").set("sortCode", 10),
-                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "SubExport").set("sortCode", 11));
+                    JSONUtil.createObj().set("title", "详情" + functionName).set("code", classNameFirstLower + "Detail").set("sortCode", 5),
+                    JSONUtil.createObj().set("title", "导入" + functionName).set("code", classNameFirstLower + "Import").set("sortCode", 6),
+                    JSONUtil.createObj().set("title", "导出" + functionName).set("code", classNameFirstLower + "Export").set("sortCode", 7),
+                    JSONUtil.createObj().set("title", "新增" + subFunctionName).set("code", classNameFirstLower + "SubAdd").set("sortCode", 8),
+                    JSONUtil.createObj().set("title", "编辑" + subFunctionName).set("code", classNameFirstLower + "SubEdit").set("sortCode", 9),
+                    JSONUtil.createObj().set("title", "删除" + subFunctionName).set("code", classNameFirstLower + "SubDelete").set("sortCode", 10),
+                    JSONUtil.createObj().set("title", "详情" + subFunctionName).set("code", classNameFirstLower + "SubDetail").set("sortCode", 11),
+                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "SubImport").set("sortCode", 12),
+                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "SubExport").set("sortCode", 13));
         } else {
             buttonList = CollectionUtil.newArrayList(
                     JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "Add").set("sortCode", 1),
                     JSONUtil.createObj().set("title", "编辑" + functionName).set("code", classNameFirstLower + "Edit").set("sortCode", 2),
                     JSONUtil.createObj().set("title", "删除" + functionName).set("code", classNameFirstLower + "Delete").set("sortCode", 3),
-                    JSONUtil.createObj().set("title", "批量删除").set("code", classNameFirstLower + "BatchDelete").set("sortCode", 4),
-                    JSONUtil.createObj().set("title", "导入" + functionName).set("code", classNameFirstLower + "Import").set("sortCode", 5),
-                    JSONUtil.createObj().set("title", "导出" + functionName).set("code", classNameFirstLower + "Export").set("sortCode", 6));
+                    JSONUtil.createObj().set("title", "详情" + functionName).set("code", classNameFirstLower + "Detail").set("sortCode", 4),
+                    JSONUtil.createObj().set("title", "批量删除").set("code", classNameFirstLower + "BatchDelete").set("sortCode", 5),
+                    JSONUtil.createObj().set("title", "导入" + functionName).set("code", classNameFirstLower + "Import").set("sortCode", 6),
+                    JSONUtil.createObj().set("title", "导出" + functionName).set("code", classNameFirstLower + "Export").set("sortCode", 7));
         }
         buttonList.forEach(jsonObject -> {
             SysButtonAddParam sysButtonAddParam = new SysButtonAddParam();
