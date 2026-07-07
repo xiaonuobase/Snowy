@@ -33,10 +33,12 @@ const errorCodeMap = {
 }
 // 定义一个重新登录弹出窗的变量
 const loginBack = ref(false)
+// 判断是否为直连模式（仅生产环境 + API_URL 配置了完整后端地址时生效）
+const isDirectMode = !import.meta.env.DEV && sysConfig.API_URL && /^https?:\/\//.test(sysConfig.API_URL)
 // 创建 axios 实例
 const service = axios.create({
-	baseURL: '/api', // api base_url
-	timeout: sysConfig.TIMEOUT // 请求超时时间
+	baseURL: isDirectMode ? sysConfig.API_URL : '/api',
+	timeout: sysConfig.TIMEOUT
 })
 
 // HTTP request 拦截器
@@ -177,6 +179,11 @@ export const baseRequest = (url, value = {}, method = 'post', options = {}) => {
 			...options
 		})
 	}
+}
+
+// 获取API基础地址（供上传组件、WebSocket等非axios场景使用）
+export const getApiBaseUrl = () => {
+	return isDirectMode ? sysConfig.API_URL : '/api'
 }
 
 export default service

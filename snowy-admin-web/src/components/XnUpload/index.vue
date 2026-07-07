@@ -113,6 +113,7 @@
 	import tool from '@/utils/tool'
 	import fileApi from '@/api/dev/fileApi'
 	import { convertUrl } from '@/utils/apiAdaptive'
+	import { getApiBaseUrl } from '@/utils/request'
 	import { message, Upload } from 'ant-design-vue'
 	import { cloneDeep } from 'lodash-es'
 	const fileList = ref([])
@@ -204,8 +205,9 @@
 			required: false
 		}
 	})
+	const apiBase = getApiBaseUrl()
 	const action =
-		props.uploadResultType === 'id' ? '/api' + props.uploadReturnIdApi : '/api' + props.uploadDynamicReturnUrlApi
+		props.uploadResultType === 'id' ? apiBase + props.uploadReturnIdApi : apiBase + props.uploadDynamicReturnUrlApi
 
 	// 构造文件对象
 	const buildFileObject = (url, id) => {
@@ -226,9 +228,9 @@
 			}
 		}
 		return {
-			data: url ? url : '/api' + props.uploadIdDownloadUrl + id,
+			data: url ? url : apiBase + props.uploadIdDownloadUrl + id,
 			name: name,
-			url: url ? url : '/api' + props.uploadIdDownloadUrl + id,
+			url: url ? url : apiBase + props.uploadIdDownloadUrl + id,
 			status: 'done',
 			response: {
 				data: url ? url : id,
@@ -400,7 +402,7 @@
 		previewTitle.value = file.name
 		// 如果返回的是id
 		if (props.uploadResultType === 'id') {
-			previewObj.value = '/api' + props.uploadIdDownloadUrl + file.response.data
+			previewObj.value = apiBase + props.uploadIdDownloadUrl + file.response.data
 		} else {
 			previewObj.value = file.response.data
 		}

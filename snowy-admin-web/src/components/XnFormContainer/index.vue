@@ -5,7 +5,7 @@
 		:open="isOpen"
 		:width="modalWidth"
 		:footer="slots.footer ? undefined : null"
-		:wrap-class-name="`${wrapClassName} ${fullscreenClass}`"
+		:wrap-class-name="`xn-form-modal ${wrapClassName} ${fullscreenClass}`"
 		:bodyStyle="calcBodyStyle"
 		@cancel="cancel"
 	>
@@ -529,6 +529,11 @@
 				// 重置对话框
 				toggleResetDrag()
 				modalFullscreen.value = false
+				modalWidth.value = props.width
+				modalHeight.value = 'auto'
+				prevModalWidth.value = props.width
+				prevModalHeight.value = 'auto'
+				fullscreenClass.value = ''
 				// 重置抽屉
 				toggleResetResize()
 				drawerFullscreen.value = false
@@ -558,6 +563,17 @@
 		inheritAttrs: false
 	}
 </script>
+
+<style lang="less">
+	/* 弹窗 body 隐藏滚动条，保留滚动功能 */
+	.xn-form-modal .ant-modal-body {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+</style>
 
 <style lang="less" scoped>
 	/* 确保小屏幕下抽屉不会有额外的边距或滚动条 */

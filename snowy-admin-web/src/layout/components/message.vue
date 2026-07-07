@@ -90,6 +90,7 @@
 	import router from '@/router'
 	import { onMounted } from 'vue'
 	import { convertUrl } from '@/utils/apiAdaptive'
+	import { getApiBaseUrl } from '@/utils/request'
 	import tool from '@/utils/tool'
 
 	const miniMessageLoading = ref(false)
@@ -104,9 +105,16 @@
 	// 创建ws连接
 	const createWebSocketConnect = () => {
 		if ('WebSocket' in window) {
-			const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-			let url =
-				protocol + window.location.host + '/api' + convertUrl('/dev/message/ws') + '?token=' + tool.data.get('TOKEN')
+			const apiBase = getApiBaseUrl()
+			let url
+			if (/^https?:\/\//.test(apiBase)) {
+				const wsBase = apiBase.replace(/^http/, 'ws')
+				url = wsBase + convertUrl('/dev/message/ws') + '?token=' + tool.data.get('TOKEN')
+			} else {
+				const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+				url =
+					protocol + window.location.host + apiBase + convertUrl('/dev/message/ws') + '?token=' + tool.data.get('TOKEN')
+			}
 			const socket = new WebSocket(url)
 			// 监听打开事件
 			socket.onopen = () => {
