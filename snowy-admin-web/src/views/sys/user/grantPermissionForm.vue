@@ -241,6 +241,23 @@
 			dataIndex: 'dataScope'
 		}
 	]
+	// 获取过滤勾选状态
+	const getFilterCheck = (item) => {
+		return item.filterCheck !== undefined ? item.filterCheck : item.check
+	}
+	// 获取过滤数据范围值
+	const getFilterDataScopeValues = (item) => {
+		return item.filterDataScopeValues !== undefined
+			? item.filterDataScopeValues
+			: item.dataScope?.filter((scope) => scope.check).map((scope) => scope.value) || []
+	}
+	// 构建过滤快照
+	const buildFilterSnapshot = () => {
+		loadDatas.value.forEach((item) => {
+			item.filterCheck = item.check
+			item.filterDataScopeValues = item.dataScope?.filter((scope) => scope.check).map((scope) => scope.value) || []
+		})
+	}
 	// 获取数据
 	const loadData = async () => {
 		spinningLoading.value = true
@@ -252,6 +269,7 @@
 		const resOwn = await userApi.userOwnPermission(param)
 		// 数据转换
 		loadDatas.value = echoModuleData(res, resOwn)
+		buildFilterSnapshot()
 		pagination.value.total = loadDatas.value.length
 		allChecked.value = loadDatas.value.every((item) => item.parentCheck)
 		spinningLoading.value = false
@@ -268,14 +286,15 @@
 					return false
 				}
 			}
-			if (grantStatusFilter.value === 'CHECKED' && !item.check) {
+			if (grantStatusFilter.value === 'CHECKED' && !getFilterCheck(item)) {
 				return false
 			}
-			if (grantStatusFilter.value === 'UNCHECKED' && item.check) {
+			if (grantStatusFilter.value === 'UNCHECKED' && getFilterCheck(item)) {
 				return false
 			}
 			if (dataScopeFilter.value !== 'ALL') {
-				return item.dataScope?.some((scope) => scope.value === dataScopeFilter.value && scope.check)
+				const filterDataScopeValues = getFilterDataScopeValues(item)
+				return filterDataScopeValues.includes(dataScopeFilter.value)
 			}
 			return true
 		})
@@ -580,6 +599,7 @@
 	// 重置搜索
 	const refreshSearch = () => {
 		pagination.value.current = 1
+		buildFilterSnapshot()
 		nextTick(() => {
 			searchFunc()
 		})
