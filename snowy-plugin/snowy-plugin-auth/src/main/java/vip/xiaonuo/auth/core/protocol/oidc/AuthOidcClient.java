@@ -12,8 +12,6 @@
  */
 package vip.xiaonuo.auth.core.protocol.oidc;
 
-import cn.dev33.satoken.context.SaHolder;
-import cn.dev33.satoken.context.model.SaRequest;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -138,15 +136,14 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
     }
 
     @Override
-    public AuthResponse<AuthUser> doLogin() {
-        SaRequest request = SaHolder.getRequest();
-        String code = request.getParam("code");
+    public AuthResponse<AuthUser> doLogin(AuthCallback authCallback) {
+        String code = authCallback.getCode();
         if(ObjectUtil.isEmpty(code)) {
             throw new CommonException("code不能为空");
         }
-        String state = request.getParam("state");
+        String state = authCallback.getState();
         AuthRequest authRequest = this.getAuthRequest(ObjectUtil.isEmpty(state));
-        AuthResponse<AuthUser> authResponse = authRequest.login(AuthCallback.builder().code(code).state(state).build());
+        AuthResponse<AuthUser> authResponse = authRequest.login(authCallback);
 
         // 如果失败了，且是因为 state 校验失败（Illegal state），则尝试降级忽略 state 校验再次登录
         if(!authResponse.ok()) {

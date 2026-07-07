@@ -17,6 +17,7 @@ import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import vip.xiaonuo.auth.core.protocol.base.AuthBaseClient;
@@ -91,7 +92,7 @@ public class AuthSamlClient extends AuthBaseClient<AuthSamlBaseJson> {
     }
 
     @Override
-    public AuthResponse<AuthUser> doLogin() {
+    public AuthResponse<AuthUser> doLogin(AuthCallback authCallback) {
         AuthBaseRequest authRequest = new AuthSamlCommonClient(getAuthBaseJson()).getAuthRequest();
         AuthResponse<AuthUser> authResponse = authRequest.login();
         if(!authResponse.ok()) {

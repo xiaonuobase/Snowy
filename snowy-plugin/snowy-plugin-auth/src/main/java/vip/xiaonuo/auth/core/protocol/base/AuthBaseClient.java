@@ -17,6 +17,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.json.JSONObject;
 import lombok.Getter;
+import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import vip.xiaonuo.auth.core.util.AuthPhoneUtil;
@@ -76,7 +77,7 @@ public abstract class AuthBaseClient<T extends AuthBaseJson> {
      * @author xuyuxiang
      * @date 2025/2/11 14:07
      **/
-    public abstract AuthResponse<AuthUser> doLogin();
+    public abstract AuthResponse<AuthUser> doLogin(AuthCallback authCallback);
 
     /**
      * 处理响应结果

@@ -63,7 +63,7 @@ public class AuthThirdController {
      * @date 2022/7/8 16:42
      **/
     @Operation(summary = "第三方登录授权回调")
-    @RequestMapping(value = "/auth/third/callback", method = {RequestMethod.GET, RequestMethod.POST})
+    @GetMapping("/auth/third/callback")
     public CommonResult<String> callback(@Valid AuthThirdCallbackParam authThirdCallbackParam, AuthCallback authCallback) {
         return CommonResult.data(authThirdService.callback(authThirdCallbackParam, authCallback));
     }

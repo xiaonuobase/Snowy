@@ -255,7 +255,10 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
         // 创建客户端
         AuthBaseClient<?> authSourceBaseClient = this.getAuthClient(platform);
         // 获取state
-        String state = SaHolder.getRequest().getParam(SaOAuth2Consts.Param.state);
+        String state = authCallback.getState();
+        if(ObjectUtil.isEmpty(state)) {
+            state = SaHolder.getRequest().getParam(SaOAuth2Consts.Param.state);
+        }
         if(ObjectUtil.isEmpty(state)) {
             state = SaHolder.getRequest().getParam("RelayState");
         }
@@ -293,7 +296,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
             }
         }
         // 执行请求
-        AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin();
+        AuthResponse<AuthUser> authResponse = authSourceBaseClient.doLogin(authCallback);
         if (authResponse.ok()) {
             // 授权的用户信息
             AuthUser authUser = authResponse.getData();
