@@ -69,6 +69,18 @@ public class AuthThirdController {
     }
 
     /**
+     * 第三方登录授权回调（POST）
+     *
+     * @author xuyuxiang
+     * @date 2022/7/8 16:42
+     **/
+    @Operation(summary = "第三方登录授权回调（POST）")
+    @PostMapping("/auth/third/callback")
+    public CommonResult<String> callbackPost(@Valid AuthThirdCallbackParam authThirdCallbackParam, @RequestBody AuthCallback authCallback) {
+        return CommonResult.data(authThirdService.callback(authThirdCallbackParam, authCallback));
+    }
+
+    /**
      * 第三方登录绑定账号
      *
      * @author xuyuxiang
