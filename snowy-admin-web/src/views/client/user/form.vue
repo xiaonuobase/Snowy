@@ -195,6 +195,7 @@
 </template>
 
 <script setup>
+	import { cloneDeep } from 'lodash-es'
 	import clientUserApi from '@/api/client/clientUserApi'
 	import { required } from '@/utils/formRules'
 	import tool from '@/utils/tool'
@@ -210,7 +211,7 @@
 	const onOpen = (record) => {
 		visible.value = true
 		if (record) {
-			formData.value = record
+			formData.value = cloneDeep(record)
 		} else {
 			formData.value = {
 				gender: '男'
