@@ -275,6 +275,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue(),
                 extJsonList);
+
+        // 刷新拥有该角色的所有在线用户的权限缓存
+        this.refreshRoleLoginUserCache(id);
     }
 
     @Override
@@ -296,6 +299,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
         sysRelationService.saveRelationBatchWithClear(id, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_MOBILE_MENU.getValue(),
                 extJsonList);
+
+        // 刷新拥有该角色的所有在线用户的权限缓存
+        this.refreshRoleLoginUserCache(id);
     }
 
     @Override
@@ -333,8 +339,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         sysRelationService.saveRelationBatchWithAppend(id, apiUrlList, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue(),
                 extJsonList);
         // 刷新拥有该角色的所有在线用户的权限缓存
+        this.refreshRoleLoginUserCache(id);
+    }
+
+    @Override
+    public void refreshRoleLoginUserCache(String roleId) {
         List<String> userIdList = sysRelationService.getRelationObjectIdListByTargetIdAndCategory(
-                id, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
+                roleId, SysRelationCategoryEnum.SYS_USER_HAS_ROLE.getValue());
         userIdList.forEach(loginUserApi::refreshOnlineUserPermission);
     }
 

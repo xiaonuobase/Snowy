@@ -107,6 +107,9 @@ public class SysRoleApiProvider implements SysRoleApi {
                     .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()).notIn(SysRelation::getTargetId, existMenuIdList));
         }
         sysRelationService.saveRelationBatchWithAppend(superAdminRoleId, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue(), extJsonList);
+
+        // 刷新拥有该角色的所有在线用户的权限缓存
+        sysRoleService.refreshRoleLoginUserCache(superAdminRoleId);
     }
 
     @Transactional(rollbackFor = Exception.class)
