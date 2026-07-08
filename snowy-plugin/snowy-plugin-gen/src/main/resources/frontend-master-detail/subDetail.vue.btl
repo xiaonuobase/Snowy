@@ -1,6 +1,6 @@
 <template>
 	<xn-form-container
-		title="详情${subFunctionName}"
+		title="详情"
 		:width="700"
 		v-model:open="open"
 		:destroy-on-close="true"
@@ -29,9 +29,6 @@
 			<% } %>
 			<% } %>
 		</a-descriptions>
-		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
-		</template>
 	</xn-form-container>
 </template>
 

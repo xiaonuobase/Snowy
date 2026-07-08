@@ -577,6 +577,9 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             // 授权菜单
             sysRoleApi.grantForGenMenuAndButton(menuId);
 
+            // 授权权限
+            sysRoleApi.grantForGenPermission(genModuleName, genBasic.getBusName(), genBasic.getGenType());
+
             //前端代码移动到前端
             FileUtil.moveContent(FileUtil.file(tempFolder + File.separator + "frontend"), FileUtil.file(genProjectFrontendPath), true);
 
@@ -879,6 +882,7 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         bindingJsonObject.set("subEditButtonId", IdWorker.getIdStr());
         bindingJsonObject.set("subDeleteButtonId", IdWorker.getIdStr());
         bindingJsonObject.set("subDetailButtonId", IdWorker.getIdStr());
+        bindingJsonObject.set("subBatchDeleteButtonId", IdWorker.getIdStr());
         // 子表导入按钮ID（主子表类型使用）
         bindingJsonObject.set("subImportButtonId", IdWorker.getIdStr());
         // 子表导出按钮ID（主子表类型使用）

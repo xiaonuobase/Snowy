@@ -38,11 +38,9 @@ INSERT INTO `SYS_RESOURCE` VALUES ('${deleteButtonId}', '${menuId}', '删除${fu
 
 INSERT INTO `SYS_RESOURCE` VALUES ('${detailButtonId}', '${menuId}', '详情${functionName}', NULL, '${classNameFirstLower}Detail', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
-INSERT INTO `SYS_RESOURCE` VALUES ('${batchDeleteButtonId}', '${menuId}', '批量删除${functionName}', NULL, '${classNameFirstLower}BatchDelete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+INSERT INTO `SYS_RESOURCE` VALUES ('${importButtonId}', '${menuId}', '导入${functionName}', NULL, '${classNameFirstLower}Import', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
-INSERT INTO `SYS_RESOURCE` VALUES ('${importButtonId}', '${menuId}', '导入${functionName}', NULL, '${classNameFirstLower}Import', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
-
-INSERT INTO `SYS_RESOURCE` VALUES ('${exportButtonId}', '${menuId}', '导出${functionName}', NULL, '${classNameFirstLower}Export', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+INSERT INTO `SYS_RESOURCE` VALUES ('${exportButtonId}', '${menuId}', '导出${functionName}', NULL, '${classNameFirstLower}Export', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
 INSERT INTO `SYS_RESOURCE` VALUES ('${subAddButtonId}', '${menuId}', '新增${subFunctionName}', NULL, '${classNameFirstLower}SubAdd', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
@@ -52,9 +50,11 @@ INSERT INTO `SYS_RESOURCE` VALUES ('${subDeleteButtonId}', '${menuId}', '删除$
 
 INSERT INTO `SYS_RESOURCE` VALUES ('${subDetailButtonId}', '${menuId}', '详情${subFunctionName}', NULL, '${classNameFirstLower}SubDetail', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 11, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
-INSERT INTO `SYS_RESOURCE` VALUES ('${subImportButtonId}', '${menuId}', '导入${subFunctionName}', NULL, '${classNameFirstLower}SubImport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+INSERT INTO `SYS_RESOURCE` VALUES ('${subBatchDeleteButtonId}', '${menuId}', '批量删除${subFunctionName}', NULL, '${classNameFirstLower}SubBatchDelete', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 
-INSERT INTO `SYS_RESOURCE` VALUES ('${subExportButtonId}', '${menuId}', '导出${subFunctionName}', NULL, '${classNameFirstLower}SubExport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+INSERT INTO `SYS_RESOURCE` VALUES ('${subImportButtonId}', '${menuId}', '导入${subFunctionName}', NULL, '${classNameFirstLower}SubImport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 13, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
+
+INSERT INTO `SYS_RESOURCE` VALUES ('${subExportButtonId}', '${menuId}', '导出${subFunctionName}', NULL, '${classNameFirstLower}SubExport', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 14, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 <% } else { %>
 INSERT INTO `SYS_RESOURCE` VALUES ('${addButtonId}', '${menuId}', '新增${functionName}', NULL, '${classNameFirstLower}Add', 'BUTTON', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'NOT_DELETE', NULL, NULL, NULL, NULL);
 

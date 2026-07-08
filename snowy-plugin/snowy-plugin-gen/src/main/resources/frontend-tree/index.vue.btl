@@ -141,13 +141,14 @@
 	                        <span>导出</span>
 	                    </a-button>
 						<xn-batch-button
-							v-if="hasPerm('${classNameFirstLower}BatchDelete')"
-							buttonName="批量删除"
-							icon="DeleteOutlined"
-							buttonDanger
-							:selectedRowKeys="selectedRowKeys"
-							@batchCallBack="deleteBatch${className}"
-						/>
+						v-if="hasPerm('${classNameFirstLower}BatchDelete')"
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:id-key="'${dbTableKeyCamelCase}'"
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatch${className}"
+					/>
 					</a-space>
 				</template>
 				<template #bodyCell="{ column, record }">
@@ -184,10 +185,10 @@
 					<% } %>
 					<template v-if="column.dataIndex === 'action'">
 						<a-space>
-							<a @click="formRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Edit')">编辑</a>
-							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Detail'], 'and')" />
 							<a @click="detailRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Detail')">详情</a>
-							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Detail', '${classNameFirstLower}Delete'], 'and')" />
+							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Detail', '${classNameFirstLower}Edit'], 'and')" />
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('${classNameFirstLower}Edit')">编辑</a>
+							<a-divider type="vertical" v-if="hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete'], 'and')" />
 							<a-popconfirm title="确定要删除吗？" @confirm="delete${className}(record)">
 								<a-button type="link" danger size="small" v-if="hasPerm('${classNameFirstLower}Delete')">删除</a-button>
 							</a-popconfirm>
@@ -264,7 +265,7 @@
 	<% } %>
 	]
 	// 操作栏通过权限判断是否显示
-	if (hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete'])) {
+	if (hasPerm(['${classNameFirstLower}Edit', '${classNameFirstLower}Delete', '${classNameFirstLower}Detail'])) {
 		columns.push({
 			title: '操作',
 			dataIndex: 'action',
@@ -541,7 +542,7 @@
         if (selectedRowKeys.value.length > 0) {
             const params = selectedRowKeys.value.map((m) => {
                 return {
-                    id: m
+                    ${dbTableKeyCamelCase}: m
                 }
             })
             ${classNameFirstLower}Api.${classNameFirstLower}Export(params).then((res) => {

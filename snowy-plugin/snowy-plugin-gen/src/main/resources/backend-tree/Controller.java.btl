@@ -187,6 +187,7 @@ public class ${className}Controller {
      * @date ${genTime}
      */
     @Operation(summary = "下载${functionName}导入模板")
+    @SaCheckPermission("/${moduleName}/${busName}/downloadImportTemplate")
     @GetMapping(value = "/${moduleName}/${busName}/downloadImportTemplate", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
         ${classNameFirstLower}Service.downloadImportTemplate(response);

@@ -1,6 +1,6 @@
 <template>
 	<xn-form-container
-		title="详情${functionName}"
+		title="详情"
 		:width="700"
 		v-model:open="open"
 		:destroy-on-close="true"
@@ -29,9 +29,6 @@
 			<% } %>
 			<% } %>
 		</a-descriptions>
-		<template #footer>
-			<a-button style="margin-right: 8px" @click="onClose">关闭</a-button>
-		</template>
 	</xn-form-container>
 </template>
 
@@ -47,7 +44,7 @@
 	// 打开抽屉
 	const onOpen = (record) => {
 		open.value = true
-		${classNameFirstLower}Api.${classNameFirstLower}Detail({ id: record.id }).then((data) => {
+		${classNameFirstLower}Api.${classNameFirstLower}Detail({ ${dbTableKeyCamelCase}: record.${dbTableKeyCamelCase} }).then((data) => {
 			formData.value = data
 		})
 	}

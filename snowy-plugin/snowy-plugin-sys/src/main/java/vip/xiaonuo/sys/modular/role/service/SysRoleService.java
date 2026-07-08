@@ -129,6 +129,14 @@ public interface SysRoleService extends IService<SysRole> {
     void grantPermission(SysRoleGrantPermissionParam sysRoleGrantPermissionParam);
 
     /**
+     * 给角色授权权限（追加方式）
+     *
+     * @author xuyuxiang
+     * @date 2022/4/29 10:12
+     **/
+    void grantPermissionWithAppend(SysRoleGrantPermissionParam sysRoleGrantPermissionParam);
+
+    /**
      * 获取角色下的用户
      *
      * @author xuyuxiang

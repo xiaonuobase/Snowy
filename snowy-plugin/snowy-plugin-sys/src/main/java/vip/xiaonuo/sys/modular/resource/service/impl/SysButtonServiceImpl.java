@@ -145,8 +145,9 @@ public class SysButtonServiceImpl extends ServiceImpl<SysButtonMapper, SysButton
                     JSONUtil.createObj().set("title", "编辑" + subFunctionName).set("code", classNameFirstLower + "SubEdit").set("sortCode", 9),
                     JSONUtil.createObj().set("title", "删除" + subFunctionName).set("code", classNameFirstLower + "SubDelete").set("sortCode", 10),
                     JSONUtil.createObj().set("title", "详情" + subFunctionName).set("code", classNameFirstLower + "SubDetail").set("sortCode", 11),
-                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "SubImport").set("sortCode", 12),
-                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "SubExport").set("sortCode", 13));
+                    JSONUtil.createObj().set("title", "批量删除" + subFunctionName).set("code", classNameFirstLower + "SubBatchDelete").set("sortCode", 12),
+                    JSONUtil.createObj().set("title", "导入" + subFunctionName).set("code", classNameFirstLower + "SubImport").set("sortCode", 13),
+                    JSONUtil.createObj().set("title", "导出" + subFunctionName).set("code", classNameFirstLower + "SubExport").set("sortCode", 14));
         } else {
             buttonList = CollectionUtil.newArrayList(
                     JSONUtil.createObj().set("title", "新增" + functionName).set("code", classNameFirstLower + "Add").set("sortCode", 1),

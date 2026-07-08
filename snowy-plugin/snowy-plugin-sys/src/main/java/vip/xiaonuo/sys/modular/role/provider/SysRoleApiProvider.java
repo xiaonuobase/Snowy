@@ -33,6 +33,7 @@ import vip.xiaonuo.sys.modular.resource.enums.SysResourceCategoryEnum;
 import vip.xiaonuo.sys.modular.resource.service.SysButtonService;
 import vip.xiaonuo.sys.modular.resource.service.SysMenuService;
 import vip.xiaonuo.sys.modular.role.entity.SysRole;
+import vip.xiaonuo.sys.modular.role.param.SysRoleGrantPermissionParam;
 import vip.xiaonuo.sys.modular.role.param.SysRoleGrantResourceParam;
 import vip.xiaonuo.sys.modular.role.param.SysRoleSelectorRoleParam;
 import vip.xiaonuo.sys.modular.role.service.SysRoleService;
@@ -106,6 +107,48 @@ public class SysRoleApiProvider implements SysRoleApi {
                     .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()).notIn(SysRelation::getTargetId, existMenuIdList));
         }
         sysRelationService.saveRelationBatchWithAppend(superAdminRoleId, menuIdList, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue(), extJsonList);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void grantForGenPermission(String moduleName, String busName, String genType) {
+        String superAdminRoleId = sysRoleService.getOne(new LambdaQueryWrapper<SysRole>()
+                .eq(SysRole::getCode, SysBuildInEnum.BUILD_IN_ROLE_CODE.getValue())).getId();
+        List<String> apiUrls = CollectionUtil.newArrayList(
+                "/" + moduleName + "/" + busName + "/page",
+                "/" + moduleName + "/" + busName + "/add",
+                "/" + moduleName + "/" + busName + "/edit",
+                "/" + moduleName + "/" + busName + "/delete",
+                "/" + moduleName + "/" + busName + "/detail",
+                "/" + moduleName + "/" + busName + "/downloadImportTemplate",
+                "/" + moduleName + "/" + busName + "/importData",
+                "/" + moduleName + "/" + busName + "/exportData"
+        );
+        if("TREE".equals(genType) || "LEFT_TREE_TABLE".equals(genType)) {
+            apiUrls.add("/" + moduleName + "/" + busName + "/tree");
+        }
+        if("MASTER_DETAIL".equals(genType) || "LEFT_TREE_TABLE".equals(genType)) {
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/page");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/add");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/edit");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/delete");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/detail");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/downloadImportTemplate");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/importData");
+            apiUrls.add("/" + moduleName + "/" + busName + "/sub/exportData");
+        }
+        List<SysRoleGrantPermissionParam.SysRoleGrantPermission> grantInfoList = apiUrls.stream().map(apiUrl -> {
+            SysRoleGrantPermissionParam.SysRoleGrantPermission sysRoleGrantPermission = new SysRoleGrantPermissionParam.SysRoleGrantPermission();
+            sysRoleGrantPermission.setApiUrl(apiUrl);
+            sysRoleGrantPermission.setScopeCategory("ALL");
+            sysRoleGrantPermission.setScopeDefineOrgIdList(CollectionUtil.newArrayList());
+            return sysRoleGrantPermission;
+        }).collect(Collectors.toList());
+
+        SysRoleGrantPermissionParam sysRoleGrantPermissionParam = new SysRoleGrantPermissionParam();
+        sysRoleGrantPermissionParam.setId(superAdminRoleId);
+        sysRoleGrantPermissionParam.setGrantInfoList(grantInfoList);
+        sysRoleService.grantPermissionWithAppend(sysRoleGrantPermissionParam);
     }
 
     @Override

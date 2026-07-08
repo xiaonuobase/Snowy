@@ -50,6 +50,14 @@ public interface SysRoleApi {
     void grantForGenMenuAndButton(String menuId);
 
     /**
+     * 代码生成权限授权
+     *
+     * @author xuyuxiang
+     * @date 2022/11/1 15:58
+     **/
+    void grantForGenPermission(String moduleName, String busName, String genType);
+
+    /**
      * 获取资源授权树
      *
      * @author xuyuxiang
