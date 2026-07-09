@@ -211,7 +211,8 @@
 	const onOpen = (record) => {
 		visible.value = true
 		if (record) {
-			formData.value = cloneDeep(record)
+			let recordData = cloneDeep(record)
+			formData.value = Object.assign({}, recordData)
 		} else {
 			formData.value = {
 				gender: '男'
@@ -220,6 +221,8 @@
 	}
 	// 关闭抽屉
 	const onClose = () => {
+		formRef.value.resetFields()
+		formData.value = {}
 		visible.value = false
 	}
 	// 默认要校验的
