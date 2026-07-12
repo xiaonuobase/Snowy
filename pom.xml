@@ -17,12 +17,55 @@
     </parent>
 
     <properties>
+        <aliyun-dm.version>1.0.6</aliyun-dm.version>
+        <aliyun-oss.version>3.15.1</aliyun-oss.version>
+        <beetl.version>1.2.40.Beetl.RELEASE</beetl.version>
+        <bouncycastle.version>1.70</bouncycastle.version>
+        <cas-client.version>4.0.4</cas-client.version>
+        <commons-net.version>3.10.0</commons-net.version>
+        <dingtalk-sdk.version>2.0.0</dingtalk-sdk.version>
+        <dingtalk-stream.version>1.3.7</dingtalk-stream.version>
+        <druid.version>1.2.21</druid.version>
+        <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
+        <easy-poi.version>4.4.0</easy-poi.version>
+        <easy-trans.version>3.1.4</easy-trans.version>
+        <easyexcel.version>3.3.3</easyexcel.version>
+        <hutool.version>5.8.25</hutool.version>
+        <ip2region.version>2.7.0</ip2region.version>
         <java.version>17</java.version>
+        <json-flattener.version>0.16.4</json-flattener.version>
+        <junit.version>5.10.1</junit.version>
+        <justauth.version>1.16.7</justauth.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <lark-sdk.version>2.3.7</lark-sdk.version>
+        <lombok.version>1.18.30</lombok.version>
+        <mail.version>1.5.4</mail.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <minio.version>8.5.2</minio.version>
+        <mybatis-plus.version>3.5.5</mybatis-plus.version>
+        <mysql.version>8.3.0</mysql.version>
+        <nashorn.version>15.4</nashorn.version>
+        <nimbus-jose-jwt.version>9.37.3</nimbus-jose-jwt.version>
+        <opensaml.version>4.3.0</opensaml.version>
+        <oshi.version>6.4.11</oshi.version>
+        <pinyin4j.version>2.5.1</pinyin4j.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <qcloud-cos.version>5.6.199</qcloud-cos.version>
+        <redisson.version>3.45.0</redisson.version>
+        <rustfs-s3.version>2.20.0</rustfs-s3.version>
+        <sa-token.version>1.44.0</sa-token.version>
+        <sm-crypto.version>0.3.2</sm-crypto.version>
+        <sms4j.version>3.3.4</sms4j.version>
         <snowy.version>3.0.0</snowy.version>
         <spring-boot.version>3.5.9</spring-boot.version>
         <spring-framework.version>6.2.15</spring-framework.version>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tencentcloud-ses.version>3.1.944</tencentcloud-ses.version>
+        <weixin-java-cp.version>4.6.7.B</weixin-java-cp.version>
+        <welink-sdk.version>2.1.5</welink-sdk.version>
+        <x-file-storage.version>2.1.0</x-file-storage.version>
+        <zxing.version>3.5.3</zxing.version>
     </properties>
 
     <modules>
@@ -178,280 +221,348 @@
             <dependency>
                 <groupId>org.openjdk.nashorn</groupId>
                 <artifactId>nashorn-core</artifactId>
-                <version>15.4</version>
+                <version>${nashorn.version}</version>
             </dependency>
 
             <!-- lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.30</version>
+                <version>${lombok.version}</version>
             </dependency>
 
             <!-- druid -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-3-starter</artifactId>
-                <version>1.2.21</version>
+                <version>${druid.version}</version>
             </dependency>
 
             <!-- mybatis-plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-                <version>3.5.5</version>
+                <version>${mybatis-plus.version}</version>
             </dependency>
 
             <!-- easy-trans -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>easy-trans-spring-boot-starter</artifactId>
-                <version>3.1.4</version>
+                <version>${easy-trans.version}</version>
             </dependency>
 
             <!-- easy-trans-mybatis-plus-extend -->
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>easy-trans-mybatis-plus-extend</artifactId>
-                <version>3.1.4</version>
+                <version>${easy-trans.version}</version>
             </dependency>
 
             <!-- redisson -->
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
-                <version>3.45.0</version>
+                <version>${redisson.version}</version>
             </dependency>
 
             <!-- commons-net -->
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>3.10.0</version>
+                <version>${commons-net.version}</version>
             </dependency>
 
             <!-- hutool -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>5.8.25</version>
+                <version>${hutool.version}</version>
             </dependency>
 
             <!-- pinyin4j -->
             <dependency>
                 <groupId>com.belerweb</groupId>
                 <artifactId>pinyin4j</artifactId>
-                <version>2.5.1</version>
+                <version>${pinyin4j.version}</version>
             </dependency>
 
             <!-- ip2region -->
             <dependency>
                 <groupId>org.lionsoul</groupId>
                 <artifactId>ip2region</artifactId>
-                <version>2.7.0</version>
+                <version>${ip2region.version}</version>
             </dependency>
 
             <!-- knife4j -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-                <version>4.5.0</version>
+                <version>${knife4j.version}</version>
             </dependency>
 
             <!-- easy-poi -->
             <dependency>
                 <groupId>cn.afterturn</groupId>
                 <artifactId>easypoi-spring-boot-starter</artifactId>
-                <version>4.4.0</version>
+                <version>${easy-poi.version}</version>
             </dependency>
 
             <!-- sm-crypto -->
             <dependency>
                 <groupId>com.antherd</groupId>
                 <artifactId>sm-crypto</artifactId>
-                <version>0.3.2</version>
+                <version>${sm-crypto.version}</version>
             </dependency>
 
             <!-- easyexcel -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>easyexcel</artifactId>
-                <version>3.3.3</version>
+                <version>${easyexcel.version}</version>
             </dependency>
 
             <!-- json-flattener -->
             <dependency>
                 <groupId>com.github.wnameless.json</groupId>
                 <artifactId>json-flattener</artifactId>
-                <version>0.16.4</version>
+                <version>${json-flattener.version}</version>
             </dependency>
 
             <!-- zxing -->
             <dependency>
                 <groupId>com.google.zxing</groupId>
                 <artifactId>core</artifactId>
-                <version>3.5.3</version>
+                <version>${zxing.version}</version>
             </dependency>
 
             <!-- bouncycastle -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.70</version>
+                <version>${bouncycastle.version}</version>
             </dependency>
 
             <!-- bouncycastle -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.70</version>
+                <version>${bouncycastle.version}</version>
             </dependency>
 
             <!-- sa-token-core -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-core</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- sa-token -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- sa-token 整合 redisson -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redisson</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- Sa-Token 插件：整合SSO -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-sso</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- sa-token-oauth2-->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-oauth2</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- sa-token-jwt 签发 OIDC id_token 令牌 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-jwt</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- Sa-Token 插件：整合 Forest 请求工具 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-forest</artifactId>
-                <version>1.44.0</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- JustAuth 第三方登录 -->
             <dependency>
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
-                <version>1.16.7</version>
+                <version>${justauth.version}</version>
+            </dependency>
+
+            <!-- opensaml -->
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-core</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-saml-api</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-saml-impl</artifactId>
+                <version>${opensaml.version}</version>
+            </dependency>
+
+            <!-- cas-client -->
+            <dependency>
+                <groupId>org.apereo.cas.client</groupId>
+                <artifactId>cas-client-core</artifactId>
+                <version>${cas-client.version}</version>
+            </dependency>
+
+            <!-- nimbus-jose-jwt -->
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+
+            <!-- 钉钉 sdk -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>alibaba-dingtalk-service-sdk</artifactId>
+                <version>${dingtalk-sdk.version}</version>
+            </dependency>
+
+            <!-- 钉钉事件订阅 -->
+            <dependency>
+                <groupId>com.dingtalk.open</groupId>
+                <artifactId>app-stream-client</artifactId>
+                <version>${dingtalk-stream.version}</version>
+            </dependency>
+
+            <!-- 企业微信 -->
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-cp</artifactId>
+                <version>${weixin-java-cp.version}</version>
+            </dependency>
+
+            <!-- 飞书 -->
+            <dependency>
+                <groupId>com.larksuite.oapi</groupId>
+                <artifactId>oapi-sdk</artifactId>
+                <version>${lark-sdk.version}</version>
+            </dependency>
+
+            <!-- WeLink -->
+            <dependency>
+                <groupId>com.huawei.welink.sdk</groupId>
+                <artifactId>welink-sdk-java</artifactId>
+                <version>${welink-sdk.version}</version>
             </dependency>
 
             <!-- beetl模板引擎 -->
             <dependency>
                 <groupId>com.ibeetl</groupId>
                 <artifactId>beetl-framework-starter</artifactId>
-                <version>1.2.40.Beetl.RELEASE</version>
+                <version>${beetl.version}</version>
             </dependency>
 
             <!--x-file-storage文件sdk-->
             <dependency>
                 <groupId>org.dromara.x-file-storage</groupId>
                 <artifactId>x-file-storage-spring</artifactId>
-                <version>2.1.0</version>
+                <version>${x-file-storage.version}</version>
             </dependency>
 
             <!--腾讯云文件sdk-->
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>cos_api</artifactId>
-                <version>5.6.199</version>
+                <version>${qcloud-cos.version}</version>
             </dependency>
 
             <!--阿里云文件sdk-->
             <dependency>
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
-                <version>3.15.1</version>
+                <version>${aliyun-oss.version}</version>
             </dependency>
 
             <!--minio文件sdk-->
             <dependency>
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
-                <version>8.5.2</version>
+                <version>${minio.version}</version>
             </dependency>
 
             <!--rustfs文件sdk (兼容S3协议)-->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
-                <version>2.20.0</version>
+                <version>${rustfs-s3.version}</version>
             </dependency>
 
             <!--java邮件sdk-->
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>javax.mail</artifactId>
-                <version>1.5.4</version>
+                <version>${mail.version}</version>
             </dependency>
 
             <!--阿里云邮件sdk-->
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>dm20151123</artifactId>
-                <version>1.0.6</version>
+                <version>${aliyun-dm.version}</version>
             </dependency>
 
             <!-- 腾讯云邮件sdk -->
             <dependency>
                 <groupId>com.tencentcloudapi</groupId>
                 <artifactId>tencentcloud-sdk-java-ses</artifactId>
-                <version>3.1.944</version>
+                <version>${tencentcloud-ses.version}</version>
             </dependency>
 
             <!-- sms4j短信sdk -->
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-javase-plugin</artifactId>
-                <version>3.3.4</version>
+                <version>${sms4j.version}</version>
             </dependency>
 
             <!-- sms4j消息推送sdk -->
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-oa-core</artifactId>
-                <version>3.3.4</version>
+                <version>${sms4j.version}</version>
             </dependency>
 
             <!--系统硬件信息-->
             <dependency>
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
-                <version>6.4.11</version>
+                <version>${oshi.version}</version>
             </dependency>
 
             <!-- junit -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.10.1</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -459,14 +570,14 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
-                <version>4.3.1</version>
+                <version>${dynamic-datasource.version}</version>
             </dependency>
 
             <!-- mysql -->
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
-                <version>8.3.0</version>
+                <version>${mysql.version}</version>
             </dependency>
 
             <!-- postgresql -->
@@ -516,7 +627,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -528,7 +639,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven-source-plugin.version}</version>
                 <configuration>
                     <attach>true</attach>
                 </configuration>
