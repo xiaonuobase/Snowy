@@ -19,14 +19,12 @@ import jakarta.annotation.Resource;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
+import org.redisson.api.options.KeysScanOptions;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import org.redisson.api.options.KeysScanOptions;
 
 /**
  * 通用Redis缓存操作器
