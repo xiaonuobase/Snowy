@@ -31,7 +31,7 @@ import org.w3c.dom.ls.LSSerializerFilter;
 import java.io.Writer;
 import java.util.Map;
 
-public class XMLHelper {
+public class XmlHelper {
   /**
    * Writes a Node out to a Writer using the DOM, level 3, Load/Save serializer. The written content is encoded using
    * the encoding specified in the writer configuration.

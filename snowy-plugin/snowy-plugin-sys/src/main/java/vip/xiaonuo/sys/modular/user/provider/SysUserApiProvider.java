@@ -149,7 +149,7 @@ public class SysUserApiProvider implements SysUserApi {
         // 查询结果
         String resultUserId = result.get();
         // 如果要求查最高层级主管
-        if(supervisorLevel.equals("-1")) {
+        if("-1".equals(supervisorLevel)) {
             if(ObjectUtil.isEmpty(resultUserId)) {
                 // 查不到，则当前用户就是最高层级主管
                 if(ObjectUtil.isEmpty(userIdList)) {
@@ -178,7 +178,7 @@ public class SysUserApiProvider implements SysUserApi {
                 // 由最低级向高级查，首先主管级别减1
                 String nextLevel = Convert.toStr(Convert.toInt(supervisorLevel) - 1);
                 // 如果减1后级别为0，表示查一级直属主管
-                if(nextLevel.equals("0")) {
+                if("0".equals(nextLevel)) {
                     // 则当前结果就是一级直属主管
                     return JSONUtil.createObj().set("id", resultUserId).set("idList", CollectionUtil.newArrayList(resultUserId));
                 } else {
@@ -200,7 +200,7 @@ public class SysUserApiProvider implements SysUserApi {
     @Override
     public List<String> getMulSupervisorIdListByEndLevel(String initiator, String orgId, String endLevel) {
         List<String> resultList = CollectionUtil.newArrayList();
-        if(endLevel.equals("-1")) {
+        if("-1".equals(endLevel)) {
             List<String> idList = this.getSupervisorIdBySupervisorLevel(initiator, CollectionUtil.newArrayList(), orgId, endLevel)
                     .getBeanList("idList", String.class);
             if(ObjectUtil.isNotEmpty(idList)) {

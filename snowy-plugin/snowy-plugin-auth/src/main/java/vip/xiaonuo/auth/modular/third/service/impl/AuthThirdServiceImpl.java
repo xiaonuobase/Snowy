@@ -724,7 +724,7 @@ public class AuthThirdServiceImpl extends ServiceImpl<AuthThirdMapper, AuthThird
      */
     private String autoCreateUser(AuthUser authUser, String platform, String clientType) {
         String email = authUser.getEmail();
-        String phone = platform.equalsIgnoreCase("phone") ? authUser.getUsername() : null;
+        String phone = "phone".equalsIgnoreCase(platform) ? authUser.getUsername() : null;
         String userId;
 
         // 生成账号：来源 + "_" + 完整UUID，保证全局唯一性，避免截取导致的冲突

@@ -28,14 +28,17 @@ public class WebSocketConfig {
      */
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
-        if (!(applicationContext instanceof WebApplicationContext webAppContext)) return null;
-
+        if (!(applicationContext instanceof WebApplicationContext webAppContext)) {
+            return null;
+        }
         ServletContext servletContext = webAppContext.getServletContext();
-        if (servletContext == null) return null;
-
+        if (servletContext == null) {
+            return null;
+        }
         ServerContainer serverContainer = (ServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
-        if (serverContainer == null) return null;
-
+        if (serverContainer == null) {
+            return null;
+        }
         return new ServerEndpointExporter();
     }
 }

@@ -173,7 +173,7 @@ public class SamlClient {
     this.credentials =
         certificates.stream().map(SamlClient::getCredential).collect(Collectors.toList());
     this.samlBinding = samlBinding;
-    this.domParser = XMLHelper.createDOMParser();
+    this.domParser = XmlHelper.createDOMParser();
   }
 
   /**
@@ -463,7 +463,7 @@ public class SamlClient {
   private static DOMMetadataResolver createMetadataResolver(InputStream metadata)
       throws SamlException {
     try {
-      BasicParserPool parser = XMLHelper.createDOMParser();
+      BasicParserPool parser = XmlHelper.createDOMParser();
       Document metadataDocument = parser.parse(metadata);
       DOMMetadataResolver resolver = new DOMMetadataResolver(metadataDocument.getDocumentElement());
       resolver.setId(
@@ -994,7 +994,7 @@ public class SamlClient {
       if (marshaller != null) {
           dom = marshaller.marshall(object);
       }
-      XMLHelper.writeNode(dom, stringWriter);
+      XmlHelper.writeNode(dom, stringWriter);
 
     return stringWriter;
   }

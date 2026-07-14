@@ -70,7 +70,7 @@ public class AuthOidcYunZhiJiaRequest extends AuthDefaultRequest {
 
     public JSONObject getAccessToken(String scopeType) {
         JSONObject param = JSONUtil.createObj();
-        if(scopeType.equals("app")) {
+        if("app".equals(scopeType)) {
             param.set("appId", this.config.getClientId());
             param.set("secret", this.config.getClientSecret());
         } else {

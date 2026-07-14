@@ -82,8 +82,8 @@ public class AuthOidcWeLinkRequest extends AuthDefaultRequest {
         if (object.containsKey("errorCode")) {
             throw new AuthException(object.getString("errorMessage"));
         }
-        if (object.containsKey("code") && !object.getString("code").equals("0") &&
-                !object.getString("code").equals("60001")) {
+        if (object.containsKey("code") && !"0".equals(object.getString("code")) &&
+                !"60001".equals(object.getString("code"))) {
             throw new AuthException(object.getString("message"));
         }
     }

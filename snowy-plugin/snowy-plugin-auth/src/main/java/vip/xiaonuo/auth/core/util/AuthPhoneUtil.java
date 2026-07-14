@@ -92,30 +92,32 @@ public class AuthPhoneUtil {
         String ippfx4 = substring(telNum,0, 4);
 
         if (telNum.length() > 7
-                && (substring(telNum, 5, 1).equals("0")
-                || substring(telNum, 5, 1).equals("1") || substring(
-                telNum, 5, 3).equals("400") || substring(
-                telNum, 5, 3).equals("+86"))
-                && (inArray(ippfx5, IPPFXS5) || inArray(ippfx4, IPPFXS4)))
+                && ("0".equals(substring(telNum, 5, 1))
+                || "1".equals(substring(telNum, 5, 1)) || "400".equals(substring(
+                telNum, 5, 3)) || "+86".equals(substring(
+                telNum, 5, 3)))
+                && (inArray(ippfx5, IPPFXS5) || inArray(ippfx4, IPPFXS4))) {
             telNum = substring(telNum, 5);
-        else if (telNum.length() > 8
-                && (substring(telNum, 6, 1).equals("0")
-                || substring(telNum, 6, 1).equals("1") || substring(
-                telNum, 6, 3).equals("400") || substring(
-                telNum, 6, 3).equals("+86"))
-                && inArray(ippfx6, IPPFXS6))
+        } else if (telNum.length() > 8
+                && ("0".equals(substring(telNum, 6, 1))
+                || "1".equals(substring(telNum, 6, 1)) || "400".equals(substring(
+                telNum, 6, 3)) || "+86".equals(substring(
+                telNum, 6, 3)))
+                && inArray(ippfx6, IPPFXS6)) {
             telNum = substring(telNum, 6);
+        }
         // remove ip dial
 
         telNum = telNum.replace("-", "");
         telNum = telNum.replace(" ", "");
 
-        if (substring(telNum, 0, 4).equals("0086"))
+        if ("0086".equals(substring(telNum, 0, 4))) {
             telNum = substring(telNum, 4);
-        else if (substring(telNum, 0, 3).equals("+86"))
+        } else if ("+86".equals(substring(telNum, 0, 3))) {
             telNum = substring(telNum, 3);
-        else if (substring(telNum, 0, 5).equals("00186"))
+        } else if ("00186".equals(substring(telNum, 0, 5))) {
             telNum = substring(telNum, 5);
+        }
 
         return telNum;
     }
