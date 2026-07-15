@@ -34,7 +34,7 @@
         <ip2region.version>2.7.0</ip2region.version>
         <java.version>17</java.version>
         <json-flattener.version>0.16.4</json-flattener.version>
-        <junit.version>5.10.1</junit.version>
+        <junit-jupiter-api.version>5.10.1</junit-jupiter-api.version>
         <justauth.version>1.16.7</justauth.version>
         <knife4j.version>4.5.0</knife4j.version>
         <lark-sdk.version>2.3.7</lark-sdk.version>
@@ -562,7 +562,7 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.version}</version>
+                <version>${junit-jupiter-api.version}</version>
                 <scope>test</scope>
             </dependency>
 
