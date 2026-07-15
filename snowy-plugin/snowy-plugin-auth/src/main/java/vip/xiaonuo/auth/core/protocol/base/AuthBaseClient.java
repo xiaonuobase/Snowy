@@ -90,7 +90,7 @@ public abstract class AuthBaseClient<T extends AuthBaseJson> {
         AuthBaseJson authBaseJson = this.getAuthBaseJson();
         if(authResponse.ok()) {
             String uuid;
-            String sourceProperty = authBaseJson.getSourceProperty();
+
             AuthUser authUser = authResponse.getData();
             authUser.setSource(this.authPlatform);
             com.alibaba.fastjson.JSONObject rawUserInfo = authUser.getRawUserInfo();
@@ -99,15 +99,17 @@ public abstract class AuthBaseClient<T extends AuthBaseJson> {
                 if(ObjectUtil.isNotEmpty(rawUserInfoData)) {
                     rawUserInfo = com.alibaba.fastjson.JSONObject.parseObject(rawUserInfoData.toString());
                 }
-                Object sourcePropertyValue = rawUserInfo.get(sourceProperty);
-                if(ObjectUtil.isEmpty(sourcePropertyValue)) {
-                    throw new CommonException("第三方原始用户信息rawUserInfo中映射源属性{}为空", sourceProperty);
+                String sourceProperty = authBaseJson.getSourceProperty();
+                if(ObjectUtil.isNotEmpty(sourceProperty)) {
+                    Object sourcePropertyValue = rawUserInfo.get(sourceProperty);
+                    if(ObjectUtil.isNotEmpty(sourcePropertyValue)) {
+                        uuid = Convert.toStr(sourcePropertyValue);
+                        if(PhoneUtil.isMobile(uuid)) {
+                            uuid = AuthPhoneUtil.trimTelNum(uuid);
+                        }
+                        authUser.setUuid(uuid);
+                    }
                 }
-                uuid = Convert.toStr(sourcePropertyValue);
-                if(PhoneUtil.isMobile(uuid)) {
-                    uuid = AuthPhoneUtil.trimTelNum(uuid);
-                }
-                authUser.setUuid(uuid);
             }
             return authResponse;
         } else {
