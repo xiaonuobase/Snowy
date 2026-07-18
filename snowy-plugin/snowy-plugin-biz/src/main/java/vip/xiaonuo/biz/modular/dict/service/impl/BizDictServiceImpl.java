@@ -75,7 +75,18 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
         } else {
             queryWrapper.lambda().orderByAsc(BizDict::getSortCode);
         }
-        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+        Page<BizDict> page = this.page(CommonPageRequest.defaultPage(), queryWrapper);
+        // 填充每条记录的子级数量
+        if (ObjectUtil.isNotEmpty(page.getRecords())) {
+            Map<String, Long> childCountMap = this.list(new LambdaQueryWrapper<BizDict>()
+                            .select(BizDict::getId, BizDict::getParentId)
+                            .in(BizDict::getParentId, page.getRecords().stream().map(BizDict::getId)
+                                    .collect(Collectors.toList()))).stream()
+                    .collect(Collectors.groupingBy(BizDict::getParentId, Collectors.counting()));
+            page.getRecords().forEach(bizDict -> bizDict.setChildCount(childCountMap
+                    .getOrDefault(bizDict.getId(), 0L).intValue()));
+        }
+        return page;
     }
 
     @Override

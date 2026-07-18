@@ -1,29 +1,21 @@
 <template>
-	<xn-form-container title="编辑字典" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
-		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical" :label-col="labelCol">
-			<a-form-item label="上级字典：" name="parentId">
-				<a-tree-select
-					:disabled="true"
-					v-model:value="formData.parentId"
-					v-model:treeExpandedKeys="defaultExpandedKeys"
-					class="xn-wd"
-					:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-					placeholder="请选择上级字典"
-					allow-clear
-					:tree-data="treeData"
-					:field-names="treeFieldNames"
-					selectable="false"
-					treeLine
-				/>
+	<xn-form-container :title="formTitle" :width="550" :visible="visible" :destroy-on-close="true" @close="onClose">
+		<a-form ref="formRef" :model="formData" :rules="formRules" layout="vertical">
+			<a-form-item v-if="mode === 'value'" label="所属字典类型：">
+				<a-input :value="parentInfo.dictLabel" disabled />
 			</a-form-item>
-			<a-form-item label="字典名称：" name="dictLabel">
+			<a-form-item :label="mode === 'type' ? '类型名称：' : '字典文字：'" name="dictLabel">
 				<a-input v-model:value="formData.dictLabel" placeholder="请输入字典名称" allow-clear />
 			</a-form-item>
-			<a-form-item label="字典值：" name="dictValue">
+			<a-form-item
+				:label="mode === 'type' ? '类型编码：' : '字典值：'"
+				name="dictValue"
+				:extra="mode === 'type' ? '类型编码被系统引用，不可修改' : '字典值被系统引用，不可修改'"
+			>
 				<a-input v-model:value="formData.dictValue" placeholder="请输入字典值" allow-clear :disabled="true" />
 			</a-form-item>
-			<a-form-item label="排序：" name="sortCode">
-				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :max="1000" />
+			<a-form-item label="排序：" name="sortCode" :extra="mode === 'value' ? '同一字典类型下的字典值按此序号升序排列' : ''">
+				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :min="1" :max="1000" />
 			</a-form-item>
 		</a-form>
 		<template #footer>
@@ -44,33 +36,21 @@
 	const formRef = ref()
 	// 表单数据
 	const formData = ref({})
-	// 定义树元素
-	const treeData = ref([])
-	// 默认展开的节点(顶级)
-	const defaultExpandedKeys = ref([0])
-	const treeFieldNames = { children: 'children', label: 'name', value: 'id' }
-	// 打开抽屉
-	const onOpen = (record, parentId) => {
+	// 表单形态：type为字典类型，value为字典值
+	const mode = ref('type')
+	// 字典值所属的字典类型信息
+	const parentInfo = ref({})
+
+	const formTitle = computed(() => {
+		return mode.value === 'type' ? '编辑字典类型' : '编辑字典值'
+	})
+
+	// 打开抽屉，parent不为空时表示编辑的是该类型下的字典值
+	const onOpen = (record, parent) => {
 		visible.value = true
-		formData.value = {
-			sortCode: 99
-		}
-		if (parentId) {
-			formData.value.parentId = parentId
-		}
-		if (record) {
-			formData.value = Object.assign({}, record)
-		}
-		bizDictApi.dictTree().then((res) => {
-			treeData.value = [
-				{
-					id: 0,
-					parentId: '-1',
-					name: '顶级',
-					children: res
-				}
-			]
-		})
+		parentInfo.value = parent || {}
+		mode.value = parent || (record && record.parentId !== '0') ? 'value' : 'type'
+		formData.value = Object.assign({}, record)
 	}
 	// 关闭抽屉
 	const onClose = () => {
@@ -82,12 +62,6 @@
 		dictValue: [required('请选择字典值')],
 		sortCode: [required('请选择排序')]
 	}
-	// 表单固定label实现
-	const labelCol = ref({
-		style: {
-			width: '100px'
-		}
-	})
 	// 验证并提交数据
 	const onSubmit = () => {
 		formRef.value

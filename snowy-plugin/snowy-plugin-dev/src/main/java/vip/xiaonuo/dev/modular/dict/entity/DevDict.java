@@ -67,4 +67,9 @@ public class DevDict extends CommonEntity {
     @Schema(description = "扩展信息")
     @TableField(insertStrategy = FieldStrategy.ALWAYS, updateStrategy = FieldStrategy.ALWAYS)
     private String extJson;
+
+    /** 子级数量 */
+    @Schema(description = "子级数量")
+    @TableField(exist = false)
+    private Integer childCount;
 }

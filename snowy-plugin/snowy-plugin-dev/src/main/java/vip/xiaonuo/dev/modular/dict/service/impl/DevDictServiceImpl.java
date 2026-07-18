@@ -84,7 +84,18 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
         } else {
             queryWrapper.lambda().orderByAsc(DevDict::getSortCode);
         }
-        return this.page(CommonPageRequest.defaultPage(), queryWrapper);
+        Page<DevDict> page = this.page(CommonPageRequest.defaultPage(), queryWrapper);
+        // 填充每条记录的子级数量
+        if (ObjectUtil.isNotEmpty(page.getRecords())) {
+            Map<String, Long> childCountMap = this.list(new LambdaQueryWrapper<DevDict>()
+                            .select(DevDict::getId, DevDict::getParentId)
+                            .in(DevDict::getParentId, page.getRecords().stream().map(DevDict::getId)
+                                    .collect(Collectors.toList()))).stream()
+                    .collect(Collectors.groupingBy(DevDict::getParentId, Collectors.counting()));
+            page.getRecords().forEach(devDict -> devDict.setChildCount(childCountMap
+                    .getOrDefault(devDict.getId(), 0L).intValue()));
+        }
+        return page;
     }
 
     @Override

@@ -1,152 +1,182 @@
 <template>
 	<div class="dict-container">
-		<XnResizablePanel
-			:initialSize="300"
-			:minSize="250"
-			:maxSize="600"
-			:bottomGap="10"
-			:leftPadding="12"
-			:rightPadding="24"
-		>
-			<template #left>
-				<!-- 左侧面板 -->
-				<div class="dict-left-panel">
-					<a-spin :spinning="cardLoading">
-						<div class="dict-left-header">
-							<a-radio-group
-								v-model:value="categoryType"
-								button-style="solid"
-								class="dict-type-radio"
-								@change="typeChange"
-							>
-								<a-radio-button value="FRM">系统字典</a-radio-button>
-								<a-radio-button value="BIZ">业务字典</a-radio-button>
-							</a-radio-group>
-							<a-input-search
-								v-model:value="treeSearchKey"
-								placeholder="搜索字典"
-								class="dict-tree-search"
-								allow-clear
-								@search="onTreeSearch"
-							/>
-						</div>
-						<div class="dict-tree-wrapper">
-							<a-tree
-								v-if="treeData.length > 0"
-								v-model:expandedKeys="defaultExpandedKeys"
-								:tree-data="treeData"
-								:field-names="treeFieldNames"
-								block-node
-								:auto-expand-parent="autoExpandParent"
-								@select="treeSelect"
-							>
-								<template #title="{ dictLabel }">
-									<span v-if="dictLabel.indexOf(treeSearchKey) > -1">
-										{{ dictLabel.substr(0, dictLabel.indexOf(treeSearchKey)) }}
-										<span style="color: #f50">{{ treeSearchKey }}</span>
-										{{ dictLabel.substr(dictLabel.indexOf(treeSearchKey) + treeSearchKey.length) }}
-									</span>
-									<span v-else>{{ dictLabel }}</span>
-								</template>
-							</a-tree>
-							<a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE" description="暂无数据" />
-						</div>
-					</a-spin>
-				</div>
-			</template>
-			<template #right>
-				<!-- 右侧面板 -->
-				<div class="dict-right-panel">
-					<!-- 搜索区域 -->
-					<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
-						<a-form-item label="关键词" name="searchKey">
-							<a-input v-model:value="searchFormState.searchKey" placeholder="请输入字典名称关键词" allow-clear />
-						</a-form-item>
-						<a-form-item>
-							<a-space>
-								<a-button type="primary" @click="tableRef.refresh(true)">
-									<template #icon><SearchOutlined /></template>
-									查询
-								</a-button>
-								<a-button @click="reset">
-									<template #icon><RedoOutlined /></template>
-									重置
-								</a-button>
-							</a-space>
-						</a-form-item>
-					</a-form>
+		<!-- 搜索区域 -->
+		<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
+			<a-form-item>
+				<a-radio-group v-model:value="categoryType" button-style="solid" @change="typeChange">
+					<a-radio-button value="FRM">系统字典</a-radio-button>
+					<a-radio-button value="BIZ">业务字典</a-radio-button>
+				</a-radio-group>
+			</a-form-item>
+			<a-form-item label="关键词" name="searchKey">
+				<a-input
+					v-model:value="searchFormState.searchKey"
+					placeholder="请输入字典类型名称"
+					allow-clear
+					@press-enter="tableRef.refresh(true)"
+				/>
+			</a-form-item>
+			<a-form-item>
+				<a-space>
+					<a-button type="primary" @click="tableRef.refresh(true)">
+						<template #icon><SearchOutlined /></template>
+						查询
+					</a-button>
+					<a-button @click="reset">
+						<template #icon><RedoOutlined /></template>
+						重置
+					</a-button>
+				</a-space>
+			</a-form-item>
+		</a-form>
 
-					<!-- 表格区域 -->
-					<s-table
-						ref="tableRef"
-						:columns="columns"
-						:data="loadData"
-						:expand-row-by-click="true"
-						bordered
-						:tool-config="toolConfig"
-						:row-key="(record) => record.id"
-						:alert="options.alert.show"
-						:row-selection="options.rowSelection"
-						:scroll="{ x: 'max-content' }"
-					>
-						<template #operator>
-							<a-space>
-								<a-button type="primary" @click="formRef.onOpen(undefined, categoryType, searchFormState.parentId)">
-									<template #icon><PlusOutlined /></template>
-									新增字典
-								</a-button>
-								<xn-batch-button
-									buttonName="批量删除"
-									icon="DeleteOutlined"
-									buttonDanger
-									:selectedRowKeys="selectedRowKeys"
-									@batchCallBack="deleteBatchDict"
-								/>
-							</a-space>
-						</template>
-						<template #bodyCell="{ column, record }">
-							<template v-if="column.dataIndex === 'dictColor'">
-								<a-tag v-if="record.dictColor" :color="record.dictColor">{{ record.dictColor }}</a-tag>
+		<!-- 字典类型表格，单击行展开显示该类型下的字典值 -->
+		<s-table
+			ref="tableRef"
+			:columns="columns"
+			:data="loadData"
+			:expand-row-by-click="true"
+			:expanded-row-keys="expandedRowKeys"
+			bordered
+			:tool-config="toolConfig"
+			:row-key="(record) => record.id"
+			:alert="options.alert.show"
+			:row-selection="options.rowSelection"
+			:scroll="{ x: 'max-content' }"
+			@on-expand="onExpandChange"
+		>
+			<template #operator>
+				<a-space>
+					<a-button type="primary" @click="addDictType">
+						<template #icon><PlusOutlined /></template>
+						新增字典类型
+					</a-button>
+					<xn-batch-button
+						buttonName="批量删除"
+						icon="DeleteOutlined"
+						buttonDanger
+						:selectedRowKeys="selectedRowKeys"
+						@batchCallBack="deleteBatchDict"
+					/>
+				</a-space>
+			</template>
+			<template #bodyCell="{ column, record }">
+				<template v-if="column.dataIndex === 'dictLabel'">
+					<span class="dict-type-label">{{ record.dictLabel }}</span>
+				</template>
+				<template v-if="column.dataIndex === 'dictValue'">
+					<a-typography-text code>{{ record.dictValue }}</a-typography-text>
+				</template>
+				<template v-if="column.dataIndex === 'childCount'">
+					<a-tag :color="record.childCount ? 'processing' : 'default'">{{ record.childCount || 0 }} 项</a-tag>
+				</template>
+				<template v-if="column.dataIndex === 'action'">
+					<a-space @click.stop>
+						<a @click="addDictValue(record)">添加值</a>
+						<a-divider type="vertical" />
+						<a @click="formRef.onOpen(record, categoryType)">编辑</a>
+						<a-divider type="vertical" />
+						<a-popconfirm title="确定要删除此字典类型及其下的字典值吗？" @confirm="remove(record)" placement="topRight">
+							<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
+						</a-popconfirm>
+					</a-space>
+				</template>
+			</template>
+			<template #expandedRowRender="{ record }">
+				<div class="dict-value-panel">
+					<div class="dict-value-table-wrap">
+						<a-table
+							size="small"
+							:columns="valueColumns"
+							:data-source="getDictValues(record.id)"
+							:pagination="false"
+							:row-key="(value) => value.id"
+							:scroll="getDictValues(record.id).length > 10 ? { y: 360 } : undefined"
+						>
+							<template #bodyCell="{ column, record: valueRecord, index }">
+								<template v-if="column.dataIndex === 'index'">
+									<span class="dict-value-index">{{ index + 1 }}</span>
+								</template>
+								<template v-if="column.dataIndex === 'dictValue'">
+									<a-typography-text code>{{ valueRecord.dictValue }}</a-typography-text>
+								</template>
+								<template v-if="column.dataIndex === 'dictColor'">
+									<a-tag v-if="valueRecord.dictColor" :color="valueRecord.dictColor">{{ valueRecord.dictLabel }}</a-tag>
+								</template>
+								<template v-if="column.dataIndex === 'action'">
+									<a-space>
+										<a @click="formRef.onOpen(valueRecord, categoryType, record)">编辑</a>
+										<a-divider type="vertical" />
+										<a-popconfirm title="确定要删除此字典值吗？" @confirm="remove(valueRecord)" placement="topRight">
+											<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
+										</a-popconfirm>
+									</a-space>
+								</template>
 							</template>
-							<template v-if="column.dataIndex === 'level'">
-								<a-tag color="processing" v-if="record.level">{{ record.level }}</a-tag>
-								<a-tag color="success" v-else>子级</a-tag>
-							</template>
-							<template v-if="column.dataIndex === 'action'">
-								<a-space>
-									<a @click="formRef.onOpen(record, categoryType)">编辑</a>
-									<a-divider type="vertical" />
-									<a-popconfirm title="确定要删除此字典及其下级字典吗？" @confirm="remove(record)" placement="topRight">
-										<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
-									</a-popconfirm>
-								</a-space>
-							</template>
-						</template>
-					</s-table>
+						</a-table>
+						<transition name="fade">
+							<div v-show="showScrollHint" class="scroll-hint">
+								<DownOutlined />
+							</div>
+						</transition>
+					</div>
+					<a-button type="dashed" block class="dict-value-add" @click="addDictValue(record)">
+						<template #icon><PlusOutlined /></template>
+						添加字典值
+					</a-button>
 				</div>
 			</template>
-		</XnResizablePanel>
+		</s-table>
 	</div>
 	<Form ref="formRef" @successful="formSuccessful()" />
 </template>
 
 <script setup name="dictCategoryIndex">
-	import { Empty } from 'ant-design-vue'
 	import dictApi from '@/api/dev/dictApi'
 	import Form from './form.vue'
 	import tool from '@/utils/tool'
-	import XnResizablePanel from '@/components/XnResizablePanel/index.vue'
 
-	const props = defineProps({
-		type: {
-			type: String,
-			default: 'FRM'
-		}
-	})
-
-	const columns = ref([
+	const columns = [
 		{
-			title: '字典名称',
+			title: '字典类型名称',
+			dataIndex: 'dictLabel'
+		},
+		{
+			title: '类型编码',
+			dataIndex: 'dictValue',
+			ellipsis: true
+		},
+		{
+			title: '字典值数',
+			dataIndex: 'childCount',
+			align: 'center',
+			width: 100
+		},
+		{
+			title: '排序',
+			dataIndex: 'sortCode',
+			align: 'center',
+			width: 80
+		},
+		{
+			title: '操作',
+			dataIndex: 'action',
+			align: 'center',
+			width: 200,
+			fixed: 'right'
+		}
+	]
+
+	// 展开后的字典值表格列
+	const valueColumns = [
+		{
+			title: '序号',
+			dataIndex: 'index',
+			align: 'center',
+			width: 60
+		},
+		{
+			title: '字典文字',
 			dataIndex: 'dictLabel'
 		},
 		{
@@ -155,41 +185,61 @@
 			ellipsis: true
 		},
 		{
-			title: '字典颜色',
+			title: '标签预览',
 			dataIndex: 'dictColor',
-			align: 'center'
+			align: 'center',
+			width: 120
 		},
 		{
 			title: '排序',
 			dataIndex: 'sortCode',
-			align: 'center'
+			align: 'center',
+			width: 80
 		},
 		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center',
-			fixed: 'right'
+			width: 130
 		}
-	])
+	]
 
 	const categoryType = ref('FRM')
-	const treeSearchKey = ref('')
-	const autoExpandParent = ref(true)
 
 	// 定义tableDOM
 	const tableRef = ref(null)
 	const formRef = ref()
-	const cardLoading = ref(true)
 	const searchFormRef = ref()
 	const searchFormState = ref({})
-	// 默认展开的节点
-	let defaultExpandedKeys = ref([])
-	const treeData = ref([])
-	// 备份完整树数据用于搜索
-	const treeDataOrigin = ref([])
+	// 各字典类型下的字典值集合，key为类型id
+	const dictValueMap = ref({})
+	// 当前分类下字典类型的最大排序号
+	const typeMaxSortCode = ref(0)
+	// 当前展开的行，手风琴模式同时只展开一个
+	const expandedRowKeys = ref([])
+	// 子表格滚动提示是否显示（滚动到底后隐藏）
+	const showScrollHint = ref(false)
 
-	// 替换treeNode 中 title,key,children
-	const treeFieldNames = { children: 'children', title: 'dictLabel', key: 'id' }
+	// 展开/收起某一行，保证同时只展开一个字典类型
+	const onExpandChange = (expanded, record) => {
+		expandedRowKeys.value = expanded ? [record.id] : []
+		showScrollHint.value = false
+		if (expanded && getDictValues(record.id).length > 10) {
+			nextTick(bindScrollHint)
+		}
+	}
+
+	// 绑定子表格滚动监听，未到底时显示提示，滚动到底后隐藏
+	const bindScrollHint = () => {
+		const body = document.querySelector('.dict-value-panel .ant-table-body')
+		if (!body) return
+		const update = () => {
+			showScrollHint.value = body.scrollHeight - body.scrollTop - body.clientHeight > 8
+		}
+		update()
+		body.onscroll = update
+	}
+
 	const toolConfig = { refresh: true, height: true, columnSetting: true, striped: false }
 
 	// 选择配置
@@ -208,31 +258,42 @@
 		}
 	}
 
-	// 表格查询 返回 Promise 对象
+	// 表格查询 返回 Promise 对象，只查字典类型（parentId为0的根级）
 	const loadData = (parameter) => {
+		loadDictValueData()
 		parameter.category = categoryType.value
-		return dictApi.dictPage(Object.assign(parameter, searchFormState.value)).then((data) => {
-			if (data.records) {
-				if (searchFormState.value.parentId) {
-					let dataArray = []
-					data.records.forEach((item) => {
-						const obj = data.records.find((f) => f.id === item.parentId)
-						if (!obj) {
-							dataArray.push(item)
-						}
-					})
-					if (dataArray.length === 1) {
-						data.records.forEach((item) => {
-							if (item.id === dataArray[0].id) {
-								item.level = '上级'
-							}
-						})
-					}
-					dataArray = []
-				}
-			}
-			return data
+		parameter.parentId = '0'
+		return dictApi.dictPage(Object.assign(parameter, searchFormState.value))
+	}
+
+	// 通过字典树一次性加载各类型下的字典值
+	const loadDictValueData = () => {
+		dictApi.dictTree({ category: categoryType.value }).then((res) => {
+			const map = {}
+			let maxSortCode = 0
+			;(res || []).forEach((node) => {
+				maxSortCode = Math.max(maxSortCode, node.sortCode || 0)
+				map[node.id] = (node.children || []).slice().sort((a, b) => (a.sortCode || 0) - (b.sortCode || 0))
+			})
+			dictValueMap.value = map
+			typeMaxSortCode.value = maxSortCode
 		})
+	}
+
+	const getDictValues = (typeId) => {
+		return dictValueMap.value[typeId] || []
+	}
+
+	// 新增字典类型，排序号默认为当前最大排序号加1
+	const addDictType = () => {
+		formRef.value.onOpen(undefined, categoryType.value, undefined, typeMaxSortCode.value + 1)
+	}
+
+	// 给某个字典类型添加字典值，排序号默认为该类型下最大排序号加1
+	const addDictValue = (record) => {
+		const values = getDictValues(record.id)
+		const maxSortCode = values.reduce((max, item) => Math.max(max, item.sortCode || 0), 0)
+		formRef.value.onOpen(undefined, categoryType.value, record, maxSortCode + 1)
 	}
 
 	// 重置
@@ -241,97 +302,15 @@
 		tableRef.value.refresh(true)
 	}
 
-	// 切换类型
+	// 切换分类
 	const typeChange = () => {
-		cardLoading.value = true
-		treeSearchKey.value = ''
-		loadTreeData()
-		// 切换类型时清空选中状态并刷新列表
-		searchFormState.value.parentId = undefined
-		const index = columns.value.findIndex((f) => f.title === '层级')
-		if (index !== -1) {
-			columns.value.splice(index, 1)
-		}
+		expandedRowKeys.value = []
+		showScrollHint.value = false
+		tableRef.value.clearSelected && tableRef.value.clearSelected()
 		tableRef.value.refresh(true)
 	}
 
-	// 加载左侧的树
-	const loadTreeData = () => {
-		const param = {
-			category: categoryType.value
-		}
-		dictApi
-			.dictTree(param)
-			.then((res) => {
-				if (res) {
-					treeData.value = res
-					treeDataOrigin.value = res
-				} else {
-					treeData.value = []
-					treeDataOrigin.value = []
-				}
-			})
-			.finally(() => {
-				cardLoading.value = false
-			})
-	}
-	// 初始化加载树
-	loadTreeData()
-
-	// 树搜索
-	const onTreeSearch = () => {
-		if (!treeSearchKey.value) {
-			treeData.value = treeDataOrigin.value
-			return
-		}
-		// 简单的前端搜索过滤，如果数据量大应该走后端
-		// 这里暂不实现复杂的前端递归过滤，AntDV的Tree通常配合后端搜索或扁平化数据处理
-		// 既然是字典树，数据量通常不大，我们只高亮匹配项，或者让用户通过视觉查找
-		// 这里为了体验，我们保持树结构不变，仅高亮，且展开所有
-		autoExpandParent.value = true
-		// 递归获取所有包含key的节点的父级key，用于展开
-		const expanded = []
-		const getParentKeys = (data, key) => {
-			data.forEach((item) => {
-				if (item.children) {
-					if (JSON.stringify(item.children).indexOf(key) > -1) {
-						expanded.push(item.id)
-					}
-					getParentKeys(item.children, key)
-				}
-			})
-		}
-		getParentKeys(treeDataOrigin.value, treeSearchKey.value)
-		defaultExpandedKeys.value = [...new Set(expanded)]
-	}
-	// 监听搜索词变化
-	watch(treeSearchKey, () => {
-		onTreeSearch()
-	})
-
-	// 点击树查询
-	const treeSelect = (selectedKeys) => {
-		if (selectedKeys && selectedKeys.length > 0) {
-			searchFormState.value.parentId = selectedKeys.toString()
-			if (!columns.value.find((f) => f.title === '层级')) {
-				columns.value.splice(2, 0, {
-					title: '层级',
-					dataIndex: 'level',
-					width: 100,
-					align: 'center'
-				})
-			}
-		} else {
-			delete searchFormState.value.parentId
-			const index = columns.value.findIndex((f) => f.title === '层级')
-			if (index !== -1) {
-				columns.value.splice(index, 1)
-			}
-		}
-		tableRef.value.refresh(true)
-	}
-
-	// 删除
+	// 删除（字典类型或字典值通用）
 	const remove = (record) => {
 		let params = [
 			{
@@ -340,8 +319,8 @@
 		]
 		dictApi.dictDelete(params).then(() => {
 			tableRef.value.refresh()
+			loadDictValueData()
 			refreshStoreDict()
-			loadTreeData() // 删除后刷新树
 		})
 	}
 
@@ -349,16 +328,16 @@
 	const deleteBatchDict = (params) => {
 		dictApi.dictDelete(params).then(() => {
 			tableRef.value.clearRefreshSelected()
+			loadDictValueData()
 			refreshStoreDict()
-			loadTreeData()
 		})
 	}
 
 	// 表单界面回调
 	const formSuccessful = () => {
 		tableRef.value.refresh()
+		loadDictValueData()
 		refreshStoreDict()
-		loadTreeData() // 新增/编辑后刷新树
 	}
 
 	// 刷新store中的字典
@@ -371,66 +350,86 @@
 
 <style scoped lang="less">
 	.dict-container {
-		height: 100%; /* 适配常见的顶部导航高度，保证铺满但不溢出 */
-		.dict-left-panel {
-			height: 100%;
-			background-color: #fff;
-			display: flex;
-			flex-direction: column;
-			overflow: hidden; /* 防止外层滚动 */
-			:deep(.ant-spin-nested-loading) {
-				height: 100%;
+		height: 100%;
+
+		.search-form {
+			margin-bottom: 16px;
+		}
+
+		.dict-type-label {
+			font-weight: 500;
+		}
+
+		.dict-value-panel {
+			padding: 0;
+			animation: dictExpandIn 0.25s ease;
+
+			.dict-value-table-wrap {
+				position: relative;
+			}
+
+			.scroll-hint {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 28px;
 				display: flex;
-				flex-direction: column;
-				.ant-spin-container {
-					height: 100%;
-					display: flex;
-					flex-direction: column;
+				align-items: flex-end;
+				justify-content: center;
+				padding-bottom: 2px;
+				pointer-events: none;
+				z-index: 2;
+				color: var(--primary-color);
+				font-size: 14px;
+				background: linear-gradient(to bottom, transparent, var(--component-background));
+
+				:deep(.anticon) {
+					animation: hintBounce 1.2s ease-in-out infinite;
 				}
 			}
 
-			.dict-left-header {
-				flex-shrink: 0;
-				margin-bottom: 12px;
-				text-align: center;
-
-				.dict-type-radio {
-					width: 100%;
-					margin-bottom: 12px;
-					display: flex;
-
-					:deep(.ant-radio-button-wrapper) {
-						flex: 1;
-						text-align: center;
-					}
-				}
-
-				.dict-tree-search {
-					width: 100%;
-				}
-			}
-
-			.dict-tree-wrapper {
-				flex: 1;
-				overflow-y: auto;
-				/* 隐藏滚动条但保留滚动功能 */
-				&::-webkit-scrollbar {
-					display: none;
-				}
-				scrollbar-width: none; /* Firefox */
-				-ms-overflow-style: none; /* IE and Edge */
+			.dict-value-add {
+				margin-top: 8px;
 			}
 		}
 
-		.dict-right-panel {
-			overflow: hidden;
-			display: flex;
-			flex-direction: column;
+		:deep(.ant-table-expanded-row > .ant-table-cell) {
+			padding: 6px 12px;
+			box-shadow:
+				inset 0 5px 5px -5px rgba(0, 0, 0, 0.22),
+				inset 0 6px 4px -6px rgba(255, 255, 255, 0.08),
+				inset 0 -4px 4px -4px rgba(0, 0, 0, 0.1);
+		}
+	}
 
-			.search-form {
-				margin-bottom: 16px;
-				flex-shrink: 0;
-			}
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 0.3s ease;
+	}
+	.fade-enter-from,
+	.fade-leave-to {
+		opacity: 0;
+	}
+
+	@keyframes hintBounce {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(3px);
+		}
+	}
+
+	@keyframes dictExpandIn {
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
 		}
 	}
 </style>
