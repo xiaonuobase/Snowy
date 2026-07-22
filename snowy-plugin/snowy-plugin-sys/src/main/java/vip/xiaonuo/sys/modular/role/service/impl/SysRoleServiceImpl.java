@@ -336,8 +336,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .map(SysRoleGrantPermissionParam.SysRoleGrantPermission::getApiUrl).collect(Collectors.toList());
         List<String> extJsonList = sysRoleGrantPermissionParam.getGrantInfoList().stream()
                 .map(JSONUtil::toJsonStr).collect(Collectors.toList());
-        sysRelationService.saveRelationBatchWithAppend(id, apiUrlList, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue(),
-                extJsonList);
+        if(clear) {
+            sysRelationService.saveRelationBatchWithClear(id, apiUrlList, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue(),
+                    extJsonList);
+        } else {
+            sysRelationService.saveRelationBatchWithAppend(id, apiUrlList, SysRelationCategoryEnum.SYS_ROLE_HAS_PERMISSION.getValue(),
+                    extJsonList);
+        }
         // 刷新拥有该角色的所有在线用户的权限缓存
         this.refreshRoleLoginUserCache(id);
     }
