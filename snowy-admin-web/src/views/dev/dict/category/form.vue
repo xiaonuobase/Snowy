@@ -30,7 +30,11 @@
 					</a-select-option>
 				</a-select>
 			</a-form-item>
-			<a-form-item label="排序：" name="sortCode" :extra="mode === 'value' ? '同一字典类型下的字典值按此序号升序排列' : ''">
+			<a-form-item
+				label="排序："
+				name="sortCode"
+				:extra="mode === 'value' ? '同一字典类型下的字典值按此序号升序排列' : ''"
+			>
 				<a-input-number class="xn-wd" v-model:value="formData.sortCode" :min="1" :max="1000" />
 			</a-form-item>
 		</a-form>

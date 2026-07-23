@@ -1,133 +1,141 @@
 <template>
-	<div class="dict-container">
-		<!-- 搜索区域 -->
-		<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
-			<a-form-item>
-				<a-radio-group v-model:value="categoryType" button-style="solid" @change="typeChange">
-					<a-radio-button value="FRM">系统字典</a-radio-button>
-					<a-radio-button value="BIZ">业务字典</a-radio-button>
-				</a-radio-group>
-			</a-form-item>
-			<a-form-item label="关键词" name="searchKey">
-				<a-input
-					v-model:value="searchFormState.searchKey"
-					placeholder="请输入字典类型名称"
-					allow-clear
-					@press-enter="tableRef.refresh(true)"
-				/>
-			</a-form-item>
-			<a-form-item>
-				<a-space>
-					<a-button type="primary" @click="tableRef.refresh(true)">
-						<template #icon><SearchOutlined /></template>
-						查询
-					</a-button>
-					<a-button @click="reset">
-						<template #icon><RedoOutlined /></template>
-						重置
-					</a-button>
-				</a-space>
-			</a-form-item>
-		</a-form>
-
-		<!-- 字典类型表格，单击行展开显示该类型下的字典值 -->
-		<s-table
-			ref="tableRef"
-			:columns="columns"
-			:data="loadData"
-			:expand-row-by-click="true"
-			:expanded-row-keys="expandedRowKeys"
-			bordered
-			:tool-config="toolConfig"
-			:row-key="(record) => record.id"
-			:alert="options.alert.show"
-			:row-selection="options.rowSelection"
-			:scroll="{ x: 'max-content' }"
-			@on-expand="onExpandChange"
-		>
-			<template #operator>
-				<a-space>
-					<a-button type="primary" @click="addDictType">
-						<template #icon><PlusOutlined /></template>
-						新增字典类型
-					</a-button>
-					<xn-batch-button
-						buttonName="批量删除"
-						icon="DeleteOutlined"
-						buttonDanger
-						:selectedRowKeys="selectedRowKeys"
-						@batchCallBack="deleteBatchDict"
+	<xn-panel>
+		<div class="dict-container">
+			<!-- 搜索区域 -->
+			<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
+				<a-form-item>
+					<a-radio-group v-model:value="categoryType" button-style="solid" @change="typeChange">
+						<a-radio-button value="FRM">系统字典</a-radio-button>
+						<a-radio-button value="BIZ">业务字典</a-radio-button>
+					</a-radio-group>
+				</a-form-item>
+				<a-form-item label="关键词" name="searchKey">
+					<a-input
+						v-model:value="searchFormState.searchKey"
+						placeholder="请输入字典类型名称"
+						allow-clear
+						@press-enter="tableRef.refresh(true)"
 					/>
-				</a-space>
-			</template>
-			<template #bodyCell="{ column, record }">
-				<template v-if="column.dataIndex === 'dictLabel'">
-					<span class="dict-type-label">{{ record.dictLabel }}</span>
-				</template>
-				<template v-if="column.dataIndex === 'dictValue'">
-					<a-typography-text code>{{ record.dictValue }}</a-typography-text>
-				</template>
-				<template v-if="column.dataIndex === 'childCount'">
-					<a-tag :color="record.childCount ? 'processing' : 'default'">{{ record.childCount || 0 }} 项</a-tag>
-				</template>
-				<template v-if="column.dataIndex === 'action'">
-					<a-space @click.stop>
-						<a @click="addDictValue(record)">添加值</a>
-						<a-divider type="vertical" />
-						<a @click="formRef.onOpen(record, categoryType)">编辑</a>
-						<a-divider type="vertical" />
-						<a-popconfirm title="确定要删除此字典类型及其下的字典值吗？" @confirm="remove(record)" placement="topRight">
-							<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
-						</a-popconfirm>
+				</a-form-item>
+				<a-form-item>
+					<a-space>
+						<a-button type="primary" @click="tableRef.refresh(true)">
+							<template #icon><SearchOutlined /></template>
+							查询
+						</a-button>
+						<a-button @click="reset">
+							<template #icon><RedoOutlined /></template>
+							重置
+						</a-button>
+					</a-space>
+				</a-form-item>
+			</a-form>
+
+			<!-- 字典类型表格，单击行展开显示该类型下的字典值 -->
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				:expanded-row-keys="expandedRowKeys"
+				:tool-config="toolConfig"
+				:row-key="(record) => record.id"
+				:alert="options.alert.show"
+				:row-selection="options.rowSelection"
+				:scroll="{ x: 'max-content' }"
+				@on-expand="onExpandChange"
+			>
+				<template #operator>
+					<a-space>
+						<a-button type="primary" @click="addDictType">
+							<template #icon><PlusOutlined /></template>
+							新增字典类型
+						</a-button>
+						<xn-batch-button
+							buttonName="批量删除"
+							icon="DeleteOutlined"
+							buttonDanger
+							:selectedRowKeys="selectedRowKeys"
+							@batchCallBack="deleteBatchDict"
+						/>
 					</a-space>
 				</template>
-			</template>
-			<template #expandedRowRender="{ record }">
-				<div class="dict-value-panel">
-					<div class="dict-value-table-wrap">
-						<a-table
-							size="small"
-							:columns="valueColumns"
-							:data-source="getDictValues(record.id)"
-							:pagination="false"
-							:row-key="(value) => value.id"
-							:scroll="getDictValues(record.id).length > 10 ? { y: 360 } : undefined"
-						>
-							<template #bodyCell="{ column, record: valueRecord, index }">
-								<template v-if="column.dataIndex === 'index'">
-									<span class="dict-value-index">{{ index + 1 }}</span>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'dictLabel'">
+						<span class="dict-type-label">{{ record.dictLabel }}</span>
+					</template>
+					<template v-if="column.dataIndex === 'dictValue'">
+						<a-typography-text code>{{ record.dictValue }}</a-typography-text>
+					</template>
+					<template v-if="column.dataIndex === 'childCount'">
+						<a-tag :color="record.childCount ? 'processing' : 'default'">{{ record.childCount || 0 }} 项</a-tag>
+					</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a-space @click.stop>
+							<a @click="addDictValue(record)">添加值</a>
+							<a-divider type="vertical" />
+							<a @click="formRef.onOpen(record, categoryType)">编辑</a>
+							<a-divider type="vertical" />
+							<a-popconfirm
+								title="确定要删除此字典类型及其下的字典值吗？"
+								@confirm="remove(record)"
+								placement="topRight"
+							>
+								<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
+							</a-popconfirm>
+						</a-space>
+					</template>
+				</template>
+				<template #expandedRowRender="{ record }">
+					<div class="dict-value-panel">
+						<div class="dict-value-table-wrap">
+							<a-table
+								size="small"
+								:bordered="false"
+								:columns="valueColumns"
+								:data-source="getDictValues(record.id)"
+								:pagination="false"
+								:row-key="(value) => value.id"
+								:scroll="getDictValues(record.id).length > 10 ? { y: 360 } : undefined"
+							>
+								<template #bodyCell="{ column, record: valueRecord, index }">
+									<template v-if="column.dataIndex === 'index'">
+										<span class="dict-value-index">{{ index + 1 }}</span>
+									</template>
+									<template v-if="column.dataIndex === 'dictValue'">
+										<a-typography-text code>{{ valueRecord.dictValue }}</a-typography-text>
+									</template>
+									<template v-if="column.dataIndex === 'dictColor'">
+										<a-tag v-if="valueRecord.dictColor" :color="valueRecord.dictColor">{{
+											valueRecord.dictLabel
+										}}</a-tag>
+									</template>
+									<template v-if="column.dataIndex === 'action'">
+										<a-space>
+											<a @click="formRef.onOpen(valueRecord, categoryType, record)">编辑</a>
+											<a-divider type="vertical" />
+											<a-popconfirm title="确定要删除此字典值吗？" @confirm="remove(valueRecord)" placement="topRight">
+												<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
+											</a-popconfirm>
+										</a-space>
+									</template>
 								</template>
-								<template v-if="column.dataIndex === 'dictValue'">
-									<a-typography-text code>{{ valueRecord.dictValue }}</a-typography-text>
-								</template>
-								<template v-if="column.dataIndex === 'dictColor'">
-									<a-tag v-if="valueRecord.dictColor" :color="valueRecord.dictColor">{{ valueRecord.dictLabel }}</a-tag>
-								</template>
-								<template v-if="column.dataIndex === 'action'">
-									<a-space>
-										<a @click="formRef.onOpen(valueRecord, categoryType, record)">编辑</a>
-										<a-divider type="vertical" />
-										<a-popconfirm title="确定要删除此字典值吗？" @confirm="remove(valueRecord)" placement="topRight">
-											<a-button type="link" danger size="small" style="padding: 0">删除</a-button>
-										</a-popconfirm>
-									</a-space>
-								</template>
-							</template>
-						</a-table>
-						<transition name="fade">
-							<div v-show="showScrollHint" class="scroll-hint">
-								<DownOutlined />
-							</div>
-						</transition>
+							</a-table>
+							<transition name="fade">
+								<div v-show="showScrollHint" class="scroll-hint">
+									<DownOutlined />
+								</div>
+							</transition>
+						</div>
+						<a-button type="dashed" block class="dict-value-add" @click="addDictValue(record)">
+							<template #icon><PlusOutlined /></template>
+							添加字典值
+						</a-button>
 					</div>
-					<a-button type="dashed" block class="dict-value-add" @click="addDictValue(record)">
-						<template #icon><PlusOutlined /></template>
-						添加字典值
-					</a-button>
-				</div>
-			</template>
-		</s-table>
-	</div>
+				</template>
+			</s-table>
+		</div>
+	</xn-panel>
 	<Form ref="formRef" @successful="formSuccessful()" />
 </template>
 

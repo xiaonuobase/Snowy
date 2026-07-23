@@ -1,95 +1,104 @@
 <template>
-	<div class="dict-container">
-		<!-- 搜索区域 -->
-		<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
-			<a-form-item label="关键词" name="searchKey">
-				<a-input
-					v-model:value="searchFormState.searchKey"
-					placeholder="请输入字典类型名称"
-					allow-clear
-					@press-enter="tableRef.refresh(true)"
-				/>
-			</a-form-item>
-			<a-form-item>
-				<a-space>
-					<a-button type="primary" @click="tableRef.refresh(true)">
-						<template #icon>
-							<SearchOutlined />
-						</template>
-						查询
-					</a-button>
-					<a-button @click="reset">
-						<template #icon>
-							<redo-outlined />
-						</template>
-						重置
-					</a-button>
-				</a-space>
-			</a-form-item>
-		</a-form>
-
-		<!-- 字典类型表格，单击行展开显示该类型下的字典值 -->
-		<s-table
-			ref="tableRef"
-			:columns="columns"
-			:data="loadData"
-			:expand-row-by-click="true"
-			:expanded-row-keys="expandedRowKeys"
-			bordered
-			:tool-config="toolConfig"
-			:row-key="(record) => record.id"
-			:scroll="{ x: 'max-content' }"
-			@on-expand="onExpandChange"
-		>
-			<template #bodyCell="{ column, record }">
-				<template v-if="column.dataIndex === 'dictLabel'">
-					<span class="dict-type-label">{{ record.dictLabel }}</span>
-				</template>
-				<template v-if="column.dataIndex === 'dictValue'">
-					<a-typography-text code>{{ record.dictValue }}</a-typography-text>
-				</template>
-				<template v-if="column.dataIndex === 'childCount'">
-					<a-tag :color="record.childCount ? 'processing' : 'default'">{{ record.childCount || 0 }} 项</a-tag>
-				</template>
-				<template v-if="column.dataIndex === 'action'">
-					<a-space @click.stop>
-						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
-					</a-space>
-				</template>
-			</template>
-			<template #expandedRowRender="{ record }">
-				<div class="dict-value-panel">
-					<div class="dict-value-table-wrap">
-						<a-table
-							size="small"
-							:columns="valueColumns"
-							:data-source="getDictValues(record.id)"
-							:pagination="false"
-							:row-key="(value) => value.id"
-							:scroll="getDictValues(record.id).length > 10 ? { y: 360 } : undefined"
-						>
-							<template #bodyCell="{ column, record: valueRecord, index }">
-								<template v-if="column.dataIndex === 'index'">
-									<span>{{ index + 1 }}</span>
-								</template>
-								<template v-if="column.dataIndex === 'dictValue'">
-									<a-typography-text code>{{ valueRecord.dictValue }}</a-typography-text>
-								</template>
-								<template v-if="column.dataIndex === 'action'">
-									<a @click="formRef.onOpen(valueRecord, record)" v-if="hasPerm('bizDictEdit')">编辑</a>
-								</template>
+	<xn-panel>
+		<a-alert
+			message="业务字典仅可修改展示文字，不可对字典进行增删操作"
+			type="info"
+			:closable="false"
+			class="mb-2"
+			show-icon
+		/>
+		<div class="dict-container">
+			<!-- 搜索区域 -->
+			<a-form ref="searchFormRef" :model="searchFormState" layout="inline" class="search-form">
+				<a-form-item label="关键词" name="searchKey">
+					<a-input
+						v-model:value="searchFormState.searchKey"
+						placeholder="请输入字典类型名称"
+						allow-clear
+						@press-enter="tableRef.refresh(true)"
+					/>
+				</a-form-item>
+				<a-form-item>
+					<a-space>
+						<a-button type="primary" @click="tableRef.refresh(true)">
+							<template #icon>
+								<SearchOutlined />
 							</template>
-						</a-table>
-						<transition name="fade">
-							<div v-show="showScrollHint" class="scroll-hint">
-								<DownOutlined />
-							</div>
-						</transition>
+							查询
+						</a-button>
+						<a-button @click="reset">
+							<template #icon>
+								<redo-outlined />
+							</template>
+							重置
+						</a-button>
+					</a-space>
+				</a-form-item>
+			</a-form>
+
+			<!-- 字典类型表格，单击行展开显示该类型下的字典值 -->
+			<s-table
+				ref="tableRef"
+				:columns="columns"
+				:data="loadData"
+				:expand-row-by-click="true"
+				:expanded-row-keys="expandedRowKeys"
+				:tool-config="toolConfig"
+				:row-key="(record) => record.id"
+				:scroll="{ x: 'max-content' }"
+				@on-expand="onExpandChange"
+			>
+				<template #bodyCell="{ column, record }">
+					<template v-if="column.dataIndex === 'dictLabel'">
+						<span class="dict-type-label">{{ record.dictLabel }}</span>
+					</template>
+					<template v-if="column.dataIndex === 'dictValue'">
+						<a-typography-text code>{{ record.dictValue }}</a-typography-text>
+					</template>
+					<template v-if="column.dataIndex === 'childCount'">
+						<a-tag :color="record.childCount ? 'processing' : 'default'">{{ record.childCount || 0 }} 项</a-tag>
+					</template>
+					<template v-if="column.dataIndex === 'action'">
+						<a-space @click.stop>
+							<a @click="formRef.onOpen(record)" v-if="hasPerm('bizDictEdit')">编辑</a>
+						</a-space>
+					</template>
+				</template>
+				<template #expandedRowRender="{ record }">
+					<div class="dict-value-panel">
+						<div class="dict-value-table-wrap">
+							<a-table
+								size="small"
+								:bordered="false"
+								:columns="valueColumns"
+								:data-source="getDictValues(record.id)"
+								:pagination="false"
+								:row-key="(value) => value.id"
+								:scroll="getDictValues(record.id).length > 10 ? { y: 360 } : undefined"
+							>
+								<template #bodyCell="{ column, record: valueRecord, index }">
+									<template v-if="column.dataIndex === 'index'">
+										<span>{{ index + 1 }}</span>
+									</template>
+									<template v-if="column.dataIndex === 'dictValue'">
+										<a-typography-text code>{{ valueRecord.dictValue }}</a-typography-text>
+									</template>
+									<template v-if="column.dataIndex === 'action'">
+										<a @click="formRef.onOpen(valueRecord, record)" v-if="hasPerm('bizDictEdit')">编辑</a>
+									</template>
+								</template>
+							</a-table>
+							<transition name="fade">
+								<div v-show="showScrollHint" class="scroll-hint">
+									<DownOutlined />
+								</div>
+							</transition>
+						</div>
 					</div>
-				</div>
-			</template>
-		</s-table>
-	</div>
+				</template>
+			</s-table>
+		</div>
+	</xn-panel>
 	<Form ref="formRef" @successful="formSuccessful()" />
 </template>
 
