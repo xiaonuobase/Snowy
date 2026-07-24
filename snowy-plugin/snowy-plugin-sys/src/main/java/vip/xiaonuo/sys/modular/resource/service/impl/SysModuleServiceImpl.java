@@ -200,7 +200,7 @@ public class SysModuleServiceImpl extends ServiceImpl<SysModuleMapper, SysModule
                 .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
         // 清除对应的用户与资源信息
         sysRelationService.remove(new LambdaUpdateWrapper<SysRelation>().in(SysRelation::getTargetId, resourceIdList)
-                .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_ROLE_HAS_RESOURCE.getValue()));
+                .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_HAS_RESOURCE.getValue()));
 
         // 发布删除事件，使用合并后的ID列表
         CommonDataChangeEventCenter.doDeleteWithDataIdList(SysDataTypeEnum.RESOURCE.getValue(), allDeleteResourceIds);
