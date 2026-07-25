@@ -206,7 +206,7 @@ public class SysPositionServiceImpl extends ServiceImpl<SysPositionMapper, SysPo
     public Page<SysPosition> positionSelector(SysPositionSelectorPositionParam sysPositionSelectorPositionParam) {
         QueryWrapper<SysPosition> queryWrapper = new QueryWrapper<SysPosition>().checkSqlInjection();
         // 查询部分字段
-        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName,
+        queryWrapper.lambda().select(SysPosition::getId, SysPosition::getOrgId, SysPosition::getName, SysPosition::getCode,
                 SysPosition::getCategory, SysPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(sysPositionSelectorPositionParam.getOrgId())) {
             queryWrapper.lambda().eq(SysPosition::getOrgId, sysPositionSelectorPositionParam.getOrgId());

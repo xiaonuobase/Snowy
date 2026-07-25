@@ -242,7 +242,7 @@ public class BizPositionServiceImpl extends ServiceImpl<BizPositionMapper, BizPo
             CommonSqlUtil.safeIn(queryWrapper.lambda(), BizPosition::getOrgId, loginUserDataScope);
         }
         // 查询部分字段
-        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName,
+        queryWrapper.lambda().select(BizPosition::getId, BizPosition::getOrgId, BizPosition::getName, BizPosition::getCode,
                 BizPosition::getCategory, BizPosition::getSortCode);
         if(ObjectUtil.isNotEmpty(bizPositionSelectorPositionParam.getOrgId())) {
             queryWrapper.lambda().eq(BizPosition::getOrgId, bizPositionSelectorPositionParam.getOrgId());
