@@ -68,10 +68,22 @@ export const globalStore = defineStore('global', () => {
 	const sysBaseConfig = ref(toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG)
 	// 默认应用
 	const module = ref(getCacheConfig('SNOWY_MENU_MODULE_ID'))
+	// 锁屏状态
+	const isLocked = ref(toolDataGet('SNOWY_IS_LOCKED') || false)
+	// 自动锁屏时间（分钟），0 为不开启
+	const autoLockTime = ref(toolDataGet('SNOWY_AUTO_LOCK_TIME') || 0)
 
 	// 定义action
 	const setIsMobile = (key) => {
 		isMobile.value = key
+	}
+	const setIsLocked = (key) => {
+		isLocked.value = key
+		tool.data.set('SNOWY_IS_LOCKED', key)
+	}
+	const setAutoLockTime = (key) => {
+		autoLockTime.value = key
+		tool.data.set('SNOWY_AUTO_LOCK_TIME', key)
 	}
 	const setLayout = (key) => {
 		layout.value = key
@@ -163,7 +175,11 @@ export const globalStore = defineStore('global', () => {
 		userInfo,
 		sysBaseConfig,
 		module,
+		isLocked,
+		autoLockTime,
 		setIsMobile,
+		setIsLocked,
+		setAutoLockTime,
 		setLayout,
 		setTheme,
 		setThemeColor,

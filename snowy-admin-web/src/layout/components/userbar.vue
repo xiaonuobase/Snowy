@@ -1,5 +1,9 @@
 <template>
 	<div class="user-bar">
+		<!-- 锁屏 -->
+		<div v-if="!isMobile" class="panel-item hidden-sm-and-down" title="锁屏" @click="lockScreen">
+			<lock-outlined />
+		</div>
 		<!-- 搜索面板 -->
 		<panel-search v-if="!isMobile" />
 		<div v-if="!isMobile" class="screen panel-item hidden-sm-and-down" @click="fullscreen">
@@ -127,6 +131,7 @@
 							tool.data.remove('USER_INFO')
 							tool.data.remove('MENU')
 							tool.data.remove('PERMISSIONS')
+							tool.data.remove('SNOWY_IS_LOCKED')
 							// 清理标签与缓存，避免同一标签页内换号后残留
 							viewTagsStore().clearViewTags()
 							keepAliveStore().clearKeepLive()
@@ -163,6 +168,10 @@
 		if (screenFull.isEnabled) {
 			screenFull.toggle(element)
 		}
+	}
+	// 锁屏
+	const lockScreen = () => {
+		store.setIsLocked(true)
 	}
 </script>
 

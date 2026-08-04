@@ -163,6 +163,7 @@ router.beforeEach(async (to, from, next) => {
 			// 验证menu或则用户信息是否存在，不存在那么就是被删除或者退出或者清理缓存了
 			if (!tool.data.get('MENU') || !tool.data.get('USER_INFO')) {
 				tool.data.remove('TOKEN')
+				tool.data.remove('SNOWY_IS_LOCKED')
 				next({
 					path: '/login'
 				})
@@ -171,6 +172,7 @@ router.beforeEach(async (to, from, next) => {
 		}
 	}
 	if (!token) {
+		tool.data.remove('SNOWY_IS_LOCKED')
 		next({
 			path: '/login'
 		})

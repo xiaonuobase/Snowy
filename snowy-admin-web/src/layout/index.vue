@@ -268,6 +268,7 @@
 		onLayoutResize()
 		window.addEventListener('resize', onLayoutResize)
 		window.addEventListener('resize', getNav)
+
 		switchoverTopHeaderThemeColor()
 		settingTopHeaderThemeOrColor(theme.value, layout.value)
 		settingFixedWidth()

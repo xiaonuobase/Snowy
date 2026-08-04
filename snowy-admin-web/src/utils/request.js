@@ -76,6 +76,7 @@ const error = () => {
 			tool.data.remove('USER_INFO')
 			tool.data.remove('MENU')
 			tool.data.remove('PERMISSIONS')
+			tool.data.remove('SNOWY_IS_LOCKED')
 			window.location.reload()
 		}
 	})

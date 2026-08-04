@@ -17,14 +17,18 @@
 				<router-view />
 			</a-watermark>
 		</div>
+		<lock-screen />
 	</a-config-provider>
 </template>
 
 <script setup name="App">
-	import { onUnmounted } from 'vue'
+	import { onUnmounted, onMounted, nextTick, watch } from 'vue'
 	import i18n from '@/locales'
 	import { globalStore } from '@/store'
 	import { theme } from 'ant-design-vue'
+	import LockScreen from '@/layout/components/lockScreen.vue'
+	import tool from '@/utils/tool'
+
 	const store = globalStore()
 	store.initTheme()
 	const locale = i18n.global.messages.value[i18n.global.locale.value].lang
@@ -38,6 +42,23 @@
 	const grayModeOpen = computed(() => store.grayModeOpen)
 	// 灰色模式类名
 	const GRAY_MODE_CLASS = 'gray-mode'
+
+	const autoLockTime = computed(() => store.autoLockTime)
+	let timer = null
+
+	// 重置定时器
+	const resetTimer = () => {
+		if (timer) {
+			clearTimeout(timer)
+		}
+		const token = tool.data.get('TOKEN')
+		if (token && autoLockTime.value > 0 && !store.isLocked) {
+			timer = setTimeout(() => {
+				store.setIsLocked(true)
+			}, autoLockTime.value * 60 * 1000)
+		}
+	}
+
 	// 监听灰色模式，同步到 html 元素
 	watch(
 		grayModeOpen,
@@ -49,6 +70,30 @@
 	// 组件卸载时清理
 	onUnmounted(() => {
 		document.documentElement.classList.remove(GRAY_MODE_CLASS)
+		window.removeEventListener('mousedown', resetTimer)
+		window.removeEventListener('mousemove', resetTimer)
+		window.removeEventListener('keydown', resetTimer)
+		window.removeEventListener('touchstart', resetTimer)
+		window.removeEventListener('scroll', resetTimer)
+		if (timer) {
+			clearTimeout(timer)
+		}
+	})
+
+	onMounted(() => {
+		window.addEventListener('mousedown', resetTimer)
+		window.addEventListener('mousemove', resetTimer)
+		window.addEventListener('keydown', resetTimer)
+		window.addEventListener('touchstart', resetTimer)
+		window.addEventListener('scroll', resetTimer)
+		nextTick(() => {
+			resetTimer()
+		})
+	})
+
+	// 监听自动锁屏时间变化
+	watch(autoLockTime, () => {
+		resetTimer()
 	})
 </script>
 
