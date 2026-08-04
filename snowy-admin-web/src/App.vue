@@ -53,9 +53,12 @@
 		}
 		const token = tool.data.get('TOKEN')
 		if (token && autoLockTime.value > 0 && !store.isLocked) {
-			timer = setTimeout(() => {
-				store.setIsLocked(true)
-			}, autoLockTime.value * 60 * 1000)
+			timer = setTimeout(
+				() => {
+					store.setIsLocked(true)
+				},
+				autoLockTime.value * 60 * 1000
+			)
 		}
 	}
 
