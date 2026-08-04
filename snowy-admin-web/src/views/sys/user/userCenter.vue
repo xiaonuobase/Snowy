@@ -141,13 +141,17 @@
 		const fileData = new FormData()
 		fileData.append('file', result)
 		avatarLoading.value = true
-		userCenterApi.userUpdateAvatar(fileData).then((data) => {
-			avatarLoading.value = false
-			userInfo.value.avatar = data
-			// 更新缓存
-			tool.data.set('USER_INFO', userInfo.value)
-			store.setUserInfo(userInfo.value)
-		})
+		userCenterApi
+			.userUpdateAvatar(fileData)
+			.then((data) => {
+				userInfo.value.avatar = data
+				// 更新缓存
+				tool.data.set('USER_INFO', userInfo.value)
+				store.setUserInfo(userInfo.value)
+			})
+			.finally(() => {
+				avatarLoading.value = false
+			})
 	}
 	// 签名板组件回调
 	const signSuccess = (value) => {

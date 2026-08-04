@@ -11,9 +11,11 @@
 // 统一的请求发送
 import axios from 'axios'
 import qs from 'qs'
-import { Modal, message } from 'ant-design-vue'
+import { Modal, message, Input } from 'ant-design-vue'
+import { h } from 'vue'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
+import smCrypto from '@/utils/smCrypto'
 import { convertUrl } from './apiAdaptive'
 
 // 以下这些code需要重新登录
@@ -25,6 +27,7 @@ const errorCodeMap = {
 	404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
 	406: '请求的格式不可得。',
 	410: '请求的资源被永久删除，且不会再得到的。',
+	411: '二级认证校验失败，请重新认证。',
 	422: '当创建一个对象时，发生一个验证错误。',
 	500: '服务器发生错误，请检查服务器。',
 	502: '网关错误。',
@@ -78,6 +81,50 @@ const error = () => {
 	})
 }
 
+// 开启二级认证的弹窗
+const handleSafeAuth = (config) => {
+	return new Promise((resolve, reject) => {
+		let password = ''
+		Modal.confirm({
+			title: '二级认证',
+			width: 400,
+			content: () =>
+				h('div', [
+					h('div', { style: 'margin-bottom: 10px' }, '该操作涉及敏感数据，请验证登录密码'),
+					h(Input.Password, {
+						placeholder: '请输入登录密码',
+						onChange: (e) => {
+							password = e.target.value
+						}
+					})
+				]),
+			onOk: () => {
+				if (!password) {
+					message.warning('请输入密码')
+					return Promise.reject()
+				}
+				const param = {
+					password: smCrypto.doSm2Encrypt(password)
+				}
+				// 调用开启二级认证接口
+				return service
+					.post('/sys/userCenter/openSafe', param)
+					.then(() => {
+						message.success('认证成功')
+						// 认证成功后重试原请求
+						resolve(service(config))
+					})
+					.catch(() => {
+						return Promise.reject()
+					})
+			},
+			onCancel: () => {
+				reject()
+			}
+		})
+	})
+}
+
 // HTTP response 拦截器
 service.interceptors.response.use(
 	(response) => {
@@ -97,6 +144,9 @@ service.interceptors.response.use(
 				error()
 			}
 			return
+		}
+		if (code === 411) {
+			return handleSafeAuth(response.config)
 		}
 		if (code !== 200) {
 			const customErrorMessage = response.config.customErrorMessage

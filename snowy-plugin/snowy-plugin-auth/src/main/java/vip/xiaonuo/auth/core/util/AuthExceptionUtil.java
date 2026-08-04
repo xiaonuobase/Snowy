@@ -48,6 +48,10 @@ public class AuthExceptionUtil {
 
             // 如果是权限异常 403
             commonResult = CommonResult.get(HttpStatus.HTTP_FORBIDDEN, "无此权限：" + notPermissionException.getPermission(), null);
+        } else if (e instanceof NotSafeException notSafeException) {
+
+            // 如果是二级认证异常 411
+            commonResult = CommonResult.get(411, notSafeException.getMessage(), null);
         } else if (e instanceof DisableServiceException disableServiceException) {
 
             // 如果是被封禁异常 403

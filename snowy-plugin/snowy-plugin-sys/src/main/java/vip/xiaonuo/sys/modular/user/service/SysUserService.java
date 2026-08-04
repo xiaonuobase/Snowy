@@ -40,6 +40,14 @@ import java.util.List;
 public interface SysUserService extends IService<SysUser> {
 
     /**
+     * 开启二级认证
+     *
+     * @author xuyuxiang
+     * @date 2022/4/22 15:53
+     **/
+    void openSafe(SysUserOpenSafeParam sysUserOpenSafeParam);
+
+    /**
      * 根据id获取用户信息，查不到则返回null
      *
      * @author xuyuxiang
