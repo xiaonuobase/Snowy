@@ -27,7 +27,7 @@ const errorCodeMap = {
 	404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
 	406: '请求的格式不可得。',
 	410: '请求的资源被永久删除，且不会再得到的。',
-	411: '二级认证校验失败，请重新认证。',
+	4011: '二级认证校验失败，请重新认证。',
 	422: '当创建一个对象时，发生一个验证错误。',
 	500: '服务器发生错误，请检查服务器。',
 	502: '网关错误。',
@@ -83,7 +83,7 @@ const error = () => {
 }
 
 // 开启二级认证的弹窗
-const handleSafeAuth = (config) => {
+const handleSafeAuth = (config, safeType) => {
 	return new Promise((resolve, reject) => {
 		let password = ''
 		Modal.confirm({
@@ -105,7 +105,8 @@ const handleSafeAuth = (config) => {
 					return Promise.reject()
 				}
 				const param = {
-					password: smCrypto.doSm2Encrypt(password)
+					password: smCrypto.doSm2Encrypt(password),
+					safeType: safeType
 				}
 				// 调用开启二级认证接口
 				return service
@@ -146,8 +147,8 @@ service.interceptors.response.use(
 			}
 			return
 		}
-		if (code === 411) {
-			return handleSafeAuth(response.config)
+		if (code === 4011) {
+			return handleSafeAuth(response.config, data.data)
 		}
 		if (code !== 200) {
 			const customErrorMessage = response.config.customErrorMessage

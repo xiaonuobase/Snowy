@@ -18,21 +18,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 用户开启二级认证参数
+ * 用户解锁参数
  *
  * @author xuyuxiang
  * @date 2022/7/26 16:04
  **/
 @Getter
 @Setter
-public class SysUserOpenSafeParam {
+public class SysUserUnlockParam {
 
     /** 密码 */
     @Schema(description = "密码")
     @NotBlank(message = "password不能为空")
     private String password;
-
-    /** 安全类型 */
-    @Schema(description = "安全类型")
-    private String safeType;
 }

@@ -52,6 +52,20 @@ public class SysUserCenterController {
     private SysUserService sysUserService;
 
     /**
+     * 解锁屏幕
+     *
+     * @author xuyuxiang
+     * @date 2022/4/22 15:53
+     **/
+    @Operation(summary = "解锁屏幕")
+    @CommonLog("解锁屏幕")
+    @PostMapping("/sys/userCenter/unlock")
+    public CommonResult<String> unlock(@RequestBody @Valid SysUserUnlockParam sysUserUnlockParam) {
+        sysUserService.unlock(sysUserUnlockParam);
+        return CommonResult.ok("解锁成功");
+    }
+
+    /**
      * 开启二级认证
      *
      * @author xuyuxiang

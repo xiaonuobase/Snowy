@@ -1,6 +1,7 @@
 <template>
-	<transition name="up">
-		<div v-if="visible" :class="['snowy-lock-screen', { dark: isDark }]">
+	<transition name="lock-fade">
+		<div v-show="visible" :class="['snowy-lock-screen', { dark: isDark }]">
+			<div class="lock-screen-mask"></div>
 			<div class="lock-screen-content">
 				<div class="lock-screen-avatar">
 					<img :src="userInfo.avatar" />
@@ -12,12 +13,15 @@
 						placeholder="请输入登录密码解锁"
 						size="large"
 						:style="{ borderRadius: 0 }"
+						:status="errorMsg ? 'error' : ''"
 						@keyup.enter="handleUnlock"
+						@change="errorMsg = ''"
 					>
 						<template #prefix>
 							<lock-outlined />
 						</template>
 					</a-input-password>
+					<div class="lock-screen-error-msg">{{ errorMsg }}</div>
 					<a-button
 						type="primary"
 						size="large"
@@ -37,7 +41,7 @@
 <script setup>
 	import { ref, computed } from 'vue'
 	import { useRoute } from 'vue-router'
-	import { message, Modal } from 'ant-design-vue'
+	import { Modal } from 'ant-design-vue'
 	import { LockOutlined } from '@ant-design/icons-vue'
 	import { globalStore } from '@/store'
 	import tool from '@/utils/tool'
@@ -52,6 +56,7 @@
 	const userInfo = computed(() => store.userInfo)
 	const password = ref('')
 	const loading = ref(false)
+	const errorMsg = ref('')
 
 	// 锁屏界面是否可见（排除登录页和无Token状态）
 	const visible = computed(() => {
@@ -62,15 +67,16 @@
 	// 解锁
 	const handleUnlock = async () => {
 		if (!password.value) {
-			message.warning('请输入密码')
+			errorMsg.value = '请输入密码'
 			return
 		}
 		loading.value = true
+		errorMsg.value = ''
 		try {
 			const param = {
 				password: smCrypto.doSm2Encrypt(password.value)
 			}
-			const res = await axios.post('/api/sys/userCenter/openSafe', param, {
+			const res = await axios.post('/api/sys/userCenter/unlock', param, {
 				headers: {
 					[sysConfig.TOKEN_NAME]: sysConfig.TOKEN_PREFIX + tool.data.get('TOKEN')
 				}
@@ -78,20 +84,16 @@
 			if (res.data.code === 200) {
 				store.setIsLocked(false)
 				password.value = ''
-				message.success('解锁成功')
 			} else if (res.data.code === 401 || res.data.code === 1011007 || res.data.code === 1011008) {
-				// Token 失效逻辑
-				message.error('登录已失效，请重新登录')
 				handleLogout(true)
 			} else {
-				message.error(res.data.msg || '密码错误')
+				errorMsg.value = res.data.msg || '密码错误'
 			}
 		} catch (err) {
 			if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-				message.error('登录已失效，请重新登录')
 				handleLogout(true)
 			} else {
-				message.error('解锁失败')
+				errorMsg.value = '解锁失败，请重试'
 			}
 		} finally {
 			loading.value = false
@@ -131,21 +133,32 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		z-index: 9999;
+		z-index: 2000;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 100vw;
 		height: 100vh;
 		overflow: hidden;
-		// 核心磨砂玻璃效果：全透明背景 + 适度模糊
-		background: rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		transition: all 0.3s;
+
+		.lock-screen-mask {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(255, 255, 255, 0.1);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			z-index: -1;
+			will-change: backdrop-filter;
+			transform: translateZ(0);
+		}
 
 		&.dark {
-			background: rgba(0, 0, 0, 0.4);
+			.lock-screen-mask {
+				background: rgba(0, 0, 0, 0.4);
+			}
 			.lock-screen-username {
 				color: #fff;
 			}
@@ -159,7 +172,6 @@
 			width: 450px;
 			padding: 60px 40px;
 			text-align: center;
-			// 内容区域磨砂感
 			background: rgba(255, 255, 255, 0.2);
 			border: 1px solid rgba(255, 255, 255, 0.1);
 			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -191,7 +203,18 @@
 
 		.lock-screen-form {
 			.ant-input-affix-wrapper-lg {
-				margin-bottom: 20px;
+				margin-bottom: 0;
+			}
+			.lock-screen-error-msg {
+				color: #ff4d4f;
+				text-align: left;
+				font-size: 12px;
+				min-height: 28px;
+				line-height: 28px;
+				padding-left: 2px;
+			}
+			.ant-btn {
+				margin-top: 4px;
 			}
 		}
 	}
@@ -204,12 +227,27 @@
 		}
 	}
 
-	.up-enter-active,
-	.up-leave-active {
-		transition: all 0.5s ease;
+	// 锁屏动画优化
+	.lock-fade-enter-active,
+	.lock-fade-leave-active {
+		transition: opacity 0.3s ease;
+		// 确保背景模糊在进入时立即应用，而不是从0开始插值
+		.lock-screen-mask {
+			transition: opacity 0.3s ease;
+		}
+		// 内容区域增加微小延迟，确保模糊效果先行渲染完成
+		.lock-screen-content {
+			transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+			transition-delay: 0.08s;
+		}
 	}
-	.up-enter-from,
-	.up-leave-to {
+
+	.lock-fade-enter-from,
+	.lock-fade-leave-to {
 		opacity: 0;
+		.lock-screen-content {
+			opacity: 0;
+			transform: scale(0.95);
+		}
 	}
 </style>

@@ -271,6 +271,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SaBaseLoginUserApi loginUserApi;
 
     @Override
+    public void unlock(SysUserUnlockParam sysUserUnlockParam) {
+        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
+        String password = CommonCryptogramUtil.doSm2Decrypt(sysUserUnlockParam.getPassword()).trim();
+        if (!CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword())) {
+            throw new CommonException("密码错误");
+        }
+    }
+
+    @Override
     public void openSafe(SysUserOpenSafeParam sysUserOpenSafeParam) {
         SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
         String password = CommonCryptogramUtil.doSm2Decrypt(sysUserOpenSafeParam.getPassword()).trim();
@@ -278,7 +287,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new CommonException("密码错误");
         }
         // 比对成功，为当前会话打开二级认证，有效期为120秒
-        StpUtil.openSafe(120);
+        if (ObjectUtil.isNotEmpty(sysUserOpenSafeParam.getSafeType())) {
+            StpUtil.openSafe(sysUserOpenSafeParam.getSafeType(), 120);
+        } else {
+            StpUtil.openSafe(120);
+        }
     }
 
     @Override
