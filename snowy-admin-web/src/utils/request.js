@@ -11,15 +11,22 @@
 // 统一的请求发送
 import axios from 'axios'
 import qs from 'qs'
-import { Modal, message, Input } from 'ant-design-vue'
-import { h } from 'vue'
+import { message } from 'ant-design-vue'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
-import smCrypto from '@/utils/smCrypto'
 import { convertUrl } from './apiAdaptive'
+// 认证类业务码的具体处理（重登弹窗、二级认证、锁屏）都在这里，本文件只负责识别与分发
+import {
+	RELOGIN_CODES,
+	SAFE_AUTH_CODE,
+	LOCKED_CODE,
+	UNLOCK_FAIL_LIMIT_CODE,
+	handleRelogin,
+	handleUnlockFailLimit,
+	handleLocked,
+	handleSafeAuth
+} from '@/utils/codeHandler'
 
-// 以下这些code需要重新登录
-const reloadCodes = [401, 1011007, 1011008]
 const errorCodeMap = {
 	400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
 	401: '用户没有权限（令牌、用户名、密码错误）。',
@@ -34,8 +41,6 @@ const errorCodeMap = {
 	503: '服务不可用，服务器暂时过载或维护。',
 	504: '网关超时。'
 }
-// 定义一个重新登录弹出窗的变量
-const loginBack = ref(false)
 // 判断是否为直连模式（仅生产环境 + API_URL 配置了完整后端地址时生效）
 const isDirectMode = !import.meta.env.DEV && sysConfig.API_URL && /^https?:\/\//.test(sysConfig.API_URL)
 // 创建 axios 实例
@@ -63,70 +68,6 @@ service.interceptors.request.use(
 	}
 )
 
-// 保持重新登录Modal的唯一性
-const error = () => {
-	loginBack.value = true
-	Modal.error({
-		title: '提示：',
-		okText: '重新登录',
-		content: '登录已失效， 请重新登录',
-		onOk: () => {
-			loginBack.value = false
-			tool.data.remove('TOKEN')
-			tool.data.remove('USER_INFO')
-			tool.data.remove('MENU')
-			tool.data.remove('PERMISSIONS')
-			tool.data.remove('SNOWY_IS_LOCKED')
-			window.location.reload()
-		}
-	})
-}
-
-// 开启二级认证的弹窗
-const handleSafeAuth = (config, safeType) => {
-	return new Promise((resolve, reject) => {
-		let password = ''
-		Modal.confirm({
-			title: '二级认证',
-			width: 400,
-			content: () =>
-				h('div', [
-					h('div', { style: 'margin-bottom: 10px' }, '该操作涉及敏感数据，请验证登录密码'),
-					h(Input.Password, {
-						placeholder: '请输入登录密码',
-						onChange: (e) => {
-							password = e.target.value
-						}
-					})
-				]),
-			onOk: () => {
-				if (!password) {
-					message.warning('请输入密码')
-					return Promise.reject()
-				}
-				const param = {
-					password: smCrypto.doSm2Encrypt(password),
-					safeType: safeType
-				}
-				// 调用开启二级认证接口
-				return service
-					.post('/sys/userCenter/openSafe', param)
-					.then(() => {
-						message.success('认证成功')
-						// 认证成功后重试原请求
-						resolve(service(config))
-					})
-					.catch(() => {
-						return Promise.reject()
-					})
-			},
-			onCancel: () => {
-				reject()
-			}
-		})
-	})
-}
-
 // HTTP response 拦截器
 service.interceptors.response.use(
 	(response) => {
@@ -141,14 +82,17 @@ service.interceptors.response.use(
 		}
 		const data = response.data
 		const code = data.code
-		if (reloadCodes.includes(code)) {
-			if (!loginBack.value) {
-				error()
-			}
-			return
+		if (RELOGIN_CODES.includes(code)) {
+			return handleRelogin()
 		}
-		if (code === 4011) {
-			return handleSafeAuth(response.config, data.data)
+		if (code === UNLOCK_FAIL_LIMIT_CODE) {
+			return handleUnlockFailLimit(data)
+		}
+		if (code === SAFE_AUTH_CODE) {
+			return handleSafeAuth(service, response.config, data.data)
+		}
+		if (code === LOCKED_CODE) {
+			return handleLocked(data)
 		}
 		if (code !== 200) {
 			const customErrorMessage = response.config.customErrorMessage

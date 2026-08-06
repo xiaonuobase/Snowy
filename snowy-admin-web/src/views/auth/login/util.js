@@ -13,6 +13,8 @@ export const afterLogin = async (loginToken, targetPath) => {
 	const menuStore = useMenuStore()
 	const userStore = useUserStore()
 	tool.data.set('TOKEN', loginToken)
+	// 重新登录一定不处于锁屏，清掉上次会话残留的锁屏状态（服务端同样会在登录时清除）
+	globalStore().setIsLocked(false)
 
 	// 并行初始化用户信息和获取用户的菜单
 	await Promise.all([userStore.initUserInfo(), menuStore.fetchMenu()])

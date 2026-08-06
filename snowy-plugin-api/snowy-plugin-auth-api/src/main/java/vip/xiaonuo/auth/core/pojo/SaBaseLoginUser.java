@@ -247,6 +247,10 @@ public abstract class SaBaseLoginUser {
     @Schema(description = "用户密码hash值")
     private String password;
 
+    /** 自动锁屏时长，单位分钟，0表示不自动锁屏 */
+    @Schema(description = "自动锁屏时长，单位分钟，0表示不自动锁屏")
+    private Integer autoLockTime;
+
     /** 是否可登录，由继承类实现 */
     public abstract Boolean getEnabled();
 

@@ -22,7 +22,8 @@
 						v-if="item.type === 'lock'"
 						v-model:value="autoLockTime"
 						:min="0"
-						:max="5"
+						:max="AUTO_LOCK_TIME_MAX"
+						:precision="0"
 						style="width: 120px"
 						@change="handleLockTimeChange"
 					/>
@@ -58,12 +59,39 @@
 	const bindEmailRef = ref()
 	const bindOtpRef = ref()
 	const store = globalStore()
+	// 自动锁屏时长上限（分钟），与后端 SysUserServiceImpl 的校验保持一致
+	const AUTO_LOCK_TIME_MAX = 720
+	// 输入防抖时长（毫秒），避免连续输入或连点步进按钮时频繁提交
+	const SAVE_DEBOUNCE_INTERVAL = 500
 	const autoLockTime = ref(store.autoLockTime)
+	let saveTimer = null
+
+	// 用户信息刷新后同步输入框，保证展示的始终是服务端的值
+	watch(
+		() => store.autoLockTime,
+		(value) => {
+			autoLockTime.value = value
+		}
+	)
 
 	const handleLockTimeChange = (value) => {
-		store.setAutoLockTime(value || 0)
-		message.success('设置成功')
+		if (saveTimer) {
+			clearTimeout(saveTimer)
+		}
+		saveTimer = setTimeout(() => {
+			const lockTime = Number(value) || 0
+			// 接口名含 update，request.js 会统一弹成功提示，此处不再重复提示
+			userCenterApi.userUpdateAutoLockTime({ autoLockTime: lockTime }).then(() => {
+				store.setAutoLockTime(lockTime)
+			})
+		}, SAVE_DEBOUNCE_INTERVAL)
 	}
+
+	onUnmounted(() => {
+		if (saveTimer) {
+			clearTimeout(saveTimer)
+		}
+	})
 
 	const userInfo = computed(() => {
 		if (store.userInfo) {

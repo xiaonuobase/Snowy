@@ -18,6 +18,22 @@ const request = (url, ...arg) => baseRequest(`/sys/userCenter/` + url, ...arg)
  * @date 2022-09-22 22:33:20
  */
 export default {
+	// 开启二级认证
+	userOpenSafe(data) {
+		return request('openSafe', data)
+	},
+	// 锁定屏幕
+	userLock(data) {
+		return request('lock', data)
+	},
+	// 解锁屏幕
+	userUnlock(data) {
+		return request('unlock', data)
+	},
+	// 修改自动锁屏时长
+	userUpdateAutoLockTime(data) {
+		return request('updateAutoLockTime', data)
+	},
 	// 获取图片验证码
 	userGetPicCaptcha(data) {
 		return request('getPicCaptcha', data, 'get')

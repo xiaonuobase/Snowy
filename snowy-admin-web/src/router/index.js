@@ -162,8 +162,8 @@ router.beforeEach(async (to, from, next) => {
 			tool.data.set('LAST_VIEWS_PATH', to.fullPath)
 			// 验证menu或则用户信息是否存在，不存在那么就是被删除或者退出或者清理缓存了
 			if (!tool.data.get('MENU') || !tool.data.get('USER_INFO')) {
-				tool.data.remove('TOKEN')
-				tool.data.remove('SNOWY_IS_LOCKED')
+				tool.clearLoginCache()
+				store.setIsLocked(false)
 				next({
 					path: '/login'
 				})
@@ -172,7 +172,8 @@ router.beforeEach(async (to, from, next) => {
 		}
 	}
 	if (!token) {
-		tool.data.remove('SNOWY_IS_LOCKED')
+		// 无登录态时一定不该处于锁屏，避免登录页被残留的锁屏遮罩盖住
+		store.setIsLocked(false)
 		next({
 			path: '/login'
 		})

@@ -68,10 +68,10 @@ export const globalStore = defineStore('global', () => {
 	const sysBaseConfig = ref(toolDataGet('SNOWY_SYS_BASE_CONFIG') || config.SYS_BASE_CONFIG)
 	// 默认应用
 	const module = ref(getCacheConfig('SNOWY_MENU_MODULE_ID'))
-	// 锁屏状态
+	// 锁屏状态，服务端为准，此处仅作本地缓存以便刷新页面时立即呈现锁屏
 	const isLocked = ref(toolDataGet('SNOWY_IS_LOCKED') || false)
-	// 自动锁屏时间（分钟），0 为不开启
-	const autoLockTime = ref(toolDataGet('SNOWY_AUTO_LOCK_TIME') || 0)
+	// 无操作自动锁屏时长（分钟），0 为不开启，随登录用户信息由服务端下发
+	const autoLockTime = computed(() => Number(userInfo.value?.autoLockTime) || 0)
 
 	// 定义action
 	const setIsMobile = (key) => {
@@ -80,10 +80,6 @@ export const globalStore = defineStore('global', () => {
 	const setIsLocked = (key) => {
 		isLocked.value = key
 		tool.data.set('SNOWY_IS_LOCKED', key)
-	}
-	const setAutoLockTime = (key) => {
-		autoLockTime.value = key
-		tool.data.set('SNOWY_AUTO_LOCK_TIME', key)
 	}
 	const setLayout = (key) => {
 		layout.value = key
@@ -147,6 +143,15 @@ export const globalStore = defineStore('global', () => {
 	}
 	const setUserInfo = (key) => {
 		userInfo.value = key
+		if (key) {
+			tool.data.set('USER_INFO', key)
+		} else {
+			tool.data.remove('USER_INFO')
+		}
+	}
+	// 修改自动锁屏时长，服务端保存成功后同步到本地用户信息
+	const setAutoLockTime = (key) => {
+		setUserInfo({ ...userInfo.value, autoLockTime: key })
 	}
 	const setSysBaseConfig = (key) => {
 		sysBaseConfig.value = key

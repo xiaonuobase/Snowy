@@ -16,11 +16,16 @@
  */
 const tool = {}
 
+// SNOWY_ 前缀的键统一聚合存放在这个 localStorage 项里
+const SNOWY_SETTING_KEY = 'SNOWY_SETTING'
+// 判断某个键是否被聚合存放（SNOWY_SYS_BASE_CONFIG 体积大，仍单独存放）
+const isSnowySettingKey = (table) => table.slice(0, 6) === 'SNOWY_' && table !== 'SNOWY_SYS_BASE_CONFIG'
+
 // localStorage
 tool.data = {
 	set(table, settings) {
 		const _set = JSON.stringify(settings)
-		const SNOWYSTRING = table.slice(0, 6) === 'SNOWY_' && table !== 'SNOWY_SYS_BASE_CONFIG'
+		const SNOWYSTRING = isSnowySettingKey(table)
 		if (SNOWYSTRING) {
 			let localSetting = JSON.parse(localStorage.getItem('SNOWY_SETTING')) || {}
 			let newSetting = {}
@@ -29,8 +34,8 @@ tool.data = {
 		} else return localStorage.setItem(table, _set)
 	},
 	get(table) {
-		const SNOWYSTRING = table.slice(0, 6) === 'SNOWY_' && table !== 'SNOWY_SYS_BASE_CONFIG'
-		const SNOWY_SETTING = JSON.parse(localStorage.getItem('SNOWY_SETTING')) || {}
+		const SNOWYSTRING = isSnowySettingKey(table)
+		const SNOWY_SETTING = JSON.parse(localStorage.getItem(SNOWY_SETTING_KEY)) || {}
 		let data = SNOWYSTRING ? SNOWY_SETTING[table] : localStorage.getItem(table)
 		try {
 			data = JSON.parse(data)
@@ -40,12 +45,28 @@ tool.data = {
 		return data
 	},
 	remove(table) {
+		// SNOWY_ 前缀的键存在聚合对象里，直接 removeItem 是删不掉的，需从聚合对象中摘除
+		if (isSnowySettingKey(table)) {
+			const localSetting = JSON.parse(localStorage.getItem(SNOWY_SETTING_KEY)) || {}
+			delete localSetting[table]
+			return localStorage.setItem(SNOWY_SETTING_KEY, JSON.stringify(localSetting))
+		}
 		return localStorage.removeItem(table)
 	},
 
 	clear() {
 		return localStorage.clear()
 	}
+}
+
+// 清理B端登录态缓存，退出登录、登录失效、缓存被破坏时统一调用
+tool.clearLoginCache = () => {
+	tool.data.remove('TOKEN')
+	tool.data.remove('USER_INFO')
+	tool.data.remove('MENU')
+	tool.data.remove('PERMISSIONS')
+	tool.data.remove('SNOWY_IS_LOCKED')
+	tool.data.remove('SNOWY_LAST_ACTIVITY')
 }
 
 // sessionStorage

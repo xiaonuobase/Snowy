@@ -40,12 +40,28 @@ import java.util.List;
 public interface SysUserService extends IService<SysUser> {
 
     /**
+     * 锁定屏幕
+     *
+     * @author xuyuxiang
+     * @date 2026/8/6 10:20
+     **/
+    void lock();
+
+    /**
      * 解锁屏幕
      *
      * @author xuyuxiang
      * @date 2022/4/22 15:53
      **/
     void unlock(SysUserUnlockParam sysUserUnlockParam);
+
+    /**
+     * 修改自动锁屏时长
+     *
+     * @author xuyuxiang
+     * @date 2026/8/6 10:20
+     **/
+    void updateAutoLockTime(SysUserUpdateAutoLockTimeParam sysUserUpdateAutoLockTimeParam);
 
     /**
      * 开启二级认证

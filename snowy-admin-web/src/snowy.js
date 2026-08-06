@@ -1,4 +1,5 @@
 import * as antdvIcons from '@ant-design/icons-vue'
+import { message, notification } from 'ant-design-vue'
 import config from './config'
 import tool from './utils/tool'
 import { hasPerm } from './utils/permission/index'
@@ -11,8 +12,15 @@ import STable from './components/Table/index.vue'
 import Ellipsis from './components/Ellipsis/index.vue'
 import DragModal from './components/DragModal/index.vue'
 
+// 全局提示的层级，需高于锁屏遮罩（@lock-screen-z-index），否则解锁失败的提示会被遮罩盖住
+const GLOBAL_MESSAGE_Z_INDEX = 10000
+
 export default {
 	install(app) {
+		// 全局提示层级配置
+		message.config({ zIndex: GLOBAL_MESSAGE_Z_INDEX })
+		notification.config({ zIndex: GLOBAL_MESSAGE_Z_INDEX })
+
 		// 挂载全局对象
 		app.config.globalProperties.$CONFIG = config
 		app.config.globalProperties.$TOOL = tool

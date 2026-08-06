@@ -9,121 +9,104 @@
 				<div class="lock-screen-username">{{ userInfo.name }}</div>
 				<div class="lock-screen-form">
 					<a-input-password
+						ref="passwordRef"
 						v-model:value="password"
 						placeholder="请输入登录密码解锁"
 						size="large"
 						:style="{ borderRadius: 0 }"
-						:status="errorMsg ? 'error' : ''"
+						:status="inputStatus"
 						@keyup.enter="handleUnlock"
-						@change="errorMsg = ''"
+						@change="inputStatus = ''"
 					>
 						<template #prefix>
 							<lock-outlined />
 						</template>
 					</a-input-password>
-					<div class="lock-screen-error-msg">{{ errorMsg }}</div>
 					<a-button
 						type="primary"
 						size="large"
 						block
+						class="lock-screen-unlock-btn"
 						:loading="loading"
 						:style="{ borderRadius: 0 }"
 						@click="handleUnlock"
 					>
 						解锁
 					</a-button>
+					<a-button type="link" block class="lock-screen-logout-btn" @click="handleBackToLogin"> 返回登录 </a-button>
 				</div>
 			</div>
 		</div>
 	</transition>
 </template>
 
-<script setup>
-	import { ref, computed } from 'vue'
-	import { useRoute } from 'vue-router'
-	import { Modal } from 'ant-design-vue'
+<script setup name="lockScreen">
+	import { useRoute, useRouter } from 'vue-router'
 	import { LockOutlined } from '@ant-design/icons-vue'
 	import { globalStore } from '@/store'
+	import { useMenuStore } from '@/store/menu'
+	import { useDictStore } from '@/store/dict'
 	import tool from '@/utils/tool'
 	import smCrypto from '@/utils/smCrypto'
-	import axios from 'axios'
-	import sysConfig from '@/config/index'
+	import userCenterApi from '@/api/sys/userCenterApi'
 
 	const store = globalStore()
 	const route = useRoute()
-	const isLocked = computed(() => store.isLocked)
+	const router = useRouter()
 	const isDark = computed(() => store.theme === 'realDark')
-	const userInfo = computed(() => store.userInfo)
+	const userInfo = computed(() => store.userInfo || {})
+	const passwordRef = ref()
 	const password = ref('')
 	const loading = ref(false)
-	const errorMsg = ref('')
+	const inputStatus = ref('')
 
-	// 锁屏界面是否可见（排除登录页和无Token状态）
-	const visible = computed(() => {
-		const token = tool.data.get('TOKEN')
-		return isLocked.value && token && route.path !== '/login'
-	})
+	// 锁屏界面是否可见，登录页不展示
+	const visible = computed(() => store.isLocked && route.path !== '/login')
 
-	// 解锁
-	const handleUnlock = async () => {
+	// 解锁，失败提示由全局错误处理统一弹出
+	const handleUnlock = () => {
 		if (!password.value) {
-			errorMsg.value = '请输入密码'
+			inputStatus.value = 'error'
 			return
 		}
 		loading.value = true
-		errorMsg.value = ''
-		try {
-			const param = {
-				password: smCrypto.doSm2Encrypt(password.value)
-			}
-			const res = await axios.post('/api/sys/userCenter/unlock', param, {
-				headers: {
-					[sysConfig.TOKEN_NAME]: sysConfig.TOKEN_PREFIX + tool.data.get('TOKEN')
-				}
-			})
-			if (res.data.code === 200) {
+		inputStatus.value = ''
+		userCenterApi
+			.userUnlock({ password: smCrypto.doSm2Encrypt(password.value) })
+			.then(() => {
 				store.setIsLocked(false)
 				password.value = ''
-			} else if (res.data.code === 401 || res.data.code === 1011007 || res.data.code === 1011008) {
-				handleLogout(true)
-			} else {
-				errorMsg.value = res.data.msg || '密码错误'
-			}
-		} catch (err) {
-			if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-				handleLogout(true)
-			} else {
-				errorMsg.value = '解锁失败，请重试'
-			}
-		} finally {
-			loading.value = false
-		}
-	}
-
-	// 退出登录/处理失效
-	const handleLogout = (force = false) => {
-		const doLogout = () => {
-			tool.data.remove('TOKEN')
-			tool.data.remove('USER_INFO')
-			tool.data.remove('MENU')
-			tool.data.remove('PERMISSIONS')
-			tool.data.remove('SNOWY_IS_LOCKED')
-			store.setIsLocked(false)
-			window.location.reload()
-		}
-
-		if (force) {
-			doLogout()
-		} else {
-			Modal.confirm({
-				title: '提示',
-				content: '确定退出登录吗？',
-				onOk: () => {
-					doLogout()
-				}
+				// 锁屏期间刷新过页面的话，菜单与字典的请求会被4012拦下，解锁后补拉一次
+				useMenuStore().refreshApiMenu()
+				useDictStore().refreshDict()
 			})
-		}
+			.catch(() => {
+				inputStatus.value = 'error'
+			})
+			.finally(() => {
+				loading.value = false
+			})
 	}
+
+	// 忘记密码等情况下的兜底出口：清空登录态回到登录页重新登录
+	const handleBackToLogin = () => {
+		tool.clearLoginCache()
+		store.setIsLocked(false)
+		store.setUserInfo(undefined)
+		router.replace({ path: '/login' }).then(() => {
+			window.location.reload()
+		})
+	}
+
+	// 锁屏弹出时自动聚焦密码框，避免还要先点一下输入框
+	watch(visible, (isVisible) => {
+		if (isVisible) {
+			nextTick(() => passwordRef.value?.focus())
+		} else {
+			password.value = ''
+			inputStatus.value = ''
+		}
+	})
 </script>
 
 <style lang="less" scoped>
@@ -205,16 +188,11 @@
 			.ant-input-affix-wrapper-lg {
 				margin-bottom: 0;
 			}
-			.lock-screen-error-msg {
-				color: #ff4d4f;
-				text-align: left;
-				font-size: 12px;
-				min-height: 28px;
-				line-height: 28px;
-				padding-left: 2px;
+			.lock-screen-unlock-btn {
+				margin-top: 16px;
 			}
-			.ant-btn {
-				margin-top: 4px;
+			.lock-screen-logout-btn {
+				margin-top: 8px;
 			}
 		}
 	}

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpLockUtil;
 import vip.xiaonuo.dev.api.DevLogApi;
 
 /**
@@ -47,6 +48,8 @@ public class AuthListener implements SaTokenListener {
         // 更新用户的登录时间和登录ip等信息
         if(SaClientTypeEnum.B.getValue().equals(loginType)) {
             loginUserApi.updateUserLoginInfo(Convert.toStr(loginId), loginModel.getDeviceType());
+            // token共享模式下重新登录会复用原token，需清除其上残留的锁屏标记，避免登录后直接处于锁屏态
+            StpLockUtil.unlockByToken(tokenValue);
             // 记录B端登录日志
             Object name = loginModel.getExtra("name");
             if(ObjectUtil.isNotEmpty(name)) {

@@ -68,7 +68,8 @@ export const viewTagsStore = defineStore('viewTags', () => {
 		const target = viewTags.value.find((item) => item.path === route.path)
 		const isName = route.name
 		if (!target && isName) {
-			viewTags.value.push(route)
+			// 必须存快照而不是 useRoute() 返回的活对象：vue-router 的路由对象是用
+			viewTags.value.push({ ...route })
 		}
 		if (target) {
 			updateViewTags(route)

@@ -64,6 +64,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
+import vip.xiaonuo.auth.core.util.StpLockUtil;
 import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -250,6 +251,17 @@ public class GlobalConfigure implements WebMvcConfigurer {
     };
 
     /**
+     * 锁屏状态下依然放行的接口地址集合，即解锁自身、退出登录与登录态查询
+     */
+    private static final String[] NO_LOCK_CHECK_PATH_ARR = {
+            "/sys/userCenter/lock",
+            "/sys/userCenter/unlock",
+            "/auth/b/getLoginUser",
+            "/auth/b/doLogout",
+            "/auth/b/isLogin"
+    };
+
+    /**
      * 注册跨域过滤器
      */
     @Bean
@@ -272,6 +284,17 @@ public class GlobalConfigure implements WebMvcConfigurer {
                                 // 更新过期时间
                                 StpUtil.renewTimeout(saTokenConfig.getTimeout());
                             });
+
+                    // B端的接口校验锁屏状态，锁屏期间除解锁与退出外一律拒绝
+                    SaRouter.match("/**")
+                            // 排除无需登录接口
+                            .notMatch(CollectionUtil.newArrayList(NO_LOGIN_PATH_ARR))
+                            // 排除C端认证接口
+                            .notMatch(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
+                            // 排除锁屏期间放行的接口
+                            .notMatch(CollectionUtil.newArrayList(NO_LOCK_CHECK_PATH_ARR))
+                            // 校验B端锁屏状态
+                            .check(r1 -> StpLockUtil.checkLock());
 
                     // C端的接口校验C端登录
                     SaRouter.match("/**")

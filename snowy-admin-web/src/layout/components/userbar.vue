@@ -71,6 +71,7 @@
 	import DevUserMessage from './message.vue'
 	import PanelSearch from './panel-search/index.vue'
 	import { globalStore, viewTagsStore, keepAliveStore } from '@/store'
+	import { doLockScreen } from '@/hooks/useAutoLock'
 	import { useI18n } from 'vue-i18n'
 	const { locale } = useI18n()
 
@@ -127,11 +128,8 @@
 						.logout(param)
 						.then(() => {
 							// 清理掉个人的一些信息
-							tool.data.remove('TOKEN')
-							tool.data.remove('USER_INFO')
-							tool.data.remove('MENU')
-							tool.data.remove('PERMISSIONS')
-							tool.data.remove('SNOWY_IS_LOCKED')
+							tool.clearLoginCache()
+							store.setIsLocked(false)
 							// 清理标签与缓存，避免同一标签页内换号后残留
 							viewTagsStore().clearViewTags()
 							keepAliveStore().clearKeepLive()
@@ -169,9 +167,9 @@
 			screenFull.toggle(element)
 		}
 	}
-	// 锁屏
+	// 锁屏，本地立即遮蔽的同时通知服务端锁定会话
 	const lockScreen = () => {
-		store.setIsLocked(true)
+		doLockScreen()
 	}
 </script>
 

@@ -67,6 +67,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpLockUtil;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonGenderEnum;
@@ -210,6 +211,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /** 验证码缓存前缀 */
     private static final String USER_VALID_CODE_CACHE_KEY = "user-validCode:";
 
+    /** 解锁失败次数缓存前缀 */
+    private static final String USER_UNLOCK_FAIL_CACHE_KEY = "user-unlockFail:";
+
+    /** 解锁允许的最大连续失败次数，达到后强制退出登录 */
+    private static final int USER_UNLOCK_FAIL_MAX_COUNT = 5;
+
+    /** 解锁失败次数的缓存时长，单位：秒 */
+    private static final int USER_UNLOCK_FAIL_CACHE_TIMEOUT = 30 * 60;
+
+    /**
+     * 解锁连续失败超限的状态码，前端据此清理登录态并跳转登录页
+     * 不能复用401：401 走的是前端通用的“登录已失效”弹窗，该分支不会 reject 请求，
+     * 会被解锁界面误判成解锁成功，同属认证类状态码，与4011二级认证、4012屏幕锁定并列
+     */
+    private static final int USER_UNLOCK_FAIL_LIMIT_CODE = 4013;
+
+    /** 自动锁屏时长上限，单位：分钟 */
+    private static final int USER_AUTO_LOCK_TIME_MAX = 720;
+
+    /** 自动锁屏时长在关系表扩展信息中的键名 */
+    private static final String USER_AUTO_LOCK_TIME_KEY = "autoLockTime";
+
     @Resource
     private CommonCacheOperator commonCacheOperator;
 
@@ -271,19 +294,76 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SaBaseLoginUserApi loginUserApi;
 
     @Override
+    public void lock() {
+        StpLockUtil.lock();
+    }
+
+    @Override
     public void unlock(SysUserUnlockParam sysUserUnlockParam) {
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
-        String password = CommonCryptogramUtil.doSm2Decrypt(sysUserUnlockParam.getPassword()).trim();
-        if (!CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword())) {
-            throw new CommonException("密码错误");
+        String userId = StpUtil.getLoginIdAsString();
+        String failCacheKey = USER_UNLOCK_FAIL_CACHE_KEY + userId;
+        if (!this.matchPassword(userId, sysUserUnlockParam.getPassword())) {
+            int failCount = Convert.toInt(commonCacheOperator.get(failCacheKey), 0) + 1;
+            // 连续失败达到上限，强制下线，避免锁屏界面被无限次尝试密码
+            if (failCount >= USER_UNLOCK_FAIL_MAX_COUNT) {
+                commonCacheOperator.remove(failCacheKey);
+                StpUtil.logout();
+                throw new CommonException(USER_UNLOCK_FAIL_LIMIT_CODE, "密码错误次数过多，已强制退出登录，请重新登录");
+            }
+            commonCacheOperator.put(failCacheKey, failCount, USER_UNLOCK_FAIL_CACHE_TIMEOUT);
+            throw new CommonException("密码错误，还可尝试{}次", USER_UNLOCK_FAIL_MAX_COUNT - failCount);
         }
+        commonCacheOperator.remove(failCacheKey);
+        StpLockUtil.unlock();
+    }
+
+    @Override
+    public void updateAutoLockTime(SysUserUpdateAutoLockTimeParam sysUserUpdateAutoLockTimeParam) {
+        Integer autoLockTime = sysUserUpdateAutoLockTimeParam.getAutoLockTime();
+        if (autoLockTime < 0 || autoLockTime > USER_AUTO_LOCK_TIME_MAX) {
+            throw new CommonException("自动锁屏时长应在0至{}分钟之间", USER_AUTO_LOCK_TIME_MAX);
+        }
+        // 存关系表而非用户表字段，避免为一个个性化配置改动SYS_USER表结构，与工作台数据、日程数据同一套做法
+        sysRelationService.saveRelationWithClear(StpUtil.getLoginIdAsString(), null,
+                SysRelationCategoryEnum.SYS_USER_LOCK_CONFIG_DATA.getValue(),
+                JSONUtil.createObj().set(USER_AUTO_LOCK_TIME_KEY, autoLockTime).toString());
+    }
+
+    /**
+     * 获取指定用户的自动锁屏时长，未配置过则返回0（不自动锁屏）
+     *
+     * @author xuyuxiang
+     * @date 2026/8/7 10:20
+     **/
+    private Integer getAutoLockTime(String userId) {
+        SysRelation sysRelation = sysRelationService.getOne(new LambdaQueryWrapper<SysRelation>()
+                .eq(SysRelation::getObjectId, userId)
+                .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_LOCK_CONFIG_DATA.getValue()));
+        if (ObjectUtil.isNull(sysRelation) || ObjectUtil.isEmpty(sysRelation.getExtJson())) {
+            return 0;
+        }
+        return JSONUtil.parseObj(sysRelation.getExtJson()).getInt(USER_AUTO_LOCK_TIME_KEY, 0);
+    }
+
+    /**
+     * 用户实体转登录用户，自动锁屏时长不在SYS_USER表上，BeanUtil拷不到，需单独回填
+     *
+     * @author xuyuxiang
+     * @date 2026/8/7 10:20
+     **/
+    private SysLoginUser convertToLoginUser(SysUser sysUser) {
+        if (ObjectUtil.isEmpty(sysUser)) {
+            return null;
+        }
+        transService.transOne(sysUser);
+        SysLoginUser sysLoginUser = BeanUtil.copyProperties(sysUser, SysLoginUser.class);
+        sysLoginUser.setAutoLockTime(this.getAutoLockTime(sysUser.getId()));
+        return sysLoginUser;
     }
 
     @Override
     public void openSafe(SysUserOpenSafeParam sysUserOpenSafeParam) {
-        SysUser sysUser = this.queryEntity(StpUtil.getLoginIdAsString());
-        String password = CommonCryptogramUtil.doSm2Decrypt(sysUserOpenSafeParam.getPassword()).trim();
-        if (!CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword())) {
+        if (!this.matchPassword(StpUtil.getLoginIdAsString(), sysUserOpenSafeParam.getPassword())) {
             throw new CommonException("密码错误");
         }
         // 比对成功，为当前会话打开二级认证，有效期为120秒
@@ -294,44 +374,37 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    /**
+     * 校验指定用户的密码是否正确，入参为国密加密后的密码
+     *
+     * @author xuyuxiang
+     * @date 2026/8/6 10:20
+     **/
+    private boolean matchPassword(String userId, String encryptPassword) {
+        SysUser sysUser = this.queryEntity(userId);
+        String password = CommonCryptogramUtil.doSm2Decrypt(encryptPassword).trim();
+        return CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword());
+    }
+
     @Override
     public SysLoginUser getUserById(String id) {
-        SysUser sysUser = this.getById(id);
-        if (ObjectUtil.isNotEmpty(sysUser)) {
-            transService.transOne(sysUser);
-            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-        }
-        return null;
+        return this.convertToLoginUser(this.getById(id));
     }
 
     @Override
     public SysLoginUser getUserByAccount(String account) {
-        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account));
-        if (ObjectUtil.isNotEmpty(sysUser)) {
-            transService.transOne(sysUser);
-            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-        }
-        return null;
+        return this.convertToLoginUser(this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getAccount, account)));
     }
 
     @Override
     public SysLoginUser getUserByPhone(String phone) {
-        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
-        if (ObjectUtil.isNotEmpty(sysUser)) {
-            transService.transOne(sysUser);
-            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-        }
-        return null;
+        return this.convertToLoginUser(this.getOne(new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone))));
     }
 
     @Override
     public SysLoginUser getUserByEmail(String email) {
-        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmail, email));
-        if (ObjectUtil.isNotEmpty(sysUser)) {
-            transService.transOne(sysUser);
-            return BeanUtil.copyProperties(sysUser, SysLoginUser.class);
-        }
-        return null;
+        return this.convertToLoginUser(this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmail, email)));
     }
 
     @Override

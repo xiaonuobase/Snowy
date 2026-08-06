@@ -32,6 +32,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import vip.xiaonuo.auth.core.exception.AuthLockedException;
 import vip.xiaonuo.auth.core.util.AuthExceptionUtil;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -111,6 +112,9 @@ public class GlobalExceptionUtil {
             log.error(">>> 文件上传参数异常：", e);
             //文件上传错误特殊提示
             commonResult = CommonResult.error("请选择要上传的文件并检查文件参数名称是否正确");
+        } else if (e instanceof AuthLockedException authLockedException) {
+            // 如果是屏幕锁定异常，返回4012，前端据此弹出解锁界面
+            commonResult = CommonResult.get(authLockedException.getCode(), authLockedException.getMsg(), null);
         } else if (e instanceof SaTokenException) {
 
             // 如果是SaToken相关异常，则由AuthExceptionUtil处理

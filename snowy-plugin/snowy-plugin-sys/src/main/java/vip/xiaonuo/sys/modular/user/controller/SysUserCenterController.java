@@ -52,6 +52,20 @@ public class SysUserCenterController {
     private SysUserService sysUserService;
 
     /**
+     * 锁定屏幕
+     *
+     * @author xuyuxiang
+     * @date 2026/8/6 10:20
+     **/
+    @Operation(summary = "锁定屏幕")
+    @CommonLog("锁定屏幕")
+    @PostMapping("/sys/userCenter/lock")
+    public CommonResult<String> lock() {
+        sysUserService.lock();
+        return CommonResult.ok("锁定成功");
+    }
+
+    /**
      * 解锁屏幕
      *
      * @author xuyuxiang
@@ -63,6 +77,20 @@ public class SysUserCenterController {
     public CommonResult<String> unlock(@RequestBody @Valid SysUserUnlockParam sysUserUnlockParam) {
         sysUserService.unlock(sysUserUnlockParam);
         return CommonResult.ok("解锁成功");
+    }
+
+    /**
+     * 修改自动锁屏时长
+     *
+     * @author xuyuxiang
+     * @date 2026/8/6 10:20
+     **/
+    @Operation(summary = "修改自动锁屏时长")
+    @CommonLog("修改自动锁屏时长")
+    @PostMapping("/sys/userCenter/updateAutoLockTime")
+    public CommonResult<String> updateAutoLockTime(@RequestBody @Valid SysUserUpdateAutoLockTimeParam sysUserUpdateAutoLockTimeParam) {
+        sysUserService.updateAutoLockTime(sysUserUpdateAutoLockTimeParam);
+        return CommonResult.ok("设置成功");
     }
 
     /**
