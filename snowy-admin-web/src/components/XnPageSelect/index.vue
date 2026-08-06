@@ -6,11 +6,13 @@
 			v-model:value="modelValue"
 			:options="options"
 			:field-names="selectFieldNames"
-			class="xn-wd"
+			:style="props.customStyle"
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
 			:disabled="props.disabled"
+			:size="props.size"
 			:filterOption="!props.showSearch"
+			:dropdown-style="props.dropdownStyle"
 			show-search
 			@change="handleChange"
 			@search="handleSearch"
@@ -21,11 +23,13 @@
 			v-model:value="modelValue"
 			:options="options"
 			:field-names="selectFieldNames"
-			class="xn-wd"
+			:style="props.customStyle"
 			:placeholder="props.placeholder"
 			:allow-clear="props.allowClear"
 			:disabled="props.disabled"
+			:size="props.size"
 			:filterOption="!props.showSearch"
+			:dropdown-style="props.dropdownStyle"
 			@change="handleChange"
 			@onSearch="handleSearch"
 			@popupScroll="handlePopupScroll"
@@ -34,7 +38,7 @@
 </template>
 
 <script setup name="xnPageSelector">
-	import { watch } from 'vue'
+	import { watch, onMounted, nextTick, ref } from 'vue'
 
 	const total = ref(0) // 数据总数
 	const initParams = ref({})
@@ -76,6 +80,18 @@
 		disabled: {
 			type: Boolean,
 			default: () => false
+		},
+		size: {
+			type: String,
+			default: () => 'default'
+		},
+		dropdownStyle: {
+			type: Object,
+			default: () => ({})
+		},
+		customStyle: {
+			type: Object,
+			default: () => ({ width: '100%' })
 		}
 	})
 	const modelValue = ref(props.value)
@@ -184,6 +200,11 @@
 				})
 		}
 	}
+
+	// 组件挂载时加载初始数据
+	onMounted(() => {
+		onPage()
+	})
 
 	defineExpose({
 		onPage

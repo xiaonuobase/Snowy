@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.client.modular.user.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,6 +57,7 @@ public class ClientUserController {
      * @date 2022/4/24 20:00
      */
     @Operation(summary = "获取用户分页")
+    @SaCheckPermission("/client/user/page")
     @GetMapping("/client/user/page")
     public CommonResult<Page<ClientUser>> page(ClientUserPageParam clientUserPageParam) {
         return CommonResult.data(clientUserService.page(clientUserPageParam));
@@ -69,6 +71,7 @@ public class ClientUserController {
      */
     @Operation(summary = "添加用户")
     @CommonLog("添加用户")
+    @SaCheckPermission("/client/user/add")
     @PostMapping("/client/user/add")
     public CommonResult<String> add(@RequestBody @Valid ClientUserAddParam clientUserAddParam) {
         clientUserService.add(clientUserAddParam, ClientUserSourceFromTypeEnum.SYSTEM_ADD.getValue());
@@ -83,6 +86,7 @@ public class ClientUserController {
      */
     @Operation(summary = "编辑用户")
     @CommonLog("编辑用户")
+    @SaCheckPermission("/client/user/edit")
     @PostMapping("/client/user/edit")
     public CommonResult<String> edit(@RequestBody @Valid ClientUserEditParam clientUserEditParam) {
         clientUserService.edit(clientUserEditParam);
@@ -97,6 +101,7 @@ public class ClientUserController {
      */
     @Operation(summary = "删除用户")
     @CommonLog("删除用户")
+    @SaCheckPermission("/client/user/delete")
     @PostMapping("/client/user/delete")
     public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集合不能为空")
                                        List<ClientUserIdParam> clientUserIdParamList) {
@@ -111,6 +116,7 @@ public class ClientUserController {
      * @date 2022/4/24 20:00
      */
     @Operation(summary = "获取用户详情")
+    @SaCheckPermission("/client/user/detail")
     @GetMapping("/client/user/detail")
     public CommonResult<ClientUser> detail(@Valid ClientUserIdParam clientUserIdParam) {
         return CommonResult.data(clientUserService.detail(clientUserIdParam));
@@ -124,6 +130,7 @@ public class ClientUserController {
      */
     @Operation(summary = "禁用用户")
     @CommonLog("禁用用户")
+    @SaCheckPermission("/client/user/disableUser")
     @PostMapping("/client/user/disableUser")
     public CommonResult<String> disableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
         clientUserService.disableUser(clientUserIdParam);
@@ -138,6 +145,7 @@ public class ClientUserController {
      */
     @Operation(summary = "启用用户")
     @CommonLog("启用用户")
+    @SaCheckPermission("/client/user/enableUser")
     @PostMapping("/client/user/enableUser")
     public CommonResult<String> enableUser(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
         clientUserService.enableUser(clientUserIdParam);

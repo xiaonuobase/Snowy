@@ -205,7 +205,6 @@ public class GlobalConfigure implements WebMvcConfigurer {
     private static final String[] SUPER_PERMISSION_PATH_ARR = {
             "/auth/session/**",
             "/auth/third/page",
-            "/client/user/**",
             "/sys/org/**",
             "/sys/group/**",
             "/sys/position/**",
