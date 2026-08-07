@@ -27,8 +27,8 @@ export default {
 		return request('lock', data)
 	},
 	// 解锁屏幕
-	userUnlock(data) {
-		return request('unlock', data)
+	userUnlock(data, options) {
+		return request('unlock', data, 'post', options)
 	},
 	// 修改自动锁屏时长
 	userUpdateAutoLockTime(data) {

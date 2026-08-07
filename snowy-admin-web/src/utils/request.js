@@ -95,16 +95,11 @@ service.interceptors.response.use(
 			return handleLocked(data)
 		}
 		if (code !== 200) {
-			const customErrorMessage = response.config.customErrorMessage
-			message.error(customErrorMessage || data.msg)
+			if (!response.config.skipErrorMessage) {
+				const customErrorMessage = response.config.customErrorMessage
+				message.error(customErrorMessage || data.msg)
+			}
 			return Promise.reject(data)
-			// 自定义错误提示，覆盖后端返回的message
-			// 使用示例：
-			// export function customerList (data) {
-			//   return request('list', data, 'get', {
-			//     customErrorMessage: '自定义错误消息提示'
-			//   });
-			// }
 		} else {
 			// 统一成功提示（支持 skipSuccessMessage 跳过）
 			if (!response.config.skipSuccessMessage) {

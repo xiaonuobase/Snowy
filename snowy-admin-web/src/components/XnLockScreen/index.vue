@@ -16,12 +16,18 @@
 						:style="{ borderRadius: 0 }"
 						:status="inputStatus"
 						@keyup.enter="handleUnlock"
-						@change="inputStatus = ''"
+						@change="
+							() => {
+								inputStatus = ''
+								errorMessage = ''
+							}
+						"
 					>
 						<template #prefix>
 							<lock-outlined />
 						</template>
 					</a-input-password>
+					<div class="lock-screen-error-msg">{{ errorMessage }}</div>
 					<a-button
 						type="primary"
 						size="large"
@@ -59,20 +65,23 @@
 	const password = ref('')
 	const loading = ref(false)
 	const inputStatus = ref('')
+	const errorMessage = ref('')
 
 	// 锁屏界面是否可见，登录页不展示
 	const visible = computed(() => store.isLocked && route.path !== '/login')
 
-	// 解锁，失败提示由全局错误处理统一弹出
+	// 解锁
 	const handleUnlock = () => {
 		if (!password.value) {
 			inputStatus.value = 'error'
+			errorMessage.value = '请输入登录密码'
 			return
 		}
 		loading.value = true
 		inputStatus.value = ''
+		errorMessage.value = ''
 		userCenterApi
-			.userUnlock({ password: smCrypto.doSm2Encrypt(password.value) })
+			.userUnlock({ password: smCrypto.doSm2Encrypt(password.value) }, { skipErrorMessage: true })
 			.then(() => {
 				store.setIsLocked(false)
 				password.value = ''
@@ -80,8 +89,9 @@
 				useMenuStore().refreshApiMenu()
 				useDictStore().refreshDict()
 			})
-			.catch(() => {
+			.catch((err) => {
 				inputStatus.value = 'error'
+				errorMessage.value = err.msg || '解锁失败，请重试'
 			})
 			.finally(() => {
 				loading.value = false
@@ -105,6 +115,7 @@
 		} else {
 			password.value = ''
 			inputStatus.value = ''
+			errorMessage.value = ''
 		}
 	})
 </script>
@@ -193,6 +204,14 @@
 			}
 			.lock-screen-logout-btn {
 				margin-top: 8px;
+			}
+			.lock-screen-error-msg {
+				color: #ff4d4f;
+				font-size: 14px;
+				min-height: 28px;
+				line-height: 28px;
+				text-align: left;
+				padding-left: 2px;
 			}
 		}
 	}
