@@ -55,6 +55,8 @@ public class GenDbTypeUtil {
             case "NCLOB":
             case "IMAGE":
                 return GenJavaTypeEnum.String.getValue();
+            case "SERIAL":
+                return GenJavaTypeEnum.Integer.getValue(); 
             case "INTEGER":
             case "BIGINT":
             case "NUMBER":
