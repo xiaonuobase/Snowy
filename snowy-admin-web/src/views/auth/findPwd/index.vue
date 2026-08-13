@@ -70,7 +70,7 @@
 		overflow: hidden;
 		background-size: cover;
 		background-position: center;
-		background-image: url(/img/login_background.png);
+		background-image: url(/img/login_background.webp);
 		position: relative;
 	}
 	@keyframes myfirst {
