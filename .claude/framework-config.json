@@ -1,0 +1,138 @@
+{
+  "framework": {
+    "description": "框架模块配置 - 这些模块是 Snowy 平台的一部分，不参与业务进度统计",
+    "backend": {
+      "modules": [
+        "snowy-common",
+        "snowy-web-app"
+      ],
+      "systemModules": [
+        "snowy-plugin/snowy-plugin-sys",
+        "snowy-plugin/snowy-plugin-auth",
+        "snowy-plugin/snowy-plugin-dev",
+        "snowy-plugin/snowy-plugin-gen",
+        "snowy-plugin/snowy-plugin-client",
+        "snowy-plugin/snowy-plugin-mobile"
+      ],
+      "apiModules": [
+        "snowy-plugin-api/snowy-plugin-auth-api",
+        "snowy-plugin-api/snowy-plugin-biz-api",
+        "snowy-plugin-api/snowy-plugin-client-api",
+        "snowy-plugin-api/snowy-plugin-dev-api",
+        "snowy-plugin-api/snowy-plugin-gen-api",
+        "snowy-plugin-api/snowy-plugin-mobile-api",
+        "snowy-plugin-api/snowy-plugin-sys-api"
+      ],
+      "description": "snowy-common 为公共基础模块，snowy-web-app 为唯一启动模块（端口82），6 个系统插件为平台自带能力，*-api 为跨插件调用接口层"
+    },
+    "frontend": {
+      "root": "snowy-admin-web",
+      "frameworkPaths": [
+        "src/views/sys",
+        "src/views/auth",
+        "src/views/dev",
+        "src/views/gen",
+        "src/views/mobile",
+        "src/views/index",
+        "src/views/login",
+        "src/views/front"
+      ],
+      "businessPattern": "src/views/biz",
+      "apiBusinessPattern": "src/api/biz",
+      "description": "前端框架页面按插件分目录，业务页面只统计 src/views/biz 与 src/api/biz"
+    },
+    "systemFeatures": [
+      "用户管理",
+      "机构管理",
+      "职位管理",
+      "角色管理",
+      "资源菜单管理",
+      "模块管理",
+      "分组管理",
+      "关系管理",
+      "数据范围授权",
+      "用户转移",
+      "站内信",
+      "通知公告",
+      "业务字典",
+      "系统字典",
+      "系统配置",
+      "操作日志",
+      "会话监控",
+      "服务器监控",
+      "弱口令检测",
+      "定时任务",
+      "代码生成器",
+      "文件管理",
+      "短信管理",
+      "邮件管理",
+      "消息推送",
+      "轮播图",
+      "三方登录",
+      "SSO单点登录",
+      "C端用户管理",
+      "移动端菜单管理"
+    ]
+  },
+  "business": {
+    "description": "业务模块配置 - 需要统计进度的业务代码",
+    "backend": {
+      "scanRoot": "snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular",
+      "modulePattern": "snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/*",
+      "excludeModules": [
+        "index",
+        "dict",
+        "group",
+        "notice",
+        "org",
+        "position",
+        "user"
+      ],
+      "defaultLocation": "新业务域默认建在 snowy-plugin-biz 的 biz/modular/{域名} 下（参考 notice 域结构）",
+      "description": "出厂自带的 7 个 biz 域（index/dict/group/notice/org/position/user）视为演示代码不计业务进度；用户新建的域才计入"
+    }
+  },
+  "scanRules": {
+    "backend": {
+      "requiredFiles": [
+        "Entity (entity/Xxx.java，extends CommonEntity)",
+        "Mapper (mapper/XxxMapper.java，extends BaseMapper)",
+        "Service (service/XxxService.java，extends IService)",
+        "ServiceImpl (service/impl/XxxServiceImpl.java，extends ServiceImpl)",
+        "Controller (controller/XxxController.java)",
+        "Param 组 (param/：XxxPageParam + XxxAddParam + XxxEditParam + XxxIdParam 至少4类)"
+      ],
+      "optionalFiles": [
+        "Mapper XML (mapper/mapping/XxxMapper.xml，仅自定义 SQL 需要)",
+        "Result (result/XxxResult.java，仅投影返回需要)"
+      ],
+      "completenessFormula": "必备存在数 / 6 * 100%（XML 与 Result 为加分项不计分母）"
+    },
+    "frontend": {
+      "requiredFiles": [
+        "API (snowy-admin-web/src/api/biz/xxxApi.js)",
+        "列表页 (snowy-admin-web/src/views/biz/xxx/index.vue)",
+        "表单页 (snowy-admin-web/src/views/biz/xxx/form.vue)"
+      ],
+      "completenessFormula": "存在文件数 / 3 * 100%"
+    },
+    "todoPatterns": [
+      "TODO:",
+      "FIXME:",
+      "XXX:",
+      "HACK:",
+      "NOTE:"
+    ]
+  },
+  "environment": {
+    "gitAvailable": "auto-detect（git rev-parse --is-inside-work-tree）",
+    "dbConfigLocation": "snowy-web-app/src/main/resources/application.properties（spring.datasource.dynamic.master 段）",
+    "dbScript": "snowy-web-app/src/main/resources/_sql/snowy_mysql.sql（33 张表初始化脚本）",
+    "backendPort": 82,
+    "frontendPort": 81,
+    "apiDoc": "http://localhost:82/doc.html（Knife4j，basic 认证 admin/123456）"
+  },
+  "version": "1.0.0",
+  "snowyVersion": "3.0.0",
+  "lastUpdated": "2026-08-18"
+}

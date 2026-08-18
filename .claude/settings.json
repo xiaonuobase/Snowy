@@ -1,0 +1,41 @@
+{
+  "permissions": {},
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-forced-eval.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-forced-eval.js\" || true"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.js\" || true",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.js\" || true",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {}
+}
