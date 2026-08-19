@@ -140,7 +140,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
+        return t -> {
+            Object key = keyExtractor.apply(t);
+            // 过滤null值，避免ConcurrentHashMap空指针
+            return key != null && seen.add(key);
+        };
     }
 
     @Transactional(rollbackFor = Exception.class)

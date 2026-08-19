@@ -23,6 +23,7 @@
 </template>
 
 <script setup name="devConfig">
+	import { onMounted, onUnmounted } from 'vue'
 	import SysConfig from './sysConfig.vue'
 	import RegisterConfig from './registerConfig/index.vue'
 	import LoginConfig from './loginConfig/index.vue'
@@ -52,16 +53,40 @@
 		{ key: 'thirdConfig', tab: '第三方配置' },
 		{ key: 'otherConfig', tab: '其他配置' }
 	]
+
+	// AntdV 4.2.6 在标签页“更多”按钮上写死了 aria-hidden="true"，点击后该按钮会获得焦点，
+	let ariaObserver = null
+	const removeNavMoreAriaHidden = () => {
+		document.querySelectorAll('.config-tabs .ant-tabs-nav-more[aria-hidden]').forEach((btn) => {
+			btn.removeAttribute('aria-hidden')
+		})
+	}
+	onMounted(() => {
+		removeNavMoreAriaHidden()
+		const tabsEl = document.querySelector('.config-tabs')
+		if (tabsEl) {
+			ariaObserver = new MutationObserver(removeNavMoreAriaHidden)
+			ariaObserver.observe(tabsEl, { subtree: true, attributes: true, attributeFilter: ['aria-hidden'] })
+		}
+	})
+	onUnmounted(() => {
+		ariaObserver?.disconnect()
+		ariaObserver = null
+	})
 </script>
 
 <style lang="less" scoped>
 	:deep(.xn-panel-title) {
 		padding: 0 !important;
 		flex: 1;
+		/* flex 子项默认 min-width:auto 会被内容撑开，导致 tabs 量不出溢出、窄屏下不出现左右滚动按钮 */
+		min-width: 0;
+		overflow: hidden;
 	}
 	.config-tabs {
 		margin-bottom: 0;
 		width: 100%;
+		min-width: 0;
 	}
 	.config-tabs :deep(.ant-tabs-nav) {
 		margin-bottom: 0;
