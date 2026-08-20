@@ -508,8 +508,10 @@ public class AuthServiceImpl implements AuthService {
         if(SaClientTypeEnum.B.getValue().equals(type)) {
             SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByAccount(account);
             if(ObjectUtil.isEmpty(saBaseLoginUser)) {
-                // 提示账号错误
-                throw new CommonException(AuthExceptionEnum.ACCOUNT_ERROR.getValue());
+                // 相同提示文案、相同剩余次数、相同锁定计数，使攻击者无法据此判断账号是否存在
+                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                // 兜底：handleRemainingTimes 极端情况下未抛异常时，仍统一报错，避免后续空指针
+                throw new CommonException(AuthExceptionEnum.PWD_ERROR.getValue());
             }
             if (!saBaseLoginUser.getPassword().equals(passwordHash)) {
                 // 密码错误，处理剩余次数提示信息
@@ -520,8 +522,10 @@ public class AuthServiceImpl implements AuthService {
         } else {
             SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByAccount(account);
             if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                // 提示账号错误
-                throw new CommonException(AuthExceptionEnum.ACCOUNT_ERROR.getValue());
+                // 相同提示文案、相同剩余次数、相同锁定计数，使攻击者无法据此判断账号是否存在
+                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                // 兜底：handleRemainingTimes 极端情况下未抛异常时，仍统一报错，避免后续空指针
+                throw new CommonException(AuthExceptionEnum.PWD_ERROR.getValue());
             }
             if (!saBaseClientLoginUser.getPassword().equals(passwordHash)) {
                 // 密码错误，处理剩余次数提示信息

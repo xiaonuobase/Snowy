@@ -105,8 +105,8 @@ const DEFAULT_CONFIG = {
 		SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL',
 		// 是否开启B端验证码
 		SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B: 'false',
-		// 默认重置密码
-		SNOWY_SYS_DEFAULT_PASSWORD: 'Snowy@2026!'
+		// 默认重置密码（安全加固：不在前端仓库硬编码明文口令，实际值运行时从后端 DEV_CONFIG 下发）
+		SNOWY_SYS_DEFAULT_PASSWORD: ''
 	}
 }
 
