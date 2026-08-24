@@ -27,6 +27,10 @@ import lombok.Setter;
 @Setter
 public class AuthThirdTokenLoginParam {
 
+    /** 第三方系统标识；未传时使用服务端配置的默认第三方 */
+    @Schema(description = "第三方系统标识；未传时使用默认第三方")
+    private String provider;
+
     /** 第三方系统的accessToken */
     @Schema(description = "第三方系统的accessToken", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "accessToken不能为空")

@@ -17,6 +17,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * 第三方系统Token交换配置属性（用于iframe嵌入免登）
  *
@@ -40,6 +43,30 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "snowy.third-auth")
 public class AuthThirdClientProperties {
 
-    /** 第三方用户信息接口地址（甲方提供），配置了即代表开启，不配置即关闭 */
+    /**
+     * Token交换登录总开关。
+     * null用于兼容旧配置；显式配置false时关闭。
+     */
+    private Boolean enabled;
+
+    /**
+     * 兼容旧版的单个第三方用户信息接口地址。
+     * 新配置请使用 providers，后续可移除此字段。
+     */
     private String userInfoUrl;
+
+    /** 未传provider时使用的默认第三方标识 */
+    private String defaultProvider;
+
+    /** 多个第三方系统配置，key为第三方标识 */
+    private Map<String, Provider> providers = new LinkedHashMap<>();
+
+    /** 单个第三方系统配置 */
+    @Getter
+    @Setter
+    public static class Provider {
+
+        /** 第三方用户信息接口地址 */
+        private String userInfoUrl;
+    }
 }

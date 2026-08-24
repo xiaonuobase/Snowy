@@ -84,16 +84,20 @@ router.beforeEach(async (to, from, next) => {
 
 	// ========== iframe嵌入免登：检测URL中的第三方accessToken ==========
 	const thirdAccessToken = to.query.accessToken
+	const thirdProvider = to.query.provider
 	if (thirdAccessToken && !tool.data.get('TOKEN')) {
-		// 调用第三方Token交换登录接口
-		loginApi
-			.doLoginByThirdToken({
-				accessToken: thirdAccessToken
+		// 先结束当前导航；afterLogin 会在登录完成后重新导航到目标页面
+		next(false)
+		try {
+			const loginToken = await loginApi.doLoginByThirdToken({
+				accessToken: thirdAccessToken,
+				provider: thirdProvider
 			})
-			.then(async (loginToken) => {
-				// 复用登录后流程，传入目标路径
-				await afterLogin(loginToken, to.path)
-			})
+			// 复用登录后流程，传入目标路径
+			await afterLogin(loginToken, to.path)
+		} catch (error) {
+			console.error('第三方Token登录失败:', error)
+		}
 		return false
 	}
 	// 如果已有TOKEN且URL带accessToken，直接放行（避免重复登录）
@@ -101,6 +105,7 @@ router.beforeEach(async (to, from, next) => {
 		// 去掉URL中的accessToken参数，保持路由干净
 		const query = { ...to.query }
 		delete query.accessToken
+		delete query.provider
 		next({ path: to.path, query, replace: true })
 		return false
 	}
