@@ -58,6 +58,15 @@ public class DevFileMinIoUtil {
     private static final String SNOWY_FILE_MINIO_END_POINT_KEY = "SNOWY_FILE_MINIO_END_POINT";
     private static final String SNOWY_FILE_MINIO_DEFAULT_BUCKET_NAME = "SNOWY_FILE_MINIO_DEFAULT_BUCKET_NAME";
 
+    /** 文件长度未知的标识，传给MINIO表示由其以分片方式上传 */
+    private static final long UNKNOWN_OBJECT_SIZE = -1L;
+
+    /** 文件长度未知时的分片大小（10MB），MINIO要求此场景下分片不得小于5MB */
+    private static final long UNKNOWN_STREAM_PART_SIZE = 10 * 1024 * 1024L;
+
+    /** 文件长度已知时的分片大小，传-1由MINIO自行推算 */
+    private static final long AUTO_PART_SIZE = -1L;
+
 
     /**
      * 初始化操作的客户端
@@ -188,7 +197,8 @@ public class DevFileMinIoUtil {
         } catch (IORuntimeException e) {
             throw new CommonException("获取文件流异常，名称是：{}", file.getName());
         }
-        storageFile(bucketName, key, inputStream);
+        // 注意：必须传入文件的真实长度，不可依赖流的available()，否则文件会被截断
+        doStorageFile(bucketName, key, inputStream, file.length());
     }
 
     /**
@@ -207,7 +217,8 @@ public class DevFileMinIoUtil {
         } catch (IOException e) {
             throw new CommonException("获取文件流异常，名称是：{}", multipartFile.getName());
         }
-        storageFile(bucketName, key, inputStream);
+        // 注意：必须传入文件的真实长度，不可依赖流的available()，否则文件会被截断
+        doStorageFile(bucketName, key, inputStream, multipartFile.getSize());
     }
 
     /**
@@ -220,18 +231,7 @@ public class DevFileMinIoUtil {
      * @date 2022/1/5 23:24
      */
     public static void storageFile(String bucketName, String key, byte[] bytes) {
-        ByteArrayInputStream byteArrayInputStream = null;
-        try {
-            initClient();
-            byteArrayInputStream = new ByteArrayInputStream(bytes);
-            PutObjectArgs putObjectArgs = PutObjectArgs.builder().bucket(bucketName).object(key)
-                    .contentType(getFileContentType(key)).stream(byteArrayInputStream, bytes.length, -1).build();
-            client.putObject(putObjectArgs);
-        } catch (Exception e) {
-            throw new CommonException(e.getMessage());
-        } finally {
-            IoUtil.close(byteArrayInputStream);
-        }
+        doStorageFile(bucketName, key, new ByteArrayInputStream(bytes), bytes.length);
     }
 
     /**
@@ -244,10 +244,29 @@ public class DevFileMinIoUtil {
      * @date 2022/1/5 23:24
      */
     public static void storageFile(String bucketName, String key, InputStream inputStream) {
+        // 仅凭流无法得知文件真实长度，传-1由MINIO以分片方式上传，切勿使用available()充当长度
+        doStorageFile(bucketName, key, inputStream, UNKNOWN_OBJECT_SIZE);
+    }
+
+    /**
+     * 存储文件的核心方法，所有存储入口最终都汇聚到此处
+     *
+     * @param bucketName  桶名称
+     * @param key         唯一标示id，例如a.txt, doc/a.txt
+     * @param inputStream 文件流
+     * @param objectSize  文件真实长度，长度未知时传 UNKNOWN_OBJECT_SIZE
+     * @author yubaoshan
+     * @date 2026/8/25 10:30
+     */
+    private static void doStorageFile(String bucketName, String key, InputStream inputStream, long objectSize) {
         try {
             initClient();
+            // 长度可信时分片大小交由MINIO推算，长度不可信时必须显式指定不小于5MB的分片大小
+            boolean sizeTrusted = objectSize > 0;
+            long finalObjectSize = sizeTrusted ? objectSize : UNKNOWN_OBJECT_SIZE;
+            long finalPartSize = sizeTrusted ? AUTO_PART_SIZE : UNKNOWN_STREAM_PART_SIZE;
             PutObjectArgs putObjectArgs = PutObjectArgs.builder().bucket(bucketName).object(key)
-                    .contentType(getFileContentType(key)).stream(inputStream, inputStream.available(), -1).build();
+                    .contentType(getFileContentType(key)).stream(inputStream, finalObjectSize, finalPartSize).build();
             client.putObject(putObjectArgs);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
