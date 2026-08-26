@@ -28,8 +28,10 @@ const getCacheConfig = (value) => {
 
 // deprecated 请使用 useGlobalStore
 export const globalStore = defineStore('global', () => {
-	// 移动端布局
+	// 移动端布局（窄屏，小于 992px，含平板与手机）
 	const isMobile = ref(false)
+	// 手机布局（小于 768px），平板尺寸为 isMobile 为真但 isPhone 为假
+	const isPhone = ref(false)
 	// 布局
 	const layout = ref(getCacheConfig('SNOWY_LAYOUT'))
 	// 菜单是否折叠 toggle
@@ -76,6 +78,9 @@ export const globalStore = defineStore('global', () => {
 	// 定义action
 	const setIsMobile = (key) => {
 		isMobile.value = key
+	}
+	const setIsPhone = (key) => {
+		isPhone.value = key
 	}
 	const setIsLocked = (key) => {
 		isLocked.value = key
@@ -161,6 +166,7 @@ export const globalStore = defineStore('global', () => {
 	}
 	return {
 		isMobile,
+		isPhone,
 		layout,
 		menuIsCollapse,
 		sideUniqueOpen,
@@ -183,6 +189,7 @@ export const globalStore = defineStore('global', () => {
 		isLocked,
 		autoLockTime,
 		setIsMobile,
+		setIsPhone,
 		setIsLocked,
 		setAutoLockTime,
 		setLayout,

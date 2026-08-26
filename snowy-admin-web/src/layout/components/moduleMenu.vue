@@ -1,5 +1,6 @@
 <template>
-	<div class="layout-items-center" v-if="moduleUnfoldOpen && layout !== layoutEnum.TOP">
+	<!-- 平板尺寸下不展开模块坞，统一走下方紧凑的模块切换风格，避免顶栏被撑爆 -->
+	<div class="layout-items-center" v-if="moduleUnfoldOpen && layout !== layoutEnum.TOP && !isTablet">
 		<a-menu
 			v-model:selectedKeys="selectedKeys"
 			mode="horizontal"
@@ -22,7 +23,7 @@
 		</a-menu>
 	</div>
 	<div v-else>
-		<a-popover v-if="menu.length > 1 && !isMobile" placement="bottomLeft">
+		<a-popover v-if="menu.length > 1 && !isPhone" placement="bottomLeft">
 			<template #content>
 				<a-row :gutter="[0, 5]" class="module-row">
 					<div v-for="item in menu" :key="item.id">
@@ -63,6 +64,14 @@
 	})
 	const isMobile = computed(() => {
 		return store.isMobile
+	})
+	// 手机尺寸（小于 768px）
+	const isPhone = computed(() => {
+		return store.isPhone
+	})
+	// 平板尺寸（768px ~ 991px）
+	const isTablet = computed(() => {
+		return store.isMobile && !store.isPhone
 	})
 	const themeColor = computed(() => {
 		return store.themeColor

@@ -4,6 +4,8 @@
 		v-if="layout === layoutEnum.CLASSICAL"
 		:layout="layout"
 		:isMobile="isMobile"
+		:isPhone="isPhone"
+		:isTablet="isTablet"
 		:menuIsCollapse="menuIsCollapse"
 		:sideTheme="sideTheme"
 		:sysBaseConfig="sysBaseConfig"
@@ -26,6 +28,8 @@
 		v-else-if="layout === layoutEnum.DOUBLEROW"
 		:layout="layout"
 		:isMobile="isMobile"
+		:isPhone="isPhone"
+		:isTablet="isTablet"
 		:sideTheme="sideTheme"
 		:secondMenuSideTheme="secondMenuSideTheme"
 		:sysBaseConfig="sysBaseConfig"
@@ -60,6 +64,8 @@
 		:footerCopyrightOpen="footerCopyrightOpen"
 		:sideTheme="sideTheme"
 		:isMobile="isMobile"
+		:isPhone="isPhone"
+		:isTablet="isTablet"
 		:kStore="kStore"
 		:layoutTagsOpen="layoutTagsOpen"
 		@switchModule="switchModule"
@@ -116,6 +122,14 @@
 	})
 	const isMobile = computed(() => {
 		return store.isMobile
+	})
+	// 手机尺寸（小于 768px）
+	const isPhone = computed(() => {
+		return store.isPhone
+	})
+	// 平板尺寸（768px ~ 991px），介于手机与桌面之间
+	const isTablet = computed(() => {
+		return store.isMobile && !store.isPhone
 	})
 	const menuIsCollapse = computed(() => {
 		return store.menuIsCollapse
@@ -330,9 +344,15 @@
 		const menuNavList = menu.value
 		menuList.value = menuNavList
 		nextTick(() => {
+			const topHeaderMenuDom = document.querySelector('#topHeaderMenu')
+			const lineNavDom = document.querySelector('#xn-line-nav')
+			// 手机尺寸下顶栏横向菜单不渲染，无需计算折叠数量
+			if (!topHeaderMenuDom || !lineNavDom) {
+				return
+			}
 			// 获取所有的导航菜单
-			let liArr = document.querySelector('#topHeaderMenu').querySelectorAll('li')
-			let allWidth = document.querySelector('#xn-line-nav').offsetWidth // 可以显示区域的宽度
+			let liArr = topHeaderMenuDom.querySelectorAll('li')
+			let allWidth = lineNavDom.offsetWidth // 可以显示区域的宽度
 
 			// 计算显示的宽度
 			let num = 0
@@ -413,6 +433,13 @@
 			}
 		})
 	})
+	// 手机与非手机尺寸互相切换时，顶栏横向菜单会销毁或重建，需要重算顶栏样式与折叠数量
+	watch(isPhone, () => {
+		nextTick(() => {
+			settingTopHeaderThemeOrColor(theme.value, layout.value)
+			getNav()
+		})
+	})
 	watch(topHeaderThemeColorOpen, () => {
 		switchoverTopHeaderThemeColor()
 	})
@@ -439,11 +466,11 @@
 		const topHeaderMenu = document.getElementById('topHeaderMenu')
 		if (layout.value === layoutEnum.TOP) {
 			if (newValue) {
-				header.classList.add('top-snowy-header-layout')
-				topHeaderMenu.classList.add('top-snowy-header-layout')
+				header?.classList.add('top-snowy-header-layout')
+				topHeaderMenu?.classList.add('top-snowy-header-layout')
 			} else {
-				header.classList.remove('top-snowy-header-layout')
-				topHeaderMenu.classList.remove('top-snowy-header-layout')
+				header?.classList.remove('top-snowy-header-layout')
+				topHeaderMenu?.classList.remove('top-snowy-header-layout')
 			}
 		}
 	})
@@ -475,27 +502,27 @@
 
 		if (topHeaderThemeColorOpen.value && layout === layoutEnum.TOP) {
 			nextTick(() => {
-				topHeaderMenu.classList.add('top-snowy-header-layout')
-				header.classList.add('top-snowy-header-layout')
+				topHeaderMenu?.classList.add('top-snowy-header-layout')
+				header?.classList.add('top-snowy-header-layout')
 			})
 		} else if (!topHeaderThemeColorOpen.value && layout === layoutEnum.TOP) {
 			nextTick(() => {
-				topHeaderMenu.classList.remove('top-snowy-header-layout')
-				header.classList.remove('top-snowy-header-layout')
+				topHeaderMenu?.classList.remove('top-snowy-header-layout')
+				header?.classList.remove('top-snowy-header-layout')
 			})
 		}
 		if (theme === themeEnum.LIGHT && layout === layoutEnum.TOP) {
-			header.classList.remove('top-snowy-header')
-			header.classList.add('top-snowy-header-light')
+			header?.classList.remove('top-snowy-header')
+			header?.classList.add('top-snowy-header-light')
 		} else {
-			header.classList.remove('top-snowy-header-light')
+			header?.classList.remove('top-snowy-header-light')
 			if (layout === layoutEnum.TOP) {
-				header.classList.add('top-snowy-header')
+				header?.classList.add('top-snowy-header')
 			} else {
 				if (theme === themeEnum.REAL_DARK) {
-					header.classList.add('top-snowy-header')
+					header?.classList.add('top-snowy-header')
 				} else {
-					header.classList.remove('top-snowy-header')
+					header?.classList.remove('top-snowy-header')
 				}
 			}
 		}
@@ -621,6 +648,7 @@
 	const onLayoutResize = () => {
 		const clientWidth = document.body.clientWidth
 		store.setIsMobile(clientWidth < 992)
+		store.setIsPhone(clientWidth < 768)
 	}
 	// 切换应用
 	const switchModule = (id) => {

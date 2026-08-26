@@ -3,7 +3,7 @@
 		v-if="isModal"
 		v-bind="attrs"
 		:open="isOpen"
-		:width="modalWidth"
+		:width="calcModalWidth"
 		:footer="slots.footer ? undefined : null"
 		:wrap-class-name="`xn-form-modal ${wrapClassName} ${fullscreenClass}`"
 		:bodyStyle="calcBodyStyle"
@@ -238,12 +238,37 @@
 	// Tooltip 挂载 body, 防止拖拽后定位错位
 	const getTooltipContainer = () => document.body
 
+	/************************* 尺寸钳制 *************************/
+	// 视口宽高，用于把业务设定的固定尺寸钳制在屏幕范围内
+	const viewportWidth = ref(window.innerWidth)
+	const viewportHeight = ref(window.innerHeight)
+
+	// 把尺寸解析为像素数值，非固定像素（百分比、vw、calc 等）返回 null 不参与钳制
+	const parsePxSize = (size) => {
+		if (typeof size === 'number') {
+			return Number.isFinite(size) ? size : null
+		}
+		if (typeof size === 'string') {
+			const matched = /^\s*(\d+(\.\d+)?)\s*(px)?\s*$/.exec(size)
+			return matched ? Number(matched[1]) : null
+		}
+		return null
+	}
 	/************************* 对话框 *************************/
 	// 响应式对话框
 	const modalContentRef = ref()
 
 	// 响应式对话框宽度
 	const modalWidth = ref(props.width)
+
+	// 对话框最终宽度：业务设定的宽度超过视口时收敛为视口宽度，避免弹窗溢出布局
+	const calcModalWidth = computed(() => {
+		const pxWidth = parsePxSize(modalWidth.value)
+		if (pxWidth !== null && pxWidth > viewportWidth.value) {
+			return viewportWidth.value
+		}
+		return modalWidth.value
+	})
 
 	// 响应式对话框高度
 	const modalHeight = ref('auto')
@@ -427,12 +452,22 @@
 	// 抽屉宽度
 	const drawerWidth = computed(() => {
 		if (isSmallScreen.value || drawerFullscreen.value) return '100%'
+		// 业务设定的宽度超过视口时占满整屏，避免抽屉溢出布局
+		const pxWidth = parsePxSize(baseDrawerWidth.value)
+		if (pxWidth !== null && pxWidth > viewportWidth.value) {
+			return '100%'
+		}
 		return baseDrawerWidth.value
 	})
 
 	// 抽屉高度
 	const drawerHeight = computed(() => {
 		if (isSmallScreen.value || drawerFullscreen.value) return '100%'
+		// 业务设定的高度超过视口时占满整屏（上下方向抽屉）
+		const pxHeight = parsePxSize(baseDrawerHeight.value)
+		if (pxHeight !== null && pxHeight > viewportHeight.value) {
+			return '100%'
+		}
 		return baseDrawerHeight.value
 	})
 
@@ -544,6 +579,8 @@
 	// 监听窗口大小变化
 	const handleResize = () => {
 		isSmallScreen.value = window.innerWidth <= 768
+		viewportWidth.value = window.innerWidth
+		viewportHeight.value = window.innerHeight
 	}
 
 	onMounted(() => {

@@ -13,7 +13,8 @@
 					</header>
 				</div>
 				<moduleMenu v-if="moduleMenuShow" @switchModule="switchModule" class="xn-pdl25" />
-				<div class="xn-navmenu-line" id="xn-line-nav">
+				<!-- 手机尺寸下顶栏放不下横向目录菜单，改由左下角悬浮按钮的抽屉菜单承载 -->
+				<div class="xn-navmenu-line" id="xn-line-nav" v-if="!isPhone">
 					<a-menu
 						class="xn-bb0"
 						id="topHeaderMenu"
@@ -32,7 +33,7 @@
 				</div>
 			</div>
 			<!-- 手机端情况下的左侧菜单 -->
-			<Side-m v-if="isMobile" v-show="displayLayout" />
+			<Side-m v-if="isPhone" v-show="displayLayout" />
 			<breadcrumb v-if="!isMobile && breadcrumbOpen" v-show="displayLayout" />
 			<!-- 多标签 -->
 			<Tags v-if="!isMobile && layoutTagsOpen" v-show="displayLayout" />
@@ -76,7 +77,9 @@
 		selectedKeys: { type: Array },
 		openKeys: { type: Array },
 		sideTheme: { type: String },
-		isMobile: { type: Boolean }, // 是否移动端
+		isMobile: { type: Boolean }, // 是否移动端（窄屏，含平板与手机）
+		isPhone: { type: Boolean }, // 是否手机尺寸（小于 768px）
+		isTablet: { type: Boolean }, // 是否平板尺寸（768px ~ 991px）
 		breadcrumbOpen: { type: Boolean }, //面包屑
 		layoutTagsOpen: { type: Boolean },
 		layoutSiderDowbleMenu: { type: Boolean },
@@ -156,6 +159,12 @@
 	}
 	.xn-pd050 {
 		padding: 0 50px;
+	}
+	/* 手机尺寸下顶栏两侧留白收窄，避免 logo 与用户栏被挤压 */
+	@media (max-width: 767px) {
+		.xn-pd050 {
+			padding: 0 10px;
+		}
 	}
 	.xn-pl10 {
 		padding-left: 10px;

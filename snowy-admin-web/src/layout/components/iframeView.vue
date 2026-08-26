@@ -25,8 +25,12 @@
 	const isMobile = computed(() => {
 		return store.isMobile
 	})
-	const layoutTags = computed(() => {
-		return store.layoutTags
+	const layoutTagsOpen = computed(() => {
+		return store.layoutTagsOpen
+	})
+	// 窄屏或未开启多标签时多标签栏不显示，此时内嵌页只保留当前一个，其余情况随多标签共存
+	const iframeSingleMode = computed(() => {
+		return isMobile.value || !layoutTagsOpen.value
 	})
 
 	watch(route, () => {
@@ -41,12 +45,12 @@
 	const clearIframeList = iStore.clearIframeList
 	const push = (route) => {
 		if (route.meta.type === 'iframe') {
-			if (isMobile || !layoutTags) {
+			if (iframeSingleMode.value) {
 				setIframeList(route)
 			} else {
 				pushIframeList(route)
 			}
-		} else if (isMobile || !layoutTags) {
+		} else if (iframeSingleMode.value) {
 			clearIframeList()
 		}
 	}

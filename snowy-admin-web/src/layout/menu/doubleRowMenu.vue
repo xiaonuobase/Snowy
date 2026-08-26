@@ -1,6 +1,14 @@
 <template>
 	<a-layout>
-		<a-layout-sider v-if="!isMobile" width="80" :theme="sideTheme" :trigger="null" collapsible v-show="displayLayout">
+		<a-layout-sider
+			v-if="!isPhone"
+			:width="firstSideWidth"
+			:class="{ 'doublerow-first-side-tablet': isTablet }"
+			:theme="sideTheme"
+			:trigger="null"
+			collapsible
+			v-show="displayLayout"
+		>
 			<header id="snowyHeaderLogo" class="snowy-header-logo">
 				<div class="snowy-header-left">
 					<div class="logo-bar">
@@ -32,9 +40,13 @@
 				>
 					<a v-if="item.meta && item.meta.type === 'link'" :href="item.path" target="_blank" @click.stop="() => {}" />
 					<template #icon>
-						<component :is="item.meta.icon" class="xn-pl10" />
+						<!-- 平板尺寸下只留图标，模块名改由右侧气泡提示承载 -->
+						<a-tooltip v-if="isTablet" placement="right" :title="item.meta.title">
+							<component :is="item.meta.icon" />
+						</a-tooltip>
+						<component v-else :is="item.meta.icon" class="xn-pl10" />
 					</template>
-					<div class="snowy-doublerow-layout-menu-item-fort-div">
+					<div v-if="!isTablet" class="snowy-doublerow-layout-menu-item-fort-div">
 						<span class="snowy-doublerow-layout-menu-item-fort-div-span">
 							{{ item.meta.title }}
 						</span>
@@ -43,7 +55,7 @@
 			</a-menu>
 		</a-layout-sider>
 		<!-- 手机端情况下的左侧菜单 -->
-		<Side-m v-if="isMobile" v-show="displayLayout" />
+		<Side-m v-if="isPhone" v-show="displayLayout" />
 		<a-layout>
 			<div id="snowyHeader" class="snowy-header" v-show="displayLayout">
 				<div class="snowy-header-left xn-pl0">
@@ -56,16 +68,16 @@
 			<a-layout>
 				<div v-show="displayLayout"></div>
 				<a-layout-sider
-					v-if="!isMobile"
+					v-if="!isPhone"
 					v-show="displayLayout && layoutSiderDowbleMenu"
-					:collapsed="menuIsCollapse"
+					:collapsed="secondSideCollapsed"
 					:trigger="null"
 					width="170"
 					collapsible
 					:theme="secondMenuSideTheme"
 				>
 					<a-menu
-						:collapsed="menuIsCollapse"
+						:collapsed="secondSideCollapsed"
 						:openKeys="openKeys"
 						:selectedKeys="selectedKeys"
 						mode="inline"
@@ -112,7 +124,9 @@
 
 	const props = defineProps({
 		layout: { type: String }, // 布局信息
-		isMobile: { type: Boolean }, // 是否移动端
+		isMobile: { type: Boolean }, // 是否移动端（窄屏，含平板与手机）
+		isPhone: { type: Boolean }, // 是否手机尺寸（小于 768px）
+		isTablet: { type: Boolean }, // 是否平板尺寸（768px ~ 991px）
 		sideTheme: { type: String },
 		menuIsCollapse: {},
 		sysBaseConfig: { type: Object },
@@ -128,6 +142,14 @@
 		footerCopyrightOpen: { type: Boolean }, //页脚版权信息
 		moduleMenuShow: { type: Boolean },
 		secondMenuSideTheme: {}
+	})
+	// 平板尺寸下一级目录栏收成纯图标栏，桌面保持出厂的 80
+	const firstSideWidth = computed(() => {
+		return props.isTablet ? 56 : 80
+	})
+	// 平板尺寸下二级菜单收成图标栏，避免两排侧边栏占去内容区过多横向空间
+	const secondSideCollapsed = computed(() => {
+		return props.isTablet ? true : props.menuIsCollapse
 	})
 	const emit = defineEmits(['onSelect', 'switchModule', 'showMenu', 'displayLayoutChange'])
 	const displayLayout = ref(true)
@@ -210,5 +232,26 @@
 	}
 	.main-content-wrapper-max {
 		padding: 0;
+	}
+	/* 平板尺寸下第一排收成纯图标栏：logo 居中，菜单项去掉左右内边距让图标居中并放大 */
+	.doublerow-first-side-tablet {
+		:deep(.snowy-header-logo) {
+			justify-content: center;
+		}
+		/* 清掉 snowy-header-left 的 20px 左内边距，否则 logo 会被顶得右偏 */
+		:deep(.snowy-header-logo .snowy-header-left) {
+			padding-left: 0;
+		}
+		:deep(.snowy-header-logo .logo-bar .logo) {
+			margin-right: 0;
+		}
+		:deep(.ant-menu-item .ant-menu-item-icon) {
+			font-size: 18px;
+			margin-inline-end: 0 !important;
+		}
+		/* 标题已隐藏，清掉图标与标题之间的预留间距，否则图标会左偏 */
+		:deep(.ant-menu-item .ant-menu-item-icon + span) {
+			margin-inline-start: 0 !important;
+		}
 	}
 </style>
