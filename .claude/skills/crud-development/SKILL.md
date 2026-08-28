@@ -7,9 +7,9 @@ description: Snowy CRUD 全套开发规范（六件套 + 可选两件 + 前端�
 
 ## 架构特征表（先背下来再写代码）
 
-| 特征 | Snowy 约定 | 与 RuoYi 系相反点 |
+| 特征 | Snowy 约定 | 与同类快速开发框架相反点 |
 |---|---|---|
-| 包名 | `vip.xiaonuo.biz.modular.{域名}.{层}` | 不是 org.dromara / com.ruoyi |
+| 包名 | `vip.xiaonuo.biz.modular.{域名}.{层}` | 不是其他脚手架的 org.* / com.* 包名 |
 | 依赖注入 | `@Resource`（jakarta.annotation）字段注入 | ❌@Autowired ❌构造器注入 |
 | ServiceImpl | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` | ❌只 implements 不继承 |
 | 对象转换 | Hutool `BeanUtil.toBean / copyProperties` | ❌MapstructUtils |
@@ -275,7 +275,7 @@ public class BizXxxIdParam {
 
 ## 常见错误正误对照
 
-| ❌ 错误（RuoYi 惯性） | ✅ 正确（Snowy） |
+| ❌ 错误（同类框架惯性） | ✅ 正确（Snowy） |
 |---|---|
 | `@Autowired private XxxService x;` | `@Resource private XxxService x;` |
 | `public class XxxServiceImpl implements IXxxService` | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` |

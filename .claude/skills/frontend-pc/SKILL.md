@@ -12,6 +12,34 @@ description: snowy-admin-web 前端开发规范：api js 封装约定、index.vu
 - 组件自动导入（unplugin）：a-xxx 组件、ref/computed 等 API **不需要 import**；自定义组件用 kebab-case 标签
 - 包管理 npm；目录 `snowy-admin-web/`
 
+## SFC 块顺序（硬性，不可颠倒）
+
+**每个 .vue 文件三块固定按 `template` → `script` → `style` 排列**，缺 style 可以，顺序错不行。
+
+```vue
+<template>
+
+</template>
+
+<script setup name="业务编码">
+
+</script>
+
+<style scoped>
+
+</style>
+```
+
+| 要求 | 说明 |
+|---|---|
+| `<template>` 永远第一 | 先看长什么样再看怎么实现；review diff 时结构稳定可预期 |
+| `<script setup name="业务编码">` 第二 | name 必填（keep-alive 缓存靠它），值为业务编码小驼峰 |
+| `<style scoped>` 第三 | 默认加 `scoped`；确需全局的另起一个不带 scoped 的块，仍排在最后 |
+
+❌ 禁止把 `<script>` 写在 `<template>` 前面（Vue 官方 SFC 也支持，但本项目统一为 template 优先，混排会让文件之间没法快速对照）。
+
+> 存量：`views/plugin/front/` 下有 29 个文件是 script 前置写法，**不做批量回改**，新写与重构经过时按本规范来。
+
 ## 三件套结构（一个业务域）
 
 ```
@@ -220,6 +248,48 @@ export default {
 
 要点：提交成功 `emit('successful')`；数组字段（多选）提交前 `JSON.stringify`（参考 notice 的 place）；字典选项 `tool.dictList('BIZ_XXX_TYPE')`。
 
+## 注释规范（求整齐，一行到底）
+
+**与后端 Javadoc 同一原则：一行说清，说不清就是代码该拆了。**
+
+| 位置 | 写法 |
+|---|---|
+| 文件头（api js） | 四行块注释：一行中文描述 + 空行 + `@author` + `@date`（见上文模板） |
+| 文件头（其他 js / vue） | 单行 `// 一句话说明本文件干什么` |
+| 常量块 / 导出对象 | 上方**一行** `//` |
+| 函数 / 方法 | 上方**一行** `//` |
+| 行内 | 句末 `// 一句话`，别换行续写 |
+
+### ❌ 禁止
+
+| 禁止 | 替代 |
+|---|---|
+| 连续 2 行以上 `//` 堆叠成段 | 压成一行；压不下的属于设计约束，写进 `docs/` 而不是源码 |
+| 解释「为什么这么设计」的长段说明 | 同上，源码只留结论 |
+| JSDoc `@param` / `@returns` / `@type` | 一行 `//` 描述即可（api js 文件头的 @author/@date 除外） |
+| 注释掉的废代码 | 直接删，git 里有 |
+
+❌ 反例（`constants/enums.js` 旧写法，5 行注释配 1 行代码）：
+```js
+// 数据中台枚举常量，统一管理所有枚举值，避免硬编码
+// 这里只放跨页面共用的值域；单个业务页自己用的选项一律放该页目录下的 xxxOptions.js，不要往这里堆
+
+// 敏感类型枚举，取值与中文名须与后端 DataSecurityScanRuleServiceImpl.SENSITIVE_NAME_MAP 保持一致。
+// 顺序即扫描规则表单下拉的展示顺序，CUSTOM 固定放末位。
+// 注意：CUSTOM 规则的真实语义在规则自身的 sensitiveTypeName 上，列表展示优先取该字段
+export const SensitiveTypeEnum = { ... }
+```
+
+✅ 正例（各留一行，约束信息移交文档）：
+```js
+// 数据中台跨页面共用枚举常量
+
+// 敏感类型枚举，须与后端 SENSITIVE_NAME_MAP 一致
+export const SensitiveTypeEnum = { ... }
+```
+
+> 压不进一行的信息（模块边界约定、跨端契约、字段优先级规则）不是删掉，是**换地方**——放模块的 `docs/` 并在 INDEX.md 挂号。源码注释负责「这是什么」，文档负责「为什么、怎么配合」。
+
 ## 按钮权限
 
 ```vue
@@ -270,16 +340,19 @@ v-if="hasPerm(['bizXxxEdit', 'bizXxxDelete'], 'and')"    // 数组 + and/or（�
 | `:data="tableData"` 数组 | s-table `:data="loadData"` 函数 |
 | 表单不用容器直接弹 a-modal | `xn-form-container` |
 | 忘 `defineExpose({ onOpen })` | 父组件打不开表单 |
+| `<script>` 写在 `<template>` 前面 | 固定 template → script → style |
 | 硬编码中文文案不进 i18n（公共区域） | $t + locales |
 
 ## 检查清单
 
+- [ ] 每个 .vue 块顺序为 template → script → style，script 带 name
 - [ ] 三件套齐全（api js / index.vue / form.vue）
 - [ ] api js 的 URL 前缀与后端一致（/biz/xxx/）
 - [ ] s-table loadData 模式 + 时间范围拆分
 - [ ] 按钮权限 hasPerm 码与 SYS_RESOURCE BUTTON 行一致
 - [ ] 提交成功 emit('successful')
 - [ ] 无 TS / Element Plus 残留；Tab 缩进
+- [ ] 注释每处不超过一行，无连续 `//` 段落、无 JSDoc @param/@returns、无注释掉的废代码
 
 ## 参考实现
 

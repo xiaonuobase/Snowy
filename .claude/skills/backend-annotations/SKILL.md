@@ -36,7 +36,7 @@ public CommonResult<String> add(...) {...}
 
 - **所有写操作接口必须加**（add/edit/delete/业务动作）；查询接口不加
 - 日志由 `snowy-plugin-dev` 的 DevLogAop 切面落 DEV_LOG 表，可在 开发工具→日志 查看
-- ❌ `@Log(title=..., businessType=...)` 是 RuoYi 的写法，本项目没有
+- ❌ `@Log(title=..., businessType=...)` 是同类快速开发框架的写法，本项目没有
 
 ## @CommonNoRepeat —— 防重复提交
 
@@ -55,7 +55,7 @@ public CommonResult<String> create(...) {...}
 
 ```java
 @SaCheckPermission("/biz/supplier/page")    // ✅ 值 = 本接口 URL
-@SaCheckPermission("biz:supplier:page")     // ❌ 冒号式是 RuoYi 的，校验必失败
+@SaCheckPermission("biz:supplier:page")     // ❌ 冒号式是同类框架的，校验必失败
 ```
 
 - 权限来源：角色-资源授权生成的数据范围 apiUrl 列表（详见 security-auth 技能）
@@ -115,7 +115,7 @@ public class BizSupplier extends CommonEntity {              // 继承即有 DEL
 - [ ] @SaCheckPermission 值 = URL 全路径
 - [ ] 翻译字段 @Trans 的 ref 冗余字段有 @TableField(exist = false)
 - [ ] 校验消息中文、格式统一
-- [ ] 没有使用 RuoYi 特有注解（@Log、@RateLimiter、@DataPermission、@ExcelProperty 换 EasyExcel 注解）
+- [ ] 没有使用同类框架特有注解（@Log、@RateLimiter、@DataPermission、@ExcelProperty 换 EasyExcel 注解）
 
 ## 参考实现
 

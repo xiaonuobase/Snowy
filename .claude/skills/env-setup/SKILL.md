@@ -7,16 +7,16 @@ description: Snowy 新环境搭建与首次启动 playbook：JDK/MySQL/Redis/前
 
 ## 就绪清单（按顺序）
 
-| # | 依赖 | 要求 | 验证 |
-|---|---|---|---|
-| 1 | JDK | **17**（⚠️ 本机只有 IDEA 内置 JBR 25 时命令行编译会因 Lombok 1.18.30 失败，IDEA 里配 Project SDK 17 构建即可） | `java -version` |
-| 2 | MySQL | 8.0/5.7，建库 `snowy`（utf8mb4） | `mysql -e "SHOW DATABASES LIKE 'snowy'"` |
-| 3 | 导入种子数据 | 执行 `snowy-web-app/src/main/resources/_sql/snowy_mysql.sql`（33 张表） | `mysql snowy -e "SELECT COUNT(*) FROM SYS_USER"` 应 ≥2 |
-| 4 | Redis | 本地 6379，无密码，用 database 1 | `redis-cli -n 1 ping` |
+| # | 依赖 | 要求                                                                                                    | 验证 |
+|---|---|-------------------------------------------------------------------------------------------------------|---|
+| 1 | JDK | **17/21/23**（⚠️ 本机只有 IDEA 内置 JBR 25 时命令行编译会因 Lombok 1.18.30 失败，IDEA 里配 Project SDK 17 构建即可）           | `java -version` |
+| 2 | MySQL | 8.0/5.7，建库 `snowy`（utf8mb4）                                                                           | `mysql -e "SHOW DATABASES LIKE 'snowy'"` |
+| 3 | 导入种子数据 | 执行 `snowy-web-app/src/main/resources/_sql/snowy_mysql.sql`（33 张表）                                     | `mysql snowy -e "SELECT COUNT(*) FROM SYS_USER"` 应 ≥2 |
+| 4 | Redis | 本地 6379，无密码，用 database 1                                                                              | `redis-cli -n 1 ping` |
 | 5 | 数据源核对 | `snowy-web-app/src/main/resources/application.properties` 的 dynamic master 段（默认 root/12345678，本机不同则改） | — |
-| 6 | 后端构建启动 | IDEA 启动 `vip.xiaonuo.Application`（snowy-web-app），端口 **82** | 浏览器开 `http://localhost:82` 应显示 WELCOME |
-| 7 | 前端依赖 | `snowy-admin-web/` 下 `npm install` | — |
-| 8 | 前端启动 | `npm run dev`，端口 **81**，代理 /api → 82 | 打开 `http://localhost:81` |
+| 6 | 后端构建启动 | IDEA 启动 `vip.xiaonuo.Application`（snowy-web-app），端口 **82**                                            | 浏览器开 `http://localhost:82` 应显示 WELCOME |
+| 7 | 前端依赖 | `snowy-admin-web/` 下 `npm install`                                                                    | — |
+| 8 | 前端启动 | `npm run dev`，端口 **81**，代理 /api → 82                                                                  | 打开 `http://localhost:81` |
 
 ## ★ 出厂登录账号（本仓库种子数据的真实值）
 

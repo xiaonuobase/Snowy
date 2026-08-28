@@ -36,7 +36,7 @@ description: 代码规范检查（后端 + 前端，三级清单）
 | W3 | 操作日志 | 写接口有 `@CommonLog(` |
 | W4 | checkSqlInjection | `new QueryWrapper` 后接 `.checkSqlInjection()` |
 | W5 | Lombok | entity/param 无 `@Data` |
-| W6 | Javadoc | 类头含 `@author` 与 `@date`、中文注释 |
+| W6 | Javadoc | 类头含 `@author` 与 `@date`、中文注释；**仅新增文件**再查四行式（一行中文摘要 + @author + @date），出现 `@param`/`@return`/`<p>`/多行说明段即报（存量不报） |
 | W7 | 主键 | `@TableId` 字段为 String |
 | W8 | PageParam | 含 current/size/sortField/sortOrder/searchKey |
 | W9 | 命名前缀 | biz 下类名 Biz 前缀 |
@@ -51,6 +51,8 @@ description: 代码规范检查（后端 + 前端，三级清单）
 | F4 | s-table 模式 | index.vue 有 `:data="loadData"` 函数模式 |
 | F5 | defineExpose | form.vue 有 `defineExpose({ onOpen })` |
 | F6 | 权限码 | hasPerm 值为驼峰式 |
+| F7 | 注释一行制 | **仅新增文件**：无连续 2 行以上 `//` 段落、无 JSDoc `@param`/`@returns`、无注释掉的废代码（存量不报） |
+| F8 | SFC 块顺序 | .vue 首个顶级标签必须是 `<template`，顺序 template → script → style；script 带 `name=` |
 
 ## 执行方式
 

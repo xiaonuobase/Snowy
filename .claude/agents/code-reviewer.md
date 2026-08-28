@@ -85,10 +85,12 @@ Grep pattern: "interface |: string|: number| as [A-Z]|el-"  path: snowy-admin-we
 | W5 | Lombok | entity/param/result 无 `@Data`（用 @Getter @Setter） |
 | W6 | XML 命名空间 | mapping/*.xml 的 namespace 指向同包 Mapper 全限定名 |
 | W7 | 分页参数 | PageParam 含 current/size/sortField/sortOrder/searchKey |
-| W8 | Javadoc | 类与方法有中文 Javadoc 且含 @author @date |
+| W8 | Javadoc | 类与方法有中文 Javadoc 且含 @author @date；**仅对新增文件**追加判定：四行式（一行中文摘要 + 空行 + @author + @date），出现 `@param`/`@return`/`@throws`/`<p>`/摘要下补充说明段即报（存量多行风格不报，见 code-patterns 技能「Javadoc 格式规范」） |
 | W9 | 对象转换 | 用 BeanUtil.toBean/copyProperties（出现 MapstructUtils/MapStruct = 错） |
 | W10 | 前端 api js | default export 对象；URL 前缀 `/{插件}/{域}/`；index.vue 用 s-table + loadData 函数模式 |
 | W11 | 按钮权限 | hasPerm 码为驼峰式且与菜单 SQL 的 BUTTON code 一致 |
+| W11b | 前端注释一行制 | **仅新增文件**：每处注释不超过一行，无连续 `//` 段落、无 JSDoc @param/@returns、无注释掉的废代码（见 frontend-pc 技能「注释规范」） |
+| W11c | SFC 块顺序 | .vue 顶级块顺序为 template → script → style，首个标签必须是 `<template`；script 带 `name=`（存量 script 前置文件不报） |
 | W12 | 命名前缀 | 类名前缀 = 插件缩写（Biz/Sys/Dev/Gen/Auth/Client/Mobile） |
 
 # 建议级（提示即可）

@@ -20,7 +20,7 @@ description: Snowy 问题排查方法论与高发故障库：启动失败、401/
 1. 端口 82 被占？（`netstat -ano | findstr :82`）
 2. MySQL 连不上/库没导 → 导入 `_sql/snowy_mysql.sql`，核对 application.properties 的 master 段口令
 3. Redis 连不上 → 本地 6379 是否启动（database 1）
-4. JDK 版本 → 必须 17
+4. JDK 版本 → 至少 17（17 及以上，如 17/21/23 均可）
 5. 依赖没编译 → 根目录 `mvn clean install -DskipTests`
 6. Knife4j 401 → /doc.html 的 basic 认证是 admin/123456
 

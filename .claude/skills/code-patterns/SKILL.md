@@ -1,15 +1,15 @@
 ---
 name: code-patterns
-description: Snowy 全量编码禁令速查表（含"来自 RuoYi 的惯性错误"专栏）、命名规范、JSON/日期约定、Git 提交规范。触发场景：1) 写任何 Java/前端代码前的规范自查 2) 审查代码风格问题 3) 提交代码。触发词：编码规范、禁令、命名、代码风格、惯性错误、RuoYi、JSON、日期、Git 提交、commit。注意：本技能是速查表；分层结构见 crud-development，模块组织见 plugin-architecture。
+description: Snowy 全量编码禁令速查表（含"来自同类快速开发框架的惯性错误"专栏）、命名规范、JSON/日期约定、Git 提交规范。触发场景：1) 写任何 Java/前端代码前的规范自查 2) 审查代码风格问题 3) 提交代码。触发词：编码规范、禁令、命名、代码风格、惯性错误、JSON、日期、Git 提交、commit。注意：本技能是速查表；分层结构见 crud-development，模块组织见 plugin-architecture。
 ---
 
 # Snowy 编码禁令速查表
 
-## ⚠️ 来自 RuoYi / RuoYi-Vue-Plus 的惯性错误（最高优先级）
+## ⚠️ 来自同类快速开发框架的惯性错误（最高优先级）
 
-AI 对 RuoYi 系框架先验极强，**以下每条都是反向的**，写代码前先扫一遍：
+AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写代码前先扫一遍：
 
-| # | ❌ RuoYi 惯性写法 | ✅ Snowy 正确写法 |
+| # | ❌ 常见脚手架惯性写法 | ✅ Snowy 正确写法 |
 |---|---|---|
 | 1 | `implements IXxxService`（不继承） | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` |
 | 2 | `@RequiredArgsConstructor` + `private final` 构造器注入 | `@Resource` 字段注入（jakarta.annotation.Resource） |
@@ -59,7 +59,51 @@ AI 对 RuoYi 系框架先验极强，**以下每条都是反向的**，写代码
 | Controller URL | `/biz/supplier/page` 小写驼峰域名 | — |
 | 数据库 | 全大写 | BIZ_SUPPLIER |
 | 枚举 | `XxxEnum`，含 getValue()，值用枚举不用魔法串 | BizNoticeStatusEnum |
-| Javadoc | 类与方法都带，含 `@author 名字` `@date yyyy/MM/dd HH:mm` | — |
+| Javadoc | 类与方法都带，含 `@author 名字` `@date yyyy/MM/dd HH:mm` | 格式见下节 |
+
+## Javadoc 格式规范（求整齐，只写一行）
+
+**固定四行，不多不少**：中文摘要一行 → 空行 → `@author` → `@date`。
+
+```java
+/**
+ * 解除订阅
+ *
+ * @author yubaoshan
+ * @date 2026/08/27 10:00
+ */
+```
+
+| 要求 | 说明 |
+|---|---|
+| 摘要**只有一行** | 一句话说清做什么，不换行、不加句号；写不下就说明方法职责太杂，该拆方法而不是加注释 |
+| 只允许 `@author` `@date` 两个标签 | date 格式 `yyyy/MM/dd HH:mm`；注释块 `*/` 收尾（平台老代码的 `**/` 不再沿用） |
+| 类头同样只写一行 | 类名已表达含义，`XXX控制器` / `XXX服务实现类` 即可 |
+
+### ❌ 禁止出现在 Javadoc 里的东西
+
+| 禁止 | 原因 |
+|---|---|
+| `@param` / `@return` / `@throws` | 参数名与 Param 类名已自解释，写了就是复述签名；改签名还容易漏改成为错误注释 |
+| 摘要下方的补充说明段落 | 属于实现细节，写在方法体内的行注释里，别占 Javadoc |
+| `<p>` `</p>` `<ul><li>` 等 HTML 标签 | 本项目 Javadoc 不追求 HTML 渲染，标签只会撑长注释 |
+| `1. xxx 2. xxx` 多条列举 | 同上，说明逻辑分支请写在代码里 |
+
+❌ 反例（三种冗余同时出现）：
+```java
+/**
+ * 解除订阅（管理端强制退订单条明细）
+ * <p>
+ * 复用订阅审批权限，能审批订阅的角色即可解除订阅，无需另行授权
+ *
+ * @param param 明细ID参数
+ * @return 操作结果
+ * @author yubaoshan
+ */
+```
+✅ 正例：摘要压成一行，权限说明移到方法体内或 `@SaCheckPermission` 旁的行注释。
+
+> 存量说明：仓库现有约 500 处多行 `<p>` 风格 Javadoc（含平台原生 CommonEntity、StpClientUtil 等），**不做批量回改**——本规范只约束新写与重构中顺手经过的代码，避免纯格式 diff 淹没 review。
 
 ## JSON / 日期约定
 
@@ -77,6 +121,8 @@ AI 对 RuoYi 系框架先验极强，**以下每条都是反向的**，写代码
 | 自造请求封装 | `src/utils/request.js` 的 baseRequest / clientRequest |
 | api 文件乱放 | `src/api/{插件}/{xxx}Api.js` |
 | 页面文案硬编码中文 | `$t('xxx')` + locales 补词条（遵循现有 i18n） |
+| 连续多行 `//` 注释段、JSDoc @param/@returns | 每处**一行** `//`；说不下的写进模块 `docs/`（详见 frontend-pc 技能「注释规范」） |
+| .vue 里 `<script>` 写在 `<template>` 前 | 固定 `template` → `script` → `style` 三块顺序，不可颠倒 |
 | 按钮权限乱写 | `hasPerm('bizXxxAdd')` 驼峰码，数组与 'and'/'or' 组合 |
 
 ## Git 提交规范
@@ -103,8 +149,8 @@ docs: 补充后端开发指南的跨插件调用章节
 
 ## 检查清单（提交前）
 
-- [ ] 17 条 RuoYi 惯性错误全部规避
-- [ ] 版权头齐全、注释中文、Javadoc 带 @author @date
+- [ ] 17 条常见脚手架惯性错误全部规避
+- [ ] 版权头齐全、注释中文；Javadoc 为「一行摘要 + @author + @date」四行式，无 @param/@return/`<p>`/补充段落
 - [ ] 命名符合前缀与后缀规范
 - [ ] 前端无 TS / Element Plus 残留
 - [ ] commit message 符合 type: 中文 描述
