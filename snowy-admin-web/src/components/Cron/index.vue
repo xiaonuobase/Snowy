@@ -344,6 +344,9 @@
 						</a-form>
 					</a-form>
 				</a-tab-pane>
+				<!--
+				注意：Spring 定时任务不支持年字段，仅支持 6 段式 Cron 表达式（秒 分 时 日 月 周）
+				如需启用年字段，需更换底层定时任务实现（如 Quartz）
 				<a-tab-pane key="7">
 					<template #tab>
 						<div class="cron-num">
@@ -385,6 +388,7 @@
 						</a-form-item>
 					</a-form>
 				</a-tab-pane>
+				-->
 			</a-tabs>
 		</div>
 	</a-modal>
@@ -719,7 +723,7 @@
 	}
 
 	const submit = () => {
-		let year = value_year.value ? ' ' + value_year.value : ''
+		// Spring 定时任务仅支持 6 段式 Cron 表达式，不支持年字段
 		defaultValue.value =
 			value_second.value +
 			' ' +
@@ -731,8 +735,7 @@
 			' ' +
 			value_month.value +
 			' ' +
-			value_week.value +
-			year
+			value_week.value
 		emit('update:modelValue', defaultValue.value)
 		modalVisible.value = false
 	}

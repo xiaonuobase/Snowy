@@ -16,7 +16,14 @@
 			<a-form-item label="任务类名：" name="actionClass">
 				<a-select v-model:value="formData.actionClass" placeholder="请选择任务类名" :options="actionClassOptions" />
 			</a-form-item>
-			<a-form-item ref="cronExpressionRef" label="表达式：" name="cronExpression">
+			<a-form-item ref="cronExpressionRef" name="cronExpression">
+				<template #label>
+					<a-tooltip>
+						<template #title> Spring 定时任务仅支持 6 段式 Cron 表达式（秒 分 时 日 月 周），不支持年字段 </template>
+						<question-circle-outlined />
+					</a-tooltip>
+					&nbsp; 表达式：
+				</template>
 				<cron v-model:modelValue="formData.cronExpression" />
 			</a-form-item>
 			<a-form-item label="扩展参数：" name="extJson">
