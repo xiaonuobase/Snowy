@@ -33,6 +33,7 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.lang.tree.parser.DefaultNodeParser;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -65,6 +66,7 @@ import org.dromara.trans.service.impl.TransService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.api.SaBaseLoginUserApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLockUtil;
@@ -122,7 +124,6 @@ import vip.xiaonuo.sys.modular.user.result.*;
 import vip.xiaonuo.sys.modular.user.service.SysUserExtService;
 import vip.xiaonuo.sys.modular.user.service.SysUserPasswordService;
 import vip.xiaonuo.sys.modular.user.service.SysUserService;
-import vip.xiaonuo.auth.api.AuthApi;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -302,7 +303,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public void unlock(SysUserUnlockParam sysUserUnlockParam) {
         String userId = StpUtil.getLoginIdAsString();
         String failCacheKey = USER_UNLOCK_FAIL_CACHE_KEY + userId;
-        if (!this.matchPassword(userId, sysUserUnlockParam.getPassword())) {
+        if (this.notMatchPassword(userId, sysUserUnlockParam.getPassword())) {
             int failCount = Convert.toInt(commonCacheOperator.get(failCacheKey), 0) + 1;
             // 连续失败达到上限，强制下线，避免锁屏界面被无限次尝试密码
             if (failCount >= USER_UNLOCK_FAIL_MAX_COUNT) {
@@ -363,7 +364,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void openSafe(SysUserOpenSafeParam sysUserOpenSafeParam) {
-        if (!this.matchPassword(StpUtil.getLoginIdAsString(), sysUserOpenSafeParam.getPassword())) {
+        if (this.notMatchPassword(StpUtil.getLoginIdAsString(), sysUserOpenSafeParam.getPassword())) {
             throw new CommonException("密码错误");
         }
         // 比对成功，为当前会话打开二级认证，有效期为120秒
@@ -375,15 +376,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 校验指定用户的密码是否正确，入参为国密加密后的密码
+     * 校验指定用户的密码是否不匹配，入参为国密加密后的密码
      *
+     * @return true 表示密码不匹配，false 表示密码匹配
      * @author xuyuxiang
      * @date 2026/8/6 10:20
      **/
-    private boolean matchPassword(String userId, String encryptPassword) {
+    private boolean notMatchPassword(String userId, String encryptPassword) {
         SysUser sysUser = this.queryEntity(userId);
         String password = CommonCryptogramUtil.doSm2Decrypt(encryptPassword).trim();
-        return CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword());
+        return !CommonCryptogramUtil.doHashValue(password).equals(sysUser.getPassword());
     }
 
     @Override
@@ -842,25 +844,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
         // 追加用户历史密码信息
         sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
-        // 重置密码成功短信消息模板编码
+        // 异步发送重置密码成功短信
         String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(smsTemplateCode)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
-            // 获取编码
-            String codeValue = contentJSONObject.getStr("code");
-            // 编码不为空
-            if(ObjectUtil.isNotEmpty(codeValue)){
-                try {
-                    // 发送短信
-                    devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
-                } catch (Exception e) {
-                    log.error(">>> 短信发送失败", e);
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -889,24 +893,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail, email).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
-        // 重置密码成功邮件消息模板内容
+        // 异步发送重置密码成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(emailTemplateContent)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
-            // 获取格式化后的主题
-            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
-            // 获取格式化后的内容
-            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
-            try {
-                // 发送邮件
-                devEmailApi.sendDynamicHtmlEmail(email, subject, content);
-            } catch (Exception e) {
-                log.error(">>> 邮件发送失败", e);
-            }
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
+                // 获取格式化后的主题
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
+                // 获取格式化后的内容
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            });
         }
     }
 
@@ -2348,18 +2354,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());
         sysRoleGrantUserParam.setGrantInfoList(CollectionUtil.newArrayList(sysUser.getId()));
         sysRoleService.grantUser(sysRoleGrantUserParam);
-        // 发送注册成功短信
+        // 异步发送注册成功短信
         String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(smsTemplateCode)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone);
-            // 获取编码
-            String codeValue = contentJSONObject.getStr("code");
-            // 发送短信
-            devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                String sysName = devConfigApi.getValueByKey(SNOWY_SYS_NAME_KEY);
+                JSONObject paramMap = JSONUtil.createObj().set("sysName", sysName);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 发送短信
+                devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+            });
         }
         // 返回用户
         return sysUser;
@@ -2384,20 +2393,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());
         sysRoleGrantUserParam.setGrantInfoList(CollectionUtil.newArrayList(sysUser.getId()));
         sysRoleService.grantUser(sysRoleGrantUserParam);
-        // 发送注册成功邮件
+        // 异步发送注册成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_REGISTER_SUCCESS_FOR_B_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(emailTemplateContent)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userEmail", email);
-            // 获取格式化后的主题
-            String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
-            // 获取格式化后的内容
-            String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
-            // 发送邮件
-            devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                String sysName = devConfigApi.getValueByKey(SNOWY_SYS_NAME_KEY);
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("sysName", sysName);
+                // 获取格式化后的主题
+                String subject = SysEmailFormatUtil.format(contentJSONObject.getStr("subject"), paramMap);;
+                // 获取格式化后的内容
+                String content = SysEmailFormatUtil.format(contentJSONObject.getStr("content"), paramMap);;
+                // 发送邮件
+                devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+            });
         }
         // 返回用户
         return sysUser;
