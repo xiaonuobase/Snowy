@@ -36,6 +36,7 @@
 				ref="tableRef"
 				:columns="columns"
 				:data="loadData"
+				bordered
 				:expand-row-by-click="true"
 				:expanded-row-keys="expandedRowKeys"
 				:tool-config="toolConfig"
@@ -88,10 +89,13 @@
 				</template>
 				<template #expandedRowRender="{ record }">
 					<div class="dict-value-panel">
+						<div v-if="isValueFiltered(record.id)" class="dict-value-filter-tip">
+							已按关键词筛选，该字典类型共 {{ (dictValueMap[record.id] || []).length }} 项
+						</div>
 						<div class="dict-value-table-wrap">
 							<a-table
 								size="small"
-								:bordered="false"
+								bordered
 								:columns="valueColumns"
 								:data-source="getDictValues(record.id)"
 								:pagination="false"
@@ -127,10 +131,6 @@
 								</div>
 							</transition>
 						</div>
-						<a-button type="dashed" block class="dict-value-add" @click="addDictValue(record)">
-							<template #icon><PlusOutlined /></template>
-							添加字典值
-						</a-button>
 					</div>
 				</template>
 			</s-table>
@@ -225,6 +225,8 @@
 	const typeMaxSortCode = ref(0)
 	// 当前展开的行，手风琴模式同时只展开一个
 	const expandedRowKeys = ref([])
+	// 已生效的搜索关键词，用于子表格筛选
+	const activeSearchKey = ref('')
 	// 子表格滚动提示是否显示（滚动到底后隐藏）
 	const showScrollHint = ref(false)
 
@@ -271,7 +273,13 @@
 		loadDictValueData()
 		parameter.category = categoryType.value
 		parameter.parentId = '0'
-		return dictApi.dictPage(Object.assign(parameter, searchFormState.value))
+		activeSearchKey.value = searchFormState.value.searchKey || ''
+		return dictApi.dictPage(Object.assign(parameter, searchFormState.value)).then((data) => {
+			// 关键词命中时自动展开，命中的字典值可能在二级
+			expandedRowKeys.value = activeSearchKey.value ? (data.records || []).map((item) => item.id) : []
+			showScrollHint.value = false
+			return data
+		})
 	}
 
 	// 通过字典树一次性加载各类型下的字典值
@@ -288,8 +296,28 @@
 		})
 	}
 
+	// 取某字典类型下的字典值，搜索时若有命中的字典值则只展示命中项
 	const getDictValues = (typeId) => {
-		return dictValueMap.value[typeId] || []
+		const values = dictValueMap.value[typeId] || []
+		if (!activeSearchKey.value) {
+			return values
+		}
+		const matchedValues = values.filter((item) => isSearchMatched(item))
+		return matchedValues.length ? matchedValues : values
+	}
+
+	// 关键词是否命中字典文字或字典值，与后端like口径保持一致
+	const isSearchMatched = (item) => {
+		const searchKey = activeSearchKey.value.toLowerCase()
+		return (
+			(item.dictLabel || '').toLowerCase().includes(searchKey) ||
+			(item.dictValue || '').toLowerCase().includes(searchKey)
+		)
+	}
+
+	// 子表格是否处于按关键词筛选的状态
+	const isValueFiltered = (typeId) => {
+		return getDictValues(typeId).length < (dictValueMap.value[typeId] || []).length
 	}
 
 	// 新增字典类型，排序号默认为当前最大排序号加1
@@ -372,6 +400,12 @@
 			padding: 0;
 			animation: dictExpandIn 0.25s ease;
 
+			.dict-value-filter-tip {
+				margin-bottom: 6px;
+				font-size: 12px;
+				color: rgba(0, 0, 0, 0.45);
+			}
+
 			.dict-value-table-wrap {
 				position: relative;
 			}
@@ -395,10 +429,6 @@
 				:deep(.anticon) {
 					animation: hintBounce 1.2s ease-in-out infinite;
 				}
-			}
-
-			.dict-value-add {
-				margin-top: 8px;
 			}
 		}
 

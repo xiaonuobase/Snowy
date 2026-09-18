@@ -47,6 +47,11 @@ public class BizDict extends CommonEntity {
     @Schema(description = "字典值")
     private String dictValue;
 
+    /** 字典颜色，允许置空，故更新时始终写入 */
+    @Schema(description = "字典颜色")
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
+    private String dictColor;
+
     /** 分类 */
     @Schema(description = "分类")
     private String category;

@@ -14,7 +14,8 @@ import tool from '@/utils/tool'
 export const useDictStore = defineStore('useDictStore', () => {
 	// 刷新字典信息
 	const refreshDict = async () => {
-		dictApi.dictTree().then((data) => {
+		// 返回 Promise 让路由守卫的 Promise.all 真正等到字典落缓存
+		return dictApi.dictTree().then((data) => {
 			// 设置字典到store中
 			tool.data.set('DICT_TYPE_TREE_DATA', data)
 		})

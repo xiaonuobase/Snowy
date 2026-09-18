@@ -60,13 +60,18 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
         QueryWrapper<BizDict> queryWrapper = new QueryWrapper<BizDict>().checkSqlInjection();
         // 查询部分字段
         queryWrapper.lambda().select(BizDict::getId, BizDict::getParentId, BizDict::getCategory, BizDict::getDictLabel,
-                BizDict::getDictValue, BizDict::getSortCode).eq(BizDict::getCategory, BizDictCategoryEnum.BIZ.getValue());
+                BizDict::getDictValue, BizDict::getDictColor, BizDict::getSortCode)
+                .eq(BizDict::getCategory, BizDictCategoryEnum.BIZ.getValue());
         if (ObjectUtil.isNotEmpty(bizDictPageParam.getParentId())) {
             queryWrapper.lambda().and(q -> q.eq(BizDict::getParentId, bizDictPageParam.getParentId())
                     .or().eq(BizDict::getId, bizDictPageParam.getParentId()));
         }
         if (ObjectUtil.isNotEmpty(bizDictPageParam.getSearchKey())) {
-            queryWrapper.lambda().like(BizDict::getDictLabel, bizDictPageParam.getSearchKey());
+            List<String> matchedTopIdList = this.listMatchedTopIdList(bizDictPageParam.getSearchKey());
+            if (ObjectUtil.isEmpty(matchedTopIdList)) {
+                return new Page<>();
+            }
+            queryWrapper.lambda().in(BizDict::getId, matchedTopIdList);
         }
         if (ObjectUtil.isAllNotEmpty(bizDictPageParam.getSortField(), bizDictPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(bizDictPageParam.getSortOrder());
@@ -87,6 +92,22 @@ public class BizDictServiceImpl extends ServiceImpl<BizDictMapper, BizDict> impl
                     .getOrDefault(bizDict.getId(), 0L).intValue()));
         }
         return page;
+    }
+
+    /**
+     * 查询关键词命中的字典类型id集合，字典值命中时取其所属的字典类型id
+     *
+     * @author xuyuxiang
+     * @date 2026/09/18 10:00
+     */
+    private List<String> listMatchedTopIdList(String searchKey) {
+        return this.list(new LambdaQueryWrapper<BizDict>()
+                        .select(BizDict::getId, BizDict::getParentId)
+                        .eq(BizDict::getCategory, BizDictCategoryEnum.BIZ.getValue())
+                        .and(q -> q.like(BizDict::getDictLabel, searchKey)
+                                .or().like(BizDict::getDictValue, searchKey))).stream()
+                .map(bizDict -> ROOT_PARENT_ID.equals(bizDict.getParentId()) ? bizDict.getId() : bizDict.getParentId())
+                .distinct().collect(Collectors.toList());
     }
 
     @Override

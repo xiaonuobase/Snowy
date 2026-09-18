@@ -14,6 +14,13 @@
 			>
 				<a-input v-model:value="formData.dictValue" placeholder="请输入字典值" allow-clear :disabled="true" />
 			</a-form-item>
+			<a-form-item label="字典颜色：" name="dictColor" extra="用于列表中标签的展示颜色">
+				<a-select v-model:value="formData.dictColor" placeholder="请选择字典颜色" allow-clear>
+					<a-select-option v-for="item in dictColorList" :key="item" :value="item">
+						<a-tag :color="item">{{ item }}</a-tag>
+					</a-select-option>
+				</a-select>
+			</a-form-item>
 			<a-form-item
 				label="排序："
 				name="sortCode"
@@ -44,6 +51,26 @@
 	const mode = ref('type')
 	// 字典值所属的字典类型信息
 	const parentInfo = ref({})
+	// 可选的字典标签颜色
+	const dictColorList = [
+		'default',
+		'pink',
+		'red',
+		'orange',
+		'green',
+		'lime',
+		'cyan',
+		'blue',
+		'purple',
+		'gold',
+		'geekblue',
+		'volcano',
+		'magenta',
+		'processing',
+		'success',
+		'error',
+		'warning'
+	]
 
 	const formTitle = computed(() => {
 		return mode.value === 'type' ? '编辑字典类型' : '编辑字典值'

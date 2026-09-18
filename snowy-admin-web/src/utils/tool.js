@@ -127,6 +127,9 @@ tool.dictTypeData = (dictValue, value) => {
 	return dict ? dict.dictLabel : ''
 }
 
+// 字典翻译兜底方法，查不到时原样返回值，避免漏配字典导致整列空白
+tool.dictLabel = (dictValue, value) => tool.dictTypeData(dictValue, value) || (value ?? '-')
+
 // 字典颜色翻译方法，界面插槽使用方法 {{ $TOOL.dictTypeColor('AI_CHANNEL_STATUS', record.status) }}
 tool.dictTypeColor = (dictValue, value) => {
 	const dictTypeTree = tool.dictDataAll()

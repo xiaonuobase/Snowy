@@ -48,8 +48,8 @@ export const afterLogin = async (loginToken, targetPath) => {
 			indexMenu = routerUtil.getIndexMenu(menu).path
 		}
 	}
-	dictApi.dictTree().then((data) => {
-		// 设置字典到store中
+	// 字典要在跳转前落缓存，否则首个页面顶层 tool.dictList() 会取到空数组
+	await dictApi.dictTree().then((data) => {
 		tool.data.set('DICT_TYPE_TREE_DATA', data)
 	})
 

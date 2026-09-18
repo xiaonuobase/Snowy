@@ -67,6 +67,7 @@
 		'red',
 		'orange',
 		'green',
+		'lime',
 		'cyan',
 		'blue',
 		'purple',

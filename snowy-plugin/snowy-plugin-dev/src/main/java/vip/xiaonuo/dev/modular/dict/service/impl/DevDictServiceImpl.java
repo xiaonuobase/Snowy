@@ -75,7 +75,12 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
             queryWrapper.lambda().eq(DevDict::getCategory, devDictPageParam.getCategory());
         }
         if (ObjectUtil.isNotEmpty(devDictPageParam.getSearchKey())) {
-            queryWrapper.lambda().like(DevDict::getDictLabel, devDictPageParam.getSearchKey());
+            List<String> matchedTopIdList = this.listMatchedTopIdList(devDictPageParam.getSearchKey(),
+                    devDictPageParam.getCategory());
+            if (ObjectUtil.isEmpty(matchedTopIdList)) {
+                return new Page<>();
+            }
+            queryWrapper.lambda().in(DevDict::getId, matchedTopIdList);
         }
         if (ObjectUtil.isAllNotEmpty(devDictPageParam.getSortField(), devDictPageParam.getSortOrder())) {
             CommonSortOrderEnum.validate(devDictPageParam.getSortOrder());
@@ -96,6 +101,23 @@ public class DevDictServiceImpl extends ServiceImpl<DevDictMapper, DevDict> impl
                     .getOrDefault(devDict.getId(), 0L).intValue()));
         }
         return page;
+    }
+
+    /**
+     * 查询关键词命中的字典类型id集合，字典值命中时取其所属的字典类型id
+     *
+     * @author xuyuxiang
+     * @date 2026/09/18 10:00
+     */
+    private List<String> listMatchedTopIdList(String searchKey, String category) {
+        LambdaQueryWrapper<DevDict> lambdaQueryWrapper = new LambdaQueryWrapper<DevDict>()
+                .select(DevDict::getId, DevDict::getParentId)
+                .and(q -> q.like(DevDict::getDictLabel, searchKey).or().like(DevDict::getDictValue, searchKey));
+        if (ObjectUtil.isNotEmpty(category)) {
+            lambdaQueryWrapper.eq(DevDict::getCategory, category);
+        }
+        return this.list(lambdaQueryWrapper).stream().map(devDict -> ROOT_PARENT_ID.equals(devDict.getParentId())
+                ? devDict.getId() : devDict.getParentId()).distinct().collect(Collectors.toList());
     }
 
     @Override

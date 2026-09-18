@@ -11,7 +11,7 @@
 	/>
 
 	<a-radio-group
-		v-if="props.optionType === 'radio' || props.optionType === 'button'"
+		v-else-if="props.optionType === 'radio' || props.optionType === 'button'"
 		v-model:value="modelValue"
 		:name="props.name"
 		:optionType="props.optionType"
@@ -22,7 +22,7 @@
 	/>
 
 	<a-checkbox-group
-		v-if="props.optionType === 'checkbox'"
+		v-else-if="props.optionType === 'checkbox'"
 		v-model:value="modelValue"
 		:name="props.name"
 		:options="dictOptions"

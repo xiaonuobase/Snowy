@@ -38,6 +38,10 @@ public class BizDictEditParam {
     @NotBlank(message = "dictLabel不能为空")
     private String dictLabel;
 
+    /** 字典颜色 */
+    @Schema(description = "字典颜色")
+    private String dictColor;
+
     /** 排序码 */
     @Schema(description = "排序码")
     @NotNull(message = "sortCode不能为空")
