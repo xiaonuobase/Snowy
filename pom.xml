@@ -30,6 +30,7 @@
         <easy-poi.version>4.4.0</easy-poi.version>
         <easy-trans.version>3.1.4</easy-trans.version>
         <easyexcel.version>3.3.3</easyexcel.version>
+        <fastjson.version>1.2.84</fastjson.version>
         <hutool.version>5.8.25</hutool.version>
         <ip2region.version>2.7.0</ip2region.version>
         <java.version>17</java.version>
@@ -390,6 +391,13 @@
                 <groupId>me.zhyd.oauth</groupId>
                 <artifactId>JustAuth</artifactId>
                 <version>${justauth.version}</version>
+            </dependency>
+
+            <!-- fastjson（JustAuth、easy-trans 传递依赖，锁定 1.2.84 修复 CVE-2026-16723） -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
 
             <!-- opensaml -->
