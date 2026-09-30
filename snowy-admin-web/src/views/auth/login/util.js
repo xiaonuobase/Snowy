@@ -15,9 +15,19 @@ export const afterLogin = async (loginToken, targetPath) => {
 	tool.data.set('TOKEN', loginToken)
 	// 重新登录一定不处于锁屏，清掉上次会话残留的锁屏状态（服务端同样会在登录时清除）
 	globalStore().setIsLocked(false)
+	// 初始化失败时回滚登录态，否则残留的 TOKEN 会让刷新后绕过登录页直接进入系统
+	const rollbackLogin = (err) => {
+		tool.clearLoginCache()
+		message.error('登录成功，但系统初始化失败，请重新登录')
+		throw err
+	}
 
-	// 并行初始化用户信息和获取用户的菜单
-	await Promise.all([userStore.initUserInfo(), menuStore.fetchMenu()])
+	// 并行初始化用户信息和获取用户的菜单，两者都结束后再判断，避免回滚后另一个请求才返回又写入缓存
+	const initResults = await Promise.allSettled([userStore.initUserInfo(), menuStore.fetchMenu()])
+	const initFailed = initResults.find((item) => item.status === 'rejected')
+	if (initFailed) {
+		rollbackLogin(initFailed.reason)
+	}
 	const menu = tool.data.get('MENU')
 	let indexMenu = routerUtil.getIndexMenu(menu).path
 
@@ -49,9 +59,12 @@ export const afterLogin = async (loginToken, targetPath) => {
 		}
 	}
 	// 字典要在跳转前落缓存，否则首个页面顶层 tool.dictList() 会取到空数组
-	await dictApi.dictTree().then((data) => {
-		tool.data.set('DICT_TYPE_TREE_DATA', data)
-	})
+	await dictApi
+		.dictTree()
+		.then((data) => {
+			tool.data.set('DICT_TYPE_TREE_DATA', data)
+		})
+		.catch(rollbackLogin)
 
 	// 第三方Token登录：直接跳转到指定目标路径
 	if (targetPath) {
