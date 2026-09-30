@@ -8,7 +8,13 @@ export const afterLogin = async (loginToken) => {
 	const param = {
 		token: loginToken
 	}
-	const clientLoginUserInfo = await clientLoginApi.clientGetLoginUser(param)
+	// 获取用户信息失败时回滚登录态，否则残留的 CLIENT_TOKEN 会让刷新后直接进入C端页面
+	const clientLoginUserInfo = await clientLoginApi.clientGetLoginUser(param).catch((err) => {
+		tool.data.remove('CLIENT_TOKEN')
+		tool.data.remove('CLIENT_USER_INFO')
+		message.error('登录成功，但系统初始化失败，请重新登录')
+		throw err
+	})
 	tool.data.set('CLIENT_USER_INFO', clientLoginUserInfo)
 	let indexMenu = '/front/client/index'
 	message.success('登录成功')
