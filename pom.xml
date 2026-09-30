@@ -25,7 +25,7 @@
         <commons-net.version>3.10.0</commons-net.version>
         <dingtalk-sdk.version>2.0.0</dingtalk-sdk.version>
         <dingtalk-stream.version>1.3.7</dingtalk-stream.version>
-        <druid.version>1.2.21</druid.version>
+        <druid.version>1.2.28</druid.version>
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
         <easy-poi.version>4.4.0</easy-poi.version>
         <easy-trans.version>3.1.4</easy-trans.version>
