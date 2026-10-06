@@ -174,4 +174,16 @@ public interface DevFileApi {
      * @date 2025/8/25 21:18
      */
     String storageFileWithReturnUrlOss(MultipartFile file);
+
+    /**
+     * 根据存储引擎、桶名和文件键读取文件字节数组
+     *
+     * @param engine 存储引擎（LOCAL/ALIYUN/TENCENT/MINIO/FTP）
+     * @param bucket 桶名
+     * @param fileKey 文件键
+     * @return 文件字节数组
+     * @author xuyuxiang
+     * @date 2026/09/17 22:00
+     */
+    byte[] getFileBytes(String engine, String bucket, String fileKey);
 }

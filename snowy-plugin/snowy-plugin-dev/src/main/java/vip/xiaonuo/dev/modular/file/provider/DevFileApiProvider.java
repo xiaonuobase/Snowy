@@ -13,17 +13,20 @@
 package vip.xiaonuo.dev.modular.file.provider;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevFileApi;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
+import vip.xiaonuo.dev.modular.file.util.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -137,5 +140,31 @@ public class DevFileApiProvider implements DevFileApi {
         }
         // 根据配置的引擎类型调用相应的存储方法
         return devFileService.uploadReturnUrl(defaultEngine, file);
+    }
+
+    @Override
+    public byte[] getFileBytes(String engine, String bucket, String fileKey) {
+        if (StrUtil.isEmpty(engine) || StrUtil.isEmpty(bucket) || StrUtil.isEmpty(fileKey)) {
+            throw new CommonException("文件存储信息不完整");
+        }
+
+        try {
+            switch (engine.toUpperCase()) {
+                case "LOCAL":
+                    return DevFileLocalUtil.getFileBytes(bucket, fileKey);
+                case "ALIYUN":
+                    return DevFileAliyunUtil.getFileBytes(bucket, fileKey);
+                case "TENCENT":
+                    return DevFileTencentUtil.getFileBytes(bucket, fileKey);
+                case "MINIO":
+                    return DevFileMinIoUtil.getFileBytes(bucket, fileKey);
+                case "FTP":
+                    return DevFileFtpUtil.getFileBytes(bucket, fileKey);
+                default:
+                    throw new CommonException("不支持的存储引擎：{}", engine);
+            }
+        } catch (Exception e) {
+            throw new CommonException("读取文件失败：{}", e.getMessage());
+        }
     }
 }
