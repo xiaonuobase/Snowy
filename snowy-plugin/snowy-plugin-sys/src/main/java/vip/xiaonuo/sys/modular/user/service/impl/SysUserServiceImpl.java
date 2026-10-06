@@ -328,6 +328,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysRelationService.saveRelationWithClear(StpUtil.getLoginIdAsString(), null,
                 SysRelationCategoryEnum.SYS_USER_LOCK_CONFIG_DATA.getValue(),
                 JSONUtil.createObj().set(USER_AUTO_LOCK_TIME_KEY, autoLockTime).toString());
+        // 自动锁屏时长在登录时回填进TokenSession，此处不同步刷新会导致getLoginUser一直返回旧值
+        refreshLoginUserCacheField(u -> u.setAutoLockTime(autoLockTime));
     }
 
     /**

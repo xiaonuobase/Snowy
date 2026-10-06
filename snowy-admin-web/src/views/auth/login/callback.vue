@@ -133,6 +133,13 @@
 		showLoading.value = false
 	}
 
+	// 只保留原串中的 redirect 参数，忽略 IdP 追加的 code/state/session_state 等，保证与签发凭证时的回调地址一致
+	const getLandingUrl = () => {
+		const [base, search = ''] = window.location.href.split('#')[0].split('?')
+		const redirectItem = search.split('&').find((item) => item.startsWith('redirect='))
+		return redirectItem ? `${base}?${redirectItem}` : base
+	}
+
 	onMounted(() => {
 		if (!route.params.platform) {
 			showError(proxy.$t('login.paramError'), true)
@@ -153,6 +160,8 @@
 		}
 		// 平台
 		params.platform = route.params.platform
+		// 实际落地地址，回调地址带目标页参数时后端用它换取或校验凭证
+		params.redirectUri = getLandingUrl()
 		thirdApi
 			.thirdCallback(params)
 			.then(async (data) => {

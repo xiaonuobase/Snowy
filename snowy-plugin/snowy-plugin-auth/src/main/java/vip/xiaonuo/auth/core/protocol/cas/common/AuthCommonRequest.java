@@ -29,6 +29,7 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import vip.xiaonuo.auth.core.enums.AuthCasVersionEnum;
+import vip.xiaonuo.auth.core.protocol.base.AuthBaseClient;
 import vip.xiaonuo.auth.core.protocol.base.AuthBaseRequest;
 import vip.xiaonuo.auth.core.protocol.cas.AuthCasBaseJson;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -84,9 +85,11 @@ public record AuthCommonRequest(AuthCasBaseJson authCasBaseJson) implements Auth
         // 获取CAS认证服务验证地址
         String casServerValidateUrl = authCasBaseJson.getCasServerValidateUrl();
         // 获取服务地址
-        String serviceUrl = authCasBaseJson.getServiceUrl();
-        // 服务地址追加state
-        serviceUrl = SaFoxUtil.joinParam(serviceUrl, SaOAuth2Consts.Param.state, state);
+        String configServiceUrl = authCasBaseJson.getServiceUrl();
+        String landingUrl = AuthBaseClient.resolveLandingUrl(configServiceUrl);
+        // 门户带目标页参数发起时service即实际落地地址，否则按发起登录时的规则追加state
+        String serviceUrl = landingUrl.equals(configServiceUrl)
+                ? SaFoxUtil.joinParam(configServiceUrl, SaOAuth2Consts.Param.state, state) : landingUrl;
         // 编码serviceUrl
         serviceUrl = URLUtil.encodeAll(serviceUrl);
         // 验证地址追加ticket和service

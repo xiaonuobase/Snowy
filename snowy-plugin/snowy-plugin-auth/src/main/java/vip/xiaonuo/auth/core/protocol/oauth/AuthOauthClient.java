@@ -98,7 +98,10 @@ public class AuthOauthClient extends AuthBaseClient<AuthOauthBaseJson> {
             throw new CommonException("code不能为空");
         }
         String state = authCallback.getState();
-        AuthRequest authRequest = new AuthOauthCommonClient(getAuthBaseJson()).getAuthRequest(ObjectUtil.isEmpty(state));
+        // 回调地址替换为实际落地地址，见 resolveLandingUrl
+        AuthOauthBaseJson authOauthBaseJson = this.getAuthBaseJson();
+        authOauthBaseJson.setCallbackUrl(resolveLandingUrl(authOauthBaseJson.getCallbackUrl()));
+        AuthRequest authRequest = new AuthOauthCommonClient(authOauthBaseJson).getAuthRequest(ObjectUtil.isEmpty(state));
         AuthResponse<AuthUser> authResponse = authRequest.login(authCallback);
 
         // 如果失败了，且是因为 state 校验失败（Illegal state），则尝试降级忽略 state 校验再次登录
@@ -106,7 +109,7 @@ public class AuthOauthClient extends AuthBaseClient<AuthOauthBaseJson> {
             String errorMsg = authResponse.getMsg();
             if(ObjectUtil.isNotEmpty(state) && errorMsg != null && errorMsg.contains("Illegal state")) {
                 log.warn(">>> OAUTH state校验失败，尝试降级忽略state校验登录，state={}, error={}", state, errorMsg);
-                authRequest = new AuthOauthCommonClient(getAuthBaseJson()).getAuthRequest(true);
+                authRequest = new AuthOauthCommonClient(authOauthBaseJson).getAuthRequest(true);
                 authResponse = authRequest.login(AuthCallback.builder().code(code).state(state).build());
             }
         }

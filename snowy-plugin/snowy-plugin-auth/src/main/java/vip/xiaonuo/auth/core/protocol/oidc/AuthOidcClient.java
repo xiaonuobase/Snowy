@@ -100,21 +100,24 @@ public class AuthOidcClient extends AuthBaseClient<AuthOidcBaseJson> {
     public AuthRequest getAuthRequest(boolean ignoreCheckState) {
         String authPlatform = this.getAuthPlatform();
         AuthPlatformEnum authPlatformEnum = AuthPlatformEnum.valueOf(authPlatform);
+        // 回调地址替换为实际落地地址，见 resolveLandingUrl
+        AuthOidcBaseJson authOidcBaseJson = this.getAuthBaseJson();
+        authOidcBaseJson.setCallbackUrl(resolveLandingUrl(authOidcBaseJson.getCallbackUrl()));
         AuthRequest authRequest;
         switch (authPlatformEnum) {
-            case IAM -> authRequest = new AuthOidcIamClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case QQ -> authRequest = new AuthOidcQqClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case WECHAT -> authRequest = new AuthOidcWechatClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case WECHAT_MINI -> authRequest = new AuthOidcWechatMiniClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case WEIBO -> authRequest = new AuthOidcWeiboClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case DOUYIN -> authRequest = new AuthOidcDouyinClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case ALIPAY -> authRequest = new AuthOidcAlipayClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case DINGTALK -> authRequest = new AuthOidcDingTalkClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case WORKWECHAT -> authRequest = new AuthOidcWorkWechatClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case FEISHU -> authRequest = new AuthOidcFeiShuClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case WELINK -> authRequest = new AuthOidcWeLinkClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            case YUNZHIJIA -> authRequest = new AuthOidcYunZhiJiaClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
-            default -> authRequest = new AuthOidcCommonClient(getAuthBaseJson()).getAuthRequest(ignoreCheckState);
+            case IAM -> authRequest = new AuthOidcIamClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case QQ -> authRequest = new AuthOidcQqClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case WECHAT -> authRequest = new AuthOidcWechatClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case WECHAT_MINI -> authRequest = new AuthOidcWechatMiniClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case WEIBO -> authRequest = new AuthOidcWeiboClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case DOUYIN -> authRequest = new AuthOidcDouyinClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case ALIPAY -> authRequest = new AuthOidcAlipayClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case DINGTALK -> authRequest = new AuthOidcDingTalkClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case WORKWECHAT -> authRequest = new AuthOidcWorkWechatClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case FEISHU -> authRequest = new AuthOidcFeiShuClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case WELINK -> authRequest = new AuthOidcWeLinkClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            case YUNZHIJIA -> authRequest = new AuthOidcYunZhiJiaClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
+            default -> authRequest = new AuthOidcCommonClient(authOidcBaseJson).getAuthRequest(ignoreCheckState);
         }
         return authRequest;
     }

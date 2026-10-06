@@ -12,6 +12,7 @@
  */
 package vip.xiaonuo.auth.core.protocol.base;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
@@ -78,6 +79,22 @@ public abstract class AuthBaseClient<T extends AuthBaseJson> {
      * @date 2025/2/11 14:07
      **/
     public abstract AuthResponse<AuthUser> doLogin(AuthCallback authCallback);
+
+    /**
+     * 解析换取凭证用的回调地址
+     *
+     * @author yubaoshan
+     * @date 2026/09/29 10:00
+     */
+    public static String resolveLandingUrl(String configCallbackUrl) {
+        // IdP门户的回调地址带了目标页参数时，须用前端传来的实际落地地址才能与签发凭证时一致，否则仍用配置地址
+        String redirectUri = SaHolder.getRequest().getParam("redirectUri");
+        if(ObjectUtil.isNotEmpty(redirectUri) && ObjectUtil.isNotEmpty(configCallbackUrl)
+                && !configCallbackUrl.contains("?") && redirectUri.startsWith(configCallbackUrl + "?")) {
+            return redirectUri;
+        }
+        return configCallbackUrl;
+    }
 
     /**
      * 处理响应结果
