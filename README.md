@@ -29,8 +29,8 @@ Snowy谐音“小诺”，恰应小诺团队名称；意思为”下雪的、纯
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
             <img src="https://img.shields.io/badge/vue-3-blue.svg" alt="bootstrap">
         </a> 
-        <a href="http://spring.io/projects/spring-boot">
-            <img src="https://img.shields.io/badge/vite-5-green.svg" alt="spring-boot">
+        <a href="https://vite.dev">
+            <img src="https://img.shields.io/badge/vite-6-green.svg" alt="vite">
         </a>
         <a href="https://www.antdv.com/docs/vue/introduce-cn/">
             <img src="https://img.shields.io/badge/vue--ant--design-4-blue.svg" alt="bootstrap">

@@ -43,6 +43,12 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
+        <!-- mybatis-plus-jsqlparser（3.5.9+ 分页拦截器必须） -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+
         <!-- postgresql -->
         <!--<dependency>
             <groupId>org.postgresql</groupId>

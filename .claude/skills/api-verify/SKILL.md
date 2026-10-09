@@ -30,7 +30,7 @@ node -e "const s=require('snowy-admin-web/node_modules/sm-crypto');console.log(s
 # 密码参数名 password，账号 password 均为上一步密文/明文账号
 RESP=$(curl -s -X POST http://localhost:82/auth/b/doLogin \
   -H "Content-Type: application/json" \
-  -d '{"account":"superAdmin","password":"<上一步的SM2密文>","device":0}')
+  -d '{"account":"superAdmin","password":"<上一步的SM2密文>","device":"PC"}')   # device 只接受 PC / APP / MINI
 echo "$RESP"
 # 成功：{"code":200,"data":{"token":"..."},...}
 # 账密错：code!=200 且 msg 提示账号或密码错误（核对 Snowy@2026! 与密文重生成）

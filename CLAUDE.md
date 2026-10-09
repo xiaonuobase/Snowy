@@ -6,7 +6,7 @@
 
 **Snowy v3.0.0** —— 小诺开源的国密前后端分离快速开发平台，本项目以它为底座做二次开发。
 
-- 后端：Java 17 + Spring Boot 3.5.9 + MyBatis-Plus 3.5.5 + Sa-Token 1.44.0 + Redisson + Hutool 5.8.25（**插件化 Maven 多模块架构**）
+- 后端：Java 17 + Spring Boot 3.5.16 + MyBatis-Plus 3.5.9 + Sa-Token 1.44.0 + Redisson + Hutool 5.8.25（**插件化 Maven 多模块架构**）
 - 前端：`snowy-admin-web/`（Vue 3.5 + Vite 6 + **Ant Design Vue 4.2.6** + Pinia + vue-i18n，**JavaScript，不是 TS**，包管理用 npm）
 - 数据库：MySQL（脚本 `_sql/snowy_mysql.sql`），表名**全大写下划线**
 - 国密：登录密码 SM2 加密传输、口令 SM3 摘要存储、敏感字段 SM4-CBC 落库加密
@@ -44,16 +44,17 @@ mvn clean install -DskipTests          # 根目录构建
 # 运行：IDE 启动 vip.xiaonuo.Application（snowy-web-app 模块），端口 82
 # 接口文档：http://localhost:82/doc.html（Knife4j，basic 认证 admin/123456）
 # 出厂登录：superAdmin / Snowy@2026!（⚠️不是 123456；权威来源 DEV_CONFIG 的 SNOWY_SYS_DEFAULT_PASSWORD_FOR_B）
+# 已在用的库密码可能被改过：登录失败不要反复重试，连续输错会锁定账号
 
 # 前端（snowy-admin-web/ 目录下）
 npm install
 npm run dev                             # 端口 81，代理 /api → localhost:82
 ```
 
-⚠️ 本机构建环境备忘（2026-08-18 实测）：
-- 命令行 mvn 需用 IDEA 内置：`"/c/Program Files/JetBrains/IntelliJ IDEA 2026.2/plugins/maven-plugin/lib/maven3/bin/mvn"`，JAVA_HOME 指向同目录 jbr
-- Maven Central 直连失败（DNS），需加阿里云镜像（临时 settings.xml 已生成在 /tmp/m2/settings.xml，mirrorOf=central → maven.aliyun.com/repository/public）
-- IDEA 内置 JBR 是 Java 25，与项目 Lombok 1.18.30 不兼容（@Slf4j 失效）——**命令行完整编译需自装 JDK 17**；日常在 IDEA 里配 Project SDK 17 构建即可
+⚠️ 构建环境要求（通用要求，不依赖任何个人电脑的安装路径）：
+- JDK 17：与编译目标一致。命令行构建前用 `java -version` 确认是 17；IDEA 里 Project SDK 也选 17
+- Maven 3.8+：访问 Maven Central 慢或失败时，在自己的 `~/.m2/settings.xml` 配置阿里云镜像（mirrorOf=central → https://maven.aliyun.com/repository/public），不要改项目 pom
+- 部分插件 pom 以 system scope 引用本地 jar，这类 pom 装进本地仓库后会被 Maven 判为无效、传递依赖丢失：只构建单个模块时必须带 `-am`（如 `mvn install -DskipTests -pl snowy-web-app -am`），或直接在根目录完整构建
 
 ## 后端架构
 
