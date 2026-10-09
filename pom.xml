@@ -260,6 +260,13 @@
                 <version>${redisson.version}</version>
             </dependency>
 
+            <!-- redisson 核心包（sa-token-redisson 会传递引入旧版本，在此统一） -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
             <!-- commons-net -->
             <dependency>
                 <groupId>commons-net</groupId>
