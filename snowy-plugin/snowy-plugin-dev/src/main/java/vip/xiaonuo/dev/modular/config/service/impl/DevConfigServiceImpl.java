@@ -243,4 +243,19 @@ public class DevConfigServiceImpl extends ServiceImpl<DevConfigMapper, DevConfig
             commonCacheOperator.remove(CONFIG_CACHE_KEY + devConfigBatchParam.getConfigKey());
         });
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void setValueByKey(String key, String value) {
+        boolean exists = this.count(new QueryWrapper<DevConfig>().checkSqlInjection().lambda()
+                .eq(DevConfig::getConfigKey, key)) > 0;
+        if (!exists) {
+            throw new CommonException("配置不存在，配置键为：{}", key);
+        }
+        this.update(new LambdaUpdateWrapper<DevConfig>()
+                .eq(DevConfig::getConfigKey, key)
+                .set(DevConfig::getConfigValue, value));
+        // 移除对应的缓存
+        commonCacheOperator.remove(CONFIG_CACHE_KEY + key);
+    }
 }

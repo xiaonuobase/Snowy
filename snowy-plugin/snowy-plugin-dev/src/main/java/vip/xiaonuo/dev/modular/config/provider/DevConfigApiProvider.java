@@ -33,4 +33,9 @@ public class DevConfigApiProvider implements DevConfigApi {
     public String getValueByKey(String key) {
         return devConfigService.getValueByKey(key);
     }
+
+    @Override
+    public void setValueByKey(String key, String value) {
+        devConfigService.setValueByKey(key, value);
+    }
 }
