@@ -271,6 +271,26 @@ public class DevFileAliyunUtil {
     }
 
     /**
+     * 按已知长度流式存储文件，声明内容长度避免SDK整读进内存，不返回地址，结束后关闭文件流
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 16:00
+     */
+    public static void storageFile(String bucketName, String key, InputStream inputStream, long size) {
+        try {
+            initClient();
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(getFileContentType(key));
+            objectMetadata.setContentLength(size);
+            client.putObject(bucketName, key, inputStream, objectMetadata);
+        } catch (OSSException | ClientException e) {
+            throw new CommonException(e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
+        }
+    }
+
+    /**
      * 存储文件，返回外网地址
      *
      * @param bucketName 桶名称
@@ -349,6 +369,75 @@ public class DevFileAliyunUtil {
             throw new CommonException(e.getMessage());
         } finally {
             IoUtil.close(objectContent);
+        }
+    }
+
+    /**
+     * 获取对象实际大小（字节），对象不存在返回null，连接或鉴权异常直接报错
+     *
+     * @param bucketName 桶名称
+     * @param key        唯一标示id，例如a.txt, doc/a.txt
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        try {
+            initClient();
+            return client.getObjectMetadata(bucketName, key).getContentLength();
+        } catch (OSSException e) {
+            // HEAD请求无响应体，SDK对404统一给出NoSuchKey错误码
+            if (OSSErrorCode.NO_SUCH_KEY.equals(e.getErrorCode())) {
+                return null;
+            }
+            throw new CommonException("读取阿里云对象信息失败：{}", e.getMessage());
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取阿里云对象信息失败：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 把对象边读边写入输出流，不整读进内存，结束后关闭对象流，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        OSSObject ossObject = null;
+        try {
+            initClient();
+            ossObject = client.getObject(bucketName, key);
+            IoUtil.copy(ossObject.getObjectContent(), outputStream);
+        } catch (Exception e) {
+            // 中途失败（如客户端断开）时强制断开连接，否则关闭对象流会把剩余内容全部读完
+            forcedCloseQuietly(ossObject);
+            if (e instanceof CommonException) {
+                throw (CommonException) e;
+            }
+            throw new CommonException("读取阿里云文件失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(ossObject);
+        }
+    }
+
+    /**
+     * 强制断开对象连接，不再读取剩余内容，异常只记日志
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    private static void forcedCloseQuietly(OSSObject ossObject) {
+        if (ObjectUtil.isNull(ossObject)) {
+            return;
+        }
+        try {
+            ossObject.forcedClose();
+        } catch (Exception e) {
+            log.warn("强制关闭阿里云对象连接失败：{}", e.getMessage());
         }
     }
 

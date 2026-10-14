@@ -28,6 +28,9 @@ import vip.xiaonuo.dev.modular.file.param.DevFileIdParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 import vip.xiaonuo.dev.modular.file.util.*;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +103,16 @@ public class DevFileApiProvider implements DevFileApi {
     }
 
     @Override
+    public String storageFileWithReturnUrlRustfs(MultipartFile file) {
+        return devFileService.uploadReturnUrl(DevFileEngineTypeEnum.RUSTFS.getValue(), file);
+    }
+
+    @Override
+    public String storageFileWithReturnIdRustfs(MultipartFile file) {
+        return devFileService.uploadReturnId(DevFileEngineTypeEnum.RUSTFS.getValue(), file);
+    }
+
+    @Override
     public String storageFileWithReturnUrlFtp(MultipartFile file) {
         return devFileService.uploadReturnUrl(DevFileEngineTypeEnum.FTP.getValue(), file);
     }
@@ -147,18 +160,25 @@ public class DevFileApiProvider implements DevFileApi {
         if (StrUtil.isEmpty(engine) || StrUtil.isEmpty(bucket) || StrUtil.isEmpty(fileKey)) {
             throw new CommonException("文件存储信息不完整");
         }
+        // 按引擎值匹配存储引擎枚举，忽略大小写
+        DevFileEngineTypeEnum engineType = Arrays.stream(DevFileEngineTypeEnum.values())
+                .filter(item -> item.getValue().equalsIgnoreCase(engine))
+                .findFirst()
+                .orElseThrow(() -> new CommonException("不支持的存储引擎：{}", engine));
 
         try {
-            switch (engine.toUpperCase()) {
-                case "LOCAL":
+            switch (engineType) {
+                case LOCAL:
                     return DevFileLocalUtil.getFileBytes(bucket, fileKey);
-                case "ALIYUN":
+                case ALIYUN:
                     return DevFileAliyunUtil.getFileBytes(bucket, fileKey);
-                case "TENCENT":
+                case TENCENT:
                     return DevFileTencentUtil.getFileBytes(bucket, fileKey);
-                case "MINIO":
+                case MINIO:
                     return DevFileMinIoUtil.getFileBytes(bucket, fileKey);
-                case "FTP":
+                case RUSTFS:
+                    return DevFileRustFsUtil.getFileBytes(bucket, fileKey);
+                case FTP:
                     return DevFileFtpUtil.getFileBytes(bucket, fileKey);
                 default:
                     throw new CommonException("不支持的存储引擎：{}", engine);
@@ -166,5 +186,39 @@ public class DevFileApiProvider implements DevFileApi {
         } catch (Exception e) {
             throw new CommonException("读取文件失败：{}", e.getMessage());
         }
+    }
+
+    @Override
+    public Long getFileSize(String engine, String bucket, String fileKey) {
+        return devFileService.getFileSize(engine, bucket, fileKey);
+    }
+
+    @Override
+    public void writeFileToStream(String engine, String bucket, String fileKey, OutputStream outputStream) {
+        devFileService.writeFileToStream(engine, bucket, fileKey, outputStream);
+    }
+
+    @Override
+    public String registerExistingFileReturnId(String engine, String bucket, String objectKey, String fileName, Long sizeBytes) {
+        return devFileService.registerExistingFile(engine, bucket, objectKey, fileName, sizeBytes);
+    }
+
+    @Override
+    public String storageStreamReturnId(String engine, InputStream inputStream, String fileName, Long size) {
+        // 引擎为空时取系统配置的默认引擎，与动态上传口径一致
+        String targetEngine = ObjectUtil.isNotEmpty(engine) ? engine : devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY);
+        return devFileService.uploadStreamReturnId(targetEngine, inputStream, fileName, size);
+    }
+
+    @Override
+    public void generateThumbnail(String fileId) {
+        devFileService.generateThumbnail(fileId);
+    }
+
+    @Override
+    public String registerSharedFileReturnId(String sourceFileId, String targetEngine, String fileName, Long sizeBytes) {
+        // 目标引擎为空时取系统配置的默认引擎，与流式存储口径一致
+        String engine = ObjectUtil.isNotEmpty(targetEngine) ? targetEngine : devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_FILE_ENGINE_KEY);
+        return devFileService.registerSharedFile(sourceFileId, engine, fileName, sizeBytes);
     }
 }

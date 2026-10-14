@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -37,8 +38,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 
 /**
  * RUSTFS文件工具类
@@ -57,11 +60,14 @@ public class DevFileRustFsUtil {
      *
      */
     @Getter
-    private static S3Client client;
+    private static volatile S3Client client;
 
-    private static String defaultBucketName;
+    private static volatile String defaultBucketName;
 
-    private static String endpoint;
+    private static volatile String endpoint;
+
+    /** 当前缓存客户端对应的连接配置（endpoint、accessKey、secretKey、region），任一变化时重建客户端 */
+    private static List<String> clientConfig;
 
     private static final String SNOWY_FILE_RUSTFS_ACCESS_KEY_KEY = "SNOWY_FILE_RUSTFS_ACCESS_KEY";
     private static final String SNOWY_FILE_RUSTFS_SECRET_KEY_KEY = "SNOWY_FILE_RUSTFS_SECRET_KEY";
@@ -70,7 +76,7 @@ public class DevFileRustFsUtil {
     private static final String SNOWY_FILE_RUSTFS_REGION_KEY = "SNOWY_FILE_RUSTFS_REGION";
 
     /**
-     * 初始化操作的客户端
+     * 初始化操作的客户端：每次读取最新配置，配置未变时复用缓存客户端，变化时关闭旧客户端并重建
      *
      * @author xuyuxiang
      * @date 2025/12/5 12:30
@@ -94,16 +100,16 @@ public class DevFileRustFsUtil {
         }
 
         /* endpoint */
-        endpoint = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_END_POINT_KEY);
+        String endpointValue = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_END_POINT_KEY);
 
-        if(ObjectUtil.isEmpty(endpoint)) {
+        if(ObjectUtil.isEmpty(endpointValue)) {
             throw new CommonException("RUSTFS文件操作客户端未正确配置：endpoint为空");
         }
 
         /* 默认BucketName */
-        defaultBucketName = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_DEFAULT_BUCKET_NAME);
+        String defaultBucketNameValue = devConfigApi.getValueByKey(SNOWY_FILE_RUSTFS_DEFAULT_BUCKET_NAME);
 
-        if(ObjectUtil.isEmpty(defaultBucketName)) {
+        if(ObjectUtil.isEmpty(defaultBucketNameValue)) {
             throw new CommonException("RUSTFS文件操作客户端未正确配置：defaultBucketName为空");
         }
 
@@ -113,13 +119,42 @@ public class DevFileRustFsUtil {
             region = "us-east-1";
         }
 
-        client = S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)))
-                .region(Region.of(region))
-                .forcePathStyle(true)
-                .build();
+        List<String> newClientConfig = List.of(endpointValue, accessKey, secretKey, region);
+        synchronized (DevFileRustFsUtil.class) {
+            endpoint = endpointValue;
+            defaultBucketName = defaultBucketNameValue;
+            // 连接配置未变化时复用已有客户端，避免每次调用新建客户端造成连接池泄漏
+            if (client != null && newClientConfig.equals(clientConfig)) {
+                return;
+            }
+            S3Client oldClient = client;
+            client = S3Client.builder()
+                    .endpointOverride(URI.create(endpointValue))
+                    .credentialsProvider(StaticCredentialsProvider.create(
+                            AwsBasicCredentials.create(accessKey, secretKey)))
+                    .region(Region.of(region))
+                    .forcePathStyle(true)
+                    .build();
+            clientConfig = newClientConfig;
+            // 配置变化后关闭旧客户端，仅在管理员修改连接配置的瞬间可能影响正在进行的请求
+            if (oldClient != null) {
+                closeQuietly(oldClient);
+            }
+        }
+    }
+
+    /**
+     * 关闭客户端，关闭异常只记日志
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:50
+     */
+    private static void closeQuietly(S3Client s3Client) {
+        try {
+            s3Client.close();
+        } catch (Exception e) {
+            log.warn("关闭RUSTFS旧客户端失败：{}", e.getMessage());
+        }
     }
 
     /**
@@ -140,8 +175,13 @@ public class DevFileRustFsUtil {
      * @date 2025/12/5 12:30
      */
     public static void destroyClient() {
-        if (ObjectUtil.isNotEmpty(client)) {
-            client.close();
+        synchronized (DevFileRustFsUtil.class) {
+            if (ObjectUtil.isNotEmpty(client)) {
+                closeQuietly(client);
+            }
+            // 销毁后清空缓存，下次调用按最新配置重建
+            client = null;
+            clientConfig = null;
         }
     }
 
@@ -214,6 +254,56 @@ public class DevFileRustFsUtil {
             return false;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * 获取对象实际大小（字节），对象不存在返回null，连接或鉴权异常直接报错
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        try {
+            initClient();
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(bucketName).key(key).build();
+            return client.headObject(headObjectRequest).contentLength();
+        } catch (S3Exception e) {
+            // 对象不存在时部分兼容实现只返回404状态码，不一定映射为NoSuchKeyException
+            if (e instanceof NoSuchKeyException || e.statusCode() == 404) {
+                return null;
+            }
+            throw new CommonException("读取RUSTFS对象信息失败：{}", e.getMessage());
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取RUSTFS对象信息失败：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 按已知长度流式存储文件，不整读进内存，不返回地址，结束后关闭文件流
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    public static void storageFile(String bucketName, String key, InputStream inputStream, long size) {
+        try {
+            initClient();
+            // 确保bucket存在
+            if (!doesBucketExist(bucketName)) {
+                createBucket(bucketName);
+            }
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(getFileContentType(key))
+                    .build();
+            client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, size));
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
         }
     }
 
@@ -388,6 +478,36 @@ public class DevFileRustFsUtil {
             return IoUtil.readBytes(inputStream);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
+        }
+    }
+
+    /**
+     * 把对象边读边写入输出流，不整读进内存，结束后关闭对象流，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        ResponseInputStream<GetObjectResponse> inputStream = null;
+        try {
+            initClient();
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(key).build();
+            inputStream = client.getObject(getObjectRequest);
+            IoUtil.copy(inputStream, outputStream);
+        } catch (Exception e) {
+            // 中途失败（如客户端断开）时直接断开连接，否则关闭对象流会把剩余内容全部读完
+            if (ObjectUtil.isNotNull(inputStream)) {
+                inputStream.abort();
+            }
+            if (e instanceof CommonException) {
+                throw (CommonException) e;
+            }
+            throw new CommonException("读取RUSTFS文件失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
         }
     }
 

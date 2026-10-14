@@ -13,7 +13,8 @@ import { message } from 'ant-design-vue'
 export default {
 	// 对下载的流进行处理，直接从浏览器下载下来
 	resultDownload(res) {
-		if (res.data.type === 'application/json') {
+		// 后端出错时返回JSON，类型可能带charset，按包含判断
+		if (res.data.type && res.data.type.includes('application/json')) {
 			// 错误以及无权限
 			const reader = new FileReader(res.data)
 			reader.readAsText(res.data)
@@ -23,11 +24,13 @@ export default {
 			}
 		} else {
 			const blob = new Blob([res.data], { type: 'application/octet-stream;charset=UTF-8' })
-			const contentDisposition = res.headers['content-disposition']
+			const contentDisposition = res.headers['content-disposition'] || ''
 			const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
+			// 文件名不带后缀或读不到响应头时用默认名，避免取不到文件名直接报错
+			const matched = patt.exec(contentDisposition)
 			const $link = document.createElement('a')
 			$link.href = URL.createObjectURL(blob)
-			$link.download = decodeURIComponent(patt.exec(contentDisposition)[1])
+			$link.download = matched ? decodeURIComponent(matched[1]) : 'download'
 			$link.click()
 			document.body.appendChild($link)
 			document.body.removeChild($link) // 下载完成移除元素

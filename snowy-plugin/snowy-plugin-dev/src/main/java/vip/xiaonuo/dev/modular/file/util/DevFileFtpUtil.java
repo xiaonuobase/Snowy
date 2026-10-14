@@ -12,12 +12,17 @@
  */
 package vip.xiaonuo.dev.modular.file.util;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.ftp.Ftp;
 import cn.hutool.extra.ftp.FtpMode;
 import cn.hutool.extra.spring.SpringUtil;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevConfigApi;
@@ -25,6 +30,7 @@ import vip.xiaonuo.dev.api.DevConfigApi;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -116,6 +122,82 @@ public class DevFileFtpUtil {
             String fileName = StrUtil.subAfter(key, StrUtil.SLASH, true);
             ftp.download(dir, fileName, outputStream);
             return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new CommonException("FTP文件下载失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(ftp);
+        }
+    }
+
+    /**
+     * 获取文件实际大小（字节），文件不存在返回null，连接或鉴权异常直接报错
+     *
+     * @param bucketName 桶名称
+     * @param key        唯一标示id，例如a.txt, doc/a.txt
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        Ftp ftp = initClient();
+        try {
+            String dir = getRemoteDir(bucketName, key);
+            String fileName = StrUtil.subAfter(key, StrUtil.SLASH, true);
+            // 与上传下载口径一致：先进入目录再按文件名操作，目录不存在即文件不存在
+            if (!ftp.cd(dir)) {
+                return null;
+            }
+            FTPClient ftpClient = ftp.getClient();
+            // SIZE命令在ASCII模式下返回的是换行转换后的长度，必须先切到二进制模式
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            String sizeReply = StrUtil.trim(ftpClient.getSize(fileName));
+            if (NumberUtil.isLong(sizeReply)) {
+                return Long.parseLong(sizeReply);
+            }
+            // 服务器不支持SIZE命令或返回失败时，按列表结果兜底判断文件是否存在
+            for (FTPFile ftpFile : ftpClient.listFiles(fileName)) {
+                if (ObjectUtil.isNotNull(ftpFile) && ftpFile.isFile() && fileName.equals(FileUtil.getName(ftpFile.getName()))) {
+                    if (ftpFile.getSize() < 0) {
+                        throw new CommonException("FTP服务器未返回文件大小：{}", key);
+                    }
+                    return ftpFile.getSize();
+                }
+            }
+            return null;
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取FTP文件信息失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(ftp);
+        }
+    }
+
+    /**
+     * 把文件边读边写入输出流，不整读进内存，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        Ftp ftp = initClient();
+        try {
+            String dir = getRemoteDir(bucketName, key);
+            String fileName = StrUtil.subAfter(key, StrUtil.SLASH, true);
+            if (!ftp.cd(dir)) {
+                throw new CommonException("FTP文件目录不存在：{}", dir);
+            }
+            FTPClient ftpClient = ftp.getClient();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            // 不用hutool的download：它丢弃retrieveFile的返回值，文件不存在时静默写出0字节
+            // retrieveFile只关闭内部数据连接的输入流，不关闭传入的输出流
+            if (!ftpClient.retrieveFile(fileName, outputStream)) {
+                throw new CommonException("FTP文件下载失败：{}，服务器响应：{}", key, StrUtil.trim(ftpClient.getReplyString()));
+            }
+        } catch (CommonException e) {
+            throw e;
         } catch (Exception e) {
             throw new CommonException("FTP文件下载失败：{}", e.getMessage());
         } finally {

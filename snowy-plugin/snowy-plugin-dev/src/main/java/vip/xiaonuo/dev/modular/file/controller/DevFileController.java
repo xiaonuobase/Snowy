@@ -250,6 +250,32 @@ public class DevFileController {
     }
 
     /**
+     * RUSTFS文件上传，返回文件id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 10:00
+     **/
+    @Operation(summary = "上传RUSTFS文件返回id")
+    @CommonLog("上传RUSTFS文件返回id")
+    @PostMapping("/dev/file/uploadRustfsReturnId")
+    public CommonResult<String> uploadRustfsReturnId(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(devFileService.uploadReturnId(DevFileEngineTypeEnum.RUSTFS.getValue(), file));
+    }
+
+    /**
+     * RUSTFS文件上传，返回文件Url
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 10:00
+     **/
+    @Operation(summary = "上传RUSTFS文件返回url")
+    @CommonLog("上传RUSTFS文件返回url")
+    @PostMapping("/dev/file/uploadRustfsReturnUrl")
+    public CommonResult<String> uploadRustfsReturnUrl(@RequestPart("file") MultipartFile file) {
+        return CommonResult.data(devFileService.uploadReturnUrl(DevFileEngineTypeEnum.RUSTFS.getValue(), file));
+    }
+
+    /**
      * FTP文件上传，返回文件id
      *
      * @author lilang

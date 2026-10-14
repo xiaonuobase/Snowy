@@ -20,15 +20,20 @@ import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.HMac;
 import cn.hutool.crypto.digest.HmacAlgorithm;
+import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -41,10 +46,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.page.CommonPageRequest;
+import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.prop.CommonProperties;
 import vip.xiaonuo.common.util.CommonDownloadUtil;
 import vip.xiaonuo.common.util.CommonResponseUtil;
 import vip.xiaonuo.dev.modular.file.entity.DevFile;
+import vip.xiaonuo.dev.modular.file.enums.DevFileBucketAuthEnum;
 import vip.xiaonuo.dev.modular.file.enums.DevFileEngineTypeEnum;
 import vip.xiaonuo.dev.modular.file.mapper.DevFileMapper;
 import vip.xiaonuo.dev.modular.file.param.DevFileDownloadParam;
@@ -55,10 +62,22 @@ import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 import vip.xiaonuo.dev.modular.file.util.*;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -73,6 +92,12 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
 
     @Resource
     private CommonProperties commonProperties;
+
+    /** 补生成缩略图时读回的文件大小上限（KB），超过跳过，避免大文件整读进内存 */
+    private static final long THUMBNAIL_MAX_SIZE_KB = 20 * 1024;
+
+    /** 缩略图边长（像素），与上传时生成的缩略图一致 */
+    private static final int THUMBNAIL_SIZE = 100;
 
     /** 文件下载签名密钥 */
     private static final String FILE_DOWNLOAD_SIGN_SECRET = "snowy_file_download_secret_key_2025";
@@ -153,18 +178,64 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
             CommonResponseUtil.renderError(response, "该文件需要授权下载，请使用授权接口authDownload进行下载！");
             return;
         }
-        if(devFile.getEngine().equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
-            File file = FileUtil.file(devFile.getStoragePath());
-            if(!FileUtil.exist(file)) {
-                CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
-                return;
-            }
-            CommonDownloadUtil.download(devFile.getName(), IoUtil.readBytes(FileUtil.getInputStream(file)), response);
-        } else if(devFile.getEngine().equals(DevFileEngineTypeEnum.FTP.getValue())) {
-            CommonDownloadUtil.download(devFile.getName(), DevFileFtpUtil.getFileBytes(devFile.getBucket(), devFile.getFileKey()), response);
+        String engine = devFile.getEngine();
+        boolean knownEngine = Arrays.stream(DevFileEngineTypeEnum.values()).anyMatch(item -> item.getValue().equals(engine));
+        if (knownEngine) {
+            streamDownload(devFile, response);
         } else {
             String storagePath = devFile.getStoragePath();
             CommonDownloadUtil.download(devFile.getName(), HttpUtil.downloadBytes(storagePath), response);
+        }
+    }
+
+    /**
+     * 边读存储边输出文件并带上实际大小（前端据此显示进度），本地文件按存储路径读取，响应头与CommonDownloadUtil一致
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 01:30
+     */
+    private void streamDownload(DevFile devFile, HttpServletResponse response) throws IOException {
+        boolean isLocal = DevFileEngineTypeEnum.LOCAL.getValue().equals(devFile.getEngine());
+        File localFile = isLocal ? FileUtil.file(devFile.getStoragePath()) : null;
+        Long fileSize;
+        try {
+            // 先取实际大小，文件不存在时还未写响应头，能正常返回错误信息
+            fileSize = isLocal ? (FileUtil.isFile(localFile) ? localFile.length() : null)
+                    : this.getFileSize(devFile.getEngine(), devFile.getBucket(), devFile.getFileKey());
+        } catch (Exception e) {
+            CommonResponseUtil.renderError(response, e.getMessage());
+            return;
+        }
+        if (ObjectUtil.isNull(fileSize)) {
+            CommonResponseUtil.renderError(response, "找不到存储的文件，id值为：" + devFile.getId());
+            return;
+        }
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLUtil.encode(devFile.getName()));
+        response.setContentLengthLong(fileSize);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+        response.setContentType("application/octet-stream;charset=UTF-8");
+        OutputStream outputStream = response.getOutputStream();
+        try {
+            if (isLocal) {
+                try (InputStream inputStream = FileUtil.getInputStream(localFile)) {
+                    IoUtil.copy(inputStream, outputStream);
+                }
+            } else {
+                this.writeFileToStream(devFile.getEngine(), devFile.getBucket(), devFile.getFileKey(), outputStream);
+            }
+        } catch (Exception e) {
+            // 已开始输出文件内容时无法再返回错误信息，前端会因内容长度不足判定失败
+            if (response.isCommitted()) {
+                log.warn(">>> 文件下载中断，文件id：{}，原因：{}", devFile.getId(), e.getMessage());
+                return;
+            }
+            // 已取得字节输出流，不能再用字符流输出，改回JSON后直接写字节
+            response.resetBuffer();
+            response.setContentLengthLong(-1);
+            response.setCharacterEncoding(CharsetUtil.UTF_8);
+            response.setContentType(ContentType.JSON.toString());
+            outputStream.write(JSONUtil.toJsonStr(CommonResult.error(e.getMessage())).getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -177,6 +248,11 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     @Override
     public void deleteAbsolute(DevFileIdParam devFileIdParam) {
         DevFile devFile = this.queryEntity(devFileIdParam.getId());
+        // 按内容复用后多条记录可能共用一个存储对象，还有其他记录在用时只删本条记录，不删对象
+        if (countOtherReferences(devFile) > 0) {
+            this.baseMapper.deleteAbsoluteById(devFile.getId());
+            return;
+        }
         try {
             // 存储引擎
             String engine = devFile.getEngine();
@@ -392,6 +468,326 @@ public class DevFileServiceImpl extends ServiceImpl<DevFileMapper, DevFile> impl
     @Override
     public List<DevFile> getFileListByIds(List<String> ids) {
         return list(Wrappers.<DevFile>lambdaQuery().in(DevFile::getId,ids));
+    }
+
+    @Override
+    public String registerExistingFile(String engine, String bucket, String objectKey, String fileName, Long sizeBytes) {
+        if (StrUtil.hasBlank(objectKey, fileName)) {
+            throw new CommonException("登记已存在对象时对象键与文件名不能为空");
+        }
+        if (ObjectUtil.isNull(sizeBytes) || sizeBytes < 0) {
+            throw new CommonException("登记已存在对象时文件大小不能为空且不能为负数");
+        }
+        // 只登记不上传需要按引擎核对对象，目前只有RUSTFS提供了取对象大小的能力
+        if (!DevFileEngineTypeEnum.RUSTFS.getValue().equals(engine)) {
+            throw new CommonException("登记已存在对象暂只支持RUSTFS存储引擎，当前引擎：{}", engine);
+        }
+        // 下载地址依赖后端域名，先校验再写库
+        String backendUrl = getBackendUrl();
+        String defaultBucketName = DevFileRustFsUtil.getDefaultBucketName();
+        String bucketName = StrUtil.blankToDefault(bucket, defaultBucketName);
+        if (!bucketName.equals(defaultBucketName)) {
+            throw new CommonException("对象所在桶（{}）与中台RUSTFS默认桶（{}）不一致", bucketName, defaultBucketName);
+        }
+        Long actualSize = DevFileRustFsUtil.getFileSize(bucketName, objectKey);
+        if (ObjectUtil.isNull(actualSize)) {
+            throw new CommonException("对象存储中不存在该对象：{}", objectKey);
+        }
+        if (!actualSize.equals(sizeBytes)) {
+            throw new CommonException("对象实际大小（{}字节）与登记大小（{}字节）不一致", actualSize, sizeBytes);
+        }
+        String fileId = IdWorker.getIdStr();
+        DevFile devFile = buildAuthDevFile(fileId, engine, bucketName, objectKey, fileName, sizeBytes,
+                DevFileRustFsUtil.getFileAuthUrl(bucketName, objectKey), backendUrl);
+        this.save(devFile);
+        return fileId;
+    }
+
+    @Override
+    public String uploadStreamReturnId(String engine, InputStream inputStream, String fileName, Long size) {
+        if (ObjectUtil.isNull(inputStream)) {
+            throw new CommonException("待存储的文件流不能为空");
+        }
+        // 无论成功失败都由本方法关闭文件流
+        try {
+            if (StrUtil.isBlank(fileName)) {
+                throw new CommonException("待存储的文件名不能为空");
+            }
+            if (ObjectUtil.isNull(size) || size < 0) {
+                throw new CommonException("待存储的文件大小不能为空且不能为负数");
+            }
+            // 引擎为空时与storageFile一致使用本地
+            String engineValue = ObjectUtil.isEmpty(engine) ? DevFileEngineTypeEnum.LOCAL.getValue() : engine;
+            // 下载地址依赖后端域名，先校验再写存储
+            String backendUrl = getBackendUrl();
+            String fileId = IdWorker.getIdStr();
+            String fileKey = genFileKeyByName(fileId, fileName);
+            String bucketName;
+            String storageUrl;
+            // 存储路径格式与storageFile一致
+            if (engineValue.equals(DevFileEngineTypeEnum.LOCAL.getValue())) {
+                bucketName = "defaultBucketName";
+                storageUrl = DevFileLocalUtil.storageFileWithReturnUrl(bucketName, fileKey, inputStream);
+            } else if (engineValue.equals(DevFileEngineTypeEnum.ALIYUN.getValue())) {
+                // 按已知长度流式写入，对象设为私有，下载走后端按桶名与文件键经SDK读取
+                bucketName = DevFileAliyunUtil.getDefaultBucketName();
+                DevFileAliyunUtil.storageFile(bucketName, fileKey, inputStream, size);
+                DevFileAliyunUtil.setFileAcl(bucketName, fileKey, DevFileBucketAuthEnum.PRIVATE);
+                storageUrl = DevFileAliyunUtil.getFileAuthUrl(bucketName, fileKey);
+            } else if (engineValue.equals(DevFileEngineTypeEnum.TENCENT.getValue())) {
+                // 按已知长度流式写入，对象设为私有，下载走后端按桶名与文件键经SDK读取
+                bucketName = DevFileTencentUtil.getDefaultBucketName();
+                DevFileTencentUtil.storageFile(bucketName, fileKey, inputStream, size);
+                DevFileTencentUtil.setFileAcl(bucketName, fileKey, DevFileBucketAuthEnum.PRIVATE);
+                storageUrl = DevFileTencentUtil.getFileAuthUrl(bucketName, fileKey);
+            } else if (engineValue.equals(DevFileEngineTypeEnum.MINIO.getValue())) {
+                // 按已知长度流式写入；MINIO没有对象级权限，setFileAcl会覆盖整桶策略，这里不设公开可读，权限随桶策略
+                bucketName = DevFileMinIoUtil.getDefaultBucketName();
+                DevFileMinIoUtil.storageFile(bucketName, fileKey, inputStream, size);
+                storageUrl = DevFileMinIoUtil.getFileAuthUrl(bucketName, fileKey);
+            } else if (engineValue.equals(DevFileEngineTypeEnum.RUSTFS.getValue())) {
+                // 按已知长度流式写入，对象保持私有，下载走后端按桶名与文件键读取
+                bucketName = DevFileRustFsUtil.getDefaultBucketName();
+                DevFileRustFsUtil.storageFile(bucketName, fileKey, inputStream, size);
+                storageUrl = DevFileRustFsUtil.getFileAuthUrl(bucketName, fileKey);
+            } else if (engineValue.equals(DevFileEngineTypeEnum.FTP.getValue())) {
+                bucketName = DevFileFtpUtil.getDefaultBucketName();
+                DevFileFtpUtil.storageFile(bucketName, fileKey, inputStream);
+                storageUrl = DevFileFtpUtil.getFileAuthUrl(bucketName, fileKey);
+            } else {
+                throw new CommonException("不支持的文件引擎：{}", engineValue);
+            }
+            DevFile devFile = buildAuthDevFile(fileId, engineValue, bucketName, fileKey, fileName, size, storageUrl, backendUrl);
+            this.save(devFile);
+            return fileId;
+        } finally {
+            IoUtil.close(inputStream);
+        }
+    }
+
+    @Override
+    public void generateThumbnail(String fileId) {
+        DevFile devFile = this.getById(fileId);
+        if (ObjectUtil.isNull(devFile) || StrUtil.isNotBlank(devFile.getThumbnail())
+                || StrUtil.isBlank(devFile.getSuffix()) || !isPic(devFile.getSuffix())) {
+            return;
+        }
+        if (Convert.toLong(devFile.getSizeKb(), 0L) > THUMBNAIL_MAX_SIZE_KB) {
+            return;
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        writeFileToStream(devFile.getEngine(), devFile.getBucket(), devFile.getFileKey(), outputStream);
+        BufferedImage image = readSubsampledImage(outputStream.toByteArray(), THUMBNAIL_SIZE);
+        if (ObjectUtil.isNull(image)) {
+            return;
+        }
+        String thumbnail = ImgUtil.toBase64DataUri(ImgUtil.scale(image, THUMBNAIL_SIZE, THUMBNAIL_SIZE, null), devFile.getSuffix());
+        // 只在仍无缩略图时写入，不覆盖其他途径已生成的结果
+        this.update(new LambdaUpdateWrapper<DevFile>().eq(DevFile::getId, fileId).isNull(DevFile::getThumbnail)
+                .set(DevFile::getThumbnail, thumbnail));
+    }
+
+    @Override
+    public String registerSharedFile(String sourceFileId, String targetEngine, String fileName, Long sizeBytes) {
+        if (StrUtil.hasBlank(sourceFileId, targetEngine, fileName) || ObjectUtil.isNull(sizeBytes) || sizeBytes < 0) {
+            return null;
+        }
+        DevFile source = this.getById(sourceFileId);
+        // 只复用目标引擎里的对象，数据随默认引擎收敛，不跨引擎混用
+        if (ObjectUtil.isNull(source) || !targetEngine.equals(source.getEngine()) || StrUtil.isBlank(source.getFileKey())) {
+            return null;
+        }
+        Long actualSize;
+        try {
+            actualSize = this.getFileSize(source.getEngine(), source.getBucket(), source.getFileKey());
+        } catch (Exception e) {
+            log.warn(">>> 复用已有存储对象前核对失败，源文件id：{}，原因：{}", sourceFileId, e.getMessage());
+            return null;
+        }
+        if (!sizeBytes.equals(actualSize)) {
+            return null;
+        }
+        String fileId = IdWorker.getIdStr();
+        DevFile devFile = buildAuthDevFile(fileId, source.getEngine(), source.getBucket(), source.getFileKey(), fileName,
+                sizeBytes, source.getStoragePath(), getBackendUrl());
+        // 内容相同缩略图也相同，图片直接沿用源记录的缩略图
+        if (ObjectUtil.isNotEmpty(devFile.getSuffix()) && isPic(devFile.getSuffix())) {
+            devFile.setThumbnail(source.getThumbnail());
+        }
+        devFile.setExtJson(JSONUtil.createObj().set("sharedFrom", sourceFileId).toString());
+        this.save(devFile);
+        return fileId;
+    }
+
+    /**
+     * 统计与本条记录共用同一存储对象的其他未删除记录数
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 16:00
+     */
+    private long countOtherReferences(DevFile devFile) {
+        if (StrUtil.isBlank(devFile.getFileKey())) {
+            return 0;
+        }
+        QueryWrapper<DevFile> queryWrapper = new QueryWrapper<DevFile>().checkSqlInjection();
+        queryWrapper.lambda().eq(DevFile::getEngine, devFile.getEngine())
+                .eq(DevFile::getFileKey, devFile.getFileKey())
+                .ne(DevFile::getId, devFile.getId());
+        if (ObjectUtil.isNull(devFile.getBucket())) {
+            queryWrapper.lambda().isNull(DevFile::getBucket);
+        } else {
+            queryWrapper.lambda().eq(DevFile::getBucket, devFile.getBucket());
+        }
+        return this.count(queryWrapper);
+    }
+
+    /**
+     * 按目标边长抽样解码图片，内存只占缩小后的尺寸，没有对应解码器时返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 15:00
+     */
+    private static BufferedImage readSubsampledImage(byte[] bytes, int targetSize) {
+        try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+            Iterator<ImageReader> readers = ObjectUtil.isNull(input) ? null : ImageIO.getImageReaders(input);
+            if (ObjectUtil.isNull(readers) || !readers.hasNext()) {
+                return null;
+            }
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(input, true, true);
+                // 抽样后短边仍保留目标边长的两倍以上，缩放后缩略图不糊
+                int step = Math.max(1, Math.min(reader.getWidth(0), reader.getHeight(0)) / (targetSize * 2));
+                ImageReadParam readParam = reader.getDefaultReadParam();
+                readParam.setSourceSubsampling(step, step, 0, 0);
+                return reader.read(0, readParam);
+            } finally {
+                reader.dispose();
+            }
+        } catch (IOException e) {
+            throw new CommonException("解码图片失败：{}", e.getMessage());
+        }
+    }
+
+    @Override
+    public Long getFileSize(String engine, String bucket, String fileKey) {
+        DevFileEngineTypeEnum engineType = resolveEngineType(engine, bucket, fileKey);
+        switch (engineType) {
+            case LOCAL:
+                return DevFileLocalUtil.getFileSize(bucket, fileKey);
+            case ALIYUN:
+                return DevFileAliyunUtil.getFileSize(bucket, fileKey);
+            case TENCENT:
+                return DevFileTencentUtil.getFileSize(bucket, fileKey);
+            case MINIO:
+                return DevFileMinIoUtil.getFileSize(bucket, fileKey);
+            case RUSTFS:
+                return DevFileRustFsUtil.getFileSize(bucket, fileKey);
+            case FTP:
+                return DevFileFtpUtil.getFileSize(bucket, fileKey);
+            default:
+                throw new CommonException("不支持的存储引擎：{}", engine);
+        }
+    }
+
+    @Override
+    public void writeFileToStream(String engine, String bucket, String fileKey, OutputStream outputStream) {
+        DevFileEngineTypeEnum engineType = resolveEngineType(engine, bucket, fileKey);
+        if (ObjectUtil.isNull(outputStream)) {
+            throw new CommonException("待写入的输出流不能为空");
+        }
+        switch (engineType) {
+            case LOCAL:
+                DevFileLocalUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            case ALIYUN:
+                DevFileAliyunUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            case TENCENT:
+                DevFileTencentUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            case MINIO:
+                DevFileMinIoUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            case RUSTFS:
+                DevFileRustFsUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            case FTP:
+                DevFileFtpUtil.writeFileToStream(bucket, fileKey, outputStream);
+                break;
+            default:
+                throw new CommonException("不支持的存储引擎：{}", engine);
+        }
+    }
+
+    /**
+     * 校验文件存储信息完整，并按引擎值忽略大小写匹配存储引擎枚举
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    private DevFileEngineTypeEnum resolveEngineType(String engine, String bucket, String fileKey) {
+        if (StrUtil.isEmpty(engine) || StrUtil.isEmpty(bucket) || StrUtil.isEmpty(fileKey)) {
+            throw new CommonException("文件存储信息不完整");
+        }
+        return Arrays.stream(DevFileEngineTypeEnum.values())
+                .filter(item -> item.getValue().equalsIgnoreCase(engine))
+                .findFirst()
+                .orElseThrow(() -> new CommonException("不支持的存储引擎：{}", engine));
+    }
+
+    /**
+     * 组装需鉴权下载的底座文件记录，字段口径与storageFile一致，不生成缩略图
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    private DevFile buildAuthDevFile(String fileId, String engine, String bucketName, String fileKey, String fileName,
+                                     long size, String storageUrl, String backendUrl) {
+        DevFile devFile = new DevFile();
+        devFile.setId(fileId);
+        devFile.setEngine(engine);
+        devFile.setBucket(bucketName);
+        devFile.setFileKey(fileKey);
+        devFile.setName(fileName);
+        String suffix = ObjectUtil.isNotEmpty(fileName) ? StrUtil.subAfter(fileName, StrUtil.DOT, true) : null;
+        devFile.setSuffix(suffix);
+        devFile.setSizeKb(Convert.toStr(NumberUtil.div(new BigDecimal(size), BigDecimal.valueOf(1024))
+                .setScale(0, RoundingMode.HALF_UP)));
+        devFile.setSizeInfo(FileUtil.readableFileSize(size));
+        devFile.setObjName(ObjectUtil.isNotEmpty(suffix) ? fileId + StrUtil.DOT + suffix : null);
+        devFile.setStoragePath(storageUrl);
+        devFile.setDownloadPath(backendUrl + "/dev/file/authDownload?id=" + fileId + "&token=");
+        devFile.setIsDownloadAuth(true);
+        return devFile;
+    }
+
+    /**
+     * 获取后端域名地址，未配置时报错
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    private String getBackendUrl() {
+        String apiUrl = commonProperties.getBackendUrl();
+        if (ObjectUtil.isEmpty(apiUrl)) {
+            throw new CommonException("后端域名地址未正确配置：snowy.config.common.backend-url为空");
+        }
+        return apiUrl;
+    }
+
+    /**
+     * 按文件名生成文件的key，格式与genFileKey一致，如 2021/10/11/1377109572375810050.docx
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    private String genFileKeyByName(String fileId, String fileName) {
+        String fileObjectName = fileId + StrUtil.DOT + FileUtil.getSuffix(fileName);
+        String dateFolderPath = DateUtil.thisYear() + StrUtil.SLASH +
+                (DateUtil.thisMonth() + 1) + StrUtil.SLASH +
+                DateUtil.thisDayOfMonth() + StrUtil.SLASH;
+        return dateFolderPath + fileObjectName;
     }
 
     /**

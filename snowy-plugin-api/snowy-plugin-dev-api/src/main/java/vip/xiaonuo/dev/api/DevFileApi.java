@@ -16,6 +16,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -122,6 +124,24 @@ public interface DevFileApi {
      **/
     String storageFileWithReturnIdMinio(MultipartFile file);
 
+    /* =========RUSTFS文件========= */
+
+    /**
+     * RUSTFS上传文件返回Url
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 10:00
+     **/
+    String storageFileWithReturnUrlRustfs(MultipartFile file);
+
+    /**
+     * RUSTFS上传文件返回Id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 10:00
+     **/
+    String storageFileWithReturnIdRustfs(MultipartFile file);
+
     /* =========FTP文件========= */
 
     /**
@@ -178,7 +198,7 @@ public interface DevFileApi {
     /**
      * 根据存储引擎、桶名和文件键读取文件字节数组
      *
-     * @param engine 存储引擎（LOCAL/ALIYUN/TENCENT/MINIO/FTP）
+     * @param engine 存储引擎（LOCAL/ALIYUN/TENCENT/MINIO/RUSTFS/FTP）
      * @param bucket 桶名
      * @param fileKey 文件键
      * @return 文件字节数组
@@ -186,4 +206,52 @@ public interface DevFileApi {
      * @date 2026/09/17 22:00
      */
     byte[] getFileBytes(String engine, String bucket, String fileKey);
+
+    /**
+     * 根据存储引擎、桶名和文件键读取文件实际字节数，文件不存在返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    Long getFileSize(String engine, String bucket, String fileKey);
+
+    /**
+     * 根据存储引擎、桶名和文件键把文件边读边写入输出流（不整读进内存，不关闭输出流）
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    void writeFileToStream(String engine, String bucket, String fileKey, OutputStream outputStream);
+
+    /**
+     * 登记对象存储中已存在的对象为底座文件（只登记不上传，暂只支持RUSTFS，桶为空取默认桶），下载需鉴权，返回文件id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    String registerExistingFileReturnId(String engine, String bucket, String objectKey, String fileName, Long sizeBytes);
+
+    /**
+     * 按流存储文件（不整读进内存，引擎为空用系统默认引擎），下载需鉴权，返回文件id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    String storageStreamReturnId(String engine, InputStream inputStream, String fileName, Long size);
+
+    /**
+     * 为没有缩略图的图片底座文件补生成缩略图（从存储读回后压缩），非图片、已有缩略图或文件过大时跳过
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 15:00
+     */
+    void generateThumbnail(String fileId);
+
+    /**
+     * 按内容复用已有存储对象登记一条新的底座文件记录（引擎为空用系统默认引擎），对象不在目标引擎或大小不符时返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 16:00
+     */
+    String registerSharedFileReturnId(String sourceFileId, String targetEngine, String fileName, Long sizeBytes);
 }

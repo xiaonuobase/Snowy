@@ -22,6 +22,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import io.minio.*;
+import io.minio.errors.ErrorResponseException;
 import io.minio.http.Method;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -249,6 +250,25 @@ public class DevFileMinIoUtil {
     }
 
     /**
+     * 按已知长度流式存储文件，分片大小交由MINIO推算，不返回地址，结束后关闭文件流
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 16:00
+     */
+    public static void storageFile(String bucketName, String key, InputStream inputStream, long size) {
+        try {
+            initClient();
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder().bucket(bucketName).object(key)
+                    .contentType(getFileContentType(key)).stream(inputStream, size, AUTO_PART_SIZE).build();
+            client.putObject(putObjectArgs);
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
+        }
+    }
+
+    /**
      * 存储文件的核心方法，所有存储入口最终都汇聚到此处
      *
      * @param bucketName  桶名称
@@ -351,6 +371,57 @@ public class DevFileMinIoUtil {
             return IoUtil.readBytes(inputStream);
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取对象实际大小（字节），对象不存在返回null，连接或鉴权异常直接报错
+     *
+     * @param bucketName 桶名称
+     * @param key        唯一标示id，例如a.txt, doc/a.txt
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        try {
+            initClient();
+            StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket(bucketName).object(key).build();
+            return client.statObject(statObjectArgs).size();
+        } catch (ErrorResponseException e) {
+            String errorCode = e.errorResponse().code();
+            if ("NoSuchKey".equals(errorCode) || "NoSuchObject".equals(errorCode)) {
+                return null;
+            }
+            throw new CommonException("读取MINIO对象信息失败：{}", e.getMessage());
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取MINIO对象信息失败：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 把对象边读边写入输出流，不整读进内存，结束后关闭对象流，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        InputStream inputStream = null;
+        try {
+            initClient();
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder().bucket(bucketName).object(key).build();
+            inputStream = client.getObject(getObjectArgs);
+            IoUtil.copy(inputStream, outputStream);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取MINIO文件失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
         }
     }
 

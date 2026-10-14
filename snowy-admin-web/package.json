@@ -17,6 +17,7 @@
 		"prod": "vite  --mode production"
 	},
 	"dependencies": {
+		"@aiden0z/pptx-renderer": "1.3.0",
 		"@amap/amap-jsapi-loader": "1.0.1",
 		"@ant-design/colors": "7.1.0",
 		"@ant-design/icons-vue": "7.0.1",

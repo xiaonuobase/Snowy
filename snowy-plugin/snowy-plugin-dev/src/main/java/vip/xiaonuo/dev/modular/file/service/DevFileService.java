@@ -24,6 +24,8 @@ import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -147,4 +149,52 @@ public interface DevFileService extends IService<DevFile> {
      * @date 2025/8/25 21:18
      */
     List<DevFile> getFileListByIds(List<String> ids);
+
+    /**
+     * 登记对象存储中已存在的对象为底座文件（只登记不上传），校验桶、对象存在与大小，返回文件id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    String registerExistingFile(String engine, String bucket, String objectKey, String fileName, Long sizeBytes);
+
+    /**
+     * 按流存储文件（不整读进内存），下载需鉴权，返回文件id
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 14:00
+     */
+    String uploadStreamReturnId(String engine, InputStream inputStream, String fileName, Long size);
+
+    /**
+     * 为没有缩略图的图片文件补生成缩略图，非图片、已有缩略图或文件过大时跳过
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 15:00
+     */
+    void generateThumbnail(String fileId);
+
+    /**
+     * 新建一条底座文件记录指向源记录的同一存储对象（名称用新的），源对象不在目标引擎或大小不符时返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 16:00
+     */
+    String registerSharedFile(String sourceFileId, String targetEngine, String fileName, Long sizeBytes);
+
+    /**
+     * 根据存储引擎、桶名和文件键读取文件实际字节数，文件不存在返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    Long getFileSize(String engine, String bucket, String fileKey);
+
+    /**
+     * 根据存储引擎、桶名和文件键把文件边读边写入输出流（不整读进内存，不关闭输出流）
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    void writeFileToStream(String engine, String bucket, String fileKey, OutputStream outputStream);
 }

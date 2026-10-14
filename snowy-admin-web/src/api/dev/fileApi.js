@@ -42,6 +42,10 @@ export default {
 	fileUploadMinioReturnId(data) {
 		return request('uploadMinioReturnId', data)
 	},
+	// RUSTFS文件上传，返回文件id
+	fileUploadRustfsReturnId(data) {
+		return request('uploadRustfsReturnId', data)
+	},
 	// FTP文件上传，返回文件id
 	fileUploadFtpReturnId(data) {
 		return request('uploadFtpReturnId', data)
@@ -62,6 +66,10 @@ export default {
 	fileUploadMinioReturnUrl(data) {
 		return request('uploadMinioReturnUrl', data)
 	},
+	// RUSTFS文件上传，返回文件Url
+	fileUploadRustfsReturnUrl(data) {
+		return request('uploadRustfsReturnUrl', data)
+	},
 	// FTP文件上传，返回文件Url
 	fileUploadFtpReturnUrl(data) {
 		return request('uploadFtpReturnUrl', data)
@@ -80,10 +88,11 @@ export default {
 			responseType: 'blob'
 		})
 	},
-	// 授权下载文件，这里要带上blob类型
-	fileAuthDownload(data) {
+	// 授权下载文件，这里要带上blob类型，options 可传下载进度回调与取消信号
+	fileAuthDownload(data, options = {}) {
 		return request('authDownload', data, 'get', {
-			responseType: 'blob'
+			responseType: 'blob',
+			...options
 		})
 	},
 	// 获取文件详情

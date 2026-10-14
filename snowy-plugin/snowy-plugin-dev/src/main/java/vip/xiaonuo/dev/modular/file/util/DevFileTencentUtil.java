@@ -22,6 +22,7 @@ import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.exception.CosClientException;
+import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.http.HttpMethodName;
 import com.qcloud.cos.model.*;
 import com.qcloud.cos.region.Region;
@@ -302,6 +303,26 @@ public class DevFileTencentUtil {
     }
 
     /**
+     * 按已知长度流式存储文件，声明内容长度避免SDK整读进内存，不返回地址，结束后关闭文件流
+     *
+     * @author yubaoshan
+     * @date 2026/10/13 16:00
+     */
+    public static void storageFile(String bucketName, String key, InputStream inputStream, long size) {
+        try {
+            initClient();
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(getFileContentType(key));
+            objectMetadata.setContentLength(size);
+            client.putObject(bucketName, key, inputStream, objectMetadata);
+        } catch (CosClientException e) {
+            throw new CommonException(e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
+        }
+    }
+
+    /**
      * 存储文件，返回外网地址
      *
      * @param bucketName 桶名称
@@ -380,6 +401,56 @@ public class DevFileTencentUtil {
         } catch (CosClientException e) {
             throw new CommonException(e.getMessage());
         } finally {
+            IoUtil.close(cosObjectInput);
+        }
+    }
+
+    /**
+     * 获取对象实际大小（字节），对象不存在返回null，连接或鉴权异常直接报错
+     *
+     * @param bucketName 桶名称
+     * @param key        唯一标示id，例如a.txt, doc/a.txt
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        try {
+            initClient();
+            return client.getObjectMetadata(bucketName, key).getContentLength();
+        } catch (CosServiceException e) {
+            if (e.getStatusCode() == 404) {
+                return null;
+            }
+            throw new CommonException("读取腾讯云对象信息失败：{}", e.getMessage());
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取腾讯云对象信息失败：{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 把对象边读边写入输出流，不整读进内存，结束后关闭对象流，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        COSObjectInputStream cosObjectInput = null;
+        try {
+            initClient();
+            COSObject cosObject = client.getObject(new GetObjectRequest(bucketName, key));
+            cosObjectInput = cosObject.getObjectContent();
+            IoUtil.copy(cosObjectInput, outputStream);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取腾讯云文件失败：{}", e.getMessage());
+        } finally {
+            // 未读到末尾时SDK的close会直接断开连接，不会把剩余内容读完
             IoUtil.close(cosObjectInput);
         }
     }

@@ -14,6 +14,7 @@ package vip.xiaonuo.dev.modular.file.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IORuntimeException;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
@@ -30,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * 本地文件工具类
@@ -281,6 +283,48 @@ public class DevFileLocalUtil {
     public static byte[] getFileBytes(String bucketName, String key) {
         File file = getFileByBucketNameAndKey(bucketName, key);
         return FileUtil.readBytes(file);
+    }
+
+    /**
+     * 获取文件实际大小（字节），文件不存在返回null
+     *
+     * @param bucketName 桶名称
+     * @param key        唯一标示id，例如a.txt, doc/a.txt
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static Long getFileSize(String bucketName, String key) {
+        // getFileByBucketNameAndKey在文件不存在时直接抛异常，这里先判断存在性
+        if (!isExistingFile(bucketName, key)) {
+            return null;
+        }
+        File file = getFileByBucketNameAndKey(bucketName, key);
+        // 同名路径是目录时视为文件不存在
+        return file.isFile() ? file.length() : null;
+    }
+
+    /**
+     * 把文件边读边写入输出流，不整读进内存，结束后关闭文件流，不关闭输出流
+     *
+     * @param bucketName   桶名称
+     * @param key          唯一标示id，例如a.txt, doc/a.txt
+     * @param outputStream 输出流
+     * @author yubaoshan
+     * @date 2026/10/13 23:50
+     */
+    public static void writeFileToStream(String bucketName, String key, OutputStream outputStream) {
+        InputStream inputStream = null;
+        try {
+            File file = getFileByBucketNameAndKey(bucketName, key);
+            inputStream = FileUtil.getInputStream(file);
+            IoUtil.copy(inputStream, outputStream);
+        } catch (CommonException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new CommonException("读取本地文件失败：{}", e.getMessage());
+        } finally {
+            IoUtil.close(inputStream);
+        }
     }
 
     /**
