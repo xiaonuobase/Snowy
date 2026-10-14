@@ -27,4 +27,12 @@ public interface DevConfigApi {
      * @date 2022/6/17 11:11
      **/
     String getValueByKey(String key);
+
+    /**
+     * 根据键设置值，键不存在时抛异常
+     *
+     * @author yubaoshan
+     * @date 2026/10/12 10:00
+     **/
+    void setValueByKey(String key, String value);
 }
