@@ -41,5 +41,9 @@ export default {
 	// 启用用户
 	userEnableUser(data) {
 		return request('enableUser', data)
+	},
+	// 重置密码
+	userResetPassword(data) {
+		return request('resetPassword', data)
 	}
 }

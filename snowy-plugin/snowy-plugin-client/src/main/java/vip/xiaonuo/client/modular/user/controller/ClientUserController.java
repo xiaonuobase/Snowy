@@ -151,4 +151,19 @@ public class ClientUserController {
         clientUserService.enableUser(clientUserIdParam);
         return CommonResult.ok();
     }
+
+    /**
+     * 重置用户密码
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 10:00
+     */
+    @Operation(summary = "重置用户密码")
+    @CommonLog("重置用户密码")
+    @SaCheckPermission("/client/user/resetPassword")
+    @PostMapping("/client/user/resetPassword")
+    public CommonResult<String> resetPassword(@RequestBody @Valid ClientUserIdParam clientUserIdParam) {
+        clientUserService.resetPassword(clientUserIdParam);
+        return CommonResult.ok();
+    }
 }

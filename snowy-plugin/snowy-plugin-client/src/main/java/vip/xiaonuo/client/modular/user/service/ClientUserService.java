@@ -120,6 +120,14 @@ public interface ClientUserService extends IService<ClientUser> {
     void enableUser(ClientUserIdParam clientUserIdParam);
 
     /**
+     * 重置用户密码
+     *
+     * @author yubaoshan
+     * @date 2026/10/14 10:00
+     */
+    void resetPassword(ClientUserIdParam clientUserIdParam);
+
+    /**
      * 获取用户详情
      *
      * @author xuyuxiang

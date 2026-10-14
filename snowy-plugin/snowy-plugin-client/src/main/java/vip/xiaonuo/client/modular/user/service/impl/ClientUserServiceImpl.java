@@ -351,6 +351,70 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         this.updateById(clientUser);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void resetPassword(ClientUserIdParam clientUserIdParam) {
+        // 获取用户
+        ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
+        // 获取默认密码
+        String defaultPassword = ClientPasswordUtl.getDefaultPassword();
+        // 修改密码
+        this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId,
+                clientUser.getId()).set(ClientUser::getPassword,
+                CommonCryptogramUtil.doHashValue(defaultPassword)));
+        // 强制下线
+        StpClientUtil.kickout(clientUser.getId());
+        // 获取手机号
+        String phone = clientUser.getPhone();
+        // 手机号不为空则发送密码重置成功短信
+        if(ObjectUtil.isNotEmpty(phone)){
+            // 重置密码成功短信消息模板编码
+            String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_C_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(smsTemplateCode)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", defaultPassword);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
+                }
+            }
+        }
+        // 获取邮箱
+        String email = clientUser.getEmail();
+        // 邮箱不为空则发送密码重置成功邮件
+        if(ObjectUtil.isNotEmpty(email)){
+            // 重置密码成功邮件消息模板内容
+            String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_C_KEY);
+            // 不为空才发送
+            if(ObjectUtil.isNotEmpty(emailTemplateContent)){
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", defaultPassword);
+                // 获取格式化后的主题
+                String subject = ClientEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);
+                // 获取格式化后的内容
+                String content = ClientEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            }
+        }
+    }
+
     @Override
     public void updateUserLoginInfo(String userId, String device) {
         ClientUser clientUser = this.queryEntity(userId);

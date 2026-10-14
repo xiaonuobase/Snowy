@@ -69,6 +69,10 @@
 					<a-popconfirm title="确定要删除此用户吗" @confirm="removeUser(record)">
 						<a-button type="link" danger size="small"> 删除 </a-button>
 					</a-popconfirm>
+					<a-divider type="vertical" />
+					<a-popconfirm title="确定要重置该用户密码吗？" placement="topRight" @confirm="resetPassword(record)">
+						<a>重置密码</a>
+					</a-popconfirm>
 				</template>
 			</template>
 		</s-table>
