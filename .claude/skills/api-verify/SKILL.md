@@ -19,7 +19,7 @@ curl -s http://localhost:82/          # 应输出 WELCOME；无响应 → 先走
 
 ```bash
 # 密文是随机的，每次生成都不同——正常
-node -e "const s=require('snowy-admin-web/node_modules/sm-crypto');console.log(s.sm2.doEncrypt('Snowy@2026!','04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54',1))"
+node -e "const s=require('./snowy-admin-web/node_modules/sm-crypto');console.log(s.sm2.doEncrypt('Snowy@2026!','04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54',1))"
 ```
 
 依赖：`snowy-admin-web/node_modules/sm-crypto`（前端执行过 npm install 即有；没有则先装，或临时 `npm i sm-crypto --registry=https://registry.npmmirror.com` 到任意目录）。cipherMode=1（C1C3C2），与前端 smCrypto.js 一致。
@@ -32,11 +32,11 @@ RESP=$(curl -s -X POST http://localhost:82/auth/b/doLogin \
   -H "Content-Type: application/json" \
   -d '{"account":"superAdmin","password":"<上一步的SM2密文>","device":"PC"}')   # device 只接受 PC / APP / MINI
 echo "$RESP"
-# 成功：{"code":200,"data":{"token":"..."},...}
+# 成功：{"code":200,"data":"token字符串",...}
 # 账密错：code!=200 且 msg 提示账号或密码错误（核对 Snowy@2026! 与密文重生成）
 ```
 
-取 token：`TOKEN=$(echo "$RESP" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);console.log(j.data?.token||'')})")`
+取 token：`TOKEN=$(echo "$RESP" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(j.code!==200||typeof j.data!=='string'||!j.data){process.exit(1)}console.log(j.data)})")`
 
 > 若系统开启了图形验证码（DEV_CONFIG 可配），doLogin 还需 validCode/validCodeReqNo——此时改用 /doc.html 手动调试或让用户从浏览器复制 token（请求头名就是 `token`）。
 

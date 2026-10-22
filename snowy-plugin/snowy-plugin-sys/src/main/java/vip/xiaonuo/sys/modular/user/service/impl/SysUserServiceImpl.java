@@ -63,6 +63,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.dromara.trans.service.impl.TransService;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -221,10 +223,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /** 解锁失败次数的缓存时长，单位：秒 */
     private static final int USER_UNLOCK_FAIL_CACHE_TIMEOUT = 30 * 60;
 
+    /** 二级认证失败次数缓存前缀 */
+    private static final String USER_SAFE_FAIL_CACHE_KEY = "user-safeFail:";
+
+    /** 二级认证连续失败上限 */
+    private static final int USER_SAFE_FAIL_MAX_COUNT = 5;
+
+    /** 二级认证失败记录及冷却时长，单位：秒 */
+    private static final int USER_SAFE_FAIL_CACHE_TIMEOUT = 30 * 60;
+
     /**
      * 解锁连续失败超限的状态码，前端据此清理登录态并跳转登录页
-     * 不能复用401：401 走的是前端通用的“登录已失效”弹窗，该分支不会 reject 请求，
-     * 会被解锁界面误判成解锁成功，同属认证类状态码，与4011二级认证、4012屏幕锁定并列
+     * 与4011二级认证、4012屏幕锁定并列，前端据此显示超限原因
      */
     private static final int USER_UNLOCK_FAIL_LIMIT_CODE = 4013;
 
@@ -236,6 +246,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Resource
     private CommonCacheOperator commonCacheOperator;
+
+    @Resource
+    private RedissonClient redissonClient;
 
     @Resource
     private DevSmsApi devSmsApi;
@@ -366,14 +379,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void openSafe(SysUserOpenSafeParam sysUserOpenSafeParam) {
-        if (this.notMatchPassword(StpUtil.getLoginIdAsString(), sysUserOpenSafeParam.getPassword())) {
-            throw new CommonException("密码错误");
+        String userId = StpUtil.getLoginIdAsString();
+        String failCacheKey = USER_SAFE_FAIL_CACHE_KEY + userId;
+        // 同账号跨会话、跨节点串行验证，避免并发请求覆盖失败计数
+        RLock lock = redissonClient.getLock(USER_SAFE_FAIL_CACHE_KEY + "lock:" + userId);
+        if (!lock.tryLock()) {
+            throw new CommonException("正在验证密码，请稍后重试");
         }
-        // 比对成功，为当前会话打开二级认证，有效期为120秒
-        if (ObjectUtil.isNotEmpty(sysUserOpenSafeParam.getSafeType())) {
-            StpUtil.openSafe(sysUserOpenSafeParam.getSafeType(), 120);
-        } else {
-            StpUtil.openSafe(120);
+        try {
+            int failCount = Convert.toInt(commonCacheOperator.get(failCacheKey), 0);
+            if (failCount >= USER_SAFE_FAIL_MAX_COUNT) {
+                throw new CommonException("密码错误次数过多，请30分钟后重试");
+            }
+            if (this.notMatchPassword(userId, sysUserOpenSafeParam.getPassword())) {
+                failCount++;
+                commonCacheOperator.put(failCacheKey, failCount, USER_SAFE_FAIL_CACHE_TIMEOUT);
+                if (failCount >= USER_SAFE_FAIL_MAX_COUNT) {
+                    throw new CommonException("密码错误次数过多，请30分钟后重试");
+                }
+                throw new CommonException("密码错误，还可尝试{}次", USER_SAFE_FAIL_MAX_COUNT - failCount);
+            }
+            commonCacheOperator.remove(failCacheKey);
+            // 比对成功，为当前会话打开二级认证，有效期为120秒
+            if (ObjectUtil.isNotEmpty(sysUserOpenSafeParam.getSafeType())) {
+                StpUtil.openSafe(sysUserOpenSafeParam.getSafeType(), 120);
+            } else {
+                StpUtil.openSafe(120);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 

@@ -21,7 +21,7 @@ description: snowy-common 工具类地图与 Hutool 优先原则：CommonCacheOp
 
 | 工具类 | 用途 | 常用方法/说明 |
 |---|---|---|
-| `CommonCryptogramUtil` | 国密三件套 | sm2Encrypt/sm2Decrypt（登录密码传输）、sm3Digest（口令摘要）、sm4Encrypt/sm4Decrypt、后端解密登录密码用（详见 crypto-sm 技能） |
+| `CommonCryptogramUtil` | 国密三件套 | doSm2Encrypt/doSm2Decrypt（登录密码传输）、doHashValue（口令摘要）、doSm4CbcEncrypt/doSm4CbcDecrypt、后端解密登录密码用（详见 crypto-sm 技能） |
 | `CommonEmailUtil` | 邮件发送 | 文本/HTML/附件/内嵌图片（基于 dev 插件 DEV_EMAIL 配置，详见 sms-mail 技能） |
 | `CommonDownloadUtil` | 文件下载 | 通过 HttpServletResponse 写流下载（Controller 导出场景用它，不要手写 IO） |
 | `CommonAvatarUtil` | 随机头像 | 生成默认头像（新用户无头像时） |

@@ -61,13 +61,35 @@ public class BizXxxDataChangeListener implements CommonDataChangeListener {
     public void doDeleteWithDataIdList(String dataType, List<String> dataIdList) {
     }
 
-    // 接口共 10 个回调，按需覆写：Add/Update/Delete × WithDataId/WithDataIdList/WithData/WithDataList
-    // （其中 Add/Update 有 WithData/WithDataList，Delete 只有 WithDataId/WithDataIdList）
+    @Override
+    public void doAddWithDataId(String dataType, String dataId) {}
+
+    @Override
+    public void doAddWithDataIdList(String dataType, List<String> dataIdList) {}
+
+    @Override
+    public void doAddWithData(String dataType, JSONObject data) {}
+
+    @Override
+    public void doAddWithDataList(String dataType, JSONArray data) {}
+
+    @Override
+    public void doUpdateWithDataIdList(String dataType, List<String> dataIdList) {}
+
+    @Override
+    public void doUpdateWithData(String dataType, JSONObject data) {}
+
+    @Override
+    public void doUpdateWithDataList(String dataType, JSONArray data) {}
+
+    @Override
+    public void doDeleteWithDataId(String dataType, String dataId) {}
 }
 ```
 
 - @Component 即自动注册（CommonDataChangeEventCenter 收集 Spring 容器中所有实现）
-- 平台侧发事件的写法（我的插件改了共享数据也要广播）：`CommonDataChangeEventCenter.doUpdateWithData(Xxx.class)` 等——写在 Service 的增删改里
+- 接口的 10 个方法都不是 default 方法，需要全部实现；无关回调可保留空方法体
+- 平台侧发事件的写法（我的插件改了共享数据也要广播）：`CommonDataChangeEventCenter.doUpdateWithData("XXX", JSONUtil.parseObj(entity))` 等——写在 Service 的增删改里
 - dataType：跟随事件来源（BizDataTypeEnum 这类插件级枚举定义自己的类型）
 
 ## 扩展点 2：复用平台能力（注入 *-api）

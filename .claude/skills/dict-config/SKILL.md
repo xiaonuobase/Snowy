@@ -35,7 +35,7 @@ description: Snowy 字典/配置/枚举三件套规范：DEV_DICT 系统字典�
      @TableField(exist = false)
      private String typeName;        // 注意：@Trans DICTIONARY 自动生成翻译；SIMPLE 才用 ref
 4. 前端下拉用 DictSelect 组件（自动拉字典并缓存）：
-     <dict-select v-model:value="formData.type" dict-type-code="SUPPLIER_TYPE" />
+     <dict-select v-model="formData.type" dict-type="SUPPLIER_TYPE" />
 5. 查询条件：PageParam 的 type 字段 eq 精确匹配
 ```
 
@@ -95,7 +95,7 @@ public enum BizSupplierStatusEnum {
 @Resource
 private DevConfigApi devConfigApi;
 
-String value = devConfigApi.getConfigValueByKey("BIZ_XXX_SWITCH");
+String value = devConfigApi.getValueByKey("BIZ_XXX_SWITCH");
 ```
 
 - ❌ 不要把可调参数写死在代码或 application.properties（改起来要重启）
@@ -114,7 +114,7 @@ String value = devConfigApi.getConfigValueByKey("BIZ_XXX_SWITCH");
 
 - [ ] 可维护选项进字典（业务字典优先），逻辑绑定选项进枚举
 - [ ] Entity 翻译字段用 @Trans，冗余字段 @TableField(exist = false)
-- [ ] 前端 DictSelect 的 dict-type-code 与字典编码一致
+- [ ] 前端 DictSelect 的 dict-type 与字典编码一致
 - [ ] 枚举实现 CommonEnum，无魔法字符串
 - [ ] 运行时参数走 DEV_CONFIG
 

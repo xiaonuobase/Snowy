@@ -305,7 +305,7 @@ v-if="hasPerm(['bizXxxEdit', 'bizXxxDelete'], 'and')"    // 数组 + and/or（�
 |---|---|
 | `s-table` | 列表表格（分页自动） |
 | `xn-form-container` | 表单弹窗容器（新增/编辑通用壳） |
-| `dict-select` | 字典下拉：`<dict-select v-model:value="x" dict-type-code="BIZ_XXX" />` |
+| `dict-select` | 字典下拉：`<dict-select v-model="x" dict-type="BIZ_XXX" />` |
 | `xn-upload` | 上传（uploadMode="image"；uploadDynamicReturnUrlApi 指定后端接口） |
 | `xn-editor` / `xn-md-editor` | 富文本 / Markdown |
 | `xn-user-selector` / `xn-org-selector` / `xn-role-selector` / `xn-position-selector` / `xn-group-selector` | 各类选择器 |

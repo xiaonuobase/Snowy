@@ -153,6 +153,7 @@ const selectApiFunction = {
 | ------------- | ------------------------------------------- | ------- | ------ |
 | pageFunction  | 分页函数 必须为 `Promise` 对象 **必须绑定** | Promise | -      |
 | pageSize      | 分页条数                                    | Number  | 10     |
+| autoLoad      | 挂载时自动请求；依赖组织等父级条件时设为 false，由父级调用 onPage | Boolean | true |
 | showSearch    | 配置是否可搜索                              | Boolean | false  |
 | searchKeyName | 搜索字段属性名                              | String  | ''     |
 

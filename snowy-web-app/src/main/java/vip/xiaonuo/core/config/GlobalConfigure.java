@@ -71,8 +71,6 @@ import vip.xiaonuo.common.cache.CommonCacheOperator;
 import vip.xiaonuo.common.enums.CommonDeleteFlagEnum;
 import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.interceptor.CommonTraceInterceptor;
-import vip.xiaonuo.common.listener.CommonDataChangeEventCenter;
-import vip.xiaonuo.common.listener.CommonDataChangeListener;
 import vip.xiaonuo.common.pojo.CommonResult;
 import vip.xiaonuo.common.pojo.CommonWrapperInterface;
 import vip.xiaonuo.common.util.CommonIpAddressUtil;
@@ -734,17 +732,6 @@ public class GlobalConfigure implements WebMvcConfigurer {
     @Bean
     public ISqlInjector sqlInjector() {
         return new MpSqlInjector();
-    }
-
-    /**
-     * 注册数据变化事件中心 事件发布器
-     *
-     * @author xuyuxiang
-     * @date 2023/3/3 14:27
-     **/
-    @Resource
-    public void registerListenerList(List<CommonDataChangeListener> dataChangeListenerList) {
-        CommonDataChangeEventCenter.registerListenerList(dataChangeListenerList);
     }
 
     /**

@@ -83,7 +83,7 @@ service.interceptors.response.use(
 		const data = response.data
 		const code = data.code
 		if (RELOGIN_CODES.includes(code)) {
-			return handleRelogin()
+			return handleRelogin(data)
 		}
 		if (code === UNLOCK_FAIL_LIMIT_CODE) {
 			return handleUnlockFailLimit(data)

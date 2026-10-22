@@ -57,7 +57,7 @@ description: Snowy 问题排查方法论与高发故障库：启动失败、401/
 | 菜单不显示 | SYS_RESOURCE 菜单 SQL 未执行；或未给角色授权 |
 | 按钮不显示 | hasPerm 码与 SYS_RESOURCE BUTTON 行 code 不一致（驼峰） |
 | 表单打不开 | form.vue 忘了 defineExpose({ onOpen }) |
-| 登录密码报错 | 前端 SM2 公钥与后端配置不一致（smCrypto.js / snowy.cryptogram 配置段） |
+| 登录密码报错 | 前端 SM2 公钥与后端常量不一致（smCrypto.js / CommonCryptogramUtil） |
 | 修改代码不生效 | Vite 热更新失效 → 重启 npm run dev；后端改动 → 重启 Java |
 
 ## 排查工具箱

@@ -64,9 +64,9 @@ RAtomicLong counter = redissonClient.getAtomicLong("biz:xxx:counter");
 
 ```java
 // 写操作后发事件（在 Service 的 add/edit/delete 里）
-CommonDataChangeEventCenter.doAddWithData(Xxx.class);            // 新增
-CommonDataChangeEventCenter.doUpdateWithData(Xxx.class);         // 更新
-CommonDataChangeEventCenter.doDeleteWithData(Xxx.class);         // 删除
+CommonDataChangeEventCenter.doAddWithData("XXX", JSONUtil.parseObj(entity));            // 新增
+CommonDataChangeEventCenter.doUpdateWithData("XXX", JSONUtil.parseObj(entity));         // 更新
+CommonDataChangeEventCenter.doDeleteWithDataId("XXX", entity.getId());         // 删除
 
 // 各插件在 core/listener/ 实现监听（参考 BizDataChangeListener）
 ```

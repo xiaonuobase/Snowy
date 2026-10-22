@@ -44,6 +44,7 @@
 	const initParams = ref({})
 	const options = ref([])
 	const spinning = ref(false)
+	let queryVersion = 0
 	const selectFieldNames = { label: 'name', value: 'id' }
 	const emit = defineEmits({ change: null, 'update:value': null, search: null })
 	const props = defineProps({
@@ -64,6 +65,10 @@
 		pageSize: {
 			type: Number,
 			default: () => 10
+		},
+		autoLoad: {
+			type: Boolean,
+			default: () => true
 		},
 		allowClear: {
 			type: Boolean,
@@ -102,30 +107,35 @@
 	// 请求数据
 	const onPage = (param = {}) => {
 		if (props.pageFunction) {
+			const requestVersion = ++queryVersion
 			initParams.value = { ...initParams.value, ...param, size: props.pageSize }
+			options.value = []
+			total.value = 0
 			// 加载API
 			spinning.value = true
 			// 重置当前页
 			initParams.value.current = 1
-			props
-				.pageFunction(initParams.value)
+			return props
+				.pageFunction({ ...initParams.value })
 				.then((data) => {
+					if (requestVersion !== queryVersion) return
 					// 更新当前页码
 					initParams.value.current = data.current
 					// 加载完后设置总数
 					total.value = data.total
 					options.value = data.records
-					queryEcho()
+					queryEcho(requestVersion)
 				})
 				.finally(() => {
-					spinning.value = false
+					if (requestVersion === queryVersion) spinning.value = false
 				})
 		}
 	}
-	const queryEcho = () => {
+	const queryEcho = (requestVersion) => {
 		// 如果带有查询的方法，那么我们去给查询回显
 		if (props.echoFunction) {
 			nextTick(() => {
+				if (requestVersion !== queryVersion) return
 				if (modelValue.value) {
 					const entity = options.value.find((f) => f.id === modelValue.value)
 					if (!entity) {
@@ -133,7 +143,7 @@
 							idList: [modelValue.value]
 						}
 						props.echoFunction(param).then((data) => {
-							if (data[0]) {
+							if (requestVersion === queryVersion && modelValue.value === param.idList[0] && data[0]) {
 								options.value.unshift(data[0])
 							}
 						})
@@ -176,12 +186,14 @@
 	// 分页加载数据
 	const handlePagination = () => {
 		// 判断已有数量是否小于总量
-		if (options.value.length < total.value) {
+		if (!spinning.value && options.value.length < total.value) {
+			const requestVersion = queryVersion
 			const param = { ...initParams.value, current: initParams.value.current + 1 }
 			spinning.value = true
-			props
+			return props
 				.pageFunction(param)
 				.then((data) => {
+					if (requestVersion !== queryVersion) return
 					if (data.records.length > 0) {
 						// 更新当前页码
 						initParams.value.current = data.current
@@ -196,14 +208,14 @@
 					}
 				})
 				.finally(() => {
-					spinning.value = false
+					if (requestVersion === queryVersion) spinning.value = false
 				})
 		}
 	}
 
 	// 组件挂载时加载初始数据
 	onMounted(() => {
-		onPage()
+		if (props.autoLoad) onPage()
 	})
 
 	defineExpose({

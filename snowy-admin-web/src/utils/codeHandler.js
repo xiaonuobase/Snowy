@@ -54,8 +54,9 @@ const showReloginModal = (content) => {
 }
 
 // 登录态失效
-export const handleRelogin = () => {
+export const handleRelogin = (data) => {
 	showReloginModal('登录已失效， 请重新登录')
+	return Promise.reject(data)
 }
 
 // 解锁连续失败超限，服务端已注销会话

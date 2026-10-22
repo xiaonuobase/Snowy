@@ -31,7 +31,7 @@ description: Snowy 鉴权与安全规范：Sa-Token B/C 双端模型、路由白
 ```java
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
 
-String userId = StpLoginUserUtil.getLoginUserId();          // 当前用户 id
+String userId = StpLoginUserUtil.getLoginUser().getId();          // 当前用户 id
 SaBaseLoginUser user = StpLoginUserUtil.getLoginUser();      // 完整登录用户（name/orgId/...）
 String orgId = StpLoginUserUtil.getLoginUser().getOrgId();
 // SaBaseLoginUser 在 snowy-plugin-api/snowy-plugin-auth-api 的 core/pojo 下

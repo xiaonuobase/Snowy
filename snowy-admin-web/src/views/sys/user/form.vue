@@ -60,6 +60,7 @@
 									v-model:value="formData.positionId"
 									placeholder="请选择职位"
 									allow-clear
+									:auto-load="false"
 									:page-function="selectApiFunction.positionSelector"
 									:echo-function="selectApiFunction.echoPosition"
 								/>
@@ -132,6 +133,7 @@
 													v-model:value="positionInfo.positionId"
 													placeholder="请选择职位"
 													allow-clear
+													:auto-load="false"
 													:page-function="selectApiFunction.childPositionSelector"
 													:echo-function="selectApiFunction.echoPosition"
 												/>
@@ -144,6 +146,7 @@
 													v-model:value="positionInfo.directorId"
 													placeholder="请选择主管"
 													allow-clear
+													:auto-load="false"
 													:page-function="selectApiFunction.childUserSelector"
 													:echo-function="selectApiFunction.echoUser"
 												/>
