@@ -32,4 +32,12 @@ public interface CommonDeleteAbsoluteMapper<T> extends BaseMapper<T> {
      */
     @SuppressWarnings("ALL")
     int deleteAbsoluteById(Serializable id);
+
+    /**
+     * 按主键查询（含已逻辑删除的），没有返回null
+     *
+     * @author yubaoshan
+     * @date 2026/10/26 14:00
+     */
+    T selectByIdIncludeDeleted(Serializable id);
 }

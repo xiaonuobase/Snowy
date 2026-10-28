@@ -222,6 +222,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/dev/file/page",
             "/dev/file/list",
             "/dev/file/delete",
+            "/dev/file/deleteAbsolute",
             "/dev/file/detail",
             "/dev/job/**",
             "/dev/log/**",
@@ -597,6 +598,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
                     return "dm";
                 } else if (url.contains("jdbc:kingbase")) {
                     return "kingbase";
+                } else if (url.contains("jdbc:sqlserver")) {
+                    return "mssql";
                 } else {
                     return "mysql";
                 }
@@ -719,12 +722,36 @@ public class GlobalConfigure implements WebMvcConfigurer {
         }
     }
 
+    /**
+     * 按主键查询，不带逻辑删除条件
+     *
+     * @author yubaoshan
+     * @date 2026/10/26 14:00
+     */
+    public static class SelectByIdIncludeDeleted extends AbstractMethod {
+
+        protected SelectByIdIncludeDeleted(String methodName) {
+            super(methodName);
+        }
+
+        @Override
+        public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
+            String sql = String.format(SqlMethod.SELECT_BY_ID.getSql(), sqlSelectColumns(tableInfo, false),
+                    tableInfo.getTableName(), tableInfo.getKeyColumn(), tableInfo.getKeyProperty(), "");
+            SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, Object.class);
+            return this.addSelectMappedStatementForTable(mapperClass, "selectByIdIncludeDeleted", sqlSource, tableInfo);
+        }
+    }
 
     public static class MpSqlInjector extends DefaultSqlInjector {
         @Override
         public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
             List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
             methodList.add(new DeleteAbsoluteById("deleteAbsoluteById"));
+            // 与MP自带的按主键方法一致，无主键的表不注册
+            if (tableInfo.havePK()) {
+                methodList.add(new SelectByIdIncludeDeleted("selectByIdIncludeDeleted"));
+            }
             return methodList;
         }
     }

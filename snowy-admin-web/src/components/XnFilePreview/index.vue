@@ -15,7 +15,8 @@
 		</a-float-button-group>
 		<a-card :bordered="false" :body-style="{ padding: 0 }">
 			<a-spin :spinning="loading">
-				<div v-if="hasSource" :class="{ 'xn-loading-body': loading }">
+				<!-- 传了水印文字时在预览层上平铺明水印，删改水印层会被自动重建；不传时只是普通容器 -->
+				<xn-watermark v-if="hasSource" :content="props.watermark" :class="{ 'xn-loading-body': loading }">
 					<vue-office-docx
 						v-if="renderType === 'docx'"
 						ref="docxRef"
@@ -61,7 +62,7 @@
 						title="该格式暂不支持在线预览，请下载后查看"
 					/>
 					<a-result v-else status="warning" title="不支持预览的文件类型" />
-				</div>
+				</xn-watermark>
 			</a-spin>
 		</a-card>
 	</div>
@@ -152,6 +153,12 @@
 		downloadHandler: {
 			type: Function,
 			default: null,
+			required: false
+		},
+		// 预览明水印文字，数组按行显示，为空不加水印
+		watermark: {
+			type: [String, Array],
+			default: '',
 			required: false
 		}
 	})
