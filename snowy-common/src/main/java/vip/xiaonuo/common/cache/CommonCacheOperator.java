@@ -16,6 +16,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
 import org.redisson.api.RedissonClient;
@@ -32,6 +33,7 @@ import java.util.stream.StreamSupport;
  * @author xuyuxiang
  * @date 2022/6/21 16:00
  **/
+@Slf4j
 @Component
 public class CommonCacheOperator {
 
@@ -51,8 +53,28 @@ public class CommonCacheOperator {
     }
 
     public Object get(String key) {
-        RBucket<Object> bucket = redissonClient.getBucket(CACHE_KEY_PREFIX + key);
-        return bucket.get();
+        String fullKey = CACHE_KEY_PREFIX + key;
+        try {
+            RBucket<Object> bucket = redissonClient.getBucket(fullKey);
+            return bucket.get();
+        } catch (Exception e) {
+            // 反序列化失败通常意味着缓存内容与当前类结构不再兼容（如实体新增了 setterless 属性），
+            // 此时删掉该 key 让调用方回源重建；否则每次请求都会失败且无法自愈
+            log.warn("缓存读取失败，已删除该 key 以便回源重建：{}", fullKey, e);
+            deleteQuietly(fullKey);
+            return null;
+        }
+    }
+
+    /**
+     * 删除失效缓存失败不应影响降级流程
+     */
+    private void deleteQuietly(String fullKey) {
+        try {
+            redissonClient.getBucket(fullKey).delete();
+        } catch (Exception e) {
+            log.warn("删除失效缓存失败，需人工清理：{}", fullKey, e);
+        }
     }
 
     public void remove(String... key) {
