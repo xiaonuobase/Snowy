@@ -130,6 +130,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/c/doLoginByEmail",
             "/auth/c/doLoginByOtp",
             "/auth/c/isLogin",
+            "/auth/b/open/user/logout",
 
             "/auth/b/getPicCaptcha",
             "/auth/b/getPhoneValidCode",

@@ -15,6 +15,8 @@ package vip.xiaonuo.auth.modular.login.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.modular.login.param.*;
+import vip.xiaonuo.auth.modular.login.prop.AuthThirdClientProperties;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.pojo.CommonResult;
@@ -179,6 +182,21 @@ public class AuthController {
     @PostMapping("/auth/b/doLoginByThirdToken")
     public CommonResult<String> doLoginByThirdToken(@RequestBody @Valid AuthThirdTokenLoginParam authThirdTokenLoginParam) {
         return CommonResult.data(authService.doLoginByThirdToken(authThirdTokenLoginParam));
+    }
+
+    /**
+     * 第三方同步接口：根据账号退出（免登录，凭请求头 X-Sync-Token 静态令牌鉴权）
+     *
+     * @author ZHC
+     * @date 2026/11/03
+     **/
+    @Operation(summary = "第三方同步接口：根据账号退出")
+    @Parameter(name = AuthThirdClientProperties.SYNC_TOKEN_HEADER, in = ParameterIn.HEADER,
+            description = "静态同步令牌", required = true)
+    @GetMapping("/auth/b/open/user/logout")
+    public CommonResult<String> doLogoutByAccount(@Valid AuthOpenLogoutParam authOpenLogoutParam) {
+        authService.doLogoutByAccountForSync(authOpenLogoutParam);
+        return CommonResult.ok();
     }
 
     /**

@@ -51,12 +51,15 @@ import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.common.util.CommonCryptogramUtil;
 import vip.xiaonuo.common.util.CommonEmailUtil;
 import vip.xiaonuo.common.util.CommonOtpUtil;
+import vip.xiaonuo.common.util.CommonServletUtil;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
 import vip.xiaonuo.sys.api.SysUserApi;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -1248,6 +1251,34 @@ public class AuthServiceImpl implements AuthService {
             return authThirdClientProperties.getUserInfoUrl();
         }
         throw new CommonException("未指定第三方系统，且未配置默认第三方系统");
+    }
+
+    @Override
+    public void doLogoutByAccountForSync(AuthOpenLogoutParam authOpenLogoutParam) {
+        // 静态同步令牌直接从请求头读取，不作为方法参数：操作日志与数据安全审计切面会序列化方法全部参数，
+        String syncToken = CommonServletUtil.getRequest().getHeader(AuthThirdClientProperties.SYNC_TOKEN_HEADER);
+        // 校验静态同步令牌（常量时间比较，防止时序攻击）
+        String configSyncToken = authThirdClientProperties.getSyncToken();
+        if (StrUtil.isBlank(configSyncToken)) {
+            throw new CommonException("未配置同步令牌snowy.third-auth.sync-token，同步接口不可用");
+        }
+        if (StrUtil.isBlank(syncToken)) {
+            throw new CommonException(401, "同步令牌不能为空");
+        }
+        if (!MessageDigest.isEqual(configSyncToken.getBytes(StandardCharsets.UTF_8),
+                syncToken.trim().getBytes(StandardCharsets.UTF_8))) {
+            throw new CommonException(401, "同步令牌无效");
+        }
+        String account = authOpenLogoutParam.getAccount();
+        if (StrUtil.isBlank(account)) {
+            throw new CommonException("account不能为空");
+        }
+        SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByAccount(account);
+        if (ObjectUtil.isEmpty(saBaseLoginUser)) {
+            throw new CommonException("账号{}在本系统中不存在", account);
+        }
+        // B端登录以用户id作为loginId，按id注销即可使该账号全部设备的token失效
+        StpUtil.logout(saBaseLoginUser.getId());
     }
 
     /**

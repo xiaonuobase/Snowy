@@ -49,11 +49,17 @@ public class AuthThirdClientProperties {
      */
     private Boolean enabled;
 
+    /** 同步接口静态令牌的请求头名称 */
+    public static final String SYNC_TOKEN_HEADER = "X-Sync-Token";
+
     /**
      * 兼容旧版的单个第三方用户信息接口地址。
      * 新配置请使用 providers，后续可移除此字段。
      */
     private String userInfoUrl;
+
+    /** 同步接口静态令牌（第三方调用 /sync/open/** 时通过请求头 X-Sync-Token 传入），不配置则同步接口一律拒绝 */
+    private String syncToken;
 
     /** 未传provider时使用的默认第三方标识 */
     private String defaultProvider;

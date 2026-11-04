@@ -156,6 +156,15 @@ public interface AuthService {
     String doLoginByThirdToken(AuthThirdTokenLoginParam authThirdTokenLoginParam);
 
     /**
+     * 第三方同步接口：根据账号退出，使该账号在本系统的全部登录状态立即失效
+     *
+     * @param authOpenLogoutParam 同步退出参数（账号），静态令牌由请求头 X-Sync-Token 传入
+     * @author ZHC
+     * @date 2026/11/03
+     */
+    void doLogoutByAccountForSync(AuthOpenLogoutParam authOpenLogoutParam);
+
+    /**
      * 获取B端验证码是否开启
      *
      * @author xuyuxiang
