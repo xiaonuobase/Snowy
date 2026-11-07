@@ -416,11 +416,15 @@
 	// 上传事件
 	const handleChange = (uploads) => {
 		const file = uploads.file
+		if (file.status === 'error' || (file.status === 'done' && file.response && file.response.code !== 200)) {
+			// 业务校验与HTTP失败均优先展示后端msg，同时兼容message字段。
+			const errorMessage = file.response?.msg || file.response?.message || '上传失败'
+			file.status = 'error'
+			file.error = new Error(errorMessage)
+			message.error(errorMessage)
+			return
+		}
 		if (file.status === 'done' || file.status === 'removed') {
-			if (file.status === 'done' && file.response && file.response.code !== 200) {
-				message.error(file.response.message || '上传失败')
-				return
-			}
 			const result = uploads.fileList.filter((f) => f.status === 'done' && f.response && f.response.code === 200)
 			if (result.length > 0) {
 				if (props.uploadResultCategory === 'interval') {
