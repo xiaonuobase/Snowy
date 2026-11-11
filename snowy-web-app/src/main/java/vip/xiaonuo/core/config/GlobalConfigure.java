@@ -118,7 +118,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/v3/api-docs/**",
             "/druid/**",
             /* 移动端静态资源 */
-            "/mobile/**",
+            "/mobile/swiper/**",
+            "/mobile/fileImg/**",
 
             /* 认证相关 */
             "/auth/c/getPicCaptcha",
@@ -130,6 +131,8 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/auth/c/doLoginByEmail",
             "/auth/c/doLoginByOtp",
             "/auth/c/isLogin",
+            /* C端退出登录 */
+            "/auth/c/doLogout",
             "/auth/b/open/user/logout",
 
             "/auth/b/getPicCaptcha",
@@ -217,9 +220,7 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/sys/index/toolDataCount",
             "/dev/config/**",
             "/dev/dict/**",
-            "/dev/email/page",
-            "/dev/email/delete",
-            "/dev/email/detail",
+            "/dev/email/**",
             "/dev/file/page",
             "/dev/file/list",
             "/dev/file/delete",
@@ -228,15 +229,17 @@ public class GlobalConfigure implements WebMvcConfigurer {
             "/dev/job/**",
             "/dev/log/**",
             "/dev/message/page",
+            "/dev/message/send",
             "/dev/message/delete",
             "/dev/message/detail",
             "/dev/monitor/**",
-            "/dev/sms/page",
-            "/dev/sms/delete",
-            "/dev/sms/detail",
+            "/dev/push/**",
+            "/dev/sms/**",
             "/dev/slideshow/**",
+            "/dev/weakPassword/**",
             "/gen/basic/**",
             "/gen/config/**",
+            "/mobile/button/**",
             "/mobile/menu/**",
             "/mobile/module/**",
     };
@@ -246,7 +249,9 @@ public class GlobalConfigure implements WebMvcConfigurer {
      */
     private static final String[] CLIENT_USER_PERMISSION_PATH_ARR = {
             "/auth/c/**",
-            "/client/c/**"
+            "/client/c/**",
+            /* C端用户个人中心 */
+            "/client/userCenter/**"
     };
 
     /**
@@ -302,7 +307,11 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 匹配C端认证接口
                             .match(CollectionUtil.newArrayList(CLIENT_USER_PERMISSION_PATH_ARR))
                             // 校验C端登录
-                            .check(r1 -> StpClientUtil.checkLogin());
+                            .check(r1 -> {
+                                StpClientUtil.checkLogin();
+                                // 更新过期时间
+                                StpClientUtil.renewTimeout(saTokenConfig.getTimeout());
+                            });
 
                     // B端的超管接口校验B端超管角色
                     SaRouter.match("/**")
