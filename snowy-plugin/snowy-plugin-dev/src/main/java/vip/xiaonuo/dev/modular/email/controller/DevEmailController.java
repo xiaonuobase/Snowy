@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,6 @@ import vip.xiaonuo.dev.modular.email.entity.DevEmail;
 import vip.xiaonuo.dev.modular.email.param.*;
 import vip.xiaonuo.dev.modular.email.service.DevEmailService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -175,7 +175,7 @@ public class DevEmailController {
     @Operation(summary = "发送腾讯云HTML邮件")
     @CommonLog("发送腾讯云HTML邮件")
     @CommonNoRepeat
-    @PostMapping("/dev/email/sentTencentHtml")
+    @PostMapping("/dev/email/sendTencentHtml")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevEmailSendTencentHtmlParam devEmailSendTencentHtmlParam) {
         devEmailService.sendTencent(devEmailSendTencentHtmlParam);
         return CommonResult.ok();
@@ -190,7 +190,7 @@ public class DevEmailController {
     @Operation(summary = "发送腾讯云模板邮件")
     @CommonLog("发送腾讯云模板邮件")
     @CommonNoRepeat
-    @PostMapping("/dev/email/sentTencentTmp")
+    @PostMapping("/dev/email/sendTencentTmp")
     public CommonResult<String> sendTencent(@RequestBody @Valid DevEmailSendTencentTmpParam devEmailSendTencentTmpParam) {
         devEmailService.sendTencent(devEmailSendTencentTmpParam);
         return CommonResult.ok();

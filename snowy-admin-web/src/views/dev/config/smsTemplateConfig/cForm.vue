@@ -29,7 +29,7 @@
 		<div class="pt-3">
 			<a-space>
 				<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-				<a-button @click="() => resetCode()">重置</a-button>
+				<a-button @click="loadData">重置</a-button>
 			</a-space>
 		</div>
 	</a-spin>
@@ -67,21 +67,26 @@
 	const param = {
 		category: 'SMS_TEMPLATE_FOR_C'
 	}
-	configApi.configList(param).then((data) => {
-		loadSpinning.value = false
-		if (data) {
-			dataSource.value = data.map((item) => {
-				const configValueObj = JSON.parse(item.configValue)
-				return {
-					...item,
-					templateCode: configValueObj.code,
-					templateContent: configValueObj.content
-				}
-			})
-		} else {
-			message.warning('表单项不存在，请初始化数据库')
-		}
-	})
+	// 加载模板配置，重置时也调用它恢复为后端当前保存的值
+	const loadData = () => {
+		loadSpinning.value = true
+		configApi.configList(param).then((data) => {
+			loadSpinning.value = false
+			if (data) {
+				dataSource.value = data.map((item) => {
+					const configValueObj = JSON.parse(item.configValue)
+					return {
+						...item,
+						templateCode: configValueObj.code,
+						templateContent: configValueObj.content
+					}
+				})
+			} else {
+				message.warning('表单项不存在，请初始化数据库')
+			}
+		})
+	}
+	loadData()
 
 	// 验证并提交数据
 	const onSubmit = () => {
@@ -113,12 +118,5 @@
 			record.templateCode = value.replace(/[\u4e00-\u9fa5]/g, '')
 			message.warning('不能输入汉字')
 		}
-	}
-	// 重置
-	const resetCode = () => {
-		dataSource.value = dataSource.value.map((item) => ({
-			...item,
-			templateCode: ''
-		}))
 	}
 </script>

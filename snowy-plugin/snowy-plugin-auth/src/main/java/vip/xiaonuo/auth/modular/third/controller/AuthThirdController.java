@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import me.zhyd.oauth.model.AuthCallback;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,6 @@ import vip.xiaonuo.auth.modular.third.param.AuthThirdUserPageParam;
 import vip.xiaonuo.auth.modular.third.result.AuthThirdRenderResult;
 import vip.xiaonuo.auth.modular.third.service.AuthThirdService;
 import vip.xiaonuo.common.pojo.CommonResult;
-
-import javax.validation.Valid;
 
 /**
  * 第三方登录控制器

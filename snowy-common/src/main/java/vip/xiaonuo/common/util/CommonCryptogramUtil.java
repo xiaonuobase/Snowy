@@ -12,15 +12,21 @@
  */
 package vip.xiaonuo.common.util;
 
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.Mode;
+import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
+import cn.hutool.crypto.symmetric.SM4;
 import com.antherd.smcrypto.sm2.Sm2;
-import com.antherd.smcrypto.sm4.Sm4;
-import com.antherd.smcrypto.sm4.Sm4Options;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 加密工具类，本框架目前使用 <a href="https://github.com/antherd/sm-crypto">sm-crypto</a> 项目中一些加解密方式
@@ -98,6 +104,15 @@ public class CommonCryptogramUtil {
     /** Hutool SM2 对象 */
     private static final SM2 sm2 = SmUtil.sm2(HexUtil.decodeHex(PRIVATE_KEY), HexUtil.decodeHex(PUBLIC_KEY));
 
+    /** 历史 ECB 密文格式：小写十六进制，长度为分组（32个十六进制字符）的整数倍；CBC 密文为 Base64，不会与之混淆 */
+    private static final Pattern SM4_LEGACY_CIPHER_PATTERN = Pattern.compile("^([0-9a-f]{32})+$");
+
+    /** Hutool SM4-CBC 对象，标准 CBC 模式，PKCS5 填充 */
+    private static final SM4 sm4Cbc = new SM4(Mode.CBC, Padding.PKCS5Padding, HexUtil.decodeHex(KEY), HexUtil.decodeHex(IV));
+
+    /** Hutool SM4-ECB 对象，仅用于兼容历史数据：旧版本依赖的 sm-crypto 0.3.2 会丢弃 CBC 模式与 IV 参数，实际以 ECB 模式加密 */
+    private static final SM4 sm4LegacyEcb = new SM4(Mode.ECB, Padding.PKCS5Padding, HexUtil.decodeHex(KEY));
+
     /**
      * 加密方法（Sm2 的专门针对前后端分离，非对称秘钥对的方式，暴露出去的公钥，对传输过程中的密码加个密）
      *
@@ -142,11 +157,12 @@ public class CommonCryptogramUtil {
      * @return 加密后的密文
      */
     public static String doSm4CbcEncrypt(String str) {
-        // SM4 加密  cbc模式
-        Sm4Options sm4Options4 = new Sm4Options();
-        sm4Options4.setMode("cbc");
-        sm4Options4.setIv(IV);
-        return Sm4.encrypt(str, KEY, sm4Options4);
+        // 空值不加密，与历史行为保持一致
+        if (StrUtil.isBlank(str)) {
+            return "";
+        }
+        // SM4 加密 cbc模式，输出 Base64 密文
+        return sm4Cbc.encryptBase64(str, CharsetUtil.CHARSET_UTF_8);
     }
 
     /**
@@ -159,17 +175,40 @@ public class CommonCryptogramUtil {
      * @return 解密后的明文
      */
     public static String doSm4CbcDecrypt(String str) {
-        // 解密，cbc 模式，输出 utf8 字符串
-        Sm4Options sm4Options8 = new Sm4Options();
-        sm4Options8.setMode("cbc");
-        sm4Options8.setIv(IV);
-        String docString =  Sm4.decrypt(str, KEY, sm4Options8);
-        if ("".equals(docString)) {
+        if (StrUtil.isBlank(str)) {
+            return str;
+        }
+        try {
+            if (isSm4LegacyCipher(str)) {
+                // 历史 ECB 十六进制密文
+                return sm4LegacyEcb.decryptStr(HexUtil.decodeHex(str), CharsetUtil.CHARSET_UTF_8);
+            }
+            // 解密，cbc 模式，输出 utf8 字符串
+            return sm4Cbc.decryptStr(Base64.decode(str), CharsetUtil.CHARSET_UTF_8);
+        } catch (Exception e) {
             log.warn(">>> 字段解密失败，返回原文值：{}", str);
             return str;
-        } else {
-            return docString;
         }
+    }
+
+    /**
+     * 获取明文对应的全部有效密文（CBC 密文与历史 ECB 密文），用于加密字段的等值查询
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    public static List<String> doSm4CbcEncryptCandidates(String str) {
+        return List.of(doSm4CbcEncrypt(str), StrUtil.isBlank(str) ? "" : sm4LegacyEcb.encryptHex(str, CharsetUtil.CHARSET_UTF_8));
+    }
+
+    /**
+     * 判断是否为历史版本的 ECB 十六进制密文
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    private static boolean isSm4LegacyCipher(String str) {
+        return SM4_LEGACY_CIPHER_PATTERN.matcher(str).matches();
     }
 
     /**

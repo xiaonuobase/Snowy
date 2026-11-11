@@ -284,7 +284,7 @@
 						delete e.thumbUrl
 					}
 					if (props.uploadResultType === 'id') {
-						e.url = '/api' + props.uploadIdDownloadUrl + e.response.data
+						e.url = apiBase + props.uploadIdDownloadUrl + e.response.data
 					}
 					if (props.uploadResultType === 'url') {
 						e.url = e.response.data

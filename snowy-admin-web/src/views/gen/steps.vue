@@ -106,7 +106,10 @@
 					current.value++
 				})
 				.catch((err) => {
-					message.warning(err)
+					// 接口错误已由请求拦截器提示，这里只提示本地校验信息
+					if (typeof err === 'string') {
+						message.warning(err)
+					}
 				})
 			current.value--
 		}

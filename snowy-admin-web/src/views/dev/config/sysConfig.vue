@@ -195,27 +195,31 @@
 	const param = {
 		category: 'SYS_BASE'
 	}
-	configApi.configList(param).then((data) => {
-		loadSpinning.value = false
-		if (data) {
-			data.forEach((item) => {
-				// 如果是系统的logo，直接存base64字符串
-				if (item.configKey === 'SNOWY_SYS_LOGO') {
-					formData.value[item.configKey] = item.configValue
-					imageUrl.value = item.configValue
-				} else if (item.configKey === 'SNOWY_SYS_DEFAULT_WORKBENCH_DATA') {
-					try {
-						menuTreeSelectRef.value.setSelectData(JSON.parse(item.configValue).shortcut)
-						// eslint-disable-next-line no-empty
-					} catch (e) {}
-				} else {
-					formData.value[item.configKey] = transferBooleanInValue(item.configValue)
-				}
-			})
-		} else {
-			message.warning('表单项不存在，请初始化数据库')
-		}
-	})
+	const loadData = () => {
+		loadSpinning.value = true
+		configApi.configList(param).then((data) => {
+			loadSpinning.value = false
+			if (data) {
+				data.forEach((item) => {
+					// 如果是系统的logo，直接存base64字符串
+					if (item.configKey === 'SNOWY_SYS_LOGO') {
+						formData.value[item.configKey] = item.configValue
+						imageUrl.value = item.configValue
+					} else if (item.configKey === 'SNOWY_SYS_DEFAULT_WORKBENCH_DATA') {
+						try {
+							menuTreeSelectRef.value.setSelectData(JSON.parse(item.configValue).shortcut)
+							// eslint-disable-next-line no-empty
+						} catch (e) {}
+					} else {
+						formData.value[item.configKey] = transferBooleanInValue(item.configValue)
+					}
+				})
+			} else {
+				message.warning('表单项不存在，请初始化数据库')
+			}
+		})
+	}
+	loadData()
 	// 文件引擎
 	const fileEngineOptions = tool.dictList('FILE_ENGINE')
 	// 短信引擎
@@ -308,17 +312,10 @@
 			})
 			.catch(() => {})
 	}
-	// 重置表单，且设置默认值
+	// 重置为后端当前保存的配置，LOGO 预览与快捷方式随之恢复
 	const resetForm = () => {
-		imageUrl.value = ''
-		formData.value = {
-			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_C: true,
-			SNOWY_SYS_DEFAULT_CAPTCHA_OPEN_FLAG_FOR_B: true,
-			SNOWY_SYS_DEFAULT_FILE_ENGINE: 'LOCAL',
-			SNOWY_SYS_DEFAULT_SMS_ENGINE: 'XIAONUO',
-			SNOWY_SYS_DEFAULT_EMAIL_ENGINE: 'LOCAL',
-			SNOWY_SYS_DEFAULT_PUSH_ENGINE: 'DINGTALK'
-		}
+		formRef.value.clearValidate()
+		loadData()
 	}
 	const layout = {
 		labelCol: {

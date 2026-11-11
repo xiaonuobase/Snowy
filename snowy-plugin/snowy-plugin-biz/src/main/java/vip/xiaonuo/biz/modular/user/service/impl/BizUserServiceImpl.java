@@ -196,7 +196,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 throw new CommonException("手机号码：{}格式错误", bizUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
-                    .eq(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(bizUserAddParam.getPhone()))) > 0) {
+                    .in(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(bizUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", bizUserAddParam.getPhone());
             }
         }
@@ -252,7 +252,7 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 throw new CommonException("手机号码：{}格式错误", bizUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<BizUser>()
-                    .eq(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(bizUserEditParam.getPhone()))
+                    .in(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(bizUserEditParam.getPhone()))
                     .ne(BizUser::getId, bizUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", bizUserEditParam.getPhone());
             }
@@ -439,9 +439,10 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
                 queryWrapper.lambda().in(BizUser::getId, StrUtil.split(bizUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(bizUserExportParam.getSearchKey())) {
+                    // 手机号为加密字段，无法模糊匹配密文，只能按新旧候选密文精确匹配
                     queryWrapper.lambda().and(q -> q.like(BizUser::getAccount, bizUserExportParam.getSearchKey())
                             .or().like(BizUser::getName, bizUserExportParam.getSearchKey())
-                            .or().like(BizUser::getPhone, bizUserExportParam.getSearchKey()));
+                            .or().in(BizUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(bizUserExportParam.getSearchKey())));
                 }
                 if (ObjectUtil.isNotEmpty(bizUserExportParam.getUserStatus())) {
                     queryWrapper.lambda().eq(BizUser::getUserStatus, bizUserExportParam.getUserStatus());

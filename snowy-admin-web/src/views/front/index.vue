@@ -8,28 +8,33 @@
 	const router = useRouter()
 	const userInfo = ref<any>({})
 
-	// 获取用户信息
+	// 获取用户信息，先展示缓存，再向后端拉取最新信息（同时触发后端token续期）
 	const getUserInfo = () => {
 		const clientUserInfo = tool.data.get('CLIENT_USER_INFO')
 		if (clientUserInfo) {
 			userInfo.value = clientUserInfo
 		}
+		clientLoginApi.clientGetLoginUser().then((data) => {
+			tool.data.set('CLIENT_USER_INFO', data)
+			userInfo.value = data
+		})
 	}
 
-	// 退出登录
-	const handleLogout = async () => {
-		try {
-			const param = {
-				token: tool.data.get('CLIENT_TOKEN')
-			}
-			await clientLoginApi.clientLogout(param)
-			tool.data.remove('CLIENT_TOKEN')
-			tool.data.remove('CLIENT_USER_INFO')
-			message.success('退出成功')
-			router.push('/front/client/login')
-		} catch (error) {
-			message.error('退出失败')
+	// 退出登录，无论接口成功与否都清理本地登录态并回到登录页
+	const handleLogout = () => {
+		const param = {
+			token: tool.data.get('CLIENT_TOKEN')
 		}
+		clientLoginApi
+			.clientLogout(param)
+			.then(() => {
+				message.success('退出成功')
+			})
+			.finally(() => {
+				tool.data.remove('CLIENT_TOKEN')
+				tool.data.remove('CLIENT_USER_INFO')
+				router.replace('/front/client/login')
+			})
 	}
 
 	onMounted(() => {

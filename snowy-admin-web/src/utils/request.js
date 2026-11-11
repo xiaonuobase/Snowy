@@ -41,6 +41,21 @@ const errorCodeMap = {
 	503: '服务不可用，服务器暂时过载或维护。',
 	504: '网关超时。'
 }
+// 根据网络层错误生成提示文案：超时、无响应单独提示，后端返回了错误信息则优先展示，其余按HTTP状态码查表
+const getHttpErrorMessage = (error) => {
+	const isTimeout = error.code === 'ETIMEDOUT' || (error.code === 'ECONNABORTED' && error.message.includes('timeout'))
+	if (isTimeout) {
+		return '请求超时，请稍后重试。'
+	}
+	if (!error.response) {
+		return '网络异常，无法连接服务器，请检查网络后重试。'
+	}
+	if (error.response.data?.msg) {
+		return error.response.data.msg
+	}
+	const status = error.response.status
+	return errorCodeMap[status] || `请求失败，HTTP状态码：${status}`
+}
 // 判断是否为直连模式（仅生产环境 + API_URL 配置了完整后端地址时生效）
 const isDirectMode = !import.meta.env.DEV && sysConfig.API_URL && /^https?:\/\//.test(sysConfig.API_URL)
 // 创建 axios 实例
@@ -135,15 +150,14 @@ service.interceptors.response.use(
 		return Promise.resolve(data.data)
 	},
 	(error) => {
-		if (error) {
-			const status = 503
-			const description = errorCodeMap[status]
-			console.error({
-				message: '请求错误',
-				description
-			})
-			return Promise.reject(status)
+		// 业务层主动取消的请求不提示
+		if (axios.isCancel(error)) {
+			return Promise.reject(error)
 		}
+		if (!error.config?.skipErrorMessage) {
+			message.error(getHttpErrorMessage(error))
+		}
+		return Promise.reject(error)
 	}
 )
 

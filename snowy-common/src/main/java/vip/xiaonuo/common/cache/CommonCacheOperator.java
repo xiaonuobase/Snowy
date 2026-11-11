@@ -19,10 +19,13 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RKeys;
+import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.options.KeysScanOptions;
+import org.redisson.client.codec.StringCodec;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -39,6 +42,9 @@ public class CommonCacheOperator {
 
     private static final String CACHE_KEY_PREFIX = "Cache:";
 
+    /** 计数器使用独立前缀，避免与普通缓存的序列化方式混用 */
+    private static final String COUNTER_KEY_PREFIX = "Counter:";
+
     @Resource
     private RedissonClient redissonClient;
 
@@ -49,7 +55,43 @@ public class CommonCacheOperator {
 
     public void put(String key, Object value, long timeoutSeconds) {
         RBucket<Object> bucket = redissonClient.getBucket(CACHE_KEY_PREFIX + key);
-        bucket.set(value, java.time.Duration.ofSeconds(timeoutSeconds));
+        bucket.set(value, Duration.ofSeconds(timeoutSeconds));
+    }
+
+    /**
+     * 键不存在时写入缓存，返回是否写入成功（原子操作）
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    public boolean putIfAbsent(String key, Object value, long timeoutSeconds) {
+        RBucket<Object> bucket = redissonClient.getBucket(CACHE_KEY_PREFIX + key);
+        return bucket.setIfAbsent(value, Duration.ofSeconds(timeoutSeconds));
+    }
+
+    /**
+     * 计数器原子自增并返回自增后的值，首次计数时设置过期时间
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    public long incrementCounter(String key, long timeoutSeconds) {
+        // 原子计数并设置过期时间，同时补齐历史无过期计数器的时效
+        return redissonClient.getScript(StringCodec.INSTANCE).eval(RScript.Mode.READ_WRITE,
+                "local count = redis.call('INCR', KEYS[1]); "
+                        + "if redis.call('TTL', KEYS[1]) == -1 then "
+                        + "redis.call('EXPIRE', KEYS[1], ARGV[1]); end; return count;",
+                RScript.ReturnType.INTEGER, Collections.singletonList(COUNTER_KEY_PREFIX + key), timeoutSeconds);
+    }
+
+    /**
+     * 删除计数器
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    public void removeCounter(String key) {
+        redissonClient.getAtomicLong(COUNTER_KEY_PREFIX + key).delete();
     }
 
     public Object get(String key) {
@@ -75,6 +117,17 @@ public class CommonCacheOperator {
         } catch (Exception e) {
             log.warn("删除失效缓存失败，需人工清理：{}", fullKey, e);
         }
+    }
+
+    /**
+     * 获取并删除缓存（原子操作），适用于验证码等只能使用一次的数据
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    public Object getAndRemove(String key) {
+        RBucket<Object> bucket = redissonClient.getBucket(CACHE_KEY_PREFIX + key);
+        return bucket.getAndDelete();
     }
 
     public void remove(String... key) {

@@ -14,6 +14,7 @@ package vip.xiaonuo.gen.modular.basic.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,11 +41,13 @@ public class GenBasicAddParam {
     /** 插件名 */
     @Schema(description = "插件名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "pluginName不能为空")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_-]*$", message = "pluginName必须以字母开头，且只能包含字母、数字、中划线和下划线")
     private String pluginName;
 
     /** 模块名 */
     @Schema(description = "模块名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "moduleName不能为空")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]*$", message = "moduleName必须以字母开头，且只能包含字母和数字")
     private String moduleName;
 
     /** 表前缀移除 */
@@ -79,11 +82,13 @@ public class GenBasicAddParam {
     /** 业务名 */
     @Schema(description = "业务名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "busName不能为空")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]*$", message = "busName必须以字母开头，且只能包含字母和数字")
     private String busName;
 
     /** 类名 */
     @Schema(description = "类名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "className不能为空")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9]*$", message = "className必须以字母开头，且只能包含字母和数字")
     private String className;
 
     /** 表单布局 */
@@ -107,6 +112,7 @@ public class GenBasicAddParam {
 
     /** 包名 */
     @Schema(description = "包名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*$", message = "packageName必须由字母开头的字母、数字或下划线段以.连接组成")
     private String packageName;
 
     /** 生成类型：TABLE/TREE/LEFT_TREE_TABLE/MASTER_DETAIL */
@@ -136,6 +142,7 @@ public class GenBasicAddParam {
 
     /** 子表类名（双表专用） */
     @Schema(description = "子表类名")
+    @Pattern(regexp = "^([a-zA-Z][a-zA-Z0-9]*)?$", message = "subClassName必须以字母开头，且只能包含字母和数字")
     private String subClassName;
 
     /** 子表功能名（双表专用） */
@@ -144,5 +151,6 @@ public class GenBasicAddParam {
 
     /** 子表业务名（双表专用） */
     @Schema(description = "子表业务名")
+    @Pattern(regexp = "^([a-zA-Z][a-zA-Z0-9]*)?$", message = "subBusName必须以字母开头，且只能包含字母和数字")
     private String subBusName;
 }

@@ -16,6 +16,7 @@ import cn.hutool.core.lang.tree.Tree;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,6 @@ import vip.xiaonuo.mobile.modular.resource.entity.MobileModule;
 import vip.xiaonuo.mobile.modular.resource.param.menu.*;
 import vip.xiaonuo.mobile.modular.resource.service.MobileMenuService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

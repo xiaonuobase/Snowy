@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +35,6 @@ import vip.xiaonuo.dev.modular.file.param.DevFilePageParam;
 import vip.xiaonuo.dev.modular.file.param.DevFileUrlListParam;
 import vip.xiaonuo.dev.modular.file.service.DevFileService;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

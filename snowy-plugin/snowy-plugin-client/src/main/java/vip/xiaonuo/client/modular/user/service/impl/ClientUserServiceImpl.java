@@ -12,7 +12,6 @@
  */
 package vip.xiaonuo.client.modular.user.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.bean.BeanUtil;
@@ -21,6 +20,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.PhoneUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -186,7 +186,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
 
     @Override
     public ClientLoginUser getUserByPhone(String phone) {
-        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        ClientUser clientUser = this.getOne(new LambdaQueryWrapper<ClientUser>().in(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone)));
         if(ObjectUtil.isNotEmpty(clientUser)) {
             transService.transOne(clientUser);
             return BeanUtil.copyProperties(clientUser, ClientLoginUser.class);
@@ -256,7 +256,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
                 throw new CommonException("手机号码：{}格式错误", clientUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
-                    .eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(clientUserAddParam.getPhone()))) > 0) {
+                    .in(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(clientUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", clientUserAddParam.getPhone());
             }
         }
@@ -293,7 +293,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
                 throw new CommonException("手机号码：{}格式错误", clientUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<ClientUser>()
-                    .eq(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(clientUserEditParam.getPhone()))
+                    .in(ClientUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(clientUserEditParam.getPhone()))
                     .ne(ClientUser::getId, clientUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", clientUserEditParam.getPhone());
             }
@@ -512,22 +512,16 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
      * @date 2022/8/25 14:29
      **/
     private void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
-        // 依据请求号，取出缓存中的验证码进行校验
+        // 依据请求号，原子地取出并移除缓存中的验证码进行校验，无论校验是否通过，保证每个验证码只能尝试一次
         Object existValidCode;
         if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
+            existValidCode = commonCacheOperator.getAndRemove(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
         } else {
-            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+            existValidCode = commonCacheOperator.getAndRemove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 为空则直接验证码错误
         if (ObjectUtil.isEmpty(existValidCode)) {
             throw new CommonException("验证码错误");
-        }
-        // 移除该验证码
-        if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
-        } else {
-            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 不一致则直接验证码错误
         if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
@@ -559,6 +553,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         if (ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机码：{}不存在", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -608,6 +604,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -635,6 +633,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         return emailValidCodeReqNo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void findPasswordByPhone(ClientUserFindPwdByPhoneParam clientUserFindPwdByPhoneParam) {
         // 再次校验手机号是否合法
@@ -655,28 +654,38 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 校验新密码
         ClientPasswordUtl.validNewPassword(clientLoginUser, newPassword);
         // 修改密码
-        this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getPhone,
-                CommonCryptogramUtil.doSm4CbcEncrypt(phone)).set(ClientUser::getPassword,
+        this.update(new LambdaUpdateWrapper<ClientUser>().in(ClientUser::getPhone,
+                CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone)).set(ClientUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
         // 更新用户最新修改密码时间
         clientUserExtService.updatePasswordLastTime(clientLoginUser.getId());
         // 追加用户历史密码信息
         clientUserPasswordService.insertUserPasswordHistory(clientLoginUser.getId(), newPassword);
-        // 重置密码成功短信消息模板编码
+        // 异步发送重置密码成功短信
         String smsTemplateCode = devConfigApi.getValueByKey(SNOWY_SMS_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_C_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(smsTemplateCode)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
-            // 获取编码
-            String codeValue = contentJSONObject.getStr("code");
-            // 发送短信
-            devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(smsTemplateCode);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userPhone", phone).set("userNewPassword", newPassword);
+                // 获取编码
+                String codeValue = contentJSONObject.getStr("code");
+                // 编码不为空
+                if(ObjectUtil.isNotEmpty(codeValue)){
+                    try {
+                        // 发送短信
+                        devSmsApi.sendDynamicSms(phone, codeValue, paramMap);
+                    } catch (Exception e) {
+                        log.error(">>> 短信发送失败", e);
+                    }
+                }
+            });
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void findPasswordByEmail(ClientUserFindPwdByEmailParam clientUserFindPwdByEmailParam) {
         // 再次校验邮箱是否合法
@@ -703,20 +712,26 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         clientUserExtService.updatePasswordLastTime(clientLoginUser.getId());
         // 追加用户历史密码信息
         clientUserPasswordService.insertUserPasswordHistory(clientLoginUser.getId(), newPassword);
-        // 重置密码成功邮件消息模板内容
+        // 异步发送重置密码成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_C_KEY);
         // 不为空才发送
         if(ObjectUtil.isNotEmpty(emailTemplateContent)){
-            // 模板内容转为JSONObject
-            JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
-            // 定义变量参数
-            JSONObject paramMap = JSONUtil.createObj().set("userEmail", clientUserFindPwdByEmailParam.getEmail()).set("userNewPassword", newPassword);
-            // 获取格式化后的主题
-            String subject = ClientEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);;
-            // 获取格式化后的内容
-            String content = ClientEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);;
-            // 发送邮件
-            devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+            ThreadUtil.execute(() -> {
+                // 模板内容转为JSONObject
+                JSONObject contentJSONObject = JSONUtil.parseObj(emailTemplateContent);
+                // 定义变量参数
+                JSONObject paramMap = JSONUtil.createObj().set("userEmail", email).set("userNewPassword", newPassword);
+                // 获取格式化后的主题
+                String subject = ClientEmailFormatUtl.format(contentJSONObject.getStr("subject"), paramMap);
+                // 获取格式化后的内容
+                String content = ClientEmailFormatUtl.format(contentJSONObject.getStr("content"), paramMap);
+                try {
+                    // 发送邮件
+                    devEmailApi.sendDynamicHtmlEmail(email, subject, content);
+                } catch (Exception e) {
+                    log.error(">>> 邮件发送失败", e);
+                }
+            });
         }
     }
 
@@ -805,6 +820,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updatePasswordByPhone(ClientUserUpdatePwdByPhoneParam clientUserUpdatePwdByPhoneParam) {
         // 判断密码验证方式
@@ -814,6 +830,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         this.findPasswordByPhone(clientUserFindPwdByPhoneParam);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updatePasswordByEmail(ClientUserUpdatePwdByEmailParam clientUserUpdatePwdByEmailParam) {
         // 判断密码验证方式
@@ -837,6 +854,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机号码：{}已存在对应用户", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -877,6 +896,8 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机号码：{}已存在对应用户", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -934,9 +955,11 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 执行校验验证码
         validValidCode(null, clientUserGetEmailValidCodeParam.getValidCode(), clientUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -976,9 +999,11 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         // 执行校验验证码
         validValidCode(null, clientUserGetEmailValidCodeParam.getValidCode(), clientUserGetEmailValidCodeParam.getValidCodeReqNo());
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -1016,7 +1041,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
             throw new CommonException("邮箱：{}格式错误", email);
         }
         // 根据邮箱获取用户信息，判断用户是否存在，如果存在则不能绑定该邮箱
-        if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
+        if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
         // 执行校验验证码
@@ -1070,7 +1095,7 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         SaBaseClientLoginUser cached = StpClientLoginUserUtil.getClientLoginUser();
         if (cached != null) {
             mutator.accept(cached);
-            StpUtil.getTokenSession().set("loginUser", cached);
+            StpClientUtil.getTokenSession().set("loginUser", cached);
         }
     }
 

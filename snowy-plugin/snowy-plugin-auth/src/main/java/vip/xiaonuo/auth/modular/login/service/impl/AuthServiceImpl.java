@@ -53,6 +53,7 @@ import vip.xiaonuo.common.util.CommonEmailUtil;
 import vip.xiaonuo.common.util.CommonOtpUtil;
 import vip.xiaonuo.common.util.CommonServletUtil;
 import vip.xiaonuo.common.util.CommonTimeFormatUtil;
+import vip.xiaonuo.common.util.CommonValidCodeUtil;
 import vip.xiaonuo.dev.api.DevConfigApi;
 import vip.xiaonuo.dev.api.DevEmailApi;
 import vip.xiaonuo.dev.api.DevSmsApi;
@@ -61,6 +62,7 @@ import vip.xiaonuo.sys.api.SysUserApi;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -157,6 +159,9 @@ public class AuthServiceImpl implements AuthService {
     /** 失败次数缓存前缀 */
     private static final String LOGIN_ERROR_TIMES_KEY_PREFIX = "login-error-times:";
 
+    /** 登录锁定封禁标识前缀，与真实登录id隔离 */
+    private static final String LOGIN_LOCK_KEY_PREFIX = "login-lock:";
+
     @Resource(name = "loginUserApi")
     private SaBaseLoginUserApi loginUserApi;
 
@@ -219,6 +224,12 @@ public class AuthServiceImpl implements AuthService {
         String validCodeReqNo = authGetPhoneValidCodeParam.getValidCodeReqNo();
         // 校验参数
         validValidCode(null, validCode, validCodeReqNo);
+        // 校验手机号格式
+        if(!PhoneUtil.isMobile(phone)) {
+            throw new CommonException(AuthExceptionEnum.PHONE_FORMAT_ERROR.getValue());
+        }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -284,6 +295,12 @@ public class AuthServiceImpl implements AuthService {
         String validCodeReqNo = authGetEmailValidCodeParam.getValidCodeReqNo();
         // 校验参数
         validValidCode(null, validCode, validCodeReqNo);
+        // 校验邮箱格式
+        if(CommonEmailUtil.isNotEmail(email)) {
+            throw new CommonException(AuthExceptionEnum.EMAIL_FORMAT_ERROR.getValue());
+        }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -348,14 +365,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
         // 依据请求号，取出缓存中的验证码进行校验
-        Object existValidCode;
+        String validCodeCacheKey;
         if(ObjectUtil.isEmpty(phoneOrEmail)) {
             // 图形验证码
-            existValidCode = commonCacheOperator.get(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo);
+            validCodeCacheKey = AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo;
         } else {
             // 手机或者邮箱验证码
-            existValidCode = commonCacheOperator.get(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+            validCodeCacheKey = AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo;
         }
+        // 原子地取出并移除该验证码，无论校验是否通过，保证每个验证码只能尝试一次
+        Object existValidCode = commonCacheOperator.getAndRemove(validCodeCacheKey);
         // 缓存中不存在验证码则返回失效错误
         if (ObjectUtil.isEmpty(existValidCode)){
             throw new CommonException(AuthExceptionEnum.VALID_CODE_EXPIRED.getValue());
@@ -363,14 +382,6 @@ public class AuthServiceImpl implements AuthService {
         // 不一致则直接验证码错误
         if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
             throw new CommonException(AuthExceptionEnum.VALID_CODE_ERROR.getValue());
-        }
-        // 验证成功，移除该验证码
-        if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            // 图形验证码
-            commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + validCodeReqNo);
-        } else {
-            // 手机或者邮箱验证码
-            commonCacheOperator.remove(AUTH_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
     }
 
@@ -424,6 +435,8 @@ public class AuthServiceImpl implements AuthService {
                     // B端手机号无对应用户时策略
                     return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_B_KEY);
                 } else {
+                    // 判断用户是否被封禁
+                    isDisableTime(getLoginLockKey(type, saBaseLoginUser.getId(), null), phoneOrEmail);
                     // 存在则允许登录
                     return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
@@ -433,6 +446,8 @@ public class AuthServiceImpl implements AuthService {
                     // B端邮箱无对应用户时策略
                     return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_B_KEY);
                 } else {
+                    // 判断用户是否被封禁
+                    isDisableTime(getLoginLockKey(type, saBaseLoginUser.getId(), null), phoneOrEmail);
                     // 存在则允许登录
                     return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
@@ -444,6 +459,8 @@ public class AuthServiceImpl implements AuthService {
                     // C端手机号无对应用户时策略
                     return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_PHONE_FOR_C_KEY);
                 } else {
+                    // 判断用户是否被封禁
+                    isDisableTime(getLoginLockKey(type, saBaseClientLoginUser.getId(), null), phoneOrEmail);
                     // 存在则允许登录
                     return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
@@ -453,6 +470,8 @@ public class AuthServiceImpl implements AuthService {
                     // C端邮箱无对应用户时策略
                     return devConfigApi.getValueByKey(SNOWY_SYS_DEFAULT_STRATEGY_WHEN_NO_USER_WITH_EMAIL_FOR_C_KEY);
                 } else {
+                    // 判断用户是否被封禁
+                    isDisableTime(getLoginLockKey(type, saBaseClientLoginUser.getId(), null), phoneOrEmail);
                     // 存在则允许登录
                     return AuthStrategyWhenNoUserWithPhoneOrEmailEnum.ALLOW_LOGIN.getValue();
                 }
@@ -462,8 +481,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String doLogin(AuthAccountPasswordLoginParam authAccountPasswordLoginParam, String type) {
-        // 判断账号是否被封禁
-        isDisableTime(authAccountPasswordLoginParam.getAccount());
         // 获取账号
         String account = authAccountPasswordLoginParam.getAccount();
         // 获取密码
@@ -510,30 +527,42 @@ public class AuthServiceImpl implements AuthService {
         // 根据账号获取用户信息，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
             SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByAccount(account);
+            // 获取登录锁定键，用户存在时按用户id，不存在时按规范化后的账号
+            String loginLockKey = getLoginLockKey(type, ObjectUtil.isEmpty(saBaseLoginUser) ? null : saBaseLoginUser.getId(), account);
+            // 判断账号是否被封禁
+            isDisableTime(loginLockKey, account);
             if(ObjectUtil.isEmpty(saBaseLoginUser)) {
                 // 相同提示文案、相同剩余次数、相同锁定计数，使攻击者无法据此判断账号是否存在
-                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                handleRemainingTimes(loginLockKey, account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
                 // 兜底：handleRemainingTimes 极端情况下未抛异常时，仍统一报错，避免后续空指针
                 throw new CommonException(AuthExceptionEnum.PWD_ERROR.getValue());
             }
             if (!saBaseLoginUser.getPassword().equals(passwordHash)) {
                 // 密码错误，处理剩余次数提示信息
-                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                handleRemainingTimes(loginLockKey, account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
             }
+            // 密码正确，清除登录失败次数
+            clearLoginErrorTimes(loginLockKey);
             // 执行B端登录
             return execLoginB(saBaseLoginUser, device);
         } else {
             SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByAccount(account);
+            // 获取登录锁定键，用户存在时按用户id，不存在时按规范化后的账号
+            String loginLockKey = getLoginLockKey(type, ObjectUtil.isEmpty(saBaseClientLoginUser) ? null : saBaseClientLoginUser.getId(), account);
+            // 判断账号是否被封禁
+            isDisableTime(loginLockKey, account);
             if(ObjectUtil.isEmpty(saBaseClientLoginUser)) {
                 // 相同提示文案、相同剩余次数、相同锁定计数，使攻击者无法据此判断账号是否存在
-                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                handleRemainingTimes(loginLockKey, account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
                 // 兜底：handleRemainingTimes 极端情况下未抛异常时，仍统一报错，避免后续空指针
                 throw new CommonException(AuthExceptionEnum.PWD_ERROR.getValue());
             }
             if (!saBaseClientLoginUser.getPassword().equals(passwordHash)) {
                 // 密码错误，处理剩余次数提示信息
-                handleRemainingTimes(account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
+                handleRemainingTimes(loginLockKey, account, AuthExceptionEnum.PWD_ERROR.getValue(), type);
             }
+            // 密码正确，清除登录失败次数
+            clearLoginErrorTimes(loginLockKey);
             // 执行C端登录
             return execLoginC(saBaseClientLoginUser, device);
         }
@@ -572,14 +601,31 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
+     * 获取登录失败计数与封禁使用的规范键
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    private String getLoginLockKey(String type, String userId, String account) {
+        // 用户存在时以端类型加用户id为键，账号的大小写、空格等变换写法都归到同一用户
+        if(ObjectUtil.isNotEmpty(userId)) {
+            return type + ":id:" + userId;
+        }
+        // 用户不存在时以端类型加去首尾空格并转小写的账号为键，保持账号不存在也计数的防枚举行为
+        return type + ":account:" + StrUtil.trimToEmpty(account).toLowerCase(Locale.ROOT);
+    }
+
+    /**
      * 处理剩余次数提示信息
      */
-    private void handleRemainingTimes(String account, String errorMessage, String type) {
+    private void handleRemainingTimes(String loginLockKey, String account, String errorMessage, String type) {
         // 记录登录次数 和 过期时间
-        int remainingTimes = saveLoginTimes(account, type);
+        int remainingTimes = saveLoginTimes(loginLockKey, type);
         if(remainingTimes == 0) {
             // 此时已封禁，返回提示语
-            isDisableTime(account);
+            isDisableTime(loginLockKey, account);
+            // 兜底：锁定时长配置异常导致未封禁时，仍提示错误，不允许继续登录
+            throw new CommonException(errorMessage);
         } else {
             // 提示错误
             throw new CommonException(errorMessage + "，您还可以尝试【" + remainingTimes + "】次");
@@ -590,19 +636,19 @@ public class AuthServiceImpl implements AuthService {
      * 是否封禁状态
      * 如果被封禁了，执行以下逻辑，返回前端还需等待的时间
      */
-    private void isDisableTime(String userAccount) {
+    private void isDisableTime(String loginLockKey, String account) {
         // disableTime = -2表示未被封禁
-        long disableTime = StpUtil.getDisableTime(userAccount);
+        long disableTime = StpUtil.getDisableTime(LOGIN_LOCK_KEY_PREFIX + loginLockKey);
         if (disableTime > 0) {
             String formatTime = CommonTimeFormatUtil.formatSeconds(disableTime);
-            throw new CommonException("账号" + userAccount + "已被封禁, 请在"+ formatTime+ "后重新尝试登录!");
+            throw new CommonException("账号" + account + "已被封禁, 请在"+ formatTime+ "后重新尝试登录!");
         }
     }
 
     /**
      * redis中保存登录错误次数
      */
-    private int saveLoginTimes(String userAccount, String type){
+    private int saveLoginTimes(String loginLockKey, String type){
         // 获取连续登录失败持续时间
         String configContinuousLoginFailDuration;
         // 获取连续登录失败次数
@@ -638,48 +684,29 @@ public class AuthServiceImpl implements AuthService {
             // 配置了则使用配置的失效时间
             continuousLoginFailLockDuration = Convert.toLong(configContinuousLoginFailLockDuration) * 60;
         }
-        // 获取登录失败次数缓存键
-        String loginErrorKey = LOGIN_ERROR_TIMES_KEY_PREFIX  + ":" + userAccount;
-        // 获取登录失败次数缓存值
-        Integer number = (Integer) commonCacheOperator.get(loginErrorKey);
-        if (number == null) {
-            // 如果redis中没有保存，代表失败第一次，如果配置的值为1次
-            if(continuousLoginFailTimes  == 1) {
-                // 直接进入isDisableTime方法，返回用户还需等待时间
-                StpUtil.disable(userAccount, continuousLoginFailLockDuration);
-                // 删除redis 中的key
-                clearLoginErrorTimes(userAccount);
-                return 0;
-            } else {
-                // 否则失败次数为2
-                number = 2;
-                commonCacheOperator.put(loginErrorKey, number, continuousLoginFailDuration);
-                return continuousLoginFailTimes - number + 1;
-            }
+        // 原子自增登录失败次数，首次失败时开始计时
+        long number = commonCacheOperator.incrementCounter(LOGIN_ERROR_TIMES_KEY_PREFIX + loginLockKey, continuousLoginFailDuration);
+        if (number < continuousLoginFailTimes) {
+            // 未达到连续登录失败次数，返回剩余次数
+            return (int) (continuousLoginFailTimes - number);
         } else {
-            if (number < continuousLoginFailTimes) {
-                number++;
-                commonCacheOperator.put(loginErrorKey, number, continuousLoginFailDuration);
-                return continuousLoginFailTimes - number + 1;
-            } else {
-                // 第N次封禁账号，第N+1次进入isDisableTime方法，返回用户还需等待时间
-                StpUtil.disable(userAccount, continuousLoginFailLockDuration);
-                // 删除redis 中的key
-                clearLoginErrorTimes(userAccount);
-                return 0;
-            }
+            // 第N次封禁账号，第N+1次进入isDisableTime方法，返回用户还需等待时间
+            StpUtil.disable(LOGIN_LOCK_KEY_PREFIX + loginLockKey, continuousLoginFailLockDuration);
+            // 删除redis 中的key
+            clearLoginErrorTimes(loginLockKey);
+            return 0;
         }
     }
 
     /**
-     * 登录成功、清空登录次数
-     * @param userAccount 账号
+     * 登录成功后清空登录失败次数
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
      */
-    private void clearLoginErrorTimes(String userAccount) {
-        // 获取登录失败次数缓存键
-        String loginErrorKey = LOGIN_ERROR_TIMES_KEY_PREFIX  + ":" + userAccount;
-        // 删除redis中的key
-        commonCacheOperator.remove(loginErrorKey);
+    private void clearLoginErrorTimes(String loginLockKey) {
+        // 删除redis中的登录失败次数
+        commonCacheOperator.removeCounter(LOGIN_ERROR_TIMES_KEY_PREFIX + loginLockKey);
     }
 
     /**
@@ -1141,47 +1168,44 @@ public class AuthServiceImpl implements AuthService {
         }
         // 获取账号
         String account = authOtpLoginParam.getAccount();
-        // 定义用户id
+        // 定义用户id，账号不存在时为空
         String userId;
-        // 根据id获取用户信息，根据B端或C端判断
+        // 根据账号获取用户信息，根据B端或C端判断
         if(SaClientTypeEnum.B.getValue().equals(type)) {
             SaBaseLoginUser saBaseLoginUser = loginUserApi.getUserByAccount(account);
-            if (ObjectUtil.isEmpty(saBaseLoginUser)) {
-                throw new CommonException("账号错误");
-            }
-            userId = saBaseLoginUser.getId();
+            userId = ObjectUtil.isEmpty(saBaseLoginUser) ? null : saBaseLoginUser.getId();
         } else {
             SaBaseClientLoginUser saBaseClientLoginUser = clientLoginUserApi.getClientUserByAccount(account);
-            if (ObjectUtil.isEmpty(saBaseClientLoginUser)) {
-                throw new CommonException("账号错误");
-            }
-            userId = saBaseClientLoginUser.getId();
+            userId = ObjectUtil.isEmpty(saBaseClientLoginUser) ? null : saBaseClientLoginUser.getId();
         }
-        // 获取用户扩展信息
-        String otpSecretKey;
-        if(SaClientTypeEnum.B.getValue().equals(type)) {
-            JSONObject sysUserExtJsonObject = sysUserApi.getOrCreateSysUserExt(userId);
-            if(!sysUserExtJsonObject.getBool("hasBindOtp")) {
-                throw new CommonException("该账号未绑定动态口令");
+        // 获取登录锁定键，用户存在时按用户id，不存在时按规范化后的账号，与账号密码登录共用失败次数
+        String loginLockKey = getLoginLockKey(type, userId, account);
+        // 判断账号是否被封禁
+        isDisableTime(loginLockKey, account);
+        // 获取用户扩展信息，账号不存在或未绑定动态口令时密钥为空
+        String otpSecretKey = null;
+        if(ObjectUtil.isNotEmpty(userId)) {
+            JSONObject userExtJsonObject;
+            if(SaClientTypeEnum.B.getValue().equals(type)) {
+                userExtJsonObject = sysUserApi.getOrCreateSysUserExt(userId);
+            } else {
+                userExtJsonObject = clientUserApi.getOrCreateClientUserExt(userId);
             }
-            // 解密密钥
-            otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(sysUserExtJsonObject.getStr("otpSecretKey"));
-        } else {
-            JSONObject clientUserExtJsonObject = clientUserApi.getOrCreateClientUserExt(userId);
-            if(!clientUserExtJsonObject.getBool("hasBindOtp")) {
-                throw new CommonException("该账号未绑定动态口令");
+            if(Boolean.TRUE.equals(userExtJsonObject.getBool("hasBindOtp"))) {
+                // 解密密钥
+                otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(userExtJsonObject.getStr("otpSecretKey"));
             }
-            // 解密密钥
-            otpSecretKey = CommonCryptogramUtil.doSm4CbcDecrypt(clientUserExtJsonObject.getStr("otpSecretKey"));
         }
 
         // 获取动态口令
         String otpCode = authOtpLoginParam.getOtpCode();
-        // 校验动态口令
-        boolean isValid = CommonOtpUtil.validateCode(otpSecretKey, otpCode, 1);
-        if(!isValid){
-            throw new CommonException("动态口令错误");
+        // 账号不存在、未绑定动态口令与口令错误统一处理，相同提示文案、相同剩余次数、相同锁定计数，使攻击者无法据此判断账号是否存在
+        if(ObjectUtil.isEmpty(otpSecretKey) || !CommonOtpUtil.validateCode(otpSecretKey, otpCode, 1)) {
+            // 动态口令错误，处理剩余次数提示信息
+            handleRemainingTimes(loginLockKey, account, "动态口令错误", type);
         }
+        // 动态口令正确，清除登录失败次数
+        clearLoginErrorTimes(loginLockKey);
         // 获取设备
         String device = authOtpLoginParam.getDevice();
         // 执行登录

@@ -13,12 +13,12 @@
 package vip.xiaonuo.sys.modular.role.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

@@ -15,6 +15,7 @@ package vip.xiaonuo.auth.modular.login.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +29,6 @@ import vip.xiaonuo.auth.modular.login.param.*;
 import vip.xiaonuo.auth.modular.login.result.AuthPicValidCodeResult;
 import vip.xiaonuo.auth.modular.login.service.AuthService;
 import vip.xiaonuo.common.pojo.CommonResult;
-
-import javax.validation.Valid;
 
 /**
  * C端登录控制器
@@ -124,7 +123,6 @@ public class AuthClientController {
      * @date 2021/10/15 13:12
      **/
     @Operation(summary = "C端退出")
-    @SaClientCheckLogin
     @GetMapping("/auth/c/doLogout")
     public CommonResult<String> doLogout() {
         StpClientUtil.logout();

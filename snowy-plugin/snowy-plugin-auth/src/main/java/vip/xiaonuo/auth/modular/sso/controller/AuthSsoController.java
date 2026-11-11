@@ -15,6 +15,7 @@ package vip.xiaonuo.auth.modular.sso.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vip.xiaonuo.auth.core.enums.SaClientTypeEnum;
@@ -22,8 +23,6 @@ import vip.xiaonuo.auth.modular.sso.param.AuthGetSsoAuthUrlParam;
 import vip.xiaonuo.auth.modular.sso.param.AuthSsoTicketLoginParam;
 import vip.xiaonuo.auth.modular.sso.service.AuthSsoService;
 import vip.xiaonuo.common.pojo.CommonResult;
-
-import javax.validation.Valid;
 
 /**
  * 单点登录控制器

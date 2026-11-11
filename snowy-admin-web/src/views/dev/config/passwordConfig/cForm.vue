@@ -159,7 +159,7 @@
 					<a-form-item>
 						<a-space>
 							<a-button type="primary" :loading="submitLoading" @click="onSubmit()">保存</a-button>
-							<a-button @click="() => formRef.resetFields()">重置</a-button>
+							<a-button @click="resetForm">重置</a-button>
 						</a-space>
 					</a-form-item>
 				</a-col>
@@ -185,16 +185,20 @@
 	const param = {
 		category: 'PASSWORD_STRATEGY_FOR_C'
 	}
-	configApi.configList(param).then((data) => {
-		loadSpinning.value = false
-		if (data) {
-			data.forEach((item) => {
-				formData.value[item.configKey] = transferBooleanInValue(item.configValue)
-			})
-		} else {
-			message.warning('表单项不存在，请初始化数据库')
-		}
-	})
+	const loadData = () => {
+		loadSpinning.value = true
+		configApi.configList(param).then((data) => {
+			loadSpinning.value = false
+			if (data) {
+				data.forEach((item) => {
+					formData.value[item.configKey] = transferBooleanInValue(item.configValue)
+				})
+			} else {
+				message.warning('表单项不存在，请初始化数据库')
+			}
+		})
+	}
+	loadData()
 	// 转换值
 	const transferBooleanInValue = (value) => {
 		if (value === 'true' || value === 'false') {
@@ -242,6 +246,11 @@
 					})
 			})
 			.catch(() => {})
+	}
+	// 重置为后端当前保存的配置
+	const resetForm = () => {
+		formRef.value.clearValidate()
+		loadData()
 	}
 	const layout = {
 		labelCol: {

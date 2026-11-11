@@ -35,6 +35,7 @@
 		"codemirror": "5.65.19",
 		"cropperjs": "1.6.2",
 		"dayjs": "1.11.19",
+		"dompurify": "3.3.1",
 		"echarts": "5.5.1",
 		"echarts-stat": "1.2.0",
 		"enquire.js": "2.1.6",

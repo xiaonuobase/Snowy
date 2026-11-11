@@ -32,7 +32,7 @@
 			</div>
 
 			<!-- 正文内容 -->
-			<div class="notice-content" v-html="formData.content"></div>
+			<div class="notice-content" v-html="safeContent"></div>
 
 			<!-- 附加信息 -->
 			<div class="notice-footer">
@@ -68,11 +68,14 @@
 	import { UserOutlined, ClockCircleOutlined } from '@ant-design/icons-vue'
 	import bizNoticeApi from '@/api/biz/bizNoticeApi'
 	import { message } from 'ant-design-vue'
+	import DOMPurify from 'dompurify'
 	// 抽屉状态
 	const open = ref(false)
 	const emit = defineEmits({ successful: null })
 	// 表单数据
 	const formData = ref({})
+	// 正文为富文本，渲染前过滤脚本与事件属性，防止存储型 XSS
+	const safeContent = computed(() => DOMPurify.sanitize(formData.value.content || ''))
 	// 打开抽屉
 	const onOpen = (id) => {
 		open.value = true

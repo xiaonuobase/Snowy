@@ -15,6 +15,7 @@ package vip.xiaonuo.sys.modular.index.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,6 @@ import vip.xiaonuo.sys.modular.index.param.*;
 import vip.xiaonuo.sys.modular.index.result.*;
 import vip.xiaonuo.sys.modular.index.service.SysIndexService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

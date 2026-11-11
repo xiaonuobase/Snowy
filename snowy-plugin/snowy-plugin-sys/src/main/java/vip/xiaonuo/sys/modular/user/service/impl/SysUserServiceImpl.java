@@ -437,7 +437,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysLoginUser getUserByPhone(String phone) {
         return this.convertToLoginUser(this.getOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone))));
+                .in(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone))));
     }
 
     @Override
@@ -504,7 +504,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("手机号码：{}格式错误", sysUserAddParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
-                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserAddParam.getPhone()))) > 0) {
+                    .in(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(sysUserAddParam.getPhone()))) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserAddParam.getPhone());
             }
         }
@@ -549,7 +549,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 throw new CommonException("手机号码：{}格式错误", sysUserEditParam.getPhone());
             }
             if (this.count(new LambdaQueryWrapper<SysUser>()
-                    .eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(sysUserEditParam.getPhone()))
+                    .in(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(sysUserEditParam.getPhone()))
                     .ne(SysUser::getId, sysUserEditParam.getId())) > 0) {
                 throw new CommonException("存在重复的手机号，手机号为：{}", sysUserEditParam.getPhone());
             }
@@ -728,22 +728,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @date 2022/8/25 14:29
      **/
     private void validValidCode(String phoneOrEmail, String validCode, String validCodeReqNo) {
-        // 依据请求号，取出缓存中的验证码进行校验
+        // 依据请求号，原子地取出并移除缓存中的验证码进行校验，无论校验是否通过，保证每个验证码只能尝试一次
         Object existValidCode;
         if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
+            existValidCode = commonCacheOperator.getAndRemove(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
         } else {
-            existValidCode = commonCacheOperator.get(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
+            existValidCode = commonCacheOperator.getAndRemove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 为空则直接验证码错误
         if (ObjectUtil.isEmpty(existValidCode)) {
             throw new CommonException("验证码错误");
-        }
-        // 移除该验证码
-        if(ObjectUtil.isEmpty(phoneOrEmail)) {
-            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + validCodeReqNo);
-        } else {
-            commonCacheOperator.remove(USER_VALID_CODE_CACHE_KEY + phoneOrEmail + StrUtil.UNDERLINE + validCodeReqNo);
         }
         // 不一致则直接验证码错误
         if (!validCode.equalsIgnoreCase(Convert.toStr(existValidCode))) {
@@ -775,6 +769,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机号码：{}不存在对应用户", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -825,6 +821,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}不存在对应用户", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -853,6 +851,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return emailValidCodeReqNo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void findPasswordByPhone(SysUserFindPwdByPhoneParam sysUserFindPwdByPhoneParam) {
         // 再次校验手机号是否合法
@@ -873,8 +872,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 校验新密码
         SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
-        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getPhone,
-                CommonCryptogramUtil.doSm4CbcEncrypt(phone)).set(SysUser::getPassword,
+        this.update(new LambdaUpdateWrapper<SysUser>().in(SysUser::getPhone,
+                CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone)).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
         // 更新用户最新修改密码时间
         sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
@@ -904,6 +903,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void findPasswordByEmail(SysUserFindPwdByEmailParam sysUserFindPwdByEmailParam) {
         // 再次校验邮箱是否合法
@@ -921,14 +921,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         validValidCode(email, sysUserFindPwdByEmailParam.getValidCode(), sysUserFindPwdByEmailParam.getValidCodeReqNo());
         // 获取新密码
         String newPassword = CommonCryptogramUtil.doSm2Decrypt(sysUserFindPwdByEmailParam.getNewPassword()).trim();
-        // 更新用户最新修改密码时间
-        sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
-        // 追加用户历史密码信息
-        sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
+        // 校验新密码
         SysPasswordUtil.validNewPassword(sysLoginUser, newPassword);
         // 修改密码
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getEmail, email).set(SysUser::getPassword,
                 CommonCryptogramUtil.doHashValue(newPassword)));
+        // 更新用户最新修改密码时间
+        sysUserExtService.updatePasswordLastTime(sysLoginUser.getId());
+        // 追加用户历史密码信息
+        sysUserPasswordService.insertUserPasswordHistory(sysLoginUser.getId(), newPassword);
         // 异步发送重置密码成功邮件
         String emailTemplateContent = devConfigApi.getValueByKey(SNOWY_EMAIL_TEMPLATE_NOTICE_PASSWORD_RESET_SUCCESS_FOR_B_KEY);
         // 不为空才发送
@@ -1037,6 +1038,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updatePasswordByPhone(SysUserUpdatePwdByPhoneParam sysUserUpdatePwdByPhoneParam) {
         // 判断密码验证方式
@@ -1046,6 +1048,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         this.findPasswordByPhone(sysUserFindPwdByPhoneParam);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updatePasswordByEmail(SysUserUpdatePwdByEmailParam sysUserUpdatePwdByEmailParam) {
         // 判断密码验证方式
@@ -1069,6 +1072,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机号码：{}已存在对应用户", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -1109,6 +1114,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotEmpty(this.getUserByPhone(phone))) {
             throw new CommonException("手机号码：{}已存在对应用户", phone);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(phone);
         // 生成手机验证码的值，随机6为数字
         String phoneValidCode = RandomUtil.randomNumbers(6);
         // 生成手机验证码的请求号
@@ -1169,6 +1176,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -1211,6 +1220,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotEmpty(this.getUserByEmail(email))) {
             throw new CommonException("邮箱：{}已存在对应用户", email);
         }
+        // 校验验证码发送频率
+        CommonValidCodeUtil.checkSendFrequency(email);
         // 生成邮箱验证码的值，随机6为数字
         String emailValidCode = RandomUtil.randomNumbers(6);
         // 生成邮箱验证码的请求号
@@ -1950,9 +1961,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 queryWrapper.lambda().in(SysUser::getId, StrUtil.split(sysUserExportParam.getUserIds(), StrUtil.COMMA));
             } else {
                 if (ObjectUtil.isNotEmpty(sysUserExportParam.getSearchKey())) {
+                    // 手机号为加密字段，无法模糊匹配密文，只能按新旧候选密文精确匹配
                     queryWrapper.lambda().and(q -> q.like(SysUser::getAccount, sysUserExportParam.getSearchKey())
                             .or().like(SysUser::getName, sysUserExportParam.getSearchKey())
-                            .or().like(SysUser::getPhone, sysUserExportParam.getSearchKey()));
+                            .or().in(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(sysUserExportParam.getSearchKey())));
                 }
                 if (ObjectUtil.isNotEmpty(sysUserExportParam.getUserStatus())) {
                     queryWrapper.lambda().eq(SysUser::getUserStatus, sysUserExportParam.getUserStatus());
@@ -2300,7 +2312,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public SysUserMessageDetailResult loginMessageDetail(SysUserMessageIdParam sysUserMessageIdParam) {
-        return JSONUtil.toBean(devMessageApi.detail(sysUserMessageIdParam.getId()), SysUserMessageDetailResult.class);
+        SysUserMessageDetailResult sysUserMessageDetailResult = JSONUtil.toBean(devMessageApi.detail(sysUserMessageIdParam.getId()),
+                SysUserMessageDetailResult.class);
+        // 校验当前登录用户是否为该站内信的接收人
+        String loginUserId = StpUtil.getLoginIdAsString();
+        List<SysUserMessageDetailResult.DevReceiveInfo> receiveInfoList = sysUserMessageDetailResult.getReceiveInfoList();
+        if (ObjectUtil.isEmpty(receiveInfoList) || receiveInfoList.stream()
+                .noneMatch(devReceiveInfo -> loginUserId.equals(devReceiveInfo.getReceiveUserId()))) {
+            throw new CommonException("无权查看该站内信，id值为：{}", sysUserMessageIdParam.getId());
+        }
+        return sysUserMessageDetailResult;
     }
 
     @Override
@@ -2384,7 +2405,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 保存用户
         this.add(sysUserAddParam, SysUserSourceFromTypeEnum.SYSTEM_REGISTER.getValue());
         // 获取用户信息
-        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone)));
+        SysUser sysUser = this.getOne(new LambdaQueryWrapper<SysUser>().in(SysUser::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone)));
         // 授权默认角色
         SysRoleGrantUserParam sysRoleGrantUserParam = new SysRoleGrantUserParam();
         sysRoleGrantUserParam.setId(this.getDefaultNewUserRoleId());

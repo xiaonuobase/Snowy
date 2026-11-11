@@ -25,7 +25,7 @@
 		</a-form-item>
 		<a-form-item label="邮件正文" name="content" v-if="sendType === 'HTML'">
 			<xn-editor
-				v-model="formData.content"
+				v-model:value="formData.content"
 				placeholder="请输入邮件正文"
 				:file-upload-function="apiFunction.fileUploadApi"
 			/>

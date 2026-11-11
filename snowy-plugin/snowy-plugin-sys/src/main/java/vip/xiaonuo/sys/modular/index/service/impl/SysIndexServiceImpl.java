@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import vip.xiaonuo.auth.api.AuthApi;
 import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
 import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.common.exception.CommonException;
 import vip.xiaonuo.dev.api.DevApi;
 import vip.xiaonuo.dev.api.DevLogApi;
 import vip.xiaonuo.dev.api.DevMessageApi;
@@ -91,7 +92,10 @@ public class SysIndexServiceImpl implements SysIndexService {
         List<String> scheduleIdList = sysIndexScheduleIdParamList.stream().map(SysIndexScheduleIdParam::getId)
                 .collect(Collectors.toList());
         if(ObjectUtil.isNotEmpty(scheduleIdList)) {
-            sysRelationService.removeByIds(scheduleIdList);
+            // 只能删除当前登录用户自己的日程
+            sysRelationService.remove(new LambdaQueryWrapper<SysRelation>().in(SysRelation::getId, scheduleIdList)
+                    .eq(SysRelation::getCategory, SysRelationCategoryEnum.SYS_USER_SCHEDULE_DATA.getValue())
+                    .eq(SysRelation::getObjectId, StpLoginUserUtil.getLoginUser().getId()));
         }
     }
 
@@ -116,7 +120,16 @@ public class SysIndexServiceImpl implements SysIndexService {
 
     @Override
     public SysIndexMessageDetailResult messageDetail(SysIndexMessageIdParam sysIndexMessageIdParam) {
-        return JSONUtil.toBean(devMessageApi.detail(sysIndexMessageIdParam.getId()), SysIndexMessageDetailResult.class);
+        SysIndexMessageDetailResult sysIndexMessageDetailResult = JSONUtil.toBean(devMessageApi.detail(sysIndexMessageIdParam.getId()),
+                SysIndexMessageDetailResult.class);
+        // 校验当前登录用户是否为该站内信的接收人
+        String loginUserId = StpUtil.getLoginIdAsString();
+        List<SysIndexMessageDetailResult.DevReceiveInfo> receiveInfoList = sysIndexMessageDetailResult.getReceiveInfoList();
+        if(ObjectUtil.isEmpty(receiveInfoList) || receiveInfoList.stream()
+                .noneMatch(devReceiveInfo -> loginUserId.equals(devReceiveInfo.getReceiveUserId()))) {
+            throw new CommonException("无权查看该站内信，id值为：{}", sysIndexMessageIdParam.getId());
+        }
+        return sysIndexMessageDetailResult;
     }
 
     @Override

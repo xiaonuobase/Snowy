@@ -15,6 +15,7 @@ import { Modal, message } from 'ant-design-vue'
 import router from '@/router'
 import sysConfig from '@/config/index'
 import tool from '@/utils/tool'
+import { getApiBaseUrl } from '@/utils/request'
 
 // 以下这些code需要重新登录
 const reloadCodes = [401, 1011007, 1011008]
@@ -35,7 +36,7 @@ const errorCodeMap = {
 const loginBack = ref(false)
 // 创建 axios 实例
 const clientService = axios.create({
-	baseURL: '/api', // api base_url
+	baseURL: getApiBaseUrl(), // api base_url，与B端一致支持生产直连模式
 	timeout: sysConfig.TIMEOUT // 请求超时时间
 })
 
@@ -92,7 +93,8 @@ clientService.interceptors.response.use(
 			if (!loginBack.value) {
 				clientError()
 			}
-			return
+			// 必须reject，否则调用方的then会拿到undefined继续执行
+			return Promise.reject(data)
 		}
 		if (code !== 200) {
 			const customErrorMessage = response.config.customErrorMessage

@@ -14,7 +14,7 @@ package vip.xiaonuo.dev.modular.email.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
-import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailAccount;
@@ -196,7 +196,7 @@ public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> i
 
     @Override
     public void sendAliyun(DevEmailSendAliyunTmpParam devEmailSendAliyunTmpParam) {
-        CommonEmailUtil.validEmail(devEmailSendAliyunTmpParam.getReceiveAccounts());
+        // 模板邮件的接收人为收件人列表名称，不是邮箱地址，不做邮箱格式校验
         String receiptInfo = DevEmailAliyunUtil.sendEmailWithTemplate(devEmailSendAliyunTmpParam.getSendAccount(),
                 devEmailSendAliyunTmpParam.getTagName(), devEmailSendAliyunTmpParam.getReceiveAccounts(),
                 devEmailSendAliyunTmpParam.getTemplateName());
@@ -237,11 +237,17 @@ public class DevEmailServiceImpl extends ServiceImpl<DevEmailMapper, DevEmail> i
 
     @Override
     public void sendTencent(DevEmailSendTencentTmpParam devEmailSendTencentTmpParam) {
-        CommonEmailUtil.validEmail(devEmailSendTencentTmpParam.getReceiveAccounts());
+        // 模板邮件的接收人为收件人列表ID、模板名为模板ID，腾讯云要求均为数字
+        if (!NumberUtil.isLong(devEmailSendTencentTmpParam.getReceiveAccounts())) {
+            throw new CommonException("收件人列表ID必须为数字：{}", devEmailSendTencentTmpParam.getReceiveAccounts());
+        }
+        if (!NumberUtil.isLong(devEmailSendTencentTmpParam.getTemplateName())) {
+            throw new CommonException("模板ID必须为数字：{}", devEmailSendTencentTmpParam.getTemplateName());
+        }
         String receiptInfo = DevEmailTencentUtil.sendEmailWithTemplate(devEmailSendTencentTmpParam.getSendAccount(),
                 devEmailSendTencentTmpParam.getSendUser(),  devEmailSendTencentTmpParam.getReceiveAccounts(),
                 devEmailSendTencentTmpParam.getTemplateName(), devEmailSendTencentTmpParam.getTemplateParam(),
-                devEmailSendTencentTmpParam.getSubject(), CollectionUtil.newArrayList());
+                devEmailSendTencentTmpParam.getSubject(), devEmailSendTencentTmpParam.getAttachmentList());
         DevEmail devEmail = new DevEmail();
         BeanUtil.copyProperties(devEmailSendTencentTmpParam, devEmail);
         devEmail.setEngine(DevEmailEngineTypeEnum.TENCENT.getValue());

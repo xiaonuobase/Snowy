@@ -22,10 +22,6 @@ export default {
 	positionPage(data) {
 		return request('page', data, 'get')
 	},
-	// 获取岗位列表
-	positionList(data) {
-		return request('list', data, 'get')
-	},
 	// 提交表单 edit为true时为编辑，默认为新增
 	submitForm(data, edit = false) {
 		return request(edit ? 'edit' : 'add', data)

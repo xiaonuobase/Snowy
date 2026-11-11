@@ -556,11 +556,11 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
         GenBasic genBasic = this.queryEntity(genBasicIdParam.getId());
         String genModuleName = genBasic.getModuleName();
         String genPluginName = genBasic.getPluginName();
-        String GEN_PROJECT_PLUGIN_BIZ_KEY = GEN_PROJECT_PLUGIN_KEY + File.separator + genPluginName;
+        File genProjectPluginFolder = FileUtil.file(System.getProperty("user.dir") + File.separator + GEN_PROJECT_PLUGIN_KEY);
 
-        // 定义后端生成的目录
-        String genProjectBackendPath = System.getProperty("user.dir") + File.separator + GEN_PROJECT_PLUGIN_BIZ_KEY + File.separator + "src" +
-                File.separator + "main" + File.separator + "java";
+        // 定义后端生成的目录，必须位于插件根目录之内
+        String genProjectBackendPath = this.getSubFile(genProjectPluginFolder, genPluginName + File.separator + "src" +
+                File.separator + "main" + File.separator + "java").getPath();
 
         if(!FileUtil.exist(genProjectBackendPath)) {
             throw new CommonException("后端代码生成位置：{}不存在，请检查位置", genProjectBackendPath);
@@ -612,30 +612,49 @@ public class GenBasicServiceImpl extends ServiceImpl<GenBasicMapper, GenBasic> i
             }
         }
         GenBasicPreviewResult genBasicPreviewResult = this.previewGen(genBasicIdParam);
+        // 系统临时根目录，压缩包与临时目录都必须位于其内
+        File tmpRootFolder = FileUtil.file(FileUtil.getTmpDirPath());
         // 先删除压缩包
-        FileUtil.del(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName() + ".zip");
+        FileUtil.del(this.getSubFile(tmpRootFolder, genBasic.getFunctionName() + ".zip"));
         // 生成临时目录
-        File tempFolder = FileUtil.file(FileUtil.getTmpDirPath() + File.separator + genBasic.getFunctionName());
+        File tempFolder = this.getSubFile(tmpRootFolder, genBasic.getFunctionName());
         // 生成SQL代码到临时目录
         genBasicPreviewResult.getGenBasicCodeSqlResultList().forEach(genBasicCodeResult ->
-                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator +
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), this.getSubFile(tempFolder,
                         genBasicCodeResult.getCodeFileWithPathName())));
         // 生成前端代码到临时目录
+        File tempFrontendFolder = this.getSubFile(tempFolder, "frontend");
         genBasicPreviewResult.getGenBasicCodeFrontendResultList().forEach(genBasicCodeResult ->
-                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
-                        + "frontend" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), this.getSubFile(tempFrontendFolder,
+                        genBasicCodeResult.getCodeFileWithPathName())));
         // 生成后端代码到临时目录
+        File tempBackendFolder = this.getSubFile(tempFolder, "backend");
         genBasicPreviewResult.getGenBasicCodeBackendResultList().forEach(genBasicCodeResult ->
-                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
-                        + "backend" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), this.getSubFile(tempBackendFolder,
+                        genBasicCodeResult.getCodeFileWithPathName())));
         // 生成移动端代码到临时目录
         if (ObjectUtil.isEmpty(genBasic.getMobileModule())){
             return tempFolder;
         }
+        File tempMobileFolder = this.getSubFile(tempFolder, "mobile");
         genBasicPreviewResult.getGenBasicCodeMobileResultList().forEach(genBasicCodeResult ->
-                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), FileUtil.file(tempFolder + File.separator
-                        + "mobile" + File.separator + genBasicCodeResult.getCodeFileWithPathName())));
+                FileUtil.writeUtf8String(genBasicCodeResult.getCodeFileContent(), this.getSubFile(tempMobileFolder,
+                        genBasicCodeResult.getCodeFileWithPathName())));
         return tempFolder;
+    }
+
+    /**
+     * 拼接子路径并校验结果位于根目录之内（不能等于根目录），防止路径穿越
+     *
+     * @author yubaoshan
+     * @date 2026/11/09 15:00
+     */
+    private File getSubFile(File rootFolder, String subPath) {
+        File subFile = FileUtil.file(rootFolder + File.separator + subPath);
+        if (!FileUtil.isSub(rootFolder, subFile) || FileUtil.pathEquals(rootFolder, subFile)) {
+            throw new CommonException("代码生成路径非法：{}，请检查插件名、包名、模块名、功能名、业务名与类名", subPath);
+        }
+        return subFile;
     }
 
     @Override

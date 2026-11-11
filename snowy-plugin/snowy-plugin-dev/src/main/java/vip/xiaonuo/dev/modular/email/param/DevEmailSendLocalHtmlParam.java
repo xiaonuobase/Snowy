@@ -14,6 +14,7 @@ package vip.xiaonuo.dev.modular.email.param;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.map.MapUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -49,11 +50,13 @@ public class DevEmailSendLocalHtmlParam {
     @NotBlank(message = "content不能为空")
     private String content;
 
-    /** 图片展位符 */
+    /** 图片展位符，仅限内部调用赋值，禁止从请求参数绑定 */
+    @JsonIgnore
     @Schema(description = "图片展位符", hidden = true)
     private Map<String, InputStream> imageMap = MapUtil.newHashMap();
 
-    /** 附件列表 */
+    /** 附件列表，仅限内部调用赋值，禁止从请求参数绑定 */
+    @JsonIgnore
     @Schema(description = "附件列表", hidden = true)
     private List<File> files = CollectionUtil.newArrayList();
 }

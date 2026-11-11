@@ -267,7 +267,6 @@
 		previewLoaded.value = 0
 		previewTotal.value = 0
 		previewLoading.value = true
-		let finished = false
 		// 大文件耗时长，不设超时，由用户自行取消
 		fileApi
 			.fileAuthDownload(
@@ -282,7 +281,6 @@
 				}
 			)
 			.then((res) => {
-				finished = true
 				// 非200时拦截器已提示并返回空
 				if (!res) return
 				// 出错时后端以JSON返回错误信息，交给下载工具解析并提示
@@ -300,10 +298,6 @@
 				if (previewController !== controller) return
 				previewController = null
 				previewLoading.value = false
-				// 网络中断等失败全局只记控制台，这里补一句提示
-				if (!finished) {
-					message.error('文件加载失败，请稍后重试')
-				}
 			})
 	}
 	// 取消正在加载的预览

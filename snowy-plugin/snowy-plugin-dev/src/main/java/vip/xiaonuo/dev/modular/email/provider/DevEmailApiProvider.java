@@ -100,6 +100,7 @@ public class DevEmailApiProvider implements DevEmailApi {
     @Override
     public void sendEmailWithTemplateAliyun(String from, String tagName, String toName, String templateName) {
         DevEmailSendAliyunTmpParam devEmailSendAliyunTmpParam = new DevEmailSendAliyunTmpParam();
+        devEmailSendAliyunTmpParam.setSendAccount(from);
         devEmailSendAliyunTmpParam.setReceiveAccounts(toName);
         devEmailSendAliyunTmpParam.setTagName(tagName);
         devEmailSendAliyunTmpParam.setTemplateName(templateName);
@@ -137,6 +138,8 @@ public class DevEmailApiProvider implements DevEmailApi {
         devEmailSendTencentTmpParam.setSendUser(user);
         devEmailSendTencentTmpParam.setReceiveAccounts(toId);
         devEmailSendTencentTmpParam.setTemplateName(templateId);
+        devEmailSendTencentTmpParam.setTemplateParam(templateParam);
+        devEmailSendTencentTmpParam.setSubject(subject);
         devEmailSendTencentTmpParam.setAttachmentList(attachmentList);
         devEmailService.sendTencent(devEmailSendTencentTmpParam);
     }

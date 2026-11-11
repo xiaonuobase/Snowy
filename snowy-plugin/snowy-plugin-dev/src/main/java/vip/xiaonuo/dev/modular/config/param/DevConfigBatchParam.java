@@ -32,9 +32,8 @@ public class DevConfigBatchParam {
     @NotBlank(message = "configKey不能为空")
     private String configKey;
 
-    /** 配置值 */
+    /** 配置值，配置页的非必填项允许为空 */
     @Schema(description = "配置值")
-    @NotBlank(message = "configValue不能为空")
     private String configValue;
 
 }

@@ -174,11 +174,11 @@ public class DevEmailTencentUtil {
         }
         sendEmailRequest.setSimple(simple);
         if(ObjectUtil.isNotEmpty(attachmentList)) {
-            Attachment[] attachments = (Attachment[]) attachmentList.stream().map(jsonObject -> {
+            Attachment[] attachments = attachmentList.stream().map(jsonObject -> {
                 Attachment attachment = new Attachment();
                 BeanUtil.copyProperties(jsonObject, attachment);
                 return attachment;
-            }).toArray();
+            }).toArray(Attachment[]::new);
             sendEmailRequest.setAttachments(attachments);
         }
         return sendEmailRequest;
@@ -202,11 +202,11 @@ public class DevEmailTencentUtil {
         batchSendEmailRequest.setSubject(subject);
         batchSendEmailRequest.setTaskType(1L);
         if(ObjectUtil.isNotEmpty(attachmentList)) {
-            Attachment[] attachments = (Attachment[]) attachmentList.stream().map(jsonObject -> {
+            Attachment[] attachments = attachmentList.stream().map(jsonObject -> {
                 Attachment attachment = new Attachment();
                 BeanUtil.copyProperties(jsonObject, attachment);
                 return attachment;
-            }).toArray();
+            }).toArray(Attachment[]::new);
             batchSendEmailRequest.setAttachments(attachments);
         }
         return batchSendEmailRequest;

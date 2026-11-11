@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,6 @@ import vip.xiaonuo.dev.modular.dict.entity.DevDict;
 import vip.xiaonuo.dev.modular.dict.param.*;
 import vip.xiaonuo.dev.modular.dict.service.DevDictService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

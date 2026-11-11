@@ -15,6 +15,7 @@ package vip.xiaonuo.client.modular.user.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,8 +24,6 @@ import vip.xiaonuo.client.modular.user.result.ClientUserPicValidCodeResult;
 import vip.xiaonuo.client.modular.user.service.ClientUserService;
 import vip.xiaonuo.common.annotation.CommonLog;
 import vip.xiaonuo.common.pojo.CommonResult;
-
-import javax.validation.Valid;
 
 /**
  * C端用户个人控制器

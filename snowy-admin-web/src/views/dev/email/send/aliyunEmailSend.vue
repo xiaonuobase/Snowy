@@ -10,10 +10,10 @@
 		<a-form-item label="发件人邮箱：" name="sendAccount">
 			<a-input v-model:value="formData.sendAccount" placeholder="请输入管理控制台中配置的发信地址" />
 		</a-form-item>
-		<a-form-item label="接收人邮箱：" name="receiveAccounts">
+		<a-form-item :label="sendType !== 'TMP' ? '接收人邮箱：' : '收件人列表名称：'" name="receiveAccounts">
 			<a-textarea
 				v-model:value="formData.receiveAccounts"
-				:placeholder="sendType !== 'TMP' ? '请输入接收人邮箱，多个逗号拼接' : '预先创建且上传了收件人的收件人列表名称'"
+				:placeholder="receiveAccountsTip"
 				:auto-size="{ minRows: 2, maxRows: 5 }"
 			/>
 		</a-form-item>
@@ -29,16 +29,16 @@
 		</a-form-item>
 		<a-form-item label="邮件正文" name="content" v-if="sendType === 'HTML'">
 			<xn-editor
-				v-model="formData.content"
+				v-model:value="formData.content"
 				placeholder="请输入邮件正文"
 				:file-upload-function="apiFunction.fileUploadApi"
 			/>
 		</a-form-item>
-		<a-form-item label="模板名：" name="templateName" v-if="sendType === 'TMP'">
+		<a-form-item label="模板名称：" name="templateName" v-if="sendType === 'TMP'">
 			<a-input v-model:value="formData.templateName" placeholder="请输入预先创建且通过审核的模板名称" allow-clear />
 		</a-form-item>
 		<a-form-item label="标签名：" name="tagName" v-if="sendType === 'TMP'">
-			<a-input v-model:value="formData.tagName" placeholder="请输入标签名" allow-clear />
+			<a-input v-model:value="formData.tagName" placeholder="请输入控制台创建的邮件标签名，可不填" allow-clear />
 		</a-form-item>
 		<a-form-item label="发件人昵称：" name="sendUser" v-if="sendType !== 'TMP'">
 			<a-input v-model:value="formData.sendUser" placeholder="设置发件人昵称" allow-clear />
@@ -61,14 +61,18 @@
 	// 表单数据
 	const formData = ref({})
 
+	// 接收人输入提示，模板邮件的接收人为收件人列表名称
+	const receiveAccountsTip = computed(() =>
+		sendType.value !== 'TMP' ? '请输入接收人邮箱，多个逗号拼接' : '请输入预先创建且上传了收件人的收件人列表名称'
+	)
 	// 默认要校验的
-	const formRules = {
+	const formRules = computed(() => ({
 		sendAccount: [required('请输入发件人邮箱，即管理控制台中配置的发信地址')],
-		receiveAccounts: [required('请输入接收人邮箱，多个逗号拼接')],
+		receiveAccounts: [required(receiveAccountsTip.value)],
 		subject: [required('请输入邮件主题')],
 		templateName: [required('请输入预先创建且通过审核的模板名称')],
 		content: [required('请输入邮件正文')]
-	}
+	}))
 
 	// 发送
 	const send = () => {
