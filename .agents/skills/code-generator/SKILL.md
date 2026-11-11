@@ -46,14 +46,15 @@ Snowy 自带 Beetl 模板代码生成器（`snowy-plugin-gen`），能从数据�
 | `treeParentField` / `treeNameField` | 树配置：父字段 / 显示名字段 | TREE、LEFT_TREE_TABLE（左树）填 |
 | `subDbTable` / `subDbTableKey` / `subForeignKey` / `subClassName` / `subFunctionName` / `subBusName` | 子表（左树右表的右表）：表名/主键/关联外键/类名/功能名/业务名 | MASTER_DETAIL、LEFT_TREE_TABLE（右表）填 |
 
-后端保存时的格式校验（GenBasicAddParam / GenBasicEditParam 的 @Pattern，防止路径穿越和生成非法代码；前端第一步表单没有同样的规则，不合规只能看到后端报错）：
+后端保存时的格式校验（GenBasicAddParam / GenBasicEditParam 的 @Pattern，保证生成的代码能编译；前端第一步表单没有同样的规则，不合规只能看到后端报错）：
 
 | 字段 | 允许的格式 |
 |---|---|
 | `pluginName` | 字母开头，只含字母、数字、中划线、下划线 |
 | `moduleName` / `busName` / `className` / `subClassName` / `subBusName` | 字母开头，只含字母和数字（子表两项可留空） |
 | `packageName` | 字母开头的段（字母、数字、下划线）用 `.` 连接 |
-| `functionName` | 不能以 `.` 开头，不能含空白、`..` 以及 `/ \ : * ? " < > \|`；导入表时默认取表注释，表注释带空格或斜杠要先手动改 |
+
+`functionName` 不做格式限制（菜单标题允许空格、斜杠等）；它兼作 ZIP 临时目录名，路径穿越由 GenBasicServiceImpl 的 `getSubFile`（目标路径必须落在根目录之内）统一拦截。
 
 ## 模板形态选择（genType）
 

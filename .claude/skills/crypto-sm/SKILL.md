@@ -69,11 +69,11 @@ public class BizPatient extends CommonEntity {
 - 模糊查询：需要另行设计检索方案；整值 SM3 摘要辅助列只能用于精确匹配/查重，不能支持子串查询
 - 列表展示：自动解密无需处理；需要脱敏展示（138****5678）在前端或 Result 层处理
 
-### 历史密文升级
+### 历史密文
 
-平台自带定时任务 `CommonSm4CipherUpgradeTimerTaskRunner`（snowy-common/timer），把配了 `CommonSm4CbcTypeHandler` 的列中的历史 ECB 密文改写为 CBC 密文；可重复执行，多实例并发安全。用法：备份数据库 → 任务调度里新建该任务（cron 设稀疏）→ 立即执行一次 → 看日志确认 → 停止任务。
+平台**不做**批量迁移，老库升级后无需任何操作：历史 ECB 密文读取、等值查询都自动兼容，记录被编辑保存时自然改写为 CBC 密文，库里长期两种格式并存属于正常现象。因此 ECB 兼容代码（`isSm4LegacyCipher`、`sm4LegacyEcb`）必须保留，禁止删除；也不要自己写全表转换脚本。
 
-注意：它只扫描配了 TypeHandler 的列。业务代码手动调用 `doSm4CbcEncrypt` 存储的列（如 SYS_USER_EXT / CLIENT_USER_EXT 的 OTP_SECRET_KEY）不在升级范围内，仍保持旧格式（照样能解密）；新业务的敏感字段优先用 TypeHandler，不要手动加解密。
+新业务的敏感字段优先用 TypeHandler，不要手动调用 `doSm4CbcEncrypt` / `doSm4CbcDecrypt` 存取（出厂 SYS_USER_EXT / CLIENT_USER_EXT 的 OTP_SECRET_KEY 是手动加解密的存量写法）。
 
 ## 登录/改密流程（不要自造）
 
@@ -143,5 +143,4 @@ bizXxx.setPhone(bizXxxAddParam.getPhone());
 | `snowy-plugin/snowy-plugin-auth/src/main/java/vip/xiaonuo/auth/modular/login/service/impl/AuthServiceImpl.java` | SM2 解密 + SM3 校验现场 |
 | `snowy-admin-web/src/utils/smCrypto.js` | 前端国密 |
 | `snowy-common/src/main/java/vip/xiaonuo/common/util/CommonCryptogramUtil.java` | 当前密钥常量与 SM4 IV |
-| `snowy-common/src/main/java/vip/xiaonuo/common/timer/CommonSm4CipherUpgradeTimerTaskRunner.java` | 历史 ECB 密文升级任务 |
 | `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/service/impl/SysUserServiceImpl.java` | 加密字段等值查询（in + 候选密文）范本 |
