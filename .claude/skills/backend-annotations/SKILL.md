@@ -15,7 +15,7 @@ description: Snowy 常用注解速查与正误用法：@CommonLog 操作日志�
 | `@SaCheckRole("xxx")` | Sa-Token | Controller 方法 | 角色校验（少用） |
 | `@Trans(type=...)` | Easy-Trans | Entity 字段 | 字典/关联表字段自动翻译 |
 | `@Validated` | Spring | Controller 类 | 开启方法级校验 |
-| `@Valid` | jakarta（新代码 `import jakarta.validation.Valid`，与 BizNoticeController 和生成器模板一致；不少存量平台 Controller 仍 import javax.validation.Valid，仿写时不要照抄） | 参数前 | 触发 Param 校验注解 |
+| `@Valid` | jakarta（一律 `import jakarta.validation.Valid`，平台代码与生成器模板已统一；禁止 import javax.validation.Valid——classpath 里有 javax 包能编译通过，但列表元素与嵌套对象的级联校验不生效） | 参数前、嵌套对象字段上 | 触发 Param 校验注解 |
 | `@TableName("BIZ_XXX")` | MyBatis-Plus | Entity 类 | 表映射（大写） |
 | `@TableId` | MyBatis-Plus | Entity id 字段 | 字符串雪花主键 |
 | `@TableLogic` | MyBatis-Plus | CommonEntity 的 deleteFlag | 逻辑删除（继承即有，别重复加） |

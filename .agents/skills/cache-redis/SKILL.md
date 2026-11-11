@@ -28,10 +28,18 @@ Object v = commonCacheOperator.get(key);                   // 取（无则 null�
 commonCacheOperator.remove(key1, key2);                    // 删一个或多个
 commonCacheOperator.removeBatch("prefix:*");               // 按模式批量删
 commonCacheOperator.getAllKeys();                          // 全部 key（调试用）
+
+// 以下为原子操作，适合验证码、限流、失败计数等并发场景
+boolean ok = commonCacheOperator.putIfAbsent(key, value, 60); // 不存在才写入，返回是否写入成功
+Object once = commonCacheOperator.getAndRemove(key);       // 取出即删除（一次性数据，如验证码）
+long n = commonCacheOperator.incrementCounter(key, 3600);  // 计数器自增并返回新值，首次计数时设过期秒数
+commonCacheOperator.removeCounter(key);                    // 删除计数器
 ```
 
+- 计数器的 key 自动加 `Counter:` 前缀（不是 `Cache:`），按字符串存储；只能用 incrementCounter / removeCounter 读写，不要用 get/put 去读写同一个 key
+
 - key 命名沿用项目现有风格 `{插件}-{对象}:{标识}`（如 `biz-org:all-list`、`biz-supplier:count`），用短横线 + 冒号分层，在本插件的 ServiceImpl 里定义成常量；CommonCacheOperator 会自动加 `Cache:` 前缀，不要自己再拼；框架已占用的前缀见 CacheConstant（`permission-resource`、`auth-b-permission-list:` 等，**不要冲突**）
-- 值可以直接存对象（JsonJacksonCodec 编解码），不需要先 JSON 序列化；实体/集合取回后用 `JSONUtil.toBean / toList` 转回目标类型（平台写法，参考 BizOrgServiceImpl.getAllOrgList），简单值（String/Integer）可直接强转（如 AuthServiceImpl 的登录失败计数）
+- 值可以直接存对象（JsonJacksonCodec 编解码），不需要先 JSON 序列化；实体/集合取回后用 `JSONUtil.toBean / toList` 转回目标类型（平台写法，参考 BizOrgServiceImpl.getAllOrgList），简单值（String/Integer）可直接强转；需要计数时用 incrementCounter，不要 get 后加一再 put（并发会丢计数，参考 AuthServiceImpl 的登录失败计数）
 
 ## 需要原生 Redis 结构/锁时：RedissonClient
 

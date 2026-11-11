@@ -58,7 +58,7 @@ throw new CommonException(CommonExceptionEnum.ERROR403.getCode(), "无权操作�
 - 禁止 `RuntimeException`、`IllegalArgumentException`、`ServiceException` 直接抛出
 - 全局异常处理在 `snowy-web-app/src/main/java/vip/xiaonuo/core/handler/GlobalExceptionHandler.java`（@ControllerAdvice → GlobalExceptionUtil.getCommonResult(e)），业务代码不要自己 try-catch 后返回错误 CommonResult
 - @Valid 校验 Param 对象失败时（MethodArgumentNotValidException / BindException），由全局处理器返回 415 + 注解里的中文 message，不需要手写校验返回
-- 注意：方法参数上的约束（如删除接口的 `@NotEmpty List<…>`）抛出的是 jakarta.validation.ConstraintViolationException，而 GlobalExceptionUtil 目前 import 的是 javax 版，可能返回"服务器异常"（静态推断，待运行验证并修代码）
+- 方法参数上的约束（如删除接口的 `@NotEmpty List<…>`）和列表元素的级联校验（`@Valid List<XxxIdParam>` 里每个 id 的 `@NotBlank`）抛出 jakarta.validation.ConstraintViolationException，同样由全局处理器返回 415 + 中文 message；前提是 `@Valid` 必须 import `jakarta.validation.Valid`，javax 版不会触发级联校验
 
 ## 文档注解（Knife4j / OpenAPI3）
 

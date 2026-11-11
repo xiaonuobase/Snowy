@@ -121,7 +121,7 @@ URL 规范：`/{插件}/{业务域}/{动作}`，动作动词式（page/list/add/
 - **超管与新接口**：超管（角色码 `superAdmin`）**不会**自动通过 `@SaCheckPermission`；**手写的新接口必须到 角色管理 → 授权权限 给超管勾选，否则超管也 403**（生成器"项目内生成"会自动授权）；平台插件（sys/dev 等）不用该注解，靠 GlobalConfigure 路由级超管校验
 - **前端按钮权限**：`hasPerm('bizNoticeAdd')`，驼峰码，存于 SYS_RESOURCE 表 category=BUTTON 行的 code 列，登录时放入 buttonCodeList 下发前端
 - 路由级白名单（免登录/C 端/超管）集中在 `snowy-web-app` 的 `GlobalConfigure`，新增免登录接口必须改那里
-- B 端用 `StpUtil` / `StpLoginUserUtil`；C 端用 `StpClientUtil` / `StpClientLoginUserUtil`（接口前缀 /auth/c/**、/client/c/**）
+- B 端用 `StpUtil` / `StpLoginUserUtil`；C 端用 `StpClientUtil` / `StpClientLoginUserUtil`（接口前缀 /auth/c/**、/client/c/**，另有历史命名 /client/userCenter/**）
 
 ## 前端架构（snowy-admin-web）
 

@@ -13,7 +13,9 @@ description: Snowy 国密体系使用规范：登录密码 SM2 加密传输、�
 | 摘要 | **SM3**（哈希） | 口令落库摘要（不可逆） | `CommonCryptogramUtil.doHashValue`（SysPasswordUtil 只负责默认密码、复杂度、历史密码和过期校验） |
 | 字段 | **SM4-CBC**（对称） | 手机号/证件号等敏感字段落库加密 | `CommonSm4CbcTypeHandler`（snowy-common/handler） |
 
-底座：后端 com.antherd:sm-crypto 0.3.2 + BouncyCastle（bcprov/bcpkix-jdk15on）1.70；前端 npm sm-crypto 0.3.13（以根 pom.xml 与 snowy-admin-web/package.json 为准）。提供国密算法能力；能否通过等保或密评，取决于部署方式、密钥管理（出厂密钥**必须替换**，见 CommonCryptogramUtil 类注释）和测评结论。
+底座：后端 Hutool SmUtil（hutool-all 5.8.25）+ BouncyCastle（bcprov/bcpkix-jdk15on）1.70，SM2 解密失败时降级到 com.antherd:sm-crypto 0.3.2；前端 npm sm-crypto 0.3.13（以根 pom.xml 与 snowy-admin-web/package.json 为准）。提供国密算法能力；能否通过等保或密评，取决于部署方式、密钥管理（出厂密钥**必须替换**，见 CommonCryptogramUtil 类注释）和测评结论。
+
+SM4 密文格式：当前为标准 CBC（PKCS5 填充）输出 **Base64**；旧版本依赖的 sm-crypto 实际按 ECB 加密，输出**小写十六进制**。`doSm4CbcDecrypt` 两种格式都能解，老库数据可直接读取；新写入一律是 CBC。注意：已写入 CBC 密文后回退到旧版本会读不出（显示密文、按手机号查不到），升级前先备份数据库。
 
 ## CommonCryptogramUtil API（snowy-common/util）
 
@@ -28,7 +30,10 @@ String digest = CommonCryptogramUtil.doHashValue(plain);
 
 // SM4 —— 通用对称加解密（字段加密底层也是它）
 String enc = CommonCryptogramUtil.doSm4CbcEncrypt(plain);
-String dec = CommonCryptogramUtil.doSm4CbcDecrypt(enc);
+String dec = CommonCryptogramUtil.doSm4CbcDecrypt(enc);   // CBC 与历史 ECB 密文都能解
+
+// SM4 —— 加密字段等值查询用：返回 [CBC 密文, 历史 ECB 密文]
+List<String> candidates = CommonCryptogramUtil.doSm4CbcEncryptCandidates(plain);
 ```
 
 当前实现的密钥常量在 `CommonCryptogramUtil` 中，前端公钥在 `smCrypto.js` 中；没有 `snowy.cryptogram.*` 配置绑定。修改密钥需同步前后端，并为已有 SM4 密文制定迁移方案。
@@ -54,9 +59,21 @@ public class BizPatient extends CommonEntity {
 ### SM4 字段的查询限制（必读）
 
 当前 SM4-CBC 使用固定 key/IV，同一明文对应相同密文。不要直接用明文对密文字段做 like 查询。处理方案：
-- 精确查询：`queryWrapper.lambda().eq(BizPatient::getPhone, 手机号明文)` —— TypeHandler 会让 MP 用密文比对？**不会自动**，需要走 eq 前手动 `CommonCryptogramUtil.doSm4CbcEncrypt(phone)` 加密后比对（以 SysUserServiceImpl 现有手机号查询写法为准，模仿之）
+- 精确查询：TypeHandler **不会**自动把查询条件加密，要手动转成密文比对；库里可能同时存在 CBC 新密文和历史 ECB 密文，所以用 `in` + 候选密文，不要用 `eq` + 单个密文（老数据会查不到、查重会漏）
+
+| 错误 | 正确 |
+|---|---|
+| `.eq(BizPatient::getPhone, phone)`（明文比密文，永远查不到） | `.in(BizPatient::getPhone, CommonCryptogramUtil.doSm4CbcEncryptCandidates(phone))` |
+| `.eq(BizPatient::getPhone, CommonCryptogramUtil.doSm4CbcEncrypt(phone))`（只命中新密文） | 同上，参考 SysUserServiceImpl / BizUserServiceImpl 的手机号查询与查重 |
+
 - 模糊查询：需要另行设计检索方案；整值 SM3 摘要辅助列只能用于精确匹配/查重，不能支持子串查询
 - 列表展示：自动解密无需处理；需要脱敏展示（138****5678）在前端或 Result 层处理
+
+### 历史密文升级
+
+平台自带定时任务 `CommonSm4CipherUpgradeTimerTaskRunner`（snowy-common/timer），把配了 `CommonSm4CbcTypeHandler` 的列中的历史 ECB 密文改写为 CBC 密文；可重复执行，多实例并发安全。用法：备份数据库 → 任务调度里新建该任务（cron 设稀疏）→ 立即执行一次 → 看日志确认 → 停止任务。
+
+注意：它只扫描配了 TypeHandler 的列。业务代码手动调用 `doSm4CbcEncrypt` 存储的列（如 SYS_USER_EXT / CLIENT_USER_EXT 的 OTP_SECRET_KEY）不在升级范围内，仍保持旧格式（照样能解密）；新业务的敏感字段优先用 TypeHandler，不要手动加解密。
 
 ## 登录/改密流程（不要自造）
 
@@ -106,12 +123,12 @@ bizXxx.setPhone(bizXxxAddParam.getPhone());
 - 禁止口令摘要、敏感字段加密、签名等安全用途自选 MD5/SHA-1/DES/AES（项目标准是国密）；非安全用途的去重键（如数据范围 SCOPE_KEY 的 MD5）和协议强制的算法（TOTP 的 HmacSHA1）除外
 - 禁止把示例密钥当作部署隔离机制；调整当前常量实现时需同时考虑前后端兼容与历史数据迁移
 - 禁止日志输出明文敏感字段（log 里脱敏或干脆不打）。注意：平台 `@CommonLog` 不做脱敏，会把整个入参写入 DEV_LOG.PARAM_JSON（出厂 `/sys/user/add`、`/biz/user/add` 就是这样）；新接口入参含敏感字段时按上节加 `@PropIgnore`，**不要拿出厂用户接口当范本**
-- 禁止对 SM4 字段写 like 查询（永远查不到）（出厂 sys/biz 用户导出的 searchKey 条件里仍有 `like(getPhone)` 遗留写法，这个条件实际不生效，不要模仿）
+- 禁止对 SM4 字段写 like 查询（永远查不到）；用户导出按手机号筛选的写法是 `in(getPhone, doSm4CbcEncryptCandidates(searchKey))` 整值匹配
 
 ## 检查清单
 
 - [ ] 新敏感字段：@TableName(autoResultMap=true) + @TableField(typeHandler=CommonSm4CbcTypeHandler.class)
-- [ ] 该字段有精确/模糊查询需求时已评估方案（密文 eq / HASH 辅助列）
+- [ ] 该字段有精确/模糊查询需求时已评估方案（精确查询用 `in` + `doSm4CbcEncryptCandidates`，不用 eq 单密文；子串查询另行设计）
 - [ ] 口令类只存 SM3 摘要，传输走 SM2（注意：出厂 `/sys/user/add` 的 password 字段没有走 SM2，新接口不要模仿）
 - [ ] 已核对当前密钥实现；如调整密钥，已同步前后端并规划历史数据迁移
 - [ ] 日志无明文敏感信息：Add/Edit Param 的敏感字段已加 `@PropIgnore`，Service 已手动赋值该字段
@@ -126,3 +143,5 @@ bizXxx.setPhone(bizXxxAddParam.getPhone());
 | `snowy-plugin/snowy-plugin-auth/src/main/java/vip/xiaonuo/auth/modular/login/service/impl/AuthServiceImpl.java` | SM2 解密 + SM3 校验现场 |
 | `snowy-admin-web/src/utils/smCrypto.js` | 前端国密 |
 | `snowy-common/src/main/java/vip/xiaonuo/common/util/CommonCryptogramUtil.java` | 当前密钥常量与 SM4 IV |
+| `snowy-common/src/main/java/vip/xiaonuo/common/timer/CommonSm4CipherUpgradeTimerTaskRunner.java` | 历史 ECB 密文升级任务 |
+| `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/service/impl/SysUserServiceImpl.java` | 加密字段等值查询（in + 候选密文）范本 |

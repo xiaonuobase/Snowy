@@ -10,9 +10,9 @@ description: Snowy 鉴权与安全规范：Sa-Token B/C 双端模型、路由白
 | 端 | 用户体系 | 登录工具类 | 接口前缀 |
 |---|---|---|---|
 | B 端（管理后台） | SYS_USER（sys 插件） | `StpUtil` / `StpLoginUserUtil.getLoginUser()` | `/sys/*` `/biz/*` `/dev/*` `/gen/*` |
-| C 端（终端用户） | CLIENT_USER（client 插件） | `StpClientUtil` / `StpClientLoginUserUtil` | `/auth/c/**` `/client/c/**` |
+| C 端（终端用户） | CLIENT_USER（client 插件） | `StpClientUtil` / `StpClientLoginUserUtil` | `/auth/c/**` `/client/c/**` `/client/userCenter/**` |
 
-出厂 `ClientUserCenterController`（`/client/userCenter/*`）是历史路径，不在 C 端前缀内，实际走 B 端登录校验，新 C 端接口**不要模仿**，一律用 `/client/c/{域}/{动作}`；`/client/user/*` 是 B 端管理 C 端用户的接口。
+出厂 `ClientUserCenterController`（`/client/userCenter/*`）是历史命名，已登记在 `CLIENT_USER_PERMISSION_PATH_ARR`，走 C 端登录校验（其中找回密码相关接口在免登录名单里）；新 C 端接口仍一律用 `/client/c/{域}/{动作}`，不要再起类似命名。`/client/user/*` 是 B 端管理 C 端用户的接口。
 
 两套独立 StpLogic（`AuthConfigure` 里注册 `stpLogic` 与 `stpClientLogic`），token 互不通用。**业务后台代码一律用 B 端 API**。
 
@@ -22,8 +22,8 @@ description: Snowy 鉴权与安全规范：Sa-Token B/C 双端模型、路由白
 
 | 数组 | 作用 |
 |---|---|
-| `NO_LOGIN_PATH_ARR` | 免登录路径（验证码、登录接口、公开页） |
-| `CLIENT_USER_PERMISSION_PATH_ARR` | C 端鉴权路径 |
+| `NO_LOGIN_PATH_ARR` | 免登录路径（验证码、登录接口、C 端退出、公开页）；移动端只放行静态图片 `/mobile/swiper/**`、`/mobile/fileImg/**`，禁止再用 `/mobile/**` 这类整段通配 |
+| `CLIENT_USER_PERMISSION_PATH_ARR` | C 端鉴权路径（`/auth/c/**`、`/client/c/**`、`/client/userCenter/**`），校验通过后自动续期 C 端 token |
 | `SUPER_PERMISSION_PATH_ARR` | 仅超管角色可访问（路由级 `StpUtil.checkRole("superAdmin")`，与 `@SaCheckPermission` 无关） |
 | `NO_LOCK_CHECK_PATH_ARR` | 锁屏期间仍放行的 B 端接口（解锁、退出登录、登录态查询），其余接口锁屏时一律拒绝；新增锁屏期间也要能调的接口时加在这里 |
 

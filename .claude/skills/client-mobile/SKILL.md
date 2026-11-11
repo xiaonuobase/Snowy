@@ -16,7 +16,7 @@ description: Snowy C 端（client 插件）与移动端（mobile 插件）开发
 | 前端请求 | request.js `baseRequest` | clientRequest.js `clientBaseRequest` |
 | 前端工程 | snowy-admin-web | snowy-admin-web 内置 C 端登录、注册、找回密码和前台页（views/auth/client、views/front）；完整的移动端在外部 uni-app 工程 |
 
-C 端接口路径规范：`/client/c/{业务域}/{动作}`（被 CLIENT_USER_PERMISSION_PATH_ARR 路由规则覆盖，走 C 端鉴权）。出厂 `/client/userCenter/*` 是历史路径，不在这条规则覆盖范围内，实际走 B 端登录校验，新接口**不要模仿**。
+C 端接口路径规范：`/client/c/{业务域}/{动作}`（被 CLIENT_USER_PERMISSION_PATH_ARR 路由规则覆盖，走 C 端鉴权）。出厂 `/client/userCenter/*` 是历史命名，也已登记在该规则里走 C 端鉴权，新接口仍用 `/client/c/` 前缀，不要再起类似命名。
 
 ## C 端模块结构（snowy-plugin-client）
 
@@ -49,7 +49,7 @@ const request = (url, ...arg) => clientBaseRequest('/client/c/xxx/' + url, ...ar
 // 用法与 baseRequest 相同，token 头与重定向逻辑按 C 端处理（读取/失效时清理 CLIENT_TOKEN）
 ```
 
-（出厂 clientLoginApi.js、clientUserCenterApi.js 仍 import baseRequest，clientBaseRequest 暂时没有调用方）
+（出厂 `src/api/auth/client/clientLoginApi.js`、`src/api/client/clientUserCenterApi.js` 就是这种写法，可作范本）
 
 实际移动端页面在独立 uni-app 工程（生成器 mobile 模板就是面向它的：请求用该工程的 `@/utils/request`，形如 `request({ url, method, data })`；token 头名 `token`，后端 82 端口）。
 
@@ -62,7 +62,7 @@ mobile/modular/
 ```
 
 - 作用：管理 uni-app 端的菜单与按钮权限（与 B 端 SYS_RESOURCE 平行的一套）
-- 内置移动端配套图片（文件类型图标、轮播图）：`snowy-plugin/snowy-plugin-mobile/src/main/resources/static/mobile/`，不含移动端打包产物
+- 内置移动端配套图片（文件类型图标、轮播图）：`snowy-plugin/snowy-plugin-mobile/src/main/resources/static/mobile/`，不含移动端打包产物；免登录只放行其中的 `swiper/`、`fileImg/` 两个目录，往这里新增目录要同步登记 NO_LOGIN_PATH_ARR
 - 代码生成器可产出 mobile 代码：GenBasic 配置 mobileModule 后，sqlend 模板会生成 MOBILE_RESOURCE 的 INSERT（按钮码 `mobile{ClassName}Add` 形态）
 - 完整 uni-app 前端工程不在本仓库（本仓库只有生成器的 mobile 模板），工程地址向团队确认
 

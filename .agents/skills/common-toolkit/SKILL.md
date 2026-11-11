@@ -1,6 +1,6 @@
 ---
 name: common-toolkit
-description: snowy-common 工具类地图与 Hutool 优先原则：CommonCacheOperator、CommonCryptogramUtil、CommonEmailUtil、CommonDownloadUtil 等 16 个工具类的用途索引与选择决策树。触发场景：1) 需要 utility（加密/邮箱校验/下载/IP/验证码/头像等）时先查这里 2) 不确定用哪个工具类 3) 想自写工具前检查是否已有。触发词：工具类、util、CommonCryptogramUtil、CommonEmailUtil、CommonDownloadUtil、Hutool、工具选择、复用。注意：缓存的完整用法见 cache-redis，国密详见 crypto-sm。
+description: snowy-common 工具类地图与 Hutool 优先原则：CommonCacheOperator、CommonCryptogramUtil、CommonEmailUtil、CommonDownloadUtil、CommonValidCodeUtil 等 17 个工具类的用途索引与选择决策树。触发场景：1) 需要 utility（加密/邮箱校验/下载/IP/验证码/头像等）时先查这里 2) 不确定用哪个工具类 3) 想自写工具前检查是否已有。触发词：工具类、util、CommonCryptogramUtil、CommonEmailUtil、CommonDownloadUtil、Hutool、工具选择、复用。注意：缓存的完整用法见 cache-redis，国密详见 crypto-sm。
 ---
 
 # Snowy 工具类地图
@@ -17,11 +17,12 @@ description: snowy-common 工具类地图与 Hutool 优先原则：CommonCacheOp
 
 禁止：重复造轮子、引入 commons-lang3/guava 等冗余依赖（hutool 已覆盖）。
 
-## snowy-common/util/ 全部 16 个工具类
+## snowy-common/util/ 全部 17 个工具类
 
 | 工具类 | 用途 | 常用方法/说明 |
 |---|---|---|
-| `CommonCryptogramUtil` | 国密三件套 | doSm2Encrypt/doSm2Decrypt（登录密码传输）、doHashValue（口令摘要）、doSm4CbcEncrypt/doSm4CbcDecrypt、后端解密登录密码用（详见 crypto-sm 技能） |
+| `CommonCryptogramUtil` | 国密三件套 | doSm2Encrypt/doSm2Decrypt（登录密码传输）、doHashValue（口令摘要）、doSm4CbcEncrypt/doSm4CbcDecrypt、doSm4CbcEncryptCandidates（加密字段等值查询的候选密文，配合 `in` 用）（详见 crypto-sm 技能） |
+| `CommonValidCodeUtil` | 验证码发送限流 | checkSendFrequency(手机号或邮箱)：同一目标 60 秒一次、24 小时 10 次，同一 IP 每小时 30 次，超限抛 CommonException；新增发短信/邮件验证码的入口，在生成验证码前调用它（详见 sms-mail 技能） |
 | `CommonEmailUtil` | 邮箱格式校验 | isNotEmail / validEmail；**不负责发送**，发邮件走 dev-api 的 `DevEmailApi`（详见 sms-mail 技能） |
 | `CommonDownloadUtil` | 文件下载 | 通过 HttpServletResponse 写流下载（Controller 导出场景用它，不要手写 IO） |
 | `CommonAvatarUtil` | 随机头像 | 生成默认头像（新用户无头像时） |
@@ -87,6 +88,6 @@ description: snowy-common 工具类地图与 Hutool 优先原则：CommonCacheOp
 
 | 文件 | 说明 |
 |---|---|
-| `snowy-common/src/main/java/vip/xiaonuo/common/util/` | 16 个工具类源码 |
+| `snowy-common/src/main/java/vip/xiaonuo/common/util/` | 17 个工具类源码 |
 | `snowy-common/src/main/java/vip/xiaonuo/common/consts/CacheConstant.java` | 缓存 key 常量 |
 | `snowy-plugin/snowy-plugin-auth/src/main/java/vip/xiaonuo/auth/modular/login/service/impl/AuthServiceImpl.java` | 工具类组合使用现场（加密/IP/UA/缓存） |

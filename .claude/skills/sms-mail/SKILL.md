@@ -40,12 +40,14 @@ devEmailApi.sendTextEmailLocal("a@x.com", "主题", "内容", List.of(new File("
 ## 验证码流程（与 auth 联动）
 
 ```
-1. 前端 /auth/b/getPhoneValidCode（或邮箱版）→ 后端生成 6 位码
+1. 前端 /auth/b/getPhoneValidCode（或邮箱版）→ 先校验图形验证码 → CommonValidCodeUtil.checkSendFrequency 限流 → 后端生成 6 位码
 2. 存 Redis（CommonCacheOperator，带过期时间，键含手机号）
 3. 发送短信/邮件给用户
-4. 用户提交登录/绑定 → 后端从缓存取码比对（一次性，验证即删）
-5. 现状：手机/邮箱验证码校验失败**不计次**（只有账号密码登录有错误次数锁定 handleRemainingTimes）；发码前必须先通过图形验证码。业务如果需要验证码防爆破，要自己加计数（比如用 CommonCacheOperator 按"手机号+请求号"计数）
+4. 用户提交登录/绑定 → 后端 getAndRemove 取码比对：取出即删除，**输错一次也作废**，需要重新获取
 ```
+
+- 发送限流（CommonValidCodeUtil）：同一手机号或邮箱 60 秒一次、24 小时 10 次，同一 IP 每小时 30 次；B/C 端与各用途共用额度，阈值目前是代码常量
+- 新增发验证码的入口必须同时做到：先过图形验证码、调 checkSendFrequency、存码带过期、校验用 getAndRemove；不要用 get + remove 两步（并发下同一个码能被用两次）
 
 参考实现：`snowy-plugin-auth/modular/login/` 的验证码相关方法（AuthController / AuthServiceImpl）。
 
@@ -62,7 +64,7 @@ devEmailApi.sendTextEmailLocal("a@x.com", "主题", "内容", List.of(new File("
 ## 检查清单
 
 - [ ] 走 DevSmsApi / DevEmailApi，未自造 HTTP 客户端
-- [ ] 验证码有过期时间与一次性消费
+- [ ] 验证码有过期时间与一次性消费（getAndRemove），发送前调用 CommonValidCodeUtil.checkSendFrequency
 - [ ] 敏感配置在管理界面/配置文件，不在代码
 - [ ] 发送结果可追溯（成功的记录在 DEV_SMS / DEV_EMAIL；失败要业务自己记）
 

@@ -315,7 +315,8 @@ v-if="hasPerm(['bizXxxEdit', 'bizXxxDelete'], 'and')"    // 数组 + and/or（�
 
 ## 请求与工具
 
-- `src/utils/request.js`：`baseRequest`（B 端）；`src/utils/clientRequest.js`：`clientBaseRequest`（C 端，读取 CLIENT_TOKEN；出厂的 C 端登录、个人中心 API 仍走 baseRequest，新写的 C 端接口用 clientBaseRequest）；token 请求头名 `token`；code!==200 自动 message.error；add/edit/delete 成功自动提示
+- `src/utils/request.js`：`baseRequest`（B 端）；`src/utils/clientRequest.js`：`clientBaseRequest`（C 端，读取 CLIENT_TOKEN；出厂 C 端登录、个人中心 API 已用它，新写的 C 端接口照此）；token 请求头名 `token`；code!==200 和网络异常（超时、断网、HTTP 非 2xx）都会自动 message.error，页面不要再自己弹一次，个别请求不想提示时在 baseRequest 第 4 参传 `{ skipErrorMessage: true }`；add/edit/delete 成功自动提示
+- 接口地址：`.env.production` 的 `VITE_API_BASEURL` 只认两种写法——`/api`（默认，部署时由 nginx 反代并去掉 /api 前缀）或完整地址 `http(s)://...`（直连后端）；`VITE_PROXY_TARGET` 只供 `npm run prod`、`npm run preview` 的本地代理使用。代码里拼接口地址统一用 request.js 导出的 `getApiBaseUrl()`，禁止写死 `/api` 或 82 端口
 - `src/utils/tool.js`：`tool.dictList('编码')` 取字典选项、`tool.dictTypeData('编码', 值)` 把字典值转成文字、`tool.translateTree(顶级字典值, 值)` 做树形字典翻译、`tool.data.get/set` 读写本地缓存（前端没有通用的树化工具）
 - `src/utils/formRules.js`：`required('提示')` 校验工厂
 - 国密：`src/utils/smCrypto.js`（登录密码 SM2 加密）
@@ -338,6 +339,7 @@ TS、Element Plus、块顺序见上方铁律与 SFC 块顺序，不重复。
 | 选择器传 `@/api/sys/*` 接口 | 传 `@/api/biz/*` 选择器接口 |
 | 忘 `defineExpose({ onOpen })` | 父组件打不开表单 |
 | 在已接入 i18n 的页面（auth 登录/找回密码、sys/user 列表）里新增硬编码中文 | 延续该页的 `$t('xxx')` 并补 locales 词条；其他页面直接写中文 |
+| `v-html="formData.content"` 直接渲染富文本 | 先消毒：`const safeContent = computed(() => DOMPurify.sanitize(formData.value.content \|\| ''))`，模板 `v-html="safeContent"`（参考 views/biz/notice/detail.vue） |
 
 > 存量说明：出厂部分文件（多在 components/）保留了显式 `import { ref } from 'vue'`，不回改；在已打开的抽屉或容器里再弹出的二级子表单可以用 a-modal（出厂 sys/resource/button/form.vue 等 4 处）。
 
