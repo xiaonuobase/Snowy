@@ -1,0 +1,5 @@
+interface:
+  display_name: "add-todo"
+  short_description: "快速添加待办事项"
+policy:
+  allow_implicit_invocation: false

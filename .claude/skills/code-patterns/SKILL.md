@@ -1,17 +1,17 @@
 ---
 name: code-patterns
-description: Snowy 全量编码禁令速查表（含"来自同类快速开发框架的惯性错误"专栏）、命名规范、JSON/日期约定、Git 提交规范。触发场景：1) 写任何 Java/前端代码前的规范自查 2) 审查代码风格问题 3) 提交代码。触发词：编码规范、禁令、命名、代码风格、惯性错误、JSON、日期、Git 提交、commit。注意：本技能是速查表；分层结构见 crud-development，模块组织见 plugin-architecture。
+description: Snowy 全量编码禁令速查表（含"来自同类快速开发框架的惯性错误"专栏）、命名规范、Javadoc 格式、JSON/日期约定。触发场景：1) 写任何 Java 代码前的规范自查 2) 审查代码风格问题 3) 不确定命名或注释格式。触发词：编码规范、禁令、命名、代码风格、惯性错误、Javadoc、JSON、日期。注意：本技能是速查表；分层结构见 crud-development，模块组织见 plugin-architecture，前端规范见 frontend-pc，提交规范见 git-workflow。
 ---
 
 # Snowy 编码禁令速查表
 
-## ⚠️ 来自同类快速开发框架的惯性错误（最高优先级）
+## 来自同类快速开发框架的惯性错误（最高优先级）
 
 AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写代码前先扫一遍：
 
-| # | ❌ 常见脚手架惯性写法 | ✅ Snowy 正确写法 |
+| # | 常见脚手架惯性写法（错误） | Snowy 正确写法 |
 |---|---|---|
-| 1 | `implements IXxxService`（不继承） | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` |
+| 1 | `implements IXxxService`（不继承） | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService`（有实体的服务；首页统计等无实体服务可以只 implements，如 BizIndexServiceImpl） |
 | 2 | `@RequiredArgsConstructor` + `private final` 构造器注入 | `@Resource` 字段注入（jakarta.annotation.Resource） |
 | 3 | `MapstructUtils.convert(src, Target.class)` | `BeanUtil.toBean(param, Target.class)` / `BeanUtil.copyProperties(src, target)` |
 | 4 | `@Data` | `@Getter @Setter` |
@@ -23,20 +23,19 @@ AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写�
 | 10 | 单个 XxxBo + AddGroup/EditGroup 校验组 | XxxPageParam / AddParam / EditParam / IdParam 每操作一类 |
 | 11 | Long 雪花主键（JS 精度问题靠序列化器解决） | `@TableId private String id` |
 | 12 | 小写表名 `biz_xxx` | 全大写 `BIZ_XXX` |
-| 13 | `del_flag` / `@TableLogic` 自己声明 | 继承 CommonEntity（字段 DELETE_FLAG） |
+| 13 | 手写实体里自己声明 `del_flag` / `@TableLogic` | 手写实体继承 CommonEntity（字段 DELETE_FLAG）；代码生成器产出的实体不继承 CommonEntity、逐字段声明 `@TableLogic`，是模板写法，两种不要混用 |
 | 14 | `@Log(title=..., businessType=...)` | `@CommonLog("中文标题")` |
-| 15 | `LambdaQueryWrapper` + `buildQueryWrapper()` 方法 | `QueryWrapper<Xxx>().checkSqlInjection()` + `queryWrapper.lambda()` 内联 |
-| 16 | 前端 Element Plus / plus-ui 组件 | Ant Design Vue 4 组件（a-button 等） |
-| 17 | 前端 TypeScript | JavaScript（本项目前端无 TS） |
+| 15 | `buildQueryWrapper()` 抽方法、字符串列名 `eq("name", …)` | 分页/动态排序：`new QueryWrapper<Xxx>().checkSqlInjection()` + `queryWrapper.lambda()` 内联；固定条件查询、唯一性校验：`new LambdaQueryWrapper<Xxx>()`（生成器模板和平台代码都这样写，`CommonSqlUtil.scopeIn` 也要求传 LambdaQueryWrapper） |
+| 16 | 前端 Element Plus 组件 | Ant Design Vue 4 组件（a-button 等） |
+| 17 | 前端 TypeScript | JavaScript（仅 `views/front/index.vue` 一处历史 `lang="ts"` 页面，不要模仿） |
 
 ## 后端禁令速查表
 
 | 禁止 | 替代 | 原因 |
 |---|---|---|
-| 包名 `com.*` / `org.*` | `vip.xiaonuo.*` | 包结构即模块边界 |
-| 删除/省略 12 行版权头 | 每个 .java 必带 | Apache 2.0 协议要求 |
-| `@Autowired` | `@Resource` | 项目统一风格（240+ 处 vs 2 处） |
-| `@Data` | `@Getter @Setter` | 避免相等性/构造器副作用 |
+| 业务用自定义包名（如 `com.company.order`）却没补启动模块扫描配置 | 补齐 Application 的 `scanBasePackages`、GlobalConfigure 的 `@MapperScan`、`mybatis-plus.mapper-locations`（见 plugin-architecture）；未指定包名时沿用目标插件现有包名（biz 为 `vip.xiaonuo.biz`） | 漏配会导致接口 404、Bean 注入失败、Invalid bound statement |
+| 删除平台自带文件（common/平台插件/*-api/web-app/biz 出厂演示代码）的 12 行版权头 | 原样保留；用户新写的业务代码不强制，默认不加小诺版权声明（用户有自己的版权头规范按用户的来） | Apache 2.0 协议要求保留原声明 |
+| `@Autowired` | `@Resource` | 项目统一风格（存量仅 auth 插件 2 处方法级 @Autowired，用于 Sa-Token 配置初始化） |
 | 裸 `new RuntimeException(...)` | `throw new CommonException(...)` | 统一异常处理链路 |
 | `Map<String,Object>` 作业务返回 | 类型化 Result/Entity + CommonResult | 类型安全 |
 | 手写 SQL 拼接 | `checkSqlInjection()` + lambda | 防注入 |
@@ -51,7 +50,7 @@ AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写�
 
 | 对象 | 规则 | 示例 |
 |---|---|---|
-| Java 类前缀 | = 插件缩写 | BizSupplier、SysUser、DevConfig、GenBasic、AuthThird、ClientUser、MobileResource |
+| Java 类前缀 | = 所在插件缩写（biz 用 Biz，自建插件用自己的缩写） | BizSupplier、SysUser、DevConfig、GenBasic、AuthThirdUser、ClientUser、MobileMenu；自建 order 插件如 OrderPayRecord |
 | Service 接口/实现 | `XxxService` / `XxxServiceImpl` | BizSupplierService / BizSupplierServiceImpl |
 | Mapper / XML | `XxxMapper` / `mapping/XxxMapper.xml` 同包 | BizSupplierMapper |
 | Param 后缀 | PageParam / AddParam / EditParam / IdParam / SelectorXxxParam / ExportParam | BizSupplierPageParam |
@@ -80,7 +79,7 @@ AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写�
 | 只允许 `@author` `@date` 两个标签 | date 格式 `yyyy/MM/dd HH:mm`；注释块 `*/` 收尾（平台老代码的 `**/` 不再沿用） |
 | 类头同样只写一行 | 类名已表达含义，`XXX控制器` / `XXX服务实现类` 即可 |
 
-### ❌ 禁止出现在 Javadoc 里的东西
+### 禁止出现在 Javadoc 里的东西
 
 | 禁止 | 原因 |
 |---|---|
@@ -89,57 +88,24 @@ AI 对主流 Java 脚手架先验极强，**以下每条都是反向的**，写�
 | `<p>` `</p>` `<ul><li>` 等 HTML 标签 | 本项目 Javadoc 不追求 HTML 渲染，标签只会撑长注释 |
 | `1. xxx 2. xxx` 多条列举 | 同上，说明逻辑分支请写在代码里 |
 
-❌ 反例（三种冗余同时出现）：
-```java
-/**
- * 解除订阅（管理端强制退订单条明细）
- * <p>
- * 复用订阅审批权限，能审批订阅的角色即可解除订阅，无需另行授权
- *
- * @param param 明细ID参数
- * @return 操作结果
- * @author yubaoshan
- */
-```
-✅ 正例：摘要压成一行，权限说明移到方法体内或 `@SaCheckPermission` 旁的行注释。
+补充说明（如权限复用原因）移到方法体内或 `@SaCheckPermission` 旁的行注释。
 
-> 存量说明：仓库现有约 500 处多行 `<p>` 风格 Javadoc（含平台原生 CommonEntity、StpClientUtil 等），**不做批量回改**——本规范只约束新写与重构中顺手经过的代码，避免纯格式 diff 淹没 review。
+> 存量说明：仓库现有数百处不符合四行式的 Javadoc（主要是 @param/@return 标签，少量多行说明段落和 `<p>` 标签，平台原生 CommonEntity、CommonResult、StpClientUtil 等都有），**不做批量回改**——本规范只约束新写与重构中顺手经过的代码，避免纯格式 diff 淹没 review。
 
 ## JSON / 日期约定
 
-- JSON：hutool `JSONUtil`（parseObj/toJsonStr）优先；跨插件传值一律 `JSONObject`
-- 日期：Entity 用 `Date` 或 String（现有代码以 String 居多，如 startCreateTime/endCreateTime 查询参数）；格式统一 `yyyy-MM-dd HH:mm:ss`
+- JSON：hutool `JSONUtil`（parseObj/toJsonStr）优先；跨插件传对象用 `JSONObject`（不传对方的实体类），简单值可以直接用 String/`List<String>`/boolean 等
+- 日期：Entity 的 datetime 字段用 `Date`（与 CommonEntity 审计字段、生成器 GenDbTypeUtil 一致）；只有按字符串存的日期列（varchar，如 BIRTHDAY、ENTRY_DATE）才用 String；分页查询的时间区间参数用 String（如 BizNoticePageParam 的 startCreateTime/endCreateTime）；全局 JSON 日期格式 `yyyy-MM-dd HH:mm:ss`（application.properties 的 spring.jackson.date-format）
 - 对象复制：新增 `BeanUtil.toBean(param, Entity.class)`；编辑 `queryEntity(id)` 后 `BeanUtil.copyProperties(param, entity)`
 - 集合操作：hutool `CollStreamUtil.toList(list, Xxx::getId)`、`ObjectUtil.isNotEmpty/isAllNotEmpty` 判空
 
 ## 前端禁令速查
 
-| 禁止 | 替代 |
-|---|---|
-| TypeScript 语法（interface、type、as） | 纯 JavaScript |
-| Element Plus 组件 | Ant Design Vue（a-xxx） |
-| 自造请求封装 | `src/utils/request.js` 的 baseRequest / clientRequest |
-| api 文件乱放 | `src/api/{插件}/{xxx}Api.js` |
-| 页面文案硬编码中文 | `$t('xxx')` + locales 补词条（遵循现有 i18n） |
-| 连续多行 `//` 注释段、JSDoc @param/@returns | 每处**一行** `//`；说不下的写进模块 `docs/`（详见 frontend-pc 技能「注释规范」） |
-| .vue 里 `<script>` 写在 `<template>` 前 | 固定 `template` → `script` → `style` 三块顺序，不可颠倒 |
-| 按钮权限乱写 | `hasPerm('bizXxxAdd')` 驼峰码，数组与 'and'/'or' 组合 |
+TS / Element Plus 见上方惯性错误第 16、17 条；其余前端规范（请求封装、api 文件位置、i18n、注释、SFC 块顺序、按钮权限）统一维护在 frontend-pc 技能，写前端时激活该技能。
 
 ## Git 提交规范
 
-```
-<type>: <subject>            # subject 中文，一行，不加句号
-
-type ∈ feat|fix|refactor|docs|style|test|chore|perf
-示例：
-feat: 新增供应商管理六件套
-fix: 修复供应商分页排序字段未下划线转换的问题
-docs: 补充后端开发指南的跨插件调用章节
-```
-
-- 只提交本次任务相关文件；**不提交** application.properties 的本地口令改动、node_modules、target
-- 默认只做本地 commit，明确要求才 push（当前仓库无远程）
-- 分支：master 单分支（个人项目）；大重构前打 tag
+格式 `【类别】中文描述`（类别：底座/新增/修复/优化/升级/更新），默认只本地 commit；完整规范见 git-workflow 技能。
 
 ## 避免过度工程
 
@@ -150,10 +116,10 @@ docs: 补充后端开发指南的跨插件调用章节
 ## 检查清单（提交前）
 
 - [ ] 17 条常见脚手架惯性错误全部规避
-- [ ] 版权头齐全、注释中文；Javadoc 为「一行摘要 + @author + @date」四行式，无 @param/@return/`<p>`/补充段落
+- [ ] 平台自带文件的版权头未被删（新业务代码不强制）、注释中文；自定义包名已补启动模块扫描配置；Javadoc 为「一行摘要 + @author + @date」四行式，无 @param/@return/`<p>`/补充段落
 - [ ] 命名符合前缀与后缀规范
 - [ ] 前端无 TS / Element Plus 残留
-- [ ] commit message 符合 type: 中文 描述
+- [ ] commit message 为【类别】中文描述
 
 ## 参考实现
 
@@ -162,4 +128,4 @@ docs: 补充后端开发指南的跨插件调用章节
 | `snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/notice/` | 全部规范的活样本 |
 | `snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/user/entity/BizUser.java` | 复杂 Entity（@Trans/SM4） |
 | `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/service/impl/SysUserServiceImpl.java` | 复杂业务写法 |
-| `CLAUDE.md` | 项目宪法（易错点警告节） |
+| `AGENTS.md` | 项目宪法（必须遵守的规范与易错点节） |

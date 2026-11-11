@@ -1,0 +1,5 @@
+interface:
+  display_name: "check"
+  short_description: "代码规范检查（后端 + 前端，三级清单）"
+policy:
+  allow_implicit_invocation: false

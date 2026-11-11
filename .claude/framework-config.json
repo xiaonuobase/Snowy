@@ -37,9 +37,16 @@
         "src/views/login",
         "src/views/front"
       ],
-      "businessPattern": "src/views/biz",
-      "apiBusinessPattern": "src/api/biz",
-      "description": "前端框架页面按插件分目录，业务页面只统计 src/views/biz 与 src/api/biz"
+      "businessPatterns": [
+        "src/views/biz",
+        "src/views/{自建插件缩写}"
+      ],
+      "apiBusinessPatterns": [
+        "src/api/biz",
+        "src/api/{自建插件缩写}"
+      ],
+      "pluginAbbrRule": "自建插件缩写 = 插件目录名去掉 snowy-plugin- 前缀（snowy-plugin-order → order）",
+      "description": "前端框架页面按插件分目录，业务页面统计 src/views/biz、src/api/biz 及自建业务插件对应的同名目录"
     },
     "systemFeatures": [
       "用户管理",
@@ -77,8 +84,12 @@
   "business": {
     "description": "业务模块配置 - 需要统计进度的业务代码",
     "backend": {
-      "scanRoot": "snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular",
-      "modulePattern": "snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/*",
+      "pluginRule": "snowy-plugin/ 下除 6 个系统插件（sys/auth/dev/gen/client/mobile）外的 snowy-plugin-* 目录都算业务插件：出厂 snowy-plugin-biz + 用户自建插件（如 snowy-plugin-order）",
+      "pluginDiscoverCommand": "ls -d snowy-plugin/snowy-plugin-*/ | grep -vE 'snowy-plugin-(sys|auth|dev|gen|client|mobile)/$'",
+      "scanRootCommand": "find snowy-plugin/*/src/main/java -type d -name modular 2>/dev/null | grep -vE 'snowy-plugin-(sys|auth|dev|gen|client|mobile)/'",
+      "scanRootNote": "自建插件可用自定义包名（如 com.company.order），因此不写死包路径，用 scanRootCommand 定位各业务插件的 modular 目录；自建插件须沿用 core/modular 两层结构才能被统计",
+      "modulePattern": "{scanRootCommand 输出的每个 modular 目录}/*",
+      "excludeModulesScope": "只对 snowy-plugin/snowy-plugin-biz 生效；自建插件里的域（即使同名）全部计入",
       "excludeModules": [
         "index",
         "dict",
@@ -88,8 +99,8 @@
         "position",
         "user"
       ],
-      "defaultLocation": "新业务域默认建在 snowy-plugin-biz 的 biz/modular/{域名} 下（参考 notice 域结构）",
-      "description": "出厂自带的 7 个 biz 域（index/dict/group/notice/org/position/user）视为演示代码不计业务进度；用户新建的域才计入"
+      "defaultLocation": "新业务域默认建在 snowy-plugin-biz 的 biz/modular/{域名} 下（参考 notice 域结构）；用户指定自建插件时建在该插件的 modular/{域名} 下",
+      "description": "出厂自带的 7 个 biz 域（index/dict/group/notice/org/position/user）视为演示代码不计业务进度；biz 插件里用户新建的域、自建业务插件里的全部域计入"
     }
   },
   "scanRules": {
@@ -103,16 +114,16 @@
         "Param 组 (param/：XxxPageParam + XxxAddParam + XxxEditParam + XxxIdParam 至少4类)"
       ],
       "optionalFiles": [
-        "Mapper XML (mapper/mapping/XxxMapper.xml，仅自定义 SQL 需要)",
+        "Mapper XML (mapper/mapping/XxxMapper.xml，平台惯例每个 Mapper 配一个空 XML 占位，自定义 SQL 写在里面)",
         "Result (result/XxxResult.java，仅投影返回需要)"
       ],
       "completenessFormula": "必备存在数 / 6 * 100%（XML 与 Result 为加分项不计分母）"
     },
     "frontend": {
       "requiredFiles": [
-        "API (snowy-admin-web/src/api/biz/xxxApi.js)",
-        "列表页 (snowy-admin-web/src/views/biz/xxx/index.vue)",
-        "表单页 (snowy-admin-web/src/views/biz/xxx/form.vue)"
+        "API (snowy-admin-web/src/api/{biz|自建插件缩写}/xxxApi.js)",
+        "列表页 (snowy-admin-web/src/views/{biz|自建插件缩写}/xxx/index.vue)",
+        "表单页 (snowy-admin-web/src/views/{biz|自建插件缩写}/xxx/form.vue)"
       ],
       "completenessFormula": "存在文件数 / 3 * 100%"
     },
@@ -130,9 +141,9 @@
     "dbScript": "snowy-web-app/src/main/resources/_sql/snowy_mysql.sql（33 张表初始化脚本）",
     "backendPort": 82,
     "frontendPort": 81,
-    "apiDoc": "http://localhost:82/doc.html（Knife4j，basic 认证 admin/123456）"
+    "apiDoc": "http://localhost:82/doc.html（Knife4j，basic 认证 snowyAdmin / Snowy@2026!，以 application.properties 的 knife4j.basic.* 为准）"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snowyVersion": "3.0.0",
-  "lastUpdated": "2026-08-18"
+  "lastUpdated": "2026-11-11"
 }

@@ -1,6 +1,6 @@
 ---
 name: plugin-architecture
-description: Snowy 插件化架构与跨插件调用规范：Maven 模块拓扑、插件内 core/modular 两层结构、plugin-api 解耦三步法、新建插件 checklist。触发场景：1) 需要调用其他插件的功能（如 biz 要用 sys 的用户）2) 划分新业务该放哪个模块 3) 新建插件或新的 *-api 接口。触发词：插件、plugin、模块划分、跨模块、跨插件、api 模块、provider、解耦、依赖、新建插件。注意：单个业务域内的 CRUD 分层见 crud-development；本技能讲"模块之间怎么组织与通信"。
+description: Snowy 插件化架构与跨插件调用规范：Maven 模块拓扑、插件内 core/modular 两层结构、plugin-api 解耦三步法、新建业务插件 checklist、自定义包名扫描配置。触发场景：1) 需要调用其他插件的功能（如 biz 要用 sys 的用户）2) 划分新业务该放哪个模块 3) 新建业务插件或新的 *-api 接口 4) 业务代码使用非 vip.xiaonuo 的自定义包名。触发词：插件、plugin、模块划分、跨模块、跨插件、api 模块、provider、解耦、依赖、新建插件、包名、自定义包名、scanBasePackages。注意：单个业务域内的 CRUD 分层见 crud-development；本技能讲"模块之间怎么组织与通信"。
 ---
 
 # Snowy 插件化架构规范
@@ -12,7 +12,7 @@ description: Snowy 插件化架构与跨插件调用规范：Maven 模块拓扑�
 
 snowy-web-app（启动模块，聚合一切）
     ├── snowy-plugin-{sys|auth|dev|gen|client|mobile|biz}
-    │       └── snowy-common（公共基础，人人依赖）
+    │       └── 自己的 *-api → snowy-common（传递依赖；公共基础，人人依赖）
     └── snowy-plugin-api/{x}-api（接口层，被调用方与调用方共同依赖）
 
 关键规则：
@@ -49,26 +49,27 @@ A→B = A 依赖 B 的 `*-api`（运行时 B 的 provider 实现注入 A）：
 | `snowy-plugin-gen` | 代码生成器 | 原则上不动 |
 | `snowy-plugin-client` | C 端用户体系 | 原则上不动 |
 | `snowy-plugin-mobile` | 移动端资源管理 | 原则上不动 |
-| **`snowy-plugin-biz`** | **业务插件——二次开发主战场** | ★ 随便写 |
-| `snowy-web-app` | 启动 + 全局配置（白名单/异常处理） | 只改配置类 |
+| **`snowy-plugin-biz`** | **业务插件——二次开发主战场** | 随便写 |
+| **`snowy-plugin-{name}`**（自建） | 用户自己的业务插件（如 snowy-plugin-order） | 随便写（按下方新建插件清单注册） |
+| `snowy-web-app` | 启动 + 全局配置（白名单/异常处理/包扫描） | 只改配置类 |
 
 ## 插件内两层结构
 
 ```
 vip.xiaonuo.biz
-├── core/                          插件级基础设施（每插件固定有）
+├── core/                          插件级基础设施（子目录按需建；出厂 biz 只有 config/enums/listener）
 │   ├── config/                    插件配置类
 │   ├── enums/                     插件级枚举
 │   ├── listener/                  数据变更监听（如 BizDataChangeListener）
-│   ├── timer/                     定时任务入口
-│   └── util/                      插件级工具
+│   ├── timer/                     定时任务入口（需要时再建）
+│   └── util/                      插件级工具（需要时再建）
 └── modular/                       业务域（一个域一个目录）
     └── {域名}/
         ├── controller/  entity/  enums/  mapper/(+mapping/)
         ├── param/  result/  service/(+impl/)  provider/
 ```
 
-新业务域默认放 `snowy-plugin-biz` 的 `modular/{域名}` 下（参考 notice 域）；只有业务规模大到需要独立插件时才新建插件。
+新业务域默认放 `snowy-plugin-biz` 的 `modular/{域名}` 下（参考 notice 域）；也可以新建自己的业务插件（按下方清单注册），插件内结构相同，包根换成该插件的包名（如 `com.company.order`）。
 
 ## 跨插件调用三步法（硬性规范）
 
@@ -151,30 +152,53 @@ public class BizOrderServiceImpl ... {
 
 命名惯例：`getXxxByIdWithoutException`（查不到返 null）/ `getXxxByIdWithException`（查不到抛异常）/ `getXxxListByIdList...`（批量）。
 
-## 新建插件 checklist（仅当业务真的需要独立插件）
+## 新建业务插件 checklist
 
-1. `snowy-plugin/snowy-plugin-{name}/`：pom（parent = snowy，依赖 snowy-common）+ 包 `vip.xiaonuo.{name}`
-2. `snowy-plugin-api/snowy-plugin-{name}-api/`：供他插件调用的接口模块
-3. 根 `pom.xml` 的 modules 加两个新模块；`snowy-web-app/pom.xml` 加实现模块依赖
-4. 包结构照 `core/ + modular/` 两层组织
-5. Knife4j 分组：`snowy-web-app` 的 Knife4jConfigure 加新插件包扫描（可选）
+业务可以新建自己的插件（如 snowy-plugin-order），步骤：
+
+1. `snowy-plugin/snowy-plugin-{name}/`：pom 的 parent = `snowy-plugin`（groupId 继承 `vip.xiaonuo`，与 Java 包名无关），依赖自己的 `snowy-plugin-{name}-api`（snowy-common 经它传递引入）和要调用的其他 *-api；包名默认 `vip.xiaonuo.{name}`，也可自定义（如 `com.company.order`，必须按下节补扫描配置）
+2. `snowy-plugin-api/snowy-plugin-{name}-api/`：供他插件调用的接口模块，pom 的 parent = `snowy-plugin-api`，依赖 snowy-common
+3. 在 `snowy-plugin/pom.xml` 和 `snowy-plugin-api/pom.xml` 的 modules 里分别登记（根 `pom.xml` 的 modules 只有 snowy-common/snowy-plugin/snowy-plugin-api/snowy-web-app 四个，不用改）；根 `pom.xml` 的 dependencyManagement 增加两个模块的版本声明（`${snowy.version}`）；`snowy-web-app/pom.xml` 加实现模块依赖
+4. 包结构照 `core/ + modular/` 两层组织；类名前缀用插件缩写（如 Order），URL 第一段用插件名（如 `/order/xxx/page`），表前缀用插件名大写（如 `ORDER_`）
+5. Knife4j 分组（可选）：在 `snowy-web-app/src/main/resources/application.properties` 的 `# knife4j doc groups` 段追加 `springdoc.group-configs[n].group=SNOWY-PLUGIN-{NAME}`、`display-name`、`packages-to-scan={插件包名}`（Knife4jConfigure 里没有包扫描配置）
 6. 前端对应加 `src/api/{name}/` 与 `src/views/{name}/` 目录
 
-⚠️ 大多数情况**不需要**新建插件——在 `snowy-plugin-biz/modular/` 下加业务域即可。
+放 biz 还是自建插件由业务决定：功能少、与出厂演示域共存无妨时放 `snowy-plugin-biz/modular/` 最省事；需要独立演进、按团队/产品线拆分时新建插件。平台插件（sys/auth/dev/gen/client/mobile）和 snowy-common 仍不建议改。
+
+## 使用自定义包名
+
+平台代码包名是 `vip.xiaonuo.*`；用户自己的业务（biz 内新业务域或自建插件）可以用自定义包名（如 `com.company.order`）。未指定时沿用目标插件现有包名（snowy-plugin-biz 为 `vip.xiaonuo.biz`）。
+
+启动模块默认只扫描 `vip.xiaonuo`，包名不以 `vip.xiaonuo` 开头时**必须**在 snowy-web-app 补齐以下 3 处，否则 Bean/Mapper 不生效（以 `com.company` 为例）：
+
+| 文件 | 原配置 | 改法 |
+|---|---|---|
+| `snowy-web-app/src/main/java/vip/xiaonuo/Application.java` | `@SpringBootApplication(exclude = {Knife4jAutoConfiguration.class})` | 加 `scanBasePackages = {"vip.xiaonuo", "com.company"}`，保留原有 exclude，`vip.xiaonuo` 不能丢 |
+| `snowy-web-app/src/main/java/vip/xiaonuo/core/config/GlobalConfigure.java` | `@MapperScan(basePackages = {"vip.xiaonuo.**.mapper"})` | 追加 `"com.company.**.mapper"` |
+| `snowy-web-app/src/main/resources/application.properties` | `mybatis-plus.mapper-locations=classpath*:vip/xiaonuo/**/mapping/*.xml,...` | 末尾追加 `,classpath*:com/company/**/mapping/*.xml` |
+
+建议项：
+- application.properties 的 `# knife4j doc groups` 段增加一组 `springdoc.group-configs[n].group / display-name / packages-to-scan=com.company`，否则 doc.html 看不到新接口
+- `snowy-web-app/src/main/resources/logback-spring.xml` 只给 `vip.xiaonuo` 配了 logger，需要业务日志同样输出时按需给 `com.company` 加一条
+
+不受包名影响、无需配置：@SaCheckPermission 接口权限收集（ResourceCollectListener 遍历全部接口，不限包）、全局异常处理（@ControllerAdvice 未限定包）、Sa-Token 路由白名单（按 URL）、`src/main/java` 下 Mapper XML 打包（根 pom 已配置 `**/*.xml`）。
+
+自定义包名只换包路径，其余规范（类名前缀、@Resource、CommonResult、URL 动词式等）不变。
 
 ## 禁止事项
 
-- ❌ 插件 pom 互相依赖实现模块（如 biz 依赖 snowy-plugin-sys）
-- ❌ 绕过 *-api 直接 import 其他插件 modular 下的类
-- ❌ 跨插件返回 Entity/自定义 DTO（会引入类依赖），一律 JSONObject
-- ❌ 把业务代码写进 sys/auth/dev 等平台插件（升级会冲突）
+- 禁止插件 pom 互相依赖实现模块（如 biz 依赖 snowy-plugin-sys）
+- 禁止绕过 *-api 直接 import 其他插件 modular 下的类
+- 禁止跨插件返回**实现模块里的** Entity/Param/Result/自定义 DTO（会引入类依赖）：对象统一用 JSONObject（列表 `List<JSONObject>`、分页 `Page<JSONObject>`），简单值可直接用 String/Long/boolean/List\<String\>；唯一例外是定义在 *-api 模块内的共享 POJO（如 auth-api 的 SaBaseLoginUser）
+- 禁止把业务代码写进 sys/auth/dev 等平台插件（升级会冲突）
 
 ## 检查清单
 
 - [ ] 跨插件调用走了 *-api 接口 + provider 实现
-- [ ] 返回值 JSONObject，字段名与 Entity 属性名一致
+- [ ] 对象返回值用 JSONObject（简单值可直接用 String/Long/boolean 等），字段名与 Entity 属性名一致
 - [ ] 调用方 pom 只依赖 *-api 模块
-- [ ] 新业务域放对了位置（默认 snowy-plugin-biz/modular）
+- [ ] 新业务域放对了位置（snowy-plugin-biz/modular 或自建业务插件，不进平台插件）
+- [ ] 包名不以 vip.xiaonuo 开头时，snowy-web-app 的 3 处扫描配置已补齐
 - [ ] 先查过现成 api（sys-api / dev-api）再决定新写
 
 ## 参考实现
@@ -185,4 +209,4 @@ public class BizOrderServiceImpl ... {
 | `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/provider/SysUserApiProvider.java` | provider 实现范本（含权限码组装） |
 | `snowy-plugin-api/snowy-plugin-dev-api/src/main/java/vip/xiaonuo/dev/api/` | dev-api 全家（Config/Dict/File/Sms/Email/Message） |
 | `snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/core/` | 插件 core 层组织范本 |
-| 根 `pom.xml` + `snowy-web-app/pom.xml` | 模块聚合与依赖关系 |
+| 根 `pom.xml`（dependencyManagement）+ `snowy-plugin/pom.xml`、`snowy-plugin-api/pom.xml`（modules 登记）+ `snowy-web-app/pom.xml` | 模块聚合与依赖关系 |

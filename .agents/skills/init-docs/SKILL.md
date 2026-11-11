@@ -1,0 +1,57 @@
+---
+name: init-docs
+description: 初始化 docs/ 三大管理文档。仅在用户显式调用时执行：Claude Code、Qwen Code 输入 /init-docs，Codex 输入 $init-docs。
+disable-model-invocation: true
+---
+
+# init-docs —— 初始化管理文档
+
+为项目创建 docs/ 下的三份管理文档（项目状态 / 需求文档 / 待办清单）。**已存在的文档不覆盖**，只补缺失的。
+
+## 执行步骤
+
+### 1. 检查现状
+```bash
+ls docs/ 2>/dev/null
+```
+报告三文档各自的存在性；已存在的跳过（保护用户数据）。
+
+### 2. 读取模板
+Read `.claude/templates/需求文档模板.md`、`项目状态模板.md`、`待办清单模板.md`。
+
+### 3. 扫描现有业务填充初始数据
+
+- 业务域枚举（同 progress 流程技能（Claude Code、Qwen Code `/progress`，Codex `$progress`）口径：snowy-plugin-biz + 自建业务插件，排除 biz 出厂 7 演示域）
+- 每域六件套完整度
+- TODO/FIXME 扫描
+- git 提交（可用时取全部提交做"已完成"时间线；不可用跳过）
+
+### 4. 生成文档
+
+**项目状态.md**：
+- 当前阶段：起步/开发中；总进度 = 自建域平均完整度（0 域 = 0%，明确写"全新项目业务进度 0%，框架功能不计入"）
+- 已完成：git 时间线或"平台基线就绪"
+- 进行中/待办：从扫描结果来（空则留模板占位）
+
+**需求文档.md**：已有自建域 → 每域生成一条 REQ-00x（状态按完整度：100%=已完成、部分=开发中、仅表=规划中）；无域 → 空模板。
+
+**待办清单.md**：FIXME→高优、TODO→中优；无则空模板。
+
+### 5. 汇报
+
+```markdown
+# 文档初始化完成
+- docs/项目状态.md 已新建（含 N 个业务域初始进度）
+- docs/需求文档.md 已新建（M 条需求记录）
+- docs/待办清单.md 已新建（高 X / 中 Y 条）
+（已存在的文档显示"已存在，跳过"）
+
+日常用 update-status 流程技能（Claude Code、Qwen Code `/update-status`，Codex `$update-status`）增量维护；sync 流程技能（Claude Code、Qwen Code `/sync`，Codex `$sync`）做全量同步报告。
+```
+
+## 质量要求（必须避免）
+
+1. 不覆盖已有文档
+2. 进度数字必须有扫描依据，禁止拍脑袋
+3. 框架功能（以 `.claude/framework-config.json` 的 `framework.systemFeatures` 清单为准）不算项目进度
+4. 文档中文、表格化、带模板的 HTML 注释示例可保留（方便用户照着填）

@@ -1,0 +1,5 @@
+interface:
+  display_name: "progress"
+  short_description: "项目进度梳理（业务模块完整度报告）"
+policy:
+  allow_implicit_invocation: false

@@ -7,19 +7,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-forced-eval.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/skill-forced-eval.js\" || true"
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.agents/hooks/skill-forced-eval.js\" && node \"${CLAUDE_PROJECT_DIR}/.agents/hooks/skill-forced-eval.js\" || true",
+            "timeout": 10
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|Write",
+        "matcher": "Bash|Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/pre-tool-use.js\" || true",
-            "timeout": 5000
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.agents/hooks/pre-tool-use.js\" && node \"${CLAUDE_PROJECT_DIR}/.agents/hooks/pre-tool-use.js\" || true",
+            "timeout": 10
           }
         ]
       }
@@ -30,8 +31,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.js\" && node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/stop.js\" || true",
-            "timeout": 10000
+            "command": "test -f \"${CLAUDE_PROJECT_DIR}/.agents/hooks/stop.js\" && node \"${CLAUDE_PROJECT_DIR}/.agents/hooks/stop.js\" || true",
+            "timeout": 30
           }
         ]
       }

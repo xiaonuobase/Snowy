@@ -1,0 +1,5 @@
+interface:
+  display_name: "update-status"
+  short_description: "增量更新项目状态文档（日常高频）"
+policy:
+  allow_implicit_invocation: false

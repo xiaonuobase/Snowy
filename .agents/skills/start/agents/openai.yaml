@@ -1,0 +1,5 @@
+interface:
+  display_name: "start"
+  short_description: "新会话快速了解项目现状"
+policy:
+  allow_implicit_invocation: false

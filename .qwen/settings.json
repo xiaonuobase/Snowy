@@ -1,0 +1,44 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "snowy-skill-forced-eval",
+            "description": "强制技能评估：首轮注入技能激活流程、后续注入精简提醒",
+            "command": "node -e \"require(require('child_process').execSync('git rev-parse --show-toplevel').toString().trim()+'/.agents/hooks/skill-forced-eval.js')\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "run_shell_command|write_file|edit",
+        "hooks": [
+          {
+            "type": "command",
+            "name": "snowy-pre-tool-use",
+            "description": "危险命令拦截、版权头与框架模块检查",
+            "command": "node -e \"require(require('child_process').execSync('git rev-parse --show-toplevel').toString().trim()+'/.agents/hooks/pre-tool-use.js')\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "snowy-stop",
+            "description": "会话收尾：nul 文件清理、技能副本同步",
+            "command": "node -e \"require(require('child_process').execSync('git rev-parse --show-toplevel').toString().trim()+'/.agents/hooks/stop.js')\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

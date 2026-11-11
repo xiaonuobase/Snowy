@@ -1,0 +1,5 @@
+interface:
+  display_name: "crud"
+  short_description: "基于已有数据库表快速生成 CRUD 代码"
+policy:
+  allow_implicit_invocation: false

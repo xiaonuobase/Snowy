@@ -9,13 +9,13 @@ description: Snowy 常用注解速查与正误用法：@CommonLog 操作日志�
 
 | 注解 | 来源 | 用在哪 | 作用 |
 |---|---|---|---|
-| `@CommonLog("中文标题")` | snowy-common | Controller 写方法 | 操作日志落 DEV_LOG 表（AOP：DevLogAop） |
-| `@CommonNoRepeat(interval=5000)` | snowy-common | Controller 写方法 | 防重复提交（默认 5 秒内相同请求拦截） |
+| `@CommonLog("中文标题")` | snowy-common | Controller 写方法、导出/下载方法 | 操作日志落 DEV_LOG 表（AOP：DevLogAop） |
+| `@CommonNoRepeat(interval=5000)` | snowy-common | Controller 写方法 | 防重复提交（同一 IP + 登录用户 + URL + 相同参数，在 interval 内重复请求被拦截；实现按"剩余整秒数 > 0"判断，实际窗口约为 interval − 1 秒，默认约 4 秒） |
 | `@SaCheckPermission("/url")` | Sa-Token | Controller 方法 | 接口权限校验，**值 = 接口 URL** |
 | `@SaCheckRole("xxx")` | Sa-Token | Controller 方法 | 角色校验（少用） |
 | `@Trans(type=...)` | Easy-Trans | Entity 字段 | 字典/关联表字段自动翻译 |
 | `@Validated` | Spring | Controller 类 | 开启方法级校验 |
-| `@Valid` | jakarta | 参数前 | 触发 Param 校验注解 |
+| `@Valid` | jakarta（新代码 `import jakarta.validation.Valid`，与 BizNoticeController 和生成器模板一致；不少存量平台 Controller 仍 import javax.validation.Valid，仿写时不要照抄） | 参数前 | 触发 Param 校验注解 |
 | `@TableName("BIZ_XXX")` | MyBatis-Plus | Entity 类 | 表映射（大写） |
 | `@TableId` | MyBatis-Plus | Entity id 字段 | 字符串雪花主键 |
 | `@TableLogic` | MyBatis-Plus | CommonEntity 的 deleteFlag | 逻辑删除（继承即有，别重复加） |
@@ -34,14 +34,14 @@ description: Snowy 常用注解速查与正误用法：@CommonLog 操作日志�
 public CommonResult<String> add(...) {...}
 ```
 
-- **所有写操作接口必须加**（add/edit/delete/业务动作）；查询接口不加
+- **所有写操作接口必须加**（add/edit/delete/业务动作），导出/下载接口也加（平台 /sys/user/export、/dev/file/download 等都有）；普通查询不加；登录/注册由访问日志记录，不加
 - 日志由 `snowy-plugin-dev` 的 DevLogAop 切面落 DEV_LOG 表，可在 开发工具→日志 查看
-- ❌ `@Log(title=..., businessType=...)` 是同类快速开发框架的写法，本项目没有
+- 错误写法：`@Log(title=..., businessType=...)` 是同类快速开发框架的写法，本项目没有
 
 ## @CommonNoRepeat —— 防重复提交
 
 ```java
-@CommonNoRepeat                        // 默认 5000ms 内视为重复
+@CommonNoRepeat                        // 默认 interval = 5000ms（实际拦截窗口约 4 秒，见下）
 @PostMapping("/biz/order/create")
 public CommonResult<String> create(...) {...}
 
@@ -49,16 +49,17 @@ public CommonResult<String> create(...) {...}
 ```
 
 - 用于不可重复的关键写操作（下单、支付、审批提交）
-- 实现：snowy-web-app 的 GlobalConfigure 内嵌 CommonNoRepeatAop（IP+URL+参数 指纹）
+- 实现：snowy-web-app 的 GlobalConfigure 内嵌 CommonNoRepeatAop（IP + 登录用户 ID + URL + 参数指纹，缓存 1 小时）
 
 ## @SaCheckPermission —— 接口权限
 
 ```java
-@SaCheckPermission("/biz/supplier/page")    // ✅ 值 = 本接口 URL
-@SaCheckPermission("biz:supplier:page")     // ❌ 冒号式是同类框架的，校验必失败
+@SaCheckPermission("/biz/supplier/page")    // 正确：值 = 本接口 URL
+@SaCheckPermission("biz:supplier:page")     // 错误：冒号式是同类框架的，校验必失败
 ```
 
-- 权限来源：角色-资源授权生成的数据范围 apiUrl 列表（详见 security-auth 技能）
+- 权限来源：用户直接授权 + 所属角色授权的**接口权限**（角色管理 / 用户管理 → **授权权限**，存 SYS_RELATION 的 SYS_USER_HAS_PERMISSION / SYS_ROLE_HAS_PERMISSION）；"授权资源"只控制菜单和按钮（SYS_ROLE_HAS_RESOURCE），不产生接口权限（详见 security-auth 技能）
+- 超管（角色码 `superAdmin`）**不会**自动通过：手写的新接口必须到 角色管理 → 授权权限 给超管勾选，否则超管也 403（代码生成器"项目内生成"时会自动给超管授权）
 - C 端接口用 `@SaClientCheckLogin` / `@SaClientCheckPermission`（auth-api 提供）
 
 ## @Trans —— 字段翻译（Easy-Trans）
@@ -78,7 +79,7 @@ private String directorName;      // 翻译结果落这里（非表字段）
 
 - Entity 继承 CommonEntity（implements TransPojo）即支持
 - 字典翻译要求字典编码存在（DEV_DICT / BIZ 字典，见 dict-config 技能）
-- SIMPLE 翻译要求 target 表数据量可控（内部有缓存）；大量关联时考虑手写批量查询
+- SIMPLE 翻译按 id 批量查询 target 表（本仓库没有对任何 target 开启 `@TransDefaultSett(isUseCache=true)` 缓存）；关联数据量大或列表高频使用时，考虑手写批量查询
 
 ## 校验注解（jakarta.validation）
 
@@ -95,7 +96,7 @@ public CommonResult<String> delete(@RequestBody @Valid @NotEmpty(message = "集�
 @NotEmpty(message = "ids不能为空")        // 集合
 ```
 
-校验失败由全局异常处理器统一返回中文提示，不需要手写返回。消息格式惯例：`字段名不能为空`（字段用英文驼峰名）。
+Param 对象校验失败由全局异常处理器统一返回 415 + 中文提示，不需要手写返回（方法参数上的约束如 `@NotEmpty List` 的异常处理有待验证，见 api-development）。消息格式惯例：`字段名不能为空`（字段用英文驼峰名）。
 
 ## MyBatis-Plus 注解
 
@@ -107,7 +108,7 @@ public class BizSupplier extends CommonEntity {              // 继承即有 DEL
 }
 ```
 
-❌ 常见误用：`@TableId(type = IdType.AUTO)`（本项目 ASSIGN_ID 全局配置，不写 type）、自己再声明 deleteFlag/createTime 字段（与基类冲突）。
+常见误用：`@TableId(type = IdType.AUTO)`（本项目 ASSIGN_ID 全局配置，不写 type）、自己再声明 deleteFlag/createTime 字段（与基类冲突）。
 
 ## 检查清单
 
@@ -115,7 +116,7 @@ public class BizSupplier extends CommonEntity {              // 继承即有 DEL
 - [ ] @SaCheckPermission 值 = URL 全路径
 - [ ] 翻译字段 @Trans 的 ref 冗余字段有 @TableField(exist = false)
 - [ ] 校验消息中文、格式统一
-- [ ] 没有使用同类框架特有注解（@Log、@RateLimiter、@DataPermission、@ExcelProperty 换 EasyExcel 注解）
+- [ ] 没有使用同类框架特有注解（@Log、@RateLimiter、@DataPermission 等）；Excel 导入导出用 EasyExcel 的 `@ExcelProperty`（参考 SysUserExportResult / BizUserExportResult）
 
 ## 参考实现
 

@@ -1,0 +1,5 @@
+interface:
+  display_name: "next"
+  short_description: "下一步开发建议（优先级排序）"
+policy:
+  allow_implicit_invocation: false

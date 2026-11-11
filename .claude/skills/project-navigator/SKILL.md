@@ -10,16 +10,20 @@ description: Snowy 项目导航地图：目录结构速查、"X 功能在哪个�
 ```
 snowy-master/
 ├── snowy-common/               公共基础（CommonResult/异常/实体基类/缓存/国密/工具）
-├── snowy-plugin/               7 个插件：sys(系统) auth(鉴权) dev(工具) gen(生成器) client(C端) mobile(移动) biz(★业务)
+├── snowy-plugin/               7 个插件：sys(系统) auth(鉴权) dev(工具) gen(生成器) client(C端) mobile(移动) biz(业务)
 ├── snowy-plugin-api/           对应 7 个 *-api 跨插件接口模块
 ├── snowy-web-app/              启动模块（Application + 全局配置 + SQL 脚本）
 ├── snowy-admin-web/            前端（Vue3 + AntdV，JS）
-└── .claude/                    本工程化配置
+├── AGENTS.md                   AI 通用规范入口（工程宪法 + 技能索引）
+├── .agents/                    AI 工程化配置（技能唯一来源/钩子/同步脚本，多工具共用）
+└── .claude/                    Claude Code 专属配置 + 开发指南/模板
 ```
 
 插件内：`{plugin}.core.{config,enums,listener,timer,util}` + `{plugin}.modular.{业务域}.{controller,entity,enums,mapper(+mapping),param,result,service(+impl),provider}`
 
 ## "我想找 X 在哪" 速查表
+
+> 表中以 `snowy-plugin-sys/`、`snowy-plugin-auth/`、`snowy-plugin-dev/`、`snowy-plugin-gen/`、`snowy-plugin-biz/` 开头的路径均省略了父目录 `snowy-plugin/`（`snowy-plugin-api/` 是根目录下的独立目录，未省略）。
 
 | 想找什么 | 位置 |
 |---|---|
@@ -41,13 +45,13 @@ snowy-master/
 | 短信/邮件/站内信/推送 | `snowy-plugin-dev/.../{sms,email,message,push}/` |
 | 定时任务管理 | `snowy-plugin-dev/.../job/` |
 | 操作日志切面 | `snowy-plugin-dev/.../core/aop/DevLogAop.java` |
-| 代码生成器逻辑/模板 | `snowy-plugin-gen/.../basic/`、`snowy-plugin-gen/src/main/resources/` |
-| 跨插件接口定义 | `snowy-plugin-api/*-api/.../api/*.java` |
-| ★ 业务代码（二开主战场） | `snowy-plugin-biz/.../modular/{域}/` |
+| 代码生成器逻辑/模板 | `snowy-plugin-gen/.../basic/`、`snowy-plugin-gen/src/main/resources/`（模板：backend-*/frontend-*/mobile/sqlend） |
+| 跨插件接口定义 | `snowy-plugin-api/*-api/.../api/*.java`（例外：client-api 的 ClientUserApi 直接在 `vip.xiaonuo.client` 包；gen-api 目前只有 package-info，没有接口） |
+| 业务代码（二开主战场） | `snowy-plugin-biz/.../modular/{域}/`；也可以是用户自建的业务插件（如 `snowy-plugin-order/`，包名可自定义，见 plugin-architecture） |
 | 前端 API 封装 | `snowy-admin-web/src/api/{插件}/xxxApi.js` |
 | 前端页面 | `snowy-admin-web/src/views/{插件}/{域}/index.vue + form.vue` |
 | 前端请求封装/工具 | `snowy-admin-web/src/utils/request.js`、`tool.js` |
-| 前端组件（37 个 Xn*） | `snowy-admin-web/src/components/` |
+| 前端组件 | `snowy-admin-web/src/components/`：Xn 前缀业务组件（XnUpload/XnUserSelector/XnOrgSelector 等），以及 DictSelect、STable（components/Table，snowy.js 全局注册）、CropUpload 等无前缀通用组件，完整列表以 `ls snowy-admin-web/src/components` 为准 |
 | 前端路由/菜单 | `snowy-admin-web/src/router/`（动态部分来自 SYS_RESOURCE） |
 | 前端状态（Pinia） | `snowy-admin-web/src/store/` |
 | 前端国际化 | `snowy-admin-web/src/locales/` |

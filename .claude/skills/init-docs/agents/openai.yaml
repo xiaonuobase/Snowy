@@ -1,0 +1,5 @@
+interface:
+  display_name: "init-docs"
+  short_description: "初始化 docs/ 三大管理文档"
+policy:
+  allow_implicit_invocation: false

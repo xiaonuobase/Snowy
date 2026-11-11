@@ -19,7 +19,8 @@ curl -s http://localhost:82/          # 应输出 WELCOME；无响应 → 先走
 
 ```bash
 # 密文是随机的，每次生成都不同——正常
-node -e "const s=require('./snowy-admin-web/node_modules/sm-crypto');console.log(s.sm2.doEncrypt('Snowy@2026!','04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54',1))"
+# 口令：新库为 Snowy@2026!；2026-06-26 之前导入的旧库为 123456（见 env-setup 出厂账号）
+SNOWY_PWD='Snowy@2026!' node -e "const s=require('./snowy-admin-web/node_modules/sm-crypto');console.log(s.sm2.doEncrypt(process.env.SNOWY_PWD,'04298364ec840088475eae92a591e01284d1abefcda348b47eb324bb521bb03b0b2a5bc393f6b71dabb8f15c99a0050818b56b23f31743b93df9cf8948f15ddb54',1))"
 ```
 
 依赖：`snowy-admin-web/node_modules/sm-crypto`（前端执行过 npm install 即有；没有则先装，或临时 `npm i sm-crypto --registry=https://registry.npmmirror.com` 到任意目录）。cipherMode=1（C1C3C2），与前端 smCrypto.js 一致。
@@ -33,7 +34,7 @@ RESP=$(curl -s -X POST http://localhost:82/auth/b/doLogin \
   -d '{"account":"superAdmin","password":"<上一步的SM2密文>","device":"PC"}')   # device 只接受 PC / APP / MINI
 echo "$RESP"
 # 成功：{"code":200,"data":"token字符串",...}
-# 账密错：code!=200 且 msg 提示账号或密码错误（核对 Snowy@2026! 与密文重生成）
+# 账密错：code!=200 且 msg 提示账号或密码错误（核对当前库的口令：新库 Snowy@2026!，旧库 123456，并重新生成密文）
 ```
 
 取 token：`TOKEN=$(echo "$RESP" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);if(j.code!==200||typeof j.data!=='string'||!j.data){process.exit(1)}console.log(j.data)})")`
@@ -54,7 +55,7 @@ curl -s -X POST http://localhost:82/biz/xxx/add -H "token: $TOKEN" -H "Content-T
 |---|---|
 | 业务正常 | `code === 200`，`data` 结构正确（分页是 `data.records/total`） |
 | 未登录 | 401/`code!==200` 且提示登录 → token 头没带或过期（头名是 `token`，不是 Authorization） |
-| 无权限 | 403 类提示 → 角色未授权该接口 URL（superAdmin 全通过，可先用它排除权限因素） |
+| 无权限 | 403 类提示 → 用户/角色没有被授权该接口 URL。注意 superAdmin **并不能访问所有 URL**：它不会自动通过 `@SaCheckPermission`，只拥有出厂 SQL 显式授权的已有 biz 接口和代码生成器项目内生成（execGenPro）时自动授权的 URL；手写的新接口要先在 角色管理 → 授权权限 给超管勾选该 URL，再测试 |
 | 参数校验失败 | msg 为 Param 里写的中文校验消息 |
 | 业务异常 | msg 为 CommonException 抛出的中文消息——**这就是定位线索** |
 
@@ -64,10 +65,10 @@ curl -s -X POST http://localhost:82/biz/xxx/add -H "token: $TOKEN" -H "Content-T
 ## 接口自测报告
 | 接口 | 结果 | 说明 |
 |---|---|---|
-| POST /auth/b/doLogin | ✅ 200 | token 获取成功 |
-| GET /biz/xxx/page | ✅ 200 | 返回 3 条记录，含逻辑删除过滤 |
-| POST /biz/xxx/add | ✅ 200 | 落库 ID=xxx（已查库核对） |
-| POST /biz/xxx/add（缺name） | ✅ 按预期拦截 | "name不能为空" |
+| POST /auth/b/doLogin | 通过（200） | token 获取成功 |
+| GET /biz/xxx/page | 通过（200） | 返回 3 条记录，含逻辑删除过滤 |
+| POST /biz/xxx/add | 通过（200） | 落库 ID=xxx（已查库核对） |
+| POST /biz/xxx/add（缺name） | 通过（按预期拦截） | "name不能为空" |
 ```
 
 有条件时用 mysql 复核落库（连接串从 application.properties 解析）：
@@ -77,7 +78,7 @@ mysql -uroot -p*** snowy -e "SELECT ID,NAME,DELETE_FLAG FROM BIZ_XXX ORDER BY CR
 
 ## 使用原则
 
-- 生成接口代码后**主动自测**再交付（本技能 = /dev 收尾步骤的自动化版）
+- 生成接口代码后**主动自测**再交付（本技能 = dev 流程技能收尾步骤的自动化版）
 - 测试数据用"测试-"前缀，验证完清理（或逻辑删除）
 - 密文/口令不写入任何文件，只在命令行内联使用
 - 自测发现问题 → 修复 → 重测，闭环后再报告

@@ -18,13 +18,16 @@ description: Snowy 接口设计规范：URL 命名、参数与返回、CommonRes
 | 编辑 | POST | `/biz/xxx/edit` | `@RequestBody @Valid XxxEditParam` |
 | 删除 | POST | `/biz/xxx/delete` | `@RequestBody @Valid @NotEmpty List<XxxIdParam>` |
 | 业务动作 | POST | `/biz/xxx/disableStatus` | `@RequestBody @Valid XxxIdParam` |
+| 上传 | POST | `/biz/xxx/upload` | `@RequestPart("file") MultipartFile` |
+| 按 ID 批量查询 | POST | `/biz/xxx/getAncestorNodes` | `@RequestBody List<String>` 或 `@RequestBody @Valid XxxIdListParam` |
+| 导出选中 | POST | `/biz/xxx/exportData` | `@RequestBody List<XxxIdParam>` + HttpServletResponse（生成器模板） |
 | 导出 | GET | `/biz/xxx/export` | void + HttpServletResponse |
 | 下载 | GET | `/biz/xxx/download` | void + HttpServletResponse |
 
 规则：
-- **查询 GET + Param 对象**（Spring 自动绑定 query string），**写入 POST + @RequestBody @Valid**
-- ❌禁止 RESTful 路径变量（`/user/{id}`）、PUT/DELETE 方法
-- 插件前缀：sys / biz / dev / gen / mobile；C 端接口 auth 插件用 `/auth/c/**`、client 插件用 `/client/c/**`
+- **查询 GET + Param 对象**（Spring 自动绑定 query string），**写入 POST + @RequestBody @Valid**（例外见表中上传、按 ID 批量查询、导出选中）
+- 禁止 RESTful 路径变量（`/user/{id}`）、PUT/DELETE 方法
+- 插件前缀：sys / biz / dev / gen / mobile，自建业务插件用自己的缩写（如 `/order/**`）；C 端接口 auth 插件用 `/auth/c/**`、client 插件用 `/client/c/**`
 
 ## 统一返回 CommonResult
 
@@ -36,8 +39,8 @@ CommonResult.error("消息")       // 失败（一般不直接用，业务失败
 CommonResult.get(code, msg, data)  // 底层构建
 ```
 
-- Controller 方法返回类型一律 `CommonResult<T>`；例外：文件流/导出/下载为 `void` + `HttpServletResponse` 参数（参考 SysUserController.exportUser）
-- ❌禁止返回 Map<String,Object>、裸 Entity 列表不带包装、R/AjaxResult/Result 等其他包装类
+- Controller 方法返回类型一律 `CommonResult<T>`；例外：文件流/导出/下载为 `void` + `HttpServletResponse` 参数（参考 SysUserController.exportUser）；SSO 协议回调（AuthSsoController.logoutCall/pushClient）按 Sa-Token SSO 协议返回 Object，属于平台协议接口，业务代码不要模仿
+- 禁止返回 Map<String,Object>、裸 Entity 列表不带包装、R/AjaxResult/Result 等其他包装类
 
 ## 异常体系
 
@@ -46,13 +49,16 @@ CommonResult.get(code, msg, data)  // 底层构建
 throw new CommonException("存在重复的账号，账号为：{}", account);
 throw new CommonException("XXX不存在，id值为：{}", id);
 
-// 系统错误码 —— 枚举定义
-throw new CommonException(CommonExceptionEnum.XXX);   // 需要新错误码时在 CommonExceptionEnum 增加
+// 固定提示文案：用插件级异常枚举取文案（参考 auth 插件 AuthExceptionEnum）
+throw new CommonException(BizXxxExceptionEnum.XXX.getValue());
+// 需要指定错误码时用三参构造器（CommonException 只有无参、(msg, args)、(code, msg, args) 三个构造器，不能直接传枚举）
+throw new CommonException(CommonExceptionEnum.ERROR403.getCode(), "无权操作该数据");
 ```
 
-- ❌禁止 `RuntimeException`、`IllegalArgumentException`、`ServiceException` 直接抛出
+- 禁止 `RuntimeException`、`IllegalArgumentException`、`ServiceException` 直接抛出
 - 全局异常处理在 `snowy-web-app/src/main/java/vip/xiaonuo/core/handler/GlobalExceptionHandler.java`（@ControllerAdvice → GlobalExceptionUtil.getCommonResult(e)），业务代码不要自己 try-catch 后返回错误 CommonResult
-- 参数校验失败（@Valid 不通过）由全局处理器统一转为中文提示，不需要手写校验返回
+- @Valid 校验 Param 对象失败时（MethodArgumentNotValidException / BindException），由全局处理器返回 415 + 注解里的中文 message，不需要手写校验返回
+- 注意：方法参数上的约束（如删除接口的 `@NotEmpty List<…>`）抛出的是 jakarta.validation.ConstraintViolationException，而 GlobalExceptionUtil 目前 import 的是 javax 版，可能返回"服务器异常"（静态推断，待运行验证并修代码）
 
 ## 文档注解（Knife4j / OpenAPI3）
 
@@ -63,7 +69,7 @@ throw new CommonException(CommonExceptionEnum.XXX);   // 需要新错误码时�
 @Schema(description = "标题", requiredMode = Schema.RequiredMode.REQUIRED)  // 必填字段
 ```
 
-接口文档地址：`http://localhost:82/doc.html`（basic 认证 admin/123456，按插件分 7 组）。所有 description 用中文。
+接口文档地址：`http://localhost:82/doc.html`（basic 认证 snowyAdmin / Snowy@2026!，以 application.properties 的 `knife4j.basic.*` 为准，2026-08-20 之前为 admin/123456；按插件分 7 组）。所有 description 用中文。
 
 ## 权限注解
 
@@ -71,9 +77,9 @@ throw new CommonException(CommonExceptionEnum.XXX);   // 需要新错误码时�
 @SaCheckPermission("/biz/xxx/page")     // 值 = 接口 URL（不是冒号式权限码！）
 ```
 
-- 用户能通过校验的条件：其角色的资源授权生成的数据范围 apiUrl 列表包含该 URL
-- 新接口上线后必须在"角色管理 → 授权"里勾选对应资源，否则非超管用户 403
-- 超管角色（SUPER_PERMISSION）自动拥有全部权限
+- 用户能通过校验的条件：用户直接授权 + 所属角色授权的**接口权限**（角色管理 / 用户管理 → **授权权限**，存 SYS_RELATION 的 SYS_USER_HAS_PERMISSION / SYS_ROLE_HAS_PERMISSION）里包含该 URL；"授权资源"只控制菜单和按钮（SYS_ROLE_HAS_RESOURCE），不产生接口权限，不能替代
+- 超管（角色码 `superAdmin`）**不会**自动通过 `@SaCheckPermission`：出厂 SQL 只给超管显式授权了已有 biz 接口；代码生成器"项目内生成"时会自动给超管授权生成的 URL；**手写的新接口必须到 角色管理 → 授权权限 给超管勾选，否则超管也 403**
+- `SUPER_PERMISSION_PATH_ARR` 是路由级"仅超管可访问"名单（`StpUtil.checkRole("superAdmin")`），与 @SaCheckPermission 无关；平台插件（sys/dev 等）不用 `@SaCheckPermission`，靠它做路由级超管校验
 
 ## 免登录 / 白名单
 
@@ -99,7 +105,7 @@ public CommonResult<String> add(...) { ... }
 
 ## 常见错误正误对照
 
-| ❌ 错误 | ✅ 正确 |
+| 错误 | 正确 |
 |---|---|
 | `@RequestMapping("/biz/xxx")` + `@GetMapping("/{id}")` | 方法上直接 `@GetMapping("/biz/xxx/detail")` |
 | `@PutMapping` / `@DeleteMapping` | 全部用 `@PostMapping` |
@@ -111,8 +117,9 @@ public CommonResult<String> add(...) { ... }
 ## 检查清单
 
 - [ ] URL = /{插件}/{域}/{动作}，动词式，写方法注解上
-- [ ] 查询 GET+Param / 写入 POST+@RequestBody @Valid
+- [ ] 查询 GET+Param / 写入 POST+@RequestBody @Valid（上传、按 ID 批量查询、导出选中按 URL 表的例外写法）
 - [ ] 返回 CommonResult<T>（文件流 void 除外）
+- [ ] 新接口已在 角色管理 → 授权权限 给需要的角色（含超管）勾选
 - [ ] @SaCheckPermission 值与 URL 完全一致
 - [ ] @Tag/@Operation/@Schema 中文齐全
 - [ ] 业务异常用 CommonException，无裸 RuntimeException

@@ -1,0 +1,5 @@
+interface:
+  display_name: "sync"
+  short_description: "全量同步代码状态并生成综合报告"
+policy:
+  allow_implicit_invocation: false

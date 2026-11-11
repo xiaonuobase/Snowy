@@ -1,6 +1,6 @@
 ---
 name: frontend-pc
-description: snowy-admin-web 前端开发规范：api js 封装约定、index.vue 列表页 + form.vue 弹窗表单三件套、s-table、Xn 组件速查、hasPerm 按钮权限、i18n、request.js 双端。触发场景：1) 写前端页面或 API 封装 2) 新业务模块的前端三件 3) 使用组件/权限/字典。触发词：前端、Vue、页面、api js、index.vue、form.vue、s-table、Xn组件、Ant Design Vue、AntdV、按钮权限、hasPerm、i18n、国际化、弹窗表单。
+description: snowy-admin-web 前端开发规范：api js 封装约定、index.vue 列表页 + form.vue 弹窗表单三件套、s-table、底座组件选型（附 components.md 组件手册）、hasPerm 按钮权限、i18n、request.js 双端。触发场景：1) 写前端页面或 API 封装 2) 新业务模块的前端三件 3) 使用组件/权限/字典。触发词：前端、Vue、页面、api js、index.vue、form.vue、s-table、Xn组件、底座组件、上传、选人、选择器、树选择、分页下拉、Ant Design Vue、AntdV、按钮权限、hasPerm、i18n、国际化、弹窗表单。
 ---
 
 # snowy-admin-web 前端开发规范
@@ -8,8 +8,8 @@ description: snowy-admin-web 前端开发规范：api js 封装约定、index.vu
 ## 技术栈与铁律
 
 - Vue 3.5（`<script setup>` 语法）+ Vite 6 + **Ant Design Vue 4.2.6** + Pinia + vue-i18n + TailwindCSS
-- **JavaScript，不是 TypeScript**——禁止 interface/type/as 等 TS 语法
-- 组件自动导入（unplugin）：a-xxx 组件、ref/computed 等 API **不需要 import**；自定义组件用 kebab-case 标签
+- **JavaScript，不是 TypeScript**——禁止 interface/type/as 等 TS 语法（存量例外：views/front/index.vue 用了 `lang="ts"`，不回改；新代码一律用 JS）
+- 组件自动导入（unplugin）：a-xxx 组件、ref/computed 等 API **不需要 import**；`src/components` 下自动注册的全局组件用 kebab-case（`<xn-form-container>`、`<s-table>`），页面内 import 的局部组件用 PascalCase（`<Form ref="formRef" />`，避免和原生 `<form>` 冲突）
 - 包管理 npm；目录 `snowy-admin-web/`
 
 ## SFC 块顺序（硬性，不可颠倒）
@@ -33,25 +33,25 @@ description: snowy-admin-web 前端开发规范：api js 封装约定、index.vu
 | 要求 | 说明 |
 |---|---|
 | `<template>` 永远第一 | 先看长什么样再看怎么实现；review diff 时结构稳定可预期 |
-| `<script setup name="业务编码">` 第二 | name 必填（keep-alive 缓存靠它），值为业务编码小驼峰 |
+| `<script setup name="业务编码">` 第二 | name 必填（路由页面的 keep-alive 靠它，值要和菜单 SYS_RESOURCE.NAME 别名一致，如 notice），页面用业务编码小驼峰；src/components 下的通用组件沿用 PascalCase（如 XnEditor）。存量中缺 name 的文件不批量回改 |
 | `<style scoped>` 第三 | 默认加 `scoped`；确需全局的另起一个不带 scoped 的块，仍排在最后 |
 
-❌ 禁止把 `<script>` 写在 `<template>` 前面（Vue 官方 SFC 也支持，但本项目统一为 template 优先，混排会让文件之间没法快速对照）。
+禁止把 `<script>` 写在 `<template>` 前面（Vue 官方 SFC 也支持，但本项目统一为 template 优先，混排会让文件之间没法快速对照）。
 
-> 存量：`views/plugin/front/` 下有 29 个文件是 script 前置写法，**不做批量回改**，新写与重构经过时按本规范来。
+> 存量：出厂有 7 个文件是 script 前置写法（layout/components/bindEmail.vue、bindPhone.vue，views/auth/login/register.vue，views/auth/client/register/index.vue，views/front/index.vue，views/sys/user/userTab/bindForm/bindEmail.vue、bindPhone.vue），**不做批量回改**，新写或重构经过时按本规范来。
 
 ## 三件套结构（一个业务域）
 
 ```
 snowy-admin-web/src/
-├── api/biz/bizXxxApi.js          ① API 封装
+├── api/biz/bizXxxApi.js          (1) API 封装
 └── views/biz/xxx/
-    ├── index.vue                 ② 列表页
-    ├── form.vue                  ③ 弹窗表单
+    ├── index.vue                 (2) 列表页
+    ├── form.vue                  (3) 弹窗表单
     └── detail.vue                详情（可选）
 ```
 
-## ① API 封装模板（bizNoticeApi.js 为范本）
+## 1. API 封装模板（bizNoticeApi.js 为范本）
 
 ```js
 import { baseRequest } from '@/utils/request'
@@ -88,7 +88,7 @@ export default {
 - 文件名 `biz{Xxx}Api.js`；缩进用 **Tab**（项目 Prettier 配置）
 - 下载文件用 baseRequest 的第 4 参 `{ responseType: 'blob' }`
 
-## ② 列表页 index.vue 骨架
+## 2. 列表页 index.vue 骨架
 
 ```vue
 <template>
@@ -100,16 +100,16 @@ export default {
 			ref="tableRef"
 			:columns="columns"
 			:data="loadData"
-			:alert="false"
-		 bordered
+			:alert="options.alert.show"
+			bordered
 			:row-key="(record) => record.id"
 			:tool-config="toolConfig"
-			:row-selection="rowSelection"
+			:row-selection="options.rowSelection"
 		>
 			<template #operator>
 				<a-space>
 					<a-button type="primary" @click="formRef.onOpen()" v-if="hasPerm('bizXxxAdd')">新增</a-button>
-					<a-button danger @click="deleteBatchBizXxx()" v-if="hasPerm('bizXxxBatchDelete')">批量删除</a-button>
+					<xn-batch-button v-if="hasPerm('bizXxxBatchDelete')" buttonName="批量删除" icon="DeleteOutlined" buttonDanger :selectedRowKeys="selectedRowKeys" @batchCallBack="deleteBatchBizXxx" />
 				</a-space>
 			</template>
 			<template #bodyCell="{ column, record }">
@@ -123,6 +123,7 @@ export default {
 			</template>
 		</s-table>
 	</a-card>
+	<Form ref="formRef" @successful="tableRef.refresh()" />
 </template>
 
 <script setup name="xxx">
@@ -142,6 +143,12 @@ export default {
 		{ title: '排序', dataIndex: 'sortCode', width: 100 },
 		{ title: '操作', dataIndex: 'action', align: 'center', width: 150 }
 	]
+	const selectedRowKeys = ref([])
+	// 列表选择配置
+	const options = {
+		alert: { show: false, clear: () => { selectedRowKeys.value = [] } },
+		rowSelection: { onChange: (keys) => { selectedRowKeys.value = keys } }
+	}
 
 	const loadData = (parameter) => {
 		const searchFormParam = cloneDeep(searchFormState.value)
@@ -160,21 +167,17 @@ export default {
 	const deleteBatchBizXxx = (params) => {
 		bizXxxApi.xxxDelete(params).then(() => tableRef.value.clearRefreshSelected())
 	}
-
-	formRef  // 模板引用（保持命名与 ref 一致）
-	loadData
-	deleteBizXxx
-	deleteBatchBizXxx
 </script>
 ```
 
 要点：
-- `<script setup name="xxx">` 带 name（keep-alive 需要）
+- `<script setup name="xxx">` 带 name（keep-alive 需要，值与菜单 SYS_RESOURCE.NAME 别名一致）
+- import 的 `Form` 必须挂载到模板（`<Form ref="formRef" @successful="tableRef.refresh()" />`），否则 formRef 为 undefined，点"新增"报错；批量删除用 `xn-batch-button`，它把 `selectedRowKeys` 转成 `[{ id }]` 经 `@batchCallBack` 传给删除方法
 - `s-table` 的 `:data="loadData"` 传函数（不是数组），内部自动管理分页参数
 - 刷新：`tableRef.value.refresh(true)`（回到第一页）/ `clearRefreshSelected()`（批量删后）
 - 时间范围查询必须拆 startCreateTime/endCreateTime（与后端 PageParam 对应）
 
-## ③ 弹窗表单 form.vue 骨架
+## 3. 弹窗表单 form.vue 骨架
 
 ```vue
 <template>
@@ -242,11 +245,11 @@ export default {
 				.finally(() => (submitLoading.value = false))
 		})
 	}
-	defineExpose({ onOpen })                        // ★ 必须，父组件才能调 onOpen
+	defineExpose({ onOpen })                        // 必须，父组件才能调 onOpen
 </script>
 ```
 
-要点：提交成功 `emit('successful')`；数组字段（多选）提交前 `JSON.stringify`（参考 notice 的 place）；字典选项 `tool.dictList('BIZ_XXX_TYPE')`。
+要点：提交成功 `emit('successful')`；后端 Param 字段是 String（存 JSON）的多选值，提交前 `JSON.stringify`、回显时 `JSON.parse`（参考 notice 的 place），后端是 List 的字段直接传数组；字典选项 `tool.dictList('BIZ_XXX_TYPE')`。
 
 ## 注释规范（求整齐，一行到底）
 
@@ -255,12 +258,13 @@ export default {
 | 位置 | 写法 |
 |---|---|
 | 文件头（api js） | 四行块注释：一行中文描述 + 空行 + `@author` + `@date`（见上文模板） |
-| 文件头（其他 js / vue） | 单行 `// 一句话说明本文件干什么` |
+| 文件头（其他 js） | 已有的 Apache 版权块注释**必须原样保留**（不得删改）；新建 js 文件头可以写一行 `// 一句话说明本文件干什么` |
+| 文件头（vue） | 不写文件头，第一行就是 `<template>` |
 | 常量块 / 导出对象 | 上方**一行** `//` |
 | 函数 / 方法 | 上方**一行** `//` |
 | 行内 | 句末 `// 一句话`，别换行续写 |
 
-### ❌ 禁止
+### 禁止
 
 | 禁止 | 替代 |
 |---|---|
@@ -269,26 +273,7 @@ export default {
 | JSDoc `@param` / `@returns` / `@type` | 一行 `//` 描述即可（api js 文件头的 @author/@date 除外） |
 | 注释掉的废代码 | 直接删，git 里有 |
 
-❌ 反例（`constants/enums.js` 旧写法，5 行注释配 1 行代码）：
-```js
-// 数据中台枚举常量，统一管理所有枚举值，避免硬编码
-// 这里只放跨页面共用的值域；单个业务页自己用的选项一律放该页目录下的 xxxOptions.js，不要往这里堆
-
-// 敏感类型枚举，取值与中文名须与后端 DataSecurityScanRuleServiceImpl.SENSITIVE_NAME_MAP 保持一致。
-// 顺序即扫描规则表单下拉的展示顺序，CUSTOM 固定放末位。
-// 注意：CUSTOM 规则的真实语义在规则自身的 sensitiveTypeName 上，列表展示优先取该字段
-export const SensitiveTypeEnum = { ... }
-```
-
-✅ 正例（各留一行，约束信息移交文档）：
-```js
-// 数据中台跨页面共用枚举常量
-
-// 敏感类型枚举，须与后端 SENSITIVE_NAME_MAP 一致
-export const SensitiveTypeEnum = { ... }
-```
-
-> 压不进一行的信息（模块边界约定、跨端契约、字段优先级规则）不是删掉，是**换地方**——放模块的 `docs/` 并在 INDEX.md 挂号。源码注释负责「这是什么」，文档负责「为什么、怎么配合」。
+以上规则针对新写或修改的代码；出厂存量（部分文件有连续 `//`、少数文件有 JSDoc、若干注释掉的语句）不做批量回改。压不进一行的信息（模块边界、跨端契约）放模块 `docs/` 并在 INDEX.md 挂号，源码注释只说「这是什么」。
 
 ## 按钮权限
 
@@ -299,58 +284,72 @@ v-if="hasPerm(['bizXxxEdit', 'bizXxxDelete'], 'and')"    // 数组 + and/or（�
 
 驼峰码来自 SYS_RESOURCE 的 BUTTON 行，与后端 @SaCheckPermission 的 URL 式是**两套**（详见 security-auth 技能）。
 
-## 高频组件速查（src/components/，37 个）
+## 底座组件选型（写页面前先查，硬性）
 
-| 组件 | 用途 |
-|---|---|
-| `s-table` | 列表表格（分页自动） |
-| `xn-form-container` | 表单弹窗容器（新增/编辑通用壳） |
-| `dict-select` | 字典下拉：`<dict-select v-model="x" dict-type="BIZ_XXX" />` |
-| `xn-upload` | 上传（uploadMode="image"；uploadDynamicReturnUrlApi 指定后端接口） |
-| `xn-editor` / `xn-md-editor` | 富文本 / Markdown |
-| `xn-user-selector` / `xn-org-selector` / `xn-role-selector` / `xn-position-selector` / `xn-group-selector` | 各类选择器 |
-| `xn-tree-select` / `tree-select` | 树选择（组织/分类） |
-| `xn-file-preview` | 文件预览 |
-| `xn-sign-name` | 手写签名 |
-| `cron` | Cron 表达式生成 |
-| `crop-upload` | 头像裁剪上传 |
-| `xn-resizable-panel` | 可拖拽分栏（左树右表布局用） |
+**底座有现成组件的场景，禁止手写同类实现或引第三方库**（自己拼 a-modal 选人、自己写 a-upload、自己封分页下拉等）。下表选型后，到同目录 `components.md` 查参数、出厂示例与坑（以源码为准，部分组件 README 已过时）。组件均自动注册，模板直接写 kebab 标签不用 import，**唯一例外 XnMdEditor 必须手动 import**。
 
-（多数组件目录带 README.md，用前可读）
+| 业务场景 | 推荐组件 | 一句话要点 |
+|---|---|---|
+| 列表分页/排序/勾选 | `s-table` | `:data="loadData"`、`:row-key="(record) => record.id"` |
+| 批量删除/批量操作 | `xn-batch-button` | `@batchCallBack` 参数已是 `[{id}]`，直接给 delete 接口 |
+| 列表页外层 / 左树右表 | `xn-panel` / `XnResizablePanel` + `xn-tree-skeleton` | 左树右表照抄 `views/biz/user/index.vue` |
+| 新增/编辑/详情外壳 | `xn-form-container` | 自己写 `#footer` 保存按钮；需拖拽全屏的普通大弹窗用 `drag-modal` |
+| 表格长文本 | `ellipsis` | `:length` 必填 |
+| 字典下拉/单选/多选 | `dict-select` 或 `a-select :options="tool.dictList('X')"` | dict-select 用 `v-model`（不是 `v-model:value`） |
+| 上传附件/图片 | `xn-upload` | 默认回传 url 逗号字符串；图片配 `/dev/file/uploadImageDynamicReturnUrl` |
+| 头像/封面裁剪 | `crop-upload` | 只回传 Blob，上传自己调接口 |
+| 附件预览 | `xn-file-preview` | 不支持 doc/ppt/wps/ofd |
+| 富文本 / Markdown | `xn-editor` / `XnMdEditor` | Markdown 需手动 import、用 `v-model` |
+| 代码/模板/JSON 编辑；只读高亮 | `xn-code-editor`；`XnHighlightjs` | 弹窗里显示后调 `refresh()`；高亮的 `code` 必须是字符串 |
+| 选人（带头像，单/多选） | `xn-user-selector` | `dataType` 默认 `'string'`，与其他选择器相反 |
+| 下拉选一条（主管/客户/产品等大表） | `xn-page-select` | 传 `page-function` + `echo-function`，选项字段固定 `id/name` |
+| 选单个机构 / 上级节点 | `xn-tree-select` | 不会自动加载：新增调 `init()`、编辑调 `echo([id])` |
+| 多选机构 / 职位 / 角色 / 用户组 | `xn-org-selector` / `xn-position-selector` / `xn-role-selector` / `xn-group-selector` | 存单字段写 `dataType="string"`；机构分页、用户组分页 biz 无现成接口需自建 |
+| Cron / 颜色 / 图标 / 签名 | `cron` / `color-picker` / `xn-icon-selector` / `XnSignName` | 图标组件只刷新名为 `icon` 的字段校验 |
+| 看板指标 / 卡片列表 / 信息列表 | `number-info` + `trend` / `xn-card-list` / `xn-data-list` | 列表类需先把 records 映射成组件结构 |
+| 敏感区域水印 / 地图 | `xn-watermark` / `gaode-map`、`baidu-map` | 地图自备 key，`@complete` 后再渲染 |
+
+**选择器 API 硬规则**：业务页传给选择器的接口必须来自 `@/api/biz/*`（如 `bizUserApi.userOrgTreeSelector`、`bizUserApi.userSelector`），**禁止传 `@/api/sys/*`**——`/sys/org|user|role|position|group/**` 是超管专属，普通用户会被拒；biz 选择器接口带 `@SaCheckPermission`，要给角色授权。
+
+不要在业务页复用：首页 `sys-*-card`/`biz-*-card`、`shortcut-card`、`menu-tree-select`、`xn-context-menu`、`xn-lock-screen`、旧版 `icon-selector`（替代见 components.md 末节）。
 
 ## 请求与工具
 
-- `src/utils/request.js`：`baseRequest`（B 端）；`src/utils/clientRequest.js`（C 端）；token 请求头名 `token`；code!==200 自动 message.error；add/edit/delete 成功自动提示
-- `src/utils/tool.js`：`tool.dictList('编码')` 取字典、`tool.dataToTree()` 树化等
+- `src/utils/request.js`：`baseRequest`（B 端）；`src/utils/clientRequest.js`：`clientBaseRequest`（C 端，读取 CLIENT_TOKEN；出厂的 C 端登录、个人中心 API 仍走 baseRequest，新写的 C 端接口用 clientBaseRequest）；token 请求头名 `token`；code!==200 自动 message.error；add/edit/delete 成功自动提示
+- `src/utils/tool.js`：`tool.dictList('编码')` 取字典选项、`tool.dictTypeData('编码', 值)` 把字典值转成文字、`tool.translateTree(顶级字典值, 值)` 做树形字典翻译、`tool.data.get/set` 读写本地缓存（前端没有通用的树化工具）
 - `src/utils/formRules.js`：`required('提示')` 校验工厂
 - 国密：`src/utils/smCrypto.js`（登录密码 SM2 加密）
 
 ## i18n
 
-页面文案 `$t('xxx.yyy')`，词条加 `src/locales/{zh-cn,en-us}/` 对应文件。**遵循现有 i18n 习惯**；纯业务管理页的动态数据（字典/菜单）不走 i18n。
+业务页面直接写中文，**不强制**国际化（biz/dev/gen/mobile 页面和 layout 公共区域现状均为中文直写）；vue-i18n 只用于 auth 登录/找回密码页和 sys/user 列表，在这些已接入的页面改动时延续 `$t('xxx.yyy')`，词条加到 `src/locales/lang/zh-cn.js` 和 `src/locales/lang/en.js`（语言键 `zh-cn` / `en`）。纯业务管理页的动态数据（字典/菜单）不走 i18n。
 
 ## 常见错误正误对照
 
-| ❌ | ✅ |
+TS、Element Plus、块顺序见上方铁律与 SFC 块顺序，不重复。
+
+| 错误 | 正确 |
 |---|---|
-| TypeScript 语法 | 纯 JS |
-| Element Plus（el-xxx）组件 | Ant Design Vue（a-xxx） |
-| `import { ref } from 'vue'` | 自动导入，不写 |
+| 新代码手写 `import { ref } from 'vue'`（冗余） | 自动导入，不写 |
 | 自己 axios.get('/api/biz/xxx') | api js + baseRequest 封装 |
 | `:data="tableData"` 数组 | s-table `:data="loadData"` 函数 |
-| 表单不用容器直接弹 a-modal | `xn-form-container` |
+| 业务主表单直接弹 a-modal | `xn-form-container` |
+| 手写 a-modal + a-table 选人/选机构、手写 a-upload、手写分页下拉 | 用底座组件（见上方选型表） |
+| 选择器传 `@/api/sys/*` 接口 | 传 `@/api/biz/*` 选择器接口 |
 | 忘 `defineExpose({ onOpen })` | 父组件打不开表单 |
-| `<script>` 写在 `<template>` 前面 | 固定 template → script → style |
-| 硬编码中文文案不进 i18n（公共区域） | $t + locales |
+| 在已接入 i18n 的页面（auth 登录/找回密码、sys/user 列表）里新增硬编码中文 | 延续该页的 `$t('xxx')` 并补 locales 词条；其他页面直接写中文 |
+
+> 存量说明：出厂部分文件（多在 components/）保留了显式 `import { ref } from 'vue'`，不回改；在已打开的抽屉或容器里再弹出的二级子表单可以用 a-modal（出厂 sys/resource/button/form.vue 等 4 处）。
 
 ## 检查清单
 
 - [ ] 每个 .vue 块顺序为 template → script → style，script 带 name
 - [ ] 三件套齐全（api js / index.vue / form.vue）
-- [ ] api js 的 URL 前缀与后端一致（/biz/xxx/）
+- [ ] api js 的 URL 前缀与后端一致（如 /biz/xxx/，自建插件用自己的前缀）
 - [ ] s-table loadData 模式 + 时间范围拆分
 - [ ] 按钮权限 hasPerm 码与 SYS_RESOURCE BUTTON 行一致
 - [ ] 提交成功 emit('successful')
+- [ ] 上传/选人/选机构/树选择/分页下拉/批量按钮等场景已用底座组件，未手写同类实现；选择器 API 来自 `@/api/biz/*`
 - [ ] 无 TS / Element Plus 残留；Tab 缩进
 - [ ] 注释每处不超过一行，无连续 `//` 段落、无 JSDoc @param/@returns、无注释掉的废代码
 
@@ -364,4 +363,8 @@ v-if="hasPerm(['bizXxxEdit', 'bizXxxDelete'], 'and')"    // 数组 + and/or（�
 | `snowy-admin-web/src/views/biz/notice/detail.vue` | 详情范本 |
 | `snowy-admin-web/src/utils/request.js` | 请求封装 |
 | `snowy-admin-web/src/utils/tool.js` | 前端工具 |
+| `.agents/skills/frontend-pc/components.md` | 底座组件手册（参数/示例/坑） |
+| `snowy-admin-web/src/views/biz/user/index.vue`、`form.vue` | 左树右表、xn-tree-select、xn-page-select、xn-role-selector 范本 |
+
+> notice 范本里有出厂历史写法，**改名照抄前先核对**：按钮码 `bizNoticerUpdateStatus`（多一个 r，与 SQL 一致，新模块写正确拼写如 `bizXxxUpdateStatus`）、`selectedRowKeys.value = ref([])`（应为 `selectedRowKeys.value = []`）、`Object.assign(parameter, searchFormParam)` 会改写 s-table 传入对象（推荐 `Object.assign({}, parameter, searchFormParam)`）。
 | `snowy-admin-web/src/components/` | 全部组件 |

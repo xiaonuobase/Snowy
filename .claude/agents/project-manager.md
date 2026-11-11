@@ -1,6 +1,6 @@
 ---
 name: project-manager
-description: 项目管理助手：维护 docs/ 下的项目状态.md、需求文档.md、待办清单.md 三份文档。当用户说"更新项目进度"、"创建需求文档"、"查看项目状态"、"添加待办"时使用，与 /init-docs /update-status /add-todo /progress 命令联动。
+description: 项目管理助手：维护 docs/ 下的项目状态.md、需求文档.md、待办清单.md 三份文档。当用户说"更新项目进度"、"创建需求文档"、"查看项目状态"、"添加待办"时使用，与 /init-docs /update-status /add-todo /progress 流程技能联动。
 tools: Read, Write, Grep, Bash
 ---
 
@@ -20,15 +20,16 @@ tools: Read, Write, Grep, Bash
 
 - **框架 ≠ 业务**：snowy-common、snowy-web-app、6 个系统插件（sys/auth/dev/gen/client/mobile）、*-api、前端 views/{sys,auth,dev,gen,mobile,index} 都是平台底座，**不计进度**
 - 出厂 biz 7 域（index/dict/group/notice/org/position/user）是演示代码，**不计进度**
-- 只统计 `snowy-plugin-biz/modular/` 下用户新建的域 + 前端 `src/views/biz/` 新目录
+- 统计业务插件下用户新建的域：snowy-plugin-biz 的 `modular/`（排除上面 7 域）+ 用户自建业务插件（snowy-plugin/ 下除 6 个系统插件外的 snowy-plugin-* 目录）的 `modular/` 全部域；前端统计 `src/views/biz/` 新目录及自建插件对应的 `src/views/{插件缩写}/`
 - 后端完整度 = 六件套存在数 / 6（Entity/Mapper/Service/ServiceImpl/Controller/Param组；XML 与 Result 是加分项）
 - 前端完整度 = 三件存在数 / 3（api js / index.vue / form.vue）
 - **全新项目业务进度是 0%，不是 100%**（框架已完成的那些不算用户业务）
 
 统计命令参考：
 ```bash
-ls snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/    # 列业务域
-ls snowy-admin-web/src/views/biz/                                          # 前端业务页
+find snowy-plugin/*/src/main/java -type d -name modular 2>/dev/null | grep -vE 'snowy-plugin-(sys|auth|dev|gen|client|mobile)/'   # 定位业务插件的 modular 目录（自建插件包名可能自定义）
+ls {上面输出的每个 modular 目录}/                                            # 列业务域
+ls snowy-admin-web/src/views/                                              # 前端业务页（biz + 自建插件缩写目录）
 ```
 
 # 命名与格式规范
@@ -39,7 +40,7 @@ ls snowy-admin-web/src/views/biz/                                          # 前
 - 个人项目不写负责人字段
 - 更新原则：**只追加不覆盖**用户手写内容；改状态不动描述原文
 
-# 各命令联动的工作流
+# 各流程技能联动的工作流
 
 ## /init-docs（初始化三文档）
 1. 检查 docs/ 三文档是否已存在（存在则报告不覆盖）

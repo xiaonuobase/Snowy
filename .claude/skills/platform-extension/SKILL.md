@@ -17,23 +17,20 @@ description: Snowy 平台扩展点地图：不改框架代码实现定制的所�
 | 在业务代码里用平台能力（查用户/发消息/传文件/读配置） | 注入现成 `*-api` 接口（SysUserApi/DevMessageApi/DevFileApi/DevConfigApi...） | 见 plugin-architecture 的现成 API 速查表 |
 | 把我方能力暴露给其他插件 | 定义接口进 `snowy-plugin-api/{我方}-api` + 我方 `provider/` 实现 | provider/ |
 | 周期性任务（对账/清理/汇总） | 实现 `CommonTimerTaskRunner` + @Component + 界面配置 | 我的插件 `core/timer/` |
-| 可调的业务参数（开关/阈值/默认密码） | DEV_CONFIG（系统配置界面维护），代码里 DevConfigApi 读取 | 界面：开发工具→系统配置 |
-| 下拉选项数据 | 业务字典（BIZ）/枚举（见 dict-config） | biz/modular/dict 或 enums/ |
+| 可调的业务参数（开关/阈值/默认密码） | DEV_CONFIG（系统配置界面维护），代码里 DevConfigApi 读取 | 界面：系统 → 系统运维 → 系统配置 |
+| 下拉选项数据 | 业务字典（BIZ）/枚举（见 dict-config） | 新建：系统运维 → 数据字典（业务字典分类）；维护：业务 → 业务字典；和代码逻辑绑定的选项用 `modular/{域}/enums/` |
 | 返回给前端的对象统一加工/包装 | `@CommonWrapper(包装类.class)`（返回值包装 AOP） | snowy-common/annotation |
 | 接口防重复提交 | `@CommonNoRepeat` | Controller 方法上 |
 | 操作留痕 | `@CommonLog("中文")` | Controller 写方法上 |
 | 字段展示为字典文本/关联名 | Entity 加 `@Trans`（DICTIONARY/SIMPLE） | entity/ |
-| 新页面/新菜单 | views/biz/{域} + SYS_RESOURCE 资源 SQL | 前端 + database-ops 挂载点速查 |
-| 记录业务操作日志/异常排查 | @CommonLog 已落 DEV_LOG，直接查 | 开发工具→日志 |
+| 新页面/新菜单 | views/{插件}/{域} + SYS_RESOURCE 资源 SQL | 前端 + database-ops 挂载点速查 |
+| 记录业务操作日志/异常排查 | @CommonLog 已落 DEV_LOG，直接查 | 系统 → 系统运维 → 日志审计 → 操作日志 |
 
 ## 扩展点 1：数据变更监听（最高频）
 
-平台（sys 等）改了共享数据（用户/组织/角色）会广播事件；我的插件想要联动（清缓存/同步数据），实现监听器即可，**零侵入**：
+平台（sys 等）改了共享数据（用户/组织/角色）会广播事件（广播覆盖 sys/biz 各实体的标准增删改；改头像、绑定手机/邮箱、授权等个别写操作不发事件，监听器不能假设能收到所有变更）；我的插件想要联动（清缓存/同步数据），实现监听器即可，**零侵入**：
 
 ```java
-/*
- * ... 版权头
- */
 package vip.xiaonuo.biz.core.listener;
 
 import cn.hutool.json.JSONArray;
@@ -87,7 +84,7 @@ public class BizXxxDataChangeListener implements CommonDataChangeListener {
 }
 ```
 
-- @Component 即自动注册（CommonDataChangeEventCenter 收集 Spring 容器中所有实现）
+- @Component 即自动注册（由 snowy-web-app 启动模块的配置类注入所有 CommonDataChangeListener Bean，再调 `CommonDataChangeEventCenter.registerListenerList`；监听器所在包必须被启动模块扫描到（默认 `vip.xiaonuo`；自定义包名需补扫描配置，见 plugin-architecture））
 - 接口的 10 个方法都不是 default 方法，需要全部实现；无关回调可保留空方法体
 - 平台侧发事件的写法（我的插件改了共享数据也要广播）：`CommonDataChangeEventCenter.doUpdateWithData("XXX", JSONUtil.parseObj(entity))` 等——写在 Service 的增删改里
 - dataType：跟随事件来源（BizDataTypeEnum 这类插件级枚举定义自己的类型）
@@ -114,17 +111,17 @@ private DevMessageApi devMessageApi;    // 站内信（自动实时推送）
 2. 平台行为本身要变（不是"加上我的业务"，而是"改掉平台默认"）
 3. 用户明确知晓升级冲突风险并接受
 
-改法约束：优先"同包同名 @Configuration 覆盖 Bean/条件装配"，其次最小 diff 修改；改动必须记入 docs 并在 /sync 报告中标注"框架改动点"。
+改法约束：直接在平台源码上做最小 diff 修改。**不要**用"同包同名类遮蔽"，也**不要**重复定义同名 Bean：项目没开 Bean 覆盖，遮蔽又取决于 classpath 顺序，升级时很容易悄悄失效。只有目标 Bean 本身带 `@ConditionalOnMissingBean` 时，才可以在业务插件里提供同类型的 Bean 来替换。改动必须记入 docs，并在 sync 流程技能报告里标注"框架改动点"。
 
 ## 常见错误正误对照
 
-| ❌ | ✅ |
+| 错误 | 正确 |
 |---|---|
-| 直接在 SysUserService 里加业务逻辑 | biz 插件建自己的域，跨插件走 SysUserApi |
+| 直接在 SysUserService 里加业务逻辑 | 在 biz 或自建业务插件里建自己的域，跨插件走 SysUserApi |
 | 业务开关写死在代码/properties | DEV_CONFIG + DevConfigApi 读取 |
 | 改共享数据后不管缓存 | 发 CommonDataChangeEventCenter 事件 |
 | 想收平台变更通知却去改 sys 源码 | 实现 CommonDataChangeListener |
-| 每个新需求都想新建插件 | 默认进 snowy-plugin-biz/modular（见 plugin-architecture） |
+| 每个小需求都新建一个插件 | 默认进 snowy-plugin-biz/modular；业务体量大、需要独立维护时再新建自己的业务插件（见 plugin-architecture） |
 
 ## 检查清单
 
@@ -141,5 +138,5 @@ private DevMessageApi devMessageApi;    // 站内信（自动实时推送）
 | `snowy-common/src/main/java/vip/xiaonuo/common/listener/CommonDataChangeEventCenter.java` | 事件中心（注册/广播） |
 | `snowy-common/src/main/java/vip/xiaonuo/common/listener/CommonDataChangeListener.java` | 监听接口（全部回调） |
 | `snowy-common/src/main/java/vip/xiaonuo/common/annotation/CommonWrapper.java` | 返回包装注解 |
-| `snowy-plugin/snowy-plugin-dev/src/main/java/vip/xiaonuo/dev/modular/job/task/DevJobTimerTaskRunner.java` | 定时任务扩展点范本 |
-| `snowy-plugin-api/snowy-plugin-dev-api/src/main/java/vip/xiaonuo/dev/api/` | 可注入的平台能力全集 |
+| `snowy-plugin/snowy-plugin-dev/src/main/java/vip/xiaonuo/dev/modular/job/task/DevJobTimerTaskRunner.java` | 定时任务接口示例（在 modular/job/task 下；业务任务目录以所在插件的 core/timer 为准，可参考 `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/core/timer/SysUserPasswordExpiredNoticeTimerTaskRunner.java`） |
+| `snowy-plugin-api/`（7 个 *-api 模块下的 `.../api/` 目录，以及 client-api 的 `ClientUserApi`） | 可注入的平台能力全集；dev-api 只放 dev 插件自己的接口（配置/字典/邮件/文件/任务/日志/站内信/推送/轮播图/短信/弱密码等，以目录实际内容为准） |

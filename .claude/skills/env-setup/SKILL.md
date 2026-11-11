@@ -9,7 +9,7 @@ description: Snowy 新环境搭建与首次启动 playbook：JDK/MySQL/Redis/前
 
 | # | 依赖 | 要求                                                                                                    | 验证 |
 |---|---|-------------------------------------------------------------------------------------------------------|---|
-| 1 | JDK | **17**（与编译目标一致；命令行构建和 IDEA 的 Project SDK 都用 17）                                                  | `java -version` |
+| 1 | JDK | **推荐 17**（与编译目标一致，21 可用；命令行构建和 IDEA 的 Project SDK 保持同一版本）                                                  | `java -version` |
 | 2 | MySQL | 8.0/5.7，建库 `snowy`（utf8mb4）                                                                           | `mysql -e "SHOW DATABASES LIKE 'snowy'"` |
 | 3 | 导入种子数据 | 执行 `snowy-web-app/src/main/resources/_sql/snowy_mysql.sql`（33 张表）                                     | `mysql snowy -e "SELECT COUNT(*) FROM SYS_USER"` 应 ≥2 |
 | 4 | Redis | 本地 6379，无密码，用 database 1                                                                              | `redis-cli -n 1 ping` |
@@ -18,14 +18,14 @@ description: Snowy 新环境搭建与首次启动 playbook：JDK/MySQL/Redis/前
 | 7 | 前端依赖 | `snowy-admin-web/` 下 `npm install`                                                                    | — |
 | 8 | 前端启动 | `npm run dev`，端口 **81**，代理 /api → 82                                                                  | 打开 `http://localhost:81` |
 
-## ★ 出厂登录账号（本仓库种子数据的真实值）
+## 出厂登录账号（本仓库种子数据的真实值）
 
 | 账号 | 密码 | 角色 |
 |---|---|---|
-| `superAdmin` | **`Snowy@2026!`** | 超级管理员（拥有全部权限） |
+| `superAdmin` | **`Snowy@2026!`** | 超级管理员（sys/dev 等平台管理功能由路由级超管校验放行；带 `@SaCheckPermission` 的接口只拥有已授权的，手写的新接口要到 角色管理 → 授权权限 给超管勾选） |
 | `bizAdmin` | **`Snowy@2026!`** | 业务管理员（仅业务模块） |
 
-> ⚠️ **不是 123456**——网上教程/官方演示站说的 123456 是 xiaonuo.vip 演示库的密码。本仓库种子密码的权威来源是 DEV_CONFIG 表 `SNOWY_SYS_DEFAULT_PASSWORD_FOR_B` 配置项（新建用户的默认密码也是它，可在 开发工具→系统配置 里改）。存储为 SM3 摘要：SM3("Snowy@2026!") = b7eb53ce42289cd168e21e37cc3b94333c3e2e691486548a06f5c5fae129f157。
+> 注意：2026-06-26 之前的种子密码是 `123456`，旧库可能仍是它；用 SYS_USER.PASSWORD 摘要判断：`207cf410…` 是 123456，`b7eb53ce…` 是 Snowy@2026!。本仓库种子密码的权威来源是 DEV_CONFIG 表 `SNOWY_SYS_DEFAULT_PASSWORD_FOR_B` 配置项（新建用户的默认密码也是它，可在 系统 → 系统运维 → 系统配置 →「密码配置」页签里改）。存储为 SM3 摘要：SM3("Snowy@2026!") = b7eb53ce42289cd168e21e37cc3b94333c3e2e691486548a06f5c5fae129f157。
 > 登录失败次数过多会锁定（PWD_ERROR 处理逻辑），连不上先确认大小写与感叹号。
 
 ## 常用自检命令
@@ -40,8 +40,8 @@ lsof -nP -iTCP:82 -iTCP:81 -sTCP:LISTEN
 # 后端活着吗（应输出 WELCOME）
 curl -s http://localhost:82/
 
-# 接口文档（basic 认证 admin/123456）
-curl -s -u admin:123456 http://localhost:82/doc.html | head -5
+# 接口文档（basic 认证见 application.properties 的 knife4j.basic.username/password，当前为 snowyAdmin / Snowy@2026!）
+curl -s -u 'snowyAdmin:Snowy@2026!' http://localhost:82/doc.html | head -5
 
 # 表齐了吗
 mysql -uroot -p snowy -e "SELECT COUNT(*) AS tables_cnt FROM information_schema.tables WHERE table_schema='snowy';"
@@ -52,12 +52,14 @@ mysql -uroot -p snowy -e "SELECT COUNT(*) AS tables_cnt FROM information_schema.
 1. 按就绪清单逐项检查，从失败的那项开始修
 2. 常见首启故障（详见 bug-detective 树 A）：端口占用 / 库没导 / Redis 没起 / JDK 版本 / 口令不符
 3. 全部就绪后：打开前端 → superAdmin / Snowy@2026! 登录 → 看到首页即完成
-4. 登录成功后建议用户立刻改密码（系统管理 → 用户中心）
+4. 登录成功后建议用户立刻改密码（右上角头像 → 个人中心）
 
 ## 新增依赖说明
 
 - Maven 中央仓库直连失败时用阿里云镜像（settings.xml mirrorOf=central → maven.aliyun.com/repository/public）
 - npm 失败时用 npmmirror：`npm install --registry=https://registry.npmmirror.com`
+- 镜像只配在个人 `~/.m2/settings.xml`，不要改项目 pom
+- auth 插件 pom 以 system scope 引用本地 welink-sdk jar，装进本地仓库后传递依赖会丢失：只构建单个模块时必须带 `-am`（如 `mvn install -DskipTests -pl snowy-web-app -am`），或直接在根目录完整构建
 
 ## 检查清单
 
@@ -74,4 +76,4 @@ mysql -uroot -p snowy -e "SELECT COUNT(*) AS tables_cnt FROM information_schema.
 | `snowy-web-app/src/main/resources/_sql/snowy_mysql.sql` | 种子数据（账号/菜单/DEV_CONFIG 默认密码） |
 | `snowy-web-app/src/main/java/vip/xiaonuo/Application.java` | 启动类 |
 | `snowy-admin-web/package.json` | 前端依赖与脚本 |
-| `CLAUDE.md` 常用命令节 | 构建环境备忘（IDEA 内置 Maven/镜像/JDK17） |
+| `AGENTS.md` 常用命令节 | 构建、启动命令与端口速记 |

@@ -1,0 +1,5 @@
+interface:
+  display_name: "dev"
+  short_description: "开发新功能（建表 + 后端六件套 + 前端三件 + 菜单SQL，双模式）"
+policy:
+  allow_implicit_invocation: false

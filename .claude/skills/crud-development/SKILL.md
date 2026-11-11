@@ -1,6 +1,6 @@
 ---
 name: crud-development
-description: Snowy CRUD 全套开发规范（六件套 + 可选两件 + 前端三件）。触发场景：1) 开发新的业务模块/增删改查功能 2) 编写 Entity/Mapper/Service/Controller/Param/Result 任何一件 3) 仿照现有模块新建业务域。触发词：CRUD、增删改查、业务模块、新建模块、Entity、Service、Controller、Param、分页、六件套。注意：只讲"怎么写代码"；建表/菜单 SQL 见 database-ops；接口设计细节见 api-development；用自带生成器见 code-generator。
+description: Snowy CRUD 全套开发规范（六件套 + 空 Mapper XML + 可选 Result + 前端三件）。触发场景：1) 开发新的业务模块/增删改查功能 2) 编写 Entity/Mapper/Service/Controller/Param/Result 任何一件 3) 仿照现有模块新建业务域。触发词：CRUD、增删改查、业务模块、新建模块、Entity、Service、Controller、Param、分页、六件套。注意：只讲"怎么写代码"；建表/菜单 SQL 见 database-ops；接口设计细节见 api-development；用自带生成器见 code-generator。
 ---
 
 # Snowy CRUD 开发规范
@@ -9,34 +9,19 @@ description: Snowy CRUD 全套开发规范（六件套 + 可选两件 + 前端�
 
 | 特征 | Snowy 约定 | 与同类快速开发框架相反点 |
 |---|---|---|
-| 包名 | `vip.xiaonuo.biz.modular.{域名}.{层}` | 不是其他脚手架的 org.* / com.* 包名 |
-| 依赖注入 | `@Resource`（jakarta.annotation）字段注入 | ❌@Autowired ❌构造器注入 |
-| ServiceImpl | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` | ❌只 implements 不继承 |
-| 对象转换 | Hutool `BeanUtil.toBean / copyProperties` | ❌MapstructUtils |
-| Lombok | 只用 `@Getter @Setter` | ❌@Data |
-| 主键 | `@TableId private String id`（字符串雪花） | ❌Long |
-| URL | 动词式写方法上 `/biz/xxx/page` | ❌RESTful 路径 ❌类级 @RequestMapping |
+| 包名 | `{插件包}.modular.{域名}.{层}`，默认 `vip.xiaonuo.biz.modular...`；业务可自定义（如 `com.company.order`） | 非 vip.xiaonuo 包必须按 plugin-architecture 补扫描配置，否则 Bean/Mapper 不生效 |
+| 依赖注入 | `@Resource`（jakarta.annotation）字段注入 | 禁止 @Autowired、构造器注入 |
+| ServiceImpl | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` | 禁止只 implements 不继承 |
+| 对象转换 | Hutool `BeanUtil.toBean / copyProperties` | 禁止 MapstructUtils |
+| Lombok | 只用 `@Getter @Setter` | 禁止 @Data |
+| 主键 | `@TableId private String id`（字符串雪花） | 禁止 Long |
+| URL | 动词式写方法上 `/biz/xxx/page` | 禁止 RESTful 路径、类级 @RequestMapping |
 | 分页 | `CommonPageRequest.defaultPage()` + MP `Page<T>` | — |
-| 版权头 | 每个 .java 头部 12 行 Apache 2.0 声明 | AI 生成最容易漏 |
-
-## 版权头模板（每个新 .java 必须有）
-
-```java
-/*
- * Copyright [2022] [https://www.xiaonuo.vip]
- *
- * Snowy采用APACHE LICENSE 2.0开源协议，您在使用过程中，需要注意以下几点：
- *
- * 1.请不要删除和修改根目录下的LICENSE文件。
- * 2.请不要删除和修改Snowy源码头部的版权声明。
- * 3.本项目代码可免费商业使用，商业使用请保留源码和相关描述文件的项目出处，作者声明等。
- * 4.分发源码时候，请注明软件出处 https://www.xiaonuo.vip
- * 5.不可二次分发开源参与同类竞品，如有想法可联系团队xiaonuobase@qq.com商议合作。
- * 6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
- */
-```
+| 版权头 | 平台代码保留原有 12 行 Apache 2.0 声明；用户新写的业务代码不强制 | 修改平台代码时不要删版权头；业务代码不要照抄小诺版权头 |
 
 ## 目录结构（一个业务域 = modular 下一个目录）
+
+默认放 biz 插件（下图）；自建业务插件同构：`snowy-plugin/snowy-plugin-{name}/src/main/java/{包路径}/modular/{域名}/`（见 plugin-architecture）。
 
 ```
 snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/{域名}/
@@ -44,7 +29,7 @@ snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/{域名}/
 ├── entity/Xxx.java
 ├── enums/XxxStatusEnum.java          （可选，有状态字段时）
 ├── mapper/XxxMapper.java
-│   └── mapping/XxxMapper.xml         （可选，仅自定义 SQL）
+│   └── mapping/XxxMapper.xml         （空 XML 占位，与生成器一致）
 ├── param/XxxPageParam.java
 │       XxxAddParam.java
 │       XxxEditParam.java
@@ -55,7 +40,7 @@ snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/{域名}/
 └── provider/XxxApiProvider.java      （可选，被跨插件调用时）
 ```
 
-类名前缀 = 插件缩写（业务插件是 **Biz**）：`BizNotice`、`BizNoticeService`。
+类名前缀 = 所在插件缩写（biz 插件是 **Biz**：`BizNotice`、`BizNoticeService`；自建插件用自己的缩写，如 snowy-plugin-order 用 `Order`）；URL 第一段同理用插件名（下方模板以 biz 为例）。
 
 ## 第 1 件：Entity
 
@@ -85,7 +70,7 @@ public class BizXxx extends CommonEntity {
 ```
 
 要点：
-- 继承 `CommonEntity`（自动获得 deleteFlag/createUser/createTime/updateUser/updateTime 审计字段，逻辑删除自动过滤）
+- 继承 `CommonEntity`（自动获得 deleteFlag/createUser/createTime/updateUser/updateTime 审计字段，逻辑删除自动过滤）；多对多关系表可以参照 SysRelation 不继承（不需要逻辑删除和审计字段）；本技能是手写模式，生成器产出的实体不继承 CommonEntity、逐字段声明，不要混用
 - 敏感字段（手机号等）加 `@TableField(typeHandler = CommonSm4CbcTypeHandler.class)`，见 crypto-sm 技能
 - 字典翻译字段加 `@Trans(type = TransType.DICTIONARY, key = "XXX")`，关联表翻译加 `@Trans(type = TransType.SIMPLE, target = Yyy.class, fields = "name", alias = "yyy", ref = "yyyName")`
 - 每个字段有 `/** 中文说明 */` + `@Schema(description = "中文")`
@@ -97,7 +82,7 @@ public interface BizXxxMapper extends BaseMapper<BizXxx> {
 }
 ```
 
-自定义 SQL 才建 `mapper/mapping/BizXxxMapper.xml`（namespace = Mapper 全限定名，与 Java 同包）。
+同时建 `mapper/mapping/BizXxxMapper.xml`：空 `<mapper namespace="Mapper 全限定名">` 占位即可（与平台惯例、代码生成器一致），有自定义 SQL 时写在里面。
 
 ## 第 3 件：Service 接口
 
@@ -245,7 +230,7 @@ public class BizXxxController {
 
 ## 第 6 件：Param 组（每操作一个类）
 
-- **XxxPageParam**：current/size/sortField/sortOrder/searchKey 五个固定字段 + 业务查询字段（无校验注解）
+- **XxxPageParam**：current/size/sortField/sortOrder/searchKey 五个固定字段 + 业务查询字段（业务查询字段一般不加校验；子表分页等必须带父 ID 时可以加 @NotBlank，如 GenConfigPageParam.basicId）
 - **XxxAddParam**：业务字段 + `@NotBlank(message = "xxx不能为空")` 等校验（jakarta.validation）
 - **XxxEditParam**：同 AddParam + `@NotBlank private String id`
 - **XxxIdParam**：只有 id
@@ -262,12 +247,12 @@ public class BizXxxIdParam {
 }
 ```
 
-## 可选两件
+## Mapper XML（必配占位）与 Result（可选）
 
-- **Result**：仅需要投影/跨表组装返回时建 `result/XxxResult.java`（@Getter @Setter + @Schema）；直接返回 Entity 是允许的
-- **Mapper XML**：仅自定义 SQL；空 XML 不要建
+- **Mapper XML（必配）**：每个 Mapper 配一个空 XML 占位（`mapper/mapping/XxxMapper.xml`，namespace = Mapper 全限定名），代码生成器也生成空 XML；有自定义 SQL 时写在里面
+- **Result（可选）**：仅需要投影/跨表组装返回时建 `result/XxxResult.java`（@Getter @Setter + @Schema）；直接返回 Entity 是允许的
 
-## 前端三件（见 frontend-pc 技能详解）
+## 前端三件（见 frontend-pc 技能详解；自建插件把路径中的 biz 换成插件名）
 
 1. `snowy-admin-web/src/api/biz/bizXxxApi.js` —— API 封装
 2. `snowy-admin-web/src/views/biz/xxx/index.vue` —— 列表页（s-table）
@@ -275,29 +260,17 @@ public class BizXxxIdParam {
 
 ## 常见错误正误对照
 
-| ❌ 错误（同类框架惯性） | ✅ 正确（Snowy） |
-|---|---|
-| `@Autowired private XxxService x;` | `@Resource private XxxService x;` |
-| `public class XxxServiceImpl implements IXxxService` | `extends ServiceImpl<XxxMapper, Xxx> implements XxxService` |
-| `MapstructUtils.convert(bo, Xxx.class)` | `BeanUtil.toBean(param, Xxx.class)` |
-| `@Data public class Xxx` | `@Getter @Setter public class Xxx` |
-| `@RequestMapping("/biz/xxx")` 类级 + `@PostMapping("/list")` | 无类级注解，方法上直接 `@PostMapping("/biz/xxx/add")` |
-| `@SaCheckPermission("biz:xxx:list")` | `@SaCheckPermission("/biz/xxx/page")` |
-| `private Long id` / `@TableId(type = IdType.ASSIGN_ID)` Long | `@TableId private String id` |
-| `throw new ServiceException("xxx")` | `throw new CommonException("xxx不存在，id值为：{}", id)` |
-| 单个 XxxBo + AddGroup/EditGroup | XxxPageParam / XxxAddParam / XxxEditParam / XxxIdParam 四类 |
-| `R.ok(data)` / `AjaxResult` | `CommonResult.data(data)` / `CommonResult.ok()` |
-| `queryWrapper.eq("name", ...)` 字符串列名 | `queryWrapper.lambda().eq(Xxx::getName, ...)` |
+上方架构特征表与六件模板即正确写法；同类框架惯性错误的完整对照（17 条）统一维护在 code-patterns 技能，此处不重复。
 
 ## 检查清单（写完自查）
 
-- [ ] 每个 .java 有 12 行版权头
-- [ ] 包名 `vip.xiaonuo.biz.modular.xxx.*`，类名 Biz 前缀
+- [ ] 业务代码未照抄小诺版权头（用户有版权头规范按用户的来）；修改的平台代码版权头未被删除
+- [ ] 包名与目标插件一致（默认 `vip.xiaonuo.biz.modular.xxx.*`；非 vip.xiaonuo 包已按 plugin-architecture 补齐扫描配置），类名前缀 = 所在插件缩写（biz 为 Biz）
 - [ ] Entity 继承 CommonEntity，@TableName 大写，@TableId String
 - [ ] ServiceImpl extends ServiceImpl 且写方法有 @Transactional(rollbackFor = Exception.class)
-- [ ] 查询 QueryWrapper 带 checkSqlInjection()，条件全部判空
+- [ ] 分页查询的 QueryWrapper 带 checkSqlInjection()，条件全部判空；唯一性校验等固定条件可以用 LambdaQueryWrapper
 - [ ] Controller：@Tag/@RestController/@Validated，URL 动词式，@SaCheckPermission 值 = URL，写操作 @CommonLog
-- [ ] Param 四类齐全，校验消息中文
+- [ ] Param 按开放的操作建类（标准 CRUD 为 Page/Add/Edit/Id 四类；只开放部分操作的域不必补齐，如 biz/dict 只有 Page、Edit），校验消息中文
 - [ ] 所有注释/Javadoc/异常消息中文，Javadoc 有 @author @date
 - [ ] 前端三件已同步生成
 
@@ -306,7 +279,7 @@ public class BizXxxIdParam {
 | 文件 | 说明 |
 |---|---|
 | `snowy-plugin/snowy-plugin-biz/src/main/java/vip/xiaonuo/biz/modular/notice/` | 最干净完整的六件套范本（entity/mapper/service/impl/controller/param 全有） |
-| `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/SysUserController.java` | 复杂版 Controller（含导出/禁用启用） |
+| `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/controller/SysUserController.java` | 复杂版 Controller（含导出/禁用启用） |
 | `snowy-plugin/snowy-plugin-sys/src/main/java/vip/xiaonuo/sys/modular/user/service/impl/SysUserServiceImpl.java` | 复杂版 ServiceImpl（含 SM4 字段/事务/重复校验） |
 | `snowy-common/src/main/java/vip/xiaonuo/common/page/CommonPageRequest.java` | 分页请求构造 |
 | `snowy-common/src/main/java/vip/xiaonuo/common/enums/CommonSortOrderEnum.java` | 排序枚举 |
