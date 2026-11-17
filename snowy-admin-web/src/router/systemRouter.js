@@ -11,6 +11,7 @@
 import config from '@/config'
 import tool from '@/utils/tool'
 import routerUtil from '@/utils/routerUtil'
+import { useMenuStore } from '@/store/menu'
 
 const Layout = () => import('@/layout/index.vue')
 const Sso = () => import('@/views/auth/sso/index.vue')
@@ -18,13 +19,22 @@ const Login = () => import('@/views/auth/login/login.vue')
 const FindPwd = () => import('@/views/auth/findPwd/index.vue')
 const Callback = () => import('@/views/auth/login/callback.vue')
 const Register = () => import('@/views/auth/login/register.vue')
+// 首页地址：取页面加载时缓存的菜单，裁剪掉当前前端工程没有页面的菜单后再取首页，避免跳转到不存在的页面
+const cacheMenu = tool.data.get('MENU')
+let indexPath = null
+const getIndexPath = () => {
+	if (!indexPath) {
+		indexPath = cacheMenu ? routerUtil.getIndexMenu(useMenuStore().pruneMenu(cacheMenu)).path : config.DASHBOARD_URL
+	}
+	return indexPath
+}
 // 系统路由
 const routes = [
 	{
 		name: 'layout',
 		path: '/',
 		component: Layout,
-		redirect: tool.data.get('MENU') ? routerUtil.getIndexMenu(tool.data.get('MENU')).path : config.DASHBOARD_URL,
+		redirect: () => getIndexPath(),
 		children: []
 	},
 	{

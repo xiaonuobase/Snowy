@@ -33,8 +33,13 @@ export const useMenuStore = defineStore('menuStore', () => {
 	}
 	// 加载菜单
 	const loadMenu = () => {
-		// 获取用户菜单
-		const apiMenu = tool.data.get('MENU') || []
+		// 获取用户菜单（缓存中可能是裁剪前的菜单，这里再裁剪一次，有变化则回写缓存）
+		const cacheMenu = tool.data.get('MENU')
+		const cacheMenuJson = JSON.stringify(cacheMenu)
+		const apiMenu = pruneMenu(cacheMenu) || []
+		if (Array.isArray(cacheMenu) && JSON.stringify(apiMenu) !== cacheMenuJson) {
+			tool.data.set('MENU', apiMenu)
+		}
 		if (apiMenu.length === 0) {
 			// 创建默认模块，显示默认菜单
 			apiMenu[0] = cloneDeep(userRoutes.module[0])
@@ -107,6 +112,65 @@ export const useMenuStore = defineStore('menuStore', () => {
 			return () => import(/* @vite-ignore */ `/src/layout/other/empty.vue`)
 		}
 	}
+	// 判断当前前端工程是否存在该页面组件（取值规则与loadComponent一致）
+	const hasComponent = (component) => {
+		if (!component) {
+			return false
+		}
+		return !!modules[component.includes('/') ? `/src/views/${component}.vue` : `/src/views/${component}/index.vue`]
+	}
+	// 裁剪掉当前前端工程没有对应页面的菜单，裁剪后为空的目录、模块一并去掉
+	const pruneMenuTree = (menuList) => {
+		return menuList.filter((item) => {
+			const type = item.meta ? item.meta.type : undefined
+			if (Array.isArray(item.children)) {
+				item.children = pruneMenuTree(item.children)
+			}
+			const hasChildren = Array.isArray(item.children) && item.children.length > 0
+			if (type === 'menu') {
+				// 菜单下还有保留下来的子菜单时不裁剪，避免连带去掉有页面的子菜单
+				return hasComponent(item.component) || hasChildren
+			}
+			if (type === 'module' || type === 'catalog') {
+				return hasChildren
+			}
+			return true
+		})
+	}
+	// 查找第一个有页面且未隐藏的菜单
+	const findFirstMenu = (menuList) => {
+		for (const item of menuList || []) {
+			if (!item.meta || item.meta.hidden === true) {
+				continue
+			}
+			if (item.meta.type === 'menu' && hasComponent(item.component)) {
+				return item
+			}
+			const child = findFirstMenu(item.children)
+			if (child) {
+				return child
+			}
+		}
+		return null
+	}
+	// 是否存在固定首页标记
+	const hasAffix = (menuList) => {
+		return (menuList || []).some((item) => (item.meta && item.meta.affix === true) || hasAffix(item.children))
+	}
+	const pruneMenu = (menuList) => {
+		if (!Array.isArray(menuList)) {
+			return menuList
+		}
+		const result = pruneMenuTree(menuList)
+		// 后端标记的固定首页如果被裁剪掉了，把裁剪后第一个模块下的第一个菜单标记为固定首页
+		if (result.length > 0 && !hasAffix(result)) {
+			const firstMenu = findFirstMenu(result[0].children)
+			if (firstMenu) {
+				firstMenu.meta.affix = true
+			}
+		}
+		return result
+	}
 	// 从路由中移除菜单
 	const removeFromRouter = () => {
 		const routes = router.getRoutes()
@@ -128,7 +192,7 @@ export const useMenuStore = defineStore('menuStore', () => {
 	// 获取用户菜单（通过API重新初始化菜单，用于界面实时响应）
 	const fetchMenu = async () => {
 		const menu = await userCenterApi.userLoginMenu()
-		tool.data.set('MENU', menu)
+		tool.data.set('MENU', pruneMenu(menu))
 		refreshMenu()
 	}
 	// 刷新菜单（非API刷新，用于路由守卫内使用）
@@ -141,7 +205,7 @@ export const useMenuStore = defineStore('menuStore', () => {
 	// 通过API刷新菜单（仅在layout的onMounted内使用，浏览器刷新只刷新一次）
 	const refreshApiMenu = () => {
 		userCenterApi.userLoginMenu().then((data) => {
-			tool.data.set('MENU', data)
+			tool.data.set('MENU', pruneMenu(data))
 			nextTick(() => {
 				refreshMenu()
 			})
@@ -153,5 +217,15 @@ export const useMenuStore = defineStore('menuStore', () => {
 			router.addRoute('layout', item)
 		})
 	}
-	return { menuData, loadMenu, addToRouter, refreshMenu, changeRefreshFlag, refreshFlag, fetchMenu, refreshApiMenu }
+	return {
+		menuData,
+		loadMenu,
+		addToRouter,
+		refreshMenu,
+		changeRefreshFlag,
+		refreshFlag,
+		fetchMenu,
+		refreshApiMenu,
+		pruneMenu
+	}
 })
