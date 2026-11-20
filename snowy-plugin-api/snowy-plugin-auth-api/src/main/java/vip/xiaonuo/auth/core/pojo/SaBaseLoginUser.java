@@ -12,6 +12,8 @@
  */
 package vip.xiaonuo.auth.core.pojo;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -251,8 +253,23 @@ public abstract class SaBaseLoginUser {
     @Schema(description = "自动锁屏时长，单位分钟，0表示不自动锁屏")
     private Integer autoLockTime;
 
+    /** 过期时间，为空表示永不过期 */
+    @Schema(description = "过期时间，为空表示永不过期")
+    private Date expireTime;
+
     /** 是否可登录，由继承类实现 */
     public abstract Boolean getEnabled();
+
+    /**
+     * 判断账号是否已过期
+     *
+     * @author yubaoshan
+     * @date 2026/11/20 10:00
+     */
+    @JsonIgnore
+    public boolean checkExpired() {
+        return ObjectUtil.isNotEmpty(expireTime) && DateUtil.date().isAfterOrEquals(expireTime);
+    }
 
     /**
      * 数据范围类

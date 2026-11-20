@@ -720,6 +720,10 @@ public class AuthServiceImpl implements AuthService {
         if(!saBaseLoginUser.getEnabled()) {
             throw new CommonException(AuthExceptionEnum.ACCOUNT_DISABLED.getValue());
         }
+        // 校验有效期
+        if(saBaseLoginUser.checkExpired()) {
+            throw new CommonException(AuthExceptionEnum.ACCOUNT_EXPIRED.getValue());
+        }
         // 执行登录
         StpUtil.login(saBaseLoginUser.getId(), new SaLoginParameter().setDeviceType(device).setExtra("name", saBaseLoginUser.getName()));
         // 填充B端用户信息并更新缓存
@@ -784,6 +788,10 @@ public class AuthServiceImpl implements AuthService {
         // 校验状态
         if(!saBaseClientLoginUser.getEnabled()) {
             throw new CommonException(AuthExceptionEnum.ACCOUNT_DISABLED.getValue());
+        }
+        // 校验有效期
+        if(saBaseClientLoginUser.checkExpired()) {
+            throw new CommonException(AuthExceptionEnum.ACCOUNT_EXPIRED.getValue());
         }
         // 执行登录
         StpClientUtil.login(saBaseClientLoginUser.getId(), new SaLoginParameter().setDeviceType(device).setExtra("name", saBaseClientLoginUser.getName()));

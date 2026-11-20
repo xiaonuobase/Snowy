@@ -258,6 +258,10 @@ public class SysUser extends CommonEntity {
     @Schema(description = "用户状态")
     private String userStatus;
 
+    /** 过期时间，为空表示永不过期 */
+    @Schema(description = "过期时间，为空表示永不过期")
+    private Date expireTime;
+
     /** 排序码 */
     @Schema(description = "排序码")
     private Integer sortCode;

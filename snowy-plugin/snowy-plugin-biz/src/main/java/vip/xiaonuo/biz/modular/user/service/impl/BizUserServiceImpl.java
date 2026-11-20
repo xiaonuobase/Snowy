@@ -221,9 +221,16 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
         if(updateSuperAdminAccount) {
             throw new CommonException("不可修改系统内置超管人员账号");
         }
+        boolean isSuperAdminAccount = bizUser.getAccount().equals(BizBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
+        if(isSuperAdminAccount && ObjectUtil.isNotEmpty(bizUserEditParam.getExpireTime())) {
+            throw new CommonException("不可为系统内置超管人员设置过期时间");
+        }
         BeanUtil.copyProperties(bizUserEditParam, bizUser);
         // 更新用户
         this.updateById(bizUser);
+        // updateById 默认忽略空值，过期时间清空（改为永不过期）需单独置空
+        this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId, bizUser.getId())
+                .set(BizUser::getExpireTime, bizUserEditParam.getExpireTime()));
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(BizDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(bizUser));
         // 刷新该用户的在线缓存信息
@@ -373,6 +380,10 @@ public class BizUserServiceImpl extends ServiceImpl<BizUserMapper, BizUser> impl
             if(!loginUserDataScope.contains(bizUser.getOrgId())) {
                 throw new CommonException("您没有权限启用该机构下的人员：{}，机构id：{}", bizUser.getName(), bizUser.getOrgId());
             }
+        }
+        // 已过期的账号启用后仍无法登录，需先修改过期时间
+        if(ObjectUtil.isNotEmpty(bizUser.getExpireTime()) && DateUtil.date().isAfterOrEquals(bizUser.getExpireTime())) {
+            throw new CommonException("该账号已于{}过期，请先修改过期时间", DateUtil.formatDateTime(bizUser.getExpireTime()));
         }
         this.update(new LambdaUpdateWrapper<BizUser>().eq(BizUser::getId,
                 bizUserIdParam.getId()).set(BizUser::getUserStatus, BizUserStatusEnum.ENABLE.getValue()));

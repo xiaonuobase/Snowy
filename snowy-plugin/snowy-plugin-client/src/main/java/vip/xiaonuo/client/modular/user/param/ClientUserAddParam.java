@@ -17,6 +17,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * 用户添加参数
  *
@@ -140,6 +142,10 @@ public class ClientUserAddParam {
     /** 紧急联系人地址 */
     @Schema(description = "紧急联系人地址")
     private String emergencyAddress;
+
+    /** 过期时间，为空表示永不过期 */
+    @Schema(description = "过期时间，为空表示永不过期")
+    private Date expireTime;
 
     /** 排序码 */
     @Schema(description = "排序码")

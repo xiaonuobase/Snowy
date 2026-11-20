@@ -75,6 +75,8 @@ export default {
 	user: {
 		userOrg: 'User Org',
 		userStatus: 'User Status',
+		expirePermanent: 'Permanent',
+		expired: 'Expired',
 		resetPassword: 'Reset Password',
 		role: 'Role',
 		batchExportButton: 'Batch Export',

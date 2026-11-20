@@ -529,9 +529,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(updateSuperAdminAccount) {
             throw new CommonException("不可修改系统内置超管用户账号");
         }
+        boolean isSuperAdminAccount = sysUser.getAccount().equals(SysBuildInEnum.BUILD_IN_USER_ACCOUNT.getValue());
+        if(isSuperAdminAccount && ObjectUtil.isNotEmpty(sysUserEditParam.getExpireTime())) {
+            throw new CommonException("不可为系统内置超管用户设置过期时间");
+        }
         BeanUtil.copyProperties(sysUserEditParam, sysUser);
         // 更新用户
         this.updateById(sysUser);
+        // updateById 默认忽略空值，过期时间清空（改为永不过期）需单独置空
+        this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId, sysUser.getId())
+                .set(SysUser::getExpireTime, sysUserEditParam.getExpireTime()));
         // 发布更新事件
         CommonDataChangeEventCenter.doUpdateWithData(SysDataTypeEnum.USER.getValue(), JSONUtil.createArray().put(sysUser));
         // 刷新该用户的在线缓存信息
@@ -633,6 +640,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void enableUser(SysUserIdParam sysUserIdParam) {
+        SysUser sysUser = this.queryEntity(sysUserIdParam.getId());
+        // 已过期的账号启用后仍无法登录，需先修改过期时间
+        if(ObjectUtil.isNotEmpty(sysUser.getExpireTime()) && DateUtil.date().isAfterOrEquals(sysUser.getExpireTime())) {
+            throw new CommonException("该账号已于{}过期，请先修改过期时间", DateUtil.formatDateTime(sysUser.getExpireTime()));
+        }
         this.update(new LambdaUpdateWrapper<SysUser>().eq(SysUser::getId,
                 sysUserIdParam.getId()).set(SysUser::getUserStatus, SysUserStatusEnum.ENABLE.getValue()));
     }

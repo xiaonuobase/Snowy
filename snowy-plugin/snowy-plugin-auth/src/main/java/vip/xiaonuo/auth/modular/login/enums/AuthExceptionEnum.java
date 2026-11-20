@@ -41,6 +41,9 @@ public enum AuthExceptionEnum {
     /** 账号已停用 */
     ACCOUNT_DISABLED("账号已停用"),
 
+    /** 账号已过期 */
+    ACCOUNT_EXPIRED("账号已过期，请联系管理员"),
+
     /** 账号或密码错误（密码错误） */
     PWD_ERROR("账号或密码错误"),
 

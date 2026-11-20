@@ -63,6 +63,11 @@
 				<template v-if="column.dataIndex === 'userStatus'">
 					<a-switch :loading="statusLoading" :checked="record.userStatus === 'ENABLE'" @change="editStatus(record)" />
 				</template>
+				<template v-if="column.dataIndex === 'expireTime'">
+					<span v-if="!record.expireTime">永久</span>
+					<a-tag v-else-if="isExpired(record.expireTime)" color="red" :title="record.expireTime">已过期</a-tag>
+					<span v-else>{{ record.expireTime }}</span>
+				</template>
 				<template v-if="column.dataIndex === 'action'">
 					<a @click="clientUserFormRef.onOpen(record)">编辑</a>
 					<a-divider type="vertical" />
@@ -128,11 +133,18 @@
 			dataIndex: 'userStatus'
 		},
 		{
+			title: '过期时间',
+			dataIndex: 'expireTime',
+			width: 170
+		},
+		{
 			title: '操作',
 			dataIndex: 'action',
 			align: 'center'
 		}
 	]
+	// 判断账号是否已过期
+	const isExpired = (expireTime) => new Date(expireTime.replace(' ', 'T')).getTime() <= Date.now()
 	const toolConfig = { refresh: true, height: true, columnSetting: true }
 	const searchFormRef = ref()
 	const searchFormState = ref({})

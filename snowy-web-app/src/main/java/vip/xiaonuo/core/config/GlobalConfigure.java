@@ -27,6 +27,7 @@ import cn.hutool.core.util.*;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.Header;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
@@ -63,8 +64,13 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import vip.xiaonuo.auth.core.pojo.SaBaseClientLoginUser;
+import vip.xiaonuo.auth.core.pojo.SaBaseLoginUser;
+import vip.xiaonuo.auth.core.util.StpClientLoginUserUtil;
 import vip.xiaonuo.auth.core.util.StpClientUtil;
 import vip.xiaonuo.auth.core.util.StpLockUtil;
+import vip.xiaonuo.auth.core.util.StpLoginUserUtil;
+import vip.xiaonuo.auth.modular.login.enums.AuthExceptionEnum;
 import vip.xiaonuo.common.annotation.CommonNoRepeat;
 import vip.xiaonuo.common.annotation.CommonWrapper;
 import vip.xiaonuo.common.cache.CommonCacheOperator;
@@ -285,6 +291,12 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 校验B端登录
                             .check(r1 -> {
                                 StpUtil.checkLogin();
+                                // 账号到期则注销并返回401，前端据此跳转登录页
+                                SaBaseLoginUser loginUser = StpLoginUserUtil.getLoginUser();
+                                if (ObjectUtil.isNotEmpty(loginUser) && loginUser.checkExpired()) {
+                                    StpUtil.logout();
+                                    throw new CommonException(HttpStatus.HTTP_UNAUTHORIZED, AuthExceptionEnum.ACCOUNT_EXPIRED.getValue());
+                                }
                                 // 更新过期时间
                                 StpUtil.renewTimeout(saTokenConfig.getTimeout());
                             });
@@ -309,6 +321,12 @@ public class GlobalConfigure implements WebMvcConfigurer {
                             // 校验C端登录
                             .check(r1 -> {
                                 StpClientUtil.checkLogin();
+                                // 账号到期则注销并返回401，前端据此跳转登录页
+                                SaBaseClientLoginUser clientLoginUser = StpClientLoginUserUtil.getClientLoginUser();
+                                if (ObjectUtil.isNotEmpty(clientLoginUser) && clientLoginUser.checkExpired()) {
+                                    StpClientUtil.logout();
+                                    throw new CommonException(HttpStatus.HTTP_UNAUTHORIZED, AuthExceptionEnum.ACCOUNT_EXPIRED.getValue());
+                                }
                                 // 更新过期时间
                                 StpClientUtil.renewTimeout(saTokenConfig.getTimeout());
                             });

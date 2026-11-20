@@ -12,12 +12,14 @@
  */
 package vip.xiaonuo.client.modular.user.service.impl;
 
+import cn.dev33.satoken.session.SaSession;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollStreamUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
@@ -70,6 +72,7 @@ import vip.xiaonuo.dev.api.DevSmsApi;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -271,15 +274,41 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void edit(ClientUserEditParam clientUserEditParam) {
         ClientUser clientUser = this.queryEntity(clientUserEditParam.getId());
         checkParam(clientUserEditParam);
         BeanUtil.copyProperties(clientUserEditParam, clientUser);
         this.updateById(clientUser);
+        // updateById 默认忽略空值，过期时间清空（改为永不过期）需单独置空
+        this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId, clientUser.getId())
+                .set(ClientUser::getExpireTime, clientUserEditParam.getExpireTime()));
 
         // 刷新该用户的在线缓存信息
         loginUserApi.refreshOnlineUserPermission(clientUserEditParam.getId());
+        // 同步C端在线会话中的过期时间，使续期或提前到期立即生效
+        refreshOnlineExpireTime(clientUser.getId(), clientUserEditParam.getExpireTime());
+    }
+
+    /**
+     * 同步C端用户所有在线会话中缓存的过期时间
+     *
+     * @author yubaoshan
+     * @date 2026/11/20 10:00
+     */
+    private void refreshOnlineExpireTime(String userId, Date expireTime) {
+        for (String token : StpClientUtil.getTokenValueListByLoginId(userId)) {
+            SaSession session = StpClientUtil.getTokenSessionByToken(token);
+            if (ObjectUtil.isEmpty(session)) {
+                continue;
+            }
+            SaBaseClientLoginUser cached = (SaBaseClientLoginUser) session.get("loginUser");
+            if (ObjectUtil.isNotEmpty(cached)) {
+                cached.setExpireTime(expireTime);
+                session.set("loginUser", cached);
+            }
+        }
     }
 
     private void checkParam(ClientUserEditParam clientUserEditParam) {
@@ -347,8 +376,13 @@ public class ClientUserServiceImpl extends ServiceImpl<ClientUserMapper, ClientU
     @Override
     public void enableUser(ClientUserIdParam clientUserIdParam) {
         ClientUser clientUser = this.queryEntity(clientUserIdParam.getId());
-        clientUser.setUserStatus(ClientUserStatusEnum.ENABLE.getValue());
-        this.updateById(clientUser);
+        // 已过期的账号启用后仍无法登录，需先修改过期时间
+        if(ObjectUtil.isNotEmpty(clientUser.getExpireTime()) && DateUtil.date().isAfterOrEquals(clientUser.getExpireTime())) {
+            throw new CommonException("该账号已于{}过期，请先修改过期时间", DateUtil.formatDateTime(clientUser.getExpireTime()));
+        }
+        // 只更新状态字段，避免整条记录回写覆盖并发修改的过期时间
+        this.update(new LambdaUpdateWrapper<ClientUser>().eq(ClientUser::getId, clientUser.getId())
+                .set(ClientUser::getUserStatus, ClientUserStatusEnum.ENABLE.getValue()));
     }
 
     @Transactional(rollbackFor = Exception.class)

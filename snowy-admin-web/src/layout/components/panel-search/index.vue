@@ -14,6 +14,7 @@
 		@close="searchPanelClose"
 	>
 		<div
+			:class="{ 'search-panel-fill': isDrawer }"
 			@keyup.up="handleKeyUp"
 			@keyup.down="handleKeyDown"
 			@keyup.enter="handleKeyEnter"
@@ -38,7 +39,7 @@
 				@mouseleave="onCardOut"
 				@keypress.up="handleKeyUp"
 				@keypress.down="handleKeyDown"
-				class="xn-mn10p0"
+				class="xn-mn10p0 search-card-wrap"
 			>
 				<div ref="cardListRef" class="search-card beauty-scroll">
 					<a-list size="small" :data-source="resultsList">
@@ -96,7 +97,7 @@
 
 <script setup>
 	import Fuse from 'fuse.js'
-	import { searchStore } from '@/store'
+	import { globalStore, searchStore } from '@/store'
 	import { useRouter, useRoute } from 'vue-router'
 	import hotkeys from 'hotkeys-js'
 	import { SearchOutlined, ArrowUpOutlined, ArrowDownOutlined, EnterOutlined } from '@ant-design/icons-vue'
@@ -107,6 +108,9 @@
 	const cardIndex = ref(0)
 	const results = ref([])
 	const search = searchStore()
+	const store = globalStore()
+	// 抽屉模式下面板上下铺满，弹窗模式保持固定高度
+	const isDrawer = computed(() => store.formStyle !== 'modal')
 	const inputRef = ref()
 	const cardListRef = ref()
 	const setActive = search.setActive
@@ -310,6 +314,28 @@
 		height: 580px;
 		overflow: hidden;
 		overflow-y: scroll;
+	}
+	.search-panel-fill {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		.search-box,
+		.search-tips {
+			flex-shrink: 0;
+		}
+		.search-card-wrap {
+			flex: 1;
+			min-height: 0;
+			display: flex;
+			flex-direction: column;
+			:deep(.ant-card-body) {
+				flex: 1;
+				min-height: 0;
+			}
+		}
+		.search-card {
+			height: 100%;
+		}
 	}
 	.search-tips {
 		display: flex;

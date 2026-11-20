@@ -77,6 +77,8 @@ export default {
 	user: {
 		userOrg: '所属组织',
 		userStatus: '用户状态',
+		expirePermanent: '永久',
+		expired: '已过期',
 		resetPassword: '重置密码',
 		role: '角色',
 		batchExportButton: '批量导出',

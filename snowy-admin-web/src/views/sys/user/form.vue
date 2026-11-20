@@ -31,14 +31,30 @@
 								<a-input v-model:value="formData.nickname" placeholder="请输入昵称" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="手机号：" name="phone">
 								<a-input v-model:value="formData.phone" placeholder="请输入手机" allow-clear />
 							</a-form-item>
 						</a-col>
-						<a-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
 							<a-form-item label="邮箱：" name="email">
 								<a-input v-model:value="formData.email" placeholder="请输入邮箱" allow-clear />
+							</a-form-item>
+						</a-col>
+						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">
+							<a-form-item
+								label="过期时间："
+								name="expireTime"
+								tooltip="到期后无法登录，已登录的会被强制退出；不填为永久有效"
+							>
+								<a-date-picker
+									v-model:value="formData.expireTime"
+									show-time
+									value-format="YYYY-MM-DD HH:mm:ss"
+									:disabled="formData.account === 'superAdmin'"
+									:placeholder="formData.account === 'superAdmin' ? '超管永久有效' : '不填为永久有效'"
+									class="xn-wd"
+								/>
 							</a-form-item>
 						</a-col>
 						<a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="8">

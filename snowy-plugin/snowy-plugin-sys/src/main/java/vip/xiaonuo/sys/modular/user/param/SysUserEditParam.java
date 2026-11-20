@@ -17,6 +17,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * 用户编辑参数
  *
@@ -171,6 +173,10 @@ public class SysUserEditParam {
     /** 兼任信息 */
     @Schema(description = "兼任信息")
     private String positionJson;
+
+    /** 过期时间，为空表示永不过期 */
+    @Schema(description = "过期时间，为空表示永不过期")
+    private Date expireTime;
 
     /** 排序码 */
     @Schema(description = "排序码")

@@ -131,6 +131,11 @@
 						/>
 						<a-tag v-else :color="$TOOL.dictTypeColor('COMMON_STATUS', record.userStatus)">{{ $TOOL.dictTypeData('COMMON_STATUS', record.userStatus) }}</a-tag>
 					</template>
+					<template v-if="column.dataIndex === 'expireTime'">
+						<span v-if="!record.expireTime">永久</span>
+						<a-tag v-else-if="isExpired(record.expireTime)" color="red" :title="record.expireTime">已过期</a-tag>
+						<span v-else>{{ record.expireTime }}</span>
+					</template>
 					<template v-if="column.dataIndex === 'action'">
 						<a @click="formRef.onOpen(record)" v-if="hasPerm('bizUserEdit')">编辑</a>
 						<a-divider type="vertical" v-if="hasPerm(['bizUserEdit', 'bizUserDelete'], 'and')" />
@@ -228,8 +233,15 @@
 		{
 			title: '状态',
 			dataIndex: 'userStatus'
+		},
+		{
+			title: '过期时间',
+			dataIndex: 'expireTime',
+			width: 170
 		}
 	]
+	// 判断账号是否已过期
+	const isExpired = (expireTime) => new Date(expireTime.replace(' ', 'T')).getTime() <= Date.now()
 	if (hasPerm(['bizUserEdit', 'bizUserGrantRole', 'bizUserPwdReset', 'bizUserExportUserInfo', 'bizUserTransfer', 'bizUserDelete'])) {
 		columns.push({
 			title: '操作',
