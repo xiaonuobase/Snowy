@@ -118,6 +118,11 @@
 		transition: background-color 0.5s ease;
 	}
 
+	.snowy-theme-dark .content-wrapper {
+		background: linear-gradient(135deg, var(--surface-layout), var(--surface-elevated));
+		box-shadow: none;
+	}
+
 	.content-box {
 		position: absolute;
 		width: 100vw;

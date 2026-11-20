@@ -33,6 +33,9 @@ export default {
 	},
 	login: {
 		signInTitle: '用户登录',
+		switchLanguage: '切换语言',
+		switchToDark: '切换至暗黑模式',
+		switchToLight: '切换至亮色模式',
 		forgetPassword: '忘记密码',
 		signIn: '登录',
 		signInOther: '其他登录方式',

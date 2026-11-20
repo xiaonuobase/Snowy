@@ -1,31 +1,16 @@
-[snowy-theme='realdark'] {
-	.ant-btn-primary {
-		color: #fff;
-		&:hover,
-		&:focus {
-			color: #fff;
-		}
-	}
-}
-.fade() {
-	@functions: ~`(function() {
-    this.fade = function(color, amount) {
-      if (String(color).indexOf('var(') === 0) {
-        if (color.indexOf('--primary-color') !== -1 ) {
-          var m = amount > 10 ? amount/10 :amount
-          return color.replace('-color)',  '-' + m + ')')
-        }
-        return color.replace(')',  '--fade--' + parseInt(amount) + ')')
-      }
-      return color
-    }
-  })()`;
-}
-.fade();
-
-@import 'ant-design-vue/dist/reset.css';
-
+// 暗黑主题变量：类名挂在 body 上（utils/themeUtil.js 切换），与 default.less 变量名一一对应，新增变量两边都要加
 .snowy-theme-dark {
+	// ---------- 表面色（换暗黑配色只改这一段，并同步 src/config/darkTheme.js） ----------
+	--surface-layout: #17181b;
+	--surface-container: #1e2023;
+	--surface-elevated: #26282c;
+	--surface-muted: #232529;
+	--surface-hover: #2a2d31;
+	--surface-border: #3b3e44;
+	--surface-border-secondary: #2c2f33;
+	--text-rgb: 229, 231, 235;
+
+	// ---------- 基础色板 ----------
 	--blue-1: #111d2c;
 	--blue-2: #112a45;
 	--blue-3: #15395b;
@@ -114,7 +99,8 @@
 	--orange-9: #f8cf8d;
 	--orange-10: #fae3b7;
 
-	--primary-radius: #141414;
+	// ---------- 主色（--primary-1~10 与 --primary-color 运行时由 utils/themeUtil.js 按主题色覆盖） ----------
+	--primary-radius: var(--surface-container);
 	--primary-1: var(--blue-1);
 	--primary-2: var(--blue-2);
 	--primary-3: var(--blue-3);
@@ -125,297 +111,219 @@
 	--primary-8: var(--blue-8);
 	--primary-9: var(--blue-9);
 	--primary-10: var(--blue-10);
-
 	--primary-color: var(--primary-6);
 	--primary-color-hover: var(--primary-5);
 	--primary-color-active: var(--primary-7);
 	--primary-color-outline: var(--primary-2);
+	--primary-fade-20: var(--primary-2);
 
+	// ---------- 功能色 ----------
 	--info-color: var(--primary-color);
 	--success-color: var(--green-6);
 	--processing-color: var(--blue-6);
 	--highlight-color: var(--red-5);
-
 	--warning-color: var(--gold-6);
 	--warning-color-hover: var(--gold-5);
 	--warning-color-active: var(--gold-7);
 	--warning-color-outline: var(--gold-2);
-
 	--error-color: var(--red-5);
 	--error-color-hover: var(--red-4);
 	--error-color-active: var(--red-7);
 	--error-color-outline: var(--red-2);
+	--success-fade-20: rgba(73, 170, 25, 0.2);
+	--error-fade-20: rgba(166, 29, 36, 0.2);
+	--warning-fade-20: rgba(216, 150, 20, 0.2);
 
-	--body-background: @black;
-	--component-background: #141414;
-	--popover-background: #1f1f1f;
-	--popover-customize-border-color: #3a3a3a;
+	// ---------- 背景 ----------
+	--body-background: var(--surface-layout);
+	--component-background: var(--surface-container);
+	--popover-background: var(--surface-elevated);
+	--popover-customize-border-color: var(--border-color-base);
+	--background-color-light: rgba(255, 255, 255, 0.04);
+	--background-color-base: rgba(255, 255, 255, 0.08);
+	--item-hover-bg: rgba(255, 255, 255, 0.08);
+	--action-hover-bg: rgba(255, 255, 255, 0.12);
 
-	--text-color: fade(@white, 85%);
-	--text-color-secondary: fade(@white, 45%);
-	--text-color-inverse: @white;
-	--icon-color-hover: fade(@white, 75%);
-	--heading-color: fade(@white, 85%);
+	// ---------- 文字 ----------
+	--text-color: rgba(var(--text-rgb), 0.85);
+	--text-color-secondary: rgba(var(--text-rgb), 0.5);
+	--text-color-inverse: #fff;
+	--heading-color: rgba(var(--text-rgb), 0.92);
+	--icon-color-hover: rgba(var(--text-rgb), 0.75);
+	--white--fade--65: rgba(255, 255, 255, 0.65);
+	--black--fade--85: rgba(var(--text-rgb), 0.85);
 
-	--item-hover-bg: fade(@white, 8%);
+	// ---------- 边框 ----------
+	--border-color-base: var(--surface-border);
+	--border-color-split: var(--surface-border-secondary);
 
-	// Border color
-	--border-color-base: #434343;
-	--border-color-split: #303030;
-	//--border-color-inverse: @black;
+	// ---------- 禁用态 ----------
+	--disabled-color: rgba(var(--text-rgb), 0.3);
+	--disabled-bg: var(--background-color-base);
+	--disabled-color-dark: rgba(255, 255, 255, 0.3);
 
-	//
-	--background-color-light: fade(@white, 4%);
-	--background-color-base: fade(@white, 8%);
-
-	// Disabled states
-	--disabled-color: fade(@white, 30%);
-	--disabled-bg: @background-color-base;
-	--disabled-color-dark: fade(@white, 30%);
-
-	// Shadow
+	// ---------- 阴影 ----------
 	--shadow-color: rgba(0, 0, 0, 0.45);
-	--shadow-color-inverse: @component-background;
-	--box-shadow-base: @shadow-2;
+	--shadow-color-inverse: var(--component-background);
 	--shadow-1-up: 0 -6px 16px -8px rgba(0, 0, 0, 0.32), 0 -9px 28px 0 rgba(0, 0, 0, 0.2),
 		0 -12px 48px 16px rgba(0, 0, 0, 0.12);
 	--shadow-1-down: 0 6px 16px -8px rgba(0, 0, 0, 0.32), 0 9px 28px 0 rgba(0, 0, 0, 0.2),
 		0 12px 48px 16px rgba(0, 0, 0, 0.12);
+	--shadow-1-left: -6px 0 16px -8px rgba(0, 0, 0, 0.32), -9px 0 28px 0 rgba(0, 0, 0, 0.2),
+		-12px 0 48px 16px rgba(0, 0, 0, 0.12);
 	--shadow-1-right: 6px 0 16px -8px rgba(0, 0, 0, 0.32), 9px 0 28px 0 rgba(0, 0, 0, 0.2),
 		12px 0 48px 16px rgba(0, 0, 0, 0.12);
 	--shadow-2: 0 3px 6px -4px rgba(0, 0, 0, 0.48), 0 6px 16px 0 rgba(0, 0, 0, 0.32), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
+	--box-shadow-base: var(--shadow-2);
 
-	// Buttons
+	// ---------- 按钮 ----------
 	--btn-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
 	--btn-primary-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
 	--btn-text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-
+	--btn-primary-color: #fff;
 	--btn-default-bg: transparent;
-
-	--btn-default-ghost-color: @text-color;
-	--btn-default-ghost-border: fade(@white, 25%);
-
+	--btn-default-ghost-color: var(--text-color);
+	--btn-default-ghost-border: rgba(255, 255, 255, 0.25);
 	--btn-text-hover-bg: rgba(255, 255, 255, 0.03);
 	--btn-text-active-bg: rgba(255, 255, 255, 0.04);
 
-	// Checkbox
+	// ---------- 表单控件 ----------
 	--checkbox-check-bg: transparent;
-
-	// Descriptions
-	--descriptions-bg: @background-color-light;
-
-	// Divider
-	--divider-color: rgba(255, 255, 255, 12%);
-
-	// Dropdown 有两个
-	--dropdown-menu-submenu-disabled-bg: transparent;
-
-	// Radio
-	--radio-dot-disabled-color: fade(@white, 20%);
-	--radio-solid-checked-color: @white;
-
-	// Radio buttons
-	--radio-disabled-button-checked-bg: fade(@white, 20%);
-	--radio-disabled-button-checked-color: @disabled-color;
-
-	// Layout
-	--layout-body-background: @body-background;
-	--layout-header-background: @popover-background;
-	--layout-trigger-background: #262626;
-	//--layout-sider-background-1: tint(#1f1f1f, 10%);
-
-	// Dropdown 有两个
-	--dropdown-menu-bg: @popover-background;
-
-	// Input
-	--input-placeholder-color: fade(@white, 30%);
-	--input-icon-color: fade(@white, 30%);
+	--radio-dot-disabled-color: rgba(255, 255, 255, 0.2);
+	--radio-solid-checked-color: #fff;
+	--radio-disabled-button-checked-bg: rgba(255, 255, 255, 0.2);
+	--radio-disabled-button-checked-color: var(--disabled-color);
 	--input-bg: transparent;
-	--input-number-handler-active-bg: @item-hover-bg;
-	--input-icon-hover-color: fade(@white, 85%);
-
-	// Mentions
-	--mentions-dropdown-bg: @popover-background;
-
-	// Select
-	--select-dropdown-bg: @popover-background;
+	--input-placeholder-color: rgba(var(--text-rgb), 0.3);
+	--input-icon-color: rgba(255, 255, 255, 0.3);
+	--input-icon-hover-color: rgba(var(--text-rgb), 0.85);
+	--input-number-handler-active-bg: var(--item-hover-bg);
+	--mentions-dropdown-bg: var(--popover-background);
 	--select-background: transparent;
-	--select-clear-background: @component-background;
-	--select-selection-item-bg: fade(@white, 8);
-	--select-selection-item-border-color: @border-color-split;
-	--select-multiple-disabled-background: @component-background;
+	--select-dropdown-bg: var(--popover-background);
+	--select-clear-background: var(--component-background);
+	--select-selection-item-bg: rgba(255, 255, 255, 0.08);
+	--select-selection-item-border-color: var(--border-color-split);
+	--select-multiple-disabled-background: var(--component-background);
 	--select-multiple-item-disabled-color: #595959;
-	--select-multiple-item-disabled-border-color: @popover-background;
-
-	// Cascader
+	--select-multiple-item-disabled-border-color: var(--popover-background);
 	--cascader-bg: transparent;
-	--cascader-menu-bg: @popover-background;
-	--cascader-menu-border-color-split: @border-color-split;
-
-	// Tooltip
-	--tooltip-bg: #434343;
-
-	// Popover
-	--popover-bg: @popover-background;
-
-	// Modal
-	--modal-header-bg: @popover-background;
-	--modal-header-border-color-split: @border-color-split;
-	--modal-content-bg: @popover-background;
-	--modal-footer-border-color-split: @border-color-split;
-
-	// Progress
-	--progress-steps-item-bg: fade(@white, 8%);
-
-	// Menu
-	--menu-popup-bg: @popover-background;
-	--menu-dark-bg: @popover-background;
-	--menu-dark-inline-submenu-bg: @component-background;
-
-	// Table
-	--table-header-bg: #1d1d1d;
-	--table-header-sort-bg: #262626;
-	--table-body-sort-bg: fade(@white, 1%);
-	--table-row-hover-bg: #262626;
-	--table-expanded-row-bg: @table-header-bg;
-	--table-header-cell-split-color: fade(@white, 8%);
-	--table-header-sort-active-bg: #303030;
-	--table-header-filter-active-bg: #434343;
-	--table-filter-btns-bg: @popover-background;
-	--table-filter-dropdown-bg: @popover-background;
-	--table-expand-icon-bg: transparent;
-
-	// TimePicker
+	--cascader-menu-bg: var(--popover-background);
+	--cascader-menu-border-color-split: var(--border-color-split);
 	--picker-bg: transparent;
-	--picker-basic-cell-disabled-bg: #303030;
-	--picker-border-color: @border-color-split;
-
-	// Calendar
-	--calendar-bg: @popover-background;
-	--calendar-input-bg: @calendar-bg;
+	--picker-basic-cell-disabled-bg: var(--surface-hover);
+	--picker-border-color: var(--border-color-split);
+	--calendar-bg: var(--popover-background);
+	--calendar-input-bg: var(--calendar-bg);
 	--calendar-border-color: transparent;
-	--calendar-full-bg: @component-background;
+	--calendar-full-bg: var(--component-background);
+	--switch-bg: #fff;
+	--switch-shadow-color: 0 2px 4px rgba(0, 35, 11, 0.2);
+	--slider-rail-background-color: var(--surface-hover);
+	--slider-rail-background-color-hover: var(--border-color-base);
+	--slider-dot-border-color: var(--border-color-split);
+	--slider-dot-border-color-active: var(--primary-4);
+	--rate-star-bg: rgba(255, 255, 255, 0.12);
+	--transfer-item-hover-bg: var(--surface-hover);
 
-	// Badge
-	--badge-text-color: @white;
+	// ---------- 浮层 ----------
+	--tooltip-bg: var(--border-color-base);
+	--tooltip-color: #fff;
+	--popover-bg: var(--popover-background);
+	--dropdown-menu-bg: var(--popover-background);
+	--dropdown-menu-submenu-disabled-bg: transparent;
+	--modal-header-bg: var(--popover-background);
+	--modal-content-bg: var(--popover-background);
+	--modal-header-border-color-split: var(--border-color-split);
+	--modal-footer-border-color-split: var(--border-color-split);
+	--drawer-bg: var(--popover-background);
+	--message-notice-content-bg: var(--popover-background);
+	--notification-bg: var(--popover-background);
+	--image-preview-operation-disabled-color: rgba(255, 255, 255, 0.45);
 
-	// Rate
-	--rate-star-bg: fade(@white, 12%);
-
-	// Card
-	--card-actions-background: @component-background;
-	--card-skeleton-bg: #303030;
+	// ---------- 数据展示 ----------
+	--table-header-bg: var(--surface-muted);
+	--table-header-sort-bg: var(--surface-hover);
+	--table-header-sort-active-bg: var(--surface-elevated);
+	--table-header-filter-active-bg: var(--border-color-base);
+	--table-header-cell-split-color: rgba(255, 255, 255, 0.08);
+	--table-body-sort-bg: rgba(255, 255, 255, 0.01);
+	--table-row-hover-bg: var(--surface-hover);
+	--table-row-striped-bg: var(--surface-muted);
+	--table-expanded-row-bg: var(--table-header-bg);
+	--table-filter-btns-bg: var(--popover-background);
+	--table-filter-dropdown-bg: var(--popover-background);
+	--table-expand-icon-bg: transparent;
+	--card-actions-background: var(--component-background);
+	--card-skeleton-bg: var(--surface-elevated);
 	--card-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.64), 0 3px 6px 0 rgba(0, 0, 0, 0.48), 0 5px 12px 4px rgba(0, 0, 0, 0.36);
-
-	// Comment
+	--card-shadow-soft: 0 1px 6px rgba(0, 0, 0, 0.45);
+	--card-above-color: var(--surface-elevated);
+	--card-above-border-color: var(--border-color-base);
+	--descriptions-bg: var(--background-color-light);
+	--divider-color: rgba(255, 255, 255, 0.12);
+	--badge-text-color: #fff;
+	--avatar-bg: rgba(255, 255, 255, 0.3);
+	--tree-bg: transparent;
+	--list-customize-card-bg: transparent;
 	--comment-bg: transparent;
-	--comment-author-time-color: fade(@white, 30%);
-	--comment-action-hover-color: fade(@white, 65%);
+	--comment-author-time-color: rgba(255, 255, 255, 0.3);
+	--comment-action-hover-color: rgba(255, 255, 255, 0.65);
+	--progress-steps-item-bg: rgba(255, 255, 255, 0.08);
+	--skeleton-to-color: rgba(255, 255, 255, 0.16);
+	--timeline-color: var(--border-color-split);
+	--timeline-dot-color: var(--primary-color);
+	--steps-background: transparent;
+	--steps-nav-arrow-color: rgba(255, 255, 255, 0.2);
+	--gradient-min: rgba(48, 48, 48, 0.2);
+	--gradient-max: rgba(48, 48, 48, 0.4);
 
-	// BackTop
-	--back-top-bg: var(--tooltip-bg);
-	--back-top-hover-bg: var(--border-color-split);
-
-	// Avatar
-	--avatar-bg: fade(@white, 30%);
-
-	// Switch
-	--switch-bg: @white;
-
-	// Pagination
+	// ---------- 导航 ----------
+	--menu-popup-bg: var(--popover-background);
+	--menu-dark-bg: var(--surface-container);
+	--menu-dark-inline-submenu-bg: var(--component-background);
+	--menu-dark-highlight-color: #fff;
 	--pagination-item-bg: transparent;
 	--pagination-item-bg-active: transparent;
 	--pagination-item-link-bg: transparent;
-	--pagination-item-disabled-color-active: @black;
-	--pagination-item-disabled-bg-active: fade(@white, 25%);
-	--pagination-item-input-bg: @pagination-item-bg;
-
-	// PageHeader
-	--page-header-back-color: @icon-color;
+	--pagination-item-input-bg: var(--pagination-item-bg);
+	--pagination-item-disabled-color-active: #000;
+	--pagination-item-disabled-bg-active: rgba(255, 255, 255, 0.25);
+	--page-header-back-color: var(--text-color-secondary);
 	--page-header-ghost-bg: transparent;
+	--back-top-bg: var(--tooltip-bg);
+	--back-top-hover-bg: var(--border-color-split);
 
-	// Slider
-	--slider-rail-background-color: #262626;
-	--slider-rail-background-color-hover: @border-color-base;
-	--slider-dot-border-color: @border-color-split;
-	--slider-dot-border-color-active: @primary-4;
-
-	// Tree
-	--tree-bg: transparent;
-
-	// Skeleton
-	--skeleton-to-color: fade(@white, 16%);
-
-	// Transfer
-	--transfer-item-hover-bg: #262626;
-
-	// Message
-	--message-notice-content-bg: @popover-background;
-
-	// List
-	--list-customize-card-bg: transparent;
-
-	// Drawer
-	--drawer-bg: @popover-background;
-
-	// Timeline
-	--timeline-color: @border-color-split;
-	--timeline-dot-color: @primary-color;
-
-	// Steps
-	--steps-nav-arrow-color: fade(@white, 20%);
-	--steps-background: transparent;
-
-	// Notification
-	--notification-bg: @popover-background;
-
-	// 侧边栏
+	// ---------- 框架布局（侧边栏 / 顶栏 / logo / 标签页 / 面包屑） ----------
+	--layout-body-background: var(--body-background);
+	--layout-header-background: var(--surface-container);
+	--layout-trigger-background: var(--surface-hover);
 	--sidebar-light-shadow: 0 4px 4px rgba(0, 0, 0, 0.6);
 	--sidebar-dark-shadow: 0 4px 4px rgba(0, 0, 0, 0.6);
-
-	// 顶栏
 	--header-light-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 	--header-dark-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 	--header-tool-hover-bg: rgba(255, 255, 255, 0.05);
 	--header-dark-tool-hover-bg: rgba(255, 255, 255, 0.05);
 	--header-color-split: rgba(255, 255, 255, 0.15);
-
-	// logo
+	--header-bottom: var(--border-color-split);
 	--logo-light-shadow: 0 3px 4px rgba(0, 0, 0, 0.6);
 	--logo-dark-shadow: 0 3px 4px rgba(0, 0, 0, 0.6);
+	--breadcrumb-background: var(--surface-container);
+	--tag-background: var(--surface-elevated);
+	--snowy-background-color: var(--surface-container);
+	--font-color: rgba(var(--text-rgb), 0.92);
 
-	//
-	--gradient-min: fade(#303030, 20%);
-	--gradient-max: fade(#303030, 40%);
+	// ---------- 流程设计器 ----------
+	--node-wrap-box-color: var(--surface-elevated);
+	--node-wrap-box-before-color: rgba(255, 255, 255, 0.09);
+	--node-wrap-box-before-borde-color: rgba(255, 255, 255, 0.09);
+	--auto-judge-before-color: var(--surface-container);
+	--cover-line-before-color: var(--surface-container);
 
-	// font
-	--font-color: #ffffff;
-	// header-bottom
-	--header-bottom: rgba(54, 54, 54, 0.6);
-	// breadcrumb-background
-	--breadcrumb-background: rgba(54, 54, 54, 0.6);
-	// background-color
-	--snowy-background-color: #141414;
-	// tag-background
-	--tag-background: rgba(56, 56, 56);
-	//
-	--primary-fade-20: var(--primary-2);
-
-	--black--fade--85: rgba(255, 255, 255, 0.85);
-	--switch-shadow-color: 0 2px 4px rgb(0 35 11 / 20%);
-	--card-above-color: #303030;
-	--card-above-border-color: #484848;
-
-	// workfolw design
-	--node-wrap-box-color: #303030;
-	--node-wrap-box-before-color: rgba(255, 255, 255, 0.09); // 箭头旁边
-	--node-wrap-box-before-borde-color: rgba(255, 255, 255, 0.09); // 箭头
-	--auto-judge-before-color: #141414; // 箭头背景
-	--cover-line-before-color: #141414;
-	// 新定义的颜色-可用于暗黑适配
-	--background-color: #141414;
+	// ---------- 业务通用（自定义页面做暗黑适配优先用这组） ----------
+	--background-color: var(--surface-container);
 	--background-border: rgba(253, 253, 253, 0.12);
-	--background-card-color: #303030;
-	--background-list-color: #141414;
-	--background-primary-text: rgb(206 206 206 / 80%);
+	--background-card-color: var(--surface-elevated);
+	--background-list-color: var(--surface-layout);
+	--background-primary-text: rgba(var(--text-rgb), 0.8);
 }

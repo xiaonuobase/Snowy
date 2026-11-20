@@ -1,0 +1,141 @@
+// 基础样式：重置、页面底色、全局滚动条、灰色模式
+@import 'ant-design-vue/dist/reset.css';
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	outline: none;
+}
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+}
+
+html {
+	background-color: #f6f8f9;
+}
+
+// 暗黑模式：让原生滚动条、表单控件也走暗色
+.snowy-theme-dark {
+	color-scheme: dark;
+	background-color: var(--body-background);
+}
+
+a,
+button,
+input,
+textarea {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	box-sizing: border-box;
+	outline: none !important;
+	-webkit-appearance: none;
+}
+
+// 灰色模式：滤镜加在 html 上才能盖住挂在 body 下的浮层（由 hooks/useGrayMode.js 切换）
+html.gray-mode {
+	filter: grayscale(100%);
+}
+
+// 主题切换只裁剪一层快照，关闭浏览器默认的淡入淡出和尺寸过渡
+html[data-snowy-theme-transition] {
+	&::view-transition {
+		pointer-events: none;
+	}
+
+	&::view-transition-group(root),
+	&::view-transition-old(root),
+	&::view-transition-new(root) {
+		animation: none;
+	}
+
+	&::view-transition-old(root),
+	&::view-transition-new(root) {
+		mix-blend-mode: normal;
+	}
+
+	&[data-snowy-theme-transition='expand']::view-transition-new(root),
+	&[data-snowy-theme-transition='collapse']::view-transition-old(root) {
+		z-index: 1;
+		will-change: clip-path;
+		animation: snowy-theme-reveal 360ms cubic-bezier(0.2, 0.65, 0.35, 1) both;
+	}
+
+	&[data-snowy-theme-transition='collapse']::view-transition-old(root) {
+		animation-direction: reverse;
+	}
+}
+
+@keyframes snowy-theme-reveal {
+	from {
+		clip-path: circle(0px at var(--snowy-theme-transition-origin));
+	}
+	to {
+		clip-path: circle(var(--snowy-theme-transition-radius) at var(--snowy-theme-transition-origin));
+	}
+}
+
+// 隐藏式滚动条：需要的容器把 class 加进来
+body,
+.ant-scrolling-effect,
+.ant-drawer-wrapper-body,
+.ant-drawer-body,
+.admin-ui,
+.ant-modal-wrap,
+.ant-transfer-list-content,
+.ant-card,
+.ant-layout-sider,
+.CodeMirror-scroll,
+.main-content-wrapper,
+.xn-icon-select-list,
+.form-user-table,
+.scopeDefineOrgTreeDiv,
+.user-table,
+.role-table,
+.org-table,
+.pos-table,
+.poi-list,
+.snowy-orgpos-vis,
+.index-message-list,
+.ant-picker-time-panel-column,
+.timeline-div,
+.gen-preview-content,
+.ant-menu,
+.ant-tabs-dropdown-menu,
+.xn-table,
+.selector-table,
+.card-div,
+.ant-table-body,
+.left-tree-container,
+.ant-card-body,
+.approval-card-record,
+.approval-card-form,
+.admin-ui-main {
+	&::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+	}
+	&::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		background-color: var(--component-background);
+		background-image: -webkit-linear-gradient(
+			45deg,
+			rgba(255, 255, 255, 0.2) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(255, 255, 255, 0.2) 50%,
+			rgba(255, 255, 255, 0.2) 75%,
+			transparent 75%,
+			transparent
+		);
+	}
+	&::-webkit-scrollbar-track {
+		box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+		background: var(--component-background);
+		border-radius: 5px;
+		opacity: 0;
+		display: none;
+	}
+}

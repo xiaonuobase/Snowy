@@ -251,7 +251,7 @@
 							</a-button>
 						</a-form-item>
 						<div style="display: flex; justify-content: flex-end">
-							<a href="/login" class="xn-color-0d84ff">{{ $t('login.haveAccountPleaseLogin') }}</a>
+							<a href="/login" class="login-link">{{ $t('login.haveAccountPleaseLogin') }}</a>
 						</div>
 					</a-form>
 				</a-card>

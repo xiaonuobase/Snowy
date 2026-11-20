@@ -9,7 +9,8 @@
  *	6.若您的项目无法满足以上几点，需要更多功能代码，获取Snowy商业授权许可，请在官网购买授权，地址为 https://www.xiaonuo.vip
  */
 import { defineStore } from 'pinia'
-import { changeColor } from '@/utils/themeUtil'
+import { changeColor, setDarkTheme } from '@/utils/themeUtil'
+import { themeEnum } from '@/layout/enum/themeEnum'
 import config from '@/config'
 import tool from '@/utils/tool'
 
@@ -36,6 +37,8 @@ export const globalStore = defineStore('global', () => {
 	const layout = ref(getCacheConfig('SNOWY_LAYOUT'))
 	// 菜单是否折叠 toggle
 	const menuIsCollapse = ref(getCacheConfig('SNOWY_MENU_COLLAPSE'))
+	// 固定侧栏 Logo
+	const sideLogoFixed = ref(getCacheConfig('SNOWY_SIDE_LOGO_FIXED'))
 	// 侧边菜单是否排他展开
 	const sideUniqueOpen = ref(getCacheConfig('SNOWY_SIDE_UNIQUE_OPEN'))
 	// 多标签栏
@@ -56,6 +59,7 @@ export const globalStore = defineStore('global', () => {
 	const moduleUnfoldOpen = ref(getCacheConfig('SNOWY_MODULE_UNFOLD_OPEN'))
 	// 主题
 	const theme = ref(getCacheConfig('SNOWY_THEME'))
+	const isRealDark = computed(() => theme.value === themeEnum.REAL_DARK)
 	// 主题颜色
 	const themeColor = ref(toolDataGet('SNOWY_THEME_COLOR') || config.COLOR)
 	// 圆角分格
@@ -90,20 +94,27 @@ export const globalStore = defineStore('global', () => {
 		layout.value = key
 	}
 	const setTheme = (key) => {
+		const wasRealDark = isRealDark.value
 		theme.value = key
-		changeColor(themeColor.value, key).then()
+		if (wasRealDark !== isRealDark.value) {
+			setDarkTheme(isRealDark.value)
+		}
 	}
 	const setThemeColor = (key) => {
 		themeColor.value = key
-		changeColor(key, theme.value).then()
+		changeColor(key)
 	}
 	const initTheme = () => {
-		changeColor(themeColor.value, theme.value).then()
+		changeColor(themeColor.value)
+		setDarkTheme(isRealDark.value)
 	}
 	const toggleConfig = (key) => {
 		switch (key) {
 			case 'menuIsCollapse':
 				menuIsCollapse.value = !menuIsCollapse.value
+				break
+			case 'sideLogoFixed':
+				sideLogoFixed.value = !sideLogoFixed.value
 				break
 			case 'topHeaderThemeColorSpread':
 				topHeaderThemeColorSpread.value = !topHeaderThemeColorSpread.value
@@ -169,6 +180,7 @@ export const globalStore = defineStore('global', () => {
 		isPhone,
 		layout,
 		menuIsCollapse,
+		sideLogoFixed,
 		sideUniqueOpen,
 		layoutTagsOpen,
 		breadcrumbOpen,
@@ -179,6 +191,7 @@ export const globalStore = defineStore('global', () => {
 		footerCopyrightOpen,
 		moduleUnfoldOpen,
 		theme,
+		isRealDark,
 		themeColor,
 		roundedCornerStyleOpen,
 		formStyle,

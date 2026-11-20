@@ -1,0 +1,319 @@
+// 框架布局：整体骨架、顶栏、logo、双排菜单、右键菜单、页面最大化
+.admin-ui {
+	overflow: hidden;
+	height: 100%;
+	display: flex;
+	flex-flow: column;
+}
+
+.admin-ui-wrapper {
+	display: flex;
+	flex: 1;
+	overflow: auto;
+}
+
+.admin-ui-main {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	flex: 1;
+}
+
+#admin-ui-main {
+	position: relative;
+}
+
+.main-content-wrapper {
+	padding: 11px 11px 0px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	flex: auto;
+}
+
+.main-bottom-wrapper {
+	height: 60px;
+	margin-top: 25px;
+	text-align: center;
+	flex: auto;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding-bottom: 25px;
+}
+
+.ant-layout-sider {
+	overflow: auto;
+}
+
+// ---------- 双排菜单 ----------
+.snowy-doublerow-layout-menu {
+	line-height: 0;
+	align-items: center;
+}
+
+.snowy-doublerow-layout-menu-item-fort-div {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	opacity: 1;
+	display: block;
+	flex: auto;
+}
+
+.snowy-doublerow-layout-menu-item-fort-div-span {
+	font-size: 13px;
+	text-overflow: ellipsis;
+}
+
+// ---------- 标题与 logo ----------
+.snowy-title {
+	color: var(--text-color);
+}
+
+.ant-layout-sider-collapsed .logo-bar > span {
+	display: none;
+}
+
+.ant-layout-sider-dark {
+	.snowy-header-logo,
+	.snowy-title {
+		color: #fff;
+	}
+}
+
+.snowy-header-logo {
+	height: 49px;
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+	.logo-bar {
+		font-weight: bold;
+		display: flex;
+		align-items: center;
+		font-size: 20px;
+	}
+
+	.logo-bar .logo {
+		margin-right: 10px;
+		width: 35px;
+		height: 35px;
+	}
+}
+
+.ant-layout-sider.snowy-sider-logo-fixed > .ant-layout-sider-children {
+	// 让 Logo 在菜单滚动到底时仍能固定在顶部
+	height: auto;
+	min-height: 100%;
+	background-color: inherit;
+
+	> .snowy-header-logo {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+
+		&:not(.snowy-header-logo-primary-color) {
+			background-color: inherit;
+		}
+	}
+}
+
+.snowy-header-logo-primary-color {
+	color: white;
+	background-color: var(--primary-color);
+}
+
+// ---------- 顶栏 ----------
+.snowy-header {
+	display: flex;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--header-bottom);
+	box-shadow: 0 0.4px 0.5px rgb(0 21 41 / 12%);
+	background: var(--snowy-background-color);
+
+	.ant-menu-item {
+		height: 48px;
+		line-height: 48px;
+	}
+}
+
+// 顶栏应用主题色
+.snowy-header-primary-color {
+	color: white;
+	background-color: var(--primary-color);
+
+	.ant-badge,
+	.ant-breadcrumb-link,
+	.ant-breadcrumb-separator {
+		color: white;
+	}
+
+	.ant-menu-light .ant-menu-item:hover {
+		color: #ccc;
+		background-color: var(--primary-7);
+	}
+}
+
+.snowy-header-left {
+	display: flex;
+	align-items: center;
+	padding-left: 20px;
+
+	.menu-unfold-outlined {
+		padding: 0 12px;
+	}
+}
+
+.snowy-header-right {
+	display: flex;
+	align-items: center;
+}
+
+// 顶部布局下的顶栏：暗色 / 亮色 / 主题色
+.top-snowy-header {
+	background: #001529;
+	color: white;
+}
+
+.top-snowy-header-light {
+	background: #ffffff;
+	color: #000000;
+}
+
+.top-snowy-header-layout {
+	background: var(--primary-color);
+	color: #ffffff;
+}
+
+// 暗黑模式下顶栏与侧栏同色，不用深海蓝
+.snowy-theme-dark .top-snowy-header {
+	background: var(--layout-header-background);
+	color: var(--text-color);
+}
+
+.panel-item {
+	padding: 0 10px;
+	cursor: pointer;
+	height: 100%;
+	display: flex;
+	align-items: center;
+
+	&:hover {
+		background: var(--header-color-split);
+	}
+}
+
+// ---------- 设置抽屉入口 ----------
+.layout-setting {
+	position: fixed;
+	width: 40px;
+	height: 40px;
+	border-radius: 3px 0 0 3px;
+	bottom: 50%;
+	right: 0px;
+	z-index: 100;
+	background: var(--primary-color);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+
+	i {
+		color: #fff;
+	}
+}
+
+// ---------- 右键菜单 ----------
+.contextmenu {
+	position: fixed;
+	width: 200px;
+	margin: 0;
+	border-radius: 0px;
+	background: var(--popover-background);
+	border: 1px solid var(--border-color-split);
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+	z-index: 3000;
+	list-style-type: none;
+	padding: 10px 0;
+
+	hr {
+		margin: 5px 0;
+		border: none;
+		height: 1px;
+		font-size: 0px;
+		background-color: var(--border-color-split);
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		margin: 0;
+		cursor: pointer;
+		line-height: 30px;
+		padding: 0 17px;
+		color: var(--text-color);
+
+		i {
+			font-size: 14px;
+			margin-right: 10px;
+		}
+
+		&:hover {
+			background-color: var(--item-hover-bg);
+			color: #66b1ff;
+		}
+
+		&.disabled {
+			cursor: not-allowed;
+			color: #bbb;
+			background: transparent;
+		}
+	}
+}
+
+// ---------- 页面最大化 ----------
+.app-main.main-maximize {
+	.main-maximize-exit {
+		display: block;
+	}
+
+	.ant-layout-sider,
+	.ant-layout-sider-dark,
+	.layout-setting,
+	.snowy-header,
+	.admin-ui-breadcrumb,
+	.snowy-tags {
+		display: none;
+	}
+
+	.main-content-wrapper {
+		padding: 0;
+	}
+}
+
+// 最大化后的退出按钮
+.main-maximize-exit {
+	display: none;
+	position: fixed;
+	z-index: 3000;
+	top: -20px;
+	padding-top: 18px;
+	left: 50%;
+	margin-left: -20px;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.2);
+	text-align: center;
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.4);
+	}
+}
+
+// ---------- 左树右表 ----------
+.left-tree-container {
+	height: calc(100vh - 8rem);
+	overflow: auto;
+}

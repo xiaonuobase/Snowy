@@ -75,7 +75,7 @@
 							</a-row>
 						</a-form-item>
 						<a-form-item>
-							<a href="/login" class="xn-color-0d84ff">{{ $t('login.signIn') }}</a>
+							<a href="/login" class="login-link">{{ $t('login.signIn') }}</a>
 						</a-form-item>
 						<a-form-item>
 							<a-button type="primary" class="w-full" :loading="loading" round size="large" @click="bindAccount"

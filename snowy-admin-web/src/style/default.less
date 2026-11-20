@@ -1,4 +1,16 @@
+// 亮色主题变量：与 realdark.less 变量名一一对应，新增变量两边都要加
 :root {
+	// ---------- 表面色（与 realdark.less 顶部同名，暗黑配色在那边调） ----------
+	--surface-layout: #f5f5f5;
+	--surface-container: #fff;
+	--surface-elevated: #fff;
+	--surface-muted: #fafafa;
+	--surface-hover: #f5f5f5;
+	--surface-border: #d9d9d9;
+	--surface-border-secondary: #f0f0f0;
+	--text-rgb: 0, 0, 0;
+
+	// ---------- 基础色板 ----------
 	--blue-1: #e6f7ff;
 	--blue-2: #bae7ff;
 	--blue-3: #91d5ff;
@@ -87,6 +99,7 @@
 	--orange-9: #873800;
 	--orange-10: #612500;
 
+	// ---------- 主色（--primary-1~10 与 --primary-color 运行时由 utils/themeUtil.js 按主题色覆盖） ----------
 	--primary-radius: #fff;
 	--primary-1: var(--blue-1);
 	--primary-2: var(--blue-2);
@@ -98,304 +111,212 @@
 	--primary-8: var(--blue-8);
 	--primary-9: var(--blue-9);
 	--primary-10: var(--blue-10);
-
 	--primary-color: var(--primary-6);
 	--primary-color-hover: var(--primary-5);
 	--primary-color-active: var(--primary-7);
 	--primary-color-outline: var(--primary-2);
+	--primary-fade-20: var(--primary-2);
 
+	// ---------- 功能色 ----------
 	--info-color: var(--primary-color);
 	--success-color: var(--green-6);
 	--processing-color: var(--blue-6);
 	--highlight-color: var(--red-5);
-
 	--warning-color: var(--gold-6);
 	--warning-color-hover: var(--gold-5);
 	--warning-color-active: var(--gold-7);
 	--warning-color-outline: var(--gold-2);
-
 	--error-color: var(--red-5);
 	--error-color-hover: var(--red-4);
 	--error-color-active: var(--red-7);
 	--error-color-outline: var(--red-2);
+	--success-fade-20: rgba(82, 196, 26, 0.2);
+	--error-fade-20: rgba(255, 77, 79, 0.2);
+	--warning-fade-20: rgba(250, 173, 20, 0.2);
 
+	// ---------- 背景 ----------
 	--body-background: #fff;
 	--component-background: #fff;
-
-	--popover-background: @component-background;
-	--popover-customize-border-color: @border-color-split;
-
-	--text-color: fade(@black, 85%);
-	--text-color-secondary: fade(@black, 45%);
-	--text-color-inverse: @white;
-	--icon-color-hover: fade(@black, 75%);
-	--heading-color: fade(@black, 85%);
-
+	--popover-background: var(--component-background);
+	--popover-customize-border-color: var(--border-color-split);
+	--background-color-light: #fafafa;
+	--background-color-base: #f5f5f5;
 	--item-hover-bg: #f5f5f5;
+	--action-hover-bg: rgba(0, 0, 0, 0.06);
 
-	// Border color
-	--border-color-base: hsv(0, 0, 85%);
-	--border-color-split: hsv(0, 0, 94%);
-	//--border-color-inverse: @white;
+	// ---------- 文字 ----------
+	--text-color: rgba(0, 0, 0, 0.85);
+	--text-color-secondary: rgba(0, 0, 0, 0.45);
+	--text-color-inverse: #fff;
+	--heading-color: rgba(0, 0, 0, 0.85);
+	--icon-color-hover: rgba(0, 0, 0, 0.75);
+	--white--fade--65: rgba(255, 255, 255, 0.65);
+	--black--fade--85: rgba(0, 0, 0, 0.85);
 
-	//
-	--background-color-light: hsv(0, 0, 98%);
-	--background-color-base: hsv(0, 0, 96%);
+	// ---------- 边框 ----------
+	--border-color-base: #d9d9d9;
+	--border-color-split: #f0f0f0;
 
-	// Disabled states
-	--disabled-color: fade(#000, 25%);
-	--disabled-bg: @background-color-base;
-	--disabled-color-dark: fade(#fff, 35%);
+	// ---------- 禁用态 ----------
+	--disabled-color: rgba(0, 0, 0, 0.25);
+	--disabled-bg: var(--background-color-base);
+	--disabled-color-dark: rgba(255, 255, 255, 0.35);
 
-	// Shadow
+	// ---------- 阴影 ----------
 	--shadow-color: rgba(195, 62, 62, 0.15);
-	--shadow-color-inverse: @component-background;
-	--box-shadow-base: @shadow-1-down;
-	--shadow-1-up: 0 -2px 8px @shadow-color;
-	--shadow-1-down: 0 2px 8px @shadow-color;
-	--shadow-1-left: -2px 0 8px @shadow-color;
-	--shadow-1-right: 2px 0 8px @shadow-color;
-	--shadow-2: 0 4px 12px @shadow-color;
+	--shadow-color-inverse: var(--component-background);
+	--shadow-1-up: 0 -2px 8px rgba(0, 0, 0, 0.15);
+	--shadow-1-down: 0 2px 8px rgba(0, 0, 0, 0.15);
+	--shadow-1-left: -2px 0 8px rgba(0, 0, 0, 0.15);
+	--shadow-1-right: 2px 0 8px rgba(0, 0, 0, 0.15);
+	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.15);
+	--box-shadow-base: var(--shadow-1-down);
 
-	// Buttons
+	// ---------- 按钮 ----------
 	--btn-shadow: 0 2px 0 rgba(0, 0, 0, 0.015);
 	--btn-primary-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
 	--btn-text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
-
-	--btn-default-bg: @component-background;
-
-	--btn-default-ghost-color: @component-background;
-	--btn-default-ghost-border: @component-background;
-
+	--btn-primary-color: #fff;
+	--btn-default-bg: var(--component-background);
+	--btn-default-ghost-color: var(--component-background);
+	--btn-default-ghost-border: var(--component-background);
 	--btn-text-hover-bg: rgba(0, 0, 0, 0.018);
 	--btn-text-active-bg: rgba(0, 0, 0, 0.028);
 
-	// Checkbox
-	--checkbox-check-bg: @checkbox-check-color;
-
-	// Descriptions
-	--descriptions-bg: #fafafa;
-
-	// Divider
-	--divider-color: rgba(0, 0, 0, 6%);
-
-	// Dropdown 有两个
-	--dropdown-menu-submenu-disabled-bg: @component-background;
-
-	// Radio
-	--radio-dot-disabled-color: fade(@black, 20%);
-	--radio-solid-checked-color: @component-background;
-
-	// Radio buttons
-	--radio-disabled-button-checked-bg: coverTintMixin(@black, 90%);
-	--radio-disabled-button-checked-color: @disabled-color;
-
-	// Layout
-	--layout-body-background: #f0f2f5;
-	--layout-header-background: #001529;
-	--layout-trigger-background: #002140;
-	//--layout-sider-background-1: coverTintMixin(#001529, 10%);
-
-	// Dropdown 有两个
-	--dropdown-menu-bg: @component-background;
-
-	// Input
-	--input-placeholder-color: hsv(0, 0, 75%);
-	--input-icon-color: @input-color;
-	--input-bg: @component-background;
+	// ---------- 表单控件 ----------
+	--checkbox-check-bg: var(--component-background);
+	--radio-dot-disabled-color: rgba(0, 0, 0, 0.2);
+	--radio-solid-checked-color: var(--component-background);
+	--radio-disabled-button-checked-bg: #e6e6e6;
+	--radio-disabled-button-checked-color: var(--disabled-color);
+	--input-bg: var(--component-background);
+	--input-placeholder-color: #bfbfbf;
+	--input-icon-color: rgba(0, 0, 0, 0.88);
+	--input-icon-hover-color: rgba(0, 0, 0, 0.85);
 	--input-number-handler-active-bg: #f4f4f4;
-	--input-icon-hover-color: fade(@black, 85%);
-
-	// Mentions
-	--mentions-dropdown-bg: @component-background;
-
-	// Select
-	--select-dropdown-bg: @component-background;
-	--select-background: @component-background;
-	--select-clear-background: @select-background;
-	--select-selection-item-bg: @background-color-base;
-	--select-selection-item-border-color: @border-color-split;
-	--select-multiple-disabled-background: @input-disabled-bg;
+	--mentions-dropdown-bg: var(--component-background);
+	--select-background: var(--component-background);
+	--select-dropdown-bg: var(--component-background);
+	--select-clear-background: var(--select-background);
+	--select-selection-item-bg: var(--background-color-base);
+	--select-selection-item-border-color: var(--border-color-split);
+	--select-multiple-disabled-background: rgba(0, 0, 0, 0.04);
 	--select-multiple-item-disabled-color: #bfbfbf;
-	--select-multiple-item-disabled-border-color: @select-border-color;
+	--select-multiple-item-disabled-border-color: var(--border-color-base);
+	--cascader-bg: var(--component-background);
+	--cascader-menu-bg: var(--component-background);
+	--cascader-menu-border-color-split: var(--border-color-split);
+	--picker-bg: var(--component-background);
+	--picker-basic-cell-disabled-bg: rgba(0, 0, 0, 0.04);
+	--picker-border-color: var(--border-color-split);
+	--calendar-bg: var(--component-background);
+	--calendar-input-bg: var(--input-bg);
+	--calendar-border-color: #fff;
+	--calendar-full-bg: var(--calendar-bg);
+	--switch-bg: var(--component-background);
+	--switch-shadow-color: 0 2px 4px rgba(0, 35, 11, 0.2);
+	--slider-rail-background-color: var(--background-color-base);
+	--slider-rail-background-color-hover: #e1e1e1;
+	--slider-dot-border-color: var(--border-color-split);
+	--slider-dot-border-color-active: var(--primary-4);
+	--rate-star-bg: var(--border-color-split);
+	--transfer-item-hover-bg: var(--item-hover-bg);
 
-	// Cascader
-	--cascader-bg: @component-background;
-	--cascader-menu-bg: @component-background;
-	--cascader-menu-border-color-split: @border-color-split;
-
-	// Tooltip
+	// ---------- 浮层 ----------
 	--tooltip-bg: rgba(0, 0, 0, 0.75);
+	--tooltip-color: #fff;
+	--popover-bg: var(--component-background);
+	--dropdown-menu-bg: var(--component-background);
+	--dropdown-menu-submenu-disabled-bg: var(--component-background);
+	--modal-header-bg: var(--component-background);
+	--modal-content-bg: var(--component-background);
+	--modal-header-border-color-split: var(--border-color-split);
+	--modal-footer-border-color-split: var(--border-color-split);
+	--drawer-bg: var(--component-background);
+	--message-notice-content-bg: var(--component-background);
+	--notification-bg: var(--component-background);
+	--image-preview-operation-disabled-color: rgba(255, 255, 255, 0.45);
 
-	// Popover
-	--popover-bg: @component-background;
-
-	// Modal
-	--modal-header-bg: @component-background;
-	--modal-header-border-color-split: @border-color-split;
-	--modal-content-bg: @component-background;
-	--modal-footer-border-color-split: @border-color-split;
-
-	// Progress
-	--progress-steps-item-bg: #f3f3f3;
-
-	// Menu
-	--menu-popup-bg: @component-background;
-	--menu-dark-bg: @layout-header-background;
-	--menu-dark-inline-submenu-bg: #000c17;
-
-	// Table
-	--table-header-bg: @background-color-light;
-	--table-header-sort-bg: @background-color-base;
-	--table-body-sort-bg: #fafafa;
-	--table-row-hover-bg: @background-color-light;
-	--table-expanded-row-bg: #fbfbfb;
-	--table-header-cell-split-color: rgba(0, 0, 0, 0.06);
+	// ---------- 数据展示 ----------
+	--table-header-bg: var(--background-color-light);
+	--table-header-sort-bg: var(--background-color-base);
 	--table-header-sort-active-bg: rgba(0, 0, 0, 0.04);
 	--table-header-filter-active-bg: rgba(0, 0, 0, 0.04);
+	--table-header-cell-split-color: rgba(0, 0, 0, 0.06);
+	--table-body-sort-bg: #fafafa;
+	--table-row-hover-bg: var(--background-color-light);
+	--table-row-striped-bg: var(--table-row-hover-bg);
+	--table-expanded-row-bg: #fbfbfb;
 	--table-filter-btns-bg: inherit;
-	--table-filter-dropdown-bg: @component-background;
-	--table-expand-icon-bg: @component-background;
-
-	// TimePicker
-	--picker-bg: @component-background;
-	--picker-basic-cell-disabled-bg: @disabled-bg;
-	--picker-border-color: @border-color-split;
-
-	// Calendar
-	--calendar-bg: @component-background;
-	--calendar-input-bg: @input-bg;
-	--calendar-border-color: @border-color-inverse;
-	--calendar-full-bg: @calendar-bg;
-
-	// Badge
-	--badge-text-color: @component-background;
-
-	// Rate
-	--rate-star-bg: @border-color-split;
-
-	// Card
-	--card-actions-background: @component-background;
+	--table-filter-dropdown-bg: var(--component-background);
+	--table-expand-icon-bg: var(--component-background);
+	--card-actions-background: var(--component-background);
 	--card-skeleton-bg: #cfd8dc;
 	--card-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
-
-	// Comment
+	--card-shadow-soft: 0 1px 6px rgba(0, 0, 0, 0.06);
+	--card-above-color: #f0f0f0;
+	--card-above-border-color: #cccccc;
+	--descriptions-bg: #fafafa;
+	--divider-color: rgba(0, 0, 0, 0.06);
+	--badge-text-color: var(--component-background);
+	--avatar-bg: #ccc;
+	--tree-bg: var(--component-background);
+	--list-customize-card-bg: var(--component-background);
 	--comment-bg: inherit;
 	--comment-author-time-color: #ccc;
 	--comment-action-hover-color: #595959;
+	--progress-steps-item-bg: #f3f3f3;
+	--skeleton-to-color: rgba(181, 181, 181, 0.24);
+	--timeline-color: var(--border-color-split);
+	--timeline-dot-color: var(--primary-color);
+	--steps-background: var(--component-background);
+	--steps-nav-arrow-color: rgba(0, 0, 0, 0.25);
+	--gradient-min: rgba(207, 216, 220, 0.2);
+	--gradient-max: rgba(207, 216, 220, 0.4);
 
-	// BackTop
-	--back-top-bg: @text-color-secondary;
-	--back-top-hover-bg: @text-color;
-
-	// Avatar
-	--avatar-bg: #ccc;
-
-	// Switch
-	--switch-bg: @component-background;
-
-	// Pagination
-	--pagination-item-bg: @component-background;
-	--pagination-item-bg-active: @component-background;
-	--pagination-item-link-bg: @component-background;
-	--pagination-item-disabled-color-active: @white;
-	--pagination-item-disabled-bg-active: darken(hsv(0, 0, 96%), 10%);
-	--pagination-item-input-bg: @component-background;
-
-	// PageHeader
+	// ---------- 导航 ----------
+	--menu-popup-bg: var(--component-background);
+	--menu-dark-bg: var(--layout-header-background);
+	--menu-dark-inline-submenu-bg: #000c17;
+	--menu-dark-highlight-color: #fff;
+	--pagination-item-bg: var(--component-background);
+	--pagination-item-bg-active: var(--component-background);
+	--pagination-item-link-bg: var(--component-background);
+	--pagination-item-input-bg: var(--component-background);
+	--pagination-item-disabled-color-active: #fff;
+	--pagination-item-disabled-bg-active: #dbdbdb;
 	--page-header-back-color: #000;
 	--page-header-ghost-bg: inherit;
+	--back-top-bg: var(--text-color-secondary);
+	--back-top-hover-bg: var(--text-color);
 
-	// Slider
-	--slider-rail-background-color: @background-color-base;
-	--slider-rail-background-color-hover: #e1e1e1;
-	--slider-dot-border-color: @border-color-split;
-	--slider-dot-border-color-active: @primary-4;
-
-	// Tree
-	--tree-bg: @component-background;
-
-	// Skeleton
-	--skeleton-to-color: coverShadeMixin(@skeleton-color, 5%);
-
-	// Transfer
-	--transfer-item-hover-bg: @item-hover-bg;
-
-	// Message
-	--message-notice-content-bg: @component-background;
-
-	// List
-	--list-customize-card-bg: @component-background;
-
-	// Drawer
-	--drawer-bg: @component-background;
-
-	// Timeline
-	--timeline-color: @border-color-split;
-	--timeline-dot-color: @primary-color;
-
-	// Image
-	--image-preview-operation-disabled-color: rgba(255, 255, 255, 0.45);
-
-	// Steps
-	--steps-nav-arrow-color: fade(@black, 25%);
-	--steps-background: @component-background;
-
-	// Notification
-	--notification-bg: @component-background;
-
-	// 侧边栏
+	// ---------- 框架布局（侧边栏 / 顶栏 / logo / 标签页 / 面包屑） ----------
+	--layout-body-background: #f0f2f5;
+	--layout-header-background: #001529;
+	--layout-trigger-background: #002140;
 	--sidebar-light-shadow: 1px 3px 3px rgba(0, 21, 41, 0.08);
 	--sidebar-dark-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);
-
-	// 顶栏
 	--header-light-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 	--header-dark-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 	--header-tool-hover-bg: rgba(0, 0, 0, 0.025);
 	--header-dark-tool-hover-bg: rgba(255, 255, 255, 0.05);
 	--header-color-split: rgba(0, 0, 0, 0.08);
-
-	// logo
+	--header-bottom: rgba(246, 246, 246, 0.85);
 	--logo-light-shadow: 1px 2px 3px rgba(0, 21, 41, 0.08);
 	--logo-dark-shadow: 0 3px 4px rgba(0, 0, 0, 0.35);
-
-	//
-	--gradient-min: fade(#cfd8dc, 20%);
-	--gradient-max: fade(#cfd8dc, 40%);
-
-	// font
-	--font-color: rgba(0, 0, 0, 0.88);
-	// header-bottom
-	--header-bottom: rgba(246, 246, 246, 0.85);
-	// breadcrumb-background
 	--breadcrumb-background: rgba(253, 253, 253, 0.85);
-	// background-color
+	--tag-background: rgb(253, 253, 253);
 	--snowy-background-color: #ffffff;
-	// tag-background
-	--tag-background: rgba(253, 253, 253);
-	//
-	--success-fade-20: fade(#52c41a, 20%);
-	--error-fade-20: fade(#ff4d4f, 20%);
-	--warning-fade-20: fade(#faad14, 20%);
+	--font-color: rgba(0, 0, 0, 0.88);
 
-	//--primary-fade-20: fade(#1890ff, 20%);
-	--primary-fade-20: var(--primary-2);
-	//--primary-fade-8: fade(#1890ff, 8%);
-
-	--white--fade--65: rgba(255, 255, 255, 0.65);
-	--menu-dark-highlight-color: #fff;
-	--btn-primary-color: #fff;
-	--tooltip-color: #fff;
-	--card-above-color: #f0f0f0;
-	--card-above-border-color: #cccccc;
-
-	// workfolw design
+	// ---------- 流程设计器 ----------
 	--node-wrap-box-color: rgb(255, 255, 255);
 	--node-wrap-box-before-color: #ffffff;
 	--node-wrap-box-before-borde-color: rgb(202, 202, 202);
 	--auto-judge-before-color: #fff;
 	--cover-line-before-color: #fff;
-	// 新定义的颜色-可用于暗黑适配
+
+	// ---------- 业务通用（自定义页面做暗黑适配优先用这组） ----------
 	--background-color: #f5f5f5;
 	--background-border: #f0f0f0;
 	--background-card-color: rgb(255, 255, 255);

@@ -10,7 +10,7 @@
  */
 import { globalStore } from '@/store'
 
-// 灰色模式类名，对应样式见 src/style/index.less 的 html.gray-mode
+// 灰色模式类名，对应样式见 src/style/base.less 的 html.gray-mode
 const GRAY_MODE_CLASS = 'gray-mode'
 
 /**

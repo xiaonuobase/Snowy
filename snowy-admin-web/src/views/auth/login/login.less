@@ -1,7 +1,7 @@
-.login-icon-gray {
-	color: rgba(0, 0, 0, 0.25);
+.login-wrapper :deep(.login-icon-gray) {
+	color: var(--text-color-secondary);
 }
-.login-validCode-img {
+.login-wrapper :deep(.login-validCode-img) {
 	border: 1px solid var(--border-color-split);
 	cursor: pointer;
 	width: 100%;
@@ -11,8 +11,17 @@
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	background-color: #fff;
+	background-color: var(--surface-container);
+	color: var(--text-color);
 	display: flex;
+
+	.snowy-theme-dark & {
+		background-color: var(--surface-layout);
+
+		:deep(.ant-input::placeholder) {
+			color: var(--text-color-secondary);
+		}
+	}
 }
 .login_background {
 	width: 50%;
@@ -22,6 +31,11 @@
 	background-position: center;
 	background-image: url(/img/login_background.webp);
 	position: relative;
+
+	.snowy-theme-dark & {
+		background-color: rgb(0 0 0 / 36%);
+		background-blend-mode: multiply;
+	}
 }
 @keyframes myfirst {
 	0% {
@@ -98,11 +112,16 @@
 	font-size: 24px;
 	font-weight: bold;
 	margin-top: 10px;
+	color: var(--heading-color);
 }
 .login_config {
 	position: absolute;
-	top: 20px;
-	right: 20px;
+	top: 12px;
+	right: 16px;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	gap: 4px;
 }
 .logo_background {
 	position: absolute;
@@ -111,9 +130,13 @@
 	height: 60px;
 	padding-left: 56px;
 	width: 100%;
-	background: linear-gradient(120deg, rgb(255 255 255 / 90%), rgba(255, 255, 255, 0));
+	background: linear-gradient(120deg, rgb(255 255 255 / 90%), transparent);
 	display: flex;
 	align-items: center;
+
+	.snowy-theme-dark & {
+		background: linear-gradient(120deg, var(--surface-container), transparent);
+	}
 }
 .logo_background a {
 	text-decoration: none;
@@ -131,8 +154,20 @@
 }
 .logo_background a label {
 	font-size: 24px;
-	color: #fff;
+	font-weight: bold;
+	color: var(--primary-color);
 	cursor: pointer;
+
+	.snowy-theme-dark & {
+		color: var(--heading-color);
+	}
+}
+.login-link {
+	color: #0d84ff;
+
+	.snowy-theme-dark & {
+		color: var(--blue-7);
+	}
 }
 .login_background .version {
 	width: 100%;

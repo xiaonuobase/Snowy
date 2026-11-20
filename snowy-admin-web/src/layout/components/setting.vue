@@ -3,13 +3,16 @@
 		<div class="scrollbar">
 			<h3 class="setting-item-title">整体风格设置</h3>
 			<div class="snowy-setting-checkbox">
-				<a-tooltip v-for="(a, i) in sideStyleList" :key="i" placement="top">
-					<template #title>
-						<span>{{ a.tips }}</span>
-					</template>
-					<div :class="['snowy-setting-checkbox-item', a.style]" @click="setSideStyle(a.value)">
-						<check-outlined v-if="theme === a.value" class="snowy-setting-checkbox-item-select-icon" />
-					</div>
+				<a-tooltip v-for="option in sideStyleList" :key="option.value" placement="top" :title="option.tips">
+					<button
+						type="button"
+						:class="['snowy-setting-checkbox-item', option.style]"
+						:aria-label="option.tips"
+						:aria-pressed="theme === option.value"
+						@click="setSideStyle(option.value, $event)"
+					>
+						<check-outlined v-if="theme === option.value" class="snowy-setting-checkbox-item-select-icon" />
+					</button>
 				</a-tooltip>
 			</div>
 			<h3 class="setting-item-title">整体界面布局</h3>
@@ -77,6 +80,10 @@
 				<h4 class="setting-item-title">多标签：</h4>
 				<a-switch :checked="layoutTagsOpen" @change="toggleState('layoutTagsOpen')" />
 			</div>
+			<div class="mb-4 layout-slide" v-if="!store.isPhone && layout !== layoutEnum.TOP">
+				<h4 class="setting-item-title">固定 Logo 栏：</h4>
+				<a-switch :checked="sideLogoFixed" aria-label="固定 Logo 栏" @change="toggleState('sideLogoFixed')" />
+			</div>
 			<div class="mb-4 layout-slide" v-if="!menuIsCollapseDisabled">
 				<h4 class="setting-item-title">折叠菜单：</h4>
 				<a-switch
@@ -132,6 +139,7 @@
 	import { layoutEnum } from '@/layout/enum/layoutEnum'
 	import { globalStore } from '@/store'
 	import tool from '@/utils/tool'
+	import { switchThemeWithTransition } from '@/utils/themeUtil'
 	const store = globalStore()
 	const topHeaderThemeColorOpenDisabled = ref(false)
 	const topHeaderThemeColorSpreadDisabled = ref(false)
@@ -140,6 +148,7 @@
 	const sideUniqueOpenDisabled = ref(false)
 	const toolDataNameMap = {
 		menuIsCollapse: 'MENU_COLLAPSE',
+		sideLogoFixed: 'SIDE_LOGO_FIXED',
 		sideUniqueOpen: 'SIDE_UNIQUE_OPEN',
 		layoutTagsOpen: 'LAYOUT_TAGS_OPEN',
 		breadcrumbOpen: 'BREADCRUMD_OPEN',
@@ -152,7 +161,7 @@
 		moduleUnfoldOpen: 'MODULE_UNFOLD_OPEN',
 		grayModeOpen: 'GRAY_MODE_OPEN'
 	}
-	const sideStyleList = ref([
+	const sideStyleList = [
 		{
 			tips: '暗色主题风格',
 			value: themeEnum.DARK,
@@ -168,7 +177,7 @@
 			value: themeEnum.REAL_DARK,
 			style: 'snowy-setting-checkbox-item-realdark'
 		}
-	])
+	]
 	const layoutList = ref([
 		{
 			tips: '经典',
@@ -207,6 +216,9 @@
 	})
 	const menuIsCollapse = computed(() => {
 		return store.menuIsCollapse
+	})
+	const sideLogoFixed = computed(() => {
+		return store.sideLogoFixed
 	})
 	const sideUniqueOpen = computed(() => {
 		return store.sideUniqueOpen
@@ -259,11 +271,15 @@
 		const toolDataName = toolDataNameMap[stateName]
 		tool.data.set(`SNOWY_${toolDataName}`, store[stateName])
 	}
-	// 设置整体风格主题
-	const setSideStyle = (value) => {
-		store.setTheme(value)
-		tool.data.set('SNOWY_THEME', value)
-		layoutChange(layout.value)
+	const setSideStyle = (value, event) => {
+		return switchThemeWithTransition(theme.value, value, event, () => {
+			const wasRealDark = store.isRealDark
+			store.setTheme(value)
+			tool.data.set('SNOWY_THEME', value)
+			if (wasRealDark !== store.isRealDark) {
+				layoutChange(layout.value)
+			}
+		})
 	}
 	// 设置整体界面布局
 	const layoutStyle = (value) => {
@@ -271,10 +287,13 @@
 		tool.data.set('SNOWY_LAYOUT', value)
 		layoutChange(value)
 	}
-	// 切换颜色
+	// 切换主色
 	const tagColor = (value) => {
-		tool.data.set('SNOWY_THEME_COLOR', value)
+		if (value === themeColor.value) {
+			return
+		}
 		store.setThemeColor(value)
+		tool.data.set('SNOWY_THEME_COLOR', value)
 	}
 	// 切换表单风格
 	const formStyleChange = (value) => {
@@ -284,13 +303,12 @@
 	// 更改布局后设置
 	const layoutChange = (layout) => {
 		// 暗黑色情况下，将其禁用顶栏颜色跟通栏功能
-		if (theme.value === themeEnum.REAL_DARK) {
+		if (store.isRealDark) {
 			topHeaderThemeColorOpenDisabled.value = true
 			topHeaderThemeColorSpreadDisabled.value = true
 			// 在切换主题风格的时候判断顶栏相关的，暗黑模式下是不允许开启顶栏变色的
 			if (topHeaderThemeColorOpen.value) {
-				toggleState('topHeaderThemeColorOpen')
-				tool.data.set('SNOWY_TOP_HEADER_THEME_COLOR_SPREAD', false)
+				changeTopHeaderThemeColorOpen()
 			}
 		} else {
 			if (layout !== layoutEnum.TOP) {
@@ -319,9 +337,7 @@
 		}
 	}
 	onMounted(() => {
-		const layout = tool.data.get('SNOWY_LAYOUT')
-		// 这里主要为了dom销毁后重新打开设置界面，界面上禁用相关
-		layoutChange(layout)
+		layoutChange(layout.value)
 	})
 </script>
 
@@ -340,6 +356,13 @@
 		border-radius: 2px;
 		box-shadow: 0 1px 2.5px 0 rgb(0 0 0 / 18%);
 		cursor: pointer;
+	}
+	button.snowy-setting-checkbox-item {
+		border: 0;
+
+		&:focus-visible {
+			box-shadow: 0 0 0 2px var(--primary-color);
+		}
 	}
 	.snowy-setting-checkbox-item::before {
 		position: absolute;

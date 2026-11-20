@@ -230,6 +230,9 @@
 	.msg:hover {
 		background: rgba(0, 0, 0, 0.025);
 	}
+	.badge {
+		color: inherit;
+	}
 	.msg-icon-trigger {
 		font-size: 16px;
 	}

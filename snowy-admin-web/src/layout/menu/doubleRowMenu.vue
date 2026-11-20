@@ -3,7 +3,7 @@
 		<a-layout-sider
 			v-if="!isPhone"
 			:width="firstSideWidth"
-			:class="{ 'doublerow-first-side-tablet': isTablet }"
+			:class="{ 'doublerow-first-side-tablet': isTablet, 'snowy-sider-logo-fixed': sideLogoFixed }"
 			:theme="sideTheme"
 			:trigger="null"
 			collapsible
@@ -73,6 +73,7 @@
 					:collapsed="secondSideCollapsed"
 					:trigger="null"
 					width="170"
+					class="snowy-doublerow-second-sider"
 					collapsible
 					:theme="secondMenuSideTheme"
 				>
@@ -129,6 +130,7 @@
 		isTablet: { type: Boolean }, // 是否平板尺寸（768px ~ 991px）
 		sideTheme: { type: String },
 		menuIsCollapse: {},
+		sideLogoFixed: { type: Boolean },
 		sysBaseConfig: { type: Object },
 		openKeys: { type: Array },
 		selectedKeys: { type: Array },
@@ -191,6 +193,13 @@
 	}
 </script>
 <style lang="less" scoped>
+	.snowy-doublerow-second-sider {
+		border-inline-start: 1px solid var(--border-color-base);
+
+		.snowy-theme-dark & {
+			border-inline-start-color: var(--header-bottom);
+		}
+	}
 	.xn-color-fff {
 		color: #fff;
 	}

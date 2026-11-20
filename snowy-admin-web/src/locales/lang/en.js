@@ -31,6 +31,9 @@ export default {
 	},
 	login: {
 		signInTitle: 'Sign in',
+		switchLanguage: 'Change language',
+		switchToDark: 'Switch to dark mode',
+		switchToLight: 'Switch to light mode',
 		forgetPassword: 'Forget password',
 		signIn: 'Sign in',
 		signInOther: 'Sign in with',

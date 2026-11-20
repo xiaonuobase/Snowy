@@ -12,46 +12,103 @@ import { generate } from '@ant-design/colors'
 import config from '../config'
 import { themeEnum } from '@/layout/enum/themeEnum'
 
-const changeColor = (newPrimaryColor, theme, darkClass = 'snowy-theme-dark') => {
-	return new Promise((resolve) => {
-		const themeEleId = 'snowy-theme-var'
-		const themeEle = document.querySelector(`#${themeEleId}`)
-		if (themeEle && themeEle.parentNode) {
-			themeEle.parentNode.removeChild(themeEle)
+const DARK_THEME_CLASS = 'snowy-theme-dark'
+const THEME_STYLE_ID = 'snowy-theme-var'
+
+const getPrimaryVariables = (primaryColor, options) =>
+	generate(primaryColor, options)
+		.map((color, index) => `--primary-${index + 1}:${color};`)
+		.join('') + `--primary-color:${primaryColor};`
+
+// 主色改变时同时生成亮色和暗黑色板，切换风格只需更新 body 类名
+const changeColor = (primaryColor) => {
+	let styleElement = document.getElementById(THEME_STYLE_ID)
+	if (!primaryColor) {
+		styleElement?.remove()
+		document.body.removeAttribute('snowy-theme')
+		return
+	}
+
+	const light = getPrimaryVariables(primaryColor)
+	const dark = getPrimaryVariables(primaryColor, { theme: 'dark' })
+	const cssText = `:root{${light}}.${DARK_THEME_CLASS}{${dark}}`
+	if (!styleElement) {
+		styleElement = document.createElement('style')
+		styleElement.id = THEME_STYLE_ID
+	}
+	if (styleElement.textContent !== cssText) {
+		styleElement.textContent = cssText
+	}
+	if (!styleElement.isConnected) {
+		document.head.appendChild(styleElement)
+	}
+}
+
+const setDarkTheme = (isRealDark) => {
+	document.body.classList.toggle(DARK_THEME_CLASS, isRealDark)
+}
+
+let activeThemeTransition
+const clearThemeTransition = (root, transition) => {
+	if (activeThemeTransition?.transition === transition) {
+		activeThemeTransition = undefined
+		root.removeAttribute('data-snowy-theme-transition')
+		root.style.removeProperty('--snowy-theme-transition-origin')
+		root.style.removeProperty('--snowy-theme-transition-radius')
+	}
+}
+
+const switchThemeWithTransition = (currentTheme, targetTheme, event, apply) => {
+	if (activeThemeTransition?.targetTheme === targetTheme) {
+		return
+	}
+
+	const root = document.documentElement
+	if (activeThemeTransition) {
+		// 连续点选时立即应用最后一次选择，避免连续截取整页
+		const { transition } = activeThemeTransition
+		transition.skipTransition()
+		clearThemeTransition(root, transition)
+		return currentTheme === targetTheme ? undefined : apply()
+	}
+	if (currentTheme === targetTheme) {
+		return
+	}
+	if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		return apply()
+	}
+
+	const { innerWidth: width, innerHeight: height } = window
+	const x = event?.detail ? event.clientX : width / 2
+	const y = event?.detail ? event.clientY : height / 2
+	const radius = Math.ceil(Math.hypot(Math.max(x, width - x), Math.max(y, height - y)))
+	const reverse =
+		currentTheme === themeEnum.REAL_DARK || (currentTheme === themeEnum.DARK && targetTheme === themeEnum.LIGHT)
+
+	root.style.setProperty('--snowy-theme-transition-origin', `${x}px ${y}px`)
+	root.style.setProperty('--snowy-theme-transition-radius', `${radius}px`)
+	root.setAttribute('data-snowy-theme-transition', reverse ? 'collapse' : 'expand')
+
+	const transition = document.startViewTransition(() => {
+		if (activeThemeTransition?.transition === transition) {
+			apply()
+			return nextTick()
 		}
-		const isRealDark = theme === themeEnum.REAL_DARK
-		if (newPrimaryColor) {
-			const colors = generate(newPrimaryColor, isRealDark ? { theme: 'dark' } : {})
-			const rootClass = isRealDark ? `.${darkClass}` : ':root'
-			const styleElement = document.createElement('style')
-			styleElement.id = themeEleId
-			styleElement.setAttribute('type', 'text/css')
-			styleElement.innerHTML = `${rootClass}{${colors
-				.map((c, i) => {
-					return `--primary-${i + 1}:${c};`
-				})
-				.concat([`--primary-color:${newPrimaryColor};`])
-				.join('')}}`
-			document.head.appendChild(styleElement)
-		} else {
-			document.body.removeAttribute('snowy-theme')
-		}
-		if (isRealDark) {
-			document.body.classList.add(darkClass)
-		} else {
-			document.body.classList.remove(darkClass)
-		}
-		resolve()
 	})
+	activeThemeTransition = { transition, targetTheme }
+	// 浏览器跳过过渡时 ready 会拒绝，主题仍由更新回调提交
+	transition.ready.catch(() => {})
+	const cleanup = () => clearThemeTransition(root, transition)
+	transition.finished.then(cleanup, cleanup)
+	return transition.updateCallbackDone
 }
 
 const loadLocalTheme = (localSetting) => {
 	if (localSetting) {
-		let { theme, themeColor } = localSetting
-		themeColor = themeColor || config.COLOR
-		theme = theme || config.THEME
-		changeColor(themeColor, theme)
+		const { theme, themeColor } = localSetting
+		changeColor(themeColor || config.COLOR)
+		setDarkTheme((theme || config.SNOWY_THEME) === themeEnum.REAL_DARK)
 	}
 }
 
-export { loadLocalTheme, changeColor }
+export { loadLocalTheme, changeColor, setDarkTheme, switchThemeWithTransition }

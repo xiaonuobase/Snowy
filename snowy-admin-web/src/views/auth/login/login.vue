@@ -9,7 +9,7 @@
 					@click="handleLink"
 				>
 					<img :alt="systemName" :src="sysBaseConfig.SNOWY_SYS_LOGO" />
-					<label style="color: var(--primary-color);font-weight: bold">{{ systemName }}</label>
+					<label>{{ systemName }}</label>
 				</a>
 			</div>
 			<div class="version">
@@ -19,8 +19,16 @@
 		</div>
 		<div class="login_main">
 			<div class="login_config">
+				<ThemeToggle />
 				<a-dropdown>
-					<global-outlined />
+					<a-button
+						type="text"
+						shape="circle"
+						:aria-label="$t('login.switchLanguage')"
+						:title="$t('login.switchLanguage')"
+					>
+						<template #icon><global-outlined /></template>
+					</a-button>
 					<template #overlay>
 						<a-menu>
 							<a-menu-item
@@ -91,8 +99,8 @@
 
 								<a-form-item>
 									<div style="display: flex; justify-content: space-between">
-										<a href="/findpwd" class="xn-color-0d84ff">{{ $t('login.forgetPassword') }}？</a>
-										<a href="/register" class="xn-color-0d84ff" v-if="registerOpen === 'true'">
+										<a href="/findpwd" class="login-link">{{ $t('login.forgetPassword') }}？</a>
+										<a href="/register" class="login-link" v-if="registerOpen === 'true'">
 											{{ $t('login.notAccountPleaseRegister') }}
 										</a>
 									</div>
@@ -125,7 +133,7 @@
 						</a-tab-pane>
 					</a-tabs>
 					<div v-if="configData.FRONT_BACK_LOGIN_URL_SHOW">
-						<a href="/front/client/index" class="xn-color-0d84ff">{{ $t('login.frontLogin') }}</a>
+						<a href="/front/client/index" class="login-link">{{ $t('login.frontLogin') }}</a>
 					</div>
 					<three-login v-if="configData.THREE_LOGIN_SHOW && !appId" />
 					<three-login-for-app
@@ -143,6 +151,7 @@
 </template>
 <script setup>
 	import loginApi from '@/api/auth/loginApi'
+	import ThemeToggle from './themeToggle.vue'
 	const PhoneLoginForm = defineAsyncComponent(() => import('./phoneLoginForm.vue'))
 	const EmailLoginForm = defineAsyncComponent(() => import('./emailLoginForm.vue'))
 	const OtpLoginForm = defineAsyncComponent(() => import('./otpLoginForm.vue'))
@@ -318,9 +327,6 @@
 		}
 	}
 </script>
-<style lang="less">
+<style lang="less" scoped>
 	@import 'login';
-	.xn-color-0d84ff {
-		color: #0d84ff;
-	}
 </style>

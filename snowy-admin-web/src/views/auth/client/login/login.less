@@ -5,18 +5,37 @@
 	justify-content: center;
 	align-items: center;
 	padding-bottom: 10vh; // 向上偏移，视觉中心通常比几何中心略高
-	background: #f5f5f5; // 使用更纯净的中性浅灰色
+	background: var(--surface-layout);
+	color: var(--text-color);
+	--login-link-color: #1890ff;
 	background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TV2t91tQncS2754uTSkv.svg');
 	background-repeat: no-repeat;
 	background-position: center 110px;
 	background-size: 100%;
+
+	.snowy-theme-dark & {
+		background-image: none;
+		--login-link-color: var(--blue-7);
+
+		:deep(.ant-input::placeholder),
+		:deep(.ant-select-selection-placeholder) {
+			color: var(--text-color-secondary);
+		}
+	}
+}
+
+.login-config {
+	position: absolute;
+	top: 12px;
+	right: 16px;
+	z-index: 1;
 }
 
 .login-content {
 	display: flex;
 	width: 1000px;
 	height: 600px;
-	background: #fff;
+	background: var(--surface-container);
 	border-radius: 12px;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 	overflow: hidden;
@@ -38,6 +57,10 @@
 	color: #fff;
 	position: relative;
 	overflow: hidden;
+
+	.snowy-theme-dark & {
+		background: linear-gradient(135deg, var(--blue-3), var(--blue-1));
+	}
 
 	&::before {
 		content: '';
@@ -114,7 +137,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	background: #fff;
+	background: var(--surface-container);
 
 	.login-form-wrapper {
 		width: 100%;
@@ -126,12 +149,12 @@
 		h2 {
 			font-size: 24px;
 			font-weight: 600;
-			color: rgba(0, 0, 0, 0.85);
+			color: var(--heading-color);
 			margin-bottom: 8px;
 		}
 
 		p {
-			color: rgba(0, 0, 0, 0.45);
+			color: var(--text-color-secondary);
 			font-size: 14px;
 		}
 	}
@@ -141,7 +164,7 @@
 	:deep(.ant-tabs-nav) {
 		margin-bottom: 24px;
 		&::before {
-			border-bottom: 1px solid #f0f0f0;
+			border-bottom: 1px solid var(--border-color-split);
 		}
 	}
 	:deep(.ant-tabs-tab) {
@@ -151,8 +174,8 @@
 	}
 }
 
-.field-icon {
-	color: rgba(0, 0, 0, 0.25);
+.login-right :deep(.field-icon) {
+	color: var(--text-color-secondary);
 }
 
 :deep(.ant-form-item) {
@@ -163,7 +186,7 @@
 		padding-bottom: 4px;
 		label {
 			font-size: 14px;
-			color: rgba(0, 0, 0, 0.65);
+			color: var(--text-color);
 		}
 	}
 
@@ -200,14 +223,14 @@
 
 .captcha-img-wrapper {
 	height: 40px;
-	border: 1px solid #d9d9d9;
+	border: 1px solid var(--border-color-base);
 	border-radius: 6px;
 	overflow: hidden;
 	cursor: pointer;
 	transition: border-color 0.3s;
 
 	&:hover {
-		border-color: #1890ff;
+		border-color: var(--login-link-color);
 	}
 
 	.login-validCode-img {
@@ -225,7 +248,7 @@
 
 	.forgot-link {
 		font-size: 14px;
-		color: #1890ff;
+		color: var(--login-link-color);
 	}
 }
 
@@ -242,11 +265,11 @@
 
 .register-footer {
 	text-align: center;
-	color: rgba(0, 0, 0, 0.45);
+	color: var(--text-color-secondary);
 	font-size: 14px;
 
 	a {
-		color: #1890ff;
+		color: var(--login-link-color);
 		margin-left: 4px;
 	}
 }
@@ -255,7 +278,7 @@
 	margin-top: 24px;
 
 	:deep(.ant-divider-inner-text) {
-		color: rgba(0, 0, 0, 0.25);
+		color: var(--text-color-secondary);
 		font-size: 12px;
 	}
 

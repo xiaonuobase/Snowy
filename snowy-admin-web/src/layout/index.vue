@@ -7,6 +7,7 @@
 		:isPhone="isPhone"
 		:isTablet="isTablet"
 		:menuIsCollapse="menuIsCollapse"
+		:sideLogoFixed="sideLogoFixed"
 		:sideTheme="sideTheme"
 		:sysBaseConfig="sysBaseConfig"
 		:openKeys="openKeys"
@@ -36,6 +37,7 @@
 		:openKeys="openKeys"
 		:selectedKeys="selectedKeys"
 		:menuIsCollapse="menuIsCollapse"
+		:sideLogoFixed="sideLogoFixed"
 		:doublerowSelectedKey="doublerowSelectedKey"
 		:menu="menu"
 		:nextMenu="nextMenu"
@@ -133,6 +135,9 @@
 	})
 	const menuIsCollapse = computed(() => {
 		return store.menuIsCollapse
+	})
+	const sideLogoFixed = computed(() => {
+		return store.sideLogoFixed
 	})
 	const theme = computed(() => {
 		return store.theme

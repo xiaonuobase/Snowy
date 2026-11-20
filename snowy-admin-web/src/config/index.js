@@ -39,6 +39,9 @@ const DEFAULT_CONFIG = {
 	// 菜单是否折叠
 	SNOWY_MENU_COLLAPSE: false,
 
+	// 是否固定侧栏 Logo
+	SNOWY_SIDE_LOGO_FIXED: true,
+
 	// 模块坞
 	SNOWY_MODULE_UNFOLD_OPEN: true,
 

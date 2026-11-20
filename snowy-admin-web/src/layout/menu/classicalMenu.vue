@@ -3,6 +3,7 @@
 		<a-layout-sider
 			v-if="!isPhone"
 			:collapsed="sideCollapsed"
+			:class="{ 'snowy-sider-logo-fixed': sideLogoFixed }"
 			:trigger="null"
 			collapsible
 			:theme="sideTheme"
@@ -98,6 +99,7 @@
 		isPhone: { type: Boolean }, // 是否手机尺寸（小于 768px）
 		isTablet: { type: Boolean }, // 是否平板尺寸（768px ~ 991px）
 		menuIsCollapse: { type: Boolean }, // 菜单是否折叠
+		sideLogoFixed: { type: Boolean },
 		sideTheme: { type: String },
 		sysBaseConfig: { type: Object },
 		openKeys: { type: Array },

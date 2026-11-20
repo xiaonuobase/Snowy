@@ -1,5 +1,8 @@
 <template>
 	<div class="login-container">
+		<div class="login-config">
+			<ThemeToggle />
+		</div>
 		<div class="login-content">
 			<!-- 左侧品牌展示区 -->
 			<div class="login-left">
@@ -71,7 +74,12 @@
 										</a-col>
 										<a-col :span="9">
 											<div class="captcha-img-wrapper">
-												<img :src="validCodeBase64" class="login-validCode-img" @click="loginCaptcha" title="点击刷新验证码" />
+												<img
+													:src="validCodeBase64"
+													class="login-validCode-img"
+													@click="loginCaptcha"
+													title="点击刷新验证码"
+												/>
 											</div>
 										</a-col>
 									</a-row>
@@ -118,6 +126,7 @@
 	</div>
 </template>
 <script setup>
+	import ThemeToggle from './themeToggle.vue'
 	import clientLoginApi from '@/api/auth/client/clientLoginApi'
 	import smCrypto from '@/utils/smCrypto'
 	import { required } from '@/utils/formRules'
